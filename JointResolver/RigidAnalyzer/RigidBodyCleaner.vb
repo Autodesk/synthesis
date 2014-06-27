@@ -2,7 +2,7 @@
 
 Module RigidBodyCleaner
     Public Sub CleanMeaningless(ByRef results As CustomRigidResults)
-        results.joints.RemoveAll(Function(item) item.groupOne.Equals(item.groupTwo) Or item.groupOne.occurrences.Count <= 0 Or item.groupTwo.occurrences.Count <= 0)
+        results.joints.RemoveAll(Function(item) item.groupOne.Equals(item.groupTwo) OrElse item.groupOne.occurrences.Count <= 0 OrElse item.groupTwo.occurrences.Count <= 0)
         results.groups.RemoveAll(Function(item) item.occurrences.Count <= 0)
     End Sub
 
@@ -33,43 +33,43 @@ Module RigidBodyCleaner
 
     Public Sub CleanConstraintOnly(ByRef results As CustomRigidResults)
         ' Determine what groups move
-        Dim jointCount As New Dictionary(Of Integer, Integer)
-        Dim constraintCount As New Dictionary(Of Integer, Integer)
+        Dim jointCount As New Dictionary(Of String, String)
+        Dim constraintCount As New Dictionary(Of String, String)
         For Each joint As CustomRigidJoint In results.joints
             If joint.joints.Count > 0 Then
                 ' Moving joint
                 Dim val As Integer
                 If Not (joint.groupOne.grounded) Then
-                    jointCount.TryGetValue(joint.groupOne.groupID, val)
-                    jointCount(joint.groupOne.groupID) = val + 1
+                    jointCount.TryGetValue(joint.groupOne.fullQualifier, val)
+                    jointCount(joint.groupOne.fullQualifier) = val + 1
                 End If
                 If Not (joint.groupTwo.grounded) Then
-                    jointCount.TryGetValue(joint.groupTwo.groupID, val)
-                    jointCount(joint.groupTwo.groupID) = val + 1
+                    jointCount.TryGetValue(joint.groupTwo.fullQualifier, val)
+                    jointCount(joint.groupTwo.fullQualifier) = val + 1
                 End If
             End If
             If joint.constraints.Count > 0 Then
                 ' Moving joint
                 Dim val As Integer
-                constraintCount.TryGetValue(joint.groupOne.groupID, val)
-                constraintCount(joint.groupOne.groupID) = val + 1
-                constraintCount.TryGetValue(joint.groupTwo.groupID, val)
-                constraintCount(joint.groupTwo.groupID) = val + 1
+                constraintCount.TryGetValue(joint.groupOne.fullQualifier, val)
+                constraintCount(joint.groupOne.fullQualifier) = val + 1
+                constraintCount.TryGetValue(joint.groupTwo.fullQualifier, val)
+                constraintCount(joint.groupTwo.fullQualifier) = val + 1
             End If
         Next joint
 
         ' Determine first level merge intention
-        Dim mergeIntents As New Dictionary(Of Integer, Integer) 'Merge key into value
+        Dim mergeIntents As New Dictionary(Of String, String) 'Merge key into value
         For Each joint As CustomRigidJoint In results.joints
             If joint.joints.Count > 0 Then Continue For
             Dim oneJointed As Boolean, twoJointed As Boolean
             Dim val As Integer
-            jointCount.TryGetValue(joint.groupOne.groupID, val)
+            jointCount.TryGetValue(joint.groupOne.fullQualifier, val)
             oneJointed = val > 0
-            jointCount.TryGetValue(joint.groupTwo.groupID, val)
+            jointCount.TryGetValue(joint.groupTwo.fullQualifier, val)
             twoJointed = val > 0
-            If oneJointed And twoJointed Then Continue For
-            If Not (oneJointed) And Not (twoJointed) Then
+            If oneJointed AndAlso twoJointed Then Continue For
+            If Not (oneJointed) AndAlso Not (twoJointed) Then
                 ' Determine best thing to fit to
                 Dim groupOneVolume As Double, groupTwoVolume As Double
                 For Each component In joint.groupOne.occurrences
@@ -78,45 +78,45 @@ Module RigidBodyCleaner
                 For Each component In joint.groupTwo.occurrences
                     groupTwoVolume += component.MassProperties.Volume
                 Next component
-                oneJointed = Not (joint.groupTwo.grounded) And (groupOneVolume > groupTwoVolume Or mergeIntents.ContainsKey(joint.groupOne.groupID) Or joint.groupOne.grounded) And Not (mergeIntents.ContainsKey(joint.groupTwo.groupID))
-                twoJointed = Not (oneJointed) And Not (joint.groupOne.grounded)
+                oneJointed = Not (joint.groupTwo.grounded) AndAlso (groupOneVolume > groupTwoVolume OrElse mergeIntents.ContainsKey(joint.groupOne.fullQualifier) OrElse joint.groupOne.grounded) AndAlso Not (mergeIntents.ContainsKey(joint.groupTwo.fullQualifier))
+                twoJointed = Not (oneJointed) AndAlso Not (joint.groupOne.grounded)
             End If
             If oneJointed Then
-                If (mergeIntents.ContainsKey(joint.groupTwo.groupID)) Then
-                    If mergeIntents(joint.groupTwo.groupID) <> joint.groupOne.groupID Then Console.WriteLine("[WARN] Double jointed on " & _
+                If (mergeIntents.ContainsKey(joint.groupTwo.fullQualifier)) Then
+                    If Not (mergeIntents(joint.groupTwo.fullQualifier).Equals(joint.groupOne.fullQualifier)) Then Console.WriteLine("[WARN] Double jointed on " & _
                         joint.groupTwo.ToString() & vbNewLine & vbTab & _
                         "CURRENT: " & joint.groupOne.ToString() & vbNewLine & vbTab & _
-                        "REPLACE: " & results.groupIDToCustom(mergeIntents(joint.groupTwo.groupID)).ToString())
+                        "REPLACE: " & results.groupIDToCustom(mergeIntents(joint.groupTwo.fullQualifier)).ToString())
                     Continue For
                 End If
-                Dim cOVal As Integer
-                If mergeIntents.TryGetValue(joint.groupOne.groupID, cOVal) Then If cOVal = joint.groupTwo.groupID Then Continue For
-                mergeIntents(joint.groupTwo.groupID) = joint.groupOne.groupID
+                Dim cOVal As String = Nothing
+                If mergeIntents.TryGetValue(joint.groupOne.fullQualifier, cOVal) AndAlso cOVal.Equals(joint.groupTwo.fullQualifier) Then Continue For
+                mergeIntents(joint.groupTwo.fullQualifier) = joint.groupOne.fullQualifier
 
                 Console.WriteLine("PreMerge " & joint.groupTwo.ToString() & " into " & joint.groupOne.ToString() & " because " & joint.ToString())
             ElseIf twoJointed Then
-                If (mergeIntents.ContainsKey(joint.groupOne.groupID)) Then
-                    If mergeIntents(joint.groupOne.groupID) <> joint.groupTwo.groupID Then Console.WriteLine("[WARN] Double jointed on " & _
+                If (mergeIntents.ContainsKey(joint.groupOne.fullQualifier)) Then
+                    If Not (mergeIntents(joint.groupOne.fullQualifier).Equals(joint.groupTwo.fullQualifier)) Then Console.WriteLine("[WARN] Double jointed on " & _
                         joint.groupOne.ToString() & vbNewLine & vbTab & _
                         "CURRENT: " & joint.groupTwo.ToString() & vbNewLine & vbTab & _
-                        "REPLACE: " & results.groupIDToCustom(mergeIntents(joint.groupOne.groupID)).ToString())
+                        "REPLACE: " & results.groupIDToCustom(mergeIntents(joint.groupOne.fullQualifier)).ToString())
                     Continue For
                 End If
-                Dim cOVal As Integer
-                If mergeIntents.TryGetValue(joint.groupTwo.groupID, cOVal) Then If cOVal = joint.groupOne.groupID Then Continue For
-                mergeIntents(joint.groupOne.groupID) = joint.groupTwo.groupID
+                Dim cOVal As String = Nothing
+                If mergeIntents.TryGetValue(joint.groupTwo.fullQualifier, cOVal) AndAlso cOVal.Equals(joint.groupOne.fullQualifier) Then Continue For
+                mergeIntents(joint.groupOne.fullQualifier) = joint.groupTwo.fullQualifier
 
                 Console.WriteLine("PreMerge " & joint.groupOne.ToString() & " into " & joint.groupTwo.ToString() & " because " & joint.ToString())
             End If
         Next joint
 
         ' Resolve merges and preform merge
-        Dim currentKeys(mergeIntents.Keys.Count - 1) As Integer
+        Dim currentKeys(mergeIntents.Keys.Count - 1) As String
         mergeIntents.Keys.CopyTo(currentKeys, 0)
-        For Each key As Integer In currentKeys
+        For Each key As String In currentKeys
             Dim myGroup As CustomRigidGroup = results.groupIDToCustom(key)
 
-            Dim currentMerge As Integer = mergeIntents(key)
+            Dim currentMerge As String = mergeIntents(key)
             While mergeIntents.ContainsKey(currentMerge)
                 currentMerge = mergeIntents(currentMerge)
             End While
@@ -132,19 +132,19 @@ Module RigidBodyCleaner
 
         ' Clean up joints to use new groups
         For Each joint As CustomRigidJoint In results.joints
-            If joint.groupOne.occurrences.Count > 0 And joint.groupTwo.occurrences.Count > 0 Then Continue For
+            If joint.groupOne.occurrences.Count > 0 AndAlso joint.groupTwo.occurrences.Count > 0 Then Continue For
 
             If joint.groupTwo.occurrences.Count = 0 Then
                 ' Merged joint?
-                Dim newOccurrence As Integer
-                If (mergeIntents.TryGetValue(joint.groupTwo.groupID, newOccurrence)) Then
+                Dim newOccurrence As String = Nothing
+                If (mergeIntents.TryGetValue(joint.groupTwo.fullQualifier, newOccurrence)) Then
                     results.groupIDToCustom.TryGetValue(newOccurrence, joint.groupTwo)
                 End If
             End If
             If joint.groupOne.occurrences.Count = 0 Then
                 ' Merged joint?
-                Dim newOccurrence As Integer
-                If (mergeIntents.TryGetValue(joint.groupOne.groupID, newOccurrence)) Then
+                Dim newOccurrence As String = Nothing
+                If (mergeIntents.TryGetValue(joint.groupOne.fullQualifier, newOccurrence)) Then
                     results.groupIDToCustom.TryGetValue(newOccurrence, joint.groupOne)
                 End If
             End If

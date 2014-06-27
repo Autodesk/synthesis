@@ -5,9 +5,9 @@
     Public children As New Dictionary(Of CustomRigidJoint, RigidNode)
     Public group As CustomRigidGroup
 
-    Private Shared Function createRigidNode(ByRef jointDictionary As Dictionary(Of Integer, List(Of CustomRigidJoint)), ByRef nodeDictionary As Dictionary(Of Integer, RigidNode), ByRef groupz As CustomRigidGroup, Optional ByRef parentz As RigidNode = Nothing) As RigidNode
+    Private Shared Function createRigidNode(ByRef jointDictionary As Dictionary(Of String, List(Of CustomRigidJoint)), ByRef nodeDictionary As Dictionary(Of String, RigidNode), ByRef groupz As CustomRigidGroup, Optional ByRef parentz As RigidNode = Nothing) As RigidNode
         Dim node As RigidNode = Nothing
-        If (nodeDictionary.TryGetValue(groupz.groupID, node)) Then
+        If (nodeDictionary.TryGetValue(groupz.fullQualifier, node)) Then
             Return node
         Else
             node = New RigidNode()
@@ -20,13 +20,13 @@
         End If
         Console.WriteLine("Creating node for " & groupz.ToString() & " at level " & Str(node.level))
         node.group = groupz
-        nodeDictionary(node.group.groupID) = node
+        nodeDictionary(node.group.fullQualifier) = node
 
         Dim joints As List(Of CustomRigidJoint) = Nothing
-        If (jointDictionary.TryGetValue(node.group.groupID, joints)) Then
+        If (jointDictionary.TryGetValue(node.group.fullQualifier, joints)) Then
             For Each joint As CustomRigidJoint In joints
                 Dim childGroup As CustomRigidGroup = If(joint.groupOne.Equals(node.group), joint.groupTwo, joint.groupOne)
-                If nodeDictionary.ContainsKey(childGroup.groupID) Then Continue For
+                If nodeDictionary.ContainsKey(childGroup.fullQualifier) Then Continue For
                 node.children(joint) = createRigidNode(jointDictionary, nodeDictionary, childGroup, node)
             Next joint
         End If
@@ -34,19 +34,19 @@
     End Function
 
     Public Shared Function generateNodeTree(ByRef results As CustomRigidResults) As RigidNode
-        Dim jointDictionary As New Dictionary(Of Integer, List(Of CustomRigidJoint))
+        Dim jointDictionary As New Dictionary(Of String, List(Of CustomRigidJoint))
         Dim baseGroup As CustomRigidGroup = Nothing
         For Each group As CustomRigidGroup In results.groups
-            jointDictionary(group.groupID) = New List(Of CustomRigidJoint)
+            jointDictionary(group.fullQualifier) = New List(Of CustomRigidJoint)
             If (group.grounded) Then baseGroup = group
         Next group
         If IsNothing(baseGroup) Then Return Nothing
         For Each joint As CustomRigidJoint In results.joints
-            jointDictionary(joint.groupOne.groupID).Add(joint)
-            jointDictionary(joint.groupTwo.groupID).Add(joint)
+            jointDictionary(joint.groupOne.fullQualifier).Add(joint)
+            jointDictionary(joint.groupTwo.fullQualifier).Add(joint)
         Next joint
 
-        Dim nodeDictionary As New Dictionary(Of Integer, RigidNode)
+        Dim nodeDictionary As New Dictionary(Of String, RigidNode)
         Return createRigidNode(jointDictionary, nodeDictionary, baseGroup)
     End Function
 
