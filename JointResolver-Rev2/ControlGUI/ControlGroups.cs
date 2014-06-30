@@ -22,12 +22,6 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void ControlGroups_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
-    {
-        formState = FormState.CLOSE;
-        Hide();
-    }
-
     private void lstItems_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (lstItems.SelectedItem is SkeletalJoint)
@@ -69,6 +63,12 @@ public partial class ControlGroups
     public void Cleanup()
     {
         SkeletalJoint.cleanupHS();
+    }
+
+    private void ControlGroups_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    {
+        formState = FormState.CLOSE;
+        Hide();
     }
 }
 

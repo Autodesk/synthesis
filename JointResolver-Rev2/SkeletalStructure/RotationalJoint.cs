@@ -37,10 +37,10 @@ public class RotationalJoint : SkeletalJoint
 
     public override string ExportData()
     {
-        UnitVector groupANormal = default(UnitVector);
-        UnitVector groupBNormal = default(UnitVector);
-        Point groupABase = default(Point);
-        Point groupBBase = default(Point);
+        UnitVector groupANormal;
+        UnitVector groupBNormal;
+        Point groupABase;
+        Point groupBBase;
         if ((asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType))
         {
             groupANormal = asmJoint.OriginOne.Geometry.Geometry.AxisVector;

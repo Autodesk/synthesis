@@ -82,11 +82,16 @@ static class Program
         //    writer.WriteLine()
         //Next i
         //writer.Close()
-        ControlGroups controlGUI = new ControlGroups();
-        controlGUI.setNodeList(nodes);
-        controlGUI.ShowDialog();
-        controlGUI.Cleanup();
-        Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
+        //ControlGroups controlGUI = new ControlGroups();
+        //controlGUI.setNodeList(nodes);
+        //controlGUI.ShowDialog();
+        //controlGUI.Cleanup();
+        SurfaceExporter surfs = new SurfaceExporter();
+        surfs.Reset();
+        surfs.ExportAll(baseNode.group.occurrences);
+        surfs.WriteBXDA("C:/Users/t_millw/Downloads/skele/thing.bxda");
+        surfs.WriteSTL("C:/Users/t_millw/Downloads/skele/thing.stl");
+        //Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
     }
 
     public static string printVector(object pO)
