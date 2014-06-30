@@ -1,7 +1,9 @@
-﻿Public Class RigidNode
+﻿Imports Inventor
 
+Public Class RigidNode
     Private level As Integer
     Public parent As RigidNode
+    Public parentConnection As CustomRigidJoint
     Public children As New Dictionary(Of CustomRigidJoint, RigidNode)
     Public group As CustomRigidGroup
 
@@ -13,6 +15,7 @@
             node = New RigidNode()
         End If
         node.parent = parentz
+        node.parentConnection = Nothing
         If IsNothing(node.parent) Then
             node.level = 0
         Else
@@ -28,6 +31,7 @@
                 Dim childGroup As CustomRigidGroup = If(joint.groupOne.Equals(node.group), joint.groupTwo, joint.groupOne)
                 If nodeDictionary.ContainsKey(childGroup.fullQualifier) Then Continue For
                 node.children(joint) = createRigidNode(jointDictionary, nodeDictionary, childGroup, node)
+                node.children(joint).parentConnection = joint
             Next joint
         End If
         Return node
@@ -52,12 +56,21 @@
 
     Public Overrides Function ToString() As String
         Dim result As String = Space(3 * level) & "Rigid Node" & vbNewLine & _
-        Space(3 * level) & "Name: " & group.ToString() & vbNewLine & _
-        Space(3 * level) & "Children: "
-        For Each pair As KeyValuePair(Of CustomRigidJoint, RigidNode) In children
-            result &= vbNewLine & Space(3 * level + 1) & "- " & pair.Key.ToString()
-            result &= vbNewLine & pair.Value.ToString()
-        Next pair
+        Space(3 * level) & "Name: " & group.ToString() & vbNewLine
+        If children.Count > 0 Then
+            result &= Space(3 * level) & "Children: "
+            For Each pair As KeyValuePair(Of CustomRigidJoint, RigidNode) In children
+                result &= vbNewLine & Space(3 * level + 1) & "- " & pair.Key.ToString()
+                result &= vbNewLine & pair.Value.ToString()
+            Next pair
+        End If
         Return result
     End Function
+
+    Public Sub listAllNodes(ByRef list As List(Of RigidNode))
+        list.Add(Me)
+        For Each pair As KeyValuePair(Of CustomRigidJoint, RigidNode) In children
+            pair.Value.listAllNodes(list)
+        Next pair
+    End Sub
 End Class

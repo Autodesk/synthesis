@@ -71,6 +71,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exporter\SurfaceExporter.vb" />
     <Compile Include="Main.vb" />
     <Compile Include="RigidAnalyzer\CustomRigidResults.vb" />
     <Compile Include="RigidAnalyzer\RigidBodyCleaner.vb" />
@@ -89,6 +90,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="RigidAnalyzer\RotationalJoint.vb" />
     <Compile Include="RigidAnalyzer\RigidNode.vb" />
   </ItemGroup>
   <ItemGroup>
