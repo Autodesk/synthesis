@@ -16,8 +16,10 @@ public abstract class SkeletalJoint
     protected AssemblyJointDefinition asmJoint;
 
     protected bool childIsTheOne;
+
+    public JointDriver cDriver;
+
     public abstract string ExportData();
-    public override abstract string ToString();
 
     public SkeletalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
@@ -54,15 +56,15 @@ public abstract class SkeletalJoint
 
     public void DoHighlight()
     {
-        if ((childHS == null))
+        if (childHS == null)
         {
             childHS = Program.invApplication.ActiveDocument.CreateHighlightSet();
-            childHS.Color.SetColor(0, 0, Convert.ToByte(255));
+            childHS.Color = Program.invApplication.TransientObjects.CreateColor(0,0,255);
         }
-        if ((parentHS == null))
+        if (parentHS == null)
         {
             parentHS = Program.invApplication.ActiveDocument.CreateHighlightSet();
-            parentHS.Color.SetColor(Convert.ToByte(255), 0, 0);
+            childHS.Color = Program.invApplication.TransientObjects.CreateColor(255, 0, 0);
         }
         childHS.Clear();
         parentHS.Clear();
@@ -83,6 +85,12 @@ public abstract class SkeletalJoint
         return null;
     }
 
+    public static void clearHighlight()
+    {
+        if (childHS != null) { childHS.Clear(); }
+        if (parentHS != null) { parentHS.Clear(); }
+    }
+
     public static void cleanupHS()
     {
         if (!((childHS == null)))
@@ -91,4 +99,16 @@ public abstract class SkeletalJoint
             parentHS.Delete();
     }
 
+    public abstract string getJointType();
+
+    protected abstract string ToString_Internal();
+
+    public override string ToString() {
+        string info = ToString_Internal();
+        if (cDriver != null)
+        {
+            info += " driven by " + Enum.GetName(typeof(JointDriverType), cDriver.getDriveType()).Replace('_', ' ').ToLowerInvariant() + " (" + cDriver.portA + (JointDriver.hasTwoPorts(cDriver.getDriveType())?","+cDriver.portB:"")+")";
+        }
+        return info;
+    }
 }

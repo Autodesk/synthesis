@@ -10,6 +10,8 @@ public partial class ControlGroups
     public FormState formState;
 
     private List<RigidNode> nodeList;
+    private DriveChooser driveChooser = new DriveChooser();
+
     private void btnExport_Click(object sender, EventArgs e)
     {
         formState = FormState.SUBMIT;
@@ -22,20 +24,11 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void lstItems_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (lstItems.SelectedItem is SkeletalJoint)
-        {
-            SkeletalJoint joint = (SkeletalJoint) lstItems.SelectedItem;
-            joint.DoHighlight();
-        }
-    }
-
     private void updateList()
     {
         if ((nodeList == null))
             return;
-        lstItems.Items.Clear();
+        lstItemView.Items.Clear();
         foreach (RigidNode node in nodeList)
         {
             if (!((node.parentConnection == null) || (node.parent == null)))
@@ -44,7 +37,14 @@ public partial class ControlGroups
                 {
                     node.parentConnection.skeletalJoint = SkeletalJoint.create(node.parentConnection, node.parent.@group);
                 }
-                lstItems.Items.Add(node.parentConnection.skeletalJoint);
+                SkeletalJoint joint = node.parentConnection.skeletalJoint;
+
+                System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
+                joint.getJointType(),
+                joint.GetParent().ToString(),
+                joint.GetChild().ToString(), joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
+                item.Tag = joint;
+                lstItemView.Items.Add(item);
             }
         }
     }
@@ -69,6 +69,29 @@ public partial class ControlGroups
     {
         formState = FormState.CLOSE;
         Hide();
+    }
+
+    private void lstItemView_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (lstItemView.SelectedItems.Count == 1 && lstItemView.SelectedItems[0].Tag is SkeletalJoint)
+        {
+            SkeletalJoint joint = (SkeletalJoint)lstItemView.SelectedItems[0].Tag;
+            joint.DoHighlight();
+        }
+        else
+        {
+            SkeletalJoint.clearHighlight();
+        }
+    }
+
+    private void lstItemView_DoubleClick(object sender, EventArgs e)
+    {
+        if (lstItemView.SelectedItems.Count == 1 && lstItemView.SelectedItems[0].Tag is SkeletalJoint)
+        {
+            SkeletalJoint joint = (SkeletalJoint)lstItemView.SelectedItems[0].Tag;
+            driveChooser.ShowDialog(joint);
+            updateList();
+        }
     }
 }
 

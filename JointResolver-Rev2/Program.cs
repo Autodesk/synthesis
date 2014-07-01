@@ -5,12 +5,14 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 using System.IO;
+using System.Runtime.InteropServices;
 
 static class Program
 {
+
     public static Application invApplication;
     private const int MAX_VERTICIES = 8192;
-    public static void Main(String[] args)
+    public static unsafe void Main(String[] args)
     {
         invApplication = (Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         AnalyzeRigidResults();
@@ -30,7 +32,7 @@ static class Program
 
     public static void AnalyzeRigidResults()
     {
-        AssemblyDocument asmDoc = (AssemblyDocument) invApplication.ActiveDocument;
+        AssemblyDocument asmDoc = (AssemblyDocument)invApplication.ActiveDocument;
         Console.WriteLine("Get rigid info...");
         RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(invApplication.TransientObjects.CreateNameValueMap());
         Console.WriteLine("Got rigid info...");
@@ -59,39 +61,41 @@ static class Program
         List<RigidNode> nodes = new List<RigidNode>();
         baseNode.listAllNodes(nodes);
 
-        // Build the file structure
-        //Dim pathBase As String = "C:\Users\t_millw\Downloads\skele\"
-        //Dim surfs As New SurfaceExporter
-        //Dim writer As StreamWriter = New StreamWriter(pathBase + "meta.txt")
-        //For i As Integer = 0 To nodes.Count - 1
-        //    writer.Write(Str(i) & ":")
-        //    Dim path As String = nodes.Item(i).group.occurrences.Item(0).Name.Replace(":", "_") & ".stl"
-        //    writer.Write(path & ":")
-        //    surfs.Reset()
-        //    surfs.ExportAll(nodes.Item(i).group.occurrences)
-        //    surfs.WriteSTL(pathBase & path)
-        //    If IsNothing(nodes.Item(i).parent) Then
-        //        writer.Write("-1,")
-        //    Else
-        //        writer.Write(Str(nodes.IndexOf(nodes.Item(i).parent)) & ":")
-        //        Dim joint As CustomRigidJoint = nodes.Item(i).parentConnection
-        //        If RotationalJoint.isRotationalJoint(joint) Then
-        //            writer.Write(RotationalJoint.getInfo(joint, nodes.Item(i).parent.group))
-        //        End If
-        //    End If
-        //    writer.WriteLine()
-        //Next i
-        //writer.Close()
-        //ControlGroups controlGUI = new ControlGroups();
-        //controlGUI.setNodeList(nodes);
-        //controlGUI.ShowDialog();
-        //controlGUI.Cleanup();
-        SurfaceExporter surfs = new SurfaceExporter();
-        surfs.Reset();
-        surfs.ExportAll(baseNode.group.occurrences);
-        surfs.WriteBXDA("C:/Users/t_millw/Downloads/skele/thing.bxda");
-        surfs.WriteSTL("C:/Users/t_millw/Downloads/skele/thing.stl");
-        //Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
+        ControlGroups controlGUI = new ControlGroups();
+        controlGUI.setNodeList(nodes);
+        controlGUI.ShowDialog();
+        controlGUI.Cleanup();
+        Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
+        if (controlGUI.formState == FormState.SUBMIT)
+        {
+            string pathBase = "C:/Users/t_millw/Downloads/skele/";
+            SurfaceExporter surfs = new SurfaceExporter();
+            StreamWriter writer = new StreamWriter(pathBase + "meta.txt");
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                writer.Write(i + ":");
+                string path = nodes[i].group.occurrences[0].Name.Replace(":", "_") + ".bxda";
+                writer.Write(path + ":");
+                surfs.Reset();
+                surfs.ExportAll(nodes[i].group.occurrences);
+                surfs.WriteBXDA(pathBase + path);
+                if (nodes[i].parent == null)
+                {
+                    writer.Write("-1,");
+                }
+                else
+                {
+                    writer.Write(nodes.IndexOf(nodes[i].parent) + ":");
+                    CustomRigidJoint joint = nodes[i].parentConnection;
+                    if (RotationalJoint.isRotationalJoint(joint))
+                    {
+                        writer.Write(new RotationalJoint(nodes[i].parent.group, joint));
+                    }
+                }
+                writer.WriteLine();
+            }
+            writer.Close();
+        }
     }
 
     public static string printVector(object pO)

@@ -60,7 +60,11 @@ public class CustomRigidGroup
 
     public override string ToString()
     {
-        string res = "#" + fullQualifier + " [";
+        if (occurrences.Count == 1)
+        {
+            return occurrences[0].Name;
+        }
+        string res = "[";
         foreach (ComponentOccurrence occ in occurrences)
         {
             if (res.Length > 100)
@@ -71,10 +75,6 @@ public class CustomRigidGroup
             res += occ.Name + ";";
         }
         res += "]";
-        if ((grounded))
-        {
-            res += "G";
-        }
         return res;
     }
 

@@ -55,10 +55,16 @@
     <Compile Include="ControlGUI\ControlGroups.Designer.cs">
       <DependentUpon>ControlGroups.cs</DependentUpon>
     </Compile>
+    <Compile Include="ControlGUI\DriveChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\DriveChooser.Designer.cs">
+      <DependentUpon>DriveChooser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
-    <Compile Include="Exporter\BigEndianBinaryWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkeletalStructure\Drivers\JointDriver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -84,6 +90,9 @@
   <ItemGroup>
     <EmbeddedResource Include="ControlGUI\ControlGroups.resx">
       <DependentUpon>ControlGroups.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\DriveChooser.resx">
+      <DependentUpon>DriveChooser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

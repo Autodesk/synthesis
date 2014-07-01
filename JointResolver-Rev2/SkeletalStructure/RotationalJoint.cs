@@ -84,8 +84,14 @@ public class RotationalJoint : SkeletalJoint
         return Program.printVector(parentBase) + ":" + Program.printVector(parentNormal) + ":" + Program.printVector(childBase) + ":" + Program.printVector(childNormal);
     }
 
-    public override string ToString()
+    public override string getJointType()
     {
-        return "RotationalJoint";
+        return "Rotational";
+    }
+
+    protected override string ToString_Internal()
+    {
+        string info =  "Rotates " + childGroup.ToString() + " about " + parentGroup.ToString();
+        return info;
     }
 }
