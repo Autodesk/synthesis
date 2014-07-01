@@ -10,6 +10,7 @@ public class RigidNode
     private int level;
     public RigidNode parent;
     public CustomRigidJoint parentConnection;
+    private SkeletalJoint skeletalJoint;
     public Dictionary<CustomRigidJoint, RigidNode> children = new Dictionary<CustomRigidJoint, RigidNode>();
 
     public CustomRigidGroup group;
@@ -73,6 +74,15 @@ public class RigidNode
 
         Dictionary<string, RigidNode> nodeDictionary = new Dictionary<string, RigidNode>();
         return createRigidNode(jointDictionary, nodeDictionary, baseGroup);
+    }
+
+    public SkeletalJoint getSkeletalJoint()
+    {
+        if (skeletalJoint == null && parentConnection != null && parent != null && parent.group != null)
+        {
+            skeletalJoint = SkeletalJoint.create(parentConnection, parent.group);
+        }
+        return skeletalJoint;
     }
 
     public override string ToString()

@@ -112,7 +112,6 @@ public class CustomRigidJoint
 
     public RigidBodyJointTypeEnum type;
 
-    public SkeletalJoint skeletalJoint = null;
     public CustomRigidJoint(RigidBodyJoint joint, CustomRigidGroup groupOnez, CustomRigidGroup groupTwoz)
     {
         foreach (AssemblyJoint aj in joint.Joints)

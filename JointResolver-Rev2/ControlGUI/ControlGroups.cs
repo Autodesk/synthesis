@@ -34,18 +34,17 @@ public partial class ControlGroups
         {
             if (!((node.parentConnection == null) || (node.parent == null)))
             {
-                if ((node.parentConnection.skeletalJoint == null))
+                SkeletalJoint joint = node.getSkeletalJoint();
+                if (joint != null)
                 {
-                    node.parentConnection.skeletalJoint = SkeletalJoint.create(node.parentConnection, node.parent.@group);
-                }
-                SkeletalJoint joint = node.parentConnection.skeletalJoint;
 
-                System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
+                    System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
                 joint.getJointType(),
                 joint.GetParent().ToString(),
                 joint.GetChild().ToString(), joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
-                item.Tag = joint;
-                lstJoints.Items.Add(item);
+                    item.Tag = joint;
+                    lstJoints.Items.Add(item);
+                }
             }
         }
     }
