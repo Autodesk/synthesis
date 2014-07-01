@@ -36,22 +36,10 @@ public class LinearJoint : SkeletalJoint
         UnitVector groupBNormal;
         Point groupABase;
         Point groupBBase;
-        UnitVector groupASlide, groupBSlide;
-
-        if ((asmJoint.JointType == AssemblyJointTypeEnum.kSlideJointType))
-        {
-            groupANormal = asmJoint.OriginOne.Geometry.Geometry.Normal;
-            groupABase = asmJoint.OriginOne.Geometry.Geometry.RootPoint;
-            groupBNormal = asmJoint.OriginTwo.Geometry.Geometry.Normal;
-            groupBBase = asmJoint.OriginTwo.Geometry.Geometry.RootPoint;
-            // Slides along
-            groupASlide = asmJoint.AlignmentOne.Geometry.Normal;
-            groupBSlide = asmJoint.AlignmentTwo.Geometry.Normal;
-        }
-        else
-        {
-            throw new Exception("Not a linear joint");
-        }
+        groupANormal = asmJoint.AlignmentOne.Normal;
+        groupABase = asmJoint.AlignmentOne.RootPoint;
+        groupBNormal = asmJoint.AlignmentTwo.Normal;
+        groupBBase = asmJoint.AlignmentTwo.RootPoint;
         if (childIsTheOne)
         {
             childNormal = groupANormal;

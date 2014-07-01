@@ -27,34 +27,72 @@ public class RotationalJoint : SkeletalJoint
         return false;
     }
 
+    private static void getRotationalInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
+    {
+        if (geom is EdgeProxy)
+        {
+            EdgeProxy edge = (EdgeProxy)geom;
+            if (edge.GeometryType == CurveTypeEnum.kCircularArcCurve || edge.GeometryType == CurveTypeEnum.kCircleCurve)
+            {
+                groupANormal = geom.Geometry.Normal;
+                groupABase = geom.Geometry.Center;
+            }
+            else if (edge.GeometryType == CurveTypeEnum.kLineSegmentCurve || edge.GeometryType == CurveTypeEnum.kLineCurve)
+            {
+                groupANormal = edge.Geometry.Direction;
+                groupABase = edge.Geometry.MidPoint;
+                // mid points look right...
+                int i;
+                i = 0;
+            }
+            else
+            {
+                throw new Exception("Unimplemented " + Enum.GetName(typeof(CurveTypeEnum), edge.GeometryType));
+            }
+        }
+        else if (geom is FaceProxy)
+        {
+            FaceProxy face = (FaceProxy)geom;
+            Console.WriteLine("FaceType: " + Enum.GetName(typeof(SurfaceTypeEnum),face.SurfaceType));
+            if (face.SurfaceType == SurfaceTypeEnum.kPlaneSurface)
+            {
+                groupANormal = face.Geometry.Normal;
+                groupABase = face.Geometry.RootPoint;
+            }
+            else if (face.SurfaceType == SurfaceTypeEnum.kCylinderSurface)
+            {
+                groupABase = face.Geometry.BasePoint;
+                groupANormal = face.Geometry.AxisVector;
+                // face.Geometry.Radius
+            }
+            else
+            {
+                throw new Exception("Unimplemented surface type " + Enum.GetName(typeof(SurfaceTypeEnum), face.SurfaceType));
+            }
+        }
+        else
+        {
+            throw new Exception("Unimplemented proxy object " + Enum.GetName(typeof(ObjectTypeEnum), geom.Type));
+        }
+    }
+
     public RotationalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
         : base(parent, rigidJoint)
     {
         if (!(isRotationalJoint(rigidJoint)))
             throw new Exception("Not a rotational joint");
 
-        UnitVector groupANormal;
-        UnitVector groupBNormal;
-        Point groupABase;
-        Point groupBBase;
-        if ((asmJoint.JointType == AssemblyJointTypeEnum.kCylindricalJointType))
-        {
-            groupANormal = asmJoint.OriginOne.Geometry.Geometry.AxisVector;
-            groupABase = asmJoint.OriginOne.Geometry.Geometry.BasePoint;
-            groupBNormal = asmJoint.OriginTwo.Geometry.Geometry.AxisVector;
-            groupBBase = asmJoint.OriginTwo.Geometry.Geometry.BasePoint;
-        }
-        else if (asmJoint.JointType == AssemblyJointTypeEnum.kRotationalJointType)
-        {
-            groupANormal = asmJoint.OriginOne.Geometry.Geometry.Normal;
-            groupABase = asmJoint.OriginOne.Geometry.Geometry.Center;
-            groupBNormal = asmJoint.OriginTwo.Geometry.Geometry.Normal;
-            groupBBase = asmJoint.OriginTwo.Geometry.Geometry.Center;
-        }
-        else
-        {
-            throw new Exception("Not a rotational joint");
-        }
+        UnitVector groupANormal = null;
+        UnitVector groupBNormal = null;
+        Point groupABase = null;
+        Point groupBBase = null;
+        Console.WriteLine("O1: " + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginOne.Type) + "\t" + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginOne.Geometry.Type));
+        Console.WriteLine("O2: " + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginTwo.Type) + "\t" + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginTwo.Geometry.Type));
+
+       
+        getRotationalInfo(asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
+        getRotationalInfo(asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
+
         if (childIsTheOne)
         {
             childNormal = groupANormal;
@@ -91,7 +129,7 @@ public class RotationalJoint : SkeletalJoint
 
     protected override string ToString_Internal()
     {
-        string info =  "Rotates " + childGroup.ToString() + " about " + parentGroup.ToString();
+        string info = "Rotates " + childGroup.ToString() + " about " + parentGroup.ToString();
         return info;
     }
 }

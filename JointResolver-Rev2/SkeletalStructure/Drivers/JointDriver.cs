@@ -27,6 +27,10 @@ public class JointDriver
             // Pneumatic and Worm Screw map to angles
             return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
         }
+        else if (joint is LinearJoint)
+        {
+            return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
+        }
         return new JointDriverType[0];// Not implemented
     }
 
