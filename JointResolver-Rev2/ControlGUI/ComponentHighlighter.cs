@@ -20,7 +20,7 @@ class ComponentHighlighter
         if (parentHS == null)
         {
             parentHS = Program.invApplication.ActiveDocument.CreateHighlightSet();
-            childHS.Color = Program.invApplication.TransientObjects.CreateColor(255, 0, 0);
+            parentHS.Color = Program.invApplication.TransientObjects.CreateColor(255, 0, 0);
         }
     }
 

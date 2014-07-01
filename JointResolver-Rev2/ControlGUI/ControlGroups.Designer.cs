@@ -70,6 +70,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chDrive});
             this.lstJoints.FullRowSelect = true;
             this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lstJoints.HoverSelection = true;
             this.lstJoints.Location = new System.Drawing.Point(6, 6);
             this.lstJoints.MultiSelect = false;
             this.lstJoints.Name = "lstJoints";
@@ -132,6 +133,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chHighRes});
             this.lstGroups.FullRowSelect = true;
             this.lstGroups.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lstGroups.HoverSelection = true;
             this.lstGroups.Location = new System.Drawing.Point(6, 6);
             this.lstGroups.MultiSelect = false;
             this.lstGroups.Name = "lstGroups";

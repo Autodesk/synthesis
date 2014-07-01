@@ -78,7 +78,7 @@ class SurfaceExporter
         uint colorVal = 0xFFFFFFFF;
         if (assetProps.color != null)
         {
-            colorVal = ((uint)assetProps.color.Red << 24) | ((uint)assetProps.color.Green << 16) | ((uint)assetProps.color.Blue << 8) | (((uint)(assetProps.color.Opacity * 255)) & 0xFF);
+            colorVal = ((uint)assetProps.color.Red << 0) | ((uint)assetProps.color.Green << 8) | ((uint)assetProps.color.Blue << 16) | ((((uint)(assetProps.color.Opacity * 255)) & 0xFF) << 24);
         }
         for (int i = vertCount; i < vertCount + tmpVertCount; i++)
         {

@@ -81,7 +81,7 @@ public class RotationalJoint : SkeletalJoint
             angularLimitLow = asmJoint.AngularPositionStartLimit.Value;
             angularLimitHigh = asmJoint.AngularPositionEndLimit.Value;
         }
-        return Program.printVector(parentBase) + ":" + Program.printVector(parentNormal) + ":" + Program.printVector(childBase) + ":" + Program.printVector(childNormal);
+        return "ROTATIONAL:" + Program.printVector(parentBase) + ":" + Program.printVector(parentNormal) + ":" + Program.printVector(childBase) + ":" + Program.printVector(childNormal);
     }
 
     public override string getJointType()

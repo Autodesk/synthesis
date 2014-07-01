@@ -78,7 +78,7 @@ static class Program
                 string path = nodes[i].group.occurrences[0].Name.Replace(":", "_") + ".bxda";
                 writer.Write(path + ":");
                 surfs.Reset();
-                surfs.ExportAll(nodes[i].group.occurrences);
+                surfs.ExportAll(nodes[i].group);
                 surfs.WriteBXDA(pathBase + path);
                 if (nodes[i].parent == null)
                 {
@@ -87,10 +87,14 @@ static class Program
                 else
                 {
                     writer.Write(nodes.IndexOf(nodes[i].parent) + ":");
-                    CustomRigidJoint joint = nodes[i].parentConnection;
-                    if (RotationalJoint.isRotationalJoint(joint))
+                    SkeletalJoint skele = nodes[i].getSkeletalJoint();
+                    if (skele == null)
                     {
-                        writer.Write(new RotationalJoint(nodes[i].parent.group, joint));
+                        writer.Write("unknown");
+                    }
+                    else
+                    {
+                        writer.Write(skele.ExportData());
                     }
                 }
                 writer.WriteLine();
