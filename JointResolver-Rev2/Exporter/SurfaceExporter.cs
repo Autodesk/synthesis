@@ -29,7 +29,7 @@ class SurfaceExporter
     private double[] tolerances = new double[10];
     private int tmpToleranceCount = 0;
 
-    public void AddFacets(SurfaceBody surf, bool bestResolution = false)
+    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
         int bestIndex = -1;
@@ -39,47 +39,42 @@ class SurfaceExporter
         }
         Console.WriteLine("Exporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
 
-        int ia = 0;
-        foreach (Face f in surf.Faces)
+        if (separateFaces)
         {
-            AddFacets(f, tolerances[bestIndex]);
-            Console.WriteLine("\t" + (++ia) + "/" + surf.Faces.Count + "\t\tVerts: " + vertCount);
+            int ia = 0;
+            foreach (Face f in surf.Faces)
+            {
+                AddFacets(f, tolerances[bestIndex]);
+                Console.WriteLine("\t" + (++ia) + "/" + surf.Faces.Count + "\t\tVerts: " + vertCount);
+            }
+        }
+        else
+        {
+            tmpVertCount = 0;
+            surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpVertCount, out tmpFacetCount, out tmpVerts, out  tmpNorms, out  tmpIndicies, out tmpTextureCoords);
+            if (tmpVertCount == 0)
+            {
+                Console.WriteLine("Calculate values");
+                surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpVertCount, out tmpFacetCount, out  tmpVerts, out tmpNorms, out  tmpIndicies, out tmpTextureCoords);
+            }
+            AssetProperties assetProps;
+            try
+            {
+                assetProps = new AssetProperties(surf.Appearance);
+            }
+            catch
+            {
+                assetProps = new AssetProperties(surf.Parent.Appearance);
+            }
+            AddFacetsInternal(assetProps);
         }
     }
 
-    private static void Memset<T>(T[] array, T elem)
+    private void AddFacetsInternal(AssetProperties assetProps)
     {
-        int length = array.Length;
-        if (length == 0) return;
-        array[0] = elem;
-        int count;
-        for (count = 1; count <= length / 2; count *= 2)
-            Array.Copy(array, 0, array, count, count);
-        Array.Copy(array, 0, array, count, length - count);
-    }
-
-    private void AddFacets(Face surf, double tolerance)
-    {
-        tmpVertCount = 0;
-        surf.GetExistingFacetsAndTextureMap(tolerance, out tmpVertCount, out tmpFacetCount, out tmpVerts, out  tmpNorms, out  tmpIndicies, out tmpTextureCoords);
-        if (tmpVertCount == 0)
-        {
-            Console.WriteLine("Calculate values");
-            surf.CalculateFacetsAndTextureMap(tolerance, out tmpVertCount, out tmpFacetCount, out  tmpVerts, out tmpNorms, out  tmpIndicies, out tmpTextureCoords);
-        }
         Array.Copy(tmpVerts, 0, verts, vertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpNorms, 0, norms, vertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpTextureCoords, 0, textureCoords, vertCount * 2, tmpVertCount * 2);
-
-        AssetProperties assetProps;
-        try
-        {
-            assetProps = new AssetProperties(surf.Appearance);
-        }
-        catch
-        {
-            assetProps = new AssetProperties(surf.Parent.Appearance);
-        }
         uint colorVal = 0xFFFFFFFF;
         if (assetProps.color != null)
         {
@@ -100,38 +95,74 @@ class SurfaceExporter
         vertCount += tmpVertCount;
     }
 
+    private void AddFacets(Face surf, double tolerance)
+    {
+        tmpVertCount = 0;
+        surf.GetExistingFacetsAndTextureMap(tolerance, out tmpVertCount, out tmpFacetCount, out tmpVerts, out  tmpNorms, out  tmpIndicies, out tmpTextureCoords);
+        if (tmpVertCount == 0)
+        {
+            Console.WriteLine("Calculate values");
+            surf.CalculateFacetsAndTextureMap(tolerance, out tmpVertCount, out tmpFacetCount, out  tmpVerts, out tmpNorms, out  tmpIndicies, out tmpTextureCoords);
+        }
+        AssetProperties assetProps;
+        try
+        {
+            assetProps = new AssetProperties(surf.Appearance);
+        }
+        catch
+        {
+            try
+            {
+                assetProps = new AssetProperties(surf.Parent.Appearance);
+            }
+            catch
+            {
+                assetProps = new AssetProperties(surf.Parent.Parent.Appearance);
+            }
+        }
+        AddFacetsInternal(assetProps);
+    }
+
     public void Reset()
     {
         vertCount = 0;
         facetCount = 0;
     }
 
-    public void ExportAll(ComponentOccurrence occ)
+    public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false)
     {
         if (!occ.Visible) return;
         foreach (SurfaceBody surf in occ.SurfaceBodies)
         {
-            AddFacets(surf, false);
+            AddFacets(surf, bestResolution, separateFaces);
         }
         foreach (ComponentOccurrence item in occ.SubOccurrences)
         {
-            ExportAll(item);
+            ExportAll(item, bestResolution, separateFaces);
         }
     }
 
-    public void ExportAll(ComponentOccurrences occs)
+    public void ExportAll(ComponentOccurrences occs, bool bestResolution = false, bool separateFaces = false)
     {
         foreach (ComponentOccurrence occ in occs)
         {
-            ExportAll(occ);
+            ExportAll(occ, bestResolution, separateFaces);
         }
     }
 
-    public void ExportAll(List<ComponentOccurrence> occs)
+    public void ExportAll(List<ComponentOccurrence> occs, bool bestResolution = false, bool separateFaces = false)
     {
         foreach (ComponentOccurrence occ in occs)
         {
-            ExportAll(occ);
+            ExportAll(occ, bestResolution, separateFaces);
+        }
+    }
+
+    public void ExportAll(CustomRigidGroup group)
+    {
+        foreach (ComponentOccurrence occ in group.occurrences)
+        {
+            ExportAll(occ, group.highRes, group.colorFaces);
         }
     }
 
@@ -184,7 +215,6 @@ class SurfaceExporter
     public void WriteBXDA(String path)
     {
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
-        writer.Write(new char[] { 'Y', 'U', 'N', 'O', '1', '8' });
         writer.Write(vertCount);
         for (int i = 0; i < vertCount; i++)
         {

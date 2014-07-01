@@ -7,8 +7,6 @@ using Inventor;
 
 public abstract class SkeletalJoint
 {
-    private static HighlightSet parentHS = null;
-    private static HighlightSet childHS = null;
 
     protected CustomRigidGroup childGroup;
     protected CustomRigidGroup parentGroup;
@@ -56,25 +54,15 @@ public abstract class SkeletalJoint
 
     public void DoHighlight()
     {
-        if (childHS == null)
-        {
-            childHS = Program.invApplication.ActiveDocument.CreateHighlightSet();
-            childHS.Color = Program.invApplication.TransientObjects.CreateColor(0,0,255);
-        }
-        if (parentHS == null)
-        {
-            parentHS = Program.invApplication.ActiveDocument.CreateHighlightSet();
-            childHS.Color = Program.invApplication.TransientObjects.CreateColor(255, 0, 0);
-        }
-        childHS.Clear();
-        parentHS.Clear();
+        ComponentHighlighter.prepareHighlight();
+        ComponentHighlighter.clearHighlight();
         foreach (ComponentOccurrence child in childGroup.occurrences)
         {
-            childHS.AddItem(child);
+            ComponentHighlighter.childHS.AddItem(child);
         }
         foreach (ComponentOccurrence parent in parentGroup.occurrences)
         {
-            parentHS.AddItem(parent);
+            ComponentHighlighter.parentHS.AddItem(parent);
         }
     }
 
@@ -83,20 +71,6 @@ public abstract class SkeletalJoint
         if (RotationalJoint.isRotationalJoint(rigidJoint))
             return new RotationalJoint(parent, rigidJoint);
         return null;
-    }
-
-    public static void clearHighlight()
-    {
-        if (childHS != null) { childHS.Clear(); }
-        if (parentHS != null) { parentHS.Clear(); }
-    }
-
-    public static void cleanupHS()
-    {
-        if (!((childHS == null)))
-            childHS.Delete();
-        if (!((parentHS == null)))
-            parentHS.Delete();
     }
 
     public abstract string getJointType();

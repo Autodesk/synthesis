@@ -42,6 +42,9 @@ public class CustomRigidGroup
 
     public bool grounded;
 
+    public bool highRes = false;
+    public bool colorFaces = false;
+
     public string fullQualifier;
     public static string GetGroupQualifier(RigidBodyGroup group)
     {

@@ -10,6 +10,7 @@ public partial class ControlGroups
     public FormState formState;
 
     private List<RigidNode> nodeList;
+    private List<CustomRigidGroup> groupList;
     private DriveChooser driveChooser = new DriveChooser();
 
     private void btnExport_Click(object sender, EventArgs e)
@@ -24,11 +25,11 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void updateList()
+    private void updateJointList()
     {
         if ((nodeList == null))
             return;
-        lstItemView.Items.Clear();
+        lstJoints.Items.Clear();
         foreach (RigidNode node in nodeList)
         {
             if (!((node.parentConnection == null) || (node.parent == null)))
@@ -44,25 +45,43 @@ public partial class ControlGroups
                 joint.GetParent().ToString(),
                 joint.GetChild().ToString(), joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
                 item.Tag = joint;
-                lstItemView.Items.Add(item);
+                lstJoints.Items.Add(item);
             }
+        }
+    }
+    private void updateGroupList()
+    {
+        if (groupList == null) return;
+        lstGroups.Items.Clear();
+        foreach (CustomRigidGroup group in groupList)
+        {
+            System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {group.ToString(),
+            group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No"});
+            item.Tag = group;
+            lstGroups.Items.Add(item);
         }
     }
 
     private void ControlGroups_Load(object sender, EventArgs e)
     {
-        updateList();
+        updateJointList();
     }
 
     public void setNodeList(List<RigidNode> nodeList)
     {
         this.nodeList = nodeList;
-        updateList();
+        updateJointList();
+    }
+
+    public void setGroupList(List<CustomRigidGroup> groupList)
+    {
+        this.groupList = groupList;
+        updateGroupList();
     }
 
     public void Cleanup()
     {
-        SkeletalJoint.cleanupHS();
+        ComponentHighlighter.cleanupHS();
     }
 
     private void ControlGroups_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
@@ -71,26 +90,72 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void lstItemView_SelectedIndexChanged(object sender, EventArgs e)
+    private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (lstItemView.SelectedItems.Count == 1 && lstItemView.SelectedItems[0].Tag is SkeletalJoint)
+        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint)
         {
-            SkeletalJoint joint = (SkeletalJoint)lstItemView.SelectedItems[0].Tag;
+            SkeletalJoint joint = (SkeletalJoint)lstJoints.SelectedItems[0].Tag;
             joint.DoHighlight();
         }
         else
         {
-            SkeletalJoint.clearHighlight();
+            ComponentHighlighter.clearHighlight();
         }
     }
 
-    private void lstItemView_DoubleClick(object sender, EventArgs e)
+    private void lstJoints_DoubleClick(object sender, EventArgs e)
     {
-        if (lstItemView.SelectedItems.Count == 1 && lstItemView.SelectedItems[0].Tag is SkeletalJoint)
+        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint)
         {
-            SkeletalJoint joint = (SkeletalJoint)lstItemView.SelectedItems[0].Tag;
+            SkeletalJoint joint = (SkeletalJoint)lstJoints.SelectedItems[0].Tag;
             driveChooser.ShowDialog(joint);
-            updateList();
+            updateJointList();
+        }
+    }
+
+    private void lstGroups_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (lstGroups.SelectedItems.Count == 1 && lstGroups.SelectedItems[0].Tag is CustomRigidGroup)
+        {
+            CustomRigidGroup group = (CustomRigidGroup)lstGroups.SelectedItems[0].Tag;
+            ComponentHighlighter.prepareHighlight();
+            ComponentHighlighter.clearHighlight();
+            foreach (Inventor.ComponentOccurrence child in group.occurrences)
+            {
+                ComponentHighlighter.childHS.AddItem(child);
+            }
+        }
+    }
+
+    private void lstGroups_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+        System.Windows.Forms.ListViewItem item = lstGroups.GetItemAt(e.X, e.Y);
+        if (item != null && item.Tag != null && item.Tag is CustomRigidGroup)
+        {
+            System.Drawing.Rectangle clicked = item.Bounds;
+            int rightPos = 0;
+            int column;
+            for (column = 0; column <= lstGroups.Columns.Count; column++)
+            {
+                int leftPos = rightPos;
+                rightPos += lstGroups.Columns[column].Width;
+                if (clicked.Left + rightPos > e.X && clicked.Left + leftPos < e.X)
+                {
+                    break;
+                }
+            }
+            if (column == 2)    // Multicolor
+            {
+                bool cVal = ((CustomRigidGroup)item.Tag).colorFaces;
+                ((CustomRigidGroup)item.Tag).colorFaces = !cVal;
+                item.SubItems[2].Text = !cVal ? "Yes" : "No";
+            }
+            else if (column == 3)   // Highres
+            {
+                bool cVal = ((CustomRigidGroup)item.Tag).highRes;
+                ((CustomRigidGroup)item.Tag).highRes = !cVal;
+                item.SubItems[3].Text = !cVal ? "Yes" : "No";
+            }
         }
     }
 }

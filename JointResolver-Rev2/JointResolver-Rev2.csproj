@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ControlGUI\ComponentHighlighter.cs" />
     <Compile Include="ControlGUI\ControlGroups.cs">
       <SubType>Form</SubType>
     </Compile>

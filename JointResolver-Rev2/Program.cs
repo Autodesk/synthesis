@@ -63,6 +63,7 @@ static class Program
 
         ControlGroups controlGUI = new ControlGroups();
         controlGUI.setNodeList(nodes);
+        controlGUI.setGroupList(customRigid.groups);
         controlGUI.ShowDialog();
         controlGUI.Cleanup();
         Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
