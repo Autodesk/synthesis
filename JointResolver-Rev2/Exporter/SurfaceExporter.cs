@@ -66,6 +66,7 @@ class SurfaceExporter
             {
                 assetProps = new AssetProperties(surf.Parent.Appearance);
             }
+            Console.WriteLine("Add " + tmpVertCount + " verticies and " + tmpFacetCount + " triangles");
             AddFacetsInternal(assetProps);
         }
     }

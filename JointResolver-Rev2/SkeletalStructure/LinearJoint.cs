@@ -74,7 +74,7 @@ public class LinearJoint : SkeletalJoint
         }
         if (hasLowerLimit = asmJoint.HasLinearPositionStartLimit)
         {
-            linearLimitLow = asmJoint.LinearPositionStartLimit;
+            linearLimitLow = asmJoint.LinearPositionStartLimit.Value;
         }
     }
 

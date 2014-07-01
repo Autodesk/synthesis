@@ -210,4 +210,113 @@ static class RigidBodyCleaner
         }
         CleanMeaningless(results);
     }
+
+    public static void generateJointMaps(CustomRigidResults results, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints)
+    {
+        foreach (CustomRigidGroup group in results.groups)
+        {
+            joints.Add(group, new HashSet<CustomRigidGroup>());
+            constraints.Add(group, new HashSet<CustomRigidGroup>());
+        }
+        foreach (CustomRigidJoint j in results.joints)
+        {
+            if (j.joints.Count > 0 && j.joints[0].Definition.JointType != AssemblyJointTypeEnum.kRigidJointType)
+            {
+                joints[j.groupOne].Add(j.groupTwo);
+                joints[j.groupTwo].Add(j.groupOne);
+            }
+            else if (j.constraints.Count > 0 || j.joints.Count > 1 && (j.joints[0].Definition.JointType == AssemblyJointTypeEnum.kRigidJointType))
+            {
+                constraints[j.groupOne].Add(j.groupTwo);
+                constraints[j.groupTwo].Add(j.groupOne);
+            }
+        }
+    }
+
+    public static RigidNode buildAndCleanDijkstra(CustomRigidResults results)
+    {
+        Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints = new Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>>();
+        Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints = new Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>>();
+        generateJointMaps(results, joints, constraints);
+
+        Dictionary<CustomRigidGroup, CustomRigidGroup> mergePattern = new Dictionary<CustomRigidGroup, CustomRigidGroup>();
+        Dictionary<CustomRigidGroup, RigidNode> baseNodes = new Dictionary<CustomRigidGroup, RigidNode>();
+        RigidNode baseRoot = null;
+
+        List<CustomRigidGroup[]> openNodes = new List<CustomRigidGroup[]>();
+        HashSet<CustomRigidGroup> closedNodes = new HashSet<CustomRigidGroup>();
+        foreach (CustomRigidGroup grp in results.groups)
+        {
+            if (grp.grounded)
+            {
+                openNodes.Add(new CustomRigidGroup[] { grp, grp });
+                closedNodes.Add(grp);
+                baseNodes.Add(grp, baseRoot = new RigidNode(grp));
+                break;
+            }
+        }
+        Console.WriteLine("Determining merge commands");
+        while (openNodes.Count > 0)
+        {
+            List<CustomRigidGroup[]> newOpen = new List<CustomRigidGroup[]>();
+            foreach (CustomRigidGroup[] node in openNodes)
+            {
+                // Get all connections
+                HashSet<CustomRigidGroup> cons = constraints[node[0]];
+                HashSet<CustomRigidGroup> jons = joints[node[0]];
+                foreach (CustomRigidGroup jonConn in jons)
+                {
+                    if (!closedNodes.Add(jonConn)) continue;
+                    RigidNode rnode = new RigidNode(jonConn);
+                    baseNodes.Add(jonConn, rnode);
+                    // Get joint name
+                    CustomRigidJoint joint = null;
+                    foreach (CustomRigidJoint jnt in results.joints)
+                    {
+                        if (jnt.joints.Count > 0 && ((jnt.groupOne.Equals(jonConn) && jnt.groupTwo.Equals(node[0])) || (jnt.groupOne.Equals(node[0]) && jnt.groupTwo.Equals(jonConn))))
+                        {
+                            joint = jnt;
+                            break;
+                        }
+                    }
+                    if (joint != null)
+                    {
+                        baseNodes[node[1]].addChild(joint, rnode);
+                        newOpen.Add(new CustomRigidGroup[] { jonConn, jonConn });
+                    }
+                }
+                foreach (CustomRigidGroup consConn in cons)
+                {
+                    if (!closedNodes.Add(consConn)) continue;
+                    mergePattern.Add(consConn, node[1]);
+                    newOpen.Add(new CustomRigidGroup[] { consConn, node[1] });
+                }
+            }
+            openNodes = newOpen;
+        }
+
+        Console.WriteLine("Do " + mergePattern.Count + " merge commands");
+        foreach (KeyValuePair<CustomRigidGroup, CustomRigidGroup> pair in mergePattern)
+        {
+            pair.Value.occurrences.AddRange(pair.Key.occurrences);
+            pair.Key.occurrences.Clear();
+            pair.Value.grounded = pair.Value.grounded || pair.Key.grounded;
+        }
+        Console.WriteLine("Resolve broken joints");
+        foreach (CustomRigidJoint joint in results.joints)
+        {
+            CustomRigidGroup thing = null;
+            if (mergePattern.TryGetValue(joint.groupOne, out thing))
+            {
+                joint.groupOne = thing;
+            }
+            if (mergePattern.TryGetValue(joint.groupTwo, out thing))
+            {
+                joint.groupTwo = thing;
+            }
+        }
+        Console.WriteLine("Cleanup remainders");
+        CleanMeaningless(results);
+        return baseRoot;
+    }
 }

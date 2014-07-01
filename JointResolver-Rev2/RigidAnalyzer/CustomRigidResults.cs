@@ -19,19 +19,21 @@ public class CustomRigidResults
         foreach (RigidBodyGroup group in results.RigidBodyGroups)
         {
             CustomRigidGroup tmp = new CustomRigidGroup(group);
-            if ((!(groupIDToCustom.ContainsKey(CustomRigidGroup.GetGroupQualifier(group)))))
+            if ((!(groupIDToCustom.ContainsKey(tmp.fullQualifier))))
             {
                 groups.Add(tmp);
-                groupIDToCustom.Add(CustomRigidGroup.GetGroupQualifier(group), tmp);
+                groupIDToCustom.Add(tmp.fullQualifier, tmp);
             }
             else
             {
                 Console.WriteLine("GroupID Collision: " + groupIDToCustom[CustomRigidGroup.GetGroupQualifier(group)].ToString() + " and " + tmp.ToString());
             }
+            Console.WriteLine("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
         }
         foreach (RigidBodyJoint joint in results.RigidBodyJoints)
         {
             joints.Add(new CustomRigidJoint(joint, groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupOne)], groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupTwo)]));
+            Console.WriteLine("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
         }
         Console.WriteLine("Built custom dataset");
         RigidBodyCleaner.CleanMeaningless(this);

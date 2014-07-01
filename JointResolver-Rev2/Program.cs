@@ -40,22 +40,9 @@ static class Program
 
         Console.WriteLine("Built model...");
         RigidBodyCleaner.CleanGroundedBodies(customRigid);
-        Console.WriteLine("Cleaned grounded; " + (customRigid.groups.Count) + " groups and " + (customRigid.joints.Count) + " joints remain.");
-        RigidBodyCleaner.CleanConstraintOnly(customRigid);
-        Console.WriteLine("Clean constraints 1; " + (customRigid.groups.Count) + " groups and " + (customRigid.joints.Count) + " joints remain.");
-        RigidBodyCleaner.CleanConstraintOnly(customRigid);
-        // Repeat gives a better join
-        Console.WriteLine("Clean constraints 2; " + (customRigid.groups.Count) + " groups and " + (customRigid.joints.Count) + " joints remain.");
 
-        foreach (CustomRigidGroup group in customRigid.groups)
-        {
-            Console.WriteLine("RigidGroup " + group.ToString());
-        }
-
-        Console.WriteLine("");
-        Console.WriteLine((customRigid.joints.Count) + " joints remain");
-
-        RigidNode baseNode = RigidNode.generateNodeTree(customRigid);
+        RigidNode baseNode = RigidBodyCleaner.buildAndCleanDijkstra(customRigid);
+        Console.WriteLine("Built");
 
         Console.WriteLine(baseNode.ToString());
         List<RigidNode> nodes = new List<RigidNode>();

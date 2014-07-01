@@ -14,6 +14,21 @@ public class RigidNode
     public Dictionary<CustomRigidJoint, RigidNode> children = new Dictionary<CustomRigidJoint, RigidNode>();
 
     public CustomRigidGroup group;
+
+    public RigidNode() : this(null){ 
+    }
+    public RigidNode(CustomRigidGroup grp) {
+        this.group = grp;
+    }
+
+    public void addChild(CustomRigidJoint joint, RigidNode child)
+    {
+        children.Add(joint, child);
+        child.parentConnection = joint;
+        child.parent = this;
+    }
+
+
     private static RigidNode createRigidNode(Dictionary<string, List<CustomRigidJoint>> jointDictionary, Dictionary<string, RigidNode> nodeDictionary, CustomRigidGroup groupz, RigidNode parentz = null)
     {
         RigidNode node = null;
