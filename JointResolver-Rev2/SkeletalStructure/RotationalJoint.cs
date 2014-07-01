@@ -33,10 +33,6 @@ public class RotationalJoint : SkeletalJoint
         if (!(isRotationalJoint(rigidJoint)))
             throw new Exception("Not a rotational joint");
 
-    }
-
-    public override string ExportData()
-    {
         UnitVector groupANormal;
         UnitVector groupBNormal;
         Point groupABase;
@@ -57,7 +53,7 @@ public class RotationalJoint : SkeletalJoint
         }
         else
         {
-            return null;
+            throw new Exception("Not a rotational joint");
         }
         if (childIsTheOne)
         {
@@ -81,6 +77,10 @@ public class RotationalJoint : SkeletalJoint
             angularLimitLow = asmJoint.AngularPositionStartLimit.Value;
             angularLimitHigh = asmJoint.AngularPositionEndLimit.Value;
         }
+    }
+
+    public override string ExportData()
+    {
         return "ROTATIONAL:" + Program.printVector(parentBase) + ":" + Program.printVector(parentNormal) + ":" + Program.printVector(childBase) + ":" + Program.printVector(childNormal);
     }
 

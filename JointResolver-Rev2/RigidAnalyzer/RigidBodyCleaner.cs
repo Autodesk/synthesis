@@ -10,7 +10,16 @@ static class RigidBodyCleaner
 {
     public static void CleanMeaningless(CustomRigidResults results)
     {
-        results.joints.RemoveAll(item => item.groupOne.Equals(item.groupTwo) || item.groupOne.occurrences.Count <= 0 || item.groupTwo.occurrences.Count <= 0);
+        foreach (CustomRigidGroup group in results.groups)
+        {
+            group.occurrences.RemoveAll(item => item.Suppressed);
+        }
+        foreach (CustomRigidJoint joint in results.joints)
+        {
+            joint.joints.RemoveAll(item => item.OccurrenceOne.Suppressed || item.OccurrenceTwo.Suppressed || item.Suppressed);
+            joint.constraints.RemoveAll(item => item.OccurrenceOne.Suppressed || item.OccurrenceTwo.Suppressed || item.Suppressed);
+        }
+        results.joints.RemoveAll(item => item.groupOne.Equals(item.groupTwo) || item.groupOne.occurrences.Count <= 0 || item.groupTwo.occurrences.Count <= 0 || (item.joints.Count + item.constraints.Count) <= 0);
         results.groups.RemoveAll(item => item.occurrences.Count <= 0);
     }
 
@@ -45,6 +54,10 @@ static class RigidBodyCleaner
                     joint.groupTwo = firstRoot;
                 }
             }
+        }
+        else
+        {
+            throw new Exception("No ground!");
         }
         CleanMeaningless(results);
     }
@@ -165,6 +178,7 @@ static class RigidBodyCleaner
             Console.WriteLine();
 
             mergeInto.occurrences.AddRange(myGroup.occurrences);
+            mergeInto.grounded = mergeInto.grounded || myGroup.grounded;
             myGroup.occurrences.Clear();
         }
 

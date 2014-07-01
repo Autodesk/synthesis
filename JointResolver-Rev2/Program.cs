@@ -110,6 +110,11 @@ static class Program
             Vector p = (Vector)pO;
             return (p.X + "," + p.Y + "," + p.Z);
         }
+        else if (pO is UnitVector)
+        {
+            UnitVector p = (UnitVector)pO;
+            return (p.X + "," + p.Y + "," + p.Z);
+        }
         else if (pO is Point)
         {
             Point p = (Point)pO;

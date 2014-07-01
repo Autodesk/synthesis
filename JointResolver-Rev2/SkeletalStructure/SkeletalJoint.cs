@@ -70,6 +70,8 @@ public abstract class SkeletalJoint
     {
         if (RotationalJoint.isRotationalJoint(rigidJoint))
             return new RotationalJoint(parent, rigidJoint);
+        if (LinearJoint.isLinearJoint(rigidJoint))
+            return new LinearJoint(parent, rigidJoint);
         return null;
     }
 
