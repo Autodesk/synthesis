@@ -66,6 +66,10 @@ static class Program
                 surfs.Reset();
                 surfs.ExportAll(output.Key);
                 surfs.WriteBXDA(output.Value);
+                if (surfs.vertCount > 65000)
+                {
+                    System.Windows.Forms.MessageBox.Show("Warning: " + output.Key.ToString() + " exceededed 65000 verticies.  Strange things may begin to happen.");
+                }
             }
         }
     }

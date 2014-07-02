@@ -66,13 +66,7 @@ class SkeletalIO
         writer.Write(jointDrivers.Count);
         foreach (JointDriver d in jointDrivers)
         {
-            writer.Write((byte)d.getDriveType());
-            writer.Write((short)d.portA);
-            writer.Write((short)d.portB);
-            writer.Write(d.lowerLimit);
-            writer.Write(d.upperLimit);
-            writer.Write(0); // Extension count
-            // No extensions
+            d.writeData(writer);
         }
     }
 }

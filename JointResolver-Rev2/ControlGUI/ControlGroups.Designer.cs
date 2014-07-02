@@ -31,10 +31,11 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.lstGroups = new System.Windows.Forms.ListView();
             this.groups_chName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groups_chGrounded = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groups_chFaceColor = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groups_chHighRes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabJoints = new System.Windows.Forms.TabPage();
-            this.groups_chGrounded = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -150,6 +151,11 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chName.Text = "Name";
             this.groups_chName.Width = 138;
             // 
+            // groups_chGrounded
+            // 
+            this.groups_chGrounded.Text = "Grounded";
+            this.groups_chGrounded.Width = 91;
+            // 
             // groups_chFaceColor
             // 
             this.groups_chFaceColor.Text = "Multicolor Parts";
@@ -171,16 +177,22 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints.Text = "Joint Drivers";
             this.tabJoints.UseVisualStyleBackColor = true;
             // 
-            // groups_chGrounded
+            // chkHighlightComponents
             // 
-            this.groups_chGrounded.Text = "Grounded";
-            this.groups_chGrounded.Width = 91;
+            this.chkHighlightComponents.AutoSize = true;
+            this.chkHighlightComponents.Location = new System.Drawing.Point(401, 451);
+            this.chkHighlightComponents.Name = "chkHighlightComponents";
+            this.chkHighlightComponents.Size = new System.Drawing.Size(193, 21);
+            this.chkHighlightComponents.TabIndex = 5;
+            this.chkHighlightComponents.Text = "Highlight Component Sets";
+            this.chkHighlightComponents.UseVisualStyleBackColor = true;
             // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 493);
+            this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnExport);
@@ -192,6 +204,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabGroups.ResumeLayout(false);
             this.tabJoints.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
     }
     internal System.Windows.Forms.Button btnExport;
@@ -214,4 +227,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader groups_chFaceColor;
     private System.Windows.Forms.ColumnHeader groups_chHighRes;
     private System.Windows.Forms.ColumnHeader groups_chGrounded;
+    private System.Windows.Forms.CheckBox chkHighlightComponents;
 }

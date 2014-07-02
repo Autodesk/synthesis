@@ -89,4 +89,25 @@ public class JointDriver
     }
 
     public JointDriverType getDriveType() { return type; }
+
+    public void writeData(System.IO.BinaryWriter writer)
+    {
+        writer.Write((byte)getDriveType());
+        writer.Write((short)portA);
+        writer.Write((short)portB);
+        writer.Write(lowerLimit);
+        writer.Write(upperLimit);
+        writer.Write(0); // Extension count
+        // No extensions
+    }
+
+    public void readData(System.IO.BinaryReader reader)
+    {
+        type = (JointDriverType)reader.ReadByte();
+        portA = reader.ReadInt16();
+        portB = reader.ReadInt16();
+        lowerLimit = reader.ReadDouble();
+        upperLimit = reader.ReadDouble();
+        int extensions = reader.ReadInt32();
+    }
 }
