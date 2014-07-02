@@ -10,7 +10,7 @@ class SkeletalIO
     public static void write(String path, List<RigidNode> nodes, out Dictionary<CustomRigidGroup, string> bxdaOutputPath)
     {
         // Check if we know parents
-        List<JointDriver> jointDrivers = new List<JointDriver>();
+        /*List<JointDriver> jointDrivers = new List<JointDriver>();
         int[] parentID = new int[nodes.Count];
         int[] driverID = new int[nodes.Count];
         for (int i = 0; i < nodes.Count; i++)
@@ -67,6 +67,8 @@ class SkeletalIO
         foreach (JointDriver d in jointDrivers)
         {
             d.writeData(writer);
-        }
+        }*/
+
+
     }
 }

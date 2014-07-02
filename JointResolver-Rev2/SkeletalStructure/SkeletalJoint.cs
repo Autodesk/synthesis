@@ -5,24 +5,14 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-public enum SkeletalJointType
+public class SkeletalJoint
 {
-    ROTATIONAL = 1, LINEAR = 2
-}
+    public CustomRigidGroup childGroup;
+    public CustomRigidGroup parentGroup;
+    public CustomRigidJoint rigidJoint;
+    public AssemblyJointDefinition asmJoint;
 
-public abstract class SkeletalJoint
-{
-
-    protected CustomRigidGroup childGroup;
-    protected CustomRigidGroup parentGroup;
-    protected CustomRigidJoint rigidJoint;
-    protected AssemblyJointDefinition asmJoint;
-
-    protected bool childIsTheOne;
-
-    public JointDriver cDriver;
-
-    public abstract string ExportData();
+    public bool childIsTheOne;
 
     public SkeletalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
@@ -71,28 +61,12 @@ public abstract class SkeletalJoint
         }
     }
 
-    public static SkeletalJoint create(CustomRigidJoint rigidJoint, CustomRigidGroup parent)
+    public static SkeletalJoint_Base create(CustomRigidJoint rigidJoint, CustomRigidGroup parent)
     {
-        if (RotationalJoint.isRotationalJoint(rigidJoint))
-            return new RotationalJoint(parent, rigidJoint);
+        //if (RotationalJoint.isRotationalJoint(rigidJoint))
+        //    return new RotationalJoint(parent, rigidJoint);
         if (LinearJoint.isLinearJoint(rigidJoint))
             return new LinearJoint(parent, rigidJoint);
         return null;
-    }
-
-
-    public abstract SkeletalJointType getJointType();
-
-    public abstract void writeJoint(System.IO.BinaryWriter writer);
-
-    protected abstract string ToString_Internal();
-
-    public override string ToString() {
-        string info = ToString_Internal();
-        if (cDriver != null)
-        {
-            info += " driven by " + Enum.GetName(typeof(JointDriverType), cDriver.getDriveType()).Replace('_', ' ').ToLowerInvariant() + " (" + cDriver.portA + (JointDriver.hasTwoPorts(cDriver.getDriveType())?","+cDriver.portB:"")+")";
-        }
-        return info;
     }
 }

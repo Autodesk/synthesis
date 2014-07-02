@@ -5,34 +5,29 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-public class RigidNode
+public class RigidNode : RigidNode_Base
 {
-    private int level;
-    public RigidNode parent;
-    public CustomRigidJoint parentConnection;
-    private SkeletalJoint skeletalJoint;
-    public Dictionary<CustomRigidJoint, RigidNode> children = new Dictionary<CustomRigidJoint, RigidNode>();
-
     public CustomRigidGroup group;
 
-    public RigidNode() : this(null){ 
+    public RigidNode()
+        : this(null)
+    {
     }
-    public RigidNode(CustomRigidGroup grp) {
+    public RigidNode(CustomRigidGroup grp)
+    {
         this.group = grp;
     }
 
-    public void addChild(CustomRigidJoint joint, RigidNode child)
+    public override object getModel()
     {
-        children.Add(joint, child);
-        child.parentConnection = joint;
-        child.parent = this;
+        return group;
     }
 
 
-    private static RigidNode createRigidNode(Dictionary<string, List<CustomRigidJoint>> jointDictionary, Dictionary<string, RigidNode> nodeDictionary, CustomRigidGroup groupz, RigidNode parentz = null)
+    private static RigidNode createRigidNode(Dictionary<CustomRigidGroup, List<CustomRigidJoint>> jointDictionary, Dictionary<CustomRigidGroup, RigidNode> nodeDictionary, CustomRigidGroup groupz, RigidNode parentz = null)
     {
         RigidNode node = null;
-        if ((nodeDictionary.TryGetValue(groupz.fullQualifier, out node)))
+        if ((nodeDictionary.TryGetValue(groupz, out node)))
         {
             return node;
         }
@@ -40,30 +35,19 @@ public class RigidNode
         {
             node = new RigidNode();
         }
-        node.parent = parentz;
-        node.parentConnection = null;
-        if ((node.parent == null))
-        {
-            node.level = 0;
-        }
-        else
-        {
-            node.level = node.parent.level + 1;
-        }
         Console.WriteLine("Creating node for " + groupz.ToString() + " at level " + (node.level));
         node.group = groupz;
-        nodeDictionary[node.group.fullQualifier] = node;
+        nodeDictionary[node.group] = node;
 
         List<CustomRigidJoint> joints = null;
-        if ((jointDictionary.TryGetValue(node.group.fullQualifier, out joints)))
+        if ((jointDictionary.TryGetValue(node.group, out joints)))
         {
             foreach (CustomRigidJoint joint in joints)
             {
                 CustomRigidGroup childGroup = joint.groupOne.Equals(node.group) ? joint.groupTwo : joint.groupOne;
-                if (nodeDictionary.ContainsKey(childGroup.fullQualifier))
+                if (nodeDictionary.ContainsKey(childGroup))
                     continue;
-                node.children[joint] = createRigidNode(jointDictionary, nodeDictionary, childGroup, node);
-                node.children[joint].parentConnection = joint;
+                node.addChild(SkeletalJoint.create(joint, groupz), createRigidNode(jointDictionary, nodeDictionary, childGroup, node));
             }
         }
         return node;
@@ -71,11 +55,11 @@ public class RigidNode
 
     public static RigidNode generateNodeTree(CustomRigidResults results)
     {
-        Dictionary<string, List<CustomRigidJoint>> jointDictionary = new Dictionary<string, List<CustomRigidJoint>>();
+        Dictionary<CustomRigidGroup, List<CustomRigidJoint>> jointDictionary = new Dictionary<CustomRigidGroup, List<CustomRigidJoint>>();
         CustomRigidGroup baseGroup = null;
         foreach (CustomRigidGroup group in results.groups)
         {
-            jointDictionary[group.fullQualifier] = new List<CustomRigidJoint>();
+            jointDictionary[group] = new List<CustomRigidJoint>();
             if ((group.grounded))
                 baseGroup = group;
         }
@@ -83,44 +67,11 @@ public class RigidNode
             return null;
         foreach (CustomRigidJoint joint in results.joints)
         {
-            jointDictionary[joint.groupOne.fullQualifier].Add(joint);
-            jointDictionary[joint.groupTwo.fullQualifier].Add(joint);
+            jointDictionary[joint.groupOne].Add(joint);
+            jointDictionary[joint.groupTwo].Add(joint);
         }
 
-        Dictionary<string, RigidNode> nodeDictionary = new Dictionary<string, RigidNode>();
+        Dictionary<CustomRigidGroup, RigidNode> nodeDictionary = new Dictionary<CustomRigidGroup, RigidNode>();
         return createRigidNode(jointDictionary, nodeDictionary, baseGroup);
-    }
-
-    public SkeletalJoint getSkeletalJoint()
-    {
-        if (skeletalJoint == null && parentConnection != null && parent != null && parent.group != null)
-        {
-            skeletalJoint = SkeletalJoint.create(parentConnection, parent.group);
-        }
-        return skeletalJoint;
-    }
-
-    public override string ToString()
-    {
-        string result = new string(' ', 3 * level) + "Rigid Node" + System.Environment.NewLine + new string(' ', 3 * level) + "Name: " + group.ToString() + System.Environment.NewLine;
-        if (children.Count > 0)
-        {
-            result += new string(' ', 3 * level) + "Children: ";
-            foreach (KeyValuePair<CustomRigidJoint, RigidNode> pair in children)
-            {
-                result += System.Environment.NewLine + new string(' ', 3 * level + 1) + "- " + pair.Key.ToString();
-                result += System.Environment.NewLine + pair.Value.ToString();
-            }
-        }
-        return result;
-    }
-
-    public void listAllNodes(List<RigidNode> list)
-    {
-        list.Add(this);
-        foreach (KeyValuePair<CustomRigidJoint, RigidNode> pair in children)
-        {
-            pair.Value.listAllNodes(list);
-        }
     }
 }

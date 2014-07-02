@@ -45,7 +45,7 @@ static class Program
         Console.WriteLine("Built");
 
         Console.WriteLine(baseNode.ToString());
-        List<RigidNode> nodes = new List<RigidNode>();
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.listAllNodes(nodes);
 
         ControlGroups controlGUI = new ControlGroups();
@@ -58,39 +58,24 @@ static class Program
         {
             string pathBase = "C:/Users/t_millw/Downloads/skele/";
             SurfaceExporter surfs = new SurfaceExporter();
-            Dictionary<CustomRigidGroup, string> bxdaOutputPath;
-            SkeletalIO.write(pathBase + "skeleton.bxdj", nodes, out bxdaOutputPath);
-            foreach (KeyValuePair<CustomRigidGroup, string> output in bxdaOutputPath)
+            Dictionary<RigidNode_Base, string> bxdaOutputPath;
+            SkeletonIO.writeSkeleton(pathBase + "skeleton.bxdj", baseNode, out bxdaOutputPath);
+            foreach (KeyValuePair<RigidNode_Base, string> output in bxdaOutputPath)
             {
-                Console.WriteLine("Output " + output.Key.ToString() + " to " + output.Value);
-                surfs.Reset();
-                surfs.ExportAll(output.Key);
-                surfs.WriteBXDA(output.Value);
-                if (surfs.vertCount > 65000)
+                if (output.Key != null && output.Key.getModel() != null && output.Key.getModel() is CustomRigidGroup)
                 {
-                    System.Windows.Forms.MessageBox.Show("Warning: " + output.Key.ToString() + " exceededed 65000 verticies.  Strange things may begin to happen.");
+                    CustomRigidGroup group = (CustomRigidGroup)output.Key.getModel();
+                    Console.WriteLine("Output " + group.ToString() + " to " + output.Value);
+                    surfs.Reset();
+                    surfs.ExportAll(group);
+                    surfs.WriteBXDA(output.Value);
+                    if (surfs.vertCount > 65000)
+                    {
+                        System.Windows.Forms.MessageBox.Show("Warning: " + group.ToString() + " exceededed 65000 verticies.  Strange things may begin to happen.");
+                    }
                 }
             }
         }
     }
 
-    public static string printVector(object pO)
-    {
-        if (pO is Vector)
-        {
-            Vector p = (Vector)pO;
-            return (p.X + "," + p.Y + "," + p.Z);
-        }
-        else if (pO is UnitVector)
-        {
-            UnitVector p = (UnitVector)pO;
-            return (p.X + "," + p.Y + "," + p.Z);
-        }
-        else if (pO is Point)
-        {
-            Point p = (Point)pO;
-            return (p.X + "," + p.Y + "," + p.Z);
-        }
-        return "";
-    }
 }

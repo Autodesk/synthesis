@@ -9,7 +9,7 @@ public partial class ControlGroups
 {
     public FormState formState;
 
-    private List<RigidNode> nodeList;
+    private List<RigidNode_Base> nodeList;
     private List<CustomRigidGroup> groupList;
     private DriveChooser driveChooser = new DriveChooser();
 
@@ -30,18 +30,27 @@ public partial class ControlGroups
         if ((nodeList == null))
             return;
         lstJoints.Items.Clear();
-        foreach (RigidNode node in nodeList)
+        foreach (RigidNode_Base node in nodeList)
         {
-            if (!((node.parentConnection == null) || (node.parent == null)))
+            if (node.getSkeletalJoint() != null)
             {
-                SkeletalJoint joint = node.getSkeletalJoint();
+                SkeletalJoint_Base joint = node.getSkeletalJoint();
                 if (joint != null)
                 {
+                    SkeletalJoint wrapped = null;
+                    if (joint is RotationalJoint)
+                    {
+                        wrapped = ((RotationalJoint)joint).wrapped;
+                    }
+                    else if (joint is LinearJoint)
+                    {
+                        wrapped = ((LinearJoint)joint).wrapped;
+                    }
 
                     System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
                 Enum.GetName(typeof(SkeletalJointType),joint.getJointType()).ToLowerInvariant(),
-                joint.GetParent().ToString(),
-                joint.GetChild().ToString(), joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
+                wrapped!=null?wrapped.parentGroup.ToString():"from-file",
+                wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
                     item.Tag = joint;
                     lstJoints.Items.Add(item);
                 }
@@ -66,7 +75,7 @@ public partial class ControlGroups
         updateJointList();
     }
 
-    public void setNodeList(List<RigidNode> nodeList)
+    public void setNodeList(List<RigidNode_Base> nodeList)
     {
         this.nodeList = nodeList;
         updateJointList();
@@ -104,9 +113,9 @@ public partial class ControlGroups
 
     private void lstJoints_DoubleClick(object sender, EventArgs e)
     {
-        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint)
+        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint_Base)
         {
-            SkeletalJoint joint = (SkeletalJoint)lstJoints.SelectedItems[0].Tag;
+            SkeletalJoint_Base joint = (SkeletalJoint_Base)lstJoints.SelectedItems[0].Tag;
             driveChooser.ShowDialog(joint);
             updateJointList();
         }

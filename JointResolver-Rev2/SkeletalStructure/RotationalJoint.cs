@@ -5,18 +5,10 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-public class RotationalJoint : SkeletalJoint
+public class RotationalJoint : RotationalJoint_Base
 {
+    public SkeletalJoint wrapped;
 
-    UnitVector parentNormal;
-    UnitVector childNormal;
-    Point parentBase;
-    Point childBase;
-    double currentAngularPosition;
-    bool hasAngularLimit;
-    double angularLimitLow;
-
-    double angularLimitHigh;
     public static bool isRotationalJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
@@ -51,7 +43,7 @@ public class RotationalJoint : SkeletalJoint
         else if (geom is FaceProxy)
         {
             FaceProxy face = (FaceProxy)geom;
-            Console.WriteLine("FaceType: " + Enum.GetName(typeof(SurfaceTypeEnum),face.SurfaceType));
+            Console.WriteLine("FaceType: " + Enum.GetName(typeof(SurfaceTypeEnum), face.SurfaceType));
             if (face.SurfaceType == SurfaceTypeEnum.kPlaneSurface)
             {
                 groupANormal = face.Geometry.Normal;
@@ -75,83 +67,50 @@ public class RotationalJoint : SkeletalJoint
     }
 
     public RotationalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
-        : base(parent, rigidJoint)
     {
         if (!(isRotationalJoint(rigidJoint)))
             throw new Exception("Not a rotational joint");
+        wrapped = new SkeletalJoint(parent, rigidJoint);
 
         UnitVector groupANormal = null;
         UnitVector groupBNormal = null;
         Point groupABase = null;
         Point groupBBase = null;
-        Console.WriteLine("O1: " + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginOne.Type) + "\t" + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginOne.Geometry.Type));
-        Console.WriteLine("O2: " + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginTwo.Type) + "\t" + Enum.GetName(typeof(ObjectTypeEnum), asmJoint.OriginTwo.Geometry.Type));
+        Console.WriteLine("O1: " + Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginOne.Type) + "\t" +
+            Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginOne.Geometry.Type));
+        Console.WriteLine("O2: " + Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Type) + "\t" +
+            Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Geometry.Type));
 
-       
-        getRotationalInfo(asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
-        getRotationalInfo(asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
 
-        if (childIsTheOne)
+        getRotationalInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
+        getRotationalInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
+
+        if (wrapped.childIsTheOne)
         {
-            childNormal = groupANormal;
-            childBase = groupABase;
-            parentNormal = groupBNormal;
-            parentBase = groupBBase;
+            childNormal = Utilities.toBXDVector(groupANormal);
+            childBase = Utilities.toBXDVector(groupABase);
+            parentNormal = Utilities.toBXDVector(groupBNormal);
+            parentBase = Utilities.toBXDVector(groupBBase);
         }
         else
         {
-            childNormal = groupBNormal;
-            childBase = groupBBase;
-            parentNormal = groupANormal;
-            parentBase = groupABase;
+            childNormal = Utilities.toBXDVector(groupBNormal);
+            childBase = Utilities.toBXDVector(groupBBase);
+            parentNormal = Utilities.toBXDVector(groupANormal);
+            parentBase = Utilities.toBXDVector(groupABase);
         }
 
-        currentAngularPosition = !((asmJoint.AngularPosition == null)) ? asmJoint.AngularPosition.Value : 0;
-        hasAngularLimit = asmJoint.HasAngularPositionLimits;
+        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? wrapped.asmJoint.AngularPosition.Value : 0;
+        hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if ((hasAngularLimit))
         {
-            angularLimitLow = asmJoint.AngularPositionStartLimit.Value;
-            angularLimitHigh = asmJoint.AngularPositionEndLimit.Value;
-        }
-    }
-
-    public override string ExportData()
-    {
-        return "ROTATIONAL:" + Program.printVector(parentBase) + ":" + Program.printVector(parentNormal) + ":" + Program.printVector(childBase) + ":" + Program.printVector(childNormal);
-    }
-
-    public override SkeletalJointType getJointType()
-    {
-        return SkeletalJointType.ROTATIONAL;
-    }
-
-    public override void writeJoint(System.IO.BinaryWriter writer)
-    {
-        writer.Write(parentBase.X);
-        writer.Write(parentBase.Y);
-        writer.Write(parentBase.Z);
-        writer.Write(parentNormal.X);
-        writer.Write(parentNormal.Y);
-        writer.Write(parentNormal.Z);
-
-        writer.Write(childBase.X);
-        writer.Write(childBase.Y);
-        writer.Write(childBase.Z);
-        writer.Write(childNormal.X);
-        writer.Write(childNormal.Y);
-        writer.Write(childNormal.Z);
-
-        writer.Write((byte)(hasAngularLimit ? 1 : 0));
-        if (hasAngularLimit)
-        {
-            writer.Write(angularLimitLow);
-            writer.Write(angularLimitHigh);
+            angularLimitLow = wrapped.asmJoint.AngularPositionStartLimit.Value;
+            angularLimitHigh = wrapped.asmJoint.AngularPositionEndLimit.Value;
         }
     }
 
     protected override string ToString_Internal()
     {
-        string info = "Rotates " + childGroup.ToString() + " about " + parentGroup.ToString();
-        return info;
+        return wrapped.childGroup + " rotates about " + wrapped.parentGroup;
     }
 }

@@ -16,8 +16,8 @@ public partial class DriveChooser : Form
     }
 
     private JointDriverType[] typeOptions;
-    private SkeletalJoint joint;
-    public void ShowDialog(SkeletalJoint joint)
+    private SkeletalJoint_Base joint;
+    public void ShowDialog(SkeletalJoint_Base joint)
     {
         this.joint = joint;
         typeOptions = JointDriver.getAllowedDrivers(joint);

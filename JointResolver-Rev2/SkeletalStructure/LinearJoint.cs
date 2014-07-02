@@ -5,16 +5,9 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-public class LinearJoint : SkeletalJoint
+public class LinearJoint : LinearJoint_Base
 {
-
-    UnitVector parentNormal;
-    UnitVector childNormal;
-    Point parentBase;
-    Point childBase;
-    double currentLinearPosition;
-    bool hasUpperLimit, hasLowerLimit;
-    double linearLimitLow, linearLimitHigh;
+    public SkeletalJoint wrapped;
 
     public static bool isLinearJoint(CustomRigidJoint jointI)
     {
@@ -27,84 +20,47 @@ public class LinearJoint : SkeletalJoint
     }
 
     public LinearJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
-        : base(parent, rigidJoint)
     {
         if (!(isLinearJoint(rigidJoint)))
             throw new Exception("Not a linear joint");
+        wrapped = new SkeletalJoint(parent, rigidJoint);
 
         UnitVector groupANormal;
         UnitVector groupBNormal;
         Point groupABase;
         Point groupBBase;
-        groupANormal = asmJoint.AlignmentOne.Normal;
-        groupABase = asmJoint.AlignmentOne.RootPoint;
-        groupBNormal = asmJoint.AlignmentTwo.Normal;
-        groupBBase = asmJoint.AlignmentTwo.RootPoint;
-        if (childIsTheOne)
+        groupANormal = wrapped.asmJoint.AlignmentOne.Normal;
+        groupABase = wrapped.asmJoint.AlignmentOne.RootPoint;
+        groupBNormal = wrapped.asmJoint.AlignmentTwo.Normal;
+        groupBBase = wrapped.asmJoint.AlignmentTwo.RootPoint;
+        if (wrapped.childIsTheOne)
         {
-            childNormal = groupANormal;
-            childBase = groupABase;
-            parentNormal = groupBNormal;
-            parentBase = groupBBase;
+            childNormal = Utilities.toBXDVector(groupANormal);
+            childBase = Utilities.toBXDVector(groupABase);
+            parentNormal = Utilities.toBXDVector(groupBNormal);
+            parentBase = Utilities.toBXDVector(groupBBase);
         }
         else
         {
-            childNormal = groupBNormal;
-            childBase = groupBBase;
-            parentNormal = groupANormal;
-            parentBase = groupABase;
+            childNormal = Utilities.toBXDVector(groupBNormal);
+            childBase = Utilities.toBXDVector(groupBBase);
+            parentNormal = Utilities.toBXDVector(groupANormal);
+            parentBase = Utilities.toBXDVector(groupABase);
         }
 
-        currentLinearPosition = !((asmJoint.LinearPosition == null)) ? asmJoint.LinearPosition.Value : 0;
-        if (hasUpperLimit = asmJoint.HasLinearPositionEndLimit)
+        currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? wrapped.asmJoint.LinearPosition.Value : 0;
+        if (hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit)
         {
-            linearLimitHigh = asmJoint.LinearPositionEndLimit.Value;
+            linearLimitHigh = wrapped.asmJoint.LinearPositionEndLimit.Value;
         }
-        if (hasLowerLimit = asmJoint.HasLinearPositionStartLimit)
+        if (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit)
         {
-            linearLimitLow = asmJoint.LinearPositionStartLimit.Value;
+            linearLimitLow = wrapped.asmJoint.LinearPositionStartLimit.Value;
         }
     }
 
-    public override string ExportData()
-    {
-        return "LINEAR:" + Program.printVector(parentBase) + ":" + Program.printVector(parentNormal) + ":" + Program.printVector(childBase) + ":" + Program.printVector(childNormal);
-    }
-
-    public override SkeletalJointType getJointType()
-    {
-        return SkeletalJointType.LINEAR;
-    }
-
-    public override void writeJoint(System.IO.BinaryWriter writer)
-    {
-        writer.Write(parentBase.X);
-        writer.Write(parentBase.Y);
-        writer.Write(parentBase.Z);
-        writer.Write(parentNormal.X);
-        writer.Write(parentNormal.Y);
-        writer.Write(parentNormal.Z);
-
-        writer.Write(childBase.X);
-        writer.Write(childBase.Y);
-        writer.Write(childBase.Z);
-        writer.Write(childNormal.X);
-        writer.Write(childNormal.Y);
-        writer.Write(childNormal.Z);
-
-        writer.Write((byte)((hasLowerLimit ? 1 : 0) | (hasUpperLimit ? 2 : 0)));
-        if (hasLowerLimit)
-        {
-            writer.Write(linearLimitLow);
-        }
-        if (hasUpperLimit)
-        {
-            writer.Write(linearLimitHigh);
-        }
-    }
     protected override string ToString_Internal()
     {
-        string info =  "Moves " + childGroup.ToString() + " along " + parentGroup.ToString();
-        return info;
+        return wrapped.childGroup + " translates along " + wrapped.parentGroup;
     }
 }
