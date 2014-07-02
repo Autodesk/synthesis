@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.IO;
 
-public class HandleBXDJ : MonoBehaviour
+public class HandleJoints : MonoBehaviour
 {
 	public enum SkeletalJointType
 	{
