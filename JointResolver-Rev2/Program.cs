@@ -56,10 +56,11 @@ static class Program
         Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
         if (controlGUI.formState == FormState.SUBMIT)
         {
-            string pathBase = "C:/Users/t_millw/Downloads/skele/";
+            string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            string pathBase = homePath;
             SurfaceExporter surfs = new SurfaceExporter();
             Dictionary<RigidNode_Base, string> bxdaOutputPath;
-            SkeletonIO.writeSkeleton(pathBase + "skeleton.bxdj", baseNode, out bxdaOutputPath);
+            SkeletonIO.writeSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
             foreach (KeyValuePair<RigidNode_Base, string> output in bxdaOutputPath)
             {
                 if (output.Key != null && output.Key.getModel() != null && output.Key.getModel() is CustomRigidGroup)
