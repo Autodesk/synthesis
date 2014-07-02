@@ -8,6 +8,22 @@ using Inventor;
 
 static class RigidBodyCleaner
 {
+    /// <summary>
+    /// Removes all the meaningless items from the given group of rigid body results, simplifying the model.
+    /// </summary>
+    /// <remarks>
+    /// Meaningless items include...
+    /// <list type="bullet">
+    /// <item><description>Component occurrences that are suppressed</description></item>
+    /// <item><description>Suppressed joints</description></item>
+    /// <item><description>Joints with suppressed components</description></item>
+    /// <item><description>Rigid joints between the same object</description></item>
+    /// <item><description>Rigid joints with meaningless groups</description></item>
+    /// <item><description>Rigid joints with not assembly constraints or joints</description></item>
+    /// <item><description>Rigid groups with no objects</description></item>
+    /// </list>
+    /// </remarks>
+    /// <param name="results">Rigid results without any meaningless items</param>
     public static void CleanMeaningless(CustomRigidResults results)
     {
         foreach (CustomRigidGroup group in results.groups)
@@ -23,6 +39,14 @@ static class RigidBodyCleaner
         results.groups.RemoveAll(item => item.occurrences.Count <= 0);
     }
 
+    /// <summary>
+    /// Merges all the grounded bodies within the given rigid results into a single group. 
+    /// </summary>
+    /// <remarks>
+    /// This also updates the references of all the rigid joints to the new groups.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">No grounded bodies exist to merge.</exception>
+    /// <param name="results">Rigid results with only a single grounded group.</param>
     public static void CleanGroundedBodies(CustomRigidResults results)
     {
         CustomRigidGroup firstRoot = null;
@@ -41,7 +65,7 @@ static class RigidBodyCleaner
                 }
             }
         }
-        if (!((firstRoot == null)))
+        if (firstRoot != null)
         {
             foreach (CustomRigidJoint joint in results.joints)
             {
@@ -57,11 +81,16 @@ static class RigidBodyCleaner
         }
         else
         {
-            throw new Exception("No ground!");
+            throw new InvalidOperationException("No ground!");
         }
         CleanMeaningless(results);
     }
 
+    /// <summary>
+    /// Merges any groups that are connected only with constraints.
+    /// </summary>
+    /// <obsolete>buildAndCleanDijkstra produces much more predicatable results.</obsolete>
+    /// <param name="results">Rigid groups connected only with constraints are merged</param>
     public static void CleanConstraintOnly(CustomRigidResults results)
     {
         // Determine what groups move
@@ -211,6 +240,12 @@ static class RigidBodyCleaner
         CleanMeaningless(results);
     }
 
+    /// <summary>
+    /// Generates a mapping between each rigid group and all the joints connected to it.
+    /// </summary>
+    /// <param name="results">The rigid results to generate joint maps from.</param>
+    /// <param name="joints">A mapping between each rigid group and a set of rigid groups connected by a joint.</param>
+    /// <param name="constraints">A mapping between each rigid group and a set of rigid groups connected by constraints.</param>
     public static void generateJointMaps(CustomRigidResults results, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints)
     {
         foreach (CustomRigidGroup group in results.groups)
