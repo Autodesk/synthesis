@@ -104,10 +104,6 @@ public class HandleBXDA : MonoBehaviour
 		{
 			loadBXDA (filepaths[i],transform.GetChild(i));
 		}
-		for (int i = 0; i < 5; i++) 
-		{
-			betaHinge(transform.GetChild(6), transform.GetChild(i));
-		}
 
 		attachMeshColliders (this.transform);
 		//attachRigidBodies (this.transform);
