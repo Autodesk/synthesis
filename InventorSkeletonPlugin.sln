@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JointResolver-Rev2", "JointResolver-Rev2\JointResolver-Rev2.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{352CDE72-AEE2-4085-ADC5-99A860EA0768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
