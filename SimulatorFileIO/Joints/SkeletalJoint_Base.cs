@@ -21,6 +21,10 @@ public class BaseSkeletalJointFactory : SkeletalJointFactory {
                 return new RotationalJoint_Base();
             case SkeletalJointType.LINEAR:
                 return new LinearJoint_Base();
+            case SkeletalJointType.CYLINDRICAL:
+                return new CylindricalJoint_Base();
+            case SkeletalJointType.PLANAR:
+                return new PlanarJoint_Base();
             default:
                 return null;
         }
