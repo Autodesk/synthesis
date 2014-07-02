@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.IO;
 
-public class HandleBXDA : MonoBehaviour 
+public class HandleMeshes : MonoBehaviour 
 {
 	public static void loadBXDA(string filepath, Transform trans)
 	{
@@ -48,6 +48,25 @@ public class HandleBXDA : MonoBehaviour
 		mesh.colors32 = colors;
 		mesh.uv = uvs;
 		
+	}
+
+	void attachMeshColliders(Transform parent)
+	{
+		MeshCollider tmp;
+		foreach (Transform child in parent) 
+		{
+			child.gameObject.AddComponent<MeshCollider>();
+			tmp = child.gameObject.GetComponent<MeshCollider>();
+			tmp.convex = true;
+		}
+	}
+
+	void attachRigidBodies(Transform parent)
+	{
+		foreach (Transform child in parent) 
+		{
+			child.gameObject.AddComponent<Rigidbody>();
+		}
 	}
 
 
