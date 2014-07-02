@@ -26,7 +26,7 @@ public class HandleJoints : MonoBehaviour
 		int parentNode = reader.ReadInt32 ();
 		string fileName = reader.ReadString ();
 
-		reader.ReadInt32 ();
+		int driver = reader.ReadInt32 ();
 
 		int jointType = reader.ReadByte ();
 

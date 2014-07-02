@@ -22,7 +22,9 @@ public class Init : MonoBehaviour {
 		{
 			HandleMeshes.loadBXDA (filepaths[i],transform.GetChild(i));
 		}
+		HandleMeshes.attachMeshColliders (this.transform);
 		HandleJoints.loadBXDJ ("C:/Users/t_waggn/Documents/bxdj/skeleton.bxdj", transform.GetChild(0), transform.GetChild(1));
+		HandleMeshes.attachRigidBodies (this.transform);
 	}
 
 	void Update () {

@@ -50,7 +50,7 @@ public class HandleMeshes : MonoBehaviour
 		
 	}
 
-	void attachMeshColliders(Transform parent)
+	public static void attachMeshColliders(Transform parent)
 	{
 		MeshCollider tmp;
 		foreach (Transform child in parent) 
@@ -61,7 +61,7 @@ public class HandleMeshes : MonoBehaviour
 		}
 	}
 
-	void attachRigidBodies(Transform parent)
+	public static void attachRigidBodies(Transform parent)
 	{
 		foreach (Transform child in parent) 
 		{
