@@ -14,7 +14,10 @@ public class LinearJoint : LinearJoint_Base
         if (jointI.joints.Count == 1)
         {
             AssemblyJointDefinition joint = jointI.joints[0].Definition;
-            return joint.JointType == AssemblyJointTypeEnum.kSlideJointType;
+            //Cylindrical joints with no rotaion are effectively sliding joints.
+            return joint.JointType == AssemblyJointTypeEnum.kSlideJointType 
+                || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType 
+                && joint.HasAngularPositionLimits && joint.AngularPositionStartLimit == joint.AngularPositionEndLimit);
         }
         return false;
     }
