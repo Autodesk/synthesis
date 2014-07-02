@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Joints\PlanarJoint_Base.cs" />
     <Compile Include="Joints\JointDriver.cs" />
     <Compile Include="Joints\LinearJoint_Base.cs" />
     <Compile Include="Joints\RotationalJoint_Base.cs" />
