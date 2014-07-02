@@ -58,6 +58,7 @@ static class Program
         {
             string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
             string pathBase = homePath;
+            Directory.CreateDirectory(pathBase + "\\Downloads\\Skeleton");
             SurfaceExporter surfs = new SurfaceExporter();
             Dictionary<RigidNode_Base, string> bxdaOutputPath;
             SkeletonIO.writeSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
