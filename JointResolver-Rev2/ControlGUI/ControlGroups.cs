@@ -39,7 +39,7 @@ public partial class ControlGroups
                 {
 
                     System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                joint.getJointType(),
+                Enum.GetName(typeof(SkeletalJointType),joint.getJointType()).ToLowerInvariant(),
                 joint.GetParent().ToString(),
                 joint.GetChild().ToString(), joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
                     item.Tag = joint;

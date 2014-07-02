@@ -1,10 +1,10 @@
 ﻿public enum JointDriverType
 {
-    MOTOR,
-    SERVO,
-    WORM_SCREW,
-    BUMPER_PNEUMATIC,
-    RELAY_PNEUMATIC
+    MOTOR = 1,
+    SERVO = 2,
+    WORM_SCREW = 3,
+    BUMPER_PNEUMATIC = 4,
+    RELAY_PNEUMATIC = 5
 }
 
 public class JointDriver

@@ -71,11 +71,37 @@ public class LinearJoint : SkeletalJoint
         return "LINEAR:" + Program.printVector(parentBase) + ":" + Program.printVector(parentNormal) + ":" + Program.printVector(childBase) + ":" + Program.printVector(childNormal);
     }
 
-    public override string getJointType()
+    public override SkeletalJointType getJointType()
     {
-        return "Linear";
+        return SkeletalJointType.LINEAR;
     }
 
+    public override void writeJoint(System.IO.BinaryWriter writer)
+    {
+        writer.Write(parentBase.X);
+        writer.Write(parentBase.Y);
+        writer.Write(parentBase.Z);
+        writer.Write(parentNormal.X);
+        writer.Write(parentNormal.Y);
+        writer.Write(parentNormal.Z);
+
+        writer.Write(childBase.X);
+        writer.Write(childBase.Y);
+        writer.Write(childBase.Z);
+        writer.Write(childNormal.X);
+        writer.Write(childNormal.Y);
+        writer.Write(childNormal.Z);
+
+        writer.Write((byte)((hasLowerLimit ? 1 : 0) | (hasUpperLimit ? 2 : 0)));
+        if (hasLowerLimit)
+        {
+            writer.Write(linearLimitLow);
+        }
+        if (hasUpperLimit)
+        {
+            writer.Write(linearLimitHigh);
+        }
+    }
     protected override string ToString_Internal()
     {
         string info =  "Moves " + childGroup.ToString() + " along " + parentGroup.ToString();

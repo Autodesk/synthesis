@@ -58,35 +58,15 @@ static class Program
         {
             string pathBase = "C:/Users/t_millw/Downloads/skele/";
             SurfaceExporter surfs = new SurfaceExporter();
-            StreamWriter writer = new StreamWriter(pathBase + "meta.txt");
-            for (int i = 0; i < nodes.Count; i++)
+            Dictionary<CustomRigidGroup, string> bxdaOutputPath;
+            SkeletalIO.write(pathBase + "skeleton.bxdj", nodes, out bxdaOutputPath);
+            foreach (KeyValuePair<CustomRigidGroup, string> output in bxdaOutputPath)
             {
-                writer.Write(i + ":");
-                string path = nodes[i].group.occurrences[0].Name.Replace(":", "_") + ".bxda";
-                writer.Write(path + ":");
+                Console.WriteLine("Output " + output.Key.ToString() + " to " + output.Value);
                 surfs.Reset();
-                surfs.ExportAll(nodes[i].group);
-                surfs.WriteBXDA(pathBase + path);
-                if (nodes[i].parent == null)
-                {
-                    writer.Write("-1,");
-                }
-                else
-                {
-                    writer.Write(nodes.IndexOf(nodes[i].parent) + ":");
-                    SkeletalJoint skele = nodes[i].getSkeletalJoint();
-                    if (skele == null)
-                    {
-                        writer.Write("unknown");
-                    }
-                    else
-                    {
-                        writer.Write(skele.ExportData());
-                    }
-                }
-                writer.WriteLine();
+                surfs.ExportAll(output.Key);
+                surfs.WriteBXDA(output.Value);
             }
-            writer.Close();
         }
     }
 

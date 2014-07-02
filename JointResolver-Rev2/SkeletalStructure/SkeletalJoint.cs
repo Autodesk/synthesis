@@ -5,6 +5,11 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
+public enum SkeletalJointType
+{
+    ROTATIONAL = 1, LINEAR = 2
+}
+
 public abstract class SkeletalJoint
 {
 
@@ -75,7 +80,10 @@ public abstract class SkeletalJoint
         return null;
     }
 
-    public abstract string getJointType();
+
+    public abstract SkeletalJointType getJointType();
+
+    public abstract void writeJoint(System.IO.BinaryWriter writer);
 
     protected abstract string ToString_Internal();
 
