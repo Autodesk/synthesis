@@ -1,4 +1,4 @@
-﻿public enum JointDriverType
+﻿public enum JointDriverType : byte
 {
     MOTOR = 1,
     SERVO = 2,
@@ -92,7 +92,7 @@ public class JointDriver
 
     public void writeData(System.IO.BinaryWriter writer)
     {
-        writer.Write((byte)getDriveType());
+        writer.Write((byte)((int)getDriveType()));
         writer.Write((short)portA);
         writer.Write((short)portB);
         writer.Write(lowerLimit);
@@ -103,7 +103,7 @@ public class JointDriver
 
     public void readData(System.IO.BinaryReader reader)
     {
-        type = (JointDriverType)reader.ReadByte();
+        type = (JointDriverType)((int)reader.ReadByte());
         portA = reader.ReadInt16();
         portB = reader.ReadInt16();
         lowerLimit = reader.ReadDouble();

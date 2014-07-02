@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 
-public enum SkeletalJointType
+public enum SkeletalJointType : byte
 {
     ROTATIONAL = 1, LINEAR = 2
 }
@@ -41,7 +41,7 @@ public abstract class SkeletalJoint_Base
 
     public static SkeletalJoint_Base readJointFully(System.IO.BinaryReader reader)
     {
-        SkeletalJointType type = (SkeletalJointType)reader.ReadByte();
+        SkeletalJointType type = (SkeletalJointType) ((int)reader.ReadByte());
         SkeletalJoint_Base joint = baseFactory.create(type);
         joint.readJoint(reader);
         return joint;

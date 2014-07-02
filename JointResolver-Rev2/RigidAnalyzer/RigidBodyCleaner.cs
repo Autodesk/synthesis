@@ -282,10 +282,6 @@ static class RigidBodyCleaner
                     if (joint != null)
                     {
                         SkeletalJoint_Base sJ = SkeletalJoint.create(joint, node[1]);
-                        if (sJ == null)
-                        {
-                            Console.WriteLine(node[1].ToString() + "::" + rnode.ToString());
-                        }
                         baseNodes[node[1]].addChild(sJ, rnode);
                         newOpen.Add(new CustomRigidGroup[] { jonConn, jonConn });
                     }

@@ -63,8 +63,8 @@ public class SkeletalJoint
 
     public static SkeletalJoint_Base create(CustomRigidJoint rigidJoint, CustomRigidGroup parent)
     {
-        //if (RotationalJoint.isRotationalJoint(rigidJoint))
-        //    return new RotationalJoint(parent, rigidJoint);
+        if (RotationalJoint.isRotationalJoint(rigidJoint))
+            return new RotationalJoint(parent, rigidJoint);
         if (LinearJoint.isLinearJoint(rigidJoint))
             return new LinearJoint(parent, rigidJoint);
         return null;

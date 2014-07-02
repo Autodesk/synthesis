@@ -59,7 +59,8 @@ public class SkeletonIO
             if (parentID[i] >= 0)
             {
                 writer.Write(driverID[i]);
-                writer.Write((byte)nodes[i].getSkeletalJoint().getJointType());
+
+                writer.Write((byte)((int)nodes[i].getSkeletalJoint().getJointType()));
                 nodes[i].getSkeletalJoint().writeJoint(writer);
             }
         }
