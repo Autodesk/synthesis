@@ -22,6 +22,73 @@ public class LinearJoint : LinearJoint_Base
         return false;
     }
 
+    private static void getLinearInfo(dynamic geom, ComponentOccurrence component, out UnitVector groupANormal, out Point groupABase)
+    {
+        int translationDegrees;
+        ObjectsEnumerator translationAxes;
+        int rotationDegrees;
+        ObjectsEnumerator rotationAxes;
+        Point center;
+        IEnumerator axesEnumerator;
+
+        component.GetDegreesOfFreedom(out translationDegrees, out translationAxes,
+            out rotationDegrees, out rotationAxes, out center);
+
+        if (translationDegrees == 1)
+        {
+            axesEnumerator = translationAxes.GetEnumerator();
+            axesEnumerator.MoveNext();
+            groupANormal = ((Vector)axesEnumerator.Current).AsUnitVector();
+        }
+        else if (translationDegrees == 0)
+        {
+            groupANormal = null;
+        }
+        else
+        {
+            throw new Exception("More than one linear axis of freedom found on linear joint.");
+        }
+
+        //Into usual base fiding stuff, will look for a way to change later.
+        if (geom is EdgeProxy)
+        {
+            EdgeProxy edge = (EdgeProxy)geom;
+            if (edge.GeometryType == CurveTypeEnum.kCircularArcCurve || edge.GeometryType == CurveTypeEnum.kCircleCurve)
+            {
+                groupABase = geom.Geometry.Center;
+            }
+            else if (edge.GeometryType == CurveTypeEnum.kLineSegmentCurve || edge.GeometryType == CurveTypeEnum.kLineCurve)
+            {
+                groupABase = edge.Geometry.MidPoint;
+            }
+            else
+            {
+                throw new Exception("Unimplemented " + Enum.GetName(typeof(CurveTypeEnum), edge.GeometryType));
+            }
+        }
+        else if (geom is FaceProxy)
+        {
+            FaceProxy face = (FaceProxy)geom;
+            Console.WriteLine("FaceType: " + Enum.GetName(typeof(SurfaceTypeEnum), face.SurfaceType));
+            if (face.SurfaceType == SurfaceTypeEnum.kPlaneSurface)
+            {
+                groupABase = face.Geometry.RootPoint;
+            }
+            else if (face.SurfaceType == SurfaceTypeEnum.kCylinderSurface)
+            {
+                groupABase = face.Geometry.BasePoint;
+            }
+            else
+            {
+                throw new Exception("Unimplemented surface type " + Enum.GetName(typeof(SurfaceTypeEnum), face.SurfaceType));
+            }
+        }
+        else
+        {
+            throw new Exception("Unimplemented proxy object " + Enum.GetName(typeof(ObjectTypeEnum), geom.Type));
+        }
+    }
+
     public LinearJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
         if (!(isLinearJoint(rigidJoint)))
@@ -32,47 +99,22 @@ public class LinearJoint : LinearJoint_Base
         UnitVector groupBNormal;
         Point groupABase;
         Point groupBBase;
-        int translationDegrees;
-        ObjectsEnumerator translationAxes;
-        int rotationDegrees;
-        ObjectsEnumerator rotationAxes;
-        Point center;
-        IEnumerator axesEnumerator;
 
+        getLinearInfo(wrapped.asmJoint.OriginOne.Geometry, wrapped.asmJointOccurrence.AffectedOccurrenceOne, out groupANormal, out groupABase);
+        getLinearInfo(wrapped.asmJoint.OriginTwo.Geometry, wrapped.asmJointOccurrence.AffectedOccurrenceTwo, out groupBNormal, out groupBBase);
 
-        wrapped.asmJointOccurrence.AffectedOccurrenceOne.GetDegreesOfFreedom(out translationDegrees, out translationAxes, 
-            out rotationDegrees, out rotationAxes, out center);
-
-        if (translationDegrees == 1)
+        if (groupABase == null && groupBBase != null)
         {
-            axesEnumerator = translationAxes.GetEnumerator();
-            axesEnumerator.MoveNext();
-            groupANormal = ((Vector)axesEnumerator.Current).AsUnitVector();
+            groupANormal = groupBNormal;
         }
-        else
+        else if (groupBBase == null && groupABase != null)
         {
-            throw new Exception("More than one linear axis of freedom found on linear joint.");
+            groupBNormal = groupANormal;
         }
-
-        wrapped.asmJointOccurrence.AffectedOccurrenceTwo.GetDegreesOfFreedom(out translationDegrees, out translationAxes,
-            out rotationDegrees, out rotationAxes, out center);
-
-        if (translationDegrees == 1)
+        else if(groupABase == null && groupBBase == null)
         {
-            axesEnumerator = translationAxes.GetEnumerator();
-            axesEnumerator.MoveNext();
-            groupBNormal = ((Vector)axesEnumerator.Current).AsUnitVector();
+            throw new Exception("Both axes for linear movement are null.");
         }
-        else
-        {
-            throw new Exception("More than one linear axis of freedom found on linear joint.");
-        }
-
-        groupABase = wrapped.asmJoint.AlignmentOne.RootPoint;
-        groupBBase = wrapped.asmJoint.AlignmentTwo.RootPoint;
-
-        
-        
 
         if (wrapped.childIsTheOne)
         {
