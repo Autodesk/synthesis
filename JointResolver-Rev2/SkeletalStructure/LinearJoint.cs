@@ -17,7 +17,7 @@ public class LinearJoint : LinearJoint_Base
             //Cylindrical joints with no rotaion are effectively sliding joints.
             return joint.JointType == AssemblyJointTypeEnum.kSlideJointType 
                 || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType 
-                && joint.HasAngularPositionLimits && joint.AngularPositionStartLimit == joint.AngularPositionEndLimit);
+                && joint.HasAngularPositionLimits && joint.AngularPositionStartLimit._Value == joint.AngularPositionEndLimit._Value);
         }
         return false;
     }
