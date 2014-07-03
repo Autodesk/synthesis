@@ -11,12 +11,13 @@ public class Init : MonoBehaviour {
 			tmp = GameObject.CreatePrimitive(PrimitiveType.Cube);
 			tmp.transform.parent = this.transform;
 			tmp.transform.position = new Vector3(0,0,0);
+			Destroy(tmp.collider);
 			tmp.name = "part" + i;
 		}
 	}
 
 	void Start () {
-		string[] filepaths = {"C:\\Users\\t_defap\\Documents\\part2_1.bxda","C:\\Users\\t_defap\\Documents\\movement_1.bxda"};
+		string[] filepaths = {"C:/Users/t_defap/Documents/part2_1.bxda","C:/Users/t_defap/Documents/movement_1.bxda"};
 		generateCubes (filepaths.Length);
 		for (int i = 0; i < filepaths.Length; i++) 
 		{

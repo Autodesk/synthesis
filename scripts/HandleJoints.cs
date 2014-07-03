@@ -60,7 +60,6 @@ public class HandleJoints : MonoBehaviour
 		
 		reader.ReadBytes(108); //skips linear segment
 		//ignores footer information relevent to the driver
-		rigidB.constraints = RigidbodyConstraints.FreezeAll;
 		
 		ownerB.anchor = parentC;
 		ownerB.connectedAnchor = childC;
