@@ -7,8 +7,7 @@ using System.Diagnostics;
 public class RotationalJoint_Base : SkeletalJoint_Base
 {
 
-    public BXDVector3 parentNormal;
-    public BXDVector3 childNormal;
+    public BXDVector3 jointNormal;
     public BXDVector3 parentBase;
     public BXDVector3 childBase;
     public double currentAngularPosition;
@@ -26,16 +25,13 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         writer.Write(parentBase.x);
         writer.Write(parentBase.y);
         writer.Write(parentBase.z);
-        writer.Write(parentNormal.x);
-        writer.Write(parentNormal.y);
-        writer.Write(parentNormal.z);
+        writer.Write(jointNormal.x);
+        writer.Write(jointNormal.y);
+        writer.Write(jointNormal.z);
 
         writer.Write(childBase.x);
         writer.Write(childBase.y);
         writer.Write(childBase.z);
-        writer.Write(childNormal.x);
-        writer.Write(childNormal.y);
-        writer.Write(childNormal.z);
 
         writer.Write((byte)(hasAngularLimit ? 1 : 0));
         if (hasAngularLimit)
@@ -48,9 +44,8 @@ public class RotationalJoint_Base : SkeletalJoint_Base
     protected override void readJoint(System.IO.BinaryReader reader)
     {
         parentBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        parentNormal = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+        jointNormal = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
         childBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        childNormal = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
 
         hasAngularLimit = (reader.ReadByte() & 1) == 1;
         if (hasAngularLimit)
