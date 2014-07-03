@@ -32,10 +32,48 @@ public class LinearJoint : LinearJoint_Base
         UnitVector groupBNormal;
         Point groupABase;
         Point groupBBase;
-        groupANormal = wrapped.asmJoint.AlignmentOne.Normal;
+        int translationDegrees;
+        ObjectsEnumerator translationAxes;
+        int rotationDegrees;
+        ObjectsEnumerator rotationAxes;
+        Point center;
+        IEnumerator axesEnumerator;
+
+
+        wrapped.asmJointOccurrence.AffectedOccurrenceOne.GetDegreesOfFreedom(out translationDegrees, out translationAxes, 
+            out rotationDegrees, out rotationAxes, out center);
+
+        if (translationDegrees == 1)
+        {
+            axesEnumerator = translationAxes.GetEnumerator();
+            axesEnumerator.MoveNext();
+            groupANormal = ((Vector)axesEnumerator.Current).AsUnitVector();
+        }
+        else
+        {
+            throw new Exception("More than one linear axis of freedom found on linear joint.");
+        }
+
+        wrapped.asmJointOccurrence.AffectedOccurrenceTwo.GetDegreesOfFreedom(out translationDegrees, out translationAxes,
+            out rotationDegrees, out rotationAxes, out center);
+
+        if (translationDegrees == 1)
+        {
+            axesEnumerator = translationAxes.GetEnumerator();
+            axesEnumerator.MoveNext();
+            groupBNormal = ((Vector)axesEnumerator.Current).AsUnitVector();
+        }
+        else
+        {
+            throw new Exception("More than one linear axis of freedom found on linear joint.");
+        }
+
         groupABase = wrapped.asmJoint.AlignmentOne.RootPoint;
-        groupBNormal = wrapped.asmJoint.AlignmentTwo.Normal;
         groupBBase = wrapped.asmJoint.AlignmentTwo.RootPoint;
+
+        
+        
+
         if (wrapped.childIsTheOne)
         {
             childNormal = Utilities.toBXDVector(groupANormal);

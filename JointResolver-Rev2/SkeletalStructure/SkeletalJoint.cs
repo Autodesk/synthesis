@@ -11,6 +11,7 @@ public class SkeletalJoint
     public CustomRigidGroup parentGroup;
     public CustomRigidJoint rigidJoint;
     public AssemblyJointDefinition asmJoint;
+    public AssemblyJoint asmJointOccurrence;
 
     public bool childIsTheOne;
 
@@ -20,6 +21,7 @@ public class SkeletalJoint
             throw new Exception("Not a proper joint");
 
         asmJoint = rigidJoint.joints[0].Definition;
+        asmJointOccurrence = rigidJoint.joints[0];
         childGroup = null;
         parentGroup = parent;
         this.rigidJoint = rigidJoint;
