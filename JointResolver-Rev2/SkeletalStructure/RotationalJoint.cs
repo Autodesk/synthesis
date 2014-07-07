@@ -11,6 +11,8 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 
     public SkeletalJoint getWrapped() { return wrapped; }
 
+    private JointDriver jointDriver = null;
+
     public void determineLimits()
     {
         MotionLimits cache = new MotionLimits();

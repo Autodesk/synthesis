@@ -24,6 +24,12 @@ public class JointDriver
         this.type = type;
     }
 
+    //Adds details to the driver type.
+    public void addInfo(JointDriverMeta metaDriver)
+    {
+        metaInfo.Add(metaDriver.metaType, metaDriver);
+    }
+
     public static JointDriverType[] getAllowedDrivers(SkeletalJoint_Base joint)
     {
         if (joint.getJointType() == SkeletalJointType.ROTATIONAL)

@@ -6,7 +6,7 @@ using System.IO;
 
 public enum JointDriverMetaType : byte
 {
-
+    WHEELDRIVER = 1
 }
 
 public abstract class JointDriverMeta
@@ -25,6 +25,8 @@ public abstract class JointDriverMeta
     {
         switch (type)
         {
+            case JointDriverMetaType.WHEELDRIVER:
+                return new WheelDriverMeta();
             default:
                 return null;
         }

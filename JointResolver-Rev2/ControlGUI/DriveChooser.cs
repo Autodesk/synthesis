@@ -17,6 +17,8 @@ public partial class DriveChooser : Form
 
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
+    private WheelPosition position;
+
     public void ShowDialog(SkeletalJoint_Base joint)
     {
         this.joint = joint;
@@ -69,6 +71,12 @@ public partial class DriveChooser : Form
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
 
+        //Only need to store wheel driver if run by motor and is a wheel.
+        if (cType == JointDriverType.MOTOR && position != WheelPosition.NOWHEEL)
+        {
+            joint.cDriver.addInfo(JointDriverMeta.create(JointDriverMetaType.WHEELDRIVER));
+        }
+
         Hide();
     }
 
@@ -79,7 +87,7 @@ public partial class DriveChooser : Form
 
     private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)
     {
-        int wheelPosition = cmbWheelPosition.SelectedIndex;
+         position = (WheelPosition)cmbWheelPosition.SelectedIndex;
     }
 
     private void txtPortA_ValueChanged(object sender, EventArgs e)
