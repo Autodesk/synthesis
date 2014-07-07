@@ -5,9 +5,11 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-public class CylindricalJoint : CylindricalJoint_Base
+public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 {
-    public SkeletalJoint wrapped;
+    private SkeletalJoint wrapped;
+
+    public SkeletalJoint getWrapped() { return wrapped; }
 
     public static bool isCylindricalJoint(CustomRigidJoint jointI)
     {

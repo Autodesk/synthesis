@@ -9,9 +9,11 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-class PlanarJoint : PlanarJoint_Base
+class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
 {
-    public SkeletalJoint wrapped;
+    private SkeletalJoint wrapped;
+
+    public SkeletalJoint getWrapped() { return wrapped; }
 
     public static bool isPlanarJoint(CustomRigidJoint jointI)
     {

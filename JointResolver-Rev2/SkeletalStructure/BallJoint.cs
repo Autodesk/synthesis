@@ -5,9 +5,11 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-public class BallJoint : BallJoint_Base
+public class BallJoint : BallJoint_Base, InventorSkeletalJoint
 {
-    public SkeletalJoint wrapped;
+    private SkeletalJoint wrapped;
+
+    public SkeletalJoint getWrapped() { return wrapped; }
 
     public static bool isBallJoint(CustomRigidJoint jointI)
     {

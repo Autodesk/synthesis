@@ -5,9 +5,11 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-public class LinearJoint : LinearJoint_Base
+public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
 {
-    public SkeletalJoint wrapped;
+    private SkeletalJoint wrapped;
+
+    public SkeletalJoint getWrapped() { return wrapped; }
 
     public static bool isLinearJoint(CustomRigidJoint jointI)
     {
