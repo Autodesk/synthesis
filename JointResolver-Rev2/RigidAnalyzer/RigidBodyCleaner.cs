@@ -23,7 +23,7 @@ static class RigidBodyCleaner
     /// <item><description>Rigid groups with no objects</description></item>
     /// </list>
     /// </remarks>
-    /// <param name="results">Rigid results without any meaningless items</param>
+    /// <param name="results">Rigid results to clean</param>
     public static void CleanMeaningless(CustomRigidResults results)
     {
         foreach (CustomRigidGroup group in results.groups)
@@ -46,7 +46,7 @@ static class RigidBodyCleaner
     /// This also updates the references of all the rigid joints to the new groups.
     /// </remarks>
     /// <exception cref="InvalidOperationException">No grounded bodies exist to merge.</exception>
-    /// <param name="results">Rigid results with only a single grounded group.</param>
+    /// <param name="results">Rigid results to clean</param>
     public static void CleanGroundedBodies(CustomRigidResults results)
     {
         CustomRigidGroup firstRoot = null;
@@ -89,8 +89,13 @@ static class RigidBodyCleaner
     /// <summary>
     /// Merges any groups that are connected only with constraints.
     /// </summary>
+    /// <remarks>
+    /// This finds every constraint-only connection between two objects, 
+    /// then attempts to determine the best merge strategy for the two objects, 
+    /// then merges them.
+    /// </remarks>
     /// <obsolete>buildAndCleanDijkstra produces much more predicatable results.</obsolete>
-    /// <param name="results">Rigid groups connected only with constraints are merged</param>
+    /// <param name="results">Rigid results to clean</param>
     public static void CleanConstraintOnly(CustomRigidResults results)
     {
         // Determine what groups move
@@ -188,7 +193,7 @@ static class RigidBodyCleaner
             }
         }
 
-        // Resolve merges and porm merge
+        // Resolve merges and preform merge
         string[] currentKeys = new string[mergeIntents.Keys.Count];
         mergeIntents.Keys.CopyTo(currentKeys, 0);
         foreach (string key in currentKeys)
@@ -241,7 +246,7 @@ static class RigidBodyCleaner
     }
 
     /// <summary>
-    /// Generates a mapping between each rigid group and all the joints connected to it.
+    /// Generates a mapping between each rigid group and all the other groups connected to it.
     /// </summary>
     /// <param name="results">The rigid results to generate joint maps from.</param>
     /// <param name="joints">A mapping between each rigid group and a set of rigid groups connected by a joint.</param>
@@ -268,18 +273,34 @@ static class RigidBodyCleaner
         }
     }
 
+    /// <summary>
+    /// Merges any groups that are connected only with constraints and generate a node tree.
+    /// </summary>
+    /// <remarks>
+    /// This starts at whichever rigid group is grounded, then branches out along rigid joints from there.
+    /// If the rigid joint is movable (made of assembly joint(s)) then another node is created, if the joint
+    /// is constraint-only then the leaf node is merged into the current branch.
+    /// </remarks>
+    /// <param name="results">Rigid results to clean</param>
     public static RigidNode buildAndCleanDijkstra(CustomRigidResults results)
     {
         Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints = new Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>>();
         Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints = new Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>>();
         generateJointMaps(results, joints, constraints);
 
+        // Mapping rigid group to merge-into group
         Dictionary<CustomRigidGroup, CustomRigidGroup> mergePattern = new Dictionary<CustomRigidGroup, CustomRigidGroup>();
+        // Mapping rigid group to skeletal node
         Dictionary<CustomRigidGroup, RigidNode> baseNodes = new Dictionary<CustomRigidGroup, RigidNode>();
+        // The base of the skeletal tree
         RigidNode baseRoot = null;
 
+        // All the currently open groups as an array {currentGroup, mergeIntoGroup}
         List<CustomRigidGroup[]> openNodes = new List<CustomRigidGroup[]>();
+        // All the groups that have been processed.  (Closed nodes)
         HashSet<CustomRigidGroup> closedNodes = new HashSet<CustomRigidGroup>();
+
+        // Find the first grounded group, the start point for dijkstra's algorithm.
         foreach (CustomRigidGroup grp in results.groups)
         {
             if (grp.grounded)
