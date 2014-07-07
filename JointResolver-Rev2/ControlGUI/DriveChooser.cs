@@ -77,7 +77,7 @@ public partial class DriveChooser : Form
         {
             wheelDriver = (WheelDriverMeta)JointDriverMeta.Create(JointDriverMetaType.WHEEL_DRIVER);
             wheelDriver.position = this.position;
-            joint.cDriver.AddInfo(JointDriverMeta.Create(JointDriverMetaType.WHEEL_DRIVER));
+            joint.cDriver.AddInfo(wheelDriver);
         }
 
         Hide();
