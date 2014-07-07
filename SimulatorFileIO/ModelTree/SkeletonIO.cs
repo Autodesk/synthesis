@@ -6,6 +6,8 @@ using System.IO;
 
 public class SkeletonIO
 {
+    private static const int FORMAT_VERSION = 1;
+
     public static void writeSkeleton(String path, RigidNode_Base baseNode, out Dictionary<RigidNode_Base, string> bxdaOutputPath)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
@@ -43,6 +45,8 @@ public class SkeletonIO
         // Begin IO
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
 
+        writer.Write(FORMAT_VERSION);
+
         bxdaOutputPath = new Dictionary<RigidNode_Base, string>(); // Prepare output paths
 
         // Write node values
@@ -76,7 +80,17 @@ public class SkeletonIO
     public static RigidNode_Base readSkeleton(string path)
     {
         BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
+        // Sanity check
+        int version = reader.ReadInt32();
+        if (version != FORMAT_VERSION)
+        {
+            throw new Exception("\"" + path + "\" was created with format version " + version + ", this library was compiled to read version " + FORMAT_VERSION);
+        }
         int nodeCount = reader.ReadInt32();
+        if (nodeCount <= 0)
+        {
+            throw new Exception("This appears to be an empty skeleton");
+        }
         RigidNode_Base root = null;
         RigidNode_Base[] nodes = new RigidNode_Base[nodeCount];
         int[] driveIndex = new int[nodeCount];
@@ -96,6 +110,11 @@ public class SkeletonIO
                 driveIndex[i] = -1;
                 root = nodes[i];
             }
+        }
+
+        if (root == null)
+        {
+            throw new Exception("This skeleton has no known base.  \"" + path + "\" is probably corrupted.");
         }
 
         int driveCount = reader.ReadInt32();
