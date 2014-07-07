@@ -273,6 +273,13 @@ static class RigidBodyCleaner
         }
     }
 
+    private class PlannedJoint
+    {
+        public RigidNode node;
+        public RigidNode parentNode;
+        public CustomRigidJoint joint;
+    }
+
     /// <summary>
     /// Merges any groups that are connected only with constraints and generate a node tree.
     /// </summary>
@@ -292,6 +299,8 @@ static class RigidBodyCleaner
         Dictionary<CustomRigidGroup, CustomRigidGroup> mergePattern = new Dictionary<CustomRigidGroup, CustomRigidGroup>();
         // Mapping rigid group to skeletal node
         Dictionary<CustomRigidGroup, RigidNode> baseNodes = new Dictionary<CustomRigidGroup, RigidNode>();
+        // Deffered joint creation.  Required so merge can take place.
+        List<PlannedJoint> plannedJoints = new List<PlannedJoint>();
         // The base of the skeletal tree
         RigidNode baseRoot = null;
 
@@ -329,7 +338,8 @@ static class RigidBodyCleaner
                     CustomRigidJoint joint = null;
                     foreach (CustomRigidJoint jnt in results.joints)
                     {
-                        if (jnt.joints.Count > 0 && ((jnt.groupOne.Equals(jonConn) && jnt.groupTwo.Equals(node[0])) || (jnt.groupOne.Equals(node[0]) && jnt.groupTwo.Equals(jonConn))))
+                        if (jnt.joints.Count > 0 && ((jnt.groupOne.Equals(jonConn) && jnt.groupTwo.Equals(node[0]))
+                            || (jnt.groupOne.Equals(node[0]) && jnt.groupTwo.Equals(jonConn))))
                         {
                             joint = jnt;
                             break;
@@ -337,8 +347,11 @@ static class RigidBodyCleaner
                     }
                     if (joint != null)
                     {
-                        SkeletalJoint_Base sJ = SkeletalJoint.create(joint, node[1]);
-                        baseNodes[node[1]].addChild(sJ, rnode);
+                        PlannedJoint pJoint = new PlannedJoint();
+                        pJoint.joint = joint;
+                        pJoint.parentNode = baseNodes[node[1]];
+                        pJoint.node = rnode;
+                        plannedJoints.Add(pJoint);
                         newOpen.Add(new CustomRigidGroup[] { jonConn, jonConn });
                     }
                 }
@@ -371,6 +384,12 @@ static class RigidBodyCleaner
             {
                 joint.groupTwo = thing;
             }
+        }
+        Console.WriteLine("Creating planned skeletal joints");
+        foreach (PlannedJoint pJoint in plannedJoints)
+        {
+            SkeletalJoint_Base sJ = SkeletalJoint.create(pJoint.joint, pJoint.parentNode.group);
+            pJoint.parentNode.addChild(sJ, pJoint.node);
         }
         Console.WriteLine("Cleanup remainders");
         CleanMeaningless(results);
