@@ -37,7 +37,7 @@ public partial class ControlGroups
                 SkeletalJoint_Base joint = node.getSkeletalJoint();
                 if (joint != null)
                 {
-                    SkeletalJoint wrapped = ((InventorSkeletalJoint)joint).getWrapped();
+                    SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint)joint).getWrapped() : null);
 
                     System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
                 Enum.GetName(typeof(SkeletalJointType),joint.getJointType()).ToLowerInvariant(),

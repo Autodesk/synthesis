@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-interface InventorSkeletalJoint
+public interface InventorSkeletalJoint
 {
-    public SkeletalJoint getWrapped();
+    SkeletalJoint getWrapped();
+
+  // TODO  void determineLimits();
 }
