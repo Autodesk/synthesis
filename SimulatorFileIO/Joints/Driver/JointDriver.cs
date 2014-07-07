@@ -1,4 +1,6 @@
-﻿public enum JointDriverType : byte
+﻿using System.Collections.Generic;
+
+public enum JointDriverType : byte
 {
     MOTOR = 1,
     SERVO = 2,
@@ -14,6 +16,8 @@ public class JointDriver
     public int portA, portB;
 
     public float lowerLimit, upperLimit;
+
+    public Dictionary<JointDriverMetaType, JointDriverMeta> metaInfo = new Dictionary<JointDriverMetaType, JointDriverMeta>();
 
     public JointDriver(JointDriverType type)
     {
@@ -115,8 +119,11 @@ public class JointDriver
         writer.Write((short)portB);
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
-        writer.Write(0); // Extension count
-        // No extensions
+        writer.Write(metaInfo.Count); // Extension count
+        foreach (JointDriverMeta meta in metaInfo.Values)
+        {
+            meta.writeData(writer);
+        }
     }
 
     public void readData(System.IO.BinaryReader reader)
@@ -127,5 +134,11 @@ public class JointDriver
         lowerLimit = reader.ReadSingle();
         upperLimit = reader.ReadSingle();
         int extensions = reader.ReadInt32();
+        metaInfo.Clear();
+        for (int i = 0; i < extensions; i++)
+        {
+            JointDriverMeta meta = JointDriverMeta.readDriverMeta(reader);
+            metaInfo.Add(meta.metaType, meta);
+        }
     }
 }
