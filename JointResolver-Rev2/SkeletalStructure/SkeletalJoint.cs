@@ -5,6 +5,12 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
+//
+public enum WheelPosition : byte
+{
+    NOTWHEEL = 0, FRONTLEFT = 1, FRONTRIGHT = 2, BACKLEFT = 3, BACKRIGHT = 4
+}
+
 public class SkeletalJoint
 {
     public CustomRigidGroup childGroup;
@@ -14,6 +20,7 @@ public class SkeletalJoint
     public AssemblyJoint asmJointOccurrence;
 
     public bool childIsTheOne;
+    public WheelPosition wheelPosition = WheelPosition.NOTWHEEL;
 
     public SkeletalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
