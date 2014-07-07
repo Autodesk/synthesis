@@ -47,6 +47,7 @@
     <Compile Include="Joints\BallJoint_Base.cs" />
     <Compile Include="Joints\CylindricalJoint_Base.cs" />
     <Compile Include="Joints\Driver\JointDriverMeta.cs" />
+    <Compile Include="Joints\Driver\WheelDriverMeta.cs" />
     <Compile Include="Joints\PlanarJoint_Base.cs" />
     <Compile Include="Joints\Driver\JointDriver.cs" />
     <Compile Include="Joints\LinearJoint_Base.cs" />

@@ -6,7 +6,7 @@ using System.IO;
 
 public enum JointDriverMetaType : byte
 {
-
+    WHEEL_DRIVER = 1
 }
 
 public abstract class JointDriverMeta
@@ -25,18 +25,20 @@ public abstract class JointDriverMeta
     {
         switch (type)
         {
+            case JointDriverMetaType.WHEEL_DRIVER:
+                return new WheelDriverMeta();
             default:
                 return null;
         }
     }
 
-    public void writeData(BinaryWriter writer)
+    public void WriteData(BinaryWriter writer)
     {
         writer.Write((byte)metaType);
         WriteDataInternal(writer);
     }
 
-    public static JointDriverMeta readDriverMeta(BinaryReader reader)
+    public static JointDriverMeta ReadDriverMeta(BinaryReader reader)
     {
         JointDriverMetaType type = (JointDriverMetaType)reader.ReadByte();
         JointDriverMeta meta = JointDriverMeta.Create(type);

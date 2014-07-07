@@ -72,7 +72,7 @@ public class SkeletonIO
         writer.Write(jointDrivers.Count);
         foreach (JointDriver d in jointDrivers)
         {
-            d.writeData(writer);
+            d.WriteData(writer);
         }
         writer.Close();
     }
@@ -122,7 +122,7 @@ public class SkeletonIO
         for (int i = 0; i < driveCount; i++)
         {
             drivers[i] = new JointDriver(JointDriverType.MOTOR);    // Real type resolved in next call
-            drivers[i].readData(reader);
+            drivers[i].ReadData(reader);
         }
         for (int i = 0; i < nodeCount; i++)
         {

@@ -24,6 +24,12 @@ public class JointDriver
         this.type = type;
     }
 
+    //Adds details to the driver type.
+    public void AddInfo(JointDriverMeta metaDriver)
+    {
+        metaInfo.Add(metaDriver.metaType, metaDriver);
+    }
+
     public static JointDriverType[] GetAllowedDrivers(SkeletalJoint_Base joint)
     {
         if (joint.GetJointType() == SkeletalJointType.ROTATIONAL)
@@ -127,7 +133,7 @@ public class JointDriver
 
     public JointDriverType GetDriveType() { return type; }
 
-    public void writeData(System.IO.BinaryWriter writer)
+    public void WriteData(System.IO.BinaryWriter writer)
     {
         writer.Write((byte)((int)GetDriveType()));
         writer.Write((short)portA);
@@ -137,11 +143,11 @@ public class JointDriver
         writer.Write(metaInfo.Count); // Extension count
         foreach (JointDriverMeta meta in metaInfo.Values)
         {
-            meta.writeData(writer);
+            meta.WriteData(writer);
         }
     }
 
-    public void readData(System.IO.BinaryReader reader)
+    public void ReadData(System.IO.BinaryReader reader)
     {
         type = (JointDriverType)((int)reader.ReadByte());
         portA = reader.ReadInt16();
@@ -152,7 +158,7 @@ public class JointDriver
         metaInfo.Clear();
         for (int i = 0; i < extensions; i++)
         {
-            JointDriverMeta meta = JointDriverMeta.readDriverMeta(reader);
+            JointDriverMeta meta = JointDriverMeta.ReadDriverMeta(reader);
             metaInfo.Add(meta.metaType, meta);
         }
     }
