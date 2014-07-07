@@ -134,11 +134,11 @@ public class LinearJoint : LinearJoint_Base
         currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? wrapped.asmJoint.LinearPosition.Value : 0;
         if (hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit)
         {
-            linearLimitHigh = wrapped.asmJoint.LinearPositionEndLimit.Value;
+            linearLimitHigh = (float) wrapped.asmJoint.LinearPositionEndLimit.Value;
         }
         if (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit)
         {
-            linearLimitLow = wrapped.asmJoint.LinearPositionStartLimit.Value;
+            linearLimitLow = (float) wrapped.asmJoint.LinearPositionStartLimit.Value;
         }
     }
 

@@ -104,12 +104,12 @@ public class RotationalJoint : RotationalJoint_Base
             parentBase = Utilities.toBXDVector(groupABase);
         }
 
-        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? wrapped.asmJoint.AngularPosition.Value : 0;
+        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float) wrapped.asmJoint.AngularPosition.Value : 0;
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if ((hasAngularLimit))
         {
-            angularLimitLow = wrapped.asmJoint.AngularPositionStartLimit.Value;
-            angularLimitHigh = wrapped.asmJoint.AngularPositionEndLimit.Value;
+            angularLimitLow = (float) wrapped.asmJoint.AngularPositionStartLimit.Value;
+            angularLimitHigh = (float) wrapped.asmJoint.AngularPositionEndLimit.Value;
         }
     }
 

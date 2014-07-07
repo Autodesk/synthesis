@@ -101,20 +101,20 @@ public class CylindricalJoint : CylindricalJoint_Base
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if (hasAngularLimit)
         {
-            angularLimitLow = wrapped.asmJoint.AngularPositionStartLimit.Value;
-            angularLimitHigh = wrapped.asmJoint.AngularPositionEndLimit.Value;
+            angularLimitLow = (float) wrapped.asmJoint.AngularPositionStartLimit.Value;
+            angularLimitHigh = (float) wrapped.asmJoint.AngularPositionEndLimit.Value;
         }
 
         hasLinearStartLimit = wrapped.asmJoint.HasLinearPositionStartLimit;
         if (hasLinearStartLimit)
         {
-            linearLimitStart = wrapped.asmJoint.LinearPositionStartLimit;
+            linearLimitStart = (float) wrapped.asmJoint.LinearPositionStartLimit.Value;
         }
 
         hasLinearEndLimit = wrapped.asmJoint.HasLinearPositionEndLimit;
         if (hasLinearEndLimit)
         {
-            linearLimitEnd = wrapped.asmJoint.LinearPositionEndLimit;
+            linearLimitEnd = (float) wrapped.asmJoint.LinearPositionEndLimit.Value;
         }
     }
 
