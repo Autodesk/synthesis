@@ -65,8 +65,7 @@ public partial class DriveChooser : Form
 
     private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)
     {
-        //find out which wheels in the drop-down menu are what int
-        //string WheelPosition = cmbWheelPosition.SelectedIndex;
+        int wheelPosition = cmbWheelPosition.SelectedIndex;
     }
 
     private void txtPortA_ValueChanged(object sender, EventArgs e)
