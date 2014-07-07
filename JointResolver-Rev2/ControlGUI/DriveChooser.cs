@@ -49,6 +49,18 @@ public partial class DriveChooser : Form
         txtPortB.Visible = JointDriver.hasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.getPortMax(cType);
         groupBox1.Visible = JointDriver.isMotor(cType);
+        bool windowReducer = JointDriver.isMotor(cType);
+        if (windowReducer == true)
+        {
+            btnSave.Location = new Point (13, 280);
+            btnSave.Visible = true;
+        } 
+        else if (windowReducer == false)
+        {
+            this.Height -= 60;
+            btnSave.Location = new Point (13, 220);
+            btnSave.Visible = true;
+        }
     }
 
     private void btnSave_Click(object sender, EventArgs e)
