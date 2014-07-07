@@ -23,7 +23,7 @@ class PlanarJoint : PlanarJoint_Base
         return false;
     }
  
-    private static void getPlanarInfo(dynamic geom, out UnitVector groupANormal)
+    private static void getPlanarInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
     {
         if (geom is EdgeProxy)
         {
@@ -31,10 +31,12 @@ class PlanarJoint : PlanarJoint_Base
             if (edge.GeometryType == CurveTypeEnum.kCircularArcCurve || edge.GeometryType == CurveTypeEnum.kCircleCurve)
             {
                 groupANormal = geom.Geometry.Normal;
+                groupABase = geom.Geometry.Center;
             }
             else if (edge.GeometryType == CurveTypeEnum.kLineSegmentCurve || edge.GeometryType == CurveTypeEnum.kLineCurve)
             {
                 groupANormal = edge.Geometry.Direction;
+                groupABase = edge.Geometry.MidPoint;
             }
             else
             {
@@ -48,9 +50,11 @@ class PlanarJoint : PlanarJoint_Base
             if (face.SurfaceType == SurfaceTypeEnum.kPlaneSurface)
             {
                 groupANormal = face.Geometry.Normal;
+                groupABase = face.Geometry.RootPoint;
             }
             else if (face.SurfaceType == SurfaceTypeEnum.kCylinderSurface)
             {
+                groupABase = face.Geometry.BasePoint;
                 groupANormal = face.Geometry.AxisVector;
             }
             else
@@ -72,24 +76,32 @@ class PlanarJoint : PlanarJoint_Base
 
         UnitVector groupANormal = null;
         UnitVector groupBNormal = null;
+        Point groupABase = null;
+        Point groupBBase = null;
         Console.WriteLine("O1: " + Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginOne.Type) + "\t" +
             Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginOne.Geometry.Type));
         Console.WriteLine("O2: " + Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Type) + "\t" +
             Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Geometry.Type));
 
 
-        getPlanarInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal);
-        getPlanarInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal);
+        getPlanarInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
+        getPlanarInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
 
         if (wrapped.childIsTheOne)
         {
             childNormal = Utilities.toBXDVector(groupANormal);
             parentNormal = Utilities.toBXDVector(groupBNormal);
+
+            childBase = Utilities.toBXDVector(groupABase);
+            parentBase = Utilities.toBXDVector(groupBBase);
         }
         else
         {
             childNormal = Utilities.toBXDVector(groupBNormal);
             parentNormal = Utilities.toBXDVector(groupANormal);
+
+            childBase = Utilities.toBXDVector(groupBBase);
+            parentBase = Utilities.toBXDVector(groupABase);
         }
     }
 
