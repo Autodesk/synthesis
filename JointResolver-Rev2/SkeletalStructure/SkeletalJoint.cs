@@ -5,8 +5,6 @@ using System.Data;
 using System.Diagnostics;
 using Inventor;
 
-//
-
 
 public class SkeletalJoint
 {
@@ -17,7 +15,7 @@ public class SkeletalJoint
     public AssemblyJoint asmJointOccurrence;
 
     public bool childIsTheOne;
-    
+
 
     public SkeletalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {

@@ -10,7 +10,6 @@ using System.Windows.Forms;
 
 public partial class DriveChooser : Form
 {
-
     public DriveChooser()
     {
         InitializeComponent();
@@ -18,8 +17,6 @@ public partial class DriveChooser : Form
 
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
-    private WheelPosition wheelPosition;
-
     public void ShowDialog(SkeletalJoint_Base joint)
     {
         this.joint = joint;
@@ -71,11 +68,7 @@ public partial class DriveChooser : Form
         joint.cDriver.portB = (int)txtPortB.Value;
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
-        if (joint is RotationalJoint)
-        {
-            ((RotationalJoint)joint).wheelPosition = this.wheelPosition;
-        }
-        
+
         Hide();
     }
 
@@ -86,7 +79,7 @@ public partial class DriveChooser : Form
 
     private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)
     {
-        wheelPosition = (WheelPosition)cmbWheelPosition.SelectedIndex;
+        int wheelPosition = cmbWheelPosition.SelectedIndex;
     }
 
     private void txtPortA_ValueChanged(object sender, EventArgs e)
