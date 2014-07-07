@@ -45,6 +45,7 @@ public partial class DriveChooser : Form
         lblPort.Text = JointDriver.getPortType(cType) + " Port" + (JointDriver.hasTwoPorts(cType) ? "s" : "");
         txtPortB.Visible = JointDriver.hasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.getPortMax(cType);
+        groupBox1.Visible = JointDriver.isMotor(cType);
     }
 
     private void btnSave_Click(object sender, EventArgs e)
@@ -89,6 +90,11 @@ public partial class DriveChooser : Form
     }
 
     private void grpDriveOptions_Enter(object sender, EventArgs e)
+    {
+
+    }
+
+    private void groupBox1_Enter(object sender, EventArgs e)
     {
 
     }

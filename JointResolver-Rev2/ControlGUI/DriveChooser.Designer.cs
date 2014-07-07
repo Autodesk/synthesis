@@ -209,6 +209,7 @@ partial class DriveChooser
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Wheel Position";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
             // DriveChooser
             // 

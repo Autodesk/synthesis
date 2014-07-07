@@ -76,6 +76,21 @@ public class JointDriver
         }
     }
 
+    public static bool isMotor (JointDriverType type)
+    {
+        bool showWheelPos = true;
+        switch (type)
+        {
+            case JointDriverType.MOTOR:
+                showWheelPos = true;
+                break;
+            default:
+                showWheelPos = false;
+                break;
+        }
+        return showWheelPos;
+    }
+
     public static int getPortMax(JointDriverType type)
     {
         switch (type)
