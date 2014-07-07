@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using System.IO;
-
+using System.Collections.Generic; 
 public class HandleJoints : MonoBehaviour
 {
 	public enum SkeletalJointType:byte
 	{
-		ROTATIONAL = 1, LINEAR = 2
+		ROTATIONAL = 1, 
+		LINEAR = 2
 	}
 	
 	public enum JointDriverType:byte
@@ -18,73 +19,78 @@ public class HandleJoints : MonoBehaviour
 		RELAY_PNEUMATIC = 5
 	}
 	
-	public static void loadBXDJ(string path, Transform child0, Transform child1)
+	public static void loadBXDJ(string filePath = null, Transform jointO, Transform jointC)
 	{
+
+		List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+		RigidNode_Base skeleton = SkeletonIO.readSkeleton ("C:/Users/t_waggn/Documents/bxdj/skeleton.bxdj");
+		skeleton.listAllNodes(nodes); 
+
+		foreach (RigidNode_Base node in nodes) {
+
+			SkeletalJoint_Base nodeX = node.getSkeletalJoint();
+			if (nodeX != null){
+				if ((int)nodeX.getJointType() == (int)SkeletalJointType.ROTATIONAL){
+					RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
+					var rigid = jointC;
+					var owner = jointO;
+
+					Rigidbody rigidB = rigid.gameObject.AddComponent<Rigidbody>();
+					var ownerB = owner.gameObject.AddComponent<ConfigurableJoint>();
+					ownerB.connectedBody = rigidB;
+					rigidB.useGravity = false;
+
+
+					Vector3 parentC = new Vector3((float)nodeR.parentBase.x,(float)nodeR.parentBase.y,(float)nodeR.parentBase.z);
+					Vector3 parentN = new Vector3((float)nodeR.parentNormal.x, (float)nodeR.parentNormal.y,(float)nodeR.parentNormal.z);
+					Vector3 childC = new Vector3((float)nodeR.childBase.x,(float)nodeR.childBase.y,(float)nodeR.childBase.z);
+					Vector3 childN = new Vector3((float)nodeR.childNormal.x,(float)nodeR.childNormal.y,(float)nodeR.childNormal.z);
+
+					
+					ownerB.anchor = parentC;
+					ownerB.connectedAnchor = childC;
+					ownerB.axis = parentN;
+					//ownerB.secondaryAxis = new Vector3 (0, 0, 1);
+					
+					ownerB.angularXMotion = ConfigurableJointMotion.Limited;
+					ownerB.angularYMotion = ConfigurableJointMotion.Locked;
+					ownerB.angularZMotion = ConfigurableJointMotion.Locked;
+					ownerB.xMotion = ConfigurableJointMotion.Locked;
+					ownerB.yMotion = ConfigurableJointMotion.Locked;
+					ownerB.zMotion = ConfigurableJointMotion.Locked;
+				}
+				
+			}
+
+			Debug.Log("Alive!");
+				}
+		//Rigidbody rigidB = rigid.gameObject.AddComponent<Rigidbody> ();
+		//owner.gameObject.AddComponent<Rigidbody> ();
+		//var ownerB = owner.gameObject.AddComponent<ConfigurableJoint> ();
+		//ownerB.connectedBody = rigidB;
+		//ownerB.gameObject.rigidbody.useGravity = false;
+		//rigidB.useGravity = false;
 		
-		BinaryReader reader = new BinaryReader (File.Open (path, FileMode.Open));
-		int nodeCount = reader.ReadInt32 ();
-		reader.ReadInt32 ();
-		reader.ReadString ();
-		int parentNode = reader.ReadInt32 ();
-		string fileName = reader.ReadString ();
-		Debug.Log (fileName);
-		int driveIndex = reader.ReadInt32 ();
-		int jointType = (int)reader.ReadByte ();
 		
-		var rigid = child0;
-		var owner = child1;
+
 		
-		double angLimLow, angLimHigh;
+		//ownerB.anchor = parentC;
+		//ownerB.connectedAnchor = childC;
+		//ownerB.axis = parentN;
+		//ownerB.secondaryAxis = new Vector3 (0, 0, 1);
 		
-		Rigidbody rigidB = rigid.gameObject.AddComponent<Rigidbody> ();
-		owner.gameObject.AddComponent<Rigidbody> ();
-		var ownerB = owner.gameObject.AddComponent<ConfigurableJoint> ();
-		ownerB.connectedBody = rigidB;
-		ownerB.gameObject.rigidbody.useGravity = false;
-		rigidB.useGravity = false;
-		
-		
-		
-		Vector3 parentC = new Vector3 ((float)reader.ReadDouble (), (float)reader.ReadDouble (), (float)reader.ReadDouble ());
-		Vector3 parentN = new Vector3 ((float)reader.ReadDouble (), (float)reader.ReadDouble (), (float)reader.ReadDouble ());
-		Vector3 childC = new Vector3 ((float)reader.ReadDouble (), (float)reader.ReadDouble (), (float)reader.ReadDouble ());
-		Vector3 childN = new Vector3 ((float)reader.ReadDouble (), (float)reader.ReadDouble (), (float)reader.ReadDouble ());
-		
-		int hasLimit = reader.ReadByte ();
-		//int angLimit = reader.ReadByte ();
-		if ((hasLimit&1)==1) {
-			angLimLow = reader.ReadDouble ();
-			angLimHigh = reader.ReadDouble ();
-			
-		}
-		
-		reader.ReadBytes(108); //skips linear segment
-		//ignores footer information relevent to the driver
-		
-		ownerB.anchor = parentC;
-		ownerB.connectedAnchor = childC;
-		ownerB.axis = parentN;
-		ownerB.secondaryAxis = new Vector3 (0, 0, 1);
-		
-		ownerB.angularXMotion = ConfigurableJointMotion.Limited;
-		ownerB.angularYMotion = ConfigurableJointMotion.Locked;
-		ownerB.angularZMotion = ConfigurableJointMotion.Locked;
-		ownerB.xMotion = ConfigurableJointMotion.Locked;
-		ownerB.yMotion = ConfigurableJointMotion.Locked;
-		ownerB.zMotion = ConfigurableJointMotion.Locked;
-		Debug.Log (jointType);
+		//ownerB.angularXMotion = ConfigurableJointMotion.Limited;
+		//ownerB.angularYMotion = ConfigurableJointMotion.Locked;
+		//ownerB.angularZMotion = ConfigurableJointMotion.Locked;
+		//ownerB.xMotion = ConfigurableJointMotion.Locked;
+		//ownerB.yMotion = ConfigurableJointMotion.Locked;
+		//ownerB.zMotion = ConfigurableJointMotion.Locked;
+		//Debug.Log (jointType);
 	}
-	
-	
-	// Use this for initialization
-	void Start ()
-	{
+	void Start(){
+		loadBXDJ ();
+
 	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-		
-	}
+
 }
 
