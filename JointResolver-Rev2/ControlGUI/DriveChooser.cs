@@ -64,6 +64,7 @@ public partial class DriveChooser : Form
 
     private void btnSave_Click(object sender, EventArgs e)
     {
+        WheelDriverMeta wheelDriver;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         joint.cDriver = new JointDriver(cType);
         joint.cDriver.portA = (int)txtPortA.Value;
@@ -74,6 +75,8 @@ public partial class DriveChooser : Form
         //Only need to store wheel driver if run by motor and is a wheel.
         if (cType == JointDriverType.MOTOR && position != WheelPosition.NO_WHEEL)
         {
+            wheelDriver = (WheelDriverMeta)JointDriverMeta.Create(JointDriverMetaType.WHEEL_DRIVER);
+            wheelDriver.position = this.position;
             joint.cDriver.AddInfo(JointDriverMeta.Create(JointDriverMetaType.WHEEL_DRIVER));
         }
 

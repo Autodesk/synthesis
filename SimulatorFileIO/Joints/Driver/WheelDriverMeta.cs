@@ -11,7 +11,7 @@ public enum WheelPosition : byte
 }
 
 
-class WheelDriverMeta : JointDriverMeta
+public class WheelDriverMeta : JointDriverMeta
 {
     public WheelPosition position { get; set; }
 
