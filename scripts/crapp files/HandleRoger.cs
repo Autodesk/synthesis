@@ -2,6 +2,7 @@
 using System.Collections;
 using System.IO;
 
+
 public class HandleRoger : MonoBehaviour 
 {
 	void loadBXDA(string filepath, Transform trans)
@@ -148,22 +149,17 @@ public class HandleRoger : MonoBehaviour
 	
 	void FixedUpdate () 
 	{
-		for (int i = 7; i < 12; i++) 
-		{
-			WheelCollider tmp = transform.GetChild(i).GetComponent<WheelCollider>();
-			tmp.motorTorque = Input.GetAxis("Vertical")*5;
-			Debug.Log (tmp.motorTorque);
-		}
 		for (int i = 7; i < 10; i++) 
 		{
 			WheelCollider tmp = transform.GetChild(i).GetComponent<WheelCollider>();
-			tmp.motorTorque = -Input.GetAxis("Horizontal")*5;
+			tmp.motorTorque = Input.GetAxis("Vertical")*7-Input.GetAxis("Horizontal")*7;
 		}
 		for (int i = 10; i < 13; i++) 
 		{
 			WheelCollider tmp = transform.GetChild(i).GetComponent<WheelCollider>();
-			tmp.motorTorque = Input.GetAxis("Horizontal")*5;
+			tmp.motorTorque = Input.GetAxis("Vertical")*7+Input.GetAxis("Horizontal")*7;
 		}
 	}
+
 
 }
