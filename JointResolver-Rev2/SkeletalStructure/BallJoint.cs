@@ -11,6 +11,8 @@ public class BallJoint : BallJoint_Base, InventorSkeletalJoint
 
     public SkeletalJoint getWrapped() { return wrapped; }
 
+    public void determineLimits() { } // TODO
+
     public static bool isBallJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)

@@ -8,5 +8,5 @@ public interface InventorSkeletalJoint
 {
     SkeletalJoint getWrapped();
 
-  // TODO  void determineLimits();
+    void determineLimits();
 }

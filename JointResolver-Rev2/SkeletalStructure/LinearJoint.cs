@@ -11,45 +11,101 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
 
     public SkeletalJoint getWrapped() { return wrapped; }
 
+
+    public void determineLimits()
+    {
+        MotionLimits cache = new MotionLimits();
+        DriveSettings driver = wrapped.asmJointOccurrence.DriveSettings;
+        driver.DriveType = DriveTypeEnum.kDriveLinearPositionType;
+        driver.CollisionDetection = true;
+        driver.OnCollision += MotionLimits.onCollision;
+        driver.FrameRate = 1000;
+        float step = 0.1f;
+        Box mover = (wrapped.childIsTheOne ? wrapped.asmJointOccurrence.OccurrenceOne : wrapped.asmJointOccurrence.OccurrenceTwo).RangeBox;
+        float maxOffset = (float)mover.MaxPoint.DistanceTo(mover.MinPoint);
+
+        driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " cm");
+
+        cache.doContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
+
+        driver.StartValue = currentLinearPosition + " cm";
+        driver.EndValue = (currentLinearPosition + maxOffset) + " cm";
+
+        // Forward
+        driver.GoToStart();
+        MotionLimits.didCollide = false;
+        driver.PlayForward();
+        if (MotionLimits.didCollide)
+        {
+            linearLimitHigh = (float)wrapped.asmJoint.LinearPosition.Value - step;
+            hasUpperLimit = true;
+        }
+
+        // Reverse
+        driver.EndValue = currentLinearPosition + " cm";
+        driver.StartValue = (currentLinearPosition - maxOffset) + " cm";
+        driver.GoToEnd();
+        MotionLimits.didCollide = false;
+        driver.PlayReverse();
+        if (MotionLimits.didCollide)
+        {
+            linearLimitLow = (float)wrapped.asmJoint.LinearPosition.Value + step;
+            hasLowerLimit = true;
+        }
+
+        driver.OnCollision -= MotionLimits.onCollision;
+        cache.doContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
+
+        wrapped.asmJoint.LinearPosition.Value = currentLinearPosition;
+
+        Console.WriteLine(hasLowerLimit + " low: " + linearLimitLow + "\t" + hasUpperLimit + " high: " + linearLimitHigh);
+
+        // Stash results
+        wrapped.asmJoint.HasLinearPositionStartLimit = hasLowerLimit;
+        wrapped.asmJoint.HasLinearPositionEndLimit = hasUpperLimit;
+        wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitLow;
+        wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitHigh;
+    }
+
     public static bool isLinearJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
         {
             AssemblyJointDefinition joint = jointI.joints[0].Definition;
             //Cylindrical joints with no rotaion are effectively sliding joints.
-            return joint.JointType == AssemblyJointTypeEnum.kSlideJointType 
-                || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType 
+            return joint.JointType == AssemblyJointTypeEnum.kSlideJointType
+                || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType
                 && joint.HasAngularPositionLimits && joint.AngularPositionStartLimit._Value == joint.AngularPositionEndLimit._Value);
         }
         return false;
     }
 
-    private static void getLinearInfo(dynamic geom, ComponentOccurrence component, out UnitVector groupANormal, out Point groupABase)
+    private static void getLinearInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
     {
-        int translationDegrees;
-        ObjectsEnumerator translationAxes;
-        int rotationDegrees;
-        ObjectsEnumerator rotationAxes;
-        Point center;
-        IEnumerator axesEnumerator;
+        //int translationDegrees;
+        //ObjectsEnumerator translationAxes;
+        //int rotationDegrees;
+        //ObjectsEnumerator rotationAxes;
+        //Point center;
+        //IEnumerator axesEnumerator;
 
-        component.GetDegreesOfFreedom(out translationDegrees, out translationAxes,
-            out rotationDegrees, out rotationAxes, out center);
+        //component.GetDegreesOfFreedom(out translationDegrees, out translationAxes,
+        //    out rotationDegrees, out rotationAxes, out center);
 
-        if (translationDegrees == 1)
-        {
-            axesEnumerator = translationAxes.GetEnumerator();
-            axesEnumerator.MoveNext();
-            groupANormal = ((Vector)axesEnumerator.Current).AsUnitVector();
-        }
-        else if (translationDegrees == 0)
-        {
-            groupANormal = null;
-        }
-        else
-        {
-            throw new Exception("More than one linear axis of freedom found on linear joint.");
-        }
+        //if (translationDegrees == 1)
+        //{
+        //    axesEnumerator = translationAxes.GetEnumerator();
+        //    axesEnumerator.MoveNext();
+        //    groupANormal = ((Vector)axesEnumerator.Current).AsUnitVector();
+        //}
+        //else if (translationDegrees == 0)
+        //{
+        //    groupANormal = null;
+        //}
+        //else
+        //{
+        //    throw new Exception("More than one linear axis of freedom found on linear joint.");
+        //}
 
         //Into usual base fiding stuff, will look for a way to change later.
         if (geom is EdgeProxy)
@@ -58,10 +114,12 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
             if (edge.GeometryType == CurveTypeEnum.kCircularArcCurve || edge.GeometryType == CurveTypeEnum.kCircleCurve)
             {
                 groupABase = geom.Geometry.Center;
+                groupANormal = geom.Geometry.Normal;
             }
             else if (edge.GeometryType == CurveTypeEnum.kLineSegmentCurve || edge.GeometryType == CurveTypeEnum.kLineCurve)
             {
                 groupABase = edge.Geometry.MidPoint;
+                groupANormal = edge.Geometry.Direction;
             }
             else
             {
@@ -75,10 +133,12 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
             if (face.SurfaceType == SurfaceTypeEnum.kPlaneSurface)
             {
                 groupABase = face.Geometry.RootPoint;
+                groupANormal = face.Geometry.Normal;
             }
             else if (face.SurfaceType == SurfaceTypeEnum.kCylinderSurface)
             {
                 groupABase = face.Geometry.BasePoint;
+                groupANormal = face.Geometry.Normal;
             }
             else
             {
@@ -102,8 +162,8 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         Point groupABase;
         Point groupBBase;
 
-        getLinearInfo(wrapped.asmJoint.OriginOne.Geometry, wrapped.asmJointOccurrence.AffectedOccurrenceOne, out groupANormal, out groupABase);
-        getLinearInfo(wrapped.asmJoint.OriginTwo.Geometry, wrapped.asmJointOccurrence.AffectedOccurrenceTwo, out groupBNormal, out groupBBase);
+        getLinearInfo(wrapped.asmJoint.AlignmentOne, out groupANormal, out groupABase);
+        getLinearInfo(wrapped.asmJoint.AlignmentTwo, out groupBNormal, out groupBBase);
 
         if (groupABase == null && groupBBase != null)
         {
@@ -113,7 +173,7 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         {
             groupBNormal = groupANormal;
         }
-        else if(groupABase == null && groupBBase == null)
+        else if (groupABase == null && groupBBase == null)
         {
             throw new Exception("Both axes for linear movement are null.");
         }
@@ -136,11 +196,11 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
         if (hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit)
         {
-            linearLimitHigh = (float) wrapped.asmJoint.LinearPositionEndLimit.Value;
+            linearLimitHigh = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
         }
         if (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit)
         {
-            linearLimitLow = (float) wrapped.asmJoint.LinearPositionStartLimit.Value;
+            linearLimitLow = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
         }
 
         Console.WriteLine("Axis is " + groupANormal.X + ", " + groupANormal.Y + ", " + groupANormal.Z);

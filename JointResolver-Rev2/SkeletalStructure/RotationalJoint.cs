@@ -11,6 +11,65 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 
     public SkeletalJoint getWrapped() { return wrapped; }
 
+    public void determineLimits()
+    {
+        MotionLimits cache = new MotionLimits();
+        DriveSettings driver = wrapped.asmJointOccurrence.DriveSettings;
+        driver.DriveType = DriveTypeEnum.kDriveAngularPositionType;
+        driver.CollisionDetection = true;
+        driver.OnCollision += MotionLimits.onCollision;
+        driver.FrameRate = 1000;
+        float step = 0.05f;
+        driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " rad");
+
+        cache.doContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
+
+        driver.StartValue = currentAngularPosition + " rad";
+        driver.EndValue = (currentAngularPosition + 6.5) + " rad";
+
+        // Forward
+        driver.GoToStart();
+        MotionLimits.didCollide = false;
+        driver.PlayForward();
+        if (MotionLimits.didCollide)
+        {
+            angularLimitHigh = (float)wrapped.asmJoint.AngularPosition.Value - step;
+            hasAngularLimit = true;
+        }
+
+        // Reverse
+        driver.EndValue = currentAngularPosition + " rad";
+        driver.StartValue = (currentAngularPosition - 6.5) + " rad";
+        driver.GoToEnd();
+        MotionLimits.didCollide = false;
+        driver.PlayReverse();
+        if (MotionLimits.didCollide)
+        {
+            angularLimitLow = (float)wrapped.asmJoint.AngularPosition.Value + step ;
+            if (!hasAngularLimit)
+            {
+                angularLimitHigh = angularLimitLow + 6.28f - (step  * 2.0f);
+            }
+            hasAngularLimit = true;
+        }
+        else if (hasAngularLimit)
+        {
+            angularLimitLow = angularLimitHigh - 6.28f + (step * 2.0f);
+        }
+
+        driver.OnCollision -= MotionLimits.onCollision;
+        cache.doContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
+
+        wrapped.asmJoint.AngularPosition.Value = currentAngularPosition;
+
+        Console.WriteLine(hasAngularLimit + "; high: " + angularLimitHigh + "; low: " + angularLimitLow);
+
+        // Stash results
+        wrapped.asmJoint.HasAngularPositionLimits = hasAngularLimit;
+        wrapped.asmJoint.AngularPositionStartLimit.Value = angularLimitLow;
+        wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;
+    }
+
     public static bool isRotationalJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
@@ -106,12 +165,12 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             parentBase = Utilities.toBXDVector(groupABase);
         }
 
-        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float) wrapped.asmJoint.AngularPosition.Value : 0;
+        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if ((hasAngularLimit))
         {
-            angularLimitLow = (float) wrapped.asmJoint.AngularPositionStartLimit.Value;
-            angularLimitHigh = (float) wrapped.asmJoint.AngularPositionEndLimit.Value;
+            angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
+            angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
         }
     }
 

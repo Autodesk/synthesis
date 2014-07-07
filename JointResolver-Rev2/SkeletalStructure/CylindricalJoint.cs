@@ -11,6 +11,10 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
     public SkeletalJoint getWrapped() { return wrapped; }
 
+    public void determineLimits() {
+        // TODO
+    }
+
     public static bool isCylindricalJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)

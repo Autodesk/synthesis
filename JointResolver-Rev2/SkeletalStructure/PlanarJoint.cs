@@ -15,6 +15,10 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
 
     public SkeletalJoint getWrapped() { return wrapped; }
 
+    public void determineLimits()
+    {
+        // TODO
+    }
     public static bool isPlanarJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
