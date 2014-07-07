@@ -176,7 +176,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints.Padding = new System.Windows.Forms.Padding(3);
             this.tabJoints.Size = new System.Drawing.Size(927, 390);
             this.tabJoints.TabIndex = 1;
-            this.tabJoints.Text = "Joint Drivers";
+            this.tabJoints.Text = "Joint Options";
             this.tabJoints.UseVisualStyleBackColor = true;
             // 
             // chkHighlightComponents

@@ -80,7 +80,7 @@ partial class DriveChooser
             this.grpDriveOptions.Size = new System.Drawing.Size(337, 128);
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
-            this.grpDriveOptions.Text = "Drive Options";
+            this.grpDriveOptions.Text = "Motor Options";
             // 
             // txtHighLimit
             // 
@@ -105,9 +105,9 @@ partial class DriveChooser
             this.lblLimits.AutoSize = true;
             this.lblLimits.Location = new System.Drawing.Point(11, 72);
             this.lblLimits.Name = "lblLimits";
-            this.lblLimits.Size = new System.Drawing.Size(44, 17);
+            this.lblLimits.Size = new System.Drawing.Size(78, 17);
             this.lblLimits.TabIndex = 4;
-            this.lblLimits.Text = "Limits";
+            this.lblLimits.Text = "Joint Limits";
             // 
             // txtLowLimit
             // 
@@ -151,9 +151,9 @@ partial class DriveChooser
             this.lblPort.AutoSize = true;
             this.lblPort.Location = new System.Drawing.Point(11, 22);
             this.lblPort.Name = "lblPort";
-            this.lblPort.Size = new System.Drawing.Size(34, 17);
+            this.lblPort.Size = new System.Drawing.Size(71, 17);
             this.lblPort.TabIndex = 1;
-            this.lblPort.Text = "Port";
+            this.lblPort.Text = "PWM Port";
             // 
             // txtPortA
             // 
@@ -218,7 +218,7 @@ partial class DriveChooser
             this.Controls.Add(this.grpDriveOptions);
             this.Controls.Add(this.grpChooseDriver);
             this.Name = "DriveChooser";
-            this.Text = "Joint Drive Config";
+            this.Text = "Configure Joint";
             this.Load += new System.EventHandler(this.DriveChooser_Load);
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
