@@ -134,23 +134,40 @@ class SurfaceExporter
         physics = new PhysicalProperties();
     }
 
-    public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false)
+    public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false, bool ignorePhysics = false)
     {
+        if (!ignorePhysics)
+        {
+            // Compute physics
+            physics.centerOfMass.multiply(physics.mass);
+            float myMass = (float)occ.MassProperties.Mass;
+            physics.mass += myMass;
+            physics.centerOfMass.add(Utilities.toBXDVector(occ.MassProperties.CenterOfMass).multiply(myMass));
+            physics.centerOfMass.multiply(1.0f / physics.mass);
+        }
+
         if (!occ.Visible) return;
-        // Compute physics
-        physics.centerOfMass.multiply(physics.mass);
-        float myMass = (float) occ.MassProperties.Mass;
-        physics.mass += myMass;
-        physics.centerOfMass.add(Utilities.toBXDVector(occ.MassProperties.CenterOfMass).multiply(myMass));
-        physics.centerOfMass.multiply(1.0f / physics.mass);
 
         foreach (SurfaceBody surf in occ.SurfaceBodies)
         {
             AddFacets(surf, bestResolution, separateFaces);
         }
+
+        double totalVolume = 0;
+        foreach (ComponentOccurrence occ2 in occ.SubOccurrences)
+        {
+            totalVolume += occ2.MassProperties.Volume;
+        }
+        totalVolume /= occ.SubOccurrences.Count*5;
+
         foreach (ComponentOccurrence item in occ.SubOccurrences)
         {
-            ExportAll(item, bestResolution, separateFaces);
+            if (item.MassProperties.Volume < totalVolume)
+            {
+                item.Visible = false;
+                Console.WriteLine("Drop: " + item.Name);
+            }
+            ExportAll(item, bestResolution, separateFaces, true);
         }
     }
 
@@ -172,8 +189,20 @@ class SurfaceExporter
 
     public void ExportAll(CustomRigidGroup group)
     {
+        double totalVolume = 0;
         foreach (ComponentOccurrence occ in group.occurrences)
         {
+            totalVolume += occ.MassProperties.Volume;
+        }
+        totalVolume /= group.occurrences.Count*5;
+
+        foreach (ComponentOccurrence occ in group.occurrences)
+        {
+            if (occ.MassProperties.Volume < totalVolume)
+            {
+                occ.Visible = false;
+                Console.WriteLine("Drop: " + occ.Name);
+            }
             ExportAll(occ, group.highRes, group.colorFaces);
         }
     }
