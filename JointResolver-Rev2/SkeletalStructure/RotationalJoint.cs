@@ -104,7 +104,10 @@ public class RotationalJoint : RotationalJoint_Base
             parentBase = Utilities.toBXDVector(groupABase);
         }
 
-        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? wrapped.asmJoint.AngularPosition.Value : 0;
+        if (wrapped.asmJoint.JointType != AssemblyJointTypeEnum.kCylindricalJointType)
+        {
+            currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? wrapped.asmJoint.AngularPosition.Value : 0;
+        }
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if ((hasAngularLimit))
         {
