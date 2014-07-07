@@ -105,6 +105,11 @@ public class CustomRigidGroup
     {
         return fullQualifier.GetHashCode();
     }
+
+    public bool contains(ComponentOccurrence c)
+    {
+        return occurrences.Contains(c);
+    }
 }
 
 public class CustomRigidJoint

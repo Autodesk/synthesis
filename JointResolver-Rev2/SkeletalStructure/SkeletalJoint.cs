@@ -25,18 +25,26 @@ public class SkeletalJoint
         childGroup = null;
         parentGroup = parent;
         this.rigidJoint = rigidJoint;
-        if ((rigidJoint.groupOne.Equals(parent)))
+        if (rigidJoint.groupOne.Equals(parent))
         {
             childGroup = rigidJoint.groupTwo;
-            childIsTheOne = false;
         }
         else if (rigidJoint.groupTwo.Equals(parent))
         {
             childGroup = rigidJoint.groupOne;
-            childIsTheOne = true;
         }
-        if ((childGroup == null))
-            throw new Exception("Not a proper joint");
+        else
+        {
+            throw new Exception("Couldn't match parent group");
+        }
+        if (childGroup == null)
+            throw new Exception("Not a proper joint: No child joint found");
+
+        childIsTheOne = childGroup.contains(asmJointOccurrence.AffectedOccurrenceOne);
+        if (!childIsTheOne && !childGroup.contains(asmJointOccurrence.AffectedOccurrenceTwo))
+        {
+            throw new Exception("Expected child not found inside assembly joint.");
+        }
     }
 
     public CustomRigidGroup GetChild()
