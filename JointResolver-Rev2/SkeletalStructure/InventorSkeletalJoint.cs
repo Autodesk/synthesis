@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 interface InventorSkeletalJoint
 {
-    public SkeletalJoint getWrapped();
+    SkeletalJoint getWrapped();
 }

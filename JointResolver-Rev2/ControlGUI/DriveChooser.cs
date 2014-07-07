@@ -61,7 +61,7 @@ public partial class DriveChooser : Form
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
         if (joint is RotationalJoint)
         {
-            ((RotationalJoint)joint).wrapped.wheelPosition = this.wheelPosition;
+            ((RotationalJoint)joint).getWrapped().wheelPosition = this.wheelPosition;
         }
         
         Hide();
