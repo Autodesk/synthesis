@@ -46,7 +46,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         writer.Write(childNormal.z);
 
         //1 indicates a linear limit.
-        writer.Write((byte)((hasAngularLimit ? 1 : 0)|(hasLinearStartLimit?2:0) | (hasLinearEndLimit?4:0));
+        writer.Write((byte)((hasAngularLimit ? 1 : 0)|(hasLinearStartLimit?2:0) | (hasLinearEndLimit?4:0)));
         if (hasAngularLimit)
         {
             writer.Write(angularLimitLow);
