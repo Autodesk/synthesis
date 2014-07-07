@@ -131,7 +131,7 @@ public class LinearJoint : LinearJoint_Base
             parentBase = Utilities.toBXDVector(groupABase);
         }
 
-        currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? wrapped.asmJoint.LinearPosition.Value : 0;
+        currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
         if (hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit)
         {
             linearLimitHigh = (float) wrapped.asmJoint.LinearPositionEndLimit.Value;
@@ -140,6 +140,8 @@ public class LinearJoint : LinearJoint_Base
         {
             linearLimitLow = (float) wrapped.asmJoint.LinearPositionStartLimit.Value;
         }
+
+        Console.WriteLine("Axis is " + groupANormal.X + ", " + groupANormal.Y + ", " + groupANormal.Z);
     }
 
     protected override string ToString_Internal()
