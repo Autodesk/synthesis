@@ -19,9 +19,10 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
     public bool hasAngularLimit;
     public double angularLimitLow;
     public double angularLimitHigh;
-    public bool hasLinearLimit;
-    public double linearLimitLow;
-    public double linearLimitHigh;
+    public bool hasLinearStartLimit;
+    public bool hasLinearEndLimit;
+    public double linearLimitStart;
+    public double linearLimitEnd;
 
     public override SkeletalJointType getJointType()
     {
@@ -44,6 +45,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         writer.Write(childNormal.y);
         writer.Write(childNormal.z);
 
+        //1 indicates a linear limit.
         writer.Write((byte)(hasAngularLimit ? 1 : 0));
         if (hasAngularLimit)
         {
@@ -51,11 +53,16 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             writer.Write(angularLimitHigh);
         }
 
-        writer.Write((byte)(hasLinearLimit ? 1 : 0));
-        if (hasLinearLimit)
+        writer.Write((byte)(hasLinearStartLimit ? 1 : 0));
+        if (hasLinearStartLimit)
         {
-            writer.Write(linearLimitLow);
-            writer.Write(linearLimitHigh);
+            writer.Write(linearLimitStart);
+        }
+
+        writer.Write((byte)(hasLinearEndLimit ? 1 : 0));
+        if (hasLinearEndLimit)
+        {
+            writer.Write(linearLimitEnd);
         }
     }
 
@@ -73,11 +80,16 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             angularLimitHigh = reader.ReadDouble();
         }
 
-        hasLinearLimit = (reader.ReadByte() & 1) == 1;
-        if (hasLinearLimit)
+        hasLinearStartLimit = (reader.ReadByte() & 1) == 1;
+        if (hasLinearStartLimit)
         {
-            linearLimitLow = reader.ReadDouble();
-            linearLimitHigh = reader.ReadDouble();
+            linearLimitStart = reader.ReadDouble();
+        }
+
+        hasLinearEndLimit = (reader.ReadByte() & 1) == 1;
+        if (hasLinearEndLimit)
+        {
+            linearLimitEnd = reader.ReadDouble();
         }
     }
 }
