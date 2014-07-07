@@ -45,6 +45,10 @@ public class JointDriver
         {
             return new JointDriverType[] { };
         }
+        else if (joint.getJointType() == SkeletalJointType.RIGID)
+        {
+            return new JointDriverType[] { };
+        }
         return new JointDriverType[0];// Not implemented
     }
 

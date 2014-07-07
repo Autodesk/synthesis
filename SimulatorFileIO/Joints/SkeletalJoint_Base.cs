@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 public enum SkeletalJointType : byte
 {
-    ROTATIONAL = 1, LINEAR = 2, PLANAR = 3, CYLINDRICAL = 4, BALL = 5
+    ROTATIONAL = 1, LINEAR = 2, PLANAR = 3, CYLINDRICAL = 4, BALL = 5, RIGID = 6
 }
 
 public interface SkeletalJointFactory
@@ -27,6 +27,8 @@ public class BaseSkeletalJointFactory : SkeletalJointFactory {
                 return new PlanarJoint_Base();
             case SkeletalJointType.BALL:
                 return new BallJoint_Base();
+            case SkeletalJointType.RIGID:
+                return new RigidJoint_Base();
             default:
                 return null;
         }

@@ -83,6 +83,8 @@ public class SkeletalJoint
             return new PlanarJoint(parent, rigidJoint);
         if(BallJoint.isBallJoint(rigidJoint))
             return new BallJoint(parent, rigidJoint);
+        if(RigidJoint.isRigidJoint(rigidJoint))
+            return new RigidJoint(parent, rigidJoint);
         return null;
     }
 }
