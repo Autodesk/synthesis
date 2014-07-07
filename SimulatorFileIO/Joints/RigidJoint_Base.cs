@@ -27,7 +27,7 @@ public class RigidJoint_Base : SkeletalJoint_Base
 
     protected override void readJoint(System.IO.BinaryReader reader)
     {
-        parentBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        childBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+        parentBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        childBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
     }
 }

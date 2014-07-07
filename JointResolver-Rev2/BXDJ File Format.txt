@@ -10,47 +10,47 @@ If there is a parent there must be a joint so...	if (NodeParent != -1)
 -- END NODE SPEC --
 
 -- BEGIN ROTATIONAL JOINT DATA SPEC --
-[8 byte double]		Parent_BaseX
-[8 byte double]		Parent_BaseY
-[8 byte double]		Parent_BaseZ
-[8 byte double]		Parent_NormX
-[8 byte double]		Parent_NormY
-[8 byte double]		Parent_NormZ
-[8 byte double]		Child_BaseX
-[8 byte double]		Child_BaseY
-[8 byte double]		Child_BaseZ
-[8 byte double]		Child_NormX
-[8 byte double]		Child_NormY
-[8 byte double]		Child_NormZ
+[4 byte float]		Parent_BaseX
+[4 byte float]		Parent_BaseY
+[4 byte float]		Parent_BaseZ
+[4 byte float]		Parent_NormX
+[4 byte float]		Parent_NormY
+[4 byte float]		Parent_NormZ
+[4 byte float]		Child_BaseX
+[4 byte float]		Child_BaseY
+[4 byte float]		Child_BaseZ
+[4 byte float]		Child_NormX
+[4 byte float]		Child_NormY
+[4 byte float]		Child_NormZ
 [1 byte]			HasLimits
 	[Bit 1]			AngularLimits
 
 If there are angular limits...
-[8 byte double]		AngularLimit_Low
-[8 byte double]		AngularLimit_High
+[4 byte float]		AngularLimit_Low
+[4 byte float]		AngularLimit_High
 
 -- END ROTATIONAL JOINT DATA SPEC --
 
 -- BEGIN LINEAR JOINT DATA SPEC --
-[8 byte double]		Parent_BaseX
-[8 byte double]		Parent_BaseY
-[8 byte double]		Parent_BaseZ
-[8 byte double]		Parent_NormX
-[8 byte double]		Parent_NormY
-[8 byte double]		Parent_NormZ
-[8 byte double]		Child_BaseX
-[8 byte double]		Child_BaseY
-[8 byte double]		Child_BaseZ
-[8 byte double]		Child_NormX
-[8 byte double]		Child_NormY
-[8 byte double]		Child_NormZ
+[4 byte float]		Parent_BaseX
+[4 byte float]		Parent_BaseY
+[4 byte float]		Parent_BaseZ
+[4 byte float]		Parent_NormX
+[4 byte float]		Parent_NormY
+[4 byte float]		Parent_NormZ
+[4 byte float]		Child_BaseX
+[4 byte float]		Child_BaseY
+[4 byte float]		Child_BaseZ
+[4 byte float]		Child_NormX
+[4 byte float]		Child_NormY
+[4 byte float]		Child_NormZ
 [1 byte]			HasLimits
 	[Bit 1]			LinearLimitLow
 	[Bit 2]			LinearLimitHigh
 
 If the bit is set for the limit..
-[8 byte double]		LinearLimit_Low
-[8 byte double]		LinearLimit_High
+[4 byte float]		LinearLimit_Low
+[4 byte float]		LinearLimit_High
 
 -- END LINEAR JOINT DATA SPEC --
 
@@ -61,8 +61,8 @@ If the bit is set for the limit..
 [1 byte]			Driver Type ENUM
 [2 byte short]		Port A
 [2 byte short]		Port B
-[8 byte double]		Lower Limit
-[8 byte double]		Upper Limit
+[4 byte float]		Lower Limit
+[4 byte float]		Upper Limit
 [4 byte integer]	Drive extension count
 
 -- BEGIN DRIVER EXTENSION SPEC --

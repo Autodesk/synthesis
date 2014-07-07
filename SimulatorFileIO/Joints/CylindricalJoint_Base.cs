@@ -46,20 +46,16 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         writer.Write(childNormal.z);
 
         //1 indicates a linear limit.
-        writer.Write((byte)(hasAngularLimit ? 1 : 0));
+        writer.Write((byte)((hasAngularLimit ? 1 : 0)|(hasLinearStartLimit?2:0) | (hasLinearEndLimit?4:0));
         if (hasAngularLimit)
         {
             writer.Write(angularLimitLow);
             writer.Write(angularLimitHigh);
         }
-
-        writer.Write((byte)(hasLinearStartLimit ? 1 : 0));
         if (hasLinearStartLimit)
         {
             writer.Write(linearLimitStart);
         }
-
-        writer.Write((byte)(hasLinearEndLimit ? 1 : 0));
         if (hasLinearEndLimit)
         {
             writer.Write(linearLimitEnd);
@@ -73,20 +69,20 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         childBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         childNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
-        hasAngularLimit = (reader.ReadByte() & 1) == 1;
+        byte limits = reader.ReadByte();
+        hasAngularLimit = (limits & 1) == 1;
+        hasLinearStartLimit = (limits & 2) == 2;
+        hasLinearEndLimit = (limits & 4) == 4;
+
         if (hasAngularLimit)
         {
             angularLimitLow = reader.ReadSingle();
             angularLimitHigh = reader.ReadSingle();
         }
-
-        hasLinearStartLimit = (reader.ReadByte() & 1) == 1;
         if (hasLinearStartLimit)
         {
             linearLimitStart = reader.ReadSingle();
         }
-
-        hasLinearEndLimit = (reader.ReadByte() & 1) == 1;
         if (hasLinearEndLimit)
         {
             linearLimitEnd = reader.ReadSingle();
