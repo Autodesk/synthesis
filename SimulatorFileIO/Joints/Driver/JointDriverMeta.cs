@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿using System.IO;
 
 public enum JointDriverMetaType : byte
 {
@@ -11,7 +7,11 @@ public enum JointDriverMetaType : byte
 
 public abstract class JointDriverMeta
 {
-    public JointDriverMetaType metaType { get; private set;}
+    public JointDriverMetaType metaType
+    {
+        get;
+        private set;
+    }
 
     protected JointDriverMeta(JointDriverMetaType type)
     {

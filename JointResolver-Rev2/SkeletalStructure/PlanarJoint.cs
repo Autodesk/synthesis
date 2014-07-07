@@ -3,17 +3,16 @@
  */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using Inventor;
 
 class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
 {
     private SkeletalJoint wrapped;
 
-    public SkeletalJoint GetWrapped() { return wrapped; }
+    public SkeletalJoint GetWrapped()
+    {
+        return wrapped;
+    }
 
     public void DetermineLimits()
     {
@@ -28,7 +27,7 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
         }
         return false;
     }
- 
+
     private static void GetPlanarInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
     {
         if (geom is EdgeProxy)

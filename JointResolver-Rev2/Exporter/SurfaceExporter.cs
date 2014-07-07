@@ -2,7 +2,6 @@
 using System.IO;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 // Not thread safe.
 class SurfaceExporter
@@ -38,7 +37,10 @@ class SurfaceExporter
         int bestIndex = -1;
         for (int i = 0; i < tmpToleranceCount; i++)
         {
-            if (bestIndex < 0 || ((tolerances[i] < tolerances[bestIndex]) == bestResolution)) { bestIndex = i; }
+            if (bestIndex < 0 || ((tolerances[i] < tolerances[bestIndex]) == bestResolution))
+            {
+                bestIndex = i;
+            }
         }
         Console.WriteLine("Exporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
 
@@ -146,7 +148,8 @@ class SurfaceExporter
             physics.centerOfMass.Multiply(1.0f / physics.mass);
         }
 
-        if (!occ.Visible) return;
+        if (!occ.Visible)
+            return;
 
         foreach (SurfaceBody surf in occ.SurfaceBodies)
         {
@@ -158,7 +161,7 @@ class SurfaceExporter
         {
             totalVolume += occ2.MassProperties.Volume;
         }
-        totalVolume /= occ.SubOccurrences.Count*5;
+        totalVolume /= occ.SubOccurrences.Count * 5;
 
         foreach (ComponentOccurrence item in occ.SubOccurrences)
         {
@@ -194,7 +197,7 @@ class SurfaceExporter
         {
             totalVolume += occ.MassProperties.Volume;
         }
-        totalVolume /= group.occurrences.Count*5;
+        totalVolume /= group.occurrences.Count * 5;
 
         foreach (ComponentOccurrence occ in group.occurrences)
         {

@@ -1,9 +1,5 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using Inventor;
 
 static class RigidBodyCleaner
@@ -172,7 +168,8 @@ static class RigidBodyCleaner
                 HashSet<CustomRigidGroup> jons = joints[node[0]];
                 foreach (CustomRigidGroup jonConn in jons)
                 {
-                    if (!closedNodes.Add(jonConn)) continue;
+                    if (!closedNodes.Add(jonConn))
+                        continue;
                     RigidNode rnode = new RigidNode(jonConn);
                     baseNodes.Add(jonConn, rnode);
                     // Get joint name
@@ -198,7 +195,8 @@ static class RigidBodyCleaner
                 }
                 foreach (CustomRigidGroup consConn in cons)
                 {
-                    if (!closedNodes.Add(consConn)) continue;
+                    if (!closedNodes.Add(consConn))
+                        continue;
                     mergePattern.Add(consConn, node[1]);
                     newOpen.Add(new CustomRigidGroup[] { consConn, node[1] });
                 }

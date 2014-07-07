@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Inventor;
+﻿using Inventor;
 
 class ComponentHighlighter
 {
@@ -26,8 +21,14 @@ class ComponentHighlighter
 
     public static void ClearHighlight()
     {
-        if (CHILD_HIGHLIGHT_SET != null) { CHILD_HIGHLIGHT_SET.Clear(); }
-        if (PARENT_HIGHLIGHT_SET != null) { PARENT_HIGHLIGHT_SET.Clear(); }
+        if (CHILD_HIGHLIGHT_SET != null)
+        {
+            CHILD_HIGHLIGHT_SET.Clear();
+        }
+        if (PARENT_HIGHLIGHT_SET != null)
+        {
+            PARENT_HIGHLIGHT_SET.Clear();
+        }
     }
 
     public static void CleanupHighlighter()

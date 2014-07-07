@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 
 public interface RigidNodeFactory
 {
@@ -19,6 +15,10 @@ public class BaseRigidNodeFactory : RigidNodeFactory
 
 public class RigidNode_Base
 {
+    /// <summary>
+    /// By setting this to a custom value skeletons that are read using <see cref="SkeletonIO.ReadSkeleton(string)"/> can 
+    /// be composed of a custom rigid node type.
+    /// </summary>
     public static RigidNodeFactory NODE_FACTORY = new BaseRigidNodeFactory();
 
     protected int level;
@@ -46,7 +46,10 @@ public class RigidNode_Base
         return parentConnection;
     }
 
-    public virtual object GetModel() { return null; }
+    public virtual object GetModel()
+    {
+        return null;
+    }
 
     public override string ToString()
     {

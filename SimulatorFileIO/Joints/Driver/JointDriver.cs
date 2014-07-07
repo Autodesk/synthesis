@@ -62,8 +62,9 @@ public class JointDriver
         return new JointDriverType[0];// Not implemented
     }
 
-    public static bool HasTwoPorts(JointDriverType type) { 
-        return type == JointDriverType.BUMPER_PNEUMATIC; 
+    public static bool HasTwoPorts(JointDriverType type)
+    {
+        return type == JointDriverType.BUMPER_PNEUMATIC;
     }
     public static string GetPortType(JointDriverType type)
     {
@@ -82,7 +83,7 @@ public class JointDriver
         }
     }
 
-    public static bool IsMotor (JointDriverType type)
+    public static bool IsMotor(JointDriverType type)
     {
         bool showWheelPos = true;
         switch (type)
@@ -131,7 +132,10 @@ public class JointDriver
         return System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant() + " " + JointDriver.GetPortType(type) + "(" + portA + (JointDriver.HasTwoPorts(GetDriveType()) ? "," + portB : "") + ")";
     }
 
-    public JointDriverType GetDriveType() { return type; }
+    public JointDriverType GetDriveType()
+    {
+        return type;
+    }
 
     public void WriteData(System.IO.BinaryWriter writer)
     {

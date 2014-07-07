@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using Inventor;
 using System.IO;
-using System.Runtime.InteropServices;
 
 static class Program
 {
@@ -15,7 +11,7 @@ static class Program
     public static unsafe void Main(String[] args)
     {
         INVENTOR_APPLICATION = (Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-        AnalyzeRigidResults();      
+        AnalyzeRigidResults();
     }
 
     public static Matrix GetWorldTransformation(ComponentOccurrence comp)
@@ -56,7 +52,7 @@ static class Program
         Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
         if (controlGUI.formState == FormState.SUBMIT)
         {
-            string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX)? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+            string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
             string pathBase = homePath;
             Directory.CreateDirectory(pathBase + "\\Downloads\\Skeleton");
             SurfaceExporter surfs = new SurfaceExporter();

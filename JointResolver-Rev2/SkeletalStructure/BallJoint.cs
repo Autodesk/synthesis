@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using Inventor;
 
 public class BallJoint : BallJoint_Base, InventorSkeletalJoint
 {
     private SkeletalJoint wrapped;
 
-    public SkeletalJoint GetWrapped() { return wrapped; }
+    public SkeletalJoint GetWrapped()
+    {
+        return wrapped;
+    }
 
-    public void DetermineLimits() { } // TODO
+    public void DetermineLimits()
+    {
+    } // TODO
 
     public static bool IsBallJoint(CustomRigidJoint jointI)
     {

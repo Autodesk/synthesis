@@ -1,22 +1,26 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 
 public enum SkeletalJointType : byte
 {
-    ROTATIONAL = 1, LINEAR = 2, PLANAR = 3, CYLINDRICAL = 4, BALL = 5, RIGID = 6
+    ROTATIONAL = 1,
+    LINEAR = 2,
+    PLANAR = 3,
+    CYLINDRICAL = 4,
+    BALL = 5,
+    RIGID = 6
 }
 
 public interface SkeletalJointFactory
 {
-     SkeletalJoint_Base Create(SkeletalJointType type);
+    SkeletalJoint_Base Create(SkeletalJointType type);
 }
 
-public class BaseSkeletalJointFactory : SkeletalJointFactory {
-    public SkeletalJoint_Base Create(SkeletalJointType type){
-        switch(type){
+public class BaseSkeletalJointFactory : SkeletalJointFactory
+{
+    public SkeletalJoint_Base Create(SkeletalJointType type)
+    {
+        switch (type)
+        {
             case SkeletalJointType.ROTATIONAL:
                 return new RotationalJoint_Base();
             case SkeletalJointType.LINEAR:
@@ -49,7 +53,7 @@ public abstract class SkeletalJoint_Base
 
     public static SkeletalJoint_Base ReadJointFully(System.IO.BinaryReader reader)
     {
-        SkeletalJointType type = (SkeletalJointType) ((int)reader.ReadByte());
+        SkeletalJointType type = (SkeletalJointType)((int)reader.ReadByte());
         SkeletalJoint_Base joint = baseFactory.Create(type);
         joint.ReadJoint(reader);
         return joint;
@@ -60,11 +64,12 @@ public abstract class SkeletalJoint_Base
         return Enum.GetName(typeof(SkeletalJointType), GetJointType());
     }
 
-    public override string ToString() {
+    public override string ToString()
+    {
         string info = ToString_Internal();
         if (cDriver != null)
         {
-            info += " driven by " + Enum.GetName(typeof(JointDriverType), cDriver.GetDriveType()).Replace('_', ' ').ToLowerInvariant() + " (" + cDriver.portA + (JointDriver.HasTwoPorts(cDriver.GetDriveType())?","+cDriver.portB:"")+")";
+            info += " driven by " + Enum.GetName(typeof(JointDriverType), cDriver.GetDriveType()).Replace('_', ' ').ToLowerInvariant() + " (" + cDriver.portA + (JointDriver.HasTwoPorts(cDriver.GetDriveType()) ? "," + cDriver.portB : "") + ")";
         }
         return info;
     }

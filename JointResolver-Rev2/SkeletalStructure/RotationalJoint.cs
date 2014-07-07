@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using Inventor;
 
 public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 {
     private SkeletalJoint wrapped;
 
-    public SkeletalJoint GetWrapped() { return wrapped; }
+    public SkeletalJoint GetWrapped()
+    {
+        return wrapped;
+    }
 
     public void DetermineLimits()
     {
@@ -45,10 +44,10 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
         driver.PlayReverse();
         if (MotionLimits.DID_COLLIDE)
         {
-            angularLimitLow = (float)wrapped.asmJoint.AngularPosition.Value + step ;
+            angularLimitLow = (float)wrapped.asmJoint.AngularPosition.Value + step;
             if (!hasAngularLimit)
             {
-                angularLimitHigh = angularLimitLow + 6.28f - (step  * 2.0f);
+                angularLimitHigh = angularLimitLow + 6.28f - (step * 2.0f);
             }
             hasAngularLimit = true;
         }

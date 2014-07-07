@@ -2,11 +2,6 @@
  *Purpose: Contains the information for an Inventor planar joint.
  */
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 
 public class PlanarJoint_Base : SkeletalJoint_Base
 {

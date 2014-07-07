@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 public class SkeletonIO
 {
+    /// <summary>
+    /// The version of the BXDJ file format this file can read and write.
+    /// </summary>
     private const int FORMAT_VERSION = 2;
 
+    /// <summary>
+    /// Writes out the skeleton file for the skeleton with the base provided to the path provided.
+    /// </summary>
+    /// <param name="path">The output file path</param>
+    /// <param name="baseNode">The base node of the skeleton</param>
+    /// <param name="bxdaOutputPath">Returns a mapping of node to expected output path of the BXDA file</param>
     public static void WriteSkeleton(String path, RigidNode_Base baseNode, out Dictionary<RigidNode_Base, string> bxdaOutputPath)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
-        // Check if we know parents
+        // Determine the parent and driver IDs for each node in the list.
         List<JointDriver> jointDrivers = new List<JointDriver>();
         int[] parentID = new int[nodes.Count];
         int[] driverID = new int[nodes.Count];
@@ -77,6 +84,11 @@ public class SkeletonIO
         writer.Close();
     }
 
+    /// <summary>
+    /// Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton.
+    /// </summary>
+    /// <param name="path">The input BXDJ file</param>
+    /// <returns>The root node of the skeleton</returns>
     public static RigidNode_Base ReadSkeleton(string path)
     {
         BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
@@ -86,6 +98,7 @@ public class SkeletonIO
         {
             throw new Exception("\"" + path + "\" was created with format version " + version + ", this library was compiled to read version " + FORMAT_VERSION);
         }
+
         int nodeCount = reader.ReadInt32();
         if (nodeCount <= 0)
         {

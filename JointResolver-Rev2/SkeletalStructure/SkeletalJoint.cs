@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using Inventor;
 
 
@@ -83,9 +79,9 @@ public class SkeletalJoint
             return new CylindricalJoint(parent, rigidJoint);
         if (PlanarJoint.IsPlanarJoint(rigidJoint))
             return new PlanarJoint(parent, rigidJoint);
-        if(BallJoint.IsBallJoint(rigidJoint))
+        if (BallJoint.IsBallJoint(rigidJoint))
             return new BallJoint(parent, rigidJoint);
-        if(RigidJoint.IsRigidJoint(rigidJoint))
+        if (RigidJoint.IsRigidJoint(rigidJoint))
             return new RigidJoint(parent, rigidJoint);
         return null;
     }

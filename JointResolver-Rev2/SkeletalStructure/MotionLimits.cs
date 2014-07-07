@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Inventor;
 
 public class MotionLimits
@@ -80,7 +77,9 @@ public class MotionLimits
                     {
                         cO.ContactSet = true;
                     }
-                    catch (Exception e) { }
+                    catch (Exception e)
+                    {
+                    }
                 }
                 else
                 {
