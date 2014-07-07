@@ -57,4 +57,30 @@ public partial class DriveChooser : Form
         joint.cDriver.upperLimit = (double)txtHighLimit.Value;
         Hide();
     }
+
+    private void DriveChooser_Load(object sender, EventArgs e)
+    {
+
+    }
+
+    private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        //find out which wheels in the drop-down menu are what int
+        //string WheelPosition = cmbWheelPosition.SelectedIndex;
+    }
+
+    private void txtPortA_ValueChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void txtPortB_ValueChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void txtLowLimit_ValueChanged(object sender, EventArgs e)
+    {
+
+    }
 }

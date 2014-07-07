@@ -14,7 +14,11 @@ public class RotationalJoint : RotationalJoint_Base
         if (jointI.joints.Count == 1)
         {
             AssemblyJointDefinition joint = jointI.joints[0].Definition;
-            return joint.JointType == AssemblyJointTypeEnum.kRotationalJointType || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType && (!(joint.HasAngularPositionLimits) || joint.AngularPositionEndLimit.Value != joint.AngularPositionStartLimit.Value));
+            //Checks if there is no linear motion allowed.
+            return joint.JointType == AssemblyJointTypeEnum.kRotationalJointType
+                || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType
+                && joint.HasLinearPositionEndLimit && joint.HasLinearPositionEndLimit
+                && joint.LinearPositionStartLimit() == joint.LinearPositionEndLimit());
         }
         return false;
     }
