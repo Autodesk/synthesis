@@ -41,6 +41,10 @@ public class JointDriver
             //Not sure of an FRC part with planar motion.  Will add later if needed.
             return new JointDriverType[] { };
         }
+        else if (joint.getJointType() == SkeletalJointType.BALL)
+        {
+            return new JointDriverType[] { };
+        }
         return new JointDriverType[0];// Not implemented
     }
 
