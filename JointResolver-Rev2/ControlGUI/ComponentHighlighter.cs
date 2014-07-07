@@ -7,34 +7,34 @@ using Inventor;
 
 class ComponentHighlighter
 {
-    public static HighlightSet parentHS = null;
-    public static HighlightSet childHS = null;
+    public static HighlightSet PARENT_HIGHLIGHT_SET = null;
+    public static HighlightSet CHILD_HIGHLIGHT_SET = null;
 
-    public static void prepareHighlight()
+    public static void PrepareHighlight()
     {
-        if (childHS == null)
+        if (CHILD_HIGHLIGHT_SET == null)
         {
-            childHS = Program.invApplication.ActiveDocument.CreateHighlightSet();
-            childHS.Color = Program.invApplication.TransientObjects.CreateColor(0, 0, 255);
+            CHILD_HIGHLIGHT_SET = Program.INVENTOR_APPLICATION.ActiveDocument.CreateHighlightSet();
+            CHILD_HIGHLIGHT_SET.Color = Program.INVENTOR_APPLICATION.TransientObjects.CreateColor(0, 0, 255);
         }
-        if (parentHS == null)
+        if (PARENT_HIGHLIGHT_SET == null)
         {
-            parentHS = Program.invApplication.ActiveDocument.CreateHighlightSet();
-            parentHS.Color = Program.invApplication.TransientObjects.CreateColor(255, 0, 0);
+            PARENT_HIGHLIGHT_SET = Program.INVENTOR_APPLICATION.ActiveDocument.CreateHighlightSet();
+            PARENT_HIGHLIGHT_SET.Color = Program.INVENTOR_APPLICATION.TransientObjects.CreateColor(255, 0, 0);
         }
     }
 
-    public static void clearHighlight()
+    public static void ClearHighlight()
     {
-        if (childHS != null) { childHS.Clear(); }
-        if (parentHS != null) { parentHS.Clear(); }
+        if (CHILD_HIGHLIGHT_SET != null) { CHILD_HIGHLIGHT_SET.Clear(); }
+        if (PARENT_HIGHLIGHT_SET != null) { PARENT_HIGHLIGHT_SET.Clear(); }
     }
 
-    public static void cleanupHS()
+    public static void CleanupHighlighter()
     {
-        if (!(childHS == null))
-            childHS.Delete();
-        if (!(parentHS == null))
-            parentHS.Delete();
+        if (!(CHILD_HIGHLIGHT_SET == null))
+            CHILD_HIGHLIGHT_SET.Delete();
+        if (!(PARENT_HIGHLIGHT_SET == null))
+            PARENT_HIGHLIGHT_SET.Delete();
     }
 }

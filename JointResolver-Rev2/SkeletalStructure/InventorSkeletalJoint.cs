@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 public interface InventorSkeletalJoint
 {
-    SkeletalJoint getWrapped();
+    SkeletalJoint GetWrapped();
 
-    void determineLimits();
+    void DetermineLimits();
 }

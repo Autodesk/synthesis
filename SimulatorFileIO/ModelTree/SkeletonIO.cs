@@ -8,10 +8,10 @@ public class SkeletonIO
 {
     private const int FORMAT_VERSION = 2;
 
-    public static void writeSkeleton(String path, RigidNode_Base baseNode, out Dictionary<RigidNode_Base, string> bxdaOutputPath)
+    public static void WriteSkeleton(String path, RigidNode_Base baseNode, out Dictionary<RigidNode_Base, string> bxdaOutputPath)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        baseNode.listAllNodes(nodes);
+        baseNode.ListAllNodes(nodes);
 
         // Check if we know parents
         List<JointDriver> jointDrivers = new List<JointDriver>();
@@ -19,9 +19,9 @@ public class SkeletonIO
         int[] driverID = new int[nodes.Count];
         for (int i = 0; i < nodes.Count; i++)
         {
-            if (nodes[i].getParent() != null)
+            if (nodes[i].GetParent() != null)
             {
-                parentID[i] = nodes.IndexOf(nodes[i].getParent());
+                parentID[i] = nodes.IndexOf(nodes[i].GetParent());
                 if (parentID[i] < 0)
                 {
                     throw new Exception("Can't resolve parent ID for " + nodes[i].ToString());
@@ -31,10 +31,10 @@ public class SkeletonIO
             {
                 parentID[i] = -1;
             }
-            if (nodes[i].getSkeletalJoint() != null && nodes[i].getSkeletalJoint().cDriver != null)
+            if (nodes[i].GetSkeletalJoint() != null && nodes[i].GetSkeletalJoint().cDriver != null)
             {
                 driverID[i] = jointDrivers.Count;
-                jointDrivers.Add(nodes[i].getSkeletalJoint().cDriver);
+                jointDrivers.Add(nodes[i].GetSkeletalJoint().cDriver);
             }
             else
             {
@@ -55,7 +55,7 @@ public class SkeletonIO
         {
             writer.Write(parentID[i]);
             string modelName = "node_" + i + ".bxda";
-            modelName = FileUtilities.sanatizeFileName(modelName);
+            modelName = FileUtilities.SanatizeFileName(modelName);
 
             writer.Write(modelName);
             bxdaOutputPath.Add(nodes[i], Directory.GetParent(path) + "\\" + modelName);
@@ -63,8 +63,8 @@ public class SkeletonIO
             {
                 writer.Write(driverID[i]);
 
-                writer.Write((byte)((int)nodes[i].getSkeletalJoint().getJointType()));
-                nodes[i].getSkeletalJoint().writeJoint(writer);
+                writer.Write((byte)((int)nodes[i].GetSkeletalJoint().GetJointType()));
+                nodes[i].GetSkeletalJoint().WriteJoint(writer);
             }
         }
 
@@ -77,7 +77,7 @@ public class SkeletonIO
         writer.Close();
     }
 
-    public static RigidNode_Base readSkeleton(string path)
+    public static RigidNode_Base ReadSkeleton(string path)
     {
         BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
         // Sanity check
@@ -96,14 +96,14 @@ public class SkeletonIO
         int[] driveIndex = new int[nodeCount];
         for (int i = 0; i < nodeCount; i++)
         {
-            nodes[i] = RigidNode_Base.NODE_FACTORY.create();
+            nodes[i] = RigidNode_Base.NODE_FACTORY.Create();
             int parent = reader.ReadInt32();
             nodes[i].modelName = reader.ReadString();
             if (parent != -1)
             {
                 driveIndex[i] = reader.ReadInt32();
-                SkeletalJoint_Base joint = SkeletalJoint_Base.readJointFully(reader);
-                nodes[parent].addChild(joint, nodes[i]);
+                SkeletalJoint_Base joint = SkeletalJoint_Base.ReadJointFully(reader);
+                nodes[parent].AddChild(joint, nodes[i]);
             }
             else
             {
@@ -126,9 +126,9 @@ public class SkeletonIO
         }
         for (int i = 0; i < nodeCount; i++)
         {
-            if (driveIndex[i] >= 0 && driveIndex[i] < driveCount && nodes[i].getSkeletalJoint() != null)
+            if (driveIndex[i] >= 0 && driveIndex[i] < driveCount && nodes[i].GetSkeletalJoint() != null)
             {
-                nodes[i].getSkeletalJoint().cDriver = drivers[driveIndex[i]];
+                nodes[i].GetSkeletalJoint().cDriver = drivers[driveIndex[i]];
             }
         }
         reader.Close();

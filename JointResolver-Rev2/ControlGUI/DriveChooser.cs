@@ -20,7 +20,7 @@ public partial class DriveChooser : Form
     public void ShowDialog(SkeletalJoint_Base joint)
     {
         this.joint = joint;
-        typeOptions = JointDriver.getAllowedDrivers(joint);
+        typeOptions = JointDriver.GetAllowedDrivers(joint);
         cmbJointDriver.Items.Clear();
         foreach (JointDriverType type in typeOptions)
         {
@@ -29,7 +29,7 @@ public partial class DriveChooser : Form
         cmbJointDriver.SelectedIndex = 0;
         if (joint.cDriver != null)
         {
-            cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.getDriveType());
+            cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType());
             cmbJointDriver_SelectedIndexChanged(null, null);
             txtPortA.Value = joint.cDriver.portA;
             txtPortB.Value = joint.cDriver.portB;
@@ -42,11 +42,11 @@ public partial class DriveChooser : Form
     private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
     {
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
-        lblPort.Text = JointDriver.getPortType(cType) + " Port" + (JointDriver.hasTwoPorts(cType) ? "s" : "");
-        txtPortB.Visible = JointDriver.hasTwoPorts(cType);
-        txtPortA.Maximum = txtPortB.Maximum = JointDriver.getPortMax(cType);
-        groupBox1.Visible = JointDriver.isMotor(cType);
-        bool windowReducer = JointDriver.isMotor(cType);
+        lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
+        txtPortB.Visible = JointDriver.HasTwoPorts(cType);
+        txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
+        groupBox1.Visible = JointDriver.IsMotor(cType);
+        bool windowReducer = JointDriver.IsMotor(cType);
         if (windowReducer == true)
         {
             btnSave.Location = new Point (13, 280);
@@ -70,11 +70,6 @@ public partial class DriveChooser : Form
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
 
         Hide();
-    }
-
-    private void DriveChooser_Load(object sender, EventArgs e)
-    {
-
     }
 
     private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)

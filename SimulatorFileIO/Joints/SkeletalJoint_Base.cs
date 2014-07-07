@@ -11,11 +11,11 @@ public enum SkeletalJointType : byte
 
 public interface SkeletalJointFactory
 {
-     SkeletalJoint_Base create(SkeletalJointType type);
+     SkeletalJoint_Base Create(SkeletalJointType type);
 }
 
 public class BaseSkeletalJointFactory : SkeletalJointFactory {
-    public SkeletalJoint_Base create(SkeletalJointType type){
+    public SkeletalJoint_Base Create(SkeletalJointType type){
         switch(type){
             case SkeletalJointType.ROTATIONAL:
                 return new RotationalJoint_Base();
@@ -41,30 +41,30 @@ public abstract class SkeletalJoint_Base
 
     public JointDriver cDriver;
 
-    public abstract SkeletalJointType getJointType();
+    public abstract SkeletalJointType GetJointType();
 
-    public abstract void writeJoint(System.IO.BinaryWriter writer);
+    public abstract void WriteJoint(System.IO.BinaryWriter writer);
 
-    protected abstract void readJoint(System.IO.BinaryReader reader);
+    protected abstract void ReadJoint(System.IO.BinaryReader reader);
 
-    public static SkeletalJoint_Base readJointFully(System.IO.BinaryReader reader)
+    public static SkeletalJoint_Base ReadJointFully(System.IO.BinaryReader reader)
     {
         SkeletalJointType type = (SkeletalJointType) ((int)reader.ReadByte());
-        SkeletalJoint_Base joint = baseFactory.create(type);
-        joint.readJoint(reader);
+        SkeletalJoint_Base joint = baseFactory.Create(type);
+        joint.ReadJoint(reader);
         return joint;
     }
 
     protected virtual string ToString_Internal()
     {
-        return Enum.GetName(typeof(SkeletalJointType), getJointType());
+        return Enum.GetName(typeof(SkeletalJointType), GetJointType());
     }
 
     public override string ToString() {
         string info = ToString_Internal();
         if (cDriver != null)
         {
-            info += " driven by " + Enum.GetName(typeof(JointDriverType), cDriver.getDriveType()).Replace('_', ' ').ToLowerInvariant() + " (" + cDriver.portA + (JointDriver.hasTwoPorts(cDriver.getDriveType())?","+cDriver.portB:"")+")";
+            info += " driven by " + Enum.GetName(typeof(JointDriverType), cDriver.GetDriveType()).Replace('_', ' ').ToLowerInvariant() + " (" + cDriver.portA + (JointDriver.HasTwoPorts(cDriver.GetDriveType())?","+cDriver.portB:"")+")";
         }
         return info;
     }

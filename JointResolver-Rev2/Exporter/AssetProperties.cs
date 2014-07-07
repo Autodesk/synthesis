@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 
-class AssetProperties
+public class AssetProperties
 {
     public Color color = null;
     public AssetTexture colorTexture = null;

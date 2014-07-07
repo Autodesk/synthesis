@@ -5,23 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 
-class Utilities
+public class Utilities
 {
-    public static string sanatizeFileName(string fName, char sanity = '_')
+    public static Vector ToInventorVector(BXDVector3 v)
     {
-        foreach (char c in System.IO.Path.GetInvalidFileNameChars())
-        {
-            fName = fName.Replace(c, sanity);
-        }
-        return fName;
+        return Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(v.x, v.y, v.z);
     }
 
-    public static Vector toInventorVector(BXDVector3 v)
-    {
-        return Program.invApplication.TransientGeometry.CreateVector(v.x, v.y, v.z);
-    }
-
-    public static BXDVector3 toBXDVector(object pO)
+    public static BXDVector3 ToBXDVector(object pO)
     {
         if (pO is Vector)
         {
@@ -41,7 +32,7 @@ class Utilities
         return new BXDVector3();
     }
 
-    public static string printVector(object pO)
+    public static string VectorToString(object pO)
     {
         if (pO is Vector)
         {

@@ -22,12 +22,12 @@ public class RotationalJoint_Base : SkeletalJoint_Base
     public float angularLimitHigh;
     public WheelPosition wheelPosition = WheelPosition.NOTWHEEL;
 
-    public override SkeletalJointType getJointType()
+    public override SkeletalJointType GetJointType()
     {
         return SkeletalJointType.ROTATIONAL;
     }
 
-    public override void writeJoint(System.IO.BinaryWriter writer)
+    public override void WriteJoint(System.IO.BinaryWriter writer)
     {
         writer.Write(parentBase.x);
         writer.Write(parentBase.y);
@@ -54,7 +54,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         writer.Write((int)this.wheelPosition);
     }
 
-    protected override void readJoint(System.IO.BinaryReader reader)
+    protected override void ReadJoint(System.IO.BinaryReader reader)
     {
         parentBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         parentNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());

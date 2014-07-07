@@ -18,13 +18,13 @@ public class RigidNode : RigidNode_Base
         this.group = grp;
     }
 
-    public override object getModel()
+    public override object GetModel()
     {
         return group;
     }
 
 
-    private static RigidNode createRigidNode(Dictionary<CustomRigidGroup, List<CustomRigidJoint>> jointDictionary, Dictionary<CustomRigidGroup, RigidNode> nodeDictionary, CustomRigidGroup groupz, RigidNode parentz = null)
+    private static RigidNode CreateRigidNode(Dictionary<CustomRigidGroup, List<CustomRigidJoint>> jointDictionary, Dictionary<CustomRigidGroup, RigidNode> nodeDictionary, CustomRigidGroup groupz, RigidNode parentz = null)
     {
         RigidNode node = null;
         if ((nodeDictionary.TryGetValue(groupz, out node)))
@@ -47,7 +47,7 @@ public class RigidNode : RigidNode_Base
                 CustomRigidGroup childGroup = joint.groupOne.Equals(node.group) ? joint.groupTwo : joint.groupOne;
                 if (nodeDictionary.ContainsKey(childGroup))
                     continue;
-                node.addChild(SkeletalJoint.create(joint, groupz), createRigidNode(jointDictionary, nodeDictionary, childGroup, node));
+                node.AddChild(SkeletalJoint.Create(joint, groupz), CreateRigidNode(jointDictionary, nodeDictionary, childGroup, node));
             }
         }
         return node;
@@ -72,6 +72,6 @@ public class RigidNode : RigidNode_Base
         }
 
         Dictionary<CustomRigidGroup, RigidNode> nodeDictionary = new Dictionary<CustomRigidGroup, RigidNode>();
-        return createRigidNode(jointDictionary, nodeDictionary, baseGroup);
+        return CreateRigidNode(jointDictionary, nodeDictionary, baseGroup);
     }
 }

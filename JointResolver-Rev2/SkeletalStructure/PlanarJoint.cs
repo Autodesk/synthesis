@@ -13,13 +13,13 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
 {
     private SkeletalJoint wrapped;
 
-    public SkeletalJoint getWrapped() { return wrapped; }
+    public SkeletalJoint GetWrapped() { return wrapped; }
 
-    public void determineLimits()
+    public void DetermineLimits()
     {
         // TODO
     }
-    public static bool isPlanarJoint(CustomRigidJoint jointI)
+    public static bool IsPlanarJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
         {
@@ -29,7 +29,7 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
         return false;
     }
  
-    private static void getPlanarInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
+    private static void GetPlanarInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
     {
         if (geom is EdgeProxy)
         {
@@ -76,7 +76,7 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
 
     public PlanarJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
-        if (!(isPlanarJoint(rigidJoint)))
+        if (!(IsPlanarJoint(rigidJoint)))
             throw new Exception("Not a planar joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
@@ -90,24 +90,24 @@ class PlanarJoint : PlanarJoint_Base, InventorSkeletalJoint
             Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Geometry.Type));
 
 
-        getPlanarInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
-        getPlanarInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
+        GetPlanarInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
+        GetPlanarInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
 
         if (wrapped.childIsTheOne)
         {
-            childNormal = Utilities.toBXDVector(groupANormal);
-            parentNormal = Utilities.toBXDVector(groupBNormal);
+            childNormal = Utilities.ToBXDVector(groupANormal);
+            parentNormal = Utilities.ToBXDVector(groupBNormal);
 
-            childBase = Utilities.toBXDVector(groupABase);
-            parentBase = Utilities.toBXDVector(groupBBase);
+            childBase = Utilities.ToBXDVector(groupABase);
+            parentBase = Utilities.ToBXDVector(groupBBase);
         }
         else
         {
-            childNormal = Utilities.toBXDVector(groupBNormal);
-            parentNormal = Utilities.toBXDVector(groupANormal);
+            childNormal = Utilities.ToBXDVector(groupBNormal);
+            parentNormal = Utilities.ToBXDVector(groupANormal);
 
-            childBase = Utilities.toBXDVector(groupBBase);
-            parentBase = Utilities.toBXDVector(groupABase);
+            childBase = Utilities.ToBXDVector(groupBBase);
+            parentBase = Utilities.ToBXDVector(groupABase);
         }
     }
 

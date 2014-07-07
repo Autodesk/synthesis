@@ -10,7 +10,7 @@ public class MotionLimits
     private Dictionary<ComponentOccurrence, bool> oldContactState = new Dictionary<ComponentOccurrence, bool>();
     private Dictionary<ComponentOccurrence, bool> oldVisibleState = new Dictionary<ComponentOccurrence, bool>();
 
-    public void doIsolation(ComponentOccurrence occ, bool isolate)
+    public void DoIsolation(ComponentOccurrence occ, bool isolate)
     {
         if (occ.SubOccurrences.Count == 0)
         {
@@ -28,16 +28,16 @@ public class MotionLimits
         {
             foreach (ComponentOccurrence oc in occ.SubOccurrences)
             {
-                doIsolation(oc, isolate);
+                DoIsolation(oc, isolate);
             }
         }
     }
 
-    public ComponentOccurrence getParent(ComponentOccurrence cO)
+    public static ComponentOccurrence GetParent(ComponentOccurrence cO)
     {
         if (cO.ParentOccurrence != null)
         {
-            return getParent(cO.ParentOccurrence);
+            return GetParent(cO.ParentOccurrence);
         }
         else
         {
@@ -45,7 +45,7 @@ public class MotionLimits
         }
     }
 
-    public void doContactSetup(bool enable, params CustomRigidGroup[] groups)
+    public void DoContactSetup(bool enable, params CustomRigidGroup[] groups)
     {
         if (enable)
         {
@@ -57,14 +57,14 @@ public class MotionLimits
         {
             foreach (ComponentOccurrence cO in group.occurrences)
             {
-                roots.Add(getParent(cO).Parent);
+                roots.Add(GetParent(cO).Parent);
             }
         }
         foreach (AssemblyComponentDefinition cO in roots)
         {
             foreach (ComponentOccurrence cOo in cO.Occurrences)
             {
-                doIsolation(cOo, enable);
+                DoIsolation(cOo, enable);
             }
         }
 
@@ -90,9 +90,9 @@ public class MotionLimits
         }
     }
 
-    public static bool didCollide = false;
-    public static void onCollision()
+    public static bool DID_COLLIDE = false;
+    public static void OnCollisionEvent()
     {
-        didCollide = true;
+        DID_COLLIDE = true;
     }
 }

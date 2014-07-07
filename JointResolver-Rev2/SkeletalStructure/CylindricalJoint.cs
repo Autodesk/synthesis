@@ -9,17 +9,17 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 {
     private SkeletalJoint wrapped;
 
-    public SkeletalJoint getWrapped() { return wrapped; }
+    public SkeletalJoint GetWrapped() { return wrapped; }
 
-    public void determineLimits()
+    public void DetermineLimits()
     {
         MotionLimits cache = new MotionLimits();
         DriveSettings driver = wrapped.asmJointOccurrence.DriveSettings;
         driver.CollisionDetection = true;
-        driver.OnCollision += MotionLimits.onCollision;
+        driver.OnCollision += MotionLimits.OnCollisionEvent;
         driver.FrameRate = 1000;
 
-        cache.doContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
+        cache.DoContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
 
         {   // Rotational motion
             driver.DriveType = DriveTypeEnum.kDriveAngularPositionType;
@@ -33,9 +33,9 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
             // Forward
             driver.GoToStart();
-            MotionLimits.didCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayForward();
-            if (MotionLimits.didCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
                 angularLimitHigh = (float)wrapped.asmJoint.AngularPosition.Value - step;
                 hasAngularLimit = true;
@@ -45,9 +45,9 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
             driver.EndValue = currentAngularPosition + " rad";
             driver.StartValue = (currentAngularPosition - 6.5) + " rad";
             driver.GoToEnd();
-            MotionLimits.didCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayReverse();
-            if (MotionLimits.didCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
                 angularLimitLow = (float)wrapped.asmJoint.AngularPosition.Value + step;
                 if (!hasAngularLimit)
@@ -72,7 +72,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
             float step = 0.1f; // cm
             Box mover = (wrapped.childIsTheOne ? wrapped.asmJointOccurrence.OccurrenceOne : wrapped.asmJointOccurrence.OccurrenceTwo).RangeBox;
-            float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(Utilities.toInventorVector(childNormal));
+            float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(Utilities.ToInventorVector(childNormal));
             Console.WriteLine("Max linear offset: " + maxOffset);
 
             driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " cm");
@@ -82,9 +82,9 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
             // Forward
             driver.GoToStart();
-            MotionLimits.didCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayForward();
-            if (MotionLimits.didCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
                 linearLimitEnd = (float)wrapped.asmJoint.LinearPosition.Value - step;
                 hasLinearEndLimit = true;
@@ -94,9 +94,9 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
             driver.EndValue = currentLinearPosition + " cm";
             driver.StartValue = (currentLinearPosition - maxOffset) + " cm";
             driver.GoToEnd();
-            MotionLimits.didCollide = false;
+            MotionLimits.DID_COLLIDE = false;
             driver.PlayReverse();
-            if (MotionLimits.didCollide)
+            if (MotionLimits.DID_COLLIDE)
             {
                 linearLimitStart = (float)wrapped.asmJoint.LinearPosition.Value + step;
                 hasLinearStartLimit = true;
@@ -106,8 +106,8 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
             Console.WriteLine(hasLinearStartLimit + " low: " + linearLimitStart + "\t" + hasLinearEndLimit + " high: " + linearLimitEnd);
         }
 
-        driver.OnCollision -= MotionLimits.onCollision;
-        cache.doContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
+        driver.OnCollision -= MotionLimits.OnCollisionEvent;
+        cache.DoContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
 
         // Stash results
         wrapped.asmJoint.HasLinearPositionStartLimit = hasLinearStartLimit;
@@ -119,7 +119,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;
     }
 
-    public static bool isCylindricalJoint(CustomRigidJoint jointI)
+    public static bool IsCylindricalJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
         {
@@ -129,7 +129,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         return false;
     }
 
-    private static void getCylindricalInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
+    private static void GetCylindricalInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
     {
         if (geom is EdgeProxy)
         {
@@ -177,7 +177,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
     public CylindricalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
-        if (!(isCylindricalJoint(rigidJoint)))
+        if (!(IsCylindricalJoint(rigidJoint)))
             throw new Exception("Not a Cylindrical joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
@@ -190,22 +190,22 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         Console.WriteLine("O2: " + Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Type) + "\t" +
             Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Geometry.Type));
 
-        getCylindricalInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
-        getCylindricalInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
+        GetCylindricalInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
+        GetCylindricalInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
 
         if (wrapped.childIsTheOne)
         {
-            childNormal = Utilities.toBXDVector(groupANormal);
-            childBase = Utilities.toBXDVector(groupABase);
-            parentNormal = Utilities.toBXDVector(groupBNormal);
-            parentBase = Utilities.toBXDVector(groupBBase);
+            childNormal = Utilities.ToBXDVector(groupANormal);
+            childBase = Utilities.ToBXDVector(groupABase);
+            parentNormal = Utilities.ToBXDVector(groupBNormal);
+            parentBase = Utilities.ToBXDVector(groupBBase);
         }
         else
         {
-            childNormal = Utilities.toBXDVector(groupBNormal);
-            childBase = Utilities.toBXDVector(groupBBase);
-            parentNormal = Utilities.toBXDVector(groupANormal);
-            parentBase = Utilities.toBXDVector(groupABase);
+            childNormal = Utilities.ToBXDVector(groupBNormal);
+            childBase = Utilities.ToBXDVector(groupBBase);
+            parentNormal = Utilities.ToBXDVector(groupANormal);
+            parentBase = Utilities.ToBXDVector(groupABase);
         }
 
         currentLinearPosition = wrapped.asmJoint.LinearPosition != null ? (float)wrapped.asmJoint.LinearPosition.Value : 0;

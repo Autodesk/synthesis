@@ -9,12 +9,12 @@ public class RigidJoint_Base : SkeletalJoint_Base
     public BXDVector3 parentBase;
     public BXDVector3 childBase;
 
-    public override SkeletalJointType getJointType()
+    public override SkeletalJointType GetJointType()
     {
         return SkeletalJointType.RIGID;
     }
 
-    public override void writeJoint(System.IO.BinaryWriter writer)
+    public override void WriteJoint(System.IO.BinaryWriter writer)
     {
         writer.Write(parentBase.x);
         writer.Write(parentBase.y);
@@ -25,7 +25,7 @@ public class RigidJoint_Base : SkeletalJoint_Base
         writer.Write(childBase.z);
     }
 
-    protected override void readJoint(System.IO.BinaryReader reader)
+    protected override void ReadJoint(System.IO.BinaryReader reader)
     {
         parentBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         childBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());

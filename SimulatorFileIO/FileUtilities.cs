@@ -5,12 +5,12 @@ using System.Text;
 
 class FileUtilities
 {
-    public static string sanatizeFileName(string fName, char sanity = '_')
+    public static string SanatizeFileName(string fileName, char sanity = '_')
     {
         foreach (char c in System.IO.Path.GetInvalidFileNameChars())
         {
-            fName = fName.Replace(c, sanity);
+            fileName = fileName.Replace(c, sanity);
         }
-        return fName;
+        return fileName;
     }
 }

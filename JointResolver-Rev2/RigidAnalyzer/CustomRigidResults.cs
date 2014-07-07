@@ -106,7 +106,7 @@ public class CustomRigidGroup
         return fullQualifier.GetHashCode();
     }
 
-    public bool contains(ComponentOccurrence c)
+    public bool Contains(ComponentOccurrence c)
     {
         return occurrences.Contains(c);
     }

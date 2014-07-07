@@ -42,8 +42,8 @@ public class SkeletalJoint
         if (childGroup == null)
             throw new Exception("Not a proper joint: No child joint found");
 
-        childIsTheOne = childGroup.contains(asmJointOccurrence.AffectedOccurrenceOne);
-        if (!childIsTheOne && !childGroup.contains(asmJointOccurrence.AffectedOccurrenceTwo))
+        childIsTheOne = childGroup.Contains(asmJointOccurrence.AffectedOccurrenceOne);
+        if (!childIsTheOne && !childGroup.Contains(asmJointOccurrence.AffectedOccurrenceTwo))
         {
             throw new Exception("Expected child not found inside assembly joint.");
         }
@@ -61,31 +61,31 @@ public class SkeletalJoint
 
     public void DoHighlight()
     {
-        ComponentHighlighter.prepareHighlight();
-        ComponentHighlighter.clearHighlight();
+        ComponentHighlighter.PrepareHighlight();
+        ComponentHighlighter.ClearHighlight();
         foreach (ComponentOccurrence child in childGroup.occurrences)
         {
-            ComponentHighlighter.childHS.AddItem(child);
+            ComponentHighlighter.CHILD_HIGHLIGHT_SET.AddItem(child);
         }
         foreach (ComponentOccurrence parent in parentGroup.occurrences)
         {
-            ComponentHighlighter.parentHS.AddItem(parent);
+            ComponentHighlighter.PARENT_HIGHLIGHT_SET.AddItem(parent);
         }
     }
 
-    public static SkeletalJoint_Base create(CustomRigidJoint rigidJoint, CustomRigidGroup parent)
+    public static SkeletalJoint_Base Create(CustomRigidJoint rigidJoint, CustomRigidGroup parent)
     {
-        if (RotationalJoint.isRotationalJoint(rigidJoint))
+        if (RotationalJoint.IsRotationalJoint(rigidJoint))
             return new RotationalJoint(parent, rigidJoint);
-        if (LinearJoint.isLinearJoint(rigidJoint))
+        if (LinearJoint.IsLinearJoint(rigidJoint))
             return new LinearJoint(parent, rigidJoint);
-        if (CylindricalJoint.isCylindricalJoint(rigidJoint))
+        if (CylindricalJoint.IsCylindricalJoint(rigidJoint))
             return new CylindricalJoint(parent, rigidJoint);
-        if (PlanarJoint.isPlanarJoint(rigidJoint))
+        if (PlanarJoint.IsPlanarJoint(rigidJoint))
             return new PlanarJoint(parent, rigidJoint);
-        if(BallJoint.isBallJoint(rigidJoint))
+        if(BallJoint.IsBallJoint(rigidJoint))
             return new BallJoint(parent, rigidJoint);
-        if(RigidJoint.isRigidJoint(rigidJoint))
+        if(RigidJoint.IsRigidJoint(rigidJoint))
             return new RigidJoint(parent, rigidJoint);
         return null;
     }

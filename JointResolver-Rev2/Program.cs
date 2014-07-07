@@ -10,21 +10,21 @@ using System.Runtime.InteropServices;
 static class Program
 {
 
-    public static Application invApplication;
+    public static Application INVENTOR_APPLICATION;
     private const int MAX_VERTICIES = 8192;
     public static unsafe void Main(String[] args)
     {
-        invApplication = (Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+        INVENTOR_APPLICATION = (Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         AnalyzeRigidResults();      
     }
 
-    public static Matrix WorldTransformation(ComponentOccurrence comp)
+    public static Matrix GetWorldTransformation(ComponentOccurrence comp)
     {
-        Matrix trans = invApplication.TransientGeometry.CreateMatrix();
+        Matrix trans = INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         trans.SetToIdentity();
         if (!((comp.ParentOccurrence == null)))
         {
-            trans.TransformBy(WorldTransformation(comp.ParentOccurrence));
+            trans.TransformBy(GetWorldTransformation(comp.ParentOccurrence));
         }
         trans.TransformBy(comp.Transformation);
         return trans;
@@ -32,25 +32,25 @@ static class Program
 
     public static void AnalyzeRigidResults()
     {
-        AssemblyDocument asmDoc = (AssemblyDocument)invApplication.ActiveDocument;
+        AssemblyDocument asmDoc = (AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
         Console.WriteLine("Get rigid info...");
-        RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(invApplication.TransientObjects.CreateNameValueMap());
+        RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap());
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);
 
         Console.WriteLine("Built model...");
         RigidBodyCleaner.CleanGroundedBodies(customRigid);
 
-        RigidNode baseNode = RigidBodyCleaner.buildAndCleanDijkstra(customRigid);
+        RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(customRigid);
         Console.WriteLine("Built");
 
         Console.WriteLine(baseNode.ToString());
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        baseNode.listAllNodes(nodes);
+        baseNode.ListAllNodes(nodes);
 
         ControlGroups controlGUI = new ControlGroups();
-        controlGUI.setNodeList(nodes);
-        controlGUI.setGroupList(customRigid.groups);
+        controlGUI.SetNodeList(nodes);
+        controlGUI.SetGroupList(customRigid.groups);
         controlGUI.ShowDialog();
         controlGUI.Cleanup();
         Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
@@ -61,12 +61,12 @@ static class Program
             Directory.CreateDirectory(pathBase + "\\Downloads\\Skeleton");
             SurfaceExporter surfs = new SurfaceExporter();
             Dictionary<RigidNode_Base, string> bxdaOutputPath;
-            SkeletonIO.writeSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
+            SkeletonIO.WriteSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
             foreach (KeyValuePair<RigidNode_Base, string> output in bxdaOutputPath)
             {
-                if (output.Key != null && output.Key.getModel() != null && output.Key.getModel() is CustomRigidGroup)
+                if (output.Key != null && output.Key.GetModel() != null && output.Key.GetModel() is CustomRigidGroup)
                 {
-                    CustomRigidGroup group = (CustomRigidGroup)output.Key.getModel();
+                    CustomRigidGroup group = (CustomRigidGroup)output.Key.GetModel();
                     Console.WriteLine("Output " + group.ToString() + " to " + output.Value);
                     surfs.Reset();
                     surfs.ExportAll(group);

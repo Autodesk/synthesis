@@ -25,22 +25,22 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void updateJointList()
+    private void UpdateJointList()
     {
         if ((nodeList == null))
             return;
         lstJoints.Items.Clear();
         foreach (RigidNode_Base node in nodeList)
         {
-            if (node.getSkeletalJoint() != null)
+            if (node.GetSkeletalJoint() != null)
             {
-                SkeletalJoint_Base joint = node.getSkeletalJoint();
+                SkeletalJoint_Base joint = node.GetSkeletalJoint();
                 if (joint != null)
                 {
-                    SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint)joint).getWrapped() : null);
+                    SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint)joint).GetWrapped() : null);
 
                     System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                Enum.GetName(typeof(SkeletalJointType),joint.getJointType()).ToLowerInvariant(),
+                Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
                 wrapped!=null?wrapped.parentGroup.ToString():"from-file",
                 wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
                     item.Tag = joint;
@@ -49,7 +49,7 @@ public partial class ControlGroups
             }
         }
     }
-    private void updateGroupList()
+    private void UpdateGroupList()
     {
         if (groupList == null) return;
         lstGroups.Items.Clear();
@@ -64,24 +64,24 @@ public partial class ControlGroups
 
     private void ControlGroups_Load(object sender, EventArgs e)
     {
-        updateJointList();
+        UpdateJointList();
     }
 
-    public void setNodeList(List<RigidNode_Base> nodeList)
+    public void SetNodeList(List<RigidNode_Base> nodeList)
     {
         this.nodeList = nodeList;
-        updateJointList();
+        UpdateJointList();
     }
 
-    public void setGroupList(List<CustomRigidGroup> groupList)
+    public void SetGroupList(List<CustomRigidGroup> groupList)
     {
         this.groupList = groupList;
-        updateGroupList();
+        UpdateGroupList();
     }
 
     public void Cleanup()
     {
-        ComponentHighlighter.cleanupHS();
+        ComponentHighlighter.CleanupHighlighter();
     }
 
     private void ControlGroups_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
@@ -99,7 +99,7 @@ public partial class ControlGroups
         }
         else
         {
-            ComponentHighlighter.clearHighlight();
+            ComponentHighlighter.ClearHighlight();
         }
     }
 
@@ -109,7 +109,7 @@ public partial class ControlGroups
         {
             SkeletalJoint_Base joint = (SkeletalJoint_Base)lstJoints.SelectedItems[0].Tag;
             driveChooser.ShowDialog(joint);
-            updateJointList();
+            UpdateJointList();
         }
     }
 
@@ -118,11 +118,11 @@ public partial class ControlGroups
         if (chkHighlightComponents.Checked && lstGroups.SelectedItems.Count == 1 && lstGroups.SelectedItems[0].Tag is CustomRigidGroup)
         {
             CustomRigidGroup group = (CustomRigidGroup)lstGroups.SelectedItems[0].Tag;
-            ComponentHighlighter.prepareHighlight();
-            ComponentHighlighter.clearHighlight();
+            ComponentHighlighter.PrepareHighlight();
+            ComponentHighlighter.ClearHighlight();
             foreach (Inventor.ComponentOccurrence child in group.occurrences)
             {
-                ComponentHighlighter.childHS.AddItem(child);
+                ComponentHighlighter.CHILD_HIGHLIGHT_SET.AddItem(child);
             }
         }
     }

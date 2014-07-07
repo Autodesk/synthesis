@@ -18,10 +18,10 @@ public abstract class JointDriverMeta
         this.metaType = type;
     }
 
-    protected abstract void writeDataInternal(BinaryWriter writer);
-    protected abstract void readDataInternal(BinaryReader reader);
+    protected abstract void WriteDataInternal(BinaryWriter writer);
+    protected abstract void ReadDataInternal(BinaryReader reader);
 
-    public static JointDriverMeta create(JointDriverMetaType type)
+    public static JointDriverMeta Create(JointDriverMetaType type)
     {
         switch (type)
         {
@@ -33,14 +33,14 @@ public abstract class JointDriverMeta
     public void writeData(BinaryWriter writer)
     {
         writer.Write((byte)metaType);
-        writeDataInternal(writer);
+        WriteDataInternal(writer);
     }
 
     public static JointDriverMeta readDriverMeta(BinaryReader reader)
     {
         JointDriverMetaType type = (JointDriverMetaType)reader.ReadByte();
-        JointDriverMeta meta = JointDriverMeta.create(type);
-        meta.readDataInternal(reader);
+        JointDriverMeta meta = JointDriverMeta.Create(type);
+        meta.ReadDataInternal(reader);
         return meta;
     }
 }

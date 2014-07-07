@@ -139,11 +139,11 @@ class SurfaceExporter
         if (!ignorePhysics)
         {
             // Compute physics
-            physics.centerOfMass.multiply(physics.mass);
+            physics.centerOfMass.Multiply(physics.mass);
             float myMass = (float)occ.MassProperties.Mass;
             physics.mass += myMass;
-            physics.centerOfMass.add(Utilities.toBXDVector(occ.MassProperties.CenterOfMass).multiply(myMass));
-            physics.centerOfMass.multiply(1.0f / physics.mass);
+            physics.centerOfMass.Add(Utilities.ToBXDVector(occ.MassProperties.CenterOfMass).Multiply(myMass));
+            physics.centerOfMass.Multiply(1.0f / physics.mass);
         }
 
         if (!occ.Visible) return;
@@ -280,7 +280,7 @@ class SurfaceExporter
             writer.Write(indicies[fI + 1] - 1);
             writer.Write(indicies[fI + 2] - 1);
         }
-        physics.writeData(writer);
+        physics.WriteData(writer);
         writer.Close();
     }
 }

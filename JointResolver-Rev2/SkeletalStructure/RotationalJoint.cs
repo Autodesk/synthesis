@@ -9,29 +9,29 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 {
     private SkeletalJoint wrapped;
 
-    public SkeletalJoint getWrapped() { return wrapped; }
+    public SkeletalJoint GetWrapped() { return wrapped; }
 
-    public void determineLimits()
+    public void DetermineLimits()
     {
         MotionLimits cache = new MotionLimits();
         DriveSettings driver = wrapped.asmJointOccurrence.DriveSettings;
         driver.DriveType = DriveTypeEnum.kDriveAngularPositionType;
         driver.CollisionDetection = true;
-        driver.OnCollision += MotionLimits.onCollision;
+        driver.OnCollision += MotionLimits.OnCollisionEvent;
         driver.FrameRate = 1000;
         float step = 0.05f;
         driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " rad");
 
-        cache.doContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
+        cache.DoContactSetup(true, wrapped.childGroup, wrapped.parentGroup);
 
         driver.StartValue = currentAngularPosition + " rad";
         driver.EndValue = (currentAngularPosition + 6.5) + " rad";
 
         // Forward
         driver.GoToStart();
-        MotionLimits.didCollide = false;
+        MotionLimits.DID_COLLIDE = false;
         driver.PlayForward();
-        if (MotionLimits.didCollide)
+        if (MotionLimits.DID_COLLIDE)
         {
             angularLimitHigh = (float)wrapped.asmJoint.AngularPosition.Value - step;
             hasAngularLimit = true;
@@ -41,9 +41,9 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
         driver.EndValue = currentAngularPosition + " rad";
         driver.StartValue = (currentAngularPosition - 6.5) + " rad";
         driver.GoToEnd();
-        MotionLimits.didCollide = false;
+        MotionLimits.DID_COLLIDE = false;
         driver.PlayReverse();
-        if (MotionLimits.didCollide)
+        if (MotionLimits.DID_COLLIDE)
         {
             angularLimitLow = (float)wrapped.asmJoint.AngularPosition.Value + step ;
             if (!hasAngularLimit)
@@ -57,8 +57,8 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             angularLimitLow = angularLimitHigh - 6.28f + (step * 2.0f);
         }
 
-        driver.OnCollision -= MotionLimits.onCollision;
-        cache.doContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
+        driver.OnCollision -= MotionLimits.OnCollisionEvent;
+        cache.DoContactSetup(false, wrapped.childGroup, wrapped.parentGroup);
 
         wrapped.asmJoint.AngularPosition.Value = currentAngularPosition;
 
@@ -70,7 +70,7 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
         wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;
     }
 
-    public static bool isRotationalJoint(CustomRigidJoint jointI)
+    public static bool IsRotationalJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
         {
@@ -84,7 +84,7 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
         return false;
     }
 
-    private static void getRotationalInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
+    private static void GetRotationalInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
     {
         if (geom is EdgeProxy)
         {
@@ -133,7 +133,7 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 
     public RotationalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
-        if (!(isRotationalJoint(rigidJoint)))
+        if (!(IsRotationalJoint(rigidJoint)))
             throw new Exception("Not a rotational joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
@@ -147,22 +147,22 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Geometry.Type));
 
 
-        getRotationalInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
-        getRotationalInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
+        GetRotationalInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
+        GetRotationalInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
 
         if (wrapped.childIsTheOne)
         {
-            childNormal = Utilities.toBXDVector(groupANormal);
-            childBase = Utilities.toBXDVector(groupABase);
-            parentNormal = Utilities.toBXDVector(groupBNormal);
-            parentBase = Utilities.toBXDVector(groupBBase);
+            childNormal = Utilities.ToBXDVector(groupANormal);
+            childBase = Utilities.ToBXDVector(groupABase);
+            parentNormal = Utilities.ToBXDVector(groupBNormal);
+            parentBase = Utilities.ToBXDVector(groupBBase);
         }
         else
         {
-            childNormal = Utilities.toBXDVector(groupBNormal);
-            childBase = Utilities.toBXDVector(groupBBase);
-            parentNormal = Utilities.toBXDVector(groupANormal);
-            parentBase = Utilities.toBXDVector(groupABase);
+            childNormal = Utilities.ToBXDVector(groupBNormal);
+            childBase = Utilities.ToBXDVector(groupBBase);
+            parentNormal = Utilities.ToBXDVector(groupANormal);
+            parentBase = Utilities.ToBXDVector(groupABase);
         }
 
         currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;

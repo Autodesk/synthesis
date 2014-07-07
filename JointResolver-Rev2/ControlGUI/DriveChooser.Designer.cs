@@ -222,7 +222,6 @@ partial class DriveChooser
             this.Controls.Add(this.grpChooseDriver);
             this.Name = "DriveChooser";
             this.Text = "Configure Joint";
-            this.Load += new System.EventHandler(this.DriveChooser_Load);
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
             this.grpDriveOptions.PerformLayout();

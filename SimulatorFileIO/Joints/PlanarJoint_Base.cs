@@ -16,12 +16,12 @@ public class PlanarJoint_Base : SkeletalJoint_Base
     public BXDVector3 parentBase;
     public BXDVector3 childBase;
 
-    public override SkeletalJointType getJointType()
+    public override SkeletalJointType GetJointType()
     {
         return SkeletalJointType.PLANAR;
     }
 
-    public override void writeJoint(System.IO.BinaryWriter writer)
+    public override void WriteJoint(System.IO.BinaryWriter writer)
     {
         writer.Write(parentNormal.x);
         writer.Write(parentNormal.y);
@@ -40,7 +40,7 @@ public class PlanarJoint_Base : SkeletalJoint_Base
         writer.Write(childBase.z);
     }
 
-    protected override void readJoint(System.IO.BinaryReader reader)
+    protected override void ReadJoint(System.IO.BinaryReader reader)
     {
         parentNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         childNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());

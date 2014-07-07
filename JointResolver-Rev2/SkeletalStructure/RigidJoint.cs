@@ -9,14 +9,14 @@ public class RigidJoint : RigidJoint_Base, InventorSkeletalJoint
 {
     private SkeletalJoint wrapped;
 
-    public SkeletalJoint getWrapped() { return wrapped; }
+    public SkeletalJoint GetWrapped() { return wrapped; }
 
-    public void determineLimits()
+    public void DetermineLimits()
     {
         // TODO
     }
 
-    public static bool isRigidJoint(CustomRigidJoint jointI)
+    public static bool IsRigidJoint(CustomRigidJoint jointI)
     {
         if (jointI.joints.Count == 1)
         {
@@ -27,7 +27,7 @@ public class RigidJoint : RigidJoint_Base, InventorSkeletalJoint
         return false;
     }
 
-    private static void getRigidInfo(dynamic geom, out Point groupABase)
+    private static void GetRigidInfo(dynamic geom, out Point groupABase)
     {
         if (geom is EdgeProxy)
         {
@@ -72,7 +72,7 @@ public class RigidJoint : RigidJoint_Base, InventorSkeletalJoint
 
     public RigidJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
-        if (!(isRigidJoint(rigidJoint)))
+        if (!(IsRigidJoint(rigidJoint)))
             throw new Exception("Not a rotational joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
@@ -84,18 +84,18 @@ public class RigidJoint : RigidJoint_Base, InventorSkeletalJoint
             Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Geometry.Type));
 
 
-        getRigidInfo(wrapped.asmJoint.OriginOne.Geometry, out groupABase);
-        getRigidInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBBase);
+        GetRigidInfo(wrapped.asmJoint.OriginOne.Geometry, out groupABase);
+        GetRigidInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBBase);
 
         if (wrapped.childIsTheOne)
         {
-            childBase = Utilities.toBXDVector(groupABase);
-            parentBase = Utilities.toBXDVector(groupBBase);
+            childBase = Utilities.ToBXDVector(groupABase);
+            parentBase = Utilities.ToBXDVector(groupBBase);
         }
         else
         {
-            childBase = Utilities.toBXDVector(groupBBase);
-            parentBase = Utilities.toBXDVector(groupABase);
+            childBase = Utilities.ToBXDVector(groupBBase);
+            parentBase = Utilities.ToBXDVector(groupABase);
         }
     }
 

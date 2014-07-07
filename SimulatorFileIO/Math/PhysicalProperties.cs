@@ -9,7 +9,7 @@ public class PhysicalProperties
     public BXDVector3 centerOfMass = new BXDVector3();
     public float mass;
 
-    public void writeData(BinaryWriter writer)
+    public void WriteData(BinaryWriter writer)
     {
         writer.Write(centerOfMass.x);
         writer.Write(centerOfMass.y);
@@ -17,7 +17,7 @@ public class PhysicalProperties
         writer.Write(mass);
     }
 
-    public void readData(BinaryReader reader)
+    public void ReadData(BinaryReader reader)
     {
         centerOfMass = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         mass = reader.ReadSingle();

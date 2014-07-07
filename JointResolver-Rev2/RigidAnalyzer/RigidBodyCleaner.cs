@@ -251,7 +251,7 @@ static class RigidBodyCleaner
     /// <param name="results">The rigid results to generate joint maps from.</param>
     /// <param name="joints">A mapping between each rigid group and a set of rigid groups connected by a joint.</param>
     /// <param name="constraints">A mapping between each rigid group and a set of rigid groups connected by constraints.</param>
-    public static void generateJointMaps(CustomRigidResults results, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints)
+    private static void GenerateJointMaps(CustomRigidResults results, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints)
     {
         foreach (CustomRigidGroup group in results.groups)
         {
@@ -289,11 +289,11 @@ static class RigidBodyCleaner
     /// is constraint-only then the leaf node is merged into the current branch.
     /// </remarks>
     /// <param name="results">Rigid results to clean</param>
-    public static RigidNode buildAndCleanDijkstra(CustomRigidResults results)
+    public static RigidNode BuildAndCleanDijkstra(CustomRigidResults results)
     {
         Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints = new Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>>();
         Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints = new Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>>();
-        generateJointMaps(results, joints, constraints);
+        GenerateJointMaps(results, joints, constraints);
 
         // Mapping rigid group to merge-into group
         Dictionary<CustomRigidGroup, CustomRigidGroup> mergePattern = new Dictionary<CustomRigidGroup, CustomRigidGroup>();
@@ -388,8 +388,8 @@ static class RigidBodyCleaner
         Console.WriteLine("Creating planned skeletal joints");
         foreach (PlannedJoint pJoint in plannedJoints)
         {
-            SkeletalJoint_Base sJ = SkeletalJoint.create(pJoint.joint, pJoint.parentNode.group);
-            pJoint.parentNode.addChild(sJ, pJoint.node);
+            SkeletalJoint_Base sJ = SkeletalJoint.Create(pJoint.joint, pJoint.parentNode.group);
+            pJoint.parentNode.AddChild(sJ, pJoint.node);
         }
         Console.WriteLine("Cleanup remainders");
         CleanMeaningless(results);

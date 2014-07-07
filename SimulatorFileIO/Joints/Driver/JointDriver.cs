@@ -24,42 +24,42 @@ public class JointDriver
         this.type = type;
     }
 
-    public static JointDriverType[] getAllowedDrivers(SkeletalJoint_Base joint)
+    public static JointDriverType[] GetAllowedDrivers(SkeletalJoint_Base joint)
     {
-        if (joint.getJointType() == SkeletalJointType.ROTATIONAL)
+        if (joint.GetJointType() == SkeletalJointType.ROTATIONAL)
         {
             // Pneumatic and Worm Screw map to angles
             return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
         }
-        else if (joint.getJointType() == SkeletalJointType.LINEAR)
+        else if (joint.GetJointType() == SkeletalJointType.LINEAR)
         {
             return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
         }
-        else if (joint.getJointType() == SkeletalJointType.CYLINDRICAL)
+        else if (joint.GetJointType() == SkeletalJointType.CYLINDRICAL)
         {
             return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,
                 JointDriverType.MOTOR, JointDriverType.SERVO};
         }
-        else if (joint.getJointType() == SkeletalJointType.PLANAR)
+        else if (joint.GetJointType() == SkeletalJointType.PLANAR)
         {
             //Not sure of an FRC part with planar motion.  Will add later if needed.
             return new JointDriverType[] { };
         }
-        else if (joint.getJointType() == SkeletalJointType.BALL)
+        else if (joint.GetJointType() == SkeletalJointType.BALL)
         {
             return new JointDriverType[] { };
         }
-        else if (joint.getJointType() == SkeletalJointType.RIGID)
+        else if (joint.GetJointType() == SkeletalJointType.RIGID)
         {
             return new JointDriverType[] { };
         }
         return new JointDriverType[0];// Not implemented
     }
 
-    public static bool hasTwoPorts(JointDriverType type) { 
+    public static bool HasTwoPorts(JointDriverType type) { 
         return type == JointDriverType.BUMPER_PNEUMATIC; 
     }
-    public static string getPortType(JointDriverType type)
+    public static string GetPortType(JointDriverType type)
     {
         switch (type)
         {
@@ -76,7 +76,7 @@ public class JointDriver
         }
     }
 
-    public static bool isMotor (JointDriverType type)
+    public static bool IsMotor (JointDriverType type)
     {
         bool showWheelPos = true;
         switch (type)
@@ -91,7 +91,7 @@ public class JointDriver
         return showWheelPos;
     }
 
-    public static int getPortMax(JointDriverType type)
+    public static int GetPortMax(JointDriverType type)
     {
         switch (type)
         {
@@ -108,13 +108,13 @@ public class JointDriver
         }
     }
 
-    public void setPort(int portA, int portB = -1)
+    public void SetPort(int portA, int portB = -1)
     {
         this.portA = portA;
         this.portB = portB;
     }
 
-    public void setLimits(float lower, float upper)
+    public void SetLimits(float lower, float upper)
     {
         this.lowerLimit = lower;
         this.upperLimit = upper;
@@ -122,14 +122,14 @@ public class JointDriver
 
     public override string ToString()
     {
-        return System.Enum.GetName(typeof(JointDriverType), getDriveType()).Replace('_', ' ').ToLowerInvariant() + " " + JointDriver.getPortType(type) + "(" + portA + (JointDriver.hasTwoPorts(getDriveType()) ? "," + portB : "") + ")";
+        return System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant() + " " + JointDriver.GetPortType(type) + "(" + portA + (JointDriver.HasTwoPorts(GetDriveType()) ? "," + portB : "") + ")";
     }
 
-    public JointDriverType getDriveType() { return type; }
+    public JointDriverType GetDriveType() { return type; }
 
     public void writeData(System.IO.BinaryWriter writer)
     {
-        writer.Write((byte)((int)getDriveType()));
+        writer.Write((byte)((int)GetDriveType()));
         writer.Write((short)portA);
         writer.Write((short)portB);
         writer.Write(lowerLimit);
