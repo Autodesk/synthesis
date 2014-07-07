@@ -10,6 +10,7 @@ class SurfaceExporter
     private const int MAX_VERTICIES = 8192 * 256;
     private const int TMP_VERTICIES = 8192;
 
+    // Temporary output
     private double[] tmpVerts = new double[TMP_VERTICIES * 3];
     private double[] tmpNorms = new double[TMP_VERTICIES * 3];
     private int[] tmpIndicies = new int[TMP_VERTICIES * 3];
@@ -17,6 +18,7 @@ class SurfaceExporter
     private int tmpVertCount = 0;
     private int tmpFacetCount = 0;
 
+    // Final output
     public double[] verts = new double[MAX_VERTICIES * 3];
     public double[] norms = new double[MAX_VERTICIES * 3];
     public double[] textureCoords = new double[MAX_VERTICIES * 2];
@@ -24,6 +26,7 @@ class SurfaceExporter
     public int[] indicies = new int[MAX_VERTICIES * 3];
     public int vertCount = 0;
     public int facetCount = 0;
+    public PhysicalProperties physics = new PhysicalProperties();
 
     // Tolerances
     private double[] tolerances = new double[10];
@@ -128,11 +131,19 @@ class SurfaceExporter
     {
         vertCount = 0;
         facetCount = 0;
+        physics = new PhysicalProperties();
     }
 
     public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false)
     {
         if (!occ.Visible) return;
+        // Compute physics
+        physics.centerOfMass.multiply(physics.mass);
+        float myMass = (float) occ.MassProperties.Mass;
+        physics.mass += myMass;
+        physics.centerOfMass.add(Utilities.toBXDVector(occ.MassProperties.CenterOfMass).multiply(myMass));
+        physics.centerOfMass.multiply(1.0f / physics.mass);
+
         foreach (SurfaceBody surf in occ.SurfaceBodies)
         {
             AddFacets(surf, bestResolution, separateFaces);
@@ -240,6 +251,7 @@ class SurfaceExporter
             writer.Write(indicies[fI + 1] - 1);
             writer.Write(indicies[fI + 2] - 1);
         }
+        physics.writeData(writer);
         writer.Close();
     }
 }

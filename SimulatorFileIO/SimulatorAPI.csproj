@@ -54,6 +54,7 @@
     <Compile Include="Joints\RotationalJoint_Base.cs" />
     <Compile Include="Joints\SkeletalJoint_Base.cs" />
     <Compile Include="Math\Math3D.cs" />
+    <Compile Include="Math\PhysicalProperties.cs" />
     <Compile Include="ModelTree\RigidNode_Base.cs" />
     <Compile Include="ModelTree\SkeletonIO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

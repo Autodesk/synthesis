@@ -13,4 +13,20 @@ public class BXDVector3
     {
         return "[" + x + "," + y + "," + z + "]";
     }
+
+    public BXDVector3 multiply(float f)
+    {
+        x *= f;
+        y *= f;
+        z *= f;
+        return this;
+    }
+
+    public BXDVector3 add(BXDVector3 f)
+    {
+        x += f.x;
+        y += f.y;
+        z += f.z;
+        return this;
+    }
 }
