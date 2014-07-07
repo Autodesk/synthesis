@@ -16,6 +16,9 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
     public BXDVector3 childNormal;
     public BXDVector3 parentBase; //The starting point of the vector.
     public BXDVector3 childBase;
+
+    public float currentLinearPosition, currentAngularPosition;
+
     public bool hasAngularLimit;
     public float angularLimitLow;
     public float angularLimitHigh;

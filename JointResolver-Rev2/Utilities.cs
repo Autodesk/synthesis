@@ -16,6 +16,11 @@ class Utilities
         return fName;
     }
 
+    public static Vector toInventorVector(BXDVector3 v)
+    {
+        return Program.invApplication.TransientGeometry.CreateVector(v.x, v.y, v.z);
+    }
+
     public static BXDVector3 toBXDVector(object pO)
     {
         if (pO is Vector)

@@ -22,7 +22,7 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         driver.FrameRate = 1000;
         float step = 0.1f;
         Box mover = (wrapped.childIsTheOne ? wrapped.asmJointOccurrence.OccurrenceOne : wrapped.asmJointOccurrence.OccurrenceTwo).RangeBox;
-        float maxOffset = (float)mover.MaxPoint.DistanceTo(mover.MinPoint);
+        float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(Utilities.toInventorVector(childNormal));
 
         driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " cm");
 
