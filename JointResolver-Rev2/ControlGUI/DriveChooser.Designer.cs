@@ -80,7 +80,8 @@ partial class DriveChooser
             this.grpDriveOptions.Size = new System.Drawing.Size(337, 128);
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
-            this.grpDriveOptions.Text = "Motor Options";
+            this.grpDriveOptions.Text = "Joint Options";
+            this.grpDriveOptions.Enter += new System.EventHandler(this.grpDriveOptions_Enter);
             // 
             // txtHighLimit
             // 
@@ -151,9 +152,10 @@ partial class DriveChooser
             this.lblPort.AutoSize = true;
             this.lblPort.Location = new System.Drawing.Point(11, 22);
             this.lblPort.Name = "lblPort";
-            this.lblPort.Size = new System.Drawing.Size(71, 17);
+            this.lblPort.Size = new System.Drawing.Size(51, 17);
             this.lblPort.TabIndex = 1;
-            this.lblPort.Text = "PWM Port";
+            this.lblPort.Text = "Port ID";
+            this.lblPort.Click += new System.EventHandler(this.lblPort_Click);
             // 
             // txtPortA
             // 

@@ -82,4 +82,14 @@ public partial class DriveChooser : Form
     {
 
     }
+
+    private void lblPort_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void grpDriveOptions_Enter(object sender, EventArgs e)
+    {
+
+    }
 }
