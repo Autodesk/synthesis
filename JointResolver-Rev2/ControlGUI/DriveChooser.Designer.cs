@@ -37,12 +37,15 @@ partial class DriveChooser
             this.lblPort = new System.Windows.Forms.Label();
             this.txtPortA = new System.Windows.Forms.NumericUpDown();
             this.btnSave = new System.Windows.Forms.Button();
+            this.cmbWheelPosition = new System.Windows.Forms.ComboBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -123,6 +126,7 @@ partial class DriveChooser
             this.txtLowLimit.Name = "txtLowLimit";
             this.txtLowLimit.Size = new System.Drawing.Size(120, 22);
             this.txtLowLimit.TabIndex = 3;
+            this.txtLowLimit.ValueChanged += new System.EventHandler(this.txtLowLimit_ValueChanged);
             // 
             // txtPortB
             // 
@@ -140,6 +144,7 @@ partial class DriveChooser
             0,
             0,
             0});
+            this.txtPortB.ValueChanged += new System.EventHandler(this.txtPortB_ValueChanged);
             // 
             // lblPort
             // 
@@ -166,10 +171,11 @@ partial class DriveChooser
             0,
             0,
             0});
+            this.txtPortA.ValueChanged += new System.EventHandler(this.txtPortA_ValueChanged);
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(12, 209);
+            this.btnSave.Location = new System.Drawing.Point(13, 280);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(338, 28);
             this.btnSave.TabIndex = 3;
@@ -177,16 +183,43 @@ partial class DriveChooser
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
+            // cmbWheelPosition
+            // 
+            this.cmbWheelPosition.FormattingEnabled = true;
+            this.cmbWheelPosition.Items.AddRange(new object[] {
+            "None of the above",
+            "Front Left",
+            "Front Right",
+            "Back Left",
+            "Back Right"});
+            this.cmbWheelPosition.Location = new System.Drawing.Point(14, 21);
+            this.cmbWheelPosition.Name = "cmbWheelPosition";
+            this.cmbWheelPosition.Size = new System.Drawing.Size(317, 24);
+            this.cmbWheelPosition.TabIndex = 4;
+            this.cmbWheelPosition.SelectedIndexChanged += new System.EventHandler(this.cmbWheelPosition_SelectedIndexChanged);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.cmbWheelPosition);
+            this.groupBox1.Location = new System.Drawing.Point(13, 210);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(337, 60);
+            this.groupBox1.TabIndex = 5;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Wheel Position";
+            // 
             // DriveChooser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 245);
+            this.ClientSize = new System.Drawing.Size(362, 316);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grpDriveOptions);
             this.Controls.Add(this.grpChooseDriver);
             this.Name = "DriveChooser";
             this.Text = "Joint Drive Config";
+            this.Load += new System.EventHandler(this.DriveChooser_Load);
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
             this.grpDriveOptions.PerformLayout();
@@ -194,6 +227,7 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).EndInit();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
     }
@@ -210,4 +244,6 @@ partial class DriveChooser
     private System.Windows.Forms.Label lblPort;
     private System.Windows.Forms.NumericUpDown txtPortA;
     private System.Windows.Forms.Button btnSave;
+    private System.Windows.Forms.ComboBox cmbWheelPosition;
+    private System.Windows.Forms.GroupBox groupBox1;
 }

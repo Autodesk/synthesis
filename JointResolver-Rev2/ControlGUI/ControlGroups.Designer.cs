@@ -36,6 +36,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chHighRes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
+            this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -68,7 +69,8 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chType,
             this.item_chParent,
             this.item_chChild,
-            this.item_chDrive});
+            this.item_chDrive,
+            this.item_chWheel});
             this.lstJoints.FullRowSelect = true;
             this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lstJoints.HoverSelection = true;
@@ -101,7 +103,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // item_chDrive
             // 
             this.item_chDrive.Text = "Driver";
-            this.item_chDrive.Width = 422;
+            this.item_chDrive.Width = 100;
             // 
             // tabsMain
             // 
@@ -187,6 +189,11 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.chkHighlightComponents.Text = "Highlight Component Sets";
             this.chkHighlightComponents.UseVisualStyleBackColor = true;
             // 
+            // item_chWheel
+            // 
+            this.item_chWheel.Text = "Wheel Position";
+            this.item_chWheel.Width = 120;
+            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -228,4 +235,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader groups_chHighRes;
     private System.Windows.Forms.ColumnHeader groups_chGrounded;
     private System.Windows.Forms.CheckBox chkHighlightComponents;
+    private System.Windows.Forms.ColumnHeader item_chWheel;
 }
