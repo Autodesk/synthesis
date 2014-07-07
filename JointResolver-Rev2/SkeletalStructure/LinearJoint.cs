@@ -82,32 +82,6 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
 
     private static void getLinearInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
     {
-        //int translationDegrees;
-        //ObjectsEnumerator translationAxes;
-        //int rotationDegrees;
-        //ObjectsEnumerator rotationAxes;
-        //Point center;
-        //IEnumerator axesEnumerator;
-
-        //component.GetDegreesOfFreedom(out translationDegrees, out translationAxes,
-        //    out rotationDegrees, out rotationAxes, out center);
-
-        //if (translationDegrees == 1)
-        //{
-        //    axesEnumerator = translationAxes.GetEnumerator();
-        //    axesEnumerator.MoveNext();
-        //    groupANormal = ((Vector)axesEnumerator.Current).AsUnitVector();
-        //}
-        //else if (translationDegrees == 0)
-        //{
-        //    groupANormal = null;
-        //}
-        //else
-        //{
-        //    throw new Exception("More than one linear axis of freedom found on linear joint.");
-        //}
-
-        //Into usual base fiding stuff, will look for a way to change later.
         if (geom is EdgeProxy)
         {
             EdgeProxy edge = (EdgeProxy)geom;
@@ -202,8 +176,6 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         {
             linearLimitLow = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
         }
-
-        Console.WriteLine("Axis is " + groupANormal.X + ", " + groupANormal.Y + ", " + groupANormal.Z);
     }
 
     protected override string ToString_Internal()
