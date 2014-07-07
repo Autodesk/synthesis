@@ -6,7 +6,7 @@ using System.IO;
 
 public class SkeletonIO
 {
-    private static const int FORMAT_VERSION = 1;
+    private const int FORMAT_VERSION = 2;
 
     public static void writeSkeleton(String path, RigidNode_Base baseNode, out Dictionary<RigidNode_Base, string> bxdaOutputPath)
     {

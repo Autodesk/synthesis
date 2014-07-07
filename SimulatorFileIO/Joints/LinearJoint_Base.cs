@@ -11,9 +11,9 @@ public class LinearJoint_Base : SkeletalJoint_Base
     public BXDVector3 childNormal;
     public BXDVector3 parentBase;
     public BXDVector3 childBase;
-    public double currentLinearPosition;
+    public float currentLinearPosition;
     public bool hasUpperLimit, hasLowerLimit;
-    public double linearLimitLow, linearLimitHigh;
+    public float linearLimitLow, linearLimitHigh;
     public override SkeletalJointType getJointType()
     {
         return SkeletalJointType.LINEAR;
@@ -48,21 +48,21 @@ public class LinearJoint_Base : SkeletalJoint_Base
 
     protected override void readJoint(System.IO.BinaryReader reader)
     {
-        parentBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        parentNormal = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        childBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        childNormal = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+        parentBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        parentNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        childBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        childNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
         byte limitFlags = reader.ReadByte();
         hasLowerLimit = (limitFlags & 1) == 1;
         hasUpperLimit = (limitFlags & 2) == 2;
         if (hasLowerLimit)
         {
-            linearLimitLow = reader.ReadDouble();
+            linearLimitLow = reader.ReadSingle();
         }
         if (hasUpperLimit)
         {
-            linearLimitHigh = reader.ReadDouble();
+            linearLimitHigh = reader.ReadSingle();
         }
     }
 }

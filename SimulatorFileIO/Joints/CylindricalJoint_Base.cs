@@ -17,12 +17,12 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
     public BXDVector3 parentBase; //The starting point of the vector.
     public BXDVector3 childBase;
     public bool hasAngularLimit;
-    public double angularLimitLow;
-    public double angularLimitHigh;
+    public float angularLimitLow;
+    public float angularLimitHigh;
     public bool hasLinearStartLimit;
     public bool hasLinearEndLimit;
-    public double linearLimitStart;
-    public double linearLimitEnd;
+    public float linearLimitStart;
+    public float linearLimitEnd;
 
     public override SkeletalJointType getJointType()
     {
@@ -68,28 +68,28 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
 
     protected override void readJoint(System.IO.BinaryReader reader)
     {
-        parentBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        parentNormal = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        childBase = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
-        childNormal = new BXDVector3(reader.ReadDouble(), reader.ReadDouble(), reader.ReadDouble());
+        parentBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        parentNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        childBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        childNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
         hasAngularLimit = (reader.ReadByte() & 1) == 1;
         if (hasAngularLimit)
         {
-            angularLimitLow = reader.ReadDouble();
-            angularLimitHigh = reader.ReadDouble();
+            angularLimitLow = reader.ReadSingle();
+            angularLimitHigh = reader.ReadSingle();
         }
 
         hasLinearStartLimit = (reader.ReadByte() & 1) == 1;
         if (hasLinearStartLimit)
         {
-            linearLimitStart = reader.ReadDouble();
+            linearLimitStart = reader.ReadSingle();
         }
 
         hasLinearEndLimit = (reader.ReadByte() & 1) == 1;
         if (hasLinearEndLimit)
         {
-            linearLimitEnd = reader.ReadDouble();
+            linearLimitEnd = reader.ReadSingle();
         }
     }
 }

@@ -53,8 +53,8 @@ public partial class DriveChooser : Form
         joint.cDriver = new JointDriver(cType);
         joint.cDriver.portA = (int)txtPortA.Value;
         joint.cDriver.portB = (int)txtPortB.Value;
-        joint.cDriver.lowerLimit = (double)txtLowLimit.Value;
-        joint.cDriver.upperLimit = (double)txtHighLimit.Value;
+        joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
+        joint.cDriver.upperLimit = (float)txtHighLimit.Value;
         Hide();
     }
 

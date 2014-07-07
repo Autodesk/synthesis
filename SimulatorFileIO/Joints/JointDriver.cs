@@ -13,7 +13,7 @@ public class JointDriver
 
     public int portA, portB;
 
-    public double lowerLimit, upperLimit;
+    public float lowerLimit, upperLimit;
 
     public JointDriver(JointDriverType type)
     {
@@ -95,7 +95,7 @@ public class JointDriver
         this.portB = portB;
     }
 
-    public void setLimits(double lower, double upper)
+    public void setLimits(float lower, float upper)
     {
         this.lowerLimit = lower;
         this.upperLimit = upper;
@@ -124,8 +124,8 @@ public class JointDriver
         type = (JointDriverType)((int)reader.ReadByte());
         portA = reader.ReadInt16();
         portB = reader.ReadInt16();
-        lowerLimit = reader.ReadDouble();
-        upperLimit = reader.ReadDouble();
+        lowerLimit = reader.ReadSingle();
+        upperLimit = reader.ReadSingle();
         int extensions = reader.ReadInt32();
     }
 }
