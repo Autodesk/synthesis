@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 
+public enum WheelPosition : byte
+{
+    NOTWHEEL = 0, FRONTLEFT = 1, FRONTRIGHT = 2, BACKLEFT = 3, BACKRIGHT = 4
+}
+
 public class RotationalJoint_Base : SkeletalJoint_Base
 {
 
@@ -15,6 +20,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
     public bool hasAngularLimit;
     public float angularLimitLow;
     public float angularLimitHigh;
+    public WheelPosition wheelPosition = WheelPosition.NOTWHEEL;
 
     public override SkeletalJointType getJointType()
     {
@@ -37,12 +43,15 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         writer.Write(childNormal.y);
         writer.Write(childNormal.z);
 
-        writer.Write((byte)(hasAngularLimit ? 1 : 0));
+        writer.Write((byte)((hasAngularLimit ? 1 : 0)));
         if (hasAngularLimit)
         {
             writer.Write(angularLimitLow);
             writer.Write(angularLimitHigh);
         }
+
+        //TODO: Takes up a lot of space.  Need to learn better way to do this.
+        writer.Write((int)this.wheelPosition);
     }
 
     protected override void readJoint(System.IO.BinaryReader reader)
@@ -58,5 +67,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             angularLimitLow = reader.ReadSingle();
             angularLimitHigh = reader.ReadSingle();
         }
+
+        wheelPosition = (WheelPosition)reader.ReadInt32();
     }
 }
