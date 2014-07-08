@@ -57,7 +57,7 @@ static class Program
             Directory.CreateDirectory(pathBase + "\\Downloads\\Skeleton");
             SurfaceExporter surfs = new SurfaceExporter();
             Dictionary<RigidNode_Base, string> bxdaOutputPath;
-            SkeletonIO.WriteSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
+            BXDJSkeleton.WriteSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
             foreach (KeyValuePair<RigidNode_Base, string> output in bxdaOutputPath)
             {
                 if (output.Key != null && output.Key.GetModel() != null && output.Key.GetModel() is CustomRigidGroup)
@@ -66,11 +66,7 @@ static class Program
                     Console.WriteLine("Output " + group.ToString() + " to " + output.Value);
                     surfs.Reset();
                     surfs.ExportAll(group);
-                    surfs.WriteBXDA(output.Value);
-                    if (surfs.vertCount > 65000)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Warning: " + group.ToString() + " exceededed 65000 verticies.  Strange things may begin to happen.");
-                    }
+                    surfs.GetOutput().WriteBXDA(output.Value);
                 }
             }
         }
