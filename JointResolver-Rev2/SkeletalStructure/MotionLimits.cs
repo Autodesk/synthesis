@@ -77,13 +77,22 @@ public class MotionLimits
                     {
                         cO.ContactSet = true;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
+                        // Ignore
                     }
                 }
                 else
                 {
                     cO.Visible = oldVisibleState[cO];
+                    try
+                    {
+                        cO.ContactSet = oldContactState[cO];
+                    }
+                    catch (Exception)
+                    {
+                        // Ignore
+                    }                    
                 }
             }
         }

@@ -75,7 +75,7 @@ public partial class DriveChooser : Form
         //Only need to store wheel driver if run by motor and is a wheel.
         if (cType == JointDriverType.MOTOR && position != WheelPosition.NO_WHEEL)
         {
-            wheelDriver = (WheelDriverMeta)JointDriverMeta.Create(JointDriverMetaType.WHEEL_DRIVER);
+            wheelDriver = new WheelDriverMeta();
             wheelDriver.position = this.position;
             joint.cDriver.AddInfo(wheelDriver);
         }
