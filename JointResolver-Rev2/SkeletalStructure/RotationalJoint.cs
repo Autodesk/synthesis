@@ -80,8 +80,8 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             //Checks if there is no linear motion allowed.
             return joint.JointType == AssemblyJointTypeEnum.kRotationalJointType
                 || (joint.JointType == AssemblyJointTypeEnum.kCylindricalJointType
-                && joint.HasLinearPositionEndLimit && joint.HasLinearPositionEndLimit
-                && joint.LinearPositionStartLimit() == joint.LinearPositionEndLimit());
+                && joint.HasLinearPositionStartLimit && joint.HasLinearPositionEndLimit
+                && joint.LinearPositionStartLimit.Value == joint.LinearPositionEndLimit.Value);
         }
         return false;
     }
