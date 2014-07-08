@@ -18,6 +18,16 @@ class SurfaceExporter
     private int tmpVertCount = 0;
     private int tmpFacetCount = 0;
 
+
+    // Temporary output
+    private double[] postVerts = new double[TMP_VERTICIES * 3];
+    private double[] postNorms = new double[TMP_VERTICIES * 3];
+    private int[] postIndicies = new int[TMP_VERTICIES * 3];
+    private uint[] postColors = new uint[TMP_VERTICIES];
+    private double[] postTextureCoords = new double[TMP_VERTICIES * 2];
+    private int postVertCount = 0;
+    private int postFacetCount = 0;
+
     // Final output
     private struct Mesh
     {
@@ -54,7 +64,7 @@ class SurfaceExporter
                 bestIndex = i;
             }
         }
-        Console.WriteLine("Exporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
+        Console.WriteLine("(" + postVertCount + "v/" + postFacetCount + "f)\tExporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
 
         if (separateFaces)
         {
@@ -81,9 +91,31 @@ class SurfaceExporter
             {
                 assetProps = new AssetProperties(surf.Parent.Appearance);
             }
-            Console.WriteLine("Add " + tmpVertCount + " verticies and " + tmpFacetCount + " triangles");
             AddFacetsInternal(assetProps);
         }
+    }
+
+    private void DumpMeshBuffer()
+    {
+        if (postVertCount == 0 || postFacetCount == 0)
+            return;
+        Mesh subObject = new Mesh();
+        subObject.verts = new double[postVertCount * 3];
+        subObject.norms = new double[postVertCount * 3];
+        subObject.textureCoords = new double[postVertCount * 2];
+        subObject.colors = new uint[postVertCount];
+        subObject.indicies = new int[postFacetCount * 3];
+        subObject.facetCount = postFacetCount;
+        subObject.vertCount = postVertCount;
+        Array.Copy(postVerts, 0, subObject.verts, 0, postVertCount * 3);
+        Array.Copy(postNorms, 0, subObject.norms, 0, postVertCount * 3);
+        Array.Copy(postTextureCoords, 0, subObject.textureCoords, 0, postVertCount * 2);
+        Array.Copy(postIndicies, 0, subObject.indicies, 0, postFacetCount * 3);
+        Array.Copy(postColors, 0, subObject.colors, 0, postVertCount);
+        Console.WriteLine("Mesh segment " + meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
+        postVertCount = 0;
+        postFacetCount = 0;
+        meshes.Add(subObject);
     }
 
     /// <summary>
@@ -93,35 +125,37 @@ class SurfaceExporter
     /// <param name="assetProps">Material information to use</param>
     private void AddFacetsInternal(AssetProperties assetProps)
     {
-        if (tmpVertCount > ushort.MaxValue)
+        if (tmpVertCount > TMP_VERTICIES)
         {
             // This won't actually happen since TMP_VERTEX_COUNT is max short.
-            System.Windows.Forms.MessageBox.Show("Warning: Mesh segment exceededed 65000 verticies.  Strange things may begin to happen.");
+            System.Windows.Forms.MessageBox.Show("Warning: Mesh segment exceededed " + TMP_VERTICIES + " verticies.  Strange things may begin to happen.");
+        }
+        if (tmpVertCount + postVertCount >= TMP_VERTICIES)
+        {
+            DumpMeshBuffer();
         }
 
-        Mesh subObject = new Mesh();
-        subObject.verts = new double[tmpVertCount * 3];
-        subObject.norms = new double[tmpVertCount * 3];
-        subObject.textureCoords = new double[tmpVertCount * 2];
-        subObject.colors = new uint[tmpVertCount];
-        subObject.indicies = new int[tmpFacetCount * 3];
-        subObject.facetCount = tmpFacetCount;
-        subObject.vertCount = tmpVertCount;
-        Array.Copy(tmpVerts, 0, subObject.verts, 0, tmpVertCount * 3);
-        Array.Copy(tmpNorms, 0, subObject.norms, 0, tmpVertCount * 3);
-        Array.Copy(tmpTextureCoords, 0, subObject.textureCoords, 0, tmpVertCount * 2);
-        Array.Copy(tmpIndicies, 0, subObject.indicies, 0, tmpFacetCount * 3);
-
+        Array.Copy(tmpVerts, 0, postVerts, postVertCount * 3, tmpVertCount * 3);
+        Array.Copy(tmpNorms, 0, postNorms, postVertCount * 3, tmpVertCount * 3);
+        Array.Copy(tmpTextureCoords, 0, postTextureCoords, postVertCount * 2, tmpVertCount * 2);
         uint colorVal = 0xFFFFFFFF;
         if (assetProps.color != null)
         {
             colorVal = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
         }
-        for (int i = 0; i < tmpVertCount; i++)
+        for (int i = postVertCount; i < postVertCount + tmpVertCount; i++)
         {
-            subObject.colors[i] = colorVal;
+            postColors[i] = colorVal;
         }
-        meshes.Add(subObject);
+
+        // Now we must manually copy the indicies
+        int indxOffset = postFacetCount * 3;
+        for (int i = 0; i < tmpFacetCount * 3; i++)
+        {
+            postIndicies[i + indxOffset] = tmpIndicies[i] + postVertCount;
+        }
+        postFacetCount += tmpFacetCount;
+        postVertCount += tmpVertCount;
     }
 
     /// <summary>
@@ -303,6 +337,7 @@ class SurfaceExporter
     /// <param name="path">Output path</param>
     public void WriteBXDA(String path)
     {
+        DumpMeshBuffer();
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
         writer.Write(meshes.Count);
         foreach (Mesh mesh in meshes)

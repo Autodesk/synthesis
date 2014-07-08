@@ -1,5 +1,5 @@
 ﻿
-class FileUtilities
+public class FileUtilities
 {
     public static string SanatizeFileName(string fileName, char sanity = '_')
     {
