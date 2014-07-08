@@ -20,13 +20,18 @@ class SurfaceExporter
     private int tmpFacetCount = 0;
 
     // Final output
-    public double[] verts = new double[MAX_VERTICIES * 3];
-    public double[] norms = new double[MAX_VERTICIES * 3];
-    public double[] textureCoords = new double[MAX_VERTICIES * 2];
-    public uint[] colors = new uint[MAX_VERTICIES];
-    public int[] indicies = new int[MAX_VERTICIES * 3];
-    public int vertCount = 0;
-    public int facetCount = 0;
+    private struct Mesh
+    {
+        public double[] verts;
+        public double[] norms;
+        public double[] textureCoords;
+        public uint[] colors;
+        public int[] indicies;
+        public int vertCount;
+        public int facetCount;
+    }
+
+    public List<Mesh> meshes = new List<Mesh>();
     public PhysicalProperties physics = new PhysicalProperties();
 
     // Tolerances
@@ -80,27 +85,29 @@ class SurfaceExporter
 
     private void AddFacetsInternal(AssetProperties assetProps)
     {
-        Array.Copy(tmpVerts, 0, verts, vertCount * 3, tmpVertCount * 3);
-        Array.Copy(tmpNorms, 0, norms, vertCount * 3, tmpVertCount * 3);
-        Array.Copy(tmpTextureCoords, 0, textureCoords, vertCount * 2, tmpVertCount * 2);
+        Mesh subObject = new Mesh();
+        subObject.verts = new double[tmpVertCount * 3];
+        subObject.norms = new double[tmpVertCount * 3];
+        subObject.textureCoords = new double[tmpVertCount * 2];
+        subObject.colors = new uint[tmpVertCount];
+        subObject.indicies = new int[tmpFacetCount * 3];
+        subObject.facetCount = tmpFacetCount;
+        subObject.vertCount = tmpVertCount;
+        Array.Copy(tmpVerts, 0, subObject.verts, 0, tmpVertCount * 3);
+        Array.Copy(tmpNorms, 0, subObject.norms, 0, tmpVertCount * 3);
+        Array.Copy(tmpTextureCoords, 0, subObject.textureCoords, 0, tmpVertCount * 2);
+        Array.Copy(tmpIndicies, 0, subObject.indicies, 0, tmpFacetCount * 3);
+
         uint colorVal = 0xFFFFFFFF;
         if (assetProps.color != null)
         {
-            colorVal = ((uint)assetProps.color.Red << 0) | ((uint)assetProps.color.Green << 8) | ((uint)assetProps.color.Blue << 16) | ((((uint)(assetProps.color.Opacity * 255)) & 0xFF) << 24);
+            colorVal = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
         }
-        for (int i = vertCount; i < vertCount + tmpVertCount; i++)
+        for (int i = 0; i < tmpVertCount; i++)
         {
-            colors[i] = colorVal;
+            subObject.colors[i] = colorVal;
         }
-
-        // Now we must manually copy the indicies
-        int indxOffset = facetCount * 3;
-        for (int i = 0; i < tmpFacetCount * 3; i++)
-        {
-            indicies[i + indxOffset] = tmpIndicies[i] + vertCount;
-        }
-        facetCount += tmpFacetCount;
-        vertCount += tmpVertCount;
+        meshes.Add(subObject);
     }
 
     private void AddFacets(Face surf, double tolerance)
@@ -144,7 +151,7 @@ class SurfaceExporter
         {
             // Compute physics
             physics.centerOfMass.Multiply(physics.mass);
-            float myMass = (float)occ.MassProperties.Mass;
+            float myMass = (float) occ.MassProperties.Mass;
             physics.mass += myMass;
             physics.centerOfMass.Add(Utilities.ToBXDVector(occ.MassProperties.CenterOfMass).Multiply(myMass));
             physics.centerOfMass.Multiply(1.0f / physics.mass);
@@ -216,30 +223,11 @@ class SurfaceExporter
         }
     }
 
-    public void WriteSTL(String path)
-    {
-        StreamWriter writer = new StreamWriter(path);
-        writer.WriteLine("solid " + "bleh");
-        for (int i = 0; i < facetCount; i++)
-        {
-            int offset = i * 3;
-            for (int j = 0; j < 3; j++)
-            {
-                int oj = indicies[offset + j] * 3 - 3;
-                if (j == 0)
-                {
-                    writer.WriteLine("facet normal " + norms[oj] + " " + norms[oj + 1] + " " + norms[oj + 2]);
-                    writer.WriteLine("outer loop");
-                }
-                writer.WriteLine("vertex " + verts[oj] + " " + verts[oj + 1] + " " + verts[oj + 2]);
-            }
-            writer.WriteLine("endloop");
-            writer.WriteLine("endfacet");
-        }
-        writer.WriteLine("endsolid");
-        writer.Close();
-    }
+    //[4 byte integer]  Mesh count
+    //[Extensible]      Meshes
 
+    //Each Mesh:
+    //
     //[4 byte integer]	Vertex Count
     //For each vertex…
     //[8 byte double]	Vertex position x
@@ -261,33 +249,36 @@ class SurfaceExporter
     //[4 byte integer]	Vertex 2
     //[4 byte integer]	Vertex 3
 
-
     public void WriteBXDA(String path)
     {
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
-        writer.Write(vertCount);
-        for (int i = 0; i < vertCount; i++)
+        writer.Write(meshes.Count);
+        foreach (Mesh mesh in meshes)
         {
-            int vecI = i * 3;
-            int texI = i * 2;
-            int colI = i;
-            writer.Write(verts[vecI]);
-            writer.Write(verts[vecI + 1]);
-            writer.Write(verts[vecI + 2]);
-            writer.Write(norms[vecI]);
-            writer.Write(norms[vecI + 1]);
-            writer.Write(norms[vecI + 2]);
-            writer.Write(colors[colI]);
-            writer.Write(textureCoords[texI]);
-            writer.Write(textureCoords[texI + 1]);
-        }
-        writer.Write(facetCount);
-        for (int i = 0; i < facetCount; i++)
-        {
-            int fI = i * 3;
-            writer.Write(indicies[fI] - 1);
-            writer.Write(indicies[fI + 1] - 1);
-            writer.Write(indicies[fI + 2] - 1);
+            writer.Write(mesh.vertCount);
+            for (int i = 0; i < mesh.vertCount; i++)
+            {
+                int vecI = i * 3;
+                int texI = i * 2;
+                int colI = i;
+                writer.Write(mesh.verts[vecI]);
+                writer.Write(mesh.verts[vecI + 1]);
+                writer.Write(mesh.verts[vecI + 2]);
+                writer.Write(mesh.norms[vecI]);
+                writer.Write(mesh.norms[vecI + 1]);
+                writer.Write(mesh.norms[vecI + 2]);
+                writer.Write(mesh.colors[colI]);
+                writer.Write(mesh.textureCoords[texI]);
+                writer.Write(mesh.textureCoords[texI + 1]);
+            }
+            writer.Write(mesh.facetCount);
+            for (int i = 0; i < mesh.facetCount; i++)
+            {
+                int fI = i * 3;
+                writer.Write(mesh.indicies[fI] - 1);
+                writer.Write(mesh.indicies[fI + 1] - 1);
+                writer.Write(mesh.indicies[fI + 2] - 1);
+            }
         }
         physics.WriteData(writer);
         writer.Close();
