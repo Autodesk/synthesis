@@ -83,6 +83,7 @@ public class HandleJoints : MonoBehaviour
 						}
 				}
 		}
+<<<<<<< HEAD
 
 		public static void Wheelcolliders (Transform parent, int i)
 		{
@@ -92,6 +93,16 @@ public class HandleJoints : MonoBehaviour
 				collider.transform.position = parent.GetChild (i).GetComponent<MeshCollider> ().bounds.center;
 				collider.AddComponent<WheelCollider> ();
 				collider.GetComponent<WheelCollider> ().radius = 5.4f;
+=======
+	}
+	public static void Wheelcolliders(Transform parent, int i){
+				GameObject collider = new GameObject ();
+				collider.transform.parent = parent;
+				collider.transform.position = parent.GetChild (i).GetComponent<MeshCollider> ().bounds.center;
+				collider.name = "WheelCollider" + i;
+				collider.AddComponent<WheelCollider> ();
+				collider.GetComponent<WheelCollider> ().radius = 5.2f;
+>>>>>>> origin/master
 				collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 				
 				//parent.Rotate (new Vector3 (0, 0, 0));
