@@ -20,7 +20,6 @@ public class WheelDriverMeta : JointDriverMeta
     }
 
     public WheelDriverMeta()
-        : base(JointDriverMetaType.WHEEL_DRIVER)
     {
     }
 

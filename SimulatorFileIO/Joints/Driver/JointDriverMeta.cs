@@ -1,47 +1,46 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
-public enum JointDriverMetaType : byte
-{
-    WHEEL_DRIVER = 1
-}
-
+/// <summary>
+/// Base class all joint metadata should inherit from.
+/// </summary>
+/// <remarks>
+/// If you inherit make sure to add your type to <see cref="JointDriverMeta.JOINT_DRIVER_TYPES"/>, 
+/// and make sure you have a public constructor that takes no arguments.
+/// </remarks>
 public abstract class JointDriverMeta
 {
-    public JointDriverMetaType metaType
-    {
-        get;
-        private set;
-    }
-
-    protected JointDriverMeta(JointDriverMetaType type)
-    {
-        this.metaType = type;
-    }
+    // Constant, but can't be declared so.
+    private static Type[] JOINT_DRIVER_TYPES = new Type[] { typeof(WheelDriverMeta) };
 
     protected abstract void WriteDataInternal(BinaryWriter writer);
     protected abstract void ReadDataInternal(BinaryReader reader);
 
-    public static JointDriverMeta Create(JointDriverMetaType type)
-    {
-        switch (type)
-        {
-            case JointDriverMetaType.WHEEL_DRIVER:
-                return new WheelDriverMeta();
-            default:
-                return null;
-        }
-    }
-
     public void WriteData(BinaryWriter writer)
     {
-        writer.Write((byte)metaType);
+        // Find my ID
+        int myID = -1;
+        for (int i = 0; i < JOINT_DRIVER_TYPES.Length; i++)
+        {
+            if (JOINT_DRIVER_TYPES[i].Equals(GetType()))
+            {
+                myID = i;
+                break;
+            }
+        }
+        if (myID < 0)
+        {
+            throw new Exception("Unknown Driver Meta.  Did you register your type?");
+        }
+        writer.Write((byte) myID);
         WriteDataInternal(writer);
     }
 
     public static JointDriverMeta ReadDriverMeta(BinaryReader reader)
     {
-        JointDriverMetaType type = (JointDriverMetaType)reader.ReadByte();
-        JointDriverMeta meta = JointDriverMeta.Create(type);
+        int type = reader.ReadByte();
+        JointDriverMeta meta = (JointDriverMeta) JOINT_DRIVER_TYPES[type].GetConstructor(new Type[0]).Invoke(new Object[0]);
         meta.ReadDataInternal(reader);
         return meta;
     }

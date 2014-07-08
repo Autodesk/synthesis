@@ -17,7 +17,7 @@ public class JointDriver
 
     public float lowerLimit, upperLimit;
 
-    public Dictionary<JointDriverMetaType, JointDriverMeta> metaInfo = new Dictionary<JointDriverMetaType, JointDriverMeta>();
+    public Dictionary<System.Type, JointDriverMeta> metaInfo = new Dictionary<System.Type, JointDriverMeta>();
 
     public JointDriver(JointDriverType type)
     {
@@ -27,39 +27,42 @@ public class JointDriver
     //Adds details to the driver type.
     public void AddInfo(JointDriverMeta metaDriver)
     {
-        metaInfo.Add(metaDriver.metaType, metaDriver);
+        metaInfo.Add(metaDriver.GetType(), metaDriver);
+    }
+
+    public T GetInfo<T>() where T : JointDriverMeta
+    {
+        JointDriverMeta val;
+        System.Type type = typeof(T);
+        if (metaInfo.TryGetValue(type, out val))
+        {
+            return (T) val;
+        }
+        return null;
     }
 
     public static JointDriverType[] GetAllowedDrivers(SkeletalJoint_Base joint)
     {
-        if (joint.GetJointType() == SkeletalJointType.ROTATIONAL)
+        switch (joint.GetJointType())
         {
-            // Pneumatic and Worm Screw map to angles
-            return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
-        }
-        else if (joint.GetJointType() == SkeletalJointType.LINEAR)
-        {
-            return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
-        }
-        else if (joint.GetJointType() == SkeletalJointType.CYLINDRICAL)
-        {
-            return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,
+            case SkeletalJointType.ROTATIONAL:
+                // Pneumatic and Worm Screw map to angles
+                return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
+            case SkeletalJointType.LINEAR:
+                return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
+            case SkeletalJointType.CYLINDRICAL:
+                return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,
                 JointDriverType.MOTOR, JointDriverType.SERVO};
+            case SkeletalJointType.PLANAR:
+                //Not sure of an FRC part with planar motion.  Will add later if needed.
+                return new JointDriverType[] { };
+            case SkeletalJointType.BALL:
+                return new JointDriverType[] { };
+            case SkeletalJointType.RIGID:
+                return new JointDriverType[] { };
+            default:
+                return new JointDriverType[0];// Not implemented
         }
-        else if (joint.GetJointType() == SkeletalJointType.PLANAR)
-        {
-            //Not sure of an FRC part with planar motion.  Will add later if needed.
-            return new JointDriverType[] { };
-        }
-        else if (joint.GetJointType() == SkeletalJointType.BALL)
-        {
-            return new JointDriverType[] { };
-        }
-        else if (joint.GetJointType() == SkeletalJointType.RIGID)
-        {
-            return new JointDriverType[] { };
-        }
-        return new JointDriverType[0];// Not implemented
     }
 
     public static bool HasTwoPorts(JointDriverType type)
@@ -139,9 +142,9 @@ public class JointDriver
 
     public void WriteData(System.IO.BinaryWriter writer)
     {
-        writer.Write((byte)((int)GetDriveType()));
-        writer.Write((short)portA);
-        writer.Write((short)portB);
+        writer.Write((byte) ((int) GetDriveType()));
+        writer.Write((short) portA);
+        writer.Write((short) portB);
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
         writer.Write(metaInfo.Count); // Extension count
@@ -153,7 +156,7 @@ public class JointDriver
 
     public void ReadData(System.IO.BinaryReader reader)
     {
-        type = (JointDriverType)((int)reader.ReadByte());
+        type = (JointDriverType) ((int) reader.ReadByte());
         portA = reader.ReadInt16();
         portB = reader.ReadInt16();
         lowerLimit = reader.ReadSingle();
@@ -163,7 +166,7 @@ public class JointDriver
         for (int i = 0; i < extensions; i++)
         {
             JointDriverMeta meta = JointDriverMeta.ReadDriverMeta(reader);
-            metaInfo.Add(meta.metaType, meta);
+            AddInfo(meta);
         }
     }
 }
