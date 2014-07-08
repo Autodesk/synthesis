@@ -65,7 +65,7 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 
         // Stash results
         wrapped.asmJoint.HasAngularPositionLimits = hasAngularLimit;
-        if (hasAngularLimit == true)
+        if (hasAngularLimit)
         {
             wrapped.asmJoint.AngularPositionStartLimit.Value = angularLimitLow;
             wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;

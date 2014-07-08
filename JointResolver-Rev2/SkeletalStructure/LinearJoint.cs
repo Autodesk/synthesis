@@ -18,7 +18,7 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         driver.DriveType = DriveTypeEnum.kDriveLinearPositionType;
         driver.CollisionDetection = true;
         driver.OnCollision += MotionLimits.OnCollisionEvent;
-        driver.FrameRate = 1000;
+        driver.FrameRate = 1;
         float step = 0.1f;
         Box mover = (wrapped.childIsTheOne ? wrapped.asmJointOccurrence.OccurrenceOne : wrapped.asmJointOccurrence.OccurrenceTwo).RangeBox;
         float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(Utilities.ToInventorVector(childNormal));
@@ -62,11 +62,11 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         // Stash results
         wrapped.asmJoint.HasLinearPositionStartLimit = hasLowerLimit;
         wrapped.asmJoint.HasLinearPositionEndLimit = hasUpperLimit;
-        if (hasLowerLimit == true)
+        if (hasLowerLimit)
         {
             wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitLow;
         }
-        if (hasUpperLimit == true)
+        if (hasUpperLimit)
         {
             wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitHigh;
         }

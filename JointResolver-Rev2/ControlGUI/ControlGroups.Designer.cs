@@ -120,6 +120,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabsMain.SelectedIndex = 0;
             this.tabsMain.Size = new System.Drawing.Size(935, 419);
             this.tabsMain.TabIndex = 4;
+            this.tabsMain.SelectedIndexChanged += new System.EventHandler(this.tabsMain_SelectedIndexChanged);
             // 
             // tabGroups
             // 
@@ -203,6 +204,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.TabIndex = 6;
             this.btnCalculate.Text = "Calculate Limit";
             this.btnCalculate.UseVisualStyleBackColor = true;
+            this.btnCalculate.Visible = false;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
             // 
             // ControlGroups

@@ -111,16 +111,16 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         // Stash results
         wrapped.asmJoint.HasLinearPositionStartLimit = hasLinearStartLimit;
         wrapped.asmJoint.HasLinearPositionEndLimit = hasLinearEndLimit;
-        if (hasLinearStartLimit == true)
+        if (hasLinearStartLimit)
         {
             wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitStart;
         }
-        if (hasLinearEndLimit == true)
+        if (hasLinearEndLimit)
         {
             wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitEnd;
         }
         wrapped.asmJoint.HasAngularPositionLimits = hasAngularLimit;
-        if (hasAngularLimit == true)
+        if (hasAngularLimit)
         {
             wrapped.asmJoint.AngularPositionStartLimit.Value = angularLimitLow;
             wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;

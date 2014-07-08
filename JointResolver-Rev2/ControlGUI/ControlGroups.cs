@@ -90,20 +90,6 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void tabsMain_Click(object sender, EventArgs e)
-    //private void tabsMain_TabIndexChanged(object sender, EventArgs e)
-    {
-        string currentTab2 = tabsMain.SelectedTab.Name;
-        if (currentTab2 == "tabJoints")
-        {
-            btnCalculate.Visible = false;
-        }
-        else
-        {
-            btnCalculate.Visible = false;
-        }
-    }
-
     private void btnCalculate_Click(object sender, EventArgs e)
     {
         
@@ -184,6 +170,18 @@ public partial class ControlGroups
         {
             InventorSkeletalJoint joint = (InventorSkeletalJoint)lstJoints.SelectedItems[0].Tag;
             joint.DetermineLimits();
+        }
+    }
+
+    private void tabsMain_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (tabsMain.SelectedTab.Name == "tabJoints")
+        {
+            btnCalculate.Visible = true;
+        }
+        else
+        {
+            btnCalculate.Visible = false;
         }
     }
 }
