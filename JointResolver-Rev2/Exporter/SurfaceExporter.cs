@@ -6,8 +6,7 @@ using System.Collections.Generic;
 // Not thread safe.
 class SurfaceExporter
 {
-    private const int MAX_VERTICIES = 8192 * 256;
-    private const int TMP_VERTICIES = 8192;
+    private const int TMP_VERTICIES = ushort.MaxValue;
 
     private bool adaptiveIgnoring = false;
 
@@ -15,7 +14,7 @@ class SurfaceExporter
     private double[] tmpVerts = new double[TMP_VERTICIES * 3];
     private double[] tmpNorms = new double[TMP_VERTICIES * 3];
     private int[] tmpIndicies = new int[TMP_VERTICIES * 3];
-    public double[] tmpTextureCoords = new double[TMP_VERTICIES * 2];
+    private double[] tmpTextureCoords = new double[TMP_VERTICIES * 2];
     private int tmpVertCount = 0;
     private int tmpFacetCount = 0;
 
@@ -31,13 +30,19 @@ class SurfaceExporter
         public int facetCount;
     }
 
-    public List<Mesh> meshes = new List<Mesh>();
-    public PhysicalProperties physics = new PhysicalProperties();
+    private List<Mesh> meshes = new List<Mesh>();
+    private PhysicalProperties physics = new PhysicalProperties();
 
     // Tolerances
     private double[] tolerances = new double[10];
     private int tmpToleranceCount = 0;
 
+    /// <summary>
+    /// Copies mesh information for the given surface body into the mesh storage structure.
+    /// </summary>
+    /// <param name="surf">The surface body to export</param>
+    /// <param name="bestResolution">Use the best possible resolution</param>
+    /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
     public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
@@ -53,11 +58,9 @@ class SurfaceExporter
 
         if (separateFaces)
         {
-            int ia = 0;
             foreach (Face f in surf.Faces)
             {
                 AddFacets(f, tolerances[bestIndex]);
-                Console.WriteLine("\t" + (++ia) + "/" + surf.Faces.Count + "\t\tVerts: " + vertCount);
             }
         }
         else
@@ -83,8 +86,19 @@ class SurfaceExporter
         }
     }
 
+    /// <summary>
+    /// Moves the mesh currently in the temporary mesh buffer into the mesh structure itself, 
+    /// with material information from the asset properties.
+    /// </summary>
+    /// <param name="assetProps">Material information to use</param>
     private void AddFacetsInternal(AssetProperties assetProps)
     {
+        if (tmpVertCount > ushort.MaxValue)
+        {
+            // This won't actually happen since TMP_VERTEX_COUNT is max short.
+            System.Windows.Forms.MessageBox.Show("Warning: Mesh segment exceededed 65000 verticies.  Strange things may begin to happen.");
+        }
+
         Mesh subObject = new Mesh();
         subObject.verts = new double[tmpVertCount * 3];
         subObject.norms = new double[tmpVertCount * 3];
@@ -110,6 +124,11 @@ class SurfaceExporter
         meshes.Add(subObject);
     }
 
+    /// <summary>
+    /// Copies mesh information from the Inventor API to the temporary mesh buffer, then into the mesh structure.
+    /// </summary>
+    /// <param name="surf">The source mesh</param>
+    /// <param name="tolerance">The chord tolerance for the mesh</param>
     private void AddFacets(Face surf, double tolerance)
     {
         tmpVertCount = 0;
@@ -138,13 +157,23 @@ class SurfaceExporter
         AddFacetsInternal(assetProps);
     }
 
+    /// <summary>
+    /// Clears the mesh structure and physical properties, 
+    /// preparing this exporter for another set of objects.
+    /// </summary>
     public void Reset()
     {
-        vertCount = 0;
-        facetCount = 0;
+        meshes.Clear();
         physics = new PhysicalProperties();
     }
 
+    /// <summary>
+    /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
+    /// </summary>
+    /// <param name="occ">The component to export</param>
+    /// <param name="bestResolution">Use the best possible resolution</param>
+    /// <param name="separateFaces">Export each face as a separate mesh</param>
+    /// <param name="ignorePhysics">Don't add the physical properties of this component to the exporter</param>
     public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false, bool ignorePhysics = false)
     {
         if (!ignorePhysics)
@@ -185,6 +214,12 @@ class SurfaceExporter
         }
     }
 
+    /// <summary>
+    /// Adds the mesh for the given components, and all their subcomponents to the mesh storage structure.
+    /// </summary>
+    /// <param name="occs">The components to export</param>
+    /// <param name="bestResolution">Use the best possible resolution</param>
+    /// <param name="separateFaces">Export each face as a separate mesh</param>
     public void ExportAll(ComponentOccurrences occs, bool bestResolution = false, bool separateFaces = false)
     {
         foreach (ComponentOccurrence occ in occs)
@@ -192,7 +227,13 @@ class SurfaceExporter
             ExportAll(occ, bestResolution, separateFaces);
         }
     }
-
+    
+    /// <summary>
+    /// Adds the mesh for the given components, and all their subcomponents to the mesh storage structure.
+    /// </summary>
+    /// <param name="occs">The components to export</param>
+    /// <param name="bestResolution">Use the best possible resolution</param>
+    /// <param name="separateFaces">Export each face as a separate mesh</param>
     public void ExportAll(List<ComponentOccurrence> occs, bool bestResolution = false, bool separateFaces = false)
     {
         foreach (ComponentOccurrence occ in occs)
@@ -200,7 +241,14 @@ class SurfaceExporter
             ExportAll(occ, bestResolution, separateFaces);
         }
     }
-
+    
+    /// <summary>
+    /// Adds the mesh for all the components and their subcomponenets in the custom rigid group.  <see cref="ExportAll(ComponentOccurrence,bool,bool,bool)"/>
+    /// </summary>
+    /// <remarks>
+    /// This uses the best resolution and separate faces options stored inside the provided custom rigid group.
+    /// </remarks>
+    /// <param name="group">The group to export from</param>
     public void ExportAll(CustomRigidGroup group)
     {
         double totalVolume = 0;
@@ -249,6 +297,10 @@ class SurfaceExporter
     //[4 byte integer]	Vertex 2
     //[4 byte integer]	Vertex 3
 
+    /// <summary>
+    /// Writes the current mesh storage structure as a segmented BXDA to the given file path.
+    /// </summary>
+    /// <param name="path">Output path</param>
     public void WriteBXDA(String path)
     {
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
