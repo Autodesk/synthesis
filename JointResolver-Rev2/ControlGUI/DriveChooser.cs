@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Inventor;
 
 public partial class DriveChooser : Form
 {
@@ -50,13 +51,13 @@ public partial class DriveChooser : Form
         groupBox1.Visible = JointDriver.IsMotor(cType);
         if (JointDriver.IsMotor(cType) == true)
         {
-            btnSave.Location = new Point (13, 280);
+            btnSave.Location = new System.Drawing.Point (13, 280);
             btnSave.Visible = true;
         } 
         else if (JointDriver.IsMotor(cType) == false)
         {
             this.Height -= 60;
-            btnSave.Location = new Point (13, 220);
+            btnSave.Location = new System.Drawing.Point (13, 220);
             btnSave.Visible = true;
         }
     }
@@ -64,6 +65,7 @@ public partial class DriveChooser : Form
     private void btnSave_Click(object sender, EventArgs e)
     {
         WheelDriverMeta wheelDriver;
+        Box wheelBox = null;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         joint.cDriver = new JointDriver(cType);
         joint.cDriver.portA = (int)txtPortA.Value;
@@ -76,7 +78,49 @@ public partial class DriveChooser : Form
         {
             wheelDriver = new WheelDriverMeta();
             wheelDriver.position = this.position;
-            wheelDriver.radius = 5;
+
+            if (joint is RotationalJoint)
+            {
+                foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
+                {
+                    if (wheelBox == null)
+                    {
+                        wheelBox = component.RangeBox;
+                    }
+
+                    else //Expands the bounding box if needed.
+                    {
+                        if (wheelBox.MaxPoint.X < component.RangeBox.MaxPoint.X)
+                        {
+                            wheelBox.MaxPoint.X = component.RangeBox.MaxPoint.X;
+                        }
+                        if (wheelBox.MaxPoint.Y < component.RangeBox.MaxPoint.Y)
+                        {
+                            wheelBox.MaxPoint.Y = component.RangeBox.MaxPoint.Y;
+                        }
+                        if (wheelBox.MaxPoint.Z < component.RangeBox.MaxPoint.Z)
+                        {
+                            wheelBox.MaxPoint.Z = component.RangeBox.MaxPoint.Z;
+                        }
+
+                        if (wheelBox.MinPoint.X < component.RangeBox.MinPoint.X)
+                        {
+                            wheelBox.MinPoint.X = component.RangeBox.MinPoint.X;
+                        }
+                        if (wheelBox.MinPoint.Y < component.RangeBox.MinPoint.Y)
+                        {
+                            wheelBox.MinPoint.Y = component.RangeBox.MinPoint.Y;
+                        }
+                        if (wheelBox.MinPoint.Z < component.RangeBox.MinPoint.Z)
+                        {
+                            wheelBox.MinPoint.Z = component.RangeBox.MinPoint.Z;
+                        }
+                    }
+                }
+
+                wheelDriver.radius = (float)(wheelBox.MaxPoint.Y - wheelBox.MinPoint.Y);
+            }
+
             joint.cDriver.AddInfo(wheelDriver);
         }
 
