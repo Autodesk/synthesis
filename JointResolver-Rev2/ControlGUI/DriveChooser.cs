@@ -66,6 +66,7 @@ public partial class DriveChooser : Form
     {
         WheelDriverMeta wheelDriver;
         Box wheelBox = null;
+        Inventor.Point tmp;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         joint.cDriver = new JointDriver(cType);
         joint.cDriver.portA = (int)txtPortA.Value;
@@ -81,41 +82,67 @@ public partial class DriveChooser : Form
 
             if (joint is RotationalJoint)
             {
+                //Enter the rabbit hole.
                 foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
                 {
-                    if (wheelBox == null)
+                    foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
                     {
-                        wheelBox = component.RangeBox;
-                    }
+                        foreach (Face polygon in surface.Faces)
+                        {
+                            foreach (Vertex vertex in polygon.Vertices)
+                            {
+                                if (wheelBox == null)
+                                {
+                                    Inventor.Application inv = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+                                    wheelBox = inv.TransientGeometry.CreateBox();
+                                    wheelBox.MinPoint = vertex.Point.Copy();
+                                    wheelBox.MaxPoint = vertex.Point.Copy();
+                                    
+                                    
+                                }
+                                else
+                                {
+                                    if (wheelBox.MaxPoint.X < vertex.Point.X)
+                                    {
+                                        tmp = wheelBox.MaxPoint;
+                                        tmp.X = vertex.Point.X;
+                                        wheelBox.MaxPoint = tmp;
+                                    }
+                                    if (wheelBox.MaxPoint.Y < vertex.Point.Y)
+                                    {
+                                        tmp = wheelBox.MaxPoint;
+                                        tmp.Y = vertex.Point.Y;
+                                        wheelBox.MaxPoint = tmp;
+                                    }
+                                    if (wheelBox.MaxPoint.Z < vertex.Point.Z)
+                                    {
+                                        tmp = wheelBox.MaxPoint;
+                                        tmp.Z = vertex.Point.Z;
+                                        wheelBox.MaxPoint = tmp;
+                                    }
 
-                    else //Expands the bounding box if needed.
-                    {
-                        if (wheelBox.MaxPoint.X < component.RangeBox.MaxPoint.X)
-                        {
-                            wheelBox.MaxPoint.X = component.RangeBox.MaxPoint.X;
+                                    if (wheelBox.MinPoint.X > vertex.Point.X)
+                                    {
+                                        tmp = wheelBox.MinPoint;
+                                        tmp.X = vertex.Point.X;
+                                        wheelBox.MinPoint = tmp;
+                                    }
+                                    if (wheelBox.MinPoint.Y > vertex.Point.Y)
+                                    {
+                                        tmp = wheelBox.MinPoint;
+                                        tmp.Y = vertex.Point.Y;
+                                        wheelBox.MinPoint = tmp;
+                                    }
+                                    if (wheelBox.MinPoint.Z > vertex.Point.Z)
+                                    {
+                                        tmp = wheelBox.MinPoint;
+                                        tmp.Z = vertex.Point.Z;
+                                        wheelBox.MinPoint = tmp;
+                                    }
+                                }
+                            }
                         }
-                        if (wheelBox.MaxPoint.Y < component.RangeBox.MaxPoint.Y)
-                        {
-                            wheelBox.MaxPoint.Y = component.RangeBox.MaxPoint.Y;
-                        }
-                        if (wheelBox.MaxPoint.Z < component.RangeBox.MaxPoint.Z)
-                        {
-                            wheelBox.MaxPoint.Z = component.RangeBox.MaxPoint.Z;
-                        }
-
-                        if (wheelBox.MinPoint.X < component.RangeBox.MinPoint.X)
-                        {
-                            wheelBox.MinPoint.X = component.RangeBox.MinPoint.X;
-                        }
-                        if (wheelBox.MinPoint.Y < component.RangeBox.MinPoint.Y)
-                        {
-                            wheelBox.MinPoint.Y = component.RangeBox.MinPoint.Y;
-                        }
-                        if (wheelBox.MinPoint.Z < component.RangeBox.MinPoint.Z)
-                        {
-                            wheelBox.MinPoint.Z = component.RangeBox.MinPoint.Z;
-                        }
-                    }
+                    }    
                 }
 
                 wheelDriver.radius = (float)(wheelBox.MaxPoint.Y - wheelBox.MinPoint.Y);
