@@ -90,14 +90,15 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void tabsMain_selectedIndexChanged(object sender, EventArgs e)
+    private void tabsMain_Click(object sender, EventArgs e)
+    //private void tabsMain_TabIndexChanged(object sender, EventArgs e)
     {
-        string currentTab = tabsMain.SelectedTab.Name;
-        if (tabsMain.SelectedTab.Name == "Joint")
+        string currentTab2 = tabsMain.SelectedTab.Name;
+        if (currentTab2 == "tabJoints")
         {
-            btnCalculate.Visible = true;
+            btnCalculate.Visible = false;
         }
-        else if (tabsMain.SelectedTab.Name != "Joint")
+        else
         {
             btnCalculate.Visible = false;
         }
@@ -105,7 +106,7 @@ public partial class ControlGroups
 
     private void btnCalculate_Click(object sender, EventArgs e)
     {
-
+        
     }
 
     private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
@@ -174,6 +175,15 @@ public partial class ControlGroups
                 ((CustomRigidGroup)item.Tag).highRes = !cVal;
                 item.SubItems[3].Text = !cVal ? "Yes" : "No";
             }
+        }
+    }
+
+    private void btnCalculate_Click_1(object sender, EventArgs e)
+    {
+        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is InventorSkeletalJoint)
+        {
+            InventorSkeletalJoint joint = (InventorSkeletalJoint)lstJoints.SelectedItems[0].Tag;
+            joint.DetermineLimits();
         }
     }
 }

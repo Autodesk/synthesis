@@ -28,8 +28,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chMidpoints = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.midpointButtons = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain = new System.Windows.Forms.TabControl();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.lstGroups = new System.Windows.Forms.ListView();
@@ -73,9 +71,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chParent,
             this.item_chChild,
             this.item_chDrive,
-            this.item_chWheel,
-            this.item_chMidpoints,
-            this.midpointButtons});
+            this.item_chWheel});
             this.lstJoints.FullRowSelect = true;
             this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lstJoints.HoverSelection = true;
@@ -114,16 +110,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             this.item_chWheel.Text = "Wheel Position";
             this.item_chWheel.Width = 120;
-            // 
-            // item_chMidpoints
-            // 
-            this.item_chMidpoints.Text = "Midpoints";
-            this.item_chMidpoints.Width = 76;
-            // 
-            // midpointButtons
-            // 
-            this.midpointButtons.Text = "Calculate Midpoints";
-            this.midpointButtons.Width = 133;
             // 
             // tabsMain
             // 
@@ -215,8 +201,9 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.Name = "btnCalculate";
             this.btnCalculate.Size = new System.Drawing.Size(128, 43);
             this.btnCalculate.TabIndex = 6;
-            this.btnCalculate.Text = "Calculate Midpoints";
+            this.btnCalculate.Text = "Calculate Limit";
             this.btnCalculate.UseVisualStyleBackColor = true;
+            this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
             // 
             // ControlGroups
             // 
@@ -261,7 +248,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader groups_chGrounded;
     private System.Windows.Forms.CheckBox chkHighlightComponents;
     private System.Windows.Forms.ColumnHeader item_chWheel;
-    private System.Windows.Forms.ColumnHeader item_chMidpoints;
-    private System.Windows.Forms.ColumnHeader midpointButtons;
     private System.Windows.Forms.Button btnCalculate;
 }

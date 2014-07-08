@@ -62,8 +62,14 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         // Stash results
         wrapped.asmJoint.HasLinearPositionStartLimit = hasLowerLimit;
         wrapped.asmJoint.HasLinearPositionEndLimit = hasUpperLimit;
-        wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitLow;
-        wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitHigh;
+        if (hasLowerLimit == true)
+        {
+            wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitLow;
+        }
+        if (hasUpperLimit == true)
+        {
+            wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitHigh;
+        }
     }
 
     public static bool IsLinearJoint(CustomRigidJoint jointI)

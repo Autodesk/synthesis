@@ -111,11 +111,20 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         // Stash results
         wrapped.asmJoint.HasLinearPositionStartLimit = hasLinearStartLimit;
         wrapped.asmJoint.HasLinearPositionEndLimit = hasLinearEndLimit;
-        wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitStart;
-        wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitEnd;
+        if (hasLinearStartLimit == true)
+        {
+            wrapped.asmJoint.LinearPositionStartLimit.Value = linearLimitStart;
+        }
+        if (hasLinearEndLimit == true)
+        {
+            wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitEnd;
+        }
         wrapped.asmJoint.HasAngularPositionLimits = hasAngularLimit;
-        wrapped.asmJoint.AngularPositionStartLimit.Value = angularLimitLow;
-        wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;
+        if (hasAngularLimit == true)
+        {
+            wrapped.asmJoint.AngularPositionStartLimit.Value = angularLimitLow;
+            wrapped.asmJoint.AngularPositionEndLimit.Value = angularLimitHigh;
+        }
     }
 
     public static bool IsCylindricalJoint(CustomRigidJoint jointI)

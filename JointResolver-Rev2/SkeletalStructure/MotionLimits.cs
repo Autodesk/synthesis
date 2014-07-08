@@ -9,7 +9,7 @@ public class MotionLimits
 
     public void DoIsolation(ComponentOccurrence occ, bool isolate)
     {
-        if (occ.SubOccurrences.Count == 0)
+        if (occ.SubOccurrences == null || occ.SubOccurrences.Count == 0)
         {
             if (isolate)
             {
