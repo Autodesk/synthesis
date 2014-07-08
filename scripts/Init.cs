@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Init : MonoBehaviour {
 	
-	void generateCubes(int amt)
+	public void generateCubes(int amt)
 	{
 		GameObject tmp;
 		for (int i = 0; i < amt; i++) 
@@ -17,18 +17,42 @@ public class Init : MonoBehaviour {
 	}
 
 	void Start () {
-		string[] filepaths = {"C:/Users/t_defap/Documents/part2_1.bxda","C:/Users/t_defap/Documents/movement_1.bxda"};
+		string[] filepaths = {"C:/Users/t_waggn/Documents/Skeleton/node_0.bxda",
+							  "C:/Users/t_waggn/Documents/Skeleton/node_1.bxda",
+			 				  "C:/Users/t_waggn/Documents/Skeleton/node_2.bxda",
+							  "C:/Users/t_waggn/Documents/Skeleton/node_3.bxda", 
+							  "C:/Users/t_waggn/Documents/Skeleton/node_4.bxda", 
+			 				  "C:/Users/t_waggn/Documents/Skeleton/node_5.bxda", 
+							  "C:/Users/t_waggn/Documents/Skeleton/node_6.bxda"};
+
 		generateCubes (filepaths.Length);
+
 		for (int i = 0; i < filepaths.Length; i++) 
 		{
 			HandleMeshes.loadBXDA (filepaths[i],transform.GetChild(i));
 		}
-		HandleMeshes.attachMeshColliders (this.transform);
-		HandleJoints.loadBXDJ ("C:/Users/t_defap/Documents/skele_andy_mark_chassis/skele_andy_mark_chassis/skeleton.bxdj", transform.GetChild(0), transform.GetChild(1));
-		HandleMeshes.attachRigidBodies (this.transform);
+		HandleMeshes.attachMeshColliders (transform);
+
+		//HandleJoints.Wheelcolliders (transform);
+		HandleJoints.loadBXDJ ("C:/Users/t_waggn/Documents/Skeleton/skeleton.bxdj", transform.GetChild(0), transform.GetChild(1), transform);
+		//HandleMeshes.attachRigidBodies (transform);
+
+
+
 	}
 
-	void Update () {
-	
+	void FixedUpdate () 
+	{
+		for (int i = 7; i < 10; i++) 
+		{
+			WheelCollider tmp = transform.GetChild(i).GetComponent<WheelCollider>();
+			tmp.motorTorque = Input.GetAxis("Vertical")*7-Input.GetAxis("Horizontal")*7;
+		}
+		for (int i = 10; i < 13; i++) 
+		{
+			WheelCollider tmp = transform.GetChild(i).GetComponent<WheelCollider>();
+			tmp.motorTorque = Input.GetAxis("Vertical")*7+Input.GetAxis("Horizontal")*7;
+		}
 	}
+
 }
