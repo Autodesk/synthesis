@@ -44,7 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BXDAMesh.cs" />
+    <Compile Include="IO\BXDAMesh.cs" />
+    <Compile Include="IO\BXDIO.cs" />
     <Compile Include="Joints\BallJoint_Base.cs" />
     <Compile Include="Joints\CylindricalJoint_Base.cs" />
     <Compile Include="Joints\Driver\JointDriverMeta.cs" />
@@ -58,7 +59,7 @@
     <Compile Include="Math\Math3D.cs" />
     <Compile Include="Math\PhysicalProperties.cs" />
     <Compile Include="ModelTree\RigidNode_Base.cs" />
-    <Compile Include="ModelTree\SkeletonIO.cs" />
+    <Compile Include="IO\BXDJSkeleton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ArrayUtilities.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />

@@ -16,7 +16,7 @@ public class BaseRigidNodeFactory : RigidNodeFactory
 public class RigidNode_Base
 {
     /// <summary>
-    /// By setting this to a custom value skeletons that are read using <see cref="SkeletonIO.ReadSkeleton(string)"/> can 
+    /// By setting this to a custom value skeletons that are read using <see cref="BXDJSkeleton.ReadSkeleton(string)"/> can 
     /// be composed of a custom rigid node type.
     /// </summary>
     public static RigidNodeFactory NODE_FACTORY = new BaseRigidNodeFactory();

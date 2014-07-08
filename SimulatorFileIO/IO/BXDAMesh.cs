@@ -40,6 +40,7 @@ public class BXDAMesh
     public void WriteBXDA(String path)
     {
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
+        writer.Write(BXDIO.FORMAT_VERSION);
         writer.Write(meshes.Count);
         foreach (BXDASubMesh mesh in meshes)
         {
@@ -79,6 +80,14 @@ public class BXDAMesh
     {
         meshes.Clear();
         BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
+
+        // Sanity check
+        uint version = reader.ReadUInt32();
+        if (version != BXDIO.FORMAT_VERSION)
+        {
+            throw new Exception("\"" + path + "\" was created with format version " + version + ", this library was compiled to read version " + BXDIO.FORMAT_VERSION);
+        }
+
         int meshCount = reader.ReadInt32();
         for (int id = 0; id < meshCount; id++)
         {

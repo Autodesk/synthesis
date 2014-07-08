@@ -2,13 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 
-public class SkeletonIO
+public class BXDJSkeleton
 {
-    /// <summary>
-    /// The version of the BXDJ file format this file can read and write.
-    /// </summary>
-    private const int FORMAT_VERSION = 2;
-
     /// <summary>
     /// Writes out the skeleton file for the skeleton with the base provided to the path provided.
     /// </summary>
@@ -52,7 +47,7 @@ public class SkeletonIO
         // Begin IO
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
 
-        writer.Write(FORMAT_VERSION);
+        writer.Write(BXDIO.FORMAT_VERSION);
 
         bxdaOutputPath = new Dictionary<RigidNode_Base, string>(); // Prepare output paths
 
@@ -93,10 +88,10 @@ public class SkeletonIO
     {
         BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
         // Sanity check
-        int version = reader.ReadInt32();
-        if (version != FORMAT_VERSION)
+        uint version = reader.ReadUInt32();
+        if (version != BXDIO.FORMAT_VERSION)
         {
-            throw new Exception("\"" + path + "\" was created with format version " + version + ", this library was compiled to read version " + FORMAT_VERSION);
+            throw new Exception("\"" + path + "\" was created with format version " + version + ", this library was compiled to read version " + BXDIO.FORMAT_VERSION);
         }
 
         int nodeCount = reader.ReadInt32();

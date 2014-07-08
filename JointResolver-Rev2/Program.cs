@@ -57,7 +57,7 @@ static class Program
             Directory.CreateDirectory(pathBase + "\\Downloads\\Skeleton");
             SurfaceExporter surfs = new SurfaceExporter();
             Dictionary<RigidNode_Base, string> bxdaOutputPath;
-            SkeletonIO.WriteSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
+            BXDJSkeleton.WriteSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
             foreach (KeyValuePair<RigidNode_Base, string> output in bxdaOutputPath)
             {
                 if (output.Key != null && output.Key.GetModel() != null && output.Key.GetModel() is CustomRigidGroup)
