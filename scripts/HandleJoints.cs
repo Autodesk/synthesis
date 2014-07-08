@@ -27,19 +27,22 @@ public class HandleJoints : MonoBehaviour
 	{
 		//this loads the skeleton for the object model
 		List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-		RigidNode_Base skeleton = SkeletonIO.readSkeleton (filePath);
-		skeleton.listAllNodes(nodes); 
+		RigidNode_Base skeleton = SkeletonIO.ReadSkeleton (filePath);
+		skeleton.ListAllNodes(nodes); 
 
+		int i = 0;
 		foreach (RigidNode_Base node in nodes) {
+
+
 			//returns skeletonjointtype to then be used as required joint type
-			SkeletalJoint_Base nodeX = node.getSkeletalJoint();
+			SkeletalJoint_Base nodeX = node.GetSkeletalJoint();
 			if (nodeX != null){
 
 				var rigid = jointC;
 				var owner = jointO;
 
 				//this is the conditional for Identified wheels
-				if ((int)nodeX.getJointType() == (int)SkeletalJointType.ROTATIONAL){
+				if ((int)nodeX.GetJointType() == (int)SkeletalJointType.ROTATIONAL){
 
 					RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
 
@@ -49,9 +52,10 @@ public class HandleJoints : MonoBehaviour
 					Vector3 childC = new Vector3((float)nodeR.childBase.x,(float)nodeR.childBase.y,(float)nodeR.childBase.z);
 					Vector3 childN = new Vector3((float)nodeR.childNormal.x,(float)nodeR.childNormal.y,(float)nodeR.childNormal.z);
 
-					if((int)nodeX.getJointType() == (int)SkeletalJointType.ROTATIONAL && isWheel == true){
-						HandleJoints.Wheelcolliders(parent);
-
+					if((int)nodeX.GetJointType() == (int)SkeletalJointType.ROTATIONAL && isWheel == true){
+						Wheelcolliders(parent, i);
+						i++;
+						//Debug.Log ("Alive");
 					}else{
 						Rigidbody rigidB = rigid.gameObject.AddComponent<Rigidbody>();
 						var ownerB = owner.gameObject.AddComponent<ConfigurableJoint>();
@@ -75,15 +79,14 @@ public class HandleJoints : MonoBehaviour
 			}
 		}
 	}
-	public static void Wheelcolliders(Transform parent){
-				for (int i = 0; i < 6; i++) {
-						GameObject collider = new GameObject ();
-						collider.transform.parent = parent;
-						collider.transform.position = parent.GetChild (i).GetComponent<MeshCollider> ().bounds.center;
-						collider.AddComponent<WheelCollider> ();
-						collider.GetComponent<WheelCollider> ().radius = 5.2f;
-						collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
-				}
+	public static void Wheelcolliders(Transform parent, int i){
+					GameObject collider = new GameObject ();
+					collider.transform.parent = parent;
+					collider.transform.position = parent.GetChild (i).GetComponent<MeshCollider> ().bounds.center;
+					collider.AddComponent<WheelCollider> ();
+					collider.GetComponent<WheelCollider> ().radius = 5.2f;
+					collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
+				
 				parent.Rotate (new Vector3 (-90, 0, 0));
 				parent.gameObject.AddComponent<Rigidbody> ();
 				parent.rigidbody.mass = 120;
