@@ -173,7 +173,7 @@ class SurfaceExporter
             }
             else
             {
-                ExportAll(item, bestResolution, separateFaces, true);   // Duplicates some of the physics
+                ExportAll(item, bestResolution, separateFaces, true);
             }
         }
     }
