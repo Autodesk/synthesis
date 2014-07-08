@@ -116,6 +116,7 @@ public class BXDAMesh
                 mesh.indicies[fI + 1] = reader.ReadInt32();
                 mesh.indicies[fI + 2] = reader.ReadInt32();
             }
+            meshes.Add(mesh);
         }
         physics.ReadData(reader);
         reader.Close();
