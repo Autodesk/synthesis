@@ -48,13 +48,12 @@ public partial class DriveChooser : Form
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
         groupBox1.Visible = JointDriver.IsMotor(cType);
-        bool windowReducer = JointDriver.IsMotor(cType);
-        if (windowReducer == true)
+        if (JointDriver.IsMotor(cType) == true)
         {
             btnSave.Location = new Point (13, 280);
             btnSave.Visible = true;
         } 
-        else if (windowReducer == false)
+        else if (JointDriver.IsMotor(cType) == false)
         {
             this.Height -= 60;
             btnSave.Location = new Point (13, 220);

@@ -90,6 +90,24 @@ public partial class ControlGroups
         Hide();
     }
 
+    private void tabsMain_selectedIndexChanged(object sender, EventArgs e)
+    {
+        string currentTab = tabsMain.SelectedTab.Name;
+        if (tabsMain.SelectedTab.Name == "Joint")
+        {
+            btnCalculate.Visible = true;
+        }
+        else if (tabsMain.SelectedTab.Name != "Joint")
+        {
+            btnCalculate.Visible = false;
+        }
+    }
+
+    private void btnCalculate_Click(object sender, EventArgs e)
+    {
+
+    }
+
     private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (chkHighlightComponents.Checked && lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint)
