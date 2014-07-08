@@ -76,6 +76,7 @@ public partial class DriveChooser : Form
         {
             wheelDriver = new WheelDriverMeta();
             wheelDriver.position = this.position;
+            wheelDriver.radius = 5;
             joint.cDriver.AddInfo(wheelDriver);
         }
 

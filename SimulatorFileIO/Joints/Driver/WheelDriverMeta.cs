@@ -13,6 +13,11 @@ public enum WheelPosition : byte
 
 public class WheelDriverMeta : JointDriverMeta
 {
+    public float radius
+    {
+        get;
+        set;
+    }
     public WheelPosition position
     {
         get;
@@ -27,12 +32,14 @@ public class WheelDriverMeta : JointDriverMeta
     protected override void WriteDataInternal(BinaryWriter writer)
     {
         writer.Write((byte)((int)position));
+        writer.Write(radius);
     }
 
     //Reads the position of the wheel from the file.
     protected override void ReadDataInternal(BinaryReader reader)
     {
         position = (WheelPosition)reader.ReadByte();
+        radius = reader.ReadSingle();
     }
 }
 

@@ -11,7 +11,7 @@ static class Program
     public static unsafe void Main(String[] args)
     {
         INVENTOR_APPLICATION = (Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-        AnalyzeRigidResults();   
+        AnalyzeRigidResults();
     }
 
     public static Matrix GetWorldTransformation(ComponentOccurrence comp)
@@ -75,5 +75,4 @@ static class Program
             }
         }
     }
-
 }
