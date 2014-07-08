@@ -132,7 +132,14 @@ public class JointDriver
 
     public override string ToString()
     {
-        return System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant() + " " + JointDriver.GetPortType(type) + "(" + portA + (JointDriver.HasTwoPorts(GetDriveType()) ? "," + portB : "") + ")";
+        string info = System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant();
+        info += "\nPorts: " + JointDriver.GetPortType(type) + "(" + portA + (JointDriver.HasTwoPorts(GetDriveType()) ? "," + portB : "") + ")";
+        info += "\nMeta: ";
+        foreach (KeyValuePair<System.Type, JointDriverMeta> meta in metaInfo)
+        {
+            info += "\n\t" + meta.Value.ToString();
+        }
+        return info;
     }
 
     public JointDriverType GetDriveType()

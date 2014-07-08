@@ -41,5 +41,10 @@ public class WheelDriverMeta : JointDriverMeta
         position = (WheelPosition)reader.ReadByte();
         radius = reader.ReadSingle();
     }
+
+    public override string ToString()
+    {
+        return "WheelMeta[pos=" + System.Enum.GetName(typeof(WheelPosition), position) + ",rad=" + radius + "]";
+    }
 }
 

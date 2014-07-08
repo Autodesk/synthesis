@@ -69,7 +69,7 @@ public abstract class SkeletalJoint_Base
         string info = ToString_Internal();
         if (cDriver != null)
         {
-            info += " driven by " + Enum.GetName(typeof(JointDriverType), cDriver.GetDriveType()).Replace('_', ' ').ToLowerInvariant() + " (" + cDriver.portA + (JointDriver.HasTwoPorts(cDriver.GetDriveType()) ? "," + cDriver.portB : "") + ")";
+            info += "\n Driver: " + cDriver.ToString().Replace("\n", "\n ");
         }
         return info;
     }

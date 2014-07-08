@@ -48,19 +48,25 @@ public class RigidNode_Base
 
     public virtual object GetModel()
     {
-        return null;
+        return modelName;
     }
 
     public override string ToString()
     {
-        string result = new string(' ', 3 * level) + "Rigid Node" + System.Environment.NewLine + new string(' ', 3 * level) + "Name: " + GetModel() + System.Environment.NewLine;
+        string result = new string('\t', level) + "Rigid Node" + System.Environment.NewLine;
+        result += new string('\t', level) + "Name: " + GetModel() + System.Environment.NewLine;
+        if (parentConnection != null && parentConnection.cDriver != null)
+        {
+            result += new string('\t', level) + "Driver: " + ("\n" + parentConnection.cDriver.ToString()).Replace("\n", "\n" + new string('\t', level + 1));
+        }
         if (children.Count > 0)
         {
-            result += new string(' ', 3 * level) + "Children: ";
+            result += new string('\t', level) + "Children: ";
             foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in children)
             {
-                result += System.Environment.NewLine + new string(' ', 3 * level + 1) + "- " + pair.Key.ToString();
+                result += System.Environment.NewLine + new string('\t', level) + " - " + pair.Key.ToString();
                 result += System.Environment.NewLine + pair.Value.ToString();
+                result += "\n";
             }
         }
         return result;
