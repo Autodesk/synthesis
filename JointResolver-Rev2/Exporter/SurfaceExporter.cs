@@ -9,6 +9,8 @@ class SurfaceExporter
     private const int MAX_VERTICIES = 8192 * 256;
     private const int TMP_VERTICIES = 8192;
 
+    private bool adaptiveIgnoring = false;
+
     // Temporary output
     private double[] tmpVerts = new double[TMP_VERTICIES * 3];
     private double[] tmpNorms = new double[TMP_VERTICIES * 3];
@@ -165,12 +167,14 @@ class SurfaceExporter
 
         foreach (ComponentOccurrence item in occ.SubOccurrences)
         {
-            if (item.MassProperties.Volume < totalVolume)
+            if (adaptiveIgnoring && item.MassProperties.Volume < totalVolume)
             {
-                item.Visible = false;
                 Console.WriteLine("Drop: " + item.Name);
             }
-            ExportAll(item, bestResolution, separateFaces, true);
+            else
+            {
+                ExportAll(item, bestResolution, separateFaces, true);   // Duplicates some of the physics
+            }
         }
     }
 
@@ -201,12 +205,14 @@ class SurfaceExporter
 
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            if (occ.MassProperties.Volume < totalVolume)
+            if (adaptiveIgnoring && occ.MassProperties.Volume < totalVolume)
             {
-                occ.Visible = false;
-                Console.WriteLine("Drop: " + occ.Name);
+                Console.WriteLine("Drop: " + occ.Name); // TODO Ignores physics
             }
-            ExportAll(occ, group.highRes, group.colorFaces);
+            else
+            {
+                ExportAll(occ, group.highRes, group.colorFaces);
+            }
         }
     }
 
