@@ -66,7 +66,7 @@ static class Program
                     Console.WriteLine("Output " + group.ToString() + " to " + output.Value);
                     surfs.Reset();
                     surfs.ExportAll(group);
-                    surfs.WriteBXDA(output.Value);
+                    surfs.GetOutput().WriteBXDA(output.Value);
                 }
             }
         }

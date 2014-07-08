@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 // Not thread safe.
-class SurfaceExporter
+public class SurfaceExporter
 {
     private const int TMP_VERTICIES = ushort.MaxValue;
 
@@ -28,20 +28,8 @@ class SurfaceExporter
     private int postVertCount = 0;
     private int postFacetCount = 0;
 
-    // Final output
-    private struct Mesh
-    {
-        public double[] verts;
-        public double[] norms;
-        public double[] textureCoords;
-        public uint[] colors;
-        public int[] indicies;
-        public int vertCount;
-        public int facetCount;
-    }
 
-    private List<Mesh> meshes = new List<Mesh>();
-    private PhysicalProperties physics = new PhysicalProperties();
+    private BXDAMesh outputMesh = new BXDAMesh();
 
     // Tolerances
     private double[] tolerances = new double[10];
@@ -99,23 +87,21 @@ class SurfaceExporter
     {
         if (postVertCount == 0 || postFacetCount == 0)
             return;
-        Mesh subObject = new Mesh();
+        BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
         subObject.verts = new double[postVertCount * 3];
         subObject.norms = new double[postVertCount * 3];
         subObject.textureCoords = new double[postVertCount * 2];
         subObject.colors = new uint[postVertCount];
         subObject.indicies = new int[postFacetCount * 3];
-        subObject.facetCount = postFacetCount;
-        subObject.vertCount = postVertCount;
         Array.Copy(postVerts, 0, subObject.verts, 0, postVertCount * 3);
         Array.Copy(postNorms, 0, subObject.norms, 0, postVertCount * 3);
         Array.Copy(postTextureCoords, 0, subObject.textureCoords, 0, postVertCount * 2);
         Array.Copy(postIndicies, 0, subObject.indicies, 0, postFacetCount * 3);
         Array.Copy(postColors, 0, subObject.colors, 0, postVertCount);
-        Console.WriteLine("Mesh segment " + meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
+        Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
         postVertCount = 0;
         postFacetCount = 0;
-        meshes.Add(subObject);
+        outputMesh.meshes.Add(subObject);
     }
 
     /// <summary>
@@ -197,8 +183,7 @@ class SurfaceExporter
     /// </summary>
     public void Reset()
     {
-        meshes.Clear();
-        physics = new PhysicalProperties();
+        outputMesh = new BXDAMesh();
     }
 
     /// <summary>
@@ -213,11 +198,11 @@ class SurfaceExporter
         if (!ignorePhysics)
         {
             // Compute physics
-            physics.centerOfMass.Multiply(physics.mass);
+            outputMesh.physics.centerOfMass.Multiply(outputMesh.physics.mass);
             float myMass = (float) occ.MassProperties.Mass;
-            physics.mass += myMass;
-            physics.centerOfMass.Add(Utilities.ToBXDVector(occ.MassProperties.CenterOfMass).Multiply(myMass));
-            physics.centerOfMass.Multiply(1.0f / physics.mass);
+            outputMesh.physics.mass += myMass;
+            outputMesh.physics.centerOfMass.Add(Utilities.ToBXDVector(occ.MassProperties.CenterOfMass).Multiply(myMass));
+            outputMesh.physics.centerOfMass.Multiply(1.0f / outputMesh.physics.mass);
         }
 
         if (!occ.Visible)
@@ -305,69 +290,12 @@ class SurfaceExporter
         }
     }
 
-    //[4 byte integer]  Mesh count
-    //[Extensible]      Meshes
-
-    //Each Mesh:
-    //
-    //[4 byte integer]	Vertex Count
-    //For each vertex…
-    //[8 byte double]	Vertex position x
-    //[8 byte double]	Vertex position y
-    //[8 byte double]	Vertex position z
-    //[8 byte double]	Vertex normal x
-    //[8 byte double]	Vertex normal y
-    //[8 byte double]	Vertex normal z
-    //[1 byte]		Vertex color red
-    //[1 byte]		Vertex color green
-    //[1 byte]		Vertex color blue
-    //[1 byte]		Vertex color alpha
-    //[8 byte double]	Vertex texture u
-    //[8 byte double]	Vertex texture v
-    //
-    //[4 byte integer]	Facet count
-    //For each facet…
-    //[4 byte integer]	Vertex 1
-    //[4 byte integer]	Vertex 2
-    //[4 byte integer]	Vertex 3
-
     /// <summary>
-    /// Writes the current mesh storage structure as a segmented BXDA to the given file path.
+    /// Gets the currently generated mesh object.
     /// </summary>
-    /// <param name="path">Output path</param>
-    public void WriteBXDA(String path)
+    /// <returns>a BXDA Mesh</returns>
+    public BXDAMesh GetOutput()
     {
-        DumpMeshBuffer();
-        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
-        writer.Write(meshes.Count);
-        foreach (Mesh mesh in meshes)
-        {
-            writer.Write(mesh.vertCount);
-            for (int i = 0; i < mesh.vertCount; i++)
-            {
-                int vecI = i * 3;
-                int texI = i * 2;
-                int colI = i;
-                writer.Write(mesh.verts[vecI]);
-                writer.Write(mesh.verts[vecI + 1]);
-                writer.Write(mesh.verts[vecI + 2]);
-                writer.Write(mesh.norms[vecI]);
-                writer.Write(mesh.norms[vecI + 1]);
-                writer.Write(mesh.norms[vecI + 2]);
-                writer.Write(mesh.colors[colI]);
-                writer.Write(mesh.textureCoords[texI]);
-                writer.Write(mesh.textureCoords[texI + 1]);
-            }
-            writer.Write(mesh.facetCount);
-            for (int i = 0; i < mesh.facetCount; i++)
-            {
-                int fI = i * 3;
-                writer.Write(mesh.indicies[fI] - 1);
-                writer.Write(mesh.indicies[fI + 1] - 1);
-                writer.Write(mesh.indicies[fI + 2] - 1);
-            }
-        }
-        physics.WriteData(writer);
-        writer.Close();
+        return outputMesh;
     }
 }
