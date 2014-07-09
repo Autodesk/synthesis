@@ -18,6 +18,8 @@ public class JointDriver
 
     public float lowerLimit, upperLimit;
 
+    public bool twoPorts;
+
     private Dictionary<System.Type, JointDriverMeta> metaInfo = new Dictionary<System.Type, JointDriverMeta>();
 
     public JointDriver(JointDriverType type)
@@ -69,8 +71,13 @@ public class JointDriver
     public static bool HasTwoPorts(JointDriverType type)
     {
         return type == JointDriverType.BUMPER_PNEUMATIC;
+    }
+
+    public static bool HasTwoPortsCheck(JointDriverType type)
+    {
         return type == JointDriverType.DUAL_MOTOR;
     }
+
     public static string GetPortType(JointDriverType type)
     {
         switch (type)
