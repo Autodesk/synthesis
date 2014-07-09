@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-//IMPORTANT: Will only move sidways by pushing the left arrow key. It will "hop" sideways and backwards. Forward = turning slowly
+//IMPORTANT: Will only move sidways by pushing the left and right arrow key
 //wheel colliders are positioned so procedurally :)
 //But... it work like omniwheels for the left arrow key!!
 
