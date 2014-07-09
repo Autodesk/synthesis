@@ -18,8 +18,6 @@ public class JointDriver
 
     public float lowerLimit, upperLimit;
 
-    public bool twoPorts;
-
     private Dictionary<System.Type, JointDriverMeta> metaInfo = new Dictionary<System.Type, JointDriverMeta>();
 
     public JointDriver(JointDriverType type)
