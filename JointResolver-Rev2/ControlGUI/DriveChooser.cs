@@ -51,12 +51,13 @@ public partial class DriveChooser : Form
         groupBox1.Visible = JointDriver.IsMotor(cType);
         if (JointDriver.IsMotor(cType) == true)
         {
+            this.Height = 360;
             btnSave.Location = new System.Drawing.Point (13, 280);
             btnSave.Visible = true;
         } 
         else if (JointDriver.IsMotor(cType) == false)
         {
-            this.Height -= 60;
+            this.Height = 300;
             btnSave.Location = new System.Drawing.Point (13, 220);
             btnSave.Visible = true;
         }

@@ -6,7 +6,8 @@ public enum JointDriverType : byte
     SERVO = 2,
     WORM_SCREW = 3,
     BUMPER_PNEUMATIC = 4,
-    RELAY_PNEUMATIC = 5
+    RELAY_PNEUMATIC = 5,
+    DUAL_MOTOR = 6
 }
 
 public class JointDriver
@@ -47,12 +48,12 @@ public class JointDriver
         {
             case SkeletalJointType.ROTATIONAL:
                 // Pneumatic and Worm Screw map to angles
-                return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
+                return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW, JointDriverType.DUAL_MOTOR};
             case SkeletalJointType.LINEAR:
                 return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW };
             case SkeletalJointType.CYLINDRICAL:
                 return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,
-                JointDriverType.MOTOR, JointDriverType.SERVO};
+                JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.DUAL_MOTOR};
             case SkeletalJointType.PLANAR:
                 //Not sure of an FRC part with planar motion.  Will add later if needed.
                 return new JointDriverType[] { };
@@ -68,6 +69,7 @@ public class JointDriver
     public static bool HasTwoPorts(JointDriverType type)
     {
         return type == JointDriverType.BUMPER_PNEUMATIC;
+        return type == JointDriverType.DUAL_MOTOR;
     }
     public static string GetPortType(JointDriverType type)
     {
@@ -75,6 +77,7 @@ public class JointDriver
         {
             case JointDriverType.MOTOR:
             case JointDriverType.SERVO:
+            case JointDriverType.DUAL_MOTOR:
             case JointDriverType.WORM_SCREW:
                 return "PWM";
             case JointDriverType.BUMPER_PNEUMATIC:
@@ -94,6 +97,9 @@ public class JointDriver
             case JointDriverType.MOTOR:
                 showWheelPos = true;
                 break;
+            case JointDriverType.DUAL_MOTOR:
+                showWheelPos = true;
+                break;
             default:
                 showWheelPos = false;
                 break;
@@ -106,6 +112,7 @@ public class JointDriver
         switch (type)
         {
             case JointDriverType.MOTOR:
+            case JointDriverType.DUAL_MOTOR:
             case JointDriverType.SERVO:
             case JointDriverType.WORM_SCREW:
                 return 8; // PWM
