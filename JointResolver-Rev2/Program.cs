@@ -10,7 +10,7 @@ static class Program
     private const int MAX_VERTICIES = 8192;
     public static unsafe void Main(String[] args)
     {
-        INVENTOR_APPLICATION = (Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+        INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         AnalyzeRigidResults();
     }
 
@@ -28,7 +28,11 @@ static class Program
 
     public static void AnalyzeRigidResults()
     {
-        AssemblyDocument asmDoc = (AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
+        string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+        string pathBase = homePath + "\\Downloads\\Skeleton";
+        Directory.CreateDirectory(pathBase);
+
+        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         Console.WriteLine("Get rigid info...");
         RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap());
         Console.WriteLine("Got rigid info...");
@@ -41,6 +45,21 @@ static class Program
         Console.WriteLine("Built");
 
         Console.WriteLine(baseNode.ToString());
+
+        // Merge with existing values
+        if (System.IO.File.Exists(pathBase + "\\skeleton.bxdj"))
+        {
+            try
+            {
+                RigidNode_Base loadedBase = BXDJSkeleton.ReadSkeleton(pathBase + "\\skeleton.bxdj");
+                JointDriver.CloneDriversFromTo(loadedBase, baseNode);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Error loading existing skeleton: " + e.ToString());
+            }
+        }
+
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
@@ -52,17 +71,14 @@ static class Program
         Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
         if (controlGUI.formState == FormState.SUBMIT)
         {
-            string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-            string pathBase = homePath;
-            Directory.CreateDirectory(pathBase + "\\Downloads\\Skeleton");
             SurfaceExporter surfs = new SurfaceExporter();
             Dictionary<RigidNode_Base, string> bxdaOutputPath;
-            BXDJSkeleton.WriteSkeleton(pathBase + "\\Downloads\\Skeleton\\skeleton.bxdj", baseNode, out bxdaOutputPath);
+            BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode, out bxdaOutputPath);
             foreach (KeyValuePair<RigidNode_Base, string> output in bxdaOutputPath)
             {
                 if (output.Key != null && output.Key.GetModel() != null && output.Key.GetModel() is CustomRigidGroup)
                 {
-                    CustomRigidGroup group = (CustomRigidGroup)output.Key.GetModel();
+                    CustomRigidGroup group = (CustomRigidGroup) output.Key.GetModel();
                     Console.WriteLine("Output " + group.ToString() + " to " + output.Value);
                     surfs.Reset();
                     surfs.ExportAll(group);

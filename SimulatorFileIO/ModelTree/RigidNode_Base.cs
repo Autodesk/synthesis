@@ -24,7 +24,8 @@ public class RigidNode_Base
     protected int level;
     private RigidNode_Base parent;
     private SkeletalJoint_Base parentConnection;
-    public string modelName;
+    protected string modelFileName;
+    protected string modelFullID;
 
     public Dictionary<SkeletalJoint_Base, RigidNode_Base> children = new Dictionary<SkeletalJoint_Base, RigidNode_Base>();
 
@@ -46,9 +47,29 @@ public class RigidNode_Base
         return parentConnection;
     }
 
+    public string GetModelFileName()
+    {
+        return modelFileName;
+    }
+
+    public virtual string GetModelID()
+    {
+        return modelFullID;
+    }
+
+    public void SetModelFileName(string s)
+    {
+        modelFileName = s;
+    }
+
+    public void SetModelID(string s)
+    {
+        modelFullID = s;
+    }
+
     public virtual object GetModel()
     {
-        return modelName;
+        return null;
     }
 
     public override string ToString()
