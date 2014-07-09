@@ -296,6 +296,7 @@ public class SurfaceExporter
     /// <returns>a BXDA Mesh</returns>
     public BXDAMesh GetOutput()
     {
+        DumpMeshBuffer();
         return outputMesh;
     }
 }
