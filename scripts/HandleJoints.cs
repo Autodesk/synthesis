@@ -24,12 +24,12 @@ public class HandleJoints : MonoBehaviour
 		//temp variable until wheels are included in the bxdj file format
 		//public static bool isWheel = true;
 
-		public static void loadBXDJ (string filePath, Transform parent)
-		{
+		public static void loadBXDJ (Transform parent)
+		{		
 				//this loads the skeleton for the object model
 				List<RigidNode_Base> nodes = new List<RigidNode_Base> ();
-				RigidNode_Base skeleton = SkeletonIO.ReadSkeleton (filePath);
-				skeleton.ListAllNodes (nodes); 
+				genSkeleton ("C:/Users/t_waggn/Documents/Skeleton/skeleton.bxdj", nodes);
+				
 
 				int i = 1;
 				foreach (RigidNode_Base node in nodes) {
@@ -39,8 +39,8 @@ public class HandleJoints : MonoBehaviour
 						SkeletalJoint_Base nodeX = node.GetSkeletalJoint ();
 						if (nodeX != null) {
 
-								var rigid = parent.GetChild(0);
-								var owner = parent.GetChild(1);
+								var rigid = parent.GetChild (0);
+								var owner = parent.GetChild (1);
 
 								//this is the conditional for Identified wheels
 								if ((int)nodeX.GetJointType () == (int)SkeletalJointType.ROTATIONAL) {
@@ -48,15 +48,19 @@ public class HandleJoints : MonoBehaviour
 										RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
 
 										//takes the x, y, and z axis information from a custom vector class to unity's vector class
+									
 										Vector3 parentC = new Vector3 ((float)nodeR.parentBase.x, (float)nodeR.parentBase.y, (float)nodeR.parentBase.z);
 										Vector3 parentN = new Vector3 ((float)nodeR.parentNormal.x, (float)nodeR.parentNormal.y, (float)nodeR.parentNormal.z);
 										Vector3 childC = new Vector3 ((float)nodeR.childBase.x, (float)nodeR.childBase.y, (float)nodeR.childBase.z);
 										Vector3 childN = new Vector3 ((float)nodeR.childNormal.x, (float)nodeR.childNormal.y, (float)nodeR.childNormal.z);
-										//Debug.Log (node.ToString());
+										Debug.Log (node.modelName);
+										//Debug.Log (node.children.Count);
 										WheelDriverMeta testWheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
+										float radius = testWheel.radius;
+										Debug.Log (radius);
 										if (testWheel != null && testWheel.position != WheelPosition.NO_WHEEL) {
 											
-												Wheelcolliders (parent, i);
+												Wheelcolliders (parent, radius, i);
 												i++;
 												
 												//Debug.Log ("Alive");
@@ -84,14 +88,15 @@ public class HandleJoints : MonoBehaviour
 				}
 		}
 
-		public static void Wheelcolliders (Transform parent, int i)
+		public static void Wheelcolliders (Transform parent, float radius, int i)
 		{
+				 
 				GameObject collider = new GameObject ();
 				collider.name = "collider" + i;
 				collider.transform.parent = parent;
 				collider.transform.position = parent.GetChild (i).GetComponent<MeshCollider> ().bounds.center;
 				collider.AddComponent<WheelCollider> ();
-				collider.GetComponent<WheelCollider> ().radius = 5.4f;
+				collider.GetComponent<WheelCollider> ().radius = radius + 0.2f;
 				collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 				
 				//parent.Rotate (new Vector3 (0, 0, 0));
@@ -99,6 +104,12 @@ public class HandleJoints : MonoBehaviour
 				parent.rigidbody.mass = 120;
 
 
+		}
+
+		public static void genSkeleton (string filePath, List<RigidNode_Base> nodes)
+		{
+				RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton (filePath);
+				skeleton.ListAllNodes (nodes);
 		}
 
 }
