@@ -92,7 +92,7 @@ public class BXDJSkeleton
         if (version != BXDIO.FORMAT_VERSION)
         {
             reader.Close();
-            throw new Exception("\"" + path + "\" was created with format version " + version + ", this library was compiled to read version " + BXDIO.FORMAT_VERSION);
+            throw new Exception("\"" + path + "\" was created with format version " + BXDIO.VersionToString(version) + ", this library was compiled to read version " + BXDIO.VersionToString(BXDIO.FORMAT_VERSION));
         }
 
         int nodeCount = reader.ReadInt32();
