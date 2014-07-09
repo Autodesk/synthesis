@@ -68,12 +68,7 @@ public class JointDriver
 
     public static bool HasTwoPorts(JointDriverType type)
     {
-        return type == JointDriverType.BUMPER_PNEUMATIC;
-    }
-
-    public static bool HasTwoPortsCheck(JointDriverType type)
-    {
-        return type == JointDriverType.DUAL_MOTOR;
+        return type == JointDriverType.BUMPER_PNEUMATIC || type == JointDriverType.DUAL_MOTOR;
     }
 
     public static string GetPortType(JointDriverType type)
@@ -96,20 +91,14 @@ public class JointDriver
 
     public static bool IsMotor(JointDriverType type)
     {
-        bool showWheelPos = true;
         switch (type)
         {
             case JointDriverType.MOTOR:
-                showWheelPos = true;
-                break;
             case JointDriverType.DUAL_MOTOR:
-                showWheelPos = true;
-                break;
+                return true;
             default:
-                showWheelPos = false;
-                break;
+                return false;
         }
-        return showWheelPos;
     }
 
     public static int GetPortMax(JointDriverType type)

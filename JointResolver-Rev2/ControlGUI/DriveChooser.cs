@@ -49,10 +49,6 @@ public partial class DriveChooser : Form
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
-        if (txtPortB.Visible == false)
-        {
-            txtPortB.Visible = JointDriver.HasTwoPortsCheck(cType);
-        }
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
         groupBox1.Visible = JointDriver.IsMotor(cType);
         if (JointDriver.IsMotor(cType) == true)
