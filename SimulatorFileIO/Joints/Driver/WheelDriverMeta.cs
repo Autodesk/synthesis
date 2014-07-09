@@ -13,6 +13,10 @@ public enum WheelPosition : byte
 
 public class WheelDriverMeta : JointDriverMeta
 {
+    /// <summary>
+    /// Stores the variables concerning a wheel, such as its position (which may be removed later) and radius.  
+    /// </summary>
+
     public float radius
     {
         get;

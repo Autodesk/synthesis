@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
+
 public partial class DriveChooser : Form
 {
     public DriveChooser()
@@ -67,11 +68,82 @@ public partial class DriveChooser : Form
         }
     }
 
+    /// <summary>
+    /// Creates a set of vertices for a component and all of its sub components.  A bounding box is then created to contain all of the 
+    /// vertices.  Currently, the Y dimension is taken as the wheel's diameter.  Later, the rotation normal will be used to find the
+    /// correct dimension of the radius.  Could find the two dimensions that are closest in distance, as the wheel is round.
+    /// </summary>
+    /// <param name="component">
+    /// The component to be encapsulated by the returned box.
+    /// </param>
+    /// <param name="wheelBox">
+    /// The reference in which to store the created box.
+    /// </param>
+    /// <returns>
+    /// The expanded box to include the most recently added component.
+    /// </returns>
+    private Box ContainInBox(ComponentOccurrence component, Box wheelBox)
+    {
+        const double MESH_TOLERANCE = 0.5;
+        Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
+        int vertexCount;
+        int segmentCount;
+        //TODO: Figure out if arrays are right for c#.
+        double[] verticeCoords = new double[10000];
+        int[] verticeIndicies = new int[10000];
+
+        Console.WriteLine("Containing " + component.Name + " in as Box.");
+
+        foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
+        {
+            //TODO: use extending box or finding projection on plane.
+            surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
+            
+            
+            for (int i = 0; i < verticeCoords.Length; i+=3)
+            {
+                tmp.X = verticeCoords[i];
+                tmp.Y = verticeCoords[i+1];
+                tmp.Z = verticeCoords[i+2];
+
+                if (wheelBox == null)
+                {
+                    Inventor.Application inv = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+                    wheelBox = inv.TransientGeometry.CreateBox();
+                    wheelBox.MinPoint = tmp.Copy();
+                    wheelBox.MaxPoint = tmp.Copy();
+                }
+                else
+                {
+                    if (i == verticeCoords.Length - 2)
+                    {
+                        int test = 5;
+                    }
+                    wheelBox.Extend(tmp);
+                }
+            }
+
+        }
+
+        foreach (ComponentOccurrence sub in component.SubOccurrences)
+        {
+            wheelBox = this.ContainInBox(sub, wheelBox);
+        }
+
+        return wheelBox;
+    }
+
+
+    /// <summary>
+    /// Saves all the data from the DriveChooser frame to be used elsewhere in the program.  Also begins calculation of wheel radius.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void btnSave_Click(object sender, EventArgs e)
     {
         WheelDriverMeta wheelDriver;
         Box wheelBox = null;
-        Inventor.Point tmp;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         joint.cDriver = new JointDriver(cType);
         joint.cDriver.portA = (int)txtPortA.Value;
@@ -87,70 +159,15 @@ public partial class DriveChooser : Form
 
             if (joint is RotationalJoint)
             {
+
                 //Enter the rabbit hole.
                 foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
                 {
-                    foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
-                    {
-                        foreach (Face polygon in surface.Faces)
-                        {
-                            foreach (Vertex vertex in polygon.Vertices)
-                            {
-                                if (wheelBox == null)
-                                {
-                                    Inventor.Application inv = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-                                    wheelBox = inv.TransientGeometry.CreateBox();
-                                    wheelBox.MinPoint = vertex.Point.Copy();
-                                    wheelBox.MaxPoint = vertex.Point.Copy();
-                                    
-                                    
-                                }
-                                else
-                                {
-                                    if (wheelBox.MaxPoint.X < vertex.Point.X)
-                                    {
-                                        tmp = wheelBox.MaxPoint;
-                                        tmp.X = vertex.Point.X;
-                                        wheelBox.MaxPoint = tmp;
-                                    }
-                                    if (wheelBox.MaxPoint.Y < vertex.Point.Y)
-                                    {
-                                        tmp = wheelBox.MaxPoint;
-                                        tmp.Y = vertex.Point.Y;
-                                        wheelBox.MaxPoint = tmp;
-                                    }
-                                    if (wheelBox.MaxPoint.Z < vertex.Point.Z)
-                                    {
-                                        tmp = wheelBox.MaxPoint;
-                                        tmp.Z = vertex.Point.Z;
-                                        wheelBox.MaxPoint = tmp;
-                                    }
-
-                                    if (wheelBox.MinPoint.X > vertex.Point.X)
-                                    {
-                                        tmp = wheelBox.MinPoint;
-                                        tmp.X = vertex.Point.X;
-                                        wheelBox.MinPoint = tmp;
-                                    }
-                                    if (wheelBox.MinPoint.Y > vertex.Point.Y)
-                                    {
-                                        tmp = wheelBox.MinPoint;
-                                        tmp.Y = vertex.Point.Y;
-                                        wheelBox.MinPoint = tmp;
-                                    }
-                                    if (wheelBox.MinPoint.Z > vertex.Point.Z)
-                                    {
-                                        tmp = wheelBox.MinPoint;
-                                        tmp.Z = vertex.Point.Z;
-                                        wheelBox.MinPoint = tmp;
-                                    }
-                                }
-                            }
-                        }
-                    }    
+                    wheelBox = this.ContainInBox(component, wheelBox);    
                 }
 
-                wheelDriver.radius = (float)(wheelBox.MaxPoint.Y - wheelBox.MinPoint.Y);
+
+                wheelDriver.radius = ((float)(wheelBox.MaxPoint.X - wheelBox.MinPoint.X)) / 2;
             }
 
             joint.cDriver.AddInfo(wheelDriver);
