@@ -145,7 +145,7 @@ public partial class DriveChooser : Form
         Box newBox;
 
         //Only need to store wheel driver if run by motor and is a wheel.
-        if ((cType == JointDriverType.MOTOR || cType == JointDriverType.DUAL_MOTOR) && position != WheelPosition.NO_WHEEL)
+        if (JointDriver.IsMotor(cType) && position != WheelPosition.NO_WHEEL)
         {
             wheelDriver = new WheelDriverMeta();
             wheelDriver.position = this.position;
