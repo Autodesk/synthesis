@@ -66,16 +66,19 @@ public partial class DriveChooser : Form
     }
 
     /// <summary>
-    /// Creates a set of vertices for a component and all of its sub components.  A bounding box is then created to contain all of the 
-    /// vertices.
+    /// Takes the vertices one at a time and gets the distance in the plane of the wheel, orthoganal to the rotation axis.  The largest
+    /// distance is kept.
     /// </summary>
     /// <param name="component">
-    /// The component to be encapsulated by the returned box.
+    /// Which part to find the furthest vertex of.
     /// </param>
-    /// <param name="wheelBox">
-    /// The reference in which to store the created box.
+    /// <param name="centerToEdgeVector">
+    /// A unit vector normal to the axis of rotation.  Any of the infinite number will work.
     /// </param>
-    private void ContainInBox(ComponentOccurrence component, ref Box wheelBox)
+    /// <returns>
+    /// The distance of the furthest vector of the occurrence and all of its suboccurrences.
+    /// </returns>
+    private double FindMaxRadius(ComponentOccurrence component, UnitVector centerToEdgeVector)
     {
         const double MESH_TOLERANCE = 0.5;
         Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
@@ -85,64 +88,72 @@ public partial class DriveChooser : Form
         //TODO: Figure out if arrays are right for c#.
         double[] verticeCoords = new double[10000];
         int[] verticeIndicies = new int[10000];
+        double maxRadius = 0;
+        double newRadius;
+        Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
 
-        Console.WriteLine("Started containing " + component.Name + " in a Box.");
+        Console.WriteLine("Finding radius of " + component.Name + ".");
 
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
             //TODO: use extending box or finding projection on plane.
             surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
-            
-            
-            for (int i = 0; i < verticeCoords.Length; i+=3)
+
+            for (int i = 0; i < verticeCoords.Length; i += 3)
             {
-                tmp.X = verticeCoords[i];
-                tmp.Y = verticeCoords[i+1];
-                tmp.Z = verticeCoords[i+2];
+                vertex.X = verticeCoords[i];
+                vertex.Y = verticeCoords[i + 1];
+                vertex.Z = verticeCoords[i + 2];
 
-                if (wheelBox.MaxPoint.X == 0 && wheelBox.MaxPoint.Y == 0 && wheelBox.MaxPoint.Z == 0)
+                newRadius = centerToEdgeVector.DotProduct(vertex.AsUnitVector()) * Math.Sqrt(Math.Pow(vertex.X, 2) + Math.Pow(vertex.Y, 2) + Math.Pow(vertex.Z, 2));
+
+                if (newRadius > maxRadius)
                 {
-                    wheelBox.MinPoint = tmp.Copy();
-                    wheelBox.MaxPoint = tmp.Copy();
+                    maxRadius = newRadius;
                 }
-
-                else
-                {
-                    wheelBox.Extend(tmp);
-                }
-
             }
         }
 
-        Console.WriteLine("Finished containing " + component.Name + " in a Box.");
+        foreach (ComponentOccurrence sub in component.SubOccurrences)
+        {
+            newRadius = FindMaxRadius(sub, centerToEdgeVector);
 
-    }
+            if (newRadius > maxRadius)
+            {
+                maxRadius = newRadius;
+            }
+        }
 
-      
+        return maxRadius;
+    }      
 
     //TODO: Modify to handle sub-suboccurrences.
     /// <summary>
     /// Saves all the data from the DriveChooser frame to be used elsewhere in the program.  Also begins calculation of wheel radius.
-    /// Each occurrence in the group is processed on at a time, whereas the subOccurrences have their own threads.  Will not handle
-    /// sub-suboccurrences.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void btnSave_Click(object sender, EventArgs e)
     {
         WheelDriverMeta wheelDriver;
-        Box wheelBox = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateBox();;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         joint.cDriver = new JointDriver(cType);
         joint.cDriver.portA = (int)txtPortA.Value;
         joint.cDriver.portB = (int)txtPortB.Value;
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
-        Thread newThread;
-        List<Thread> threadList = new List<Thread>();
-        List<Box> subBoxList = new List<Box>();
-        Box newBox;
+        double maxRadius = 0;
+        UnitVector randomVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateUnitVector();
+        UnitVector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateUnitVector();
+
+        //Needed to make another vector so that I could use the Vector.CrossProduct function.  This guarentees an output vector normal to 
+        //the rotation axis, which is what I need.
+        randomVector.X = .707;
+        randomVector.Y = 0;
+        randomVector.Z = .707;
 
         //Only need to store wheel driver if run by motor and is a wheel.
         if (JointDriver.IsMotor(cType) && position != WheelPosition.NO_WHEEL)
@@ -154,48 +165,14 @@ public partial class DriveChooser : Form
             {
                 foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
                 {
-                    this.ContainInBox(component, ref wheelBox);    
-                    foreach(ComponentOccurrence sub in component.SubOccurrences)
-                    {
-                        newBox = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-                            GetActiveObject("Inventor.Application")).TransientGeometry.CreateBox();
-                        subBoxList.Add(newBox);
+                    rotationAxis.X = ((RotationalJoint)joint).childNormal.x;
+                    rotationAxis.Y = ((RotationalJoint)joint).childNormal.y;
+                    rotationAxis.Z = ((RotationalJoint)joint).childNormal.z;
 
-                        newThread = new Thread(() => ContainInBox(sub, ref newBox));
-                        threadList.Add(newThread);
-                        newThread.Start();
-                    }
-                    
-                    foreach (Thread boxingThread in threadList)
-                    {
-                        boxingThread.Join();
-                    }
-
-                    foreach (Box subBox in subBoxList)
-                    {
-                        wheelBox.Extend(subBox.MinPoint);
-                        wheelBox.Extend(subBox.MaxPoint);
-                    }
+                    maxRadius = FindMaxRadius(component, randomVector.CrossProduct(rotationAxis));
                 }
 
-                if (Math.Abs(((RotationalJoint)joint).childNormal.x) > 0.95)
-                {
-                    //Finds average of the two dimensions of the wheel to calculate the radius.
-                    wheelDriver.radius = (float)(((wheelBox.MaxPoint.Z - wheelBox.MinPoint.Z) + (wheelBox.MaxPoint.Y - wheelBox.MinPoint.Y)) / 4);
-                }
-                else if (Math.Abs(((RotationalJoint)joint).childNormal.y) > 0.95)
-                {
-                    wheelDriver.radius = (float)(((wheelBox.MaxPoint.Z - wheelBox.MinPoint.Z) + (wheelBox.MaxPoint.X - wheelBox.MinPoint.X)) / 4);
-                }
-                else if (Math.Abs(((RotationalJoint)joint).childNormal.z) > 0.95)
-                {
-                    //Finds average of the two dimensions of the wheel to calculate the radius.
-                    wheelDriver.radius = (float)(((wheelBox.MaxPoint.X - wheelBox.MinPoint.X) + (wheelBox.MaxPoint.Y - wheelBox.MinPoint.Y)) / 4);
-                }
-                else
-                {
-                    throw new Exception("Wheel radius not found.  Joint an axis.");
-                }
+                wheelDriver.radius = (float)maxRadius;
             }
 
             joint.cDriver.AddInfo(wheelDriver);
