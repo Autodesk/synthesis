@@ -97,10 +97,10 @@ public partial class ControlGroups
 
     private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (chkHighlightComponents.Checked && lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint)
+        if (chkHighlightComponents.Checked && lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is InventorSkeletalJoint)
         {
-            SkeletalJoint joint = (SkeletalJoint)lstJoints.SelectedItems[0].Tag;
-            joint.DoHighlight();
+            InventorSkeletalJoint joint = (InventorSkeletalJoint) lstJoints.SelectedItems[0].Tag;
+            joint.GetWrapped().DoHighlight();
         }
         else
         {
