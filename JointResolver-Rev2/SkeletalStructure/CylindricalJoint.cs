@@ -71,7 +71,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
             float step = 0.1f; // cm
             Box mover = (wrapped.childIsTheOne ? wrapped.asmJointOccurrence.OccurrenceOne : wrapped.asmJointOccurrence.OccurrenceTwo).RangeBox;
-            float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(Utilities.ToInventorVector(childNormal));
+            float maxOffset = (float)mover.MinPoint.VectorTo(mover.MaxPoint).DotProduct(Utilities.ToInventorVector(axis));
             Console.WriteLine("Max linear offset: " + maxOffset);
 
             driver.SetIncrement(IncrementTypeEnum.kAmountOfValueIncrement, step + " cm");
@@ -129,6 +129,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
     public static bool IsCylindricalJoint(CustomRigidJoint jointI)
     {
+        // kMateLineLineJoint
         if (jointI.joints.Count == 1)
         {
             AssemblyJointDefinition joint = jointI.joints[0].Definition;
@@ -137,83 +138,21 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         return false;
     }
 
-    private static void GetCylindricalInfo(dynamic geom, out UnitVector groupANormal, out Point groupABase)
-    {
-        if (geom is EdgeProxy)
-        {
-            EdgeProxy edge = (EdgeProxy)geom;
-            if (edge.GeometryType == CurveTypeEnum.kCircularArcCurve || edge.GeometryType == CurveTypeEnum.kCircleCurve)
-            {
-                groupANormal = geom.Geometry.Normal;
-                groupABase = geom.Geometry.Center;
-            }
-            else if (edge.GeometryType == CurveTypeEnum.kLineSegmentCurve || edge.GeometryType == CurveTypeEnum.kLineCurve)
-            {
-                groupANormal = edge.Geometry.Direction;
-                groupABase = edge.Geometry.MidPoint;
-            }
-            else
-            {
-                throw new Exception("Unimplemented " + Enum.GetName(typeof(CurveTypeEnum), edge.GeometryType));
-            }
-        }
-        else if (geom is FaceProxy)
-        {
-            FaceProxy face = (FaceProxy)geom;
-            Console.WriteLine("FaceType: " + Enum.GetName(typeof(SurfaceTypeEnum), face.SurfaceType));
-            if (face.SurfaceType == SurfaceTypeEnum.kPlaneSurface)
-            {
-                groupANormal = face.Geometry.Normal;
-                groupABase = face.Geometry.RootPoint;
-            }
-            else if (face.SurfaceType == SurfaceTypeEnum.kCylinderSurface)
-            {
-                groupABase = face.Geometry.BasePoint;
-                groupANormal = face.Geometry.AxisVector;
-                // face.Geometry.Radius
-            }
-            else
-            {
-                throw new Exception("Unimplemented surface type " + Enum.GetName(typeof(SurfaceTypeEnum), face.SurfaceType));
-            }
-        }
-        else
-        {
-            throw new Exception("Unimplemented proxy object " + Enum.GetName(typeof(ObjectTypeEnum), geom.Type));
-        }
-    }
-
     public CylindricalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
         if (!(IsCylindricalJoint(rigidJoint)))
             throw new Exception("Not a Cylindrical joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
-        UnitVector groupANormal = null;
-        UnitVector groupBNormal = null;
-        Point groupABase = null;
-        Point groupBBase = null;
-        Console.WriteLine("O1: " + Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginOne.Type) + "\t" +
-            Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginOne.Geometry.Type));
-        Console.WriteLine("O2: " + Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Type) + "\t" +
-            Enum.GetName(typeof(ObjectTypeEnum), wrapped.asmJoint.OriginTwo.Geometry.Type));
-
-        GetCylindricalInfo(wrapped.asmJoint.OriginOne.Geometry, out groupANormal, out groupABase);
-        GetCylindricalInfo(wrapped.asmJoint.OriginTwo.Geometry, out groupBNormal, out groupBBase);
-
-        if (wrapped.childIsTheOne)
+        if (wrapped.childGroup == rigidJoint.groupOne)
         {
-            childNormal = Utilities.ToBXDVector(groupANormal);
-            childBase = Utilities.ToBXDVector(groupABase);
-            parentNormal = Utilities.ToBXDVector(groupBNormal);
-            parentBase = Utilities.ToBXDVector(groupBBase);
+            axis = Utilities.ToBXDVector(rigidJoint.geomTwo.Direction);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomTwo.RootPoint);
         }
         else
         {
-            childNormal = Utilities.ToBXDVector(groupBNormal);
-            childBase = Utilities.ToBXDVector(groupBBase);
-            parentNormal = Utilities.ToBXDVector(groupANormal);
-            parentBase = Utilities.ToBXDVector(groupABase);
+            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
         }
 
         currentLinearPosition = wrapped.asmJoint.LinearPosition != null ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
@@ -241,6 +180,6 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
 
     protected override string ToString_Internal()
     {
-        return wrapped.childGroup + " rotates about " + wrapped.parentGroup;
+        return wrapped.childGroup + " rotates about and slides along " + wrapped.parentGroup;
     }
 }

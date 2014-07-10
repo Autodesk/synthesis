@@ -38,8 +38,8 @@ public partial class DriveChooser : Form
             cmbJointDriver_SelectedIndexChanged(null, null);
             txtPortA.Value = joint.cDriver.portA;
             txtPortB.Value = joint.cDriver.portB;
-            txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
-            txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
+            txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
+            txtHighLimit.Value = (decimal) joint.cDriver.upperLimit;
         }
         ShowDialog();
     }
@@ -54,13 +54,13 @@ public partial class DriveChooser : Form
         if (JointDriver.IsMotor(cType) == true)
         {
             this.Height = 360;
-            btnSave.Location = new System.Drawing.Point (13, 280);
+            btnSave.Location = new System.Drawing.Point(13, 280);
             btnSave.Visible = true;
-        } 
+        }
         else if (JointDriver.IsMotor(cType) == false)
         {
             this.Height = 300;
-            btnSave.Location = new System.Drawing.Point (13, 220);
+            btnSave.Location = new System.Drawing.Point(13, 220);
             btnSave.Visible = true;
         }
     }
@@ -81,7 +81,7 @@ public partial class DriveChooser : Form
     private double FindMaxRadius(ComponentOccurrence component, UnitVector centerToEdgeVector)
     {
         const double MESH_TOLERANCE = 0.5;
-        Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+        Inventor.Point tmp = ((Inventor.Application) System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
         int vertexCount;
         int segmentCount;
@@ -90,7 +90,7 @@ public partial class DriveChooser : Form
         int[] verticeIndicies = new int[10000];
         double maxRadius = 0;
         double newRadius;
-        Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+        Vector vertex = ((Inventor.Application) System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
@@ -126,7 +126,7 @@ public partial class DriveChooser : Form
         }
 
         return maxRadius;
-    }      
+    }
 
     //TODO: Modify to handle sub-suboccurrences.
     /// <summary>
@@ -139,14 +139,14 @@ public partial class DriveChooser : Form
         WheelDriverMeta wheelDriver;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         joint.cDriver = new JointDriver(cType);
-        joint.cDriver.portA = (int)txtPortA.Value;
-        joint.cDriver.portB = (int)txtPortB.Value;
-        joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
-        joint.cDriver.upperLimit = (float)txtHighLimit.Value;
+        joint.cDriver.portA = (int) txtPortA.Value;
+        joint.cDriver.portB = (int) txtPortB.Value;
+        joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
+        joint.cDriver.upperLimit = (float) txtHighLimit.Value;
         double maxRadius = 0;
-        UnitVector randomVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+        UnitVector randomVector = ((Inventor.Application) System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateUnitVector();
-        UnitVector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+        UnitVector rotationAxis = ((Inventor.Application) System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateUnitVector();
 
         //Needed to make another vector so that I could use the Vector.CrossProduct function.  This guarentees an output vector normal to 
@@ -163,16 +163,16 @@ public partial class DriveChooser : Form
 
             if (joint is RotationalJoint)
             {
-                foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
+                foreach (ComponentOccurrence component in ((RotationalJoint) joint).GetWrapped().childGroup.occurrences)
                 {
-                    rotationAxis.X = ((RotationalJoint)joint).childNormal.x;
-                    rotationAxis.Y = ((RotationalJoint)joint).childNormal.y;
-                    rotationAxis.Z = ((RotationalJoint)joint).childNormal.z;
+                    rotationAxis.X = ((RotationalJoint) joint).axis.x;
+                    rotationAxis.Y = ((RotationalJoint) joint).axis.y;
+                    rotationAxis.Z = ((RotationalJoint) joint).axis.z;
 
                     maxRadius = FindMaxRadius(component, randomVector.CrossProduct(rotationAxis));
                 }
 
-                wheelDriver.radius = (float)maxRadius;
+                wheelDriver.radius = (float) maxRadius;
             }
 
             joint.cDriver.AddInfo(wheelDriver);
@@ -183,7 +183,7 @@ public partial class DriveChooser : Form
 
     private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)
     {
-         position = (WheelPosition)cmbWheelPosition.SelectedIndex;
+        position = (WheelPosition) cmbWheelPosition.SelectedIndex;
     }
 
     private void txtPortA_ValueChanged(object sender, EventArgs e)

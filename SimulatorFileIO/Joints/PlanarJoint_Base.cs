@@ -5,11 +5,8 @@
 
 public class PlanarJoint_Base : SkeletalJoint_Base
 {
-    //Contain the normal to the plane of motion.  Since both define the same plane, maybe we only need one?
-    public BXDVector3 parentNormal;
-    public BXDVector3 childNormal;
-    public BXDVector3 parentBase;
-    public BXDVector3 childBase;
+    public BXDVector3 normal;
+    public BXDVector3 basePoint;
 
     public override SkeletalJointType GetJointType()
     {
@@ -18,29 +15,18 @@ public class PlanarJoint_Base : SkeletalJoint_Base
 
     public override void WriteJoint(System.IO.BinaryWriter writer)
     {
-        writer.Write(parentNormal.x);
-        writer.Write(parentNormal.y);
-        writer.Write(parentNormal.z);
+        writer.Write(normal.x);
+        writer.Write(normal.y);
+        writer.Write(normal.z);
 
-        writer.Write(childNormal.x);
-        writer.Write(childNormal.y);
-        writer.Write(childNormal.z);
-
-        writer.Write(parentBase.x);
-        writer.Write(parentBase.y);
-        writer.Write(parentBase.z);
-
-        writer.Write(childBase.x);
-        writer.Write(childBase.y);
-        writer.Write(childBase.z);
+        writer.Write(basePoint.x);
+        writer.Write(basePoint.y);
+        writer.Write(basePoint.z);
     }
 
     protected override void ReadJoint(System.IO.BinaryReader reader)
     {
-        parentNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        childNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-
-        parentBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        childBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        normal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        basePoint = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
     }
 }

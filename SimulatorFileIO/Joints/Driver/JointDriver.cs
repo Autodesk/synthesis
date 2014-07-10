@@ -59,8 +59,6 @@ public class JointDriver
                 return new JointDriverType[] { };
             case SkeletalJointType.BALL:
                 return new JointDriverType[] { };
-            case SkeletalJointType.RIGID:
-                return new JointDriverType[] { };
             default:
                 return new JointDriverType[0];// Not implemented
         }

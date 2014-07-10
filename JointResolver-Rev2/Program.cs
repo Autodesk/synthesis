@@ -26,6 +26,20 @@ static class Program
         return trans;
     }
 
+    public static string stringify(RigidBodyGroup group)
+    {
+        string val = "";
+        foreach (ComponentOccurrence occ in group.Occurrences)
+        {
+            val += occ.Name;
+            if (val.Length > 50)
+            {
+                return val;
+            }
+        }
+        return val;
+    }
+
     public static void AnalyzeRigidResults()
     {
         string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
@@ -34,7 +48,12 @@ static class Program
 
         AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         Console.WriteLine("Get rigid info...");
-        RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap());
+
+        NameValueMap options = INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap();
+        //options.Add("SuperfluousDOF", true);
+        options.Add("DoubleBearing", false);
+        RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(options);
+        
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);
 
