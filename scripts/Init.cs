@@ -4,25 +4,7 @@ using System.Collections.Generic;
 
 public class Init : MonoBehaviour
 {		
-		
-		public static void generateCubes (int amt, Transform parent, string name)
-		{
-				GameObject tmp;
-				for (int i = 0; i < amt; i++) {
-						tmp = new GameObject ();
-						tmp.transform.parent = parent;
-						tmp.transform.position = new Vector3 (0, 0, 0);
-						Destroy (tmp.collider);
-						tmp.name = name + i;
-				}
-		
-		}
-		//converts custom vector format to unity vector3's
-		public static Vector3 ConvertV3 (BXDVector3 vector)
-		{
-				Vector3 vectorUnity = new Vector3 ((float)vector.x, (float)vector.y, (float)vector.z);
-				return vectorUnity;
-		}
+
 
 		void Start ()
 		{
@@ -43,41 +25,24 @@ public class Init : MonoBehaviour
 					
 				}
 
-
-
-
-				/*	
-		foreach (RigidNode_Base node in names) { 
-						//Debug.Log (node.modelName);
-						filepaths.Add (path + node.modelName);
-						
-				}
-
-
-				generateCubes (filepaths.Count, transform, "part");
-				for (int i = 0; i < filepaths.Count; i++) {
-						HandleMeshes.loadBXDA (filepaths [i], transform.GetChild (i));
-		}
-				transform.Rotate (new Vector3(0,0,180));
-				HandleMeshes.attachMeshColliders (transform);
-				HandleJoints.loadBXDJ (transform);
-				//HandleMeshes.attachRigidBodies (transform);
-				//transform.Rotate (90,90,0, Space.World);
-				//transform.rotation = Quaternion.Euler(0,90,0);
-				*/
 		}
 
 		void FixedUpdate ()
 		{
-				
-				for (int i = 1; i < 2; i++) {
-						WheelCollider tmp = transform.GetChild (i).GetChild(1).GetComponent<WheelCollider> ();
+		/*
+		WheelCollider[] tmps = transform.GetChild (0).GetComponentsInChildren<WheelCollider> ();
+		foreach (WheelCollider tmp in tmps){
 						tmp.motorTorque = Input.GetAxis ("Vertical") * 5 - Input.GetAxis ("Horizontal") * 5;
-				}
-				for (int i = 2; i < 4; i++) {
-						WheelCollider tmp = transform.GetChild (i).GetChild(1).GetComponent<WheelCollider> ();
-						tmp.motorTorque = Input.GetAxis ("Vertical") * 5 + Input.GetAxis ("Horizontal") * 5;
-				}
+		}
+		*/
+//				for (int i = 1; i < 2; i++) {
+//						WheelCollider tmp = transform.GetChild (i).GetChild (1).GetComponent<WheelCollider> ();
+//						tmp.motorTorque = Input.GetAxis ("Vertical") * 5 - Input.GetAxis ("Horizontal") * 5;
+//				}
+//				for (int i = 2; i < 4; i++) {
+//						WheelCollider tmp = transform.GetChild (i).GetChild (1).GetComponent<WheelCollider> ();
+//			tmp.motorTorque = Input.GetAxis ("Vertical") * 5 + Input.GetAxis ("Horizontal") * 5;
+//				}
 
 		}
 		

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class UnityRigidNode : RigidNode_Base
 {
-		protected GameObject unityObject;
+		protected GameObject unityObject, collider;
 		protected ConfigurableJoint joint;
 		private BXDAMesh mesh;
 		protected WheelDriverMeta wheel;
@@ -28,16 +28,16 @@ public class UnityRigidNode : RigidNode_Base
 				if ((int)nodeX.GetJointType () == (int)SkeletalJointType.ROTATIONAL) {
 					
 						RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
-					
+						
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
-						Vector3 parentC = Init.ConvertV3 (nodeR.parentBase);
-						Vector3 parentN = Init.ConvertV3 (nodeR.parentNormal);
-						Vector3 childC = Init.ConvertV3 (nodeR.childBase);
-						Vector3 childN = Init.ConvertV3 (nodeR.childNormal);
-						//Debug.Log ("Vector3" + parentC);
-						//Debug.Log (node.children.Count);
-					
-					
+						Vector3 parentC = ConvertV3 (nodeR.parentBase);
+						Vector3 parentN = ConvertV3 (nodeR.parentNormal);
+						Vector3 childC = ConvertV3 (nodeR.childBase);
+						Vector3 childN = ConvertV3 (nodeR.childNormal);
+
+						float limitLow = nodeR.angularLimitLow;
+						float limitHigh = nodeR.angularLimitHigh;
+						Debug.Log ("Limits: " + limitLow + " " + limitHigh);
 						wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
 						Debug.Log ("testWheel: " + wheel);
 					
@@ -55,26 +55,36 @@ public class UnityRigidNode : RigidNode_Base
 						joint.anchor = parentC;
 						joint.connectedAnchor = childC;
 						joint.axis = parentN;
+						
 						//joint.secondaryAxis = new Vector3 (0, 0, 1);
 					
-						joint.angularXMotion = ConfigurableJointMotion.Free;
+						joint.angularXMotion = nodeR.hasAngularLimit != false ? ConfigurableJointMotion.Limited : ConfigurableJointMotion.Free;
 						joint.angularYMotion = ConfigurableJointMotion.Locked;
 						joint.angularZMotion = ConfigurableJointMotion.Locked;
 						joint.xMotion = ConfigurableJointMotion.Locked;
 						joint.yMotion = ConfigurableJointMotion.Locked;
 						joint.zMotion = ConfigurableJointMotion.Locked;
-					
-						
-					if (wheel != null && wheel.position != WheelPosition.NO_WHEEL) {
-						CreateWheel(nodeR);
-						joint.angularXMotion = ConfigurableJointMotion.Locked;
-						
-					}
-					
-					 	
-						
+						/*
+						if(joint.angularXMotion == ConfigurableJointMotion.Limited)
+						{
+							joint.highAngularXLimit = limitHigh;
+							joint.lowAngularXLimit = limitLow;
+						}
+*/
 
+						//joint.projectionMode = JointProjectionMode.PositionAndRotation;
+						joint.projectionDistance = .1f;
+						joint.projectionAngle = .1f;
+
+						if (wheel != null && wheel.position != WheelPosition.NO_WHEEL) {
+								CreateWheel (nodeR);
+								//joint.angularXMotion = ConfigurableJointMotion.Locked;
+						
+						}
 					
+				} else {
+						LinearJoint_Base nodeL = (LinearJoint_Base)nodeX;
+
 				}
 		}
 
@@ -131,26 +141,39 @@ public class UnityRigidNode : RigidNode_Base
 						unityMesh.colors32 = colors;
 						unityMesh.uv = uvs;
 
-						subObject.AddComponent<MeshCollider>().convex = true;
-		}
+						subObject.AddComponent<MeshCollider> ().convex = true;
+				}
+
+				if (!unityObject.GetComponent<Rigidbody> ()) {
+						unityObject.AddComponent<Rigidbody> ();
+				}
+				Rigidbody rigidB = unityObject.GetComponent<Rigidbody> ();
+				rigidB.mass = mesh.physics.mass;
+				rigidB.centerOfMass = ConvertV3 (mesh.physics.centerOfMass);
 		}
 	
-		private void CreateWheel(RotationalJoint_Base center)
+		private void CreateWheel (RotationalJoint_Base center)
 		{
-			//Debug.Log (wheel.position);
-			GameObject collider = new GameObject (unityObject.name + " Collider");
-			collider.transform.parent = unityObject.transform;
-			collider.transform.position = Init.ConvertV3(center.childBase);
-			collider.AddComponent<WheelCollider> ();
-			collider.GetComponent<WheelCollider> ().radius = wheel.radius + 0.2f;
-			collider.GetComponent<WheelCollider> ().transform.Rotate (0, 0, 0);
+				//Debug.Log (wheel.position);
+				collider = new GameObject (unityObject.name + " Collider");
+				collider.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
+				collider.transform.position = ConvertV3 (center.childBase);
+				collider.AddComponent<WheelCollider> ();
+				collider.GetComponent<WheelCollider> ().radius = wheel.radius + 0.2f;
+				collider.GetComponent<WheelCollider> ().transform.Rotate (0, 0, 0);
 
-			//parent.Rotate (new Vector3 (0, 90, 0));
+				//parent.Rotate (new Vector3 (0, 90, 0));
 			
-			//I want the grandfather to have a rigidbody
-			//unityObject.transform.gameObject.AddComponent<Rigidbody> ();
-			unityObject.transform.rigidbody.mass = 120;
-	}	
+				//I want the grandfather to have a rigidbody
+				//unityObject.transform.gameObject.AddComponent<Rigidbody> ();
+				//unityObject.transform.rigidbody.mass = 120;
+		}
+
+		public static Vector3 ConvertV3 (BXDVector3 vector)
+		{
+				Vector3 vectorUnity = new Vector3 ((float)vector.x, (float)vector.y, (float)vector.z);
+				return vectorUnity;
+		}
 }
 
 public class UnityRigidNodeFactory : RigidNodeFactory
