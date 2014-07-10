@@ -9,7 +9,7 @@ public class Init : MonoBehaviour
 		{
 				GameObject tmp;
 				for (int i = 0; i < amt; i++) {
-						tmp = new GameObject();
+						tmp = new GameObject ();
 						tmp.transform.parent = parent;
 						tmp.transform.position = new Vector3 (0, 0, 0);
 						Destroy (tmp.collider);
@@ -31,8 +31,23 @@ public class Init : MonoBehaviour
 				
 				List<string> filepaths = new List<string> ();
 				List<RigidNode_Base> names = new List<RigidNode_Base> ();
-				HandleJoints.genSkeleton ("C:/Users/t_waggn/Documents/Skeleton/Skeleton/skeleton.bxdj", names);
-				foreach (RigidNode_Base node in names) { 
+				
+				RigidNode_Base.NODE_FACTORY = new UnityRigidNodeFactory ();
+				RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton ("C:/Users/t_waggn/Documents/Skeleton/Skeleton/skeleton.bxdj");
+				skeleton.ListAllNodes (names);
+				foreach (RigidNode_Base node in names) {
+						UnityRigidNode uNode = (UnityRigidNode)node;
+						uNode.CreateTransform (transform);
+						uNode.CreateMesh (path + uNode.GetModelFileName ());
+						uNode.CreateJoint ();
+					
+				}
+
+
+
+
+				/*	
+		foreach (RigidNode_Base node in names) { 
 						//Debug.Log (node.modelName);
 						filepaths.Add (path + node.modelName);
 						
@@ -49,20 +64,21 @@ public class Init : MonoBehaviour
 				//HandleMeshes.attachRigidBodies (transform);
 				//transform.Rotate (90,90,0, Space.World);
 				//transform.rotation = Quaternion.Euler(0,90,0);
+				*/
 		}
 
 		void FixedUpdate ()
 		{
-				/*
-				for (int i = 7; i < 10; i++) {
-						WheelCollider tmp = transform.GetChild (i).GetComponent<WheelCollider> ();
+				
+				for (int i = 1; i < 2; i++) {
+						WheelCollider tmp = transform.GetChild (i).GetChild(1).GetComponent<WheelCollider> ();
 						tmp.motorTorque = Input.GetAxis ("Vertical") * 5 - Input.GetAxis ("Horizontal") * 5;
 				}
-				for (int i = 10; i < 12; i++) {
-						WheelCollider tmp = transform.GetChild (i).GetComponent<WheelCollider> ();
+				for (int i = 2; i < 4; i++) {
+						WheelCollider tmp = transform.GetChild (i).GetChild(1).GetComponent<WheelCollider> ();
 						tmp.motorTorque = Input.GetAxis ("Vertical") * 5 + Input.GetAxis ("Horizontal") * 5;
 				}
-*/
+
 		}
 		
 
