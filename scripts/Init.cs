@@ -8,14 +8,16 @@ public class Init : MonoBehaviour
 
 		void Start ()
 		{
+				string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 				//Now you can use a default directory to load all of the files
-				string path = "C:/Users/t_waggn/Documents/Skeleton/Skeleton/";
+				Directory.CreateDirectory(homePath + "/Documents/Skeleton/Skeleton);
+				string path = homePath + "/Documents/Skeleton/Skeleton/";
 				
 				List<string> filepaths = new List<string> ();
 				List<RigidNode_Base> names = new List<RigidNode_Base> ();
 				
 				RigidNode_Base.NODE_FACTORY = new UnityRigidNodeFactory ();
-				RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton ("C:/Users/t_waggn/Documents/Skeleton/Skeleton/skeleton.bxdj");
+				RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton (homePath + "/Documents/Skeleton/Skeleton/skeleton.bxdj");
 				skeleton.ListAllNodes (names);
 				foreach (RigidNode_Base node in names) {
 						UnityRigidNode uNode = (UnityRigidNode)node;

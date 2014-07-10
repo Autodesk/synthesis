@@ -26,9 +26,11 @@ public class HandleJoints : MonoBehaviour
 
 		public static void loadBXDJ (Transform parent)
 		{		
+				string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 				//this loads the skeleton for the object model
 				List<RigidNode_Base> nodes = new List<RigidNode_Base> ();
-				genSkeleton ("C:/Users/t_waggn/Documents/Skeleton/Skeleton/skeleton.bxdj", nodes);
+				Directory.CreateDirectory(homePath + "/Documents/Skeleton/Skeleton);
+				genSkeleton (homePath + "/Documents/Skeleton/Skeleton/skeleton.bxdj", nodes);
 				
 
 				int i = 1;
