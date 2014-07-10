@@ -8,10 +8,12 @@ public class AssetProperties
     public AssetTexture colorTexture = null;
     public double generic_glossiness;
     public double generic_transparency;
+
     public AssetProperties(Asset asset)
     {
         foreach (AssetValue val in asset)
         {
+            //is this one supposed to be different from the others? "DisplayName vs Name"
             if (val.DisplayName.Equals("Color") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeColor)
             {
                 ColorAssetValue colVal = (ColorAssetValue)val;
@@ -32,11 +34,14 @@ public class AssetProperties
                     Console.WriteLine(lst.Count);
                 }
             }
+            /*    //I am unable to find any reference to gloss in the API, and I've found the value changes from material to material
             else if (val.Name.Equals("generic_glossiness") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
             {
                 generic_glossiness = ((FloatAssetValue)val).Value;
             }
-            else if (val.Name.Equals("generic_transparency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
+            */
+            //opacity is a double
+            else if (val.Name.Equals("Opacity") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
             {
                 generic_transparency = ((FloatAssetValue)val).Value;
             }
