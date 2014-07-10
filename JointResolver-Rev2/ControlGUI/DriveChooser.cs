@@ -81,7 +81,7 @@ public partial class DriveChooser : Form
     /// </returns>
     private double FindMaxRadius(ComponentOccurrence component, Vector rotationAxis)
     {
-        const double MESH_TOLERANCE = 0.25;
+        const double MESH_TOLERANCE = 0.5;
         Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
         int vertexCount;
@@ -92,6 +92,8 @@ public partial class DriveChooser : Form
         double maxRadius = 0;
         double newRadius;
         Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
+        Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
@@ -107,7 +109,9 @@ public partial class DriveChooser : Form
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
 
-                newRadius = rotationAxis.DotProduct(vertex);
+                projectedVector = rotationAxis.CrossProduct(rotationAxis.CrossProduct(vertex));
+
+                newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
 
                 if (newRadius > maxRadius)
                 {
