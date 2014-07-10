@@ -28,6 +28,12 @@ public class WheelDriverMeta : JointDriverMeta
         set;
     }
 
+    public float width
+    {
+        get;
+        set;
+    }
+
     public WheelDriverMeta()
     {
     }
@@ -37,6 +43,7 @@ public class WheelDriverMeta : JointDriverMeta
     {
         writer.Write((byte)((int)position));
         writer.Write(radius);
+        writer.Write(width);
     }
 
     //Reads the position of the wheel from the file.
@@ -44,6 +51,7 @@ public class WheelDriverMeta : JointDriverMeta
     {
         position = (WheelPosition)reader.ReadByte();
         radius = reader.ReadSingle();
+        width = reader.ReadSingle();
     }
 
     public override string ToString()

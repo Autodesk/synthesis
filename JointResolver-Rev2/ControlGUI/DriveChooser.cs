@@ -79,7 +79,7 @@ public partial class DriveChooser : Form
     /// <returns>
     /// The distance of the furthest vector of the occurrence and all of its suboccurrences.
     /// </returns>
-    private double FindMaxRadius(ComponentOccurrence component, Vector rotationAxis)
+    private double FindMaxRadius(ComponentOccurrence component, Vector rotationAxis, double currentMaxRadius, out ComponentOccurrence treadPart)
     {
         const double MESH_TOLERANCE = 0.5;
         Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
@@ -89,14 +89,28 @@ public partial class DriveChooser : Form
         //TODO: Figure out if arrays are right for c#.
         double[] verticeCoords = new double[10000];
         int[] verticeIndicies = new int[10000];
-        double maxRadius = 0;
         double newRadius;
         Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
         Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
+        treadPart = null;
+        double maxRadius = 0;
+        
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
+
+        foreach (ComponentOccurrence sub in component.SubOccurrences)
+        {
+            newRadius = FindMaxRadius(sub, rotationAxis, maxRadius, out component);
+
+            if (newRadius > currentMaxRadius)
+            {
+                currentMaxRadius = newRadius;
+
+                treadPart = component;
+            }
+        }
 
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
@@ -109,31 +123,86 @@ public partial class DriveChooser : Form
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
 
-                projectedVector = rotationAxis.CrossProduct(rotationAxis.CrossProduct(vertex));
+                projectedVector = rotationAxis.CrossProduct(vertex);
 
                 newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
 
-                if (newRadius > maxRadius)
+                if (newRadius > currentMaxRadius)
                 {
-                    maxRadius = newRadius;
+                    currentMaxRadius = newRadius;
+
+                    treadPart = component;
                 }
             }
         }
 
-        foreach (ComponentOccurrence sub in component.SubOccurrences)
-        {
-            newRadius = FindMaxRadius(sub, rotationAxis);
+        return currentMaxRadius;
+    }
 
-            if (newRadius > maxRadius)
+    /// <summary>
+    /// Finds the width of the provided part of the wheel.
+    /// </summary>
+    /// <param name="wheelTread">
+    /// The part of the wheel that actually touches the ground.
+    /// </param>
+    /// <param name="rotationAxis">
+    /// The rotation normal for the rotation axis.
+    /// </param>
+    /// <returns>
+    /// The width of the part in centimeters.
+    /// </returns>
+    public double FindWheelWidth(ComponentOccurrence wheelTread, Vector rotationAxis)
+    {
+        const double MESH_TOLERANCE = 0.5;
+        Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
+        int vertexCount;
+        int segmentCount;
+        //TODO: Figure out if arrays are right for c#.
+        double[] verticeCoords = new double[10000];
+        int[] verticeIndicies = new int[10000];
+        double newWidth;
+        Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
+        Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
+        double maxWidth = 0;
+        Inventor.Point sideVertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint(0, 0, 0);
+        double minWidth = 0.0;
+
+        foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
+        {
+            //TODO: use extending box or finding projection on plane.
+            surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
+
+            for (int i = 0; i < verticeCoords.Length; i += 3)
             {
-                maxRadius = newRadius;
+                vertex.X = verticeCoords[i] - sideVertex.X;
+                vertex.Y = verticeCoords[i + 1] - sideVertex.Y;
+                vertex.Z = verticeCoords[i + 2] - sideVertex.Z;
+
+                newWidth = rotationAxis.DotProduct(vertex);
+
+                if (newWidth > maxWidth)
+                {
+                    maxWidth = newWidth;
+                }
+                if (newWidth < minWidth)
+                {
+                    sideVertex.X = vertex.X;
+                    sideVertex.Y = vertex.Y;
+                    sideVertex.Z = vertex.Z;
+
+                    minWidth = newWidth;
+                }
             }
         }
 
-        return maxRadius;
-    }      
+        return maxWidth;
+    }
 
-    //TODO: Modify to handle sub-suboccurrences.
+
     /// <summary>
     /// Saves all the data from the DriveChooser frame to be used elsewhere in the program.  Also begins calculation of wheel radius.
     /// </summary>
@@ -149,8 +218,10 @@ public partial class DriveChooser : Form
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
         double maxRadius = 0;
+        double maxWidth = 0;
         Vector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
+        ComponentOccurrence treadPart = null;
 
         //Needed to make another vector so that I could use the Vector.CrossProduct function.  This guarentees an output vector normal to 
         //the rotation axis, which is what I need.
@@ -169,10 +240,11 @@ public partial class DriveChooser : Form
                     rotationAxis.Y = ((RotationalJoint)joint).childNormal.y;
                     rotationAxis.Z = ((RotationalJoint)joint).childNormal.z;
 
-                    maxRadius = FindMaxRadius(component, rotationAxis);
+                    maxRadius = FindMaxRadius(component, rotationAxis, 0.0, out treadPart);
                 }
 
                 wheelDriver.radius = (float)maxRadius;
+                wheelDriver.width = (float)FindWheelWidth(treadPart, rotationAxis);
             }
 
             joint.cDriver.AddInfo(wheelDriver);
