@@ -67,7 +67,8 @@ public partial class DriveChooser : Form
 
     /// <summary>
     /// Takes the vertices one at a time and gets the distance in the plane of the wheel, orthoganal to the rotation axis.  The largest
-    /// distance is kept.
+    /// distance is kept.  All the vertex points are with the origin of the piece, not of the assembly.  As such, if a wheel is split by
+    /// 1000 feet, it will consider them to be side by side when finding the radius.  This may cause issues later.
     /// </summary>
     /// <param name="component">
     /// Which part to find the furthest vertex of.
@@ -78,9 +79,9 @@ public partial class DriveChooser : Form
     /// <returns>
     /// The distance of the furthest vector of the occurrence and all of its suboccurrences.
     /// </returns>
-    private double FindMaxRadius(ComponentOccurrence component, UnitVector centerToEdgeVector)
+    private double FindMaxRadius(ComponentOccurrence component, Vector rotationAxis)
     {
-        const double MESH_TOLERANCE = 0.5;
+        const double MESH_TOLERANCE = 0.25;
         Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
         int vertexCount;
@@ -106,7 +107,7 @@ public partial class DriveChooser : Form
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
 
-                newRadius = centerToEdgeVector.DotProduct(vertex.AsUnitVector()) * Math.Sqrt(Math.Pow(vertex.X, 2) + Math.Pow(vertex.Y, 2) + Math.Pow(vertex.Z, 2));
+                newRadius = rotationAxis.DotProduct(vertex);
 
                 if (newRadius > maxRadius)
                 {
@@ -117,7 +118,7 @@ public partial class DriveChooser : Form
 
         foreach (ComponentOccurrence sub in component.SubOccurrences)
         {
-            newRadius = FindMaxRadius(sub, centerToEdgeVector);
+            newRadius = FindMaxRadius(sub, rotationAxis);
 
             if (newRadius > maxRadius)
             {
@@ -144,16 +145,11 @@ public partial class DriveChooser : Form
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
         double maxRadius = 0;
-        UnitVector randomVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateUnitVector();
-        UnitVector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateUnitVector();
+        Vector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
 
         //Needed to make another vector so that I could use the Vector.CrossProduct function.  This guarentees an output vector normal to 
         //the rotation axis, which is what I need.
-        randomVector.X = .707;
-        randomVector.Y = 0;
-        randomVector.Z = .707;
 
         //Only need to store wheel driver if run by motor and is a wheel.
         if (JointDriver.IsMotor(cType) && position != WheelPosition.NO_WHEEL)
@@ -169,7 +165,7 @@ public partial class DriveChooser : Form
                     rotationAxis.Y = ((RotationalJoint)joint).childNormal.y;
                     rotationAxis.Z = ((RotationalJoint)joint).childNormal.z;
 
-                    maxRadius = FindMaxRadius(component, randomVector.CrossProduct(rotationAxis));
+                    maxRadius = FindMaxRadius(component, rotationAxis);
                 }
 
                 wheelDriver.radius = (float)maxRadius;
