@@ -212,16 +212,32 @@ public partial class DriveChooser : Form
     {
         WheelDriverMeta wheelDriver;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
+        double maxRadius = 0;
+        Vector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
+        ComponentOccurrence treadPart = null;
+        Matrix partInStandard;
+        Matrix asmToPart = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateMatrix();
+        Matrix transformedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateMatrix();
+        Inventor.Point origin;
+        Vector partXAxis;
+        Vector partYAxis;
+        Vector partZAxis;
+        Vector asmXAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(1, 0, 0);
+        Vector asmYAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 1, 0);
+        Vector asmZAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 1);
+
         joint.cDriver = new JointDriver(cType);
         joint.cDriver.portA = (int)txtPortA.Value;
         joint.cDriver.portB = (int)txtPortB.Value;
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
-        double maxRadius = 0;
-        double maxWidth = 0;
-        Vector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        ComponentOccurrence treadPart = null;
+        
 
         //Needed to make another vector so that I could use the Vector.CrossProduct function.  This guarentees an output vector normal to 
         //the rotation axis, which is what I need.
@@ -234,17 +250,34 @@ public partial class DriveChooser : Form
 
             if (joint is RotationalJoint)
             {
+
                 foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
                 {
-                    rotationAxis.X = ((RotationalJoint)joint).childNormal.x;
-                    rotationAxis.Y = ((RotationalJoint)joint).childNormal.y;
-                    rotationAxis.Z = ((RotationalJoint)joint).childNormal.z;
+                    component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
+
+                    asmToPart.SetToAlignCoordinateSystems(origin, asmXAxis, asmYAxis, asmZAxis, origin, partXAxis, partYAxis, partZAxis);
+
+                    asmToPart.Invert();
+
+                    transformedVector.Cell[1, 1] = ((RotationalJoint)joint).childNormal.x;
+                    transformedVector.Cell[2, 1] = ((RotationalJoint)joint).childNormal.y;
+                    transformedVector.Cell[3, 1] = ((RotationalJoint)joint).childNormal.z;
+
+                    Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
+
+                    transformedVector.TransformBy(asmToPart);
+
+                    rotationAxis.X = transformedVector.Cell[1, 1];
+                    rotationAxis.Y = transformedVector.Cell[2, 1];
+                    rotationAxis.Z = transformedVector.Cell[3, 1];
+
+                    Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
 
                     maxRadius = FindMaxRadius(component, rotationAxis, 0.0, out treadPart);
                 }
 
-                wheelDriver.radius = (float)maxRadius;
-                wheelDriver.width = (float)FindWheelWidth(treadPart, rotationAxis);
+                wheelDriver.radius = (float)maxRadius; //Actually 7.62, Calculated: +X is 7.93, +Z is 8.04, +Y 7.64
+                wheelDriver.width = (float)FindWheelWidth(treadPart, rotationAxis); //Actually 2.54, +x is 11.06,  +z is 12.15, +Y is 2.55
             }
 
             joint.cDriver.AddInfo(wheelDriver);
