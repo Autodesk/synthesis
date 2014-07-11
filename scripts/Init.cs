@@ -24,6 +24,7 @@ public class Init : MonoBehaviour
 						uNode.CreateTransform (transform);
 						uNode.CreateMesh (path + uNode.GetModelFileName ());
 						uNode.CreateJoint ();
+						
 					
 				}
 
@@ -31,12 +32,12 @@ public class Init : MonoBehaviour
 
 		void FixedUpdate ()
 		{
-		/*
-		WheelCollider[] tmps = transform.GetChild (0).GetComponentsInChildren<WheelCollider> ();
+
+		WheelCollider[] tmps = transform.GetComponentsInChildren<WheelCollider> ();
 		foreach (WheelCollider tmp in tmps){
 						tmp.motorTorque = Input.GetAxis ("Vertical") * 5 - Input.GetAxis ("Horizontal") * 5;
 		}
-		*/
+
 //				for (int i = 1; i < 2; i++) {
 //						WheelCollider tmp = transform.GetChild (i).GetChild (1).GetComponent<WheelCollider> ();
 //						tmp.motorTorque = Input.GetAxis ("Vertical") * 5 - Input.GetAxis ("Horizontal") * 5;
