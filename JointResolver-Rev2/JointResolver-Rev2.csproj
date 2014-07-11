@@ -74,6 +74,7 @@
     <Compile Include="SkeletalStructure\LinearJoint.cs" />
     <Compile Include="SkeletalStructure\PlanarJoint.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="CollisionAnalyzer\WheelAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
