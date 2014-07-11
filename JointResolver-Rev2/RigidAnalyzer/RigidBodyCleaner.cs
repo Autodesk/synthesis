@@ -11,11 +11,8 @@ static class RigidBodyCleaner
     /// Meaningless items include...
     /// <list type="bullet">
     /// <item><description>Component occurrences that are suppressed</description></item>
-    /// <item><description>Suppressed joints</description></item>
-    /// <item><description>Joints with suppressed components</description></item>
     /// <item><description>Rigid joints between the same object</description></item>
     /// <item><description>Rigid joints with meaningless groups</description></item>
-    /// <item><description>Rigid joints with not assembly constraints or joints</description></item>
     /// <item><description>Rigid groups with no objects</description></item>
     /// </list>
     /// </remarks>
@@ -26,13 +23,8 @@ static class RigidBodyCleaner
         {
             group.occurrences.RemoveAll(item => item.Suppressed);
         }
-        foreach (CustomRigidJoint joint in results.joints)
-        {
-            joint.joints.RemoveAll(item => item.OccurrenceOne.Suppressed || item.OccurrenceTwo.Suppressed || item.Suppressed);
-            joint.constraints.RemoveAll(item => item.OccurrenceOne.Suppressed || item.OccurrenceTwo.Suppressed || item.Suppressed);
-        }
-        results.joints.RemoveAll(item => item.groupOne.Equals(item.groupTwo) || item.groupOne.occurrences.Count <= 0 || item.groupTwo.occurrences.Count <= 0 || (item.joints.Count + item.constraints.Count) <= 0);
         results.groups.RemoveAll(item => item.occurrences.Count <= 0);
+        results.joints.RemoveAll(item => item.groupOne.Equals(item.groupTwo) || item.groupOne.occurrences.Count <= 0 || item.groupTwo.occurrences.Count <= 0);
     }
 
     /// <summary>
@@ -97,12 +89,12 @@ static class RigidBodyCleaner
         }
         foreach (CustomRigidJoint j in results.joints)
         {
-            if (j.joints.Count > 0 && j.joints[0].Definition.JointType != AssemblyJointTypeEnum.kRigidJointType)
+            if (j.jointBased && j.joints.Count > 0 && j.joints[0].Definition.JointType != AssemblyJointTypeEnum.kRigidJointType)
             {
                 joints[j.groupOne].Add(j.groupTwo);
                 joints[j.groupTwo].Add(j.groupOne);
             }
-            else if (j.constraints.Count > 0 || j.joints.Count > 1 && (j.joints[0].Definition.JointType == AssemblyJointTypeEnum.kRigidJointType))
+            else
             {
                 constraints[j.groupOne].Add(j.groupTwo);
                 constraints[j.groupTwo].Add(j.groupOne);

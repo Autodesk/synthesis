@@ -6,8 +6,7 @@ public enum SkeletalJointType : byte
     LINEAR = 2,
     PLANAR = 3,
     CYLINDRICAL = 4,
-    BALL = 5,
-    RIGID = 6
+    BALL = 5
 }
 
 public interface SkeletalJointFactory
@@ -31,8 +30,6 @@ public class BaseSkeletalJointFactory : SkeletalJointFactory
                 return new PlanarJoint_Base();
             case SkeletalJointType.BALL:
                 return new BallJoint_Base();
-            case SkeletalJointType.RIGID:
-                return new RigidJoint_Base();
             default:
                 return null;
         }

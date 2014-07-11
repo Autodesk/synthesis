@@ -8,6 +8,7 @@ public class CustomRigidResults
     public List<CustomRigidJoint> joints;
 
     public Dictionary<string, CustomRigidGroup> groupIDToCustom = new Dictionary<string, CustomRigidGroup>();
+
     public CustomRigidResults(RigidBodyResults results)
     {
         Console.WriteLine("Building custom dataset");
@@ -116,6 +117,11 @@ public class CustomRigidJoint
     public CustomRigidGroup groupOne;
     public CustomRigidGroup groupTwo;
 
+    public dynamic geomOne, geomTwo;
+    public NameValueMap options;
+
+    public bool jointBased;
+
     public RigidBodyJointTypeEnum type;
 
     public CustomRigidJoint(RigidBodyJoint joint, CustomRigidGroup groupOnez, CustomRigidGroup groupTwoz)
@@ -131,6 +137,15 @@ public class CustomRigidJoint
         groupOne = groupOnez;
         groupTwo = groupTwoz;
         type = joint.JointType;
+        joint.GetJointData(out geomOne, out geomTwo, out options);
+        try
+        {
+            jointBased = options.get_Value("FromJoint");
+        }
+        catch
+        {
+            jointBased = false;
+        }
     }
 
     public override string ToString()

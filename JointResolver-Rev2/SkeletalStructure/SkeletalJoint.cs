@@ -9,8 +9,9 @@ public class SkeletalJoint
     public CustomRigidJoint rigidJoint;
     public AssemblyJointDefinition asmJoint;
     public AssemblyJoint asmJointOccurrence;
-
     public bool childIsTheOne;
+
+   // public bool childIsTheOne;
 
 
     public SkeletalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
@@ -38,11 +39,11 @@ public class SkeletalJoint
         if (childGroup == null)
             throw new Exception("Not a proper joint: No child joint found");
 
-        childIsTheOne = childGroup.Contains(asmJointOccurrence.AffectedOccurrenceOne);
+        /*childIsTheOne = childGroup.Contains(asmJointOccurrence.AffectedOccurrenceOne);
         if (!childIsTheOne && !childGroup.Contains(asmJointOccurrence.AffectedOccurrenceTwo))
         {
             throw new Exception("Expected child not found inside assembly joint.");
-        }
+        }*/
     }
 
     public CustomRigidGroup GetChild()
@@ -81,8 +82,6 @@ public class SkeletalJoint
             return new PlanarJoint(parent, rigidJoint);
         if (BallJoint.IsBallJoint(rigidJoint))
             return new BallJoint(parent, rigidJoint);
-        if (RigidJoint.IsRigidJoint(rigidJoint))
-            return new RigidJoint(parent, rigidJoint);
         return null;
     }
 }
