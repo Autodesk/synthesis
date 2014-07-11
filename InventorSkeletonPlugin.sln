@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JointResolver-Rev2", "Joint
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConvexHull", "ConvexHull\ConvexHull.csproj", "{6C7CFF8E-98C3-46F9-9D23-0E8C6D44EF95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C7CFF8E-98C3-46F9-9D23-0E8C6D44EF95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7CFF8E-98C3-46F9-9D23-0E8C6D44EF95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C7CFF8E-98C3-46F9-9D23-0E8C6D44EF95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C7CFF8E-98C3-46F9-9D23-0E8C6D44EF95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

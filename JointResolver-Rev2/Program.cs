@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Inventor;
 using System.IO;
+using MIConvexHull;
 
 static class Program
 {
@@ -11,7 +12,32 @@ static class Program
     public static unsafe void Main(String[] args)
     {
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-        AnalyzeRigidResults();
+        //AnalyzeRigidResults();
+        AssemblyDocument doc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
+        SurfaceExporter exp = new SurfaceExporter();
+        foreach (ComponentOccurrence b in doc.ComponentDefinition.Occurrences)
+        {
+            exp.ExportAll(b);
+        }
+        BXDAMesh mesh = exp.GetOutput();
+
+        StreamWriter writer = new StreamWriter(new FileStream("C:/users/t_millw/Downloads/test.stl", FileMode.Create));
+        List<DefaultConvexFace<DefaultVertex>> faces = ConvexHullCalculator.GetHullFaceList(mesh);
+        writer.WriteLine("solid");
+        foreach (DefaultConvexFace<DefaultVertex> face in faces)
+        {
+            writer.WriteLine("facet normal " + face.Normal[0] + " " + face.Normal[1] + " " + face.Normal[2]);
+            writer.WriteLine("outer loop");
+            for (int i = 0; i < face.Vertices.Length; i++)
+            {
+                writer.WriteLine("vertex " + face.Vertices[i].Position[0] + " " + face.Vertices[i].Position[1] + " " + face.Vertices[i].Position[2]);
+            }
+            writer.WriteLine("endloop");
+            writer.WriteLine("endfacet");
+        }
+        writer.WriteLine("endsolid");
+        writer.Close();
+        Console.ReadLine();
     }
 
     public static Matrix GetWorldTransformation(ComponentOccurrence comp)
@@ -39,7 +65,7 @@ static class Program
         //options.Add("SuperfluousDOF", true);
         options.Add("DoubleBearing", false);
         RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(options);
-        
+
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);
 
@@ -59,7 +85,7 @@ static class Program
                 RigidNode_Base loadedBase = BXDJSkeleton.ReadSkeleton(pathBase + "\\skeleton.bxdj");
                 JointDriver.CloneDriversFromTo(loadedBase, baseNode);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine("Error loading existing skeleton: " + e.ToString());
             }
