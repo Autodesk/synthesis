@@ -73,7 +73,6 @@
     <Compile Include="SkeletalStructure\InventorSkeletalJoint.cs" />
     <Compile Include="SkeletalStructure\LinearJoint.cs" />
     <Compile Include="SkeletalStructure\PlanarJoint.cs" />
-    <Compile Include="SkeletalStructure\RigidJoint.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -7,10 +7,8 @@
 public class CylindricalJoint_Base : SkeletalJoint_Base
 {
 
-    public BXDVector3 parentNormal; //The axis of both rotation and movement;
-    public BXDVector3 childNormal;
-    public BXDVector3 parentBase; //The starting point of the vector.
-    public BXDVector3 childBase;
+    public BXDVector3 axis; //The axis of both rotation and movement;
+    public BXDVector3 basePoint;
 
     public float currentLinearPosition, currentAngularPosition;
 
@@ -29,19 +27,12 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
 
     public override void WriteJoint(System.IO.BinaryWriter writer)
     {
-        writer.Write(parentBase.x);
-        writer.Write(parentBase.y);
-        writer.Write(parentBase.z);
-        writer.Write(parentNormal.x);
-        writer.Write(parentNormal.y);
-        writer.Write(parentNormal.z);
-
-        writer.Write(childBase.x);
-        writer.Write(childBase.y);
-        writer.Write(childBase.z);
-        writer.Write(childNormal.x);
-        writer.Write(childNormal.y);
-        writer.Write(childNormal.z);
+        writer.Write(basePoint.x);
+        writer.Write(basePoint.y);
+        writer.Write(basePoint.z);
+        writer.Write(axis.x);
+        writer.Write(axis.y);
+        writer.Write(axis.z);
 
         //1 indicates a linear limit.
         writer.Write((byte)((hasAngularLimit ? 1 : 0) | (hasLinearStartLimit ? 2 : 0) | (hasLinearEndLimit ? 4 : 0)));
@@ -62,10 +53,8 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
 
     protected override void ReadJoint(System.IO.BinaryReader reader)
     {
-        parentBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        parentNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        childBase = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        childNormal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        basePoint = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        axis = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
 
         byte limits = reader.ReadByte();
         hasAngularLimit = (limits & 1) == 1;

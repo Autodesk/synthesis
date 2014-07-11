@@ -53,7 +53,6 @@
     <Compile Include="Joints\PlanarJoint_Base.cs" />
     <Compile Include="Joints\Driver\JointDriver.cs" />
     <Compile Include="Joints\LinearJoint_Base.cs" />
-    <Compile Include="Joints\RigidJoint_Base.cs" />
     <Compile Include="Joints\RotationalJoint_Base.cs" />
     <Compile Include="Joints\SkeletalJoint_Base.cs" />
     <Compile Include="Math\Math3D.cs" />
