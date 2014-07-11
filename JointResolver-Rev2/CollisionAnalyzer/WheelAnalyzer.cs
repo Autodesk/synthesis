@@ -65,9 +65,9 @@ class WheelAnalyzer
 
             center.TransformBy(asmToPart);
 
-            wheelDriver.centerX = (float)(center.X + treadPart.Transformation.Translation.X);
-            wheelDriver.centerY = (float)(center.Y + treadPart.Transformation.Translation.Y);
-            wheelDriver.centerZ = (float)(center.Z + treadPart.Transformation.Translation.Z);
+            wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
+            wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
+            wheelDriver.center.z = (float)(center.Z + treadPart.Transformation.Translation.Z);
         }
 
         joint.cDriver.AddInfo(wheelDriver);
