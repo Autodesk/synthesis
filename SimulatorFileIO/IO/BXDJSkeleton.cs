@@ -45,7 +45,7 @@ public class BXDJSkeleton
         }
 
         // Begin IO
-        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
+        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.Create));
 
         writer.Write(BXDIO.FORMAT_VERSION);
 

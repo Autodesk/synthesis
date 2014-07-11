@@ -39,7 +39,7 @@ public class BXDAMesh
     /// <param name="path">Output path</param>
     public void WriteBXDA(String path)
     {
-        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
+        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.Create));
         writer.Write(BXDIO.FORMAT_VERSION);
         writer.Write(meshes.Count);
         foreach (BXDASubMesh mesh in meshes)
