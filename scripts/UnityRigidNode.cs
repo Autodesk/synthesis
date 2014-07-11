@@ -62,18 +62,24 @@ public class UnityRigidNode : RigidNode_Base
 						RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
 						
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
-						joint = ConfigJointInternal (ConvertV3 (nodeR.parentBase), ConvertV3 (nodeR.childBase), ConvertV3 (nodeR.parentNormal));
+						joint = ConfigJointInternal (ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.axis));
+						
+
+						
 						
 						lower = nodeR.angularLimitLow * (180.0f / Mathf.PI);
 						upper = nodeR.angularLimitHigh * (180.0f / Mathf.PI);
-						joint.angularXMotion = nodeR.hasAngularLimit != false ? ConfigurableJointMotion.Limited : ConfigurableJointMotion.Free;
+
 						//Debug.Log ("Limits: " + lower + " " + upper);
+
+						//incomplete conditional
 						if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
 								low.limit = lower;
 								high.limit = upper;
 								joint.lowAngularXLimit = low;
 								joint.highAngularXLimit = high;
 						}
+
 						
 						
 						wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
@@ -84,11 +90,12 @@ public class UnityRigidNode : RigidNode_Base
 				} else if (nodeX.GetJointType () == SkeletalJointType.LINEAR) {
 						LinearJoint_Base nodeL = (LinearJoint_Base)nodeX;
 						
-						joint = ConfigJointInternal (ConvertV3 (nodeL.parentBase), ConvertV3 (nodeL.childBase), ConvertV3 (nodeL.parentNormal));
+						joint = ConfigJointInternal (ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.axis));
 						
-						joint.xMotion = nodeL.parentNormal.x != 1 ? ConfigurableJointMotion.Locked : ConfigurableJointMotion.Limited;
-						joint.yMotion = nodeL.parentNormal.y != 1 ? ConfigurableJointMotion.Locked : ConfigurableJointMotion.Limited;
-						joint.zMotion = nodeL.parentNormal.z != 1 ? ConfigurableJointMotion.Locked : ConfigurableJointMotion.Limited;
+						
+
+						
+						
 				}
 					
 		}
@@ -114,11 +121,11 @@ public class UnityRigidNode : RigidNode_Base
 			
 						Vector3[] vertices = ArrayUtilities.WrapArray<Vector3> (
 				delegate(double x, double y, double z) {
-								return new Vector3 ((float)x, (float)y, (float)z);
+				return new Vector3 ((float)x, (float)y, (float)z);
 						}, sub.verts);
 						Vector3[] normals = ArrayUtilities.WrapArray<Vector3> (
 				delegate(double x, double y, double z) {
-								return new Vector3 ((float)x, (float)y, (float)z);
+				return new Vector3 ((float)x, (float)y, (float)z);
 						}, sub.norms);
 						Color32[] colors = ArrayUtilities.WrapArray<Color32> (
 				delegate(byte r, byte g, byte b, byte a) {
@@ -146,7 +153,7 @@ public class UnityRigidNode : RigidNode_Base
 						unityMesh.colors32 = colors;
 						unityMesh.uv = uvs;
 
-						subObject.AddComponent<MeshCollider> ().convex = true;
+						subObject.AddComponent<BoxCollider>();
 				}
 
 				if (!unityObject.GetComponent<Rigidbody> ()) {
@@ -162,10 +169,10 @@ public class UnityRigidNode : RigidNode_Base
 				//Debug.Log (wheel.position);
 				collider = new GameObject (unityObject.name + " Collider");
 				collider.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
-				collider.transform.position = ConvertV3 (center.childBase);
+				collider.transform.position = ConvertV3 (center.basePoint);
 				collider.AddComponent<WheelCollider> ();
-				collider.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.5f);
-				collider.GetComponent<WheelCollider> ().transform.Rotate (0, 0, 0);
+				collider.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.15f);
+				collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 				
 				//parent.Rotate (new Vector3 (0, 90, 0));
 			
@@ -176,10 +183,8 @@ public class UnityRigidNode : RigidNode_Base
 
 		public static Vector3 ConvertV3 (BXDVector3 vector)
 		{
-				Vector3 vectorUnity = new Vector3 ((float)vector.x, (float)vector.y, (float)vector.z);
-				return vectorUnity;
+				return new Vector3 ((float)vector.x, (float)vector.y, (float)vector.z);
 		}
-
 
 
 
@@ -201,9 +206,13 @@ public class UnityRigidNode : RigidNode_Base
 				}
 				return GetSkeletalJoint ().cDriver.portB;
 		}
+
 		public WheelCollider GetWheelCollider() {
 			return collider != null ? collider.GetComponent<WheelCollider> () : null;
 		}
+		public ConfigurableJoint GetConfigJoint(){
+		return joint != null ? joint : null;
+	}
 
 }
 
