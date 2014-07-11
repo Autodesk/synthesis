@@ -65,7 +65,7 @@ public class BXDJSkeleton
             {
                 writer.Write(driverID[i]);
 
-                writer.Write((byte)((int)nodes[i].GetSkeletalJoint().GetJointType()));
+                writer.Write((byte) ((int) nodes[i].GetSkeletalJoint().GetJointType()));
                 nodes[i].GetSkeletalJoint().WriteJoint(writer);
             }
         }
@@ -87,63 +87,69 @@ public class BXDJSkeleton
     public static RigidNode_Base ReadSkeleton(string path)
     {
         BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
-        // Sanity check
-        uint version = reader.ReadUInt32();
-        if (version != BXDIO.FORMAT_VERSION)
+        try
+        {
+            // Sanity check
+            uint version = reader.ReadUInt32();
+            if (version != BXDIO.FORMAT_VERSION)
+            {
+                throw new Exception("\"" + path + "\" was created with format version " + BXDIO.VersionToString(version) + ", this library was compiled to read version " + BXDIO.VersionToString(BXDIO.FORMAT_VERSION));
+            }
+
+            int nodeCount = reader.ReadInt32();
+            if (nodeCount <= 0)
+            {
+                throw new Exception("This appears to be an empty skeleton");
+            }
+            RigidNode_Base root = null;
+            RigidNode_Base[] nodes = new RigidNode_Base[nodeCount];
+            int[] driveIndex = new int[nodeCount];
+            for (int i = 0; i < nodeCount; i++)
+            {
+                nodes[i] = RigidNode_Base.NODE_FACTORY.Create();
+                int parent = reader.ReadInt32();
+                nodes[i].SetModelFileName(reader.ReadString());
+                nodes[i].SetModelID(reader.ReadString());
+                if (parent != -1)
+                {
+                    driveIndex[i] = reader.ReadInt32();
+                    SkeletalJoint_Base joint = SkeletalJoint_Base.ReadJointFully(reader);
+                    nodes[parent].AddChild(joint, nodes[i]);
+                }
+                else
+                {
+                    driveIndex[i] = -1;
+                    root = nodes[i];
+                }
+            }
+
+            if (root == null)
+            {
+                reader.Close();
+                throw new Exception("This skeleton has no known base.  \"" + path + "\" is probably corrupted.");
+            }
+
+            int driveCount = reader.ReadInt32();
+            JointDriver[] drivers = new JointDriver[driveCount];
+            for (int i = 0; i < driveCount; i++)
+            {
+                drivers[i] = new JointDriver(JointDriverType.MOTOR);    // Real type resolved in next call
+                drivers[i].ReadData(reader);
+            }
+            for (int i = 0; i < nodeCount; i++)
+            {
+                if (driveIndex[i] >= 0 && driveIndex[i] < driveCount && nodes[i].GetSkeletalJoint() != null)
+                {
+                    nodes[i].GetSkeletalJoint().cDriver = drivers[driveIndex[i]];
+                }
+            }
+            reader.Close();
+            return root;
+        }
+        catch (Exception e)
         {
             reader.Close();
-            throw new Exception("\"" + path + "\" was created with format version " + BXDIO.VersionToString(version) + ", this library was compiled to read version " + BXDIO.VersionToString(BXDIO.FORMAT_VERSION));
+            throw e.GetBaseException();
         }
-
-        int nodeCount = reader.ReadInt32();
-        if (nodeCount <= 0)
-        {
-            reader.Close();
-            throw new Exception("This appears to be an empty skeleton");
-        }
-        RigidNode_Base root = null;
-        RigidNode_Base[] nodes = new RigidNode_Base[nodeCount];
-        int[] driveIndex = new int[nodeCount];
-        for (int i = 0; i < nodeCount; i++)
-        {
-            nodes[i] = RigidNode_Base.NODE_FACTORY.Create();
-            int parent = reader.ReadInt32();
-            nodes[i].SetModelFileName(reader.ReadString());
-            nodes[i].SetModelID(reader.ReadString());
-            if (parent != -1)
-            {
-                driveIndex[i] = reader.ReadInt32();
-                SkeletalJoint_Base joint = SkeletalJoint_Base.ReadJointFully(reader);
-                nodes[parent].AddChild(joint, nodes[i]);
-            }
-            else
-            {
-                driveIndex[i] = -1;
-                root = nodes[i];
-            }
-        }
-
-        if (root == null)
-        {
-            reader.Close();
-            throw new Exception("This skeleton has no known base.  \"" + path + "\" is probably corrupted.");
-        }
-
-        int driveCount = reader.ReadInt32();
-        JointDriver[] drivers = new JointDriver[driveCount];
-        for (int i = 0; i < driveCount; i++)
-        {
-            drivers[i] = new JointDriver(JointDriverType.MOTOR);    // Real type resolved in next call
-            drivers[i].ReadData(reader);
-        }
-        for (int i = 0; i < nodeCount; i++)
-        {
-            if (driveIndex[i] >= 0 && driveIndex[i] < driveCount && nodes[i].GetSkeletalJoint() != null)
-            {
-                nodes[i].GetSkeletalJoint().cDriver = drivers[driveIndex[i]];
-            }
-        }
-        reader.Close();
-        return root;
     }
 }

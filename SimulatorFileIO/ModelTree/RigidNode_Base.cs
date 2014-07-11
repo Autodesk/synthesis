@@ -75,7 +75,7 @@ public class RigidNode_Base
     public override string ToString()
     {
         string result = new string('\t', level) + "Rigid Node" + System.Environment.NewLine;
-        result += new string('\t', level) + "Name: " + GetModel() + System.Environment.NewLine;
+        result += new string('\t', level) + "ID: " + GetModelID() + System.Environment.NewLine;
         if (parentConnection != null && parentConnection.cDriver != null)
         {
             result += new string('\t', level) + "Driver: " + ("\n" + parentConnection.cDriver.ToString()).Replace("\n", "\n" + new string('\t', level + 1));

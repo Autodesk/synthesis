@@ -8,7 +8,7 @@ public class BXDIO
     private const byte MAJOR_VERSION = 0;
     private const byte MINOR_VERSION = 0;
     private const byte REVISION_VERSION = 4;
-    private const byte REVISION_PORTION = 0;
+    private const byte REVISION_PORTION = 1;
     /// <summary>
     /// The version of the BXDJ file format this file can read and write.
     /// </summary>
