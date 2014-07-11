@@ -150,7 +150,7 @@ public partial class DriveChooser : Form
     /// <returns>
     /// The width of the part in centimeters.
     /// </returns>
-    public double FindWheelWidth(ComponentOccurrence wheelTread, Vector rotationAxis)
+    public void FindWheelWidthCenter(ComponentOccurrence wheelTread, Vector rotationAxis, out double maxWidth, out Vector center)
     {
         const double MESH_TOLERANCE = 0.5;
         Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
@@ -165,18 +165,23 @@ public partial class DriveChooser : Form
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
         Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        double maxWidth = 0;
         Inventor.Point sideVertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint(0, 0, 0);
         double minWidth = 0.0;
+        maxWidth = 0;
+        center = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0);
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
             //TODO: use extending box or finding projection on plane.
             surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
-
             for (int i = 0; i < verticeCoords.Length; i += 3)
             {
+                center.X += verticeCoords[i];
+                center.Y += verticeCoords[i + 1];
+                center.Z += verticeCoords[i + 2];
+
                 vertex.X = verticeCoords[i] - sideVertex.X;
                 vertex.Y = verticeCoords[i + 1] - sideVertex.Y;
                 vertex.Z = verticeCoords[i + 2] - sideVertex.Z;
@@ -201,9 +206,15 @@ public partial class DriveChooser : Form
                 //These two statements result in an end where the starting point is on one side of the wheel, and the distance that is being
                 //      calculated and stored is for a vertex on the other side of the wheel.
             }
+
+            //May cause issue if there are multiple surfaces.
+
+            center.X = center.X / vertexCount;
+            center.Y = center.Y / vertexCount;
+            center.Z = center.Z / vertexCount;
         }
 
-        return maxWidth;
+       
     }
 
     /// <summary>
@@ -233,6 +244,10 @@ public partial class DriveChooser : Form
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 1);
+        Vector center;
+        Inventor.Point wheelNode = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
+        double maxWidth;
 
         joint.cDriver = new JointDriver(cType);
 
@@ -274,7 +289,24 @@ public partial class DriveChooser : Form
                 }
 
                 wheelDriver.radius = (float)maxRadius;
-                wheelDriver.width = (float)FindWheelWidth(treadPart, rotationAxis);
+                FindWheelWidthCenter(treadPart, rotationAxis, out maxWidth, out center);
+
+                wheelDriver.width = (float)maxWidth;
+
+                //Vector testVector = treadPart.Transformation.SetTranslation();
+                treadPart.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
+
+                wheelNode.X = treadPart.Transformation.Translation.X;
+                wheelNode.Y = treadPart.Transformation.Translation.Y;
+                wheelNode.Z = treadPart.Transformation.Translation.Z;
+
+                asmToPart.SetToAlignCoordinateSystems(origin, asmXAxis, asmYAxis, asmZAxis, origin, partXAxis, partYAxis, partZAxis);
+
+                center.TransformBy(asmToPart);
+
+                wheelDriver.centerX = (float)(center.X + wheelNode.X);
+                wheelDriver.centerY = (float)(center.Y + wheelNode.Y);
+                wheelDriver.centerZ = (float)(center.Z + wheelNode.Z);
             }
 
             joint.cDriver.AddInfo(wheelDriver);
