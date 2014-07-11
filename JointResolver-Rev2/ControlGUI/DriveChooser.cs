@@ -237,11 +237,6 @@ public partial class DriveChooser : Form
         joint.cDriver.portB = (int) txtPortB.Value;
         joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
         joint.cDriver.upperLimit = (float) txtHighLimit.Value;
-        double maxRadius = 0;
-        double maxWidth = 0;
-        Vector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        ComponentOccurrence treadPart = null;
 
         //Needed to make another vector so that I could use the Vector.CrossProduct function.  This guarentees an output vector normal to 
         //the rotation axis, which is what I need.
@@ -262,9 +257,9 @@ public partial class DriveChooser : Form
 
                     asmToPart.Invert();
 
-                    transformedVector.Cell[1, 1] = ((RotationalJoint)joint).childNormal.x;
-                    transformedVector.Cell[2, 1] = ((RotationalJoint)joint).childNormal.y;
-                    transformedVector.Cell[3, 1] = ((RotationalJoint)joint).childNormal.z;
+                    transformedVector.Cell[1, 1] = ((RotationalJoint)joint).axis.x;
+                    transformedVector.Cell[2, 1] = ((RotationalJoint)joint).axis.y;
+                    transformedVector.Cell[3, 1] = ((RotationalJoint)joint).axis.z;
 
                     Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
 
