@@ -66,9 +66,9 @@ public partial class DriveChooser : Form
     }
 
     /// <summary>
-    /// Takes the vertices one at a time and gets the distance in the plane of the wheel, orthoganal to the rotation axis.  The largest
-    /// distance is kept.  All the vertex points are with the origin of the piece, not of the assembly.  As such, if a wheel is split by
-    /// 1000 feet, it will consider them to be side by side when finding the radius.  This may cause issues later.
+    /// Takes the vertices one at a time and gets the distance in the plane of the wheel, orthoganal to the rotation axis.  It does not find the actual
+    /// radius of the entire wheel, it finds the largest radius of a part in the plane of the wheel.  It treats it as if all the components of a wheel
+    /// are in the same position.
     /// </summary>
     /// <param name="component">
     /// Which part to find the furthest vertex of.
@@ -114,7 +114,6 @@ public partial class DriveChooser : Form
 
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
-            //TODO: use extending box or finding projection on plane.
             surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
 
             for (int i = 0; i < verticeCoords.Length; i += 3)
@@ -184,10 +183,12 @@ public partial class DriveChooser : Form
 
                 newWidth = rotationAxis.DotProduct(vertex);
 
+                //Stores the distance to the point. 
                 if (newWidth > maxWidth)
                 {
                     maxWidth = newWidth;
                 }
+                //Changes the starting point when detecting distance for later vertices.
                 if (newWidth < minWidth)
                 {
                     sideVertex.X = vertex.X;
@@ -196,6 +197,9 @@ public partial class DriveChooser : Form
 
                     minWidth = newWidth;
                 }
+
+                //These two statements result in an end where the starting point is on one side of the wheel, and the distance that is being
+                //      calculated and stored is for a vertex on the other side of the wheel.
             }
         }
 
@@ -215,7 +219,6 @@ public partial class DriveChooser : Form
         Vector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
         ComponentOccurrence treadPart = null;
-        Matrix partInStandard;
         Matrix asmToPart = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateMatrix();
         Matrix transformedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
@@ -238,9 +241,6 @@ public partial class DriveChooser : Form
         joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
         joint.cDriver.upperLimit = (float) txtHighLimit.Value;
 
-        //Needed to make another vector so that I could use the Vector.CrossProduct function.  This guarentees an output vector normal to 
-        //the rotation axis, which is what I need.
-
         //Only need to store wheel driver if run by motor and is a wheel.
         if (JointDriver.IsMotor(cType) && position != WheelPosition.NO_WHEEL)
         {
@@ -251,11 +251,10 @@ public partial class DriveChooser : Form
             {
                 foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
                 {
+                    //Takes the part axes and the assembly axes and creates a transformation from one to the other.
                     component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
 
-                    asmToPart.SetToAlignCoordinateSystems(origin, asmXAxis, asmYAxis, asmZAxis, origin, partXAxis, partYAxis, partZAxis);
-
-                    asmToPart.Invert();
+                    asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
 
                     transformedVector.Cell[1, 1] = ((RotationalJoint)joint).axis.x;
                     transformedVector.Cell[2, 1] = ((RotationalJoint)joint).axis.y;
@@ -274,8 +273,8 @@ public partial class DriveChooser : Form
                     maxRadius = FindMaxRadius(component, rotationAxis, 0.0, out treadPart);
                 }
 
-                wheelDriver.radius = (float)maxRadius; //Actually 7.62, Calculated: +X is 7.93, +Z is 8.04, +Y 7.64
-                wheelDriver.width = (float)FindWheelWidth(treadPart, rotationAxis); //Actually 2.54, +x is 11.06,  +z is 12.15, +Y is 2.55
+                wheelDriver.radius = (float)maxRadius;
+                wheelDriver.width = (float)FindWheelWidth(treadPart, rotationAxis);
             }
 
             joint.cDriver.AddInfo(wheelDriver);
