@@ -24,7 +24,11 @@ namespace MIConvexHull
         /// <summary>
         /// Position of the vertex.
         /// </summary>
-        double[] Position { get; set; }
+        double[] Position
+        {
+            get;
+            set;
+        }
     }
 
     /// <summary>
@@ -32,10 +36,39 @@ namespace MIConvexHull
     /// </summary>
     public class DefaultVertex : IVertex
     {
+        public int indexNumber = -1;
+        public double[] normal;
+        public int faceCount;
+
         /// <summary>
         /// Position of the vertex.
         /// </summary>
-        public double[] Position { get; set; }
+        public double[] Position
+        {
+            get;
+            set;
+        }
+
+        public override int GetHashCode()
+        {
+            return (int) (Position[0] * 73856093) ^ (int) (Position[1] * 19349663) ^ (int) (Position[2] * 83492791);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == this)
+            {
+                return true;
+            }
+            else if (obj is IVertex)
+            {
+                return Constants.SamePosition(Position, ((IVertex) obj).Position, 3);
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
 }

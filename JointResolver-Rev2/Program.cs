@@ -21,23 +21,7 @@ static class Program
         }
         BXDAMesh mesh = exp.GetOutput();
 
-        StreamWriter writer = new StreamWriter(new FileStream("C:/users/t_millw/Downloads/test.stl", FileMode.Create));
-        List<DefaultConvexFace<DefaultVertex>> faces = ConvexHullCalculator.GetHullFaceList(mesh);
-        writer.WriteLine("solid");
-        foreach (DefaultConvexFace<DefaultVertex> face in faces)
-        {
-            writer.WriteLine("facet normal " + face.Normal[0] + " " + face.Normal[1] + " " + face.Normal[2]);
-            writer.WriteLine("outer loop");
-            for (int i = 0; i < face.Vertices.Length; i++)
-            {
-                writer.WriteLine("vertex " + face.Vertices[i].Position[0] + " " + face.Vertices[i].Position[1] + " " + face.Vertices[i].Position[2]);
-            }
-            writer.WriteLine("endloop");
-            writer.WriteLine("endfacet");
-        }
-        writer.WriteLine("endsolid");
-        writer.Close();
-        Console.ReadLine();
+        BXDAMesh.BXDASubMesh hull = ConvexHullCalculator.GetHull(mesh);
     }
 
     public static Matrix GetWorldTransformation(ComponentOccurrence comp)

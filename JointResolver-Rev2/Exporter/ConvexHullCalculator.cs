@@ -6,15 +6,25 @@ using System.Threading.Tasks;
 using MIConvexHull;
 public class ConvexHullCalculator
 {
-    public static List<DefaultConvexFace<DefaultVertex>> GetHullFaceList(BXDAMesh mesh, int faceLimit = 255)
+    public static BXDAMesh.BXDASubMesh GetHull(BXDAMesh mesh, int faceLimit = 255)
+    {
+        return GetHull(mesh.meshes, faceLimit);
+    }
+
+    public static BXDAMesh.BXDASubMesh GetHull(BXDAMesh.BXDASubMesh mesh, int faceLimit = 255)
+    {
+        return GetHull(new BXDAMesh.BXDASubMesh[] { mesh }, faceLimit);
+    }
+
+    public static BXDAMesh.BXDASubMesh GetHull(IEnumerable<BXDAMesh.BXDASubMesh> meshes, int faceLimit = 255)
     {
         List<double[]> pts = new List<double[]>();
-        for (int a = 0; a < mesh.meshes.Count; a++)
+        foreach (BXDAMesh.BXDASubMesh mesh in meshes)
         {
             pts.AddRange(ArrayUtilities.WrapArray<double[]>(delegate(double x, double y, double z)
             {
                 return new double[] { x, y, z };
-            }, mesh.meshes[a].verts));
+            }, mesh.verts));
         }
         ConvexHull<DefaultVertex, DefaultConvexFace<DefaultVertex>> hull = MIConvexHull.ConvexHull.Create(pts);
         List<DefaultConvexFace<DefaultVertex>> faces = new List<DefaultConvexFace<DefaultVertex>>();
@@ -29,7 +39,7 @@ public class ConvexHullCalculator
         faces.Sort();
 
         Console.WriteLine("Original: " + faces.Count);
-        for (int i = 0; i < 2000 && faces.Count > 255; i++)
+        for (int i = 0; i < 2000 && faces.Count > faceLimit; i++)
         {
             DefaultConvexFace<DefaultVertex> remove = faces[0];
             // Square remove's verticies into the center.
@@ -63,6 +73,50 @@ public class ConvexHullCalculator
                 }
             }
         }
-        return faces;
+
+        List<DefaultVertex> set = new List<DefaultVertex>();
+
+        int[] indicies = new int[3 * faces.Count];
+        int indexHead = 0;
+        foreach (DefaultConvexFace<DefaultVertex> face in faces)
+        {
+            foreach (DefaultVertex vert in face.Vertices)
+            {
+                if (vert.indexNumber < 0)
+                {
+                    vert.indexNumber = set.Count;
+                    set.Add(vert);
+                    if (vert.normal == null)
+                    {
+                        vert.normal = new double[] { face.Normal[0], face.Normal[1], face.Normal[2] };
+                    }
+                    else
+                    {
+                        vert.normal[0] += face.Normal[0];
+                        vert.normal[1] += face.Normal[1];
+                        vert.normal[2] += face.Normal[2];
+                    }
+                    vert.faceCount++;
+                }
+                indicies[indexHead++] = vert.indexNumber;
+            }
+        }
+        BXDAMesh.BXDASubMesh subMesh = new BXDAMesh.BXDASubMesh();
+        subMesh.verts = new double[3 * set.Count];
+        subMesh.norms = new double[3 * set.Count];
+        subMesh.colors = null;
+        subMesh.textureCoords = null;
+
+        for (int vertHead = 0; vertHead < set.Count; vertHead++)
+        {
+            int vH = vertHead * 3;
+            Array.Copy(set[vertHead].Position, 0, subMesh.verts, vH, 3);
+            subMesh.norms[vH] = set[vertHead].normal[0] / (double) set[vertHead].faceCount;
+            subMesh.norms[vH + 1] = set[vertHead].normal[1] / (double) set[vertHead].faceCount;
+            subMesh.norms[vH + 2] = set[vertHead].normal[2] / (double) set[vertHead].faceCount;
+        }
+
+        subMesh.indicies = indicies;
+        return subMesh;
     }
 }
