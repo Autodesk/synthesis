@@ -8,6 +8,15 @@ using Inventor;
 class WheelAnalyzer
 {
 
+    /// <summary>
+    /// Saves all of the informations for a wheel collider, such as width, radius, and center, to a joint.
+    /// </summary>
+    /// <param name="position">
+    /// The position of the wheel on the robot's frame.  Will most likely be removed later.
+    /// </param>
+    /// <param name="joint">
+    /// The joint that controls the collider.
+    /// </param>
     public static void SaveToJoint(WheelPosition position, SkeletalJoint_Base joint)
     {
         Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
@@ -37,6 +46,7 @@ class WheelAnalyzer
 
                 asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
 
+                //The joint normal is changed from being relative to assembly to relative to the part axes.
                 transformedVector.Cell[1, 1] = ((RotationalJoint)joint).axis.x;
                 transformedVector.Cell[2, 1] = ((RotationalJoint)joint).axis.y;
                 transformedVector.Cell[3, 1] = ((RotationalJoint)joint).axis.z;
@@ -59,7 +69,7 @@ class WheelAnalyzer
 
             wheelDriver.width = (float)maxWidth;
 
-            //Vector testVector = treadPart.Transformation.SetTranslation();
+            //The average vertex coordinates are changed to assembly space.
             treadPart.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
 
             asmToPart.SetToAlignCoordinateSystems(origin, asmXAxis, asmYAxis, asmZAxis, origin, partXAxis, partYAxis, partZAxis);
