@@ -116,7 +116,7 @@ class WheelAnalyzer
     /// <param name="center">
     /// The output object to store the coordinates of the center with respect to the component.
     /// </param>
-    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, Vector rotationAxis, out double maxWidth, out Vector center)
+    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, Vector rotationAxis, out double fullWidth, out Vector center)
     {
         const double MESH_TOLERANCE = 0.5;
         Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
@@ -134,7 +134,8 @@ class WheelAnalyzer
         Inventor.Point sideVertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint(0, 0, 0);
         double minWidth = 0.0;
-        maxWidth = 0;
+        double maxWidth = 0.0;
+        fullWidth = 0.0;
         center = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0);
 
@@ -150,9 +151,9 @@ class WheelAnalyzer
                 center.Y += verticeCoords[i + 1];
                 center.Z += verticeCoords[i + 2];
 
-                vertex.X = verticeCoords[i] - sideVertex.X;
-                vertex.Y = verticeCoords[i + 1] - sideVertex.Y;
-                vertex.Z = verticeCoords[i + 2] - sideVertex.Z;
+                vertex.X = verticeCoords[i];
+                vertex.Y = verticeCoords[i + 1];
+                vertex.Z = verticeCoords[i + 2];
 
                 newWidth = rotationAxis.DotProduct(vertex);
 
@@ -164,10 +165,6 @@ class WheelAnalyzer
                 //Changes the starting point when detecting distance for later vertices.
                 if (newWidth < minWidth)
                 {
-                    sideVertex.X = vertex.X;
-                    sideVertex.Y = vertex.Y;
-                    sideVertex.Z = vertex.Z;
-
                     minWidth = newWidth;
                 }
 
@@ -175,8 +172,7 @@ class WheelAnalyzer
                 //      calculated and stored is for a vertex on the other side of the wheel.
             }
 
-            //May cause issue if there are multiple surfaces.
-
+            fullWidth = maxWidth - minWidth;
             center.X = center.X / vertexCount;
             center.Y = center.Y / vertexCount;
             center.Z = center.Z / vertexCount;
