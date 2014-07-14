@@ -38,6 +38,9 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.btnCalculate = new System.Windows.Forms.Button();
+            this.item_chRadius = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chWidth = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chCenter = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -71,7 +74,10 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chParent,
             this.item_chChild,
             this.item_chDrive,
-            this.item_chWheel});
+            this.item_chWheel,
+            this.item_chRadius,
+            this.item_chWidth,
+            this.item_chCenter});
             this.lstJoints.FullRowSelect = true;
             this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lstJoints.HoverSelection = true;
@@ -207,6 +213,19 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.Visible = false;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
             // 
+            // item_chRadius
+            // 
+            this.item_chRadius.Text = "Radius";
+            // 
+            // item_chWidth
+            // 
+            this.item_chWidth.Text = "Width";
+            // 
+            // item_chCenter
+            // 
+            this.item_chCenter.Text = "Center";
+            this.item_chCenter.Width = 147;
+            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -251,4 +270,7 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.CheckBox chkHighlightComponents;
     private System.Windows.Forms.ColumnHeader item_chWheel;
     private System.Windows.Forms.Button btnCalculate;
+    private System.Windows.Forms.ColumnHeader item_chRadius;
+    private System.Windows.Forms.ColumnHeader item_chWidth;
+    private System.Windows.Forms.ColumnHeader item_chCenter;
 }

@@ -82,6 +82,24 @@ public class WheelDriverMeta : JointDriverMeta
         center.z = reader.ReadSingle();
     }
 
+    //Returns a string for the position.
+    public string GetPositionString()
+    {
+        switch (position)
+        {
+            case WheelPosition.FRONT_LEFT:
+                return "Front Left";
+            case WheelPosition.FRONT_RIGHT:
+                return "Front Right";
+            case WheelPosition.BACK_LEFT:
+                return "Back Left";
+            case WheelPosition.BACK_RIGHT:
+                return "Back Right";
+            default:
+                return "No Wheel";
+        }
+    }
+
     public override string ToString()
     {
         return "WheelMeta[pos=" + System.Enum.GetName(typeof(WheelPosition), position) + ",rad=" + radius + "]";
