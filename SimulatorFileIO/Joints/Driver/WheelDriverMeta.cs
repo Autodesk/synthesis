@@ -10,6 +10,12 @@ public enum WheelPosition : byte
     BACK_RIGHT = 4
 }
 
+public enum WheelType : byte
+{
+    NORMAL = 0, //As in, not omni or mecanum.
+    OMNI = 1,
+    MECANUM = 2
+}
 
 public class WheelDriverMeta : JointDriverMeta
 {
@@ -28,6 +34,11 @@ public class WheelDriverMeta : JointDriverMeta
         set;
     }
 
+    public WheelType type
+    {
+        get;
+        set;
+    }
 
     public float width
     {
@@ -51,6 +62,7 @@ public class WheelDriverMeta : JointDriverMeta
     protected override void WriteDataInternal(BinaryWriter writer)
     {
         writer.Write((byte)((int)position));
+        writer.Write((byte)((int)type));
         writer.Write(radius);
         writer.Write(width);
         writer.Write(center.x);
@@ -62,6 +74,7 @@ public class WheelDriverMeta : JointDriverMeta
     protected override void ReadDataInternal(BinaryReader reader)
     {
         position = (WheelPosition)reader.ReadByte();
+        type = (WheelType)reader.ReadByte();
         radius = reader.ReadSingle();
         width = reader.ReadSingle();
         center.x = reader.ReadSingle();

@@ -39,6 +39,8 @@ partial class DriveChooser
             this.btnSave = new System.Windows.Forms.Button();
             this.cmbWheelPosition = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
@@ -46,6 +48,7 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -177,7 +180,7 @@ partial class DriveChooser
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(13, 280);
+            this.btnSave.Location = new System.Drawing.Point(11, 332);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(338, 28);
             this.btnSave.TabIndex = 3;
@@ -211,11 +214,35 @@ partial class DriveChooser
             this.groupBox1.Text = "Wheel Position";
             this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.cmbWheelType);
+            this.groupBox2.Location = new System.Drawing.Point(11, 276);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(339, 50);
+            this.groupBox2.TabIndex = 6;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Wheel Type";
+            // 
+            // cmbWheelType
+            // 
+            this.cmbWheelType.FormattingEnabled = true;
+            this.cmbWheelType.Items.AddRange(new object[] {
+            "Normal",
+            "Omni",
+            "Mecanum"});
+            this.cmbWheelType.Location = new System.Drawing.Point(16, 18);
+            this.cmbWheelType.Name = "cmbWheelType";
+            this.cmbWheelType.Size = new System.Drawing.Size(317, 24);
+            this.cmbWheelType.TabIndex = 0;
+            this.cmbWheelType.SelectedIndexChanged += new System.EventHandler(this.cmbWheelType_SelectedIndexChanged);
+            // 
             // DriveChooser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 315);
+            this.ClientSize = new System.Drawing.Size(362, 367);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grpDriveOptions);
@@ -230,6 +257,7 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).EndInit();
             this.groupBox1.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
     }
@@ -248,4 +276,6 @@ partial class DriveChooser
     private System.Windows.Forms.Button btnSave;
     private System.Windows.Forms.ComboBox cmbWheelPosition;
     private System.Windows.Forms.GroupBox groupBox1;
+    private System.Windows.Forms.GroupBox groupBox2;
+    private System.Windows.Forms.ComboBox cmbWheelType;
 }

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Inventor;
+using System.Threading;
 
 class WheelAnalyzer
 {
-
     /// <summary>
     /// Saves all of the informations for a wheel collider, such as width, radius, and center, to a joint.
     /// </summary>
@@ -17,7 +17,7 @@ class WheelAnalyzer
     /// <param name="joint">
     /// The joint that controls the collider.
     /// </param>
-    public static void SaveToJoint(WheelPosition position, SkeletalJoint_Base joint)
+    public static void SaveToJoint(WheelPosition position, SkeletalJoint_Base joint, WheelType type)
     {
         Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
         Vector partXAxis;
@@ -30,12 +30,16 @@ class WheelAnalyzer
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         Vector rotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
-        double maxRadius = 0;
         double maxWidth = 0;
         ComponentOccurrence treadPart = null;
         Vector center;
+        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
+        FindRadiusThread newRadiusThread;
 
         wheelDriver.position = position;
+        wheelDriver.type = type;
+
+        FindRadiusThread.Reset();
 
         if (joint is RotationalJoint)
         {
@@ -61,10 +65,18 @@ class WheelAnalyzer
 
                 Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
 
-                maxRadius = WheelAnalyzer.FindMaxRadius(component, rotationAxis, 0.0, out treadPart);
+                newRadiusThread = new FindRadiusThread(component, rotationAxis);
+                radiusThreadList.Add(newRadiusThread);
+                newRadiusThread.Start();
             }
 
-            wheelDriver.radius = (float)maxRadius;
+            foreach(FindRadiusThread thread in radiusThreadList)
+            {
+                thread.Join();
+            }
+
+            wheelDriver.radius = (float)FindRadiusThread.GetRadius();
+            treadPart = FindRadiusThread.GetWidthComponent();
             WheelAnalyzer.FindWheelWidthCenter(treadPart, rotationAxis, out maxWidth, out center);
 
             wheelDriver.width = (float)maxWidth;
@@ -79,88 +91,16 @@ class WheelAnalyzer
             wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
             wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
             wheelDriver.center.z = (float)(center.Z + treadPart.Transformation.Translation.Z);
+
+            Console.WriteLine("Center of " + treadPart.Name + "found to be:");
+            Console.WriteLine(wheelDriver.center.x + ", " + wheelDriver.center.y + ", " + wheelDriver.center.z);
+            Console.WriteLine("Whilst the node coordinates are: ");
+            Console.WriteLine(treadPart.Transformation.Translation.X + ", " + treadPart.Transformation.Translation.Y + ", "  + 
+                treadPart.Transformation.Translation.Z);
         }
 
         joint.cDriver.AddInfo(wheelDriver);
     }
-
-    /// <summary>
-    /// Calculates the radius of the component and stores the component.
-    /// </summary>
-    /// <param name="component">
-    /// The component to analyze.
-    /// </param>
-    /// <param name="rotationAxis">
-    /// The axis of the rotation joint.  Needs to have been converted to the part's axes, not the assemblies.
-    /// </param>
-    /// <param name="currentMaxRadius">
-    /// Contains the largest radius found.
-    /// </param>
-    /// <param name="treadPart">
-    /// Outputs the component occurrence with the largest radius.  Most likely this is the part of the wheel that touches the ground.
-    /// </param>
-    /// <returns>
-    /// Returns the largest radius.
-    /// </returns>
-    public static double FindMaxRadius(ComponentOccurrence component, Vector rotationAxis, double currentMaxRadius, out ComponentOccurrence treadPart)
-    {
-        const double MESH_TOLERANCE = 0.5;
-        Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
-        int vertexCount;
-        int segmentCount;
-        //TODO: Figure out if arrays are right for c#.
-        double[] verticeCoords = new double[10000];
-        int[] verticeIndicies = new int[10000];
-        double newRadius;
-        Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        treadPart = null;
-        double maxRadius = 0;
-
-
-        Console.WriteLine("Finding radius of " + component.Name + ".");
-
-        foreach (ComponentOccurrence sub in component.SubOccurrences)
-        {
-            newRadius = FindMaxRadius(sub, rotationAxis, maxRadius, out component);
-
-            if (newRadius > currentMaxRadius)
-            {
-                currentMaxRadius = newRadius;
-
-                treadPart = component;
-            }
-        }
-
-        foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
-        {
-            surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
-
-            for (int i = 0; i < verticeCoords.Length; i += 3)
-            {
-                vertex.X = verticeCoords[i];
-                vertex.Y = verticeCoords[i + 1];
-                vertex.Z = verticeCoords[i + 2];
-
-                projectedVector = rotationAxis.CrossProduct(vertex);
-
-                newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
-
-                if (newRadius > currentMaxRadius)
-                {
-                    currentMaxRadius = newRadius;
-
-                    treadPart = component;
-                }
-            }
-        }
-
-        return currentMaxRadius;
-    }
-
 
     /// <summary>
     /// Calculates the width and centerpoint of a wheel.
@@ -198,6 +138,8 @@ class WheelAnalyzer
         maxWidth = 0;
         center = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0);
+
+        Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
@@ -240,6 +182,8 @@ class WheelAnalyzer
             center.Y = center.Y / vertexCount;
             center.Z = center.Z / vertexCount;
         }
+
+        Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
     }
 
 

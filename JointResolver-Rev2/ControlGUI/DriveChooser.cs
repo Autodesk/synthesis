@@ -21,6 +21,7 @@ public partial class DriveChooser : Form
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
     private WheelPosition position;
+    private WheelType wheelType;
 
     public void ShowDialog(SkeletalJoint_Base joint)
     {
@@ -84,7 +85,7 @@ public partial class DriveChooser : Form
         //Only need to store wheel driver if run by motor and is a wheel.
         if (JointDriver.IsMotor(cType) && position != WheelPosition.NO_WHEEL)
         {
-            WheelAnalyzer.SaveToJoint(position, joint);
+            WheelAnalyzer.SaveToJoint(position, joint, wheelType);
         }
 
         Hide();
@@ -123,5 +124,10 @@ public partial class DriveChooser : Form
     private void groupBox1_Enter(object sender, EventArgs e)
     {
 
+    }
+
+    private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        wheelType = (WheelType)cmbWheelType.SelectedIndex;
     }
 }
