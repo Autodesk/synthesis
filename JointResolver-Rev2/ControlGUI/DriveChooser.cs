@@ -20,7 +20,6 @@ public partial class DriveChooser : Form
 
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
-    private WheelPosition position;
     private WheelType wheelType;
 
     public void ShowDialog(SkeletalJoint_Base joint)
@@ -51,7 +50,6 @@ public partial class DriveChooser : Form
         lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
-        groupBox1.Visible = JointDriver.IsMotor(cType);
         if (JointDriver.IsMotor(cType) == true)
         {
             this.Height = 360;
@@ -83,17 +81,12 @@ public partial class DriveChooser : Form
         joint.cDriver.upperLimit = (float) txtHighLimit.Value;
 
         //Only need to store wheel driver if run by motor and is a wheel.
-        if (JointDriver.IsMotor(cType) && position != WheelPosition.NO_WHEEL)
+        if (JointDriver.IsMotor(cType) && wheelType != null)
         {
-            WheelAnalyzer.SaveToJoint(position, joint, wheelType);
+            WheelAnalyzer.SaveToJoint(joint, wheelType);
         }
 
         Hide();
-    }
-
-    private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        position = (WheelPosition) cmbWheelPosition.SelectedIndex;
     }
 
     private void txtPortA_ValueChanged(object sender, EventArgs e)
@@ -129,5 +122,10 @@ public partial class DriveChooser : Form
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
         wheelType = (WheelType)cmbWheelType.SelectedIndex;
+    }
+
+    private void groupBox2_Enter(object sender, EventArgs e)
+    {
+
     }
 }

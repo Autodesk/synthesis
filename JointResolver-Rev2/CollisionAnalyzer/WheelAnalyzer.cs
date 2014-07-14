@@ -17,7 +17,7 @@ class WheelAnalyzer
     /// <param name="joint">
     /// The joint that controls the collider.
     /// </param>
-    public static void SaveToJoint(WheelPosition position, SkeletalJoint_Base joint, WheelType type)
+    public static void SaveToJoint(SkeletalJoint_Base joint, WheelType type)
     {
         Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
         Vector partXAxis;
@@ -36,7 +36,6 @@ class WheelAnalyzer
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
         FindRadiusThread newRadiusThread;
 
-        wheelDriver.position = position;
         wheelDriver.type = type;
 
         FindRadiusThread.Reset();

@@ -37,8 +37,6 @@ partial class DriveChooser
             this.lblPort = new System.Windows.Forms.Label();
             this.txtPortA = new System.Windows.Forms.NumericUpDown();
             this.btnSave = new System.Windows.Forms.Button();
-            this.cmbWheelPosition = new System.Windows.Forms.ComboBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver.SuspendLayout();
@@ -47,7 +45,6 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -180,7 +177,7 @@ partial class DriveChooser
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(11, 332);
+            this.btnSave.Location = new System.Drawing.Point(11, 278);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(338, 28);
             this.btnSave.TabIndex = 3;
@@ -188,41 +185,16 @@ partial class DriveChooser
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
-            // cmbWheelPosition
-            // 
-            this.cmbWheelPosition.FormattingEnabled = true;
-            this.cmbWheelPosition.Items.AddRange(new object[] {
-            "None of the above",
-            "Front Left",
-            "Front Right",
-            "Back Left",
-            "Back Right"});
-            this.cmbWheelPosition.Location = new System.Drawing.Point(14, 21);
-            this.cmbWheelPosition.Name = "cmbWheelPosition";
-            this.cmbWheelPosition.Size = new System.Drawing.Size(317, 24);
-            this.cmbWheelPosition.TabIndex = 4;
-            this.cmbWheelPosition.SelectedIndexChanged += new System.EventHandler(this.cmbWheelPosition_SelectedIndexChanged);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.cmbWheelPosition);
-            this.groupBox1.Location = new System.Drawing.Point(13, 210);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(337, 60);
-            this.groupBox1.TabIndex = 5;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Wheel Position";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.cmbWheelType);
-            this.groupBox2.Location = new System.Drawing.Point(11, 276);
+            this.groupBox2.Location = new System.Drawing.Point(11, 209);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(339, 50);
+            this.groupBox2.Size = new System.Drawing.Size(339, 63);
             this.groupBox2.TabIndex = 6;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Wheel Type";
+            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
             // cmbWheelType
             // 
@@ -231,7 +203,7 @@ partial class DriveChooser
             "Normal",
             "Omni",
             "Mecanum"});
-            this.cmbWheelType.Location = new System.Drawing.Point(16, 18);
+            this.cmbWheelType.Location = new System.Drawing.Point(16, 21);
             this.cmbWheelType.Name = "cmbWheelType";
             this.cmbWheelType.Size = new System.Drawing.Size(317, 24);
             this.cmbWheelType.TabIndex = 0;
@@ -241,9 +213,8 @@ partial class DriveChooser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 367);
+            this.ClientSize = new System.Drawing.Size(362, 314);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grpDriveOptions);
             this.Controls.Add(this.grpChooseDriver);
@@ -256,7 +227,6 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).EndInit();
-            this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -274,8 +244,6 @@ partial class DriveChooser
     private System.Windows.Forms.Label lblPort;
     private System.Windows.Forms.NumericUpDown txtPortA;
     private System.Windows.Forms.Button btnSave;
-    private System.Windows.Forms.ComboBox cmbWheelPosition;
-    private System.Windows.Forms.GroupBox groupBox1;
     private System.Windows.Forms.GroupBox groupBox2;
     private System.Windows.Forms.ComboBox cmbWheelType;
 }

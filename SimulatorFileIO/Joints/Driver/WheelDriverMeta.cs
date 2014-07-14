@@ -1,15 +1,5 @@
 ﻿using System.IO;
 
-//The position relative to the front of the robot.
-public enum WheelPosition : byte
-{
-    NO_WHEEL = 0,
-    FRONT_LEFT = 1,
-    FRONT_RIGHT = 2,
-    BACK_LEFT = 3,
-    BACK_RIGHT = 4
-}
-
 public enum WheelType : byte
 {
     NORMAL = 0, //As in, not omni or mecanum.
@@ -24,11 +14,6 @@ public class WheelDriverMeta : JointDriverMeta
     /// </summary>
 
     public float radius
-    {
-        get;
-        set;
-    }
-    public WheelPosition position
     {
         get;
         set;
@@ -61,7 +46,6 @@ public class WheelDriverMeta : JointDriverMeta
     //Writes the position of the wheel to the file.
     protected override void WriteDataInternal(BinaryWriter writer)
     {
-        writer.Write((byte)((int)position));
         writer.Write((byte)((int)type));
         writer.Write(radius);
         writer.Write(width);
@@ -72,9 +56,7 @@ public class WheelDriverMeta : JointDriverMeta
 
     //Reads the position of the wheel from the file.
     protected override void ReadDataInternal(BinaryReader reader)
-    {
-        position = (WheelPosition)reader.ReadByte();
-        type = (WheelType)reader.ReadByte();
+    {        type = (WheelType)reader.ReadByte();
         radius = reader.ReadSingle();
         width = reader.ReadSingle();
         center.x = reader.ReadSingle();
@@ -82,27 +64,22 @@ public class WheelDriverMeta : JointDriverMeta
         center.z = reader.ReadSingle();
     }
 
-    //Returns a string for the position.
-    public string GetPositionString()
+    public string GetTypeString()
     {
-        switch (position)
+        switch (type)
         {
-            case WheelPosition.FRONT_LEFT:
-                return "Front Left";
-            case WheelPosition.FRONT_RIGHT:
-                return "Front Right";
-            case WheelPosition.BACK_LEFT:
-                return "Back Left";
-            case WheelPosition.BACK_RIGHT:
-                return "Back Right";
+            case WheelType.OMNI:
+                return "Omni Wheel";
+            case WheelType.MECANUM:
+                return "Mecanum";
             default:
-                return "No Wheel";
+                return "Normal";
         }
     }
 
     public override string ToString()
     {
-        return "WheelMeta[pos=" + System.Enum.GetName(typeof(WheelPosition), position) + ",rad=" + radius + "]";
+        return "WheelMeta[rad=" + radius + "]";
     }
 }
 

@@ -28,6 +28,9 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chRadius = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chWidth = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chCenter = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain = new System.Windows.Forms.TabControl();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.lstGroups = new System.Windows.Forms.ListView();
@@ -38,9 +41,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.btnCalculate = new System.Windows.Forms.Button();
-            this.item_chRadius = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chWidth = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chCenter = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -114,8 +114,21 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // item_chWheel
             // 
-            this.item_chWheel.Text = "Wheel Position";
+            this.item_chWheel.Text = "Wheel Type";
             this.item_chWheel.Width = 120;
+            // 
+            // item_chRadius
+            // 
+            this.item_chRadius.Text = "Radius";
+            // 
+            // item_chWidth
+            // 
+            this.item_chWidth.Text = "Width";
+            // 
+            // item_chCenter
+            // 
+            this.item_chCenter.Text = "Center";
+            this.item_chCenter.Width = 147;
             // 
             // tabsMain
             // 
@@ -212,19 +225,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.UseVisualStyleBackColor = true;
             this.btnCalculate.Visible = false;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
-            // 
-            // item_chRadius
-            // 
-            this.item_chRadius.Text = "Radius";
-            // 
-            // item_chWidth
-            // 
-            this.item_chWidth.Text = "Width";
-            // 
-            // item_chCenter
-            // 
-            this.item_chCenter.Text = "Center";
-            this.item_chCenter.Width = 147;
             // 
             // ControlGroups
             // 
