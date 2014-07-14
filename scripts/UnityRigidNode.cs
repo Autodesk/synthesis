@@ -64,20 +64,18 @@ public class UnityRigidNode : RigidNode_Base
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
 						joint = ConfigJointInternal (ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.axis));
 						
-
+						joint.angularXMotion = !nodeR.hasAngularLimit ?  ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
 						
 						
 						lower = nodeR.angularLimitLow * (180.0f / Mathf.PI);
 						upper = nodeR.angularLimitHigh * (180.0f / Mathf.PI);
 
-						//Debug.Log ("Limits: " + lower + " " + upper);
-
-						//incomplete conditional
 						if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
 								low.limit = lower;
 								high.limit = upper;
 								joint.lowAngularXLimit = low;
 								joint.highAngularXLimit = high;
+								Debug.Log ("Lower: " + low.limit + " Upper: " + high.limit);
 						}
 
 						
@@ -93,7 +91,8 @@ public class UnityRigidNode : RigidNode_Base
 						joint = ConfigJointInternal (ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.axis));
 						
 						
-
+						joint.xMotion = ConfigurableJointMotion.Limited;
+						
 						
 						
 				}
@@ -153,7 +152,7 @@ public class UnityRigidNode : RigidNode_Base
 						unityMesh.colors32 = colors;
 						unityMesh.uv = uvs;
 
-						subObject.AddComponent<BoxCollider>();
+						subObject.AddComponent<MeshCollider>().convex = true;
 				}
 
 				if (!unityObject.GetComponent<Rigidbody> ()) {
