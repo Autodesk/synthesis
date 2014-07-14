@@ -10,15 +10,17 @@ public class UnityRigidNode : RigidNode_Base
 		private SoftJointLimit low, high;
 		private float upper, lower;
 
+
+		//The root transform for the whole object model is determined in this constructor passively
 		public void CreateTransform (Transform root)
 		{
 				unityObject = new GameObject ();
 				unityObject.transform.parent = root;
 				unityObject.transform.position = new Vector3 (0, 0, 0);
-				//Destroy (gameObject.collider);
 				unityObject.name = base.GetModelFileName (); 
 		}
 
+		//creates a uniform configurable joint which can be altered through conditionals.
 		private ConfigurableJoint ConfigJointInternal (Vector3 parentPos, Vector3 childPos, Vector3 axis)
 		{
 		
@@ -48,7 +50,25 @@ public class UnityRigidNode : RigidNode_Base
 				joint.zMotion = ConfigurableJointMotion.Locked;
 				return joint;
 		}
+		//creates a wheel collider and centers it on the current transform
+		private void CreateWheel (RotationalJoint_Base center)
+		{
+				//Debug.Log (wheel.position);
+				collider = new GameObject (unityObject.name + " Collider");
+				collider.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
+				collider.transform.position = ConvertV3 (center.basePoint);
+				collider.AddComponent<WheelCollider> ();
+				collider.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.15f);
+				collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
+		
+				//parent.Rotate (new Vector3 (0, 90, 0));
+		
+				//I want the grandfather to have a rigidbody
+				//unityObject.transform.gameObject.AddComponent<Rigidbody> ();
+				//unityObject.transform.rigidbody.mass = 120;
+		}
 
+		//creates the configurable joint then preforms the appropriate alterations based on the joint type
 		public void CreateJoint ()
 		{
 				if (joint != null || base.GetSkeletalJoint () == null) {
@@ -64,7 +84,8 @@ public class UnityRigidNode : RigidNode_Base
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
 						joint = ConfigJointInternal (ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.axis));
 						
-						joint.angularXMotion = !nodeR.hasAngularLimit ?  ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
+						
+						joint.angularXMotion = !nodeR.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
 						
 						
 						lower = nodeR.angularLimitLow * (180.0f / Mathf.PI);
@@ -79,26 +100,32 @@ public class UnityRigidNode : RigidNode_Base
 						}
 
 						
-						
+						//if the mesh contains information which identifies it as a wheel then create a wheel collider.
 						wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
 						if (wheel != null && wheel.position != WheelPosition.NO_WHEEL) {
+								JointDrive drMode = new JointDrive ();
+								drMode.mode = JointDriveMode.Velocity;
 								CreateWheel (nodeR);
+								joint.angularXDrive = drMode;	
+								
 						}
 					
-				} else if (nodeX.GetJointType () == SkeletalJointType.LINEAR) {
-						LinearJoint_Base nodeL = (LinearJoint_Base)nodeX;
+				} else if (nodeX.GetJointType () == SkeletalJointType.CYLINDRICAL) {
+						CylindricalJoint_Base nodeQ = (CylindricalJoint_Base)nodeX;
 						
-						joint = ConfigJointInternal (ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.axis));
+						joint = ConfigJointInternal (ConvertV3 (nodeQ.basePoint), ConvertV3 (nodeQ.basePoint), ConvertV3 (nodeQ.axis));
 						
 						
 						joint.xMotion = ConfigurableJointMotion.Limited;
+						joint.angularXMotion = !nodeQ.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
 						
+						Debug.Log ("Axis: " + nodeQ.axis);
 						
 						
 				}
 					
 		}
-
+		//loads the bxda format meshes
 		public void CreateMesh (string filePath)
 		{
 		
@@ -107,24 +134,25 @@ public class UnityRigidNode : RigidNode_Base
 				mesh.ReadBXDA (filePath);
 		
 				int mCount = mesh.meshes.Count;
-		
-				//Init.generateCubes (mCount, gameObject.transform, gameObject.transform.name + " Subpart");
+
 		
 				for (int j = 0; j < mCount; j++) {
+						//new gameobject is made for the submesh
 						GameObject subObject = new GameObject (unityObject.name + " Subpart" + j);
+						//it is passively assigned as a child to the root transform 
 						subObject.transform.parent = unityObject.transform;
 						subObject.transform.position = new Vector3 (0, 0, 0);
 
 						BXDAMesh.BXDASubMesh sub = mesh.meshes [j];
 				
-			
+						//takes all of the required information from the API (the API information is within "sub" above)
 						Vector3[] vertices = ArrayUtilities.WrapArray<Vector3> (
 				delegate(double x, double y, double z) {
-				return new Vector3 ((float)x, (float)y, (float)z);
+								return new Vector3 ((float)x, (float)y, (float)z);
 						}, sub.verts);
 						Vector3[] normals = ArrayUtilities.WrapArray<Vector3> (
 				delegate(double x, double y, double z) {
-				return new Vector3 ((float)x, (float)y, (float)z);
+								return new Vector3 ((float)x, (float)y, (float)z);
 						}, sub.norms);
 						Color32[] colors = ArrayUtilities.WrapArray<Color32> (
 				delegate(byte r, byte g, byte b, byte a) {
@@ -137,24 +165,24 @@ public class UnityRigidNode : RigidNode_Base
 			
 						Mesh unityMesh = new Mesh ();
 				
-						//Debug.Log (vertices [2]);
+						
 			
 			
-						//Seems to be mostly useless since they are already added by default
+						//this the gameobject which contains the components
 						subObject.AddComponent <MeshFilter> ();
 						subObject.AddComponent <MeshRenderer> ();
 						subObject.GetComponent<MeshFilter> ().mesh = unityMesh;
 						subObject.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Diffuse"));
-				
+						//the mesh is strictly for rendering | for serious, it would be irresponsible to give joints to children
 						unityMesh.vertices = vertices;
 						unityMesh.triangles = sub.indicies;
 						unityMesh.normals = normals;
 						unityMesh.colors32 = colors;
 						unityMesh.uv = uvs;
 
-						subObject.AddComponent<MeshCollider>().convex = true;
+						subObject.AddComponent<MeshCollider> ().convex = true;
 				}
-
+				//if the object doesn't have a rigidbody then attach one
 				if (!unityObject.GetComponent<Rigidbody> ()) {
 						unityObject.AddComponent<Rigidbody> ();
 				}
@@ -162,34 +190,17 @@ public class UnityRigidNode : RigidNode_Base
 				rigidB.mass = mesh.physics.mass;
 				rigidB.centerOfMass = ConvertV3 (mesh.physics.centerOfMass);
 		}
-	
-		private void CreateWheel (RotationalJoint_Base center)
-		{
-				//Debug.Log (wheel.position);
-				collider = new GameObject (unityObject.name + " Collider");
-				collider.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
-				collider.transform.position = ConvertV3 (center.basePoint);
-				collider.AddComponent<WheelCollider> ();
-				collider.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.15f);
-				collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
-				
-				//parent.Rotate (new Vector3 (0, 90, 0));
-			
-				//I want the grandfather to have a rigidbody
-				//unityObject.transform.gameObject.AddComponent<Rigidbody> ();
-				//unityObject.transform.rigidbody.mass = 120;
-		}
 
+
+		//These are all of the public functions which have varying uses. Mostly "get" functions, but convertV3 is especially useful.
+		
+
+		//converts BXDVectors to the unity vector3 type
 		public static Vector3 ConvertV3 (BXDVector3 vector)
 		{
 				return new Vector3 ((float)vector.x, (float)vector.y, (float)vector.z);
 		}
-
-
-
-
-
-
+		//porta used mostly for drive controls. Allows for proper motor simulation
 		public int GetPortA ()
 		{
 				if (base.GetSkeletalJoint () == null || base.GetSkeletalJoint ().cDriver == null) {
@@ -205,16 +216,19 @@ public class UnityRigidNode : RigidNode_Base
 				}
 				return GetSkeletalJoint ().cDriver.portB;
 		}
-
-		public WheelCollider GetWheelCollider() {
-			return collider != null ? collider.GetComponent<WheelCollider> () : null;
+		
+		public WheelCollider GetWheelCollider ()
+		{
+				return collider != null ? collider.GetComponent<WheelCollider> () : null;
 		}
-		public ConfigurableJoint GetConfigJoint(){
-		return joint != null ? joint : null;
-	}
+
+		public ConfigurableJoint GetConfigJoint ()
+		{
+				return joint != null ? joint : null;
+		}
 
 }
-
+//This allows the rigidnode_base to be loaded with unityrigidnode_base information
 public class UnityRigidNodeFactory : RigidNodeFactory
 {
 		public RigidNode_Base Create ()
