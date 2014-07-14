@@ -9,13 +9,13 @@ using System.Threading;
 class WheelAnalyzer
 {
     /// <summary>
-    /// Saves all of the informations for a wheel collider, such as width, radius, and center, to a joint.
+    /// Saves the various information for a wheel collider.
     /// </summary>
-    /// <param name="position">
-    /// The position of the wheel on the robot's frame.  Will most likely be removed later.
-    /// </param>
     /// <param name="joint">
-    /// The joint that controls the collider.
+    /// The joint associated with the wheel.
+    /// </param>
+    /// <param name="type">
+    /// The kind of wheel attached to the joint, such as omni or mecanum.
     /// </param>
     public static void SaveToJoint(SkeletalJoint_Base joint, WheelType type)
     {
@@ -123,7 +123,7 @@ class WheelAnalyzer
             GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
         int vertexCount;
         int segmentCount;
-        //TODO: Figure out if arrays are right for c#.
+        //Not sure how long to make arrays.  
         double[] verticeCoords = new double[10000];
         int[] verticeIndicies = new int[10000];
         double newWidth;
