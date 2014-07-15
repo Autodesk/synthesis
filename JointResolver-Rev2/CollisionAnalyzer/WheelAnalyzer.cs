@@ -112,27 +112,8 @@ class WheelAnalyzer
         {
             foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
             {
-                //Takes the part axes and the assembly axes and creates a transformation from one to the other.
-                component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
-
-                asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
-
-                //The joint normal is changed from being relative to assembly to relative to the part axes.
-                transformedVector.Cell[1, 1] = ((RotationalJoint)joint).axis.x;
-                transformedVector.Cell[2, 1] = ((RotationalJoint)joint).axis.y;
-                transformedVector.Cell[3, 1] = ((RotationalJoint)joint).axis.z;
-
-                Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
-
-                transformedVector.TransformBy(asmToPart);
-
-                rotationAxis.X = transformedVector.Cell[1, 1];
-                rotationAxis.Y = transformedVector.Cell[2, 1];
-                rotationAxis.Z = transformedVector.Cell[3, 1];
-
-                Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
-
-                newRadiusThread = new FindRadiusThread(component, rotationAxis);
+                
+                newRadiusThread = new FindRadiusThread(component, ((RotationalJoint)joint).axis);
                 radiusThreadList.Add(newRadiusThread);
                 newRadiusThread.Start();
             }

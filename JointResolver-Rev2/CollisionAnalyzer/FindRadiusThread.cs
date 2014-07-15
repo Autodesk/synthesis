@@ -13,11 +13,11 @@ class FindRadiusThread
 {
     Thread findRadius;
     ComponentOccurrence component;
-    Vector rotationAxis;
+    BXDVector3 rotationAxis;
     static double fullRadius;
     static ComponentOccurrence treadPart;
 
-    public FindRadiusThread(ComponentOccurrence passComponent, Vector passRotationAxis)
+    public FindRadiusThread(ComponentOccurrence passComponent, BXDVector3 passRotationAxis)
     {
         findRadius = new Thread(() => FindMaxRadius());
         component = passComponent;
@@ -74,8 +74,16 @@ class FindRadiusThread
         double minRadius = 0.0;
         double maxRadius = 0.0;
         double localFullRadius = 0.0;
-
-
+        Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
+        Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
+        Vector partXAxis;
+        Vector partYAxis;
+        Vector partZAxis;
+        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
+        Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
+        Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
+        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
+        Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
 
@@ -86,8 +94,30 @@ class FindRadiusThread
             newThread.Start();
         }
 
+        //Takes the part axes and the assembly axes and creates a transformation from one to the other.
+        component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
+
+        asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
+
+        //The joint normal is changed from being relative to assembly to relative to the part axes.
+        transformedVector.Cell[1, 1] = rotationAxis.x;
+        transformedVector.Cell[2, 1] = rotationAxis.y;
+        transformedVector.Cell[3, 1] = rotationAxis.z;
+
+        Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
+
+        transformedVector.TransformBy(asmToPart);
+
+        myRotationAxis.X = transformedVector.Cell[1, 1];
+        myRotationAxis.Y = transformedVector.Cell[2, 1];
+        myRotationAxis.Z = transformedVector.Cell[3, 1];
+
+        Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
+
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
+
+
             surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
 
             Console.WriteLine(Convert.ToString(vertexCount) + " vertices in mesh of " + component.Name + ".");
@@ -98,7 +128,7 @@ class FindRadiusThread
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
 
-                projectedVector = rotationAxis.CrossProduct(vertex);
+                projectedVector = myRotationAxis.CrossProduct(vertex);
 
                 newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
 
