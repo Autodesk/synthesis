@@ -17,7 +17,7 @@ class WheelAnalyzer
     /// <param name="type">
     /// The kind of wheel attached to the joint, such as omni or mecanum.
     /// </param>
-    public static void SaveToJoint(SkeletalJoint_Base joint, WheelType type)
+    public static void SaveToJoint(SkeletalJoint_Base joint, WheelType type, FrictionLevel friction)
     {
         Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
         Vector partXAxis;
@@ -37,6 +37,21 @@ class WheelAnalyzer
         FindRadiusThread newRadiusThread;
 
         wheelDriver.type = type;
+
+        switch (friction)
+        {
+            case FrictionLevel.HIGH:
+                wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
+                wheelDriver.forwardExtremeValue = 10; //Force of max static friction force.
+                wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
+                wheelDriver.forwardAsympValue = 8;
+
+                if (wheelDriver.type == WheelType.OMNI)
+                {
+
+                }
+                break;
+        }
 
         FindRadiusThread.Reset();
 

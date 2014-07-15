@@ -7,6 +7,13 @@ public enum WheelType : byte
     MECANUM = 2
 }
 
+public enum FrictionLevel : byte
+{
+    HIGH = 0,
+    MEDIUM = 1,
+    LOW = 2
+}
+
 public class WheelDriverMeta : JointDriverMeta
 {
     /// <summary>
@@ -37,6 +44,53 @@ public class WheelDriverMeta : JointDriverMeta
         set;
     }
 
+    public float forwardExtremeSlip
+    {
+        get;
+        set;
+    }
+
+    public float forwardExtremeValue
+    {
+        get;
+        set;
+    }
+
+    public float forwardAsympSlip
+    {
+        get;
+        set;
+    }
+
+    public float forwardAsympValue
+    {
+        get;
+        set;
+    }
+
+    public float sideExtremeSlip
+    {
+        get;
+        set;
+    }
+
+    public float sidextremeValue
+    {
+        get;
+        set;
+    }
+
+    public float sideAsympSlip
+    {
+        get;
+        set;
+    }
+
+    public float sideAsympValue
+    {
+        get;
+        set;
+    }
 
     public WheelDriverMeta()
     {
@@ -52,6 +106,8 @@ public class WheelDriverMeta : JointDriverMeta
         writer.Write(center.x);
         writer.Write(center.y);
         writer.Write(center.z);
+        writer.Write(staticMu);
+        writer.Write(kineticMu);
     }
 
     //Reads the position of the wheel from the file.
@@ -62,6 +118,8 @@ public class WheelDriverMeta : JointDriverMeta
         center.x = reader.ReadSingle();
         center.y = reader.ReadSingle();
         center.z = reader.ReadSingle();
+        staticMu = reader.ReadSingle();
+        kineticMu = reader.ReadSingle();
     }
 
     public string GetTypeString()

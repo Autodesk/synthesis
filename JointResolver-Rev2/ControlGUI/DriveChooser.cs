@@ -21,6 +21,7 @@ public partial class DriveChooser : Form
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
     private WheelType wheelType;
+    private FrictionLevel friction;
 
     public void ShowDialog(SkeletalJoint_Base joint)
     {
@@ -90,7 +91,7 @@ public partial class DriveChooser : Form
         //Only need to store wheel driver if run by motor and is a wheel.
         if (JointDriver.IsMotor(cType) && wheelType != null)
         {
-            WheelAnalyzer.SaveToJoint(joint, wheelType);
+            WheelAnalyzer.SaveToJoint(joint, wheelType, friction);
         }
 
         Hide();
@@ -134,5 +135,10 @@ public partial class DriveChooser : Form
     private void groupBox2_Enter(object sender, EventArgs e)
     {
 
+    }
+
+    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
     }
 }

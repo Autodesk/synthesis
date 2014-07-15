@@ -39,6 +39,7 @@ partial class DriveChooser
             this.btnSave = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
+            this.cmbFrictionLevel = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
@@ -187,6 +188,7 @@ partial class DriveChooser
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cmbFrictionLevel);
             this.groupBox2.Controls.Add(this.cmbWheelType);
             this.groupBox2.Location = new System.Drawing.Point(11, 209);
             this.groupBox2.Name = "groupBox2";
@@ -205,9 +207,24 @@ partial class DriveChooser
             "Mecanum"});
             this.cmbWheelType.Location = new System.Drawing.Point(16, 21);
             this.cmbWheelType.Name = "cmbWheelType";
-            this.cmbWheelType.Size = new System.Drawing.Size(317, 24);
+            this.cmbWheelType.Size = new System.Drawing.Size(149, 24);
             this.cmbWheelType.TabIndex = 0;
+            this.cmbWheelType.Text = "Wheel Type";
             this.cmbWheelType.SelectedIndexChanged += new System.EventHandler(this.cmbWheelType_SelectedIndexChanged);
+            // 
+            // cmbFrictionLevel
+            // 
+            this.cmbFrictionLevel.FormattingEnabled = true;
+            this.cmbFrictionLevel.Items.AddRange(new object[] {
+            "High",
+            "Medium",
+            "Banana"});
+            this.cmbFrictionLevel.Location = new System.Drawing.Point(171, 21);
+            this.cmbFrictionLevel.Name = "cmbFrictionLevel";
+            this.cmbFrictionLevel.Size = new System.Drawing.Size(149, 24);
+            this.cmbFrictionLevel.TabIndex = 1;
+            this.cmbFrictionLevel.Text = "Friction Level";
+            this.cmbFrictionLevel.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // DriveChooser
             // 
@@ -246,4 +263,5 @@ partial class DriveChooser
     private System.Windows.Forms.Button btnSave;
     private System.Windows.Forms.GroupBox groupBox2;
     private System.Windows.Forms.ComboBox cmbWheelType;
+    private System.Windows.Forms.ComboBox cmbFrictionLevel;
 }
