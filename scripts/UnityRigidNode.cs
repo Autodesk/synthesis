@@ -21,7 +21,7 @@ public class UnityRigidNode : RigidNode_Base
 		}
 
 		//creates a uniform configurable joint which can be altered through conditionals.
-		private ConfigurableJoint ConfigJointInternal (Vector3 parentPos, Vector3 childPos, Vector3 axis)
+		private ConfigurableJoint ConfigJointInternal (Vector3 pos, Vector3 axis)
 		{
 		
 				GameObject rigid = ((UnityRigidNode)GetParent ()).unityObject;
@@ -29,15 +29,13 @@ public class UnityRigidNode : RigidNode_Base
 						rigid.gameObject.AddComponent<Rigidbody> ();
 				}
 				Rigidbody rigidB = rigid.gameObject.GetComponent<Rigidbody> ();
-				//rigidB.isKinematic = true;
 				joint = unityObject.gameObject.AddComponent<ConfigurableJoint> ();
 				
 				joint.connectedBody = rigidB;
-				//joint.enableCollision = false;
-		
+
 				//configures the joint
-				joint.anchor = parentPos;
-				joint.connectedAnchor = childPos;
+				joint.anchor = pos;
+				joint.connectedAnchor = pos;
 				joint.axis = axis;
 		
 				//joint.secondaryAxis = new Vector3 (0, 0, 1);
@@ -53,7 +51,6 @@ public class UnityRigidNode : RigidNode_Base
 		//creates a wheel collider and centers it on the current transform
 		private void CreateWheel (RotationalJoint_Base center)
 		{
-				//Debug.Log (wheel.position);
 				collider = new GameObject (unityObject.name + " Collider");
 				collider.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
 				collider.transform.position = ConvertV3 (center.basePoint);
@@ -61,11 +58,8 @@ public class UnityRigidNode : RigidNode_Base
 				collider.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.15f);
 				collider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 		
-				//parent.Rotate (new Vector3 (0, 90, 0));
-		
 				//I want the grandfather to have a rigidbody
-				//unityObject.transform.gameObject.AddComponent<Rigidbody> ();
-				//unityObject.transform.rigidbody.mass = 120;
+				
 		}
 
 		//creates the configurable joint then preforms the appropriate alterations based on the joint type
@@ -82,7 +76,7 @@ public class UnityRigidNode : RigidNode_Base
 						RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
 						
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
-						joint = ConfigJointInternal (ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.axis));
+						joint = ConfigJointInternal (ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.axis));
 						
 						
 						joint.angularXMotion = !nodeR.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
@@ -103,6 +97,8 @@ public class UnityRigidNode : RigidNode_Base
 						//if the mesh contains information which identifies it as a wheel then create a wheel collider.
 						wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
 						if (wheel != null && wheel.position != WheelPosition.NO_WHEEL) {
+								
+								//don't worry, I'm a doctor
 								JointDrive drMode = new JointDrive ();
 								drMode.mode = JointDriveMode.Velocity;
 								CreateWheel (nodeR);
@@ -113,13 +109,12 @@ public class UnityRigidNode : RigidNode_Base
 				} else if (nodeX.GetJointType () == SkeletalJointType.CYLINDRICAL) {
 						CylindricalJoint_Base nodeQ = (CylindricalJoint_Base)nodeX;
 						
-						joint = ConfigJointInternal (ConvertV3 (nodeQ.basePoint), ConvertV3 (nodeQ.basePoint), ConvertV3 (nodeQ.axis));
+						joint = ConfigJointInternal (ConvertV3 (nodeQ.basePoint), ConvertV3 (nodeQ.axis));
 						
 						
 						joint.xMotion = ConfigurableJointMotion.Limited;
 						joint.angularXMotion = !nodeQ.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
-						
-						Debug.Log ("Axis: " + nodeQ.axis);
+			Debug.Log("Start: "  + nodeQ.linearLimitStart + " End: " + nodeQ.linearLimitEnd);
 						
 						
 				}
@@ -180,7 +175,7 @@ public class UnityRigidNode : RigidNode_Base
 						unityMesh.colors32 = colors;
 						unityMesh.uv = uvs;
 
-						subObject.AddComponent<MeshCollider> ().convex = true;
+						subObject.AddComponent<BoxCollider>();
 				}
 				//if the object doesn't have a rigidbody then attach one
 				if (!unityObject.GetComponent<Rigidbody> ()) {
