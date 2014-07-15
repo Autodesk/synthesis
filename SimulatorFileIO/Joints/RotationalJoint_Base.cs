@@ -46,6 +46,6 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             angularLimitHigh = reader.ReadSingle();
         }
 
-        currentAngularPosition = reader.Read();
+        currentAngularPosition = reader.ReadSingle();
     }
 }
