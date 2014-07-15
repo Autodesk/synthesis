@@ -49,6 +49,8 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             writer.Write(linearLimitEnd);
         }
+
+        writer.Write(currentLinearPosition);
     }
 
     protected override void ReadJoint(System.IO.BinaryReader reader)
@@ -74,5 +76,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             linearLimitEnd = reader.ReadSingle();
         }
+
+        currentLinearPosition = reader.ReadSingle();
     }
 }
