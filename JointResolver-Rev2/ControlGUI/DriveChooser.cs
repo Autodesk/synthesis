@@ -44,6 +44,11 @@ public partial class DriveChooser : Form
         ShowDialog();
     }
 
+    /// <summary>
+    /// Changes the position of window elements based on the type of driver.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
     {
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
@@ -55,12 +60,14 @@ public partial class DriveChooser : Form
             this.Height = 360;
             btnSave.Location = new System.Drawing.Point(13, 280);
             btnSave.Visible = true;
+            groupBox2.Visible = true;
         }
         else if (JointDriver.IsMotor(cType) == false)
         {
             this.Height = 300;
             btnSave.Location = new System.Drawing.Point(13, 220);
             btnSave.Visible = true;
+            groupBox2.Visible = false;
         }
     }
 
