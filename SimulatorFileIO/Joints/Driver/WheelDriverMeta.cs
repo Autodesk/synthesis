@@ -74,7 +74,7 @@ public class WheelDriverMeta : JointDriverMeta
         set;
     }
 
-    public float sidextremeValue
+    public float sideExtremeValue
     {
         get;
         set;
@@ -103,11 +103,19 @@ public class WheelDriverMeta : JointDriverMeta
         writer.Write((byte)((int)type));
         writer.Write(radius);
         writer.Write(width);
+
         writer.Write(center.x);
         writer.Write(center.y);
         writer.Write(center.z);
-        writer.Write(staticMu);
-        writer.Write(kineticMu);
+
+        writer.Write(forwardAsympSlip);
+        writer.Write(forwardAsympValue);
+        writer.Write(forwardExtremeSlip);
+        writer.Write(forwardExtremeValue);
+        writer.Write(sideAsympSlip);
+        writer.Write(sideAsympValue);
+        writer.Write(sideExtremeSlip);
+        writer.Write(sideExtremeValue);
     }
 
     //Reads the position of the wheel from the file.
@@ -115,11 +123,19 @@ public class WheelDriverMeta : JointDriverMeta
     {        type = (WheelType)reader.ReadByte();
         radius = reader.ReadSingle();
         width = reader.ReadSingle();
+
         center.x = reader.ReadSingle();
         center.y = reader.ReadSingle();
         center.z = reader.ReadSingle();
-        staticMu = reader.ReadSingle();
-        kineticMu = reader.ReadSingle();
+
+        forwardAsympSlip = reader.ReadSingle();
+        forwardAsympValue = reader.ReadSingle();
+        forwardExtremeSlip = reader.ReadSingle();
+        forwardExtremeValue = reader.ReadSingle();
+        sideAsympSlip = reader.ReadSingle();
+        sideAsympValue = reader.ReadSingle();
+        sideExtremeSlip = reader.ReadSingle();
+        sideExtremeValue = reader.ReadSingle();
     }
 
     public string GetTypeString()

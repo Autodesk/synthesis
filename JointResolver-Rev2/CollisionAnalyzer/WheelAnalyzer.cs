@@ -38,6 +38,7 @@ class WheelAnalyzer
 
         wheelDriver.type = type;
 
+        //TODO: Figure out mecanum friction.
         switch (friction)
         {
             case FrictionLevel.HIGH:
@@ -48,7 +49,59 @@ class WheelAnalyzer
 
                 if (wheelDriver.type == WheelType.OMNI)
                 {
+                    wheelDriver.sideExtremeSlip = 1;
+                    wheelDriver.sideExtremeValue = .01f;
+                    wheelDriver.sideAsympSlip = 1.5f;
+                    wheelDriver.sideAsympValue = .005f;
+                }
+                else
+                {
+                    wheelDriver.sideExtremeSlip = 1;
+                    wheelDriver.sideExtremeValue = 10;
+                    wheelDriver.sideAsympSlip = 1.5f;
+                    wheelDriver.sideAsympValue = 8;
+                }
+                break;
+            case FrictionLevel.MEDIUM:
+                wheelDriver.forwardExtremeSlip = 1f; //Speed of max static friction force.
+                wheelDriver.forwardExtremeValue = 7; //Force of max static friction force.
+                wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
+                wheelDriver.forwardAsympValue = 5;
 
+                if (wheelDriver.type == WheelType.OMNI)
+                {
+                    wheelDriver.sideExtremeSlip = 1;
+                    wheelDriver.sideExtremeValue = .01f;
+                    wheelDriver.sideAsympSlip = 1.5f;
+                    wheelDriver.sideAsympValue = .005f;
+                }
+                else
+                {
+                    wheelDriver.sideExtremeSlip = 1;
+                    wheelDriver.sideExtremeValue = 7;
+                    wheelDriver.sideAsympSlip = 1.5f;
+                    wheelDriver.sideAsympValue = 5;
+                }
+                break;
+            case FrictionLevel.LOW:
+                wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
+                wheelDriver.forwardExtremeValue = 5; //Force of max static friction force.
+                wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
+                wheelDriver.forwardAsympValue = 3;
+
+                if (wheelDriver.type == WheelType.OMNI)
+                {
+                    wheelDriver.sideExtremeSlip = 1;
+                    wheelDriver.sideExtremeValue = .01f;
+                    wheelDriver.sideAsympSlip = 1.5f;
+                    wheelDriver.sideAsympValue = .005f;
+                }
+                else
+                {
+                    wheelDriver.sideExtremeSlip = 1;
+                    wheelDriver.sideExtremeValue = 5;
+                    wheelDriver.sideAsympSlip = 1.5f;
+                    wheelDriver.sideAsympValue = 3;
                 }
                 break;
         }
