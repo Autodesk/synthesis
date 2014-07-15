@@ -106,11 +106,23 @@ class FindRadiusThread
                 {
                     maxRadius = newRadius;
 
+                    //Sets the starting point if this is the first vertex.
+                    if (minRadius == 0.0)
+                    {
+                        minRadius = newRadius;
+                    }
+
                     localFullRadius = maxRadius - minRadius;
                 }
                 else if (newRadius < minRadius)
                 {
                     minRadius = newRadius;
+
+                    //Sets the starting point if this is the first vertex.
+                    if (maxRadius == 0.0)
+                    {
+                        maxRadius = newRadius;
+                    }
 
                     localFullRadius = maxRadius - minRadius;
                 }
