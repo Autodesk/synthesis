@@ -67,7 +67,6 @@ class FindRadiusThread
         double newRadius;
         Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        Vector projectedVector;
         treadPart = null;
         FindRadiusThread newThread;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
