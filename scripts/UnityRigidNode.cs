@@ -8,7 +8,6 @@ public class UnityRigidNode : RigidNode_Base
 		protected WheelDriverMeta wheel;
 		private BXDAMesh mesh;
 		private SoftJointLimit low, high;
-		private float upper, lower;
 
 
 		//The root transform for the whole object model is determined in this constructor passively
@@ -62,6 +61,18 @@ public class UnityRigidNode : RigidNode_Base
 				
 		}
 
+		//converts inventor's limit information to the modular system unity uses (180/-180)
+		private void AngularLimit (float[] limit)
+		{
+				for (int i = 0; i < limit.Length; i++) {
+						limit [i] = (Mathf.Abs (limit [i]) > 180.0f) ? 360.0f - Mathf.Abs (limit [i]) : limit [i];  
+				
+						Debug.Log ("Value: " + limit [i] + " limit index: " + i);
+				}
+				low.limit = limit [0] == limit [1] ? limit [0] - limit [1] : limit [1];
+				high.limit = limit [0] == limit [2] ? limit [0] - limit [2] : limit [2];
+		}
+
 		//creates the configurable joint then preforms the appropriate alterations based on the joint type
 		public void CreateJoint ()
 		{
@@ -82,15 +93,19 @@ public class UnityRigidNode : RigidNode_Base
 						joint.angularXMotion = !nodeR.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
 						
 						
-						lower = nodeR.angularLimitLow * (180.0f / Mathf.PI);
-						upper = nodeR.angularLimitHigh * (180.0f / Mathf.PI);
-
+						
 						if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
-								low.limit = lower;
-								high.limit = upper;
+								float[] limit = {
+										nodeR.currentAngularPosition * (180.0f / Mathf.PI),
+										nodeR.angularLimitLow * (180.0f / Mathf.PI),
+										nodeR.angularLimitHigh * (180.0f / Mathf.PI)
+								};
+								AngularLimit (limit);
+								
+
 								joint.lowAngularXLimit = low;
 								joint.highAngularXLimit = high;
-								Debug.Log ("Lower: " + low.limit + " Upper: " + high.limit);
+								Debug.Log ("Lower: " + nodeR.angularLimitLow * (180.0f / Mathf.PI) + " Upper: " + nodeR.angularLimitHigh * (180.0f / Mathf.PI) + " Current: " + nodeR.currentAngularPosition * (180.0f / Mathf.PI));
 						}
 
 						
@@ -110,11 +125,19 @@ public class UnityRigidNode : RigidNode_Base
 						CylindricalJoint_Base nodeQ = (CylindricalJoint_Base)nodeX;
 						
 						joint = ConfigJointInternal (ConvertV3 (nodeQ.basePoint), ConvertV3 (nodeQ.axis));
-						
-						
+						Debug.Log ("BasePoint (init): " + nodeQ.basePoint);
+						nodeQ.basePoint.x = nodeQ.currentLinearPosition;
+						Debug.Log ("BasePoint (final): " + nodeQ.basePoint);
+
 						joint.xMotion = ConfigurableJointMotion.Limited;
 						joint.angularXMotion = !nodeQ.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
-			Debug.Log("Start: "  + nodeQ.linearLimitStart + " End: " + nodeQ.linearLimitEnd);
+						Debug.Log ("Start: " + nodeQ.linearLimitStart + " End: " + nodeQ.linearLimitEnd);
+						joint.anchor = ConvertV3 (nodeQ.basePoint);
+
+						if (joint.xMotion == ConfigurableJointMotion.Limited) {
+							
+						}
+						
 						
 						
 				}
@@ -175,7 +198,7 @@ public class UnityRigidNode : RigidNode_Base
 						unityMesh.colors32 = colors;
 						unityMesh.uv = uvs;
 
-						subObject.AddComponent<BoxCollider>();
+						subObject.AddComponent<BoxCollider> ();
 				}
 				//if the object doesn't have a rigidbody then attach one
 				if (!unityObject.GetComponent<Rigidbody> ()) {
@@ -184,6 +207,7 @@ public class UnityRigidNode : RigidNode_Base
 				Rigidbody rigidB = unityObject.GetComponent<Rigidbody> ();
 				rigidB.mass = mesh.physics.mass;
 				rigidB.centerOfMass = ConvertV3 (mesh.physics.centerOfMass);
+				//rigidB.collisionDetectionMode = CollisionDetectionMode.Continuous;
 		}
 
 
@@ -195,21 +219,14 @@ public class UnityRigidNode : RigidNode_Base
 		{
 				return new Vector3 ((float)vector.x, (float)vector.y, (float)vector.z);
 		}
-		//porta used mostly for drive controls. Allows for proper motor simulation
+
+		//portA used mostly for drive controls. Allows for proper motor simulation
 		public int GetPortA ()
 		{
 				if (base.GetSkeletalJoint () == null || base.GetSkeletalJoint ().cDriver == null) {
 						return -1;			
 				}
 				return GetSkeletalJoint ().cDriver.portA;
-		}
-
-		public int GetPortB ()
-		{
-				if (joint != null || base.GetSkeletalJoint () == null || base.GetSkeletalJoint ().cDriver == null) {
-						return -1;			
-				}
-				return GetSkeletalJoint ().cDriver.portB;
 		}
 		
 		public WheelCollider GetWheelCollider ()
