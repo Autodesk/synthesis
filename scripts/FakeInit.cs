@@ -80,10 +80,9 @@ public class FakeInit : MonoBehaviour
 		Controls.setMotor (PWMAssignments[4], -10*(Input.GetAxis("Vertical")+Input.GetAxis("Horizontal")));
 		Controls.setMotor (PWMAssignments[3], 10*(Input.GetAxis("Vertical")-Input.GetAxis("Horizontal")));
 		Controls.setMotor (PWMAssignments[1], 10*(Input.GetAxis("Vertical")+Input.GetAxis("Horizontal")));
-		Controls.setMotor (PWMAssignments[2], 10*(Input.GetAxis("Vertical")-Input.GetAxis("Horizontal")));			}
+		Controls.setMotor (PWMAssignments[2], 10*(Input.GetAxis("Vertical")-Input.GetAxis("Horizontal")));			
 		
 	}
-}
 
 
 }
