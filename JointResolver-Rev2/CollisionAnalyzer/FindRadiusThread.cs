@@ -78,8 +78,7 @@ class FindRadiusThread
         Double boxRadius;
  
         //Calculates the largest possible radius for the part using the bounding box.
-        boxRadius = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(component.RangeBox.MaxPoint.X - component.RangeBox.MinPoint.X,
-            component.RangeBox.MaxPoint.Y - component.RangeBox.MinPoint.Y, component.RangeBox.MaxPoint.Z - component.RangeBox.MinPoint.Z).Length / 2;
+        boxRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
 
