@@ -50,8 +50,6 @@ class FindRadiusThread
     public void FindMaxRadius()
     {
         const double MESH_TOLERANCE = 0.5;
-        Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
         int vertexCount;
         int segmentCount;
         //TODO: Figure out if arrays are right for c#.
@@ -60,13 +58,12 @@ class FindRadiusThread
         double newRadius;
         Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
+        Vector projectedVector;
         treadPart = null;
         FindRadiusThread newThread;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
-        Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
+        Inventor.Point origin;
         Vector partXAxis;
         Vector partYAxis;
         Vector partZAxis;
@@ -120,6 +117,7 @@ class FindRadiusThread
                 projectedVector = myRotationAxis.CrossProduct(vertex);
 
                 newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
+
 
                 lock (Program.INVENTOR_APPLICATION)
                 {

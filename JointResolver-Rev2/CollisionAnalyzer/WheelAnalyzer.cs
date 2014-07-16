@@ -125,7 +125,7 @@ class WheelAnalyzer
 
             wheelDriver.radius = (float)FindRadiusThread.GetRadius();
             treadPart = FindRadiusThread.GetWidthComponent();
-            WheelAnalyzer.FindWheelWidthCenter(treadPart, rotationAxis, out maxWidth, out center);
+            WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
 
             wheelDriver.width = (float)maxWidth;
 
@@ -165,30 +165,55 @@ class WheelAnalyzer
     /// <param name="center">
     /// The output object to store the coordinates of the center with respect to the component.
     /// </param>
-    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, Vector rotationAxis, out double fullWidth, out Vector center)
+    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out Vector center)
     {
         const double MESH_TOLERANCE = 0.5;
-        Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
         int vertexCount;
         int segmentCount;
         //TODO: Figure out if arrays are right for c#.
         double[] verticeCoords = new double[10000];
         int[] verticeIndicies = new int[10000];
         double newWidth;
-        Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        Inventor.Point sideVertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint(0, 0, 0);
+        Vector vertex = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
         double minWidth = 0.0;
         double maxWidth = 0.0;
         fullWidth = 0.0;
         center = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
             GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0);
 
+        Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
+        Inventor.Point origin;
+        Vector partXAxis;
+        Vector partYAxis;
+        Vector partZAxis;
+        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
+        Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
+        Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
+        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
+        Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
+
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
+
+        //Takes the part axes and the assembly axes and creates a transformation from one to the other.
+        wheelTread.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
+
+        asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
+
+        //The joint normal is changed from being relative to assembly to relative to the part axes.
+        transformedVector.Cell[1, 1] = rotationAxis.x;
+        transformedVector.Cell[2, 1] = rotationAxis.y;
+        transformedVector.Cell[3, 1] = rotationAxis.z;
+
+        Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
+
+        transformedVector.TransformBy(asmToPart);
+
+        myRotationAxis.X = transformedVector.Cell[1, 1];
+        myRotationAxis.Y = transformedVector.Cell[2, 1];
+        myRotationAxis.Z = transformedVector.Cell[3, 1];
+
+        Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
+
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
@@ -204,17 +229,27 @@ class WheelAnalyzer
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
 
-                newWidth = rotationAxis.DotProduct(vertex);
+                newWidth = myRotationAxis.DotProduct(vertex);
 
                 //Stores the distance to the point. 
                 if (newWidth > maxWidth)
                 {
                     maxWidth = newWidth;
+
+                    if (minWidth == 0.0)
+                    {
+                        minWidth = newWidth;
+                    }
                 }
                 //Changes the starting point when detecting distance for later vertices.
                 if (newWidth < minWidth)
                 {
                     minWidth = newWidth;
+
+                    if (maxWidth == 0.0)
+                    {
+                        maxWidth = newWidth;
+                    }
                 }
 
                 //These two statements result in an end where the starting point is on one side of the wheel, and the distance that is being
