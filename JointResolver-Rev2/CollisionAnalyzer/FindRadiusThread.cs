@@ -116,7 +116,7 @@ class FindRadiusThread
 
                 projectedVector = myRotationAxis.CrossProduct(vertex);
 
-                newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
+                newRadius = projectedVector.Length;
 
 
                 lock (Program.INVENTOR_APPLICATION)
