@@ -75,6 +75,11 @@ class FindRadiusThread
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         double localMaxRadius = 0.0;
+        Double boxRadius;
+ 
+        //Calculates the largest possible radius for the part using the bounding box.
+        boxRadius = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(component.RangeBox.MaxPoint.X - component.RangeBox.MinPoint.X,
+            component.RangeBox.MaxPoint.Y - component.RangeBox.MinPoint.Y, component.RangeBox.MaxPoint.Z - component.RangeBox.MinPoint.Z).Length / 2;
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
 
@@ -108,6 +113,12 @@ class FindRadiusThread
 
             for (int i = 0; i < verticeCoords.Length; i += 3)
             {
+                //Checks if it possible for the radius to exceed the max radius.
+                if (boxRadius < currentMaxRadius)
+                {
+                    return;
+                }
+
                 vertex.X = verticeCoords[i];
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
