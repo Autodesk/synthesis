@@ -179,8 +179,19 @@ class WheelAnalyzer
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part axes.
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the rotation axis as it is transformed.
+        Inventor.Point origin;
+        Vector partXAxis;
+        Vector partYAxis;
+        Vector partZAxis;
+        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
+        Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
+        Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
 
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
+
+        wheelTread.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
+
+        asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
 
         //The joint normal is changed from being relative to assembly to relative to the part axes.
         transformedVector.Cell[1, 1] = rotationAxis.x;
@@ -189,7 +200,7 @@ class WheelAnalyzer
 
         Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
 
-        transformedVector.TransformBy(wheelTread.Transformation);
+        transformedVector.TransformBy(asmToPart);
 
         myRotationAxis.X = transformedVector.Cell[1, 1];
         myRotationAxis.Y = transformedVector.Cell[2, 1];

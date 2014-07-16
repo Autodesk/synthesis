@@ -69,10 +69,18 @@ class FindRadiusThread
         FindRadiusThread newThread;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores all of the threads for suboccurrnces of this occurrence.
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part's axes.
+        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
         double localMaxRadius = 0.0; //The largest radius found for this occurrence.
         double boxRadius; //The largest possible radius for this part found via a bounding box.
         Vector vertexVector;
+        Inventor.Point origin;
+        Vector partXAxis;
+        Vector partYAxis;
+        Vector partZAxis;
+        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
+        Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
+        Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
  
         //Calculates the largest possible radius for the part using the bounding box.
         boxRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
@@ -87,6 +95,10 @@ class FindRadiusThread
             newThread.Start();
         }
 
+        component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
+
+        asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
+
         transformedVector.Cell[1, 1] = rotationAxis.x;
         transformedVector.Cell[2, 1] = rotationAxis.y;
         transformedVector.Cell[3, 1] = rotationAxis.z;
@@ -94,7 +106,7 @@ class FindRadiusThread
         Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
         
         //Changes the rotation axis from being expressed by assembly axes to occurrence axes.
-        //transformedVector.TransformBy(component.Transformation);
+        transformedVector.TransformBy(asmToPart);
 
 
         myRotationAxis.X = transformedVector.Cell[1, 1];
