@@ -19,13 +19,6 @@ class WheelAnalyzer
     /// </param>
     public static void SaveToJoint(SkeletalJoint_Base joint, WheelType type, FrictionLevel friction)
     {
-        Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
-        Vector partXAxis;
-        Vector partYAxis;
-        Vector partZAxis;
-        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
-        Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
-        Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
         WheelDriverMeta wheelDriver = new WheelDriverMeta();
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
@@ -35,6 +28,7 @@ class WheelAnalyzer
         Vector center;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
         FindRadiusThread newRadiusThread;
+        Matrix invertedTransform;
 
         wheelDriver.type = type;
 
@@ -128,13 +122,10 @@ class WheelAnalyzer
             WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
 
             wheelDriver.width = (float)maxWidth;
+            invertedTransform = treadPart.Transformation;
+            invertedTransform.Invert();
 
-            //The average vertex coordinates are changed to assembly space.
-            treadPart.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
-
-            asmToPart.SetToAlignCoordinateSystems(origin, asmXAxis, asmYAxis, asmZAxis, origin, partXAxis, partYAxis, partZAxis);
-
-            center.TransformBy(asmToPart);
+            center.TransformBy(invertedTransform);
 
             wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
             wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
