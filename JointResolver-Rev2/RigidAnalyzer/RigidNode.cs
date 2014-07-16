@@ -4,7 +4,10 @@ using Inventor;
 
 public class RigidNode : RigidNode_Base
 {
+    public delegate void DeferredCalculation(RigidNode node);
+
     public CustomRigidGroup group;
+    private Dictionary<string, DeferredCalculation> deferredCalculations = new Dictionary<string, DeferredCalculation>();
 
     public RigidNode()
         : this(null)
@@ -18,6 +21,34 @@ public class RigidNode : RigidNode_Base
     public override object GetModel()
     {
         return group;
+    }
+
+    public bool RegisterDeferredCalculation(string id, DeferredCalculation calc)
+    {
+        try
+        {
+            deferredCalculations.Add(id, calc);
+            return false;
+        }
+        catch
+        {
+            deferredCalculations[id] = calc;
+            return true;
+        }
+    }
+
+    public bool UnregisterDeferredCalculation(string id)
+    {
+        return deferredCalculations.Remove(id);
+    }
+
+    public void DoDeferredCalculations()
+    {
+        foreach (DeferredCalculation calc in deferredCalculations.Values)
+        {
+            calc(this);
+        }
+        deferredCalculations.Clear();
     }
 
     public override string GetModelID()
