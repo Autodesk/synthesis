@@ -53,7 +53,7 @@ public class SurfaceExporter
                 bestIndex = i;
             }
         }
-        Console.WriteLine("(" + postVertCount + "v/" + postFacetCount + "f)\tExporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
+      //  Console.WriteLine("(" + postVertCount + "v/" + postFacetCount + "f)\tExporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
 
         if (separateFaces)
         {

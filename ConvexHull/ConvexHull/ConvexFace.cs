@@ -62,6 +62,7 @@ namespace MIConvexHull
     public class DefaultConvexFace<TVertex> : ConvexFace<TVertex, DefaultConvexFace<TVertex>>, System.IComparable<DefaultConvexFace<TVertex>>
         where TVertex : IVertex
     {
+        public int tmpHead = 0;
         private double areaSQ = -1;
         public double getAreaSQ(bool force = false)
         {
@@ -74,14 +75,37 @@ namespace MIConvexHull
                     (a[2]*b[0]) - (a[0]*b[2]),
                     (a[0]*b[1]) - (a[1]*b[0])
                 };
-                areaSQ = Constants.normSq(res, res.Length) / 4.0;
+
+                double size = Constants.normSq(res, res.Length);
+
+                size = System.Math.Sqrt(size);
+                areaSQ = -size / 25.0;
+                res[0] /= size;
+                res[1] /= size;
+                res[2] /= size;
+                if (res[0] * Normal[0] + res[1] * Normal[1] + res[2] * Normal[2] < 0)
+                {
+                    res[0] *= -1;
+                    res[1] *= -1;
+                    res[2] *= -1;
+                }
+                Normal = res;
+
+                foreach (DefaultConvexFace<TVertex> pair in Adjacency)
+                {
+                    if (pair != null)
+                    {
+                        areaSQ += pair.Normal[0] * Normal[0] + pair.Normal[1] * Normal[1] + pair.Normal[2] * Normal[2];
+                    }
+                    break;
+                }
             }
             return areaSQ;
         }
 
         public int CompareTo(DefaultConvexFace<TVertex> v)
         {
-            return getAreaSQ().CompareTo(v.getAreaSQ());
+            return -getAreaSQ().CompareTo(v.getAreaSQ());
         }
     }
 }
