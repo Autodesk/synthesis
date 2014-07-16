@@ -58,29 +58,29 @@ class FindRadiusThread
     /// </summary>
     public void FindMaxRadius()
     {
-        const double MESH_TOLERANCE = 0.5;
+        const double MESH_TOLERANCE = 0.5; //The maximum error the mesh can have relative to the part in cm.
         int vertexCount;
         int segmentCount;
         //TODO: Figure out if arrays are right for c#.
-        double[] verticeCoords = new double[10000];
+        double[] verticeCoords = new double[10000]; //Stores all the doubles for the coordinates of the vertices.
         int[] verticeIndicies = new int[10000];
-        double newRadius;
+        double newRadius; //The radius for the most recent vertex
         Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        treadPart = null;
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(); //The coordinates of the vertex.
+        treadPart = null; //The part of the wheel that collides with the ground.  Most likely the tred.
         FindRadiusThread newThread;
-        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
-        Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
-        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        double localMaxRadius = 0.0;
-        double boxRadius;
+        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores all of the threads for suboccurrnces of this occurrence.
+        Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part's axes.
+        Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
+        double localMaxRadius = 0.0; //The largest radius found for this occurrence.
+        double boxRadius; //The largest possible radius for this part found via a bounding box.
  
         //Calculates the largest possible radius for the part using the bounding box.
         boxRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
 
+        //Creates new threads for sub occurrences.
         foreach (ComponentOccurrence sub in component.SubOccurrences)
         {
             newThread = new FindRadiusThread(sub, rotationAxis);
@@ -88,13 +88,13 @@ class FindRadiusThread
             newThread.Start();
         }
 
-        //The joint normal is changed from being relative to assembly to relative to the part axes.
         transformedVector.Cell[1, 1] = rotationAxis.x;
         transformedVector.Cell[2, 1] = rotationAxis.y;
         transformedVector.Cell[3, 1] = rotationAxis.z;
 
         Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
-
+        
+        //Changes the rotation axis from being expressed by assembly axes to occurrence axes.
         transformedVector.TransformBy(component.Transformation);
 
         myRotationAxis.X = transformedVector.Cell[1, 1];
@@ -105,22 +105,25 @@ class FindRadiusThread
 
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
-
-
+            //Creates a mesh for the occurrence with the given tolerance.
             surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
 
+            //Jumps from 3D coordinate to 3D coordinate.
             for (int i = 0; i < verticeCoords.Length; i += 3)
             {
-                //Checks if it possible for the radius to exceed the max radius.
+                //Checks if it possible for the radius to exceed the max radius.  Quits early if there's no chance of finding a larger radius.
                 if (boxRadius < currentMaxRadius)
                 {
                     return;
                 }
 
+                //Grabs the three doubles that make up a coordinate for a single vertex.
                 vertex.X = verticeCoords[i];
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
 
+                //Crossproduct returns a vector with the magnitude of the distance between the two orthagonal to myRotationAxis.
+                //Direction doesn't matter, onlyh the magnitude.
                 newRadius = myRotationAxis.CrossProduct(vertex).Length;
 
                 if (newRadius > localMaxRadius)
@@ -130,6 +133,7 @@ class FindRadiusThread
             }
         }
 
+        //Stores the largest radius in shared memory once the largest radius for this component is calculated.
         lock (Program.INVENTOR_APPLICATION)
         {
             if (localMaxRadius > currentMaxRadius)
@@ -140,9 +144,10 @@ class FindRadiusThread
             }
         }
 
-        foreach (FindRadiusThread thread in radiusThreadList)
+        //Makes sure all sub components have ended before the parent ends.  Done to make sure that the final radius is indeed the largest radius.
+        foreach (FindRadiusThread subThread in radiusThreadList)
         {
-            thread.Join();
+            subThread.Join();
         }
 
         Console.WriteLine("Found radius of " + component.Name + ".");

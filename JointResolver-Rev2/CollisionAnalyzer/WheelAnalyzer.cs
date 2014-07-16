@@ -17,33 +17,35 @@ class WheelAnalyzer
     /// <param name="joint">
     /// The joint that controls the collider.
     /// </param>
+    /// <param name="friction">
+    /// The tier of friction that was selected by DriveChooser.
+    /// </param>
     public static void SaveToJoint(SkeletalJoint_Base joint, WheelType type, FrictionLevel friction)
     {
-        WheelDriverMeta wheelDriver = new WheelDriverMeta();
-        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
+        WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        Vector rotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
-        double maxWidth = 0;
-        ComponentOccurrence treadPart = null;
-        Vector center;
-        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
+        Vector rotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation for the rigidgroup in assembly terms.
+        double maxWidth = 0; //The width of the part of the wheel with the largest radius.
+        ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
+        Vector center; //The average center of all the vertex coordinates.
+        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
         FindRadiusThread newRadiusThread;
-        Matrix invertedTransform;
+        Matrix invertedTransform; //Stores the transfrom from part axes to assembly axes.
 
         wheelDriver.type = type;
 
-        //TODO: Figure out mecanum friction.
+        //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
         switch (friction)
         {
             case FrictionLevel.HIGH:
                 wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
                 wheelDriver.forwardExtremeValue = 10; //Force of max static friction force.
                 wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
-                wheelDriver.forwardAsympValue = 8;
+                wheelDriver.forwardAsympValue = 8; //Force of leveld off kinetic friction force.
 
-                if (wheelDriver.type == WheelType.OMNI)
+                if (wheelDriver.type == WheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
                 {
-                    wheelDriver.sideExtremeSlip = 1;
+                    wheelDriver.sideExtremeSlip = 1; //Same as above, but orthogonal to the movement of the wheel.
                     wheelDriver.sideExtremeValue = .01f;
                     wheelDriver.sideAsympSlip = 1.5f;
                     wheelDriver.sideAsympValue = .005f;
@@ -57,9 +59,9 @@ class WheelAnalyzer
                 }
                 break;
             case FrictionLevel.MEDIUM:
-                wheelDriver.forwardExtremeSlip = 1f; //Speed of max static friction force.
-                wheelDriver.forwardExtremeValue = 7; //Force of max static friction force.
-                wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
+                wheelDriver.forwardExtremeSlip = 1f;
+                wheelDriver.forwardExtremeValue = 7;
+                wheelDriver.forwardAsympSlip = 1.5f;
                 wheelDriver.forwardAsympValue = 5;
 
                 if (wheelDriver.type == WheelType.OMNI)
@@ -78,9 +80,9 @@ class WheelAnalyzer
                 }
                 break;
             case FrictionLevel.LOW:
-                wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
-                wheelDriver.forwardExtremeValue = 5; //Force of max static friction force.
-                wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
+                wheelDriver.forwardExtremeSlip = 1;
+                wheelDriver.forwardExtremeValue = 5;
+                wheelDriver.forwardAsympSlip = 1.5f;
                 wheelDriver.forwardAsympValue = 3;
 
                 if (wheelDriver.type == WheelType.OMNI)
@@ -100,33 +102,36 @@ class WheelAnalyzer
                 break;
         }
 
-        FindRadiusThread.Reset();
+        FindRadiusThread.Reset(); //Prepares the shared memeory for the next component.
 
+        //Only need to worry about wheels if it is a rotational joint.
         if (joint is RotationalJoint)
         {
             foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
             {
-                
                 newRadiusThread = new FindRadiusThread(component, ((RotationalJoint)joint).axis);
                 radiusThreadList.Add(newRadiusThread);
                 newRadiusThread.Start();
             }
 
+            //Waits for all radii to be found before operating on the final values.
             foreach(FindRadiusThread thread in radiusThreadList)
             {
                 thread.Join();
             }
 
-            wheelDriver.radius = (float)FindRadiusThread.GetRadius();
+            //Finds width.
             treadPart = FindRadiusThread.GetWidthComponent();
             WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
 
-            wheelDriver.width = (float)maxWidth;
             invertedTransform = treadPart.Transformation;
             invertedTransform.Invert();
 
             center.TransformBy(invertedTransform);
 
+            //Beings saving calculated values to the driver.
+            wheelDriver.radius = (float)FindRadiusThread.GetRadius();
+            wheelDriver.width = (float)maxWidth;
             wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
             wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
             wheelDriver.center.z = (float)(center.Z + treadPart.Transformation.Translation.Z);
@@ -138,6 +143,7 @@ class WheelAnalyzer
                 treadPart.Transformation.Translation.Z);
         }
 
+        //Finally saves the bundle of info to the driver attached to the wheel.
         joint.cDriver.AddInfo(wheelDriver);
     }
 
@@ -158,23 +164,21 @@ class WheelAnalyzer
     /// </param>
     public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out Vector center)
     {
-        const double MESH_TOLERANCE = 0.5;
-        int vertexCount;
+        const double MESH_TOLERANCE = 0.5; //The max distance of error between the mesh and the model. In cm.
+        int vertexCount; 
         int segmentCount;
-        //TODO: Figure out if arrays are right for c#.
-        double[] verticeCoords = new double[10000];
+        double[] verticeCoords = new double[10000]; //All of the vertex coordinates 3 at a time.
         int[] verticeIndicies = new int[10000];
-        double newWidth;
-        Vector vertex = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
-        double minWidth = 0.0;
-        double maxWidth = 0.0;
-        fullWidth = 0.0;
+        double newWidth; //The distance from the origin to the latest vertex.
+        Vector vertex = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The coordinates of the latest vertex.
+        double minWidth = 0.0; //The lowest newWidth ever recorded.
+        double maxWidth = 0.0; //The highest newWidth ever recorded.
+        fullWidth = 0.0; //The difference between min and max widths. The actual width of the part.
         center = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0);
-
-        Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
-        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
+            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0); //The average coordinates of all the vertices.  Roughly the center.
+        Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part axes.
+        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
+        Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the rotation axis as it is transformed.
 
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
 
@@ -193,10 +197,9 @@ class WheelAnalyzer
 
         Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
 
-
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
-            //TODO: use extending box or finding projection on plane.
+            //Creates the mesh with specified tolerances.
             surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
             for (int i = 0; i < verticeCoords.Length; i += 3)
             {
@@ -236,7 +239,7 @@ class WheelAnalyzer
             }
 
             fullWidth = maxWidth - minWidth;
-            center.X = center.X / vertexCount;
+            center.X = center.X / vertexCount; //Finds the average for all the vertex coordinates.
             center.Y = center.Y / vertexCount;
             center.Z = center.Z / vertexCount;
         }
