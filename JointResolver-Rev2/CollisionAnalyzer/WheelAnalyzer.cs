@@ -170,7 +170,6 @@ class WheelAnalyzer
         double[] verticeCoords = new double[10000]; //All of the vertex coordinates 3 at a time.
         int[] verticeIndicies = new int[10000];
         double newWidth; //The distance from the origin to the latest vertex.
-        Vector vertex = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The coordinates of the latest vertex.
         double minWidth = 0.0; //The lowest newWidth ever recorded.
         double maxWidth = 0.0; //The highest newWidth ever recorded.
         fullWidth = 0.0; //The difference between min and max widths. The actual width of the part.
@@ -186,6 +185,8 @@ class WheelAnalyzer
         Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
         Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
+        Vector vertexVector;
+        int totalVertexCount = 0;
 
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
 
@@ -210,19 +211,17 @@ class WheelAnalyzer
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
-            //Creates the mesh with specified tolerances.
-            surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
-            for (int i = 0; i < verticeCoords.Length; i += 3)
+            totalVertexCount += surface.Vertices.Count;
+
+            foreach (Vertex vertex in surface.Vertices)
             {
-                center.X += verticeCoords[i];
-                center.Y += verticeCoords[i + 1];
-                center.Z += verticeCoords[i + 2];
+                vertexVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
 
-                vertex.X = verticeCoords[i];
-                vertex.Y = verticeCoords[i + 1];
-                vertex.Z = verticeCoords[i + 2];
+                center.X += vertexVector.X;
+                center.Y += vertexVector.Y;
+                center.Z += vertexVector.Z;
 
-                newWidth = myRotationAxis.DotProduct(vertex);
+                newWidth = myRotationAxis.DotProduct(vertexVector);
 
                 //Stores the distance to the point. 
                 if (newWidth > maxWidth)
@@ -244,16 +243,14 @@ class WheelAnalyzer
                         maxWidth = newWidth;
                     }
                 }
-
-                //These two statements result in an end where the starting point is on one side of the wheel, and the distance that is being
-                //      calculated and stored is for a vertex on the other side of the wheel.
             }
 
-            fullWidth = maxWidth - minWidth;
-            center.X = center.X / vertexCount; //Finds the average for all the vertex coordinates.
-            center.Y = center.Y / vertexCount;
-            center.Z = center.Z / vertexCount;
         }
+
+        fullWidth = maxWidth - minWidth;
+        center.X = center.X / totalVertexCount; //Finds the average for all the vertex coordinates.
+        center.Y = center.Y / totalVertexCount;
+        center.Z = center.Z / totalVertexCount;
 
         Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
     }
