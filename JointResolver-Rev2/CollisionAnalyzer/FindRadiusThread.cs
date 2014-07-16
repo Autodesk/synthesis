@@ -75,7 +75,7 @@ class FindRadiusThread
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         double localMaxRadius = 0.0;
-        Double boxRadius;
+        double boxRadius;
  
         //Calculates the largest possible radius for the part using the bounding box.
         boxRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
