@@ -14,18 +14,6 @@ static class Program
         AnalyzeRigidResults();
     }
 
-    public static Matrix GetWorldTransformation(ComponentOccurrence comp)
-    {
-        Matrix trans = INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        trans.SetToIdentity();
-        if (!((comp.ParentOccurrence == null)))
-        {
-            trans.TransformBy(GetWorldTransformation(comp.ParentOccurrence));
-        }
-        trans.TransformBy(comp.Transformation);
-        return trans;
-    }
-
     public static void AnalyzeRigidResults()
     {
         string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");

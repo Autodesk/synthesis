@@ -14,6 +14,11 @@ public class BXDIO
     /// </summary>
     public const uint FORMAT_VERSION = (MAJOR_VERSION << 24) | (MINOR_VERSION << 16) | (REVISION_VERSION << 8) | REVISION_PORTION;
 
+    /// <summary>
+    /// Converts the given version ID number to decimal notation.
+    /// </summary>
+    /// <param name="version">Version ID</param>
+    /// <returns>Decimal notation of the version ID</returns>
     public static string VersionToString(uint version)
     {
         return ((version >> 24) & 0xFF) + "." + ((version >> 16) & 0xFF) + "." + ((version >> 8) & 0xFF) + ((version >> 0) & 0xFF);
