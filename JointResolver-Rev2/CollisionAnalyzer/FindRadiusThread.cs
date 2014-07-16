@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
 
+/// <summary>
+/// Handles a single thread to find the radius of a single component.
+/// </summary>
 class FindRadiusThread
 {
     Thread findRadius;
-    ComponentOccurrence component;
-    BXDVector3 rotationAxis;
-    static double currentMaxRadius;
-    static ComponentOccurrence treadPart;
+    ComponentOccurrence component; //The component of which to find the radius.
+    BXDVector3 rotationAxis; //The vector that is being rotated around in terms of the part's axes.
+    static double currentMaxRadius; //The largest radius found among all the parts in the rigid group.
+    static ComponentOccurrence treadPart; //The component with the largest radius.  This is stored so its width can be found later.
 
     public FindRadiusThread(ComponentOccurrence passComponent, BXDVector3 passRotationAxis)
     {
@@ -21,6 +24,9 @@ class FindRadiusThread
         rotationAxis = passRotationAxis;
     }
 
+    /// <summary>
+    /// Sets the largest radius found back to zero.  This needs to be done between rigid groups.
+    /// </summary>
     static public void Reset()
     {
         currentMaxRadius = 0;
@@ -47,6 +53,9 @@ class FindRadiusThread
         findRadius.Join();
     }
 
+    /// <summary>
+    /// Calculates the largest radius and its component.
+    /// </summary>
     public void FindMaxRadius()
     {
         const double MESH_TOLERANCE = 0.5;
@@ -63,13 +72,6 @@ class FindRadiusThread
         FindRadiusThread newThread;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
-        Inventor.Point origin;
-        Vector partXAxis;
-        Vector partYAxis;
-        Vector partZAxis;
-        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
-        Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
-        Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
 
@@ -82,11 +84,6 @@ class FindRadiusThread
             newThread.Start();
         }
 
-        //Takes the part axes and the assembly axes and creates a transformation from one to the other.
-        component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
-
-        asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
-
         //The joint normal is changed from being relative to assembly to relative to the part axes.
         transformedVector.Cell[1, 1] = rotationAxis.x;
         transformedVector.Cell[2, 1] = rotationAxis.y;
@@ -94,7 +91,7 @@ class FindRadiusThread
 
         Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
 
-        transformedVector.TransformBy(asmToPart);
+        transformedVector.TransformBy(component.Transformation);
 
         myRotationAxis.X = transformedVector.Cell[1, 1];
         myRotationAxis.Y = transformedVector.Cell[2, 1];
