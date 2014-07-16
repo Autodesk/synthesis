@@ -58,12 +58,6 @@ class FindRadiusThread
     /// </summary>
     public void FindMaxRadius()
     {
-        const double MESH_TOLERANCE = 0.5; //The maximum error the mesh can have relative to the part in cm.
-        int vertexCount;
-        int segmentCount;
-        //TODO: Figure out if arrays are right for c#.
-        double[] verticeCoords = new double[10000]; //Stores all the doubles for the coordinates of the vertices.
-        int[] verticeIndicies = new int[10000];
         double newRadius; //The radius for the most recent vertex
         treadPart = null; //The part of the wheel that collides with the ground.  Most likely the tred.
         FindRadiusThread newThread;

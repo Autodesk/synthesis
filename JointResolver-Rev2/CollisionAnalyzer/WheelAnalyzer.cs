@@ -164,11 +164,6 @@ class WheelAnalyzer
     /// </param>
     public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out Vector center)
     {
-        const double MESH_TOLERANCE = 0.5; //The max distance of error between the mesh and the model. In cm.
-        int vertexCount; 
-        int segmentCount;
-        double[] verticeCoords = new double[10000]; //All of the vertex coordinates 3 at a time.
-        int[] verticeIndicies = new int[10000];
         double newWidth; //The distance from the origin to the latest vertex.
         double minWidth = 0.0; //The lowest newWidth ever recorded.
         double maxWidth = 0.0; //The highest newWidth ever recorded.
