@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
 
-/// <summary>
-/// Handles all the variables for a thread to find the radius of a component.
-/// </summary>
 class FindRadiusThread
 {
     Thread findRadius;
     ComponentOccurrence component;
     BXDVector3 rotationAxis;
-    static double fullRadius;
+    static double currentMaxRadius;
     static ComponentOccurrence treadPart;
 
     public FindRadiusThread(ComponentOccurrence passComponent, BXDVector3 passRotationAxis)
@@ -26,13 +23,13 @@ class FindRadiusThread
 
     static public void Reset()
     {
-        fullRadius = 0;
+        currentMaxRadius = 0;
         treadPart = null;
     }
 
     static public double GetRadius()
     {
-        return fullRadius;
+        return currentMaxRadius;
     }
 
     static public ComponentOccurrence GetWidthComponent()
@@ -50,9 +47,6 @@ class FindRadiusThread
         findRadius.Join();
     }
 
-    /// <summary>
-    /// Calculates the radius of component by creating a mesh and checking their distance from the origin.
-    /// </summary>
     public void FindMaxRadius()
     {
         const double MESH_TOLERANCE = 0.5;
@@ -71,9 +65,6 @@ class FindRadiusThread
         treadPart = null;
         FindRadiusThread newThread;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>();
-        double minRadius = 0.0;
-        double maxRadius = 0.0;
-        double localFullRadius = 0.0;
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
         Inventor.Point origin = Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint();
         Vector partXAxis;
@@ -120,8 +111,6 @@ class FindRadiusThread
 
             surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
 
-            Console.WriteLine(Convert.ToString(vertexCount) + " vertices in mesh of " + component.Name + ".");
-
             for (int i = 0; i < verticeCoords.Length; i += 3)
             {
                 vertex.X = verticeCoords[i];
@@ -132,36 +121,11 @@ class FindRadiusThread
 
                 newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
 
-                if (newRadius > maxRadius)
-                {
-                    maxRadius = newRadius;
-
-                    //Sets the starting point if this is the first vertex.
-                    if (minRadius == 0.0)
-                    {
-                        minRadius = newRadius;
-                    }
-
-                    localFullRadius = maxRadius - minRadius;
-                }
-                else if (newRadius < minRadius)
-                {
-                    minRadius = newRadius;
-
-                    //Sets the starting point if this is the first vertex.
-                    if (maxRadius == 0.0)
-                    {
-                        maxRadius = newRadius;
-                    }
-
-                    localFullRadius = maxRadius - minRadius;
-                }
-
                 lock (Program.INVENTOR_APPLICATION)
                 {
-                    if (localFullRadius > fullRadius)
+                    if (newRadius > currentMaxRadius)
                     {
-                        fullRadius = localFullRadius;
+                        currentMaxRadius = newRadius;
 
                         treadPart = component;
                     }
