@@ -74,6 +74,7 @@ class FindRadiusThread
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector();
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
+        double localMaxRadius = 0.0;
 
         Console.WriteLine("Finding radius of " + component.Name + ".");
 
@@ -115,16 +116,20 @@ class FindRadiusThread
 
                 newRadius = projectedVector.Length;
 
-
-                lock (Program.INVENTOR_APPLICATION)
+                if (newRadius > localMaxRadius)
                 {
-                    if (newRadius > currentMaxRadius)
-                    {
-                        currentMaxRadius = newRadius;
-
-                        treadPart = component;
-                    }
+                    localMaxRadius = newRadius;
                 }
+            }
+        }
+
+        lock (Program.INVENTOR_APPLICATION)
+        {
+            if (localMaxRadius > currentMaxRadius)
+            {
+                currentMaxRadius = localMaxRadius;
+
+                treadPart = component;
             }
         }
 
