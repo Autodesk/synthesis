@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollisionAnalyzer\FindRadiusThread.cs" />
     <Compile Include="ControlGUI\ComponentHighlighter.cs" />
     <Compile Include="ControlGUI\ControlGroups.cs">
       <SubType>Form</SubType>
@@ -74,6 +75,7 @@
     <Compile Include="SkeletalStructure\LinearJoint.cs" />
     <Compile Include="SkeletalStructure\PlanarJoint.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="CollisionAnalyzer\WheelAnalyzer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -5,10 +5,10 @@ using System.Text;
 
 public class BXDIO
 {
-    private const byte MAJOR_VERSION = 0;
-    private const byte MINOR_VERSION = 0;
-    private const byte REVISION_VERSION = 6;
-    private const byte REVISION_PORTION = 0;
+    private const byte MAJOR_VERSION = 0;           // Bump on stable releases
+    private const byte MINOR_VERSION = 0;           // Bump on beta releases
+    private const byte REVISION_VERSION = 6;        // Bump on major IO changes.
+    private const byte REVISION_PORTION = 1;        // Bump on minor additions and removals from IO.
     /// <summary>
     /// The version of the BXDJ file format this file can read and write.
     /// </summary>

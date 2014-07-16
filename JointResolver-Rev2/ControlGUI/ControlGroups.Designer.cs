@@ -28,6 +28,9 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chRadius = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chWidth = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chCenter = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain = new System.Windows.Forms.TabControl();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.lstGroups = new System.Windows.Forms.ListView();
@@ -71,7 +74,10 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.item_chParent,
             this.item_chChild,
             this.item_chDrive,
-            this.item_chWheel});
+            this.item_chWheel,
+            this.item_chRadius,
+            this.item_chWidth,
+            this.item_chCenter});
             this.lstJoints.FullRowSelect = true;
             this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lstJoints.HoverSelection = true;
@@ -108,8 +114,21 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // item_chWheel
             // 
-            this.item_chWheel.Text = "Wheel Position";
+            this.item_chWheel.Text = "Wheel Type";
             this.item_chWheel.Width = 120;
+            // 
+            // item_chRadius
+            // 
+            this.item_chRadius.Text = "Radius";
+            // 
+            // item_chWidth
+            // 
+            this.item_chWidth.Text = "Width";
+            // 
+            // item_chCenter
+            // 
+            this.item_chCenter.Text = "Center";
+            this.item_chCenter.Width = 147;
             // 
             // tabsMain
             // 
@@ -251,4 +270,7 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.CheckBox chkHighlightComponents;
     private System.Windows.Forms.ColumnHeader item_chWheel;
     private System.Windows.Forms.Button btnCalculate;
+    private System.Windows.Forms.ColumnHeader item_chRadius;
+    private System.Windows.Forms.ColumnHeader item_chWidth;
+    private System.Windows.Forms.ColumnHeader item_chCenter;
 }

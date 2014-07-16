@@ -27,6 +27,8 @@ public partial class ControlGroups
 
     private void UpdateJointList()
     {
+        WheelDriverMeta wheelData = null;
+
         if ((nodeList == null))
             return;
         lstJoints.Items.Clear();
@@ -39,10 +41,23 @@ public partial class ControlGroups
                 {
                     SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint)joint).GetWrapped() : null);
 
+                    if (joint is RotationalJoint && joint.cDriver != null)
+                    {
+                        wheelData = ((RotationalJoint)joint).cDriver.GetInfo<WheelDriverMeta>();
+                    }
+                    else
+                    {
+                        wheelData = null;
+                    }
+
                     System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
-                wrapped!=null?wrapped.parentGroup.ToString():"from-file",
-                wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
+                    Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
+                        wrapped!=null?wrapped.parentGroup.ToString():"from-file",
+                        wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver",
+                        wheelData!=null?wheelData.GetTypeString():"No Wheel",
+                        wheelData!=null?Convert.ToString(wheelData.radius) + " cm":"None",
+                        wheelData!=null?Convert.ToString(wheelData.width) + " cm":"None",
+                        wheelData!=null?wheelData.center.ToString():"None"});
                     item.Tag = joint;
                     lstJoints.Items.Add(item);
                 }
@@ -56,7 +71,7 @@ public partial class ControlGroups
         foreach (CustomRigidGroup group in groupList)
         {
             System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {group.ToString(),
-            group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No"});
+                group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No"});
             item.Tag = group;
             lstGroups.Items.Add(item);
         }

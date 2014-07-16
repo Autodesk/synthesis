@@ -20,7 +20,8 @@ public partial class DriveChooser : Form
 
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
-    private WheelPosition position;
+    private WheelType wheelType;
+    private FrictionLevel friction;
 
     public void ShowDialog(SkeletalJoint_Base joint)
     {
@@ -44,166 +45,31 @@ public partial class DriveChooser : Form
         ShowDialog();
     }
 
+    /// <summary>
+    /// Changes the position of window elements based on the type of driver.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
     {
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
         lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
-        groupBox1.Visible = JointDriver.IsMotor(cType);
         if (JointDriver.IsMotor(cType) == true)
         {
             this.Height = 360;
             btnSave.Location = new System.Drawing.Point(13, 280);
             btnSave.Visible = true;
+            groupBox2.Visible = true;
         }
         else if (JointDriver.IsMotor(cType) == false)
         {
             this.Height = 300;
             btnSave.Location = new System.Drawing.Point(13, 220);
             btnSave.Visible = true;
+            groupBox2.Visible = false;
         }
-    }
-
-    /// <summary>
-    /// Takes the vertices one at a time and gets the distance in the plane of the wheel, orthoganal to the rotation axis.  It does not find the actual
-    /// radius of the entire wheel, it finds the largest radius of a part in the plane of the wheel.  It treats it as if all the components of a wheel
-    /// are in the same position.
-    /// </summary>
-    /// <param name="component">
-    /// Which part to find the furthest vertex of.
-    /// </param>
-    /// <param name="centerToEdgeVector">
-    /// A unit vector normal to the axis of rotation.  Any of the infinite number will work.
-    /// </param>
-    /// <returns>
-    /// The distance of the furthest vector of the occurrence and all of its suboccurrences.
-    /// </returns>
-    private double FindMaxRadius(ComponentOccurrence component, Vector rotationAxis, double currentMaxRadius, out ComponentOccurrence treadPart)
-    {
-        const double MESH_TOLERANCE = 0.5;
-        Inventor.Point tmp = ((Inventor.Application) System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
-        int vertexCount;
-        int segmentCount;
-        //TODO: Figure out if arrays are right for c#.
-        double[] verticeCoords = new double[10000];
-        int[] verticeIndicies = new int[10000];
-        double newRadius;
-        Vector vertex = ((Inventor.Application) System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        treadPart = null;
-        double maxRadius = 0;
-        
-
-        Console.WriteLine("Finding radius of " + component.Name + ".");
-
-        foreach (ComponentOccurrence sub in component.SubOccurrences)
-        {
-            newRadius = FindMaxRadius(sub, rotationAxis, maxRadius, out component);
-
-            if (newRadius > currentMaxRadius)
-            {
-                currentMaxRadius = newRadius;
-
-                treadPart = component;
-            }
-        }
-
-        foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
-        {
-            surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
-
-            for (int i = 0; i < verticeCoords.Length; i += 3)
-            {
-                vertex.X = verticeCoords[i];
-                vertex.Y = verticeCoords[i + 1];
-                vertex.Z = verticeCoords[i + 2];
-
-                projectedVector = rotationAxis.CrossProduct(vertex);
-
-                newRadius = Math.Sqrt(Math.Pow(projectedVector.X, 2) + Math.Pow(projectedVector.Y, 2) + Math.Pow(projectedVector.Z, 2));
-
-                if (newRadius > currentMaxRadius)
-                {
-                    currentMaxRadius = newRadius;
-
-                    treadPart = component;
-                }
-            }
-        }
-
-        return currentMaxRadius;
-    }
-
-    /// <summary>
-    /// Finds the width of the provided part of the wheel.
-    /// </summary>
-    /// <param name="wheelTread">
-    /// The part of the wheel that actually touches the ground.
-    /// </param>
-    /// <param name="rotationAxis">
-    /// The rotation normal for the rotation axis.
-    /// </param>
-    /// <returns>
-    /// The width of the part in centimeters.
-    /// </returns>
-    public double FindWheelWidth(ComponentOccurrence wheelTread, Vector rotationAxis)
-    {
-        const double MESH_TOLERANCE = 0.5;
-        Inventor.Point tmp = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint();
-        int vertexCount;
-        int segmentCount;
-        //TODO: Figure out if arrays are right for c#.
-        double[] verticeCoords = new double[10000];
-        int[] verticeIndicies = new int[10000];
-        double newWidth;
-        Vector vertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        Vector projectedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        double maxWidth = 0;
-        Inventor.Point sideVertex = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreatePoint(0, 0, 0);
-        double minWidth = 0.0;
-
-        foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
-        {
-            //TODO: use extending box or finding projection on plane.
-            surface.CalculateStrokes(MESH_TOLERANCE, out vertexCount, out segmentCount, out verticeCoords, out verticeIndicies);
-
-            for (int i = 0; i < verticeCoords.Length; i += 3)
-            {
-                vertex.X = verticeCoords[i] - sideVertex.X;
-                vertex.Y = verticeCoords[i + 1] - sideVertex.Y;
-                vertex.Z = verticeCoords[i + 2] - sideVertex.Z;
-
-                newWidth = rotationAxis.DotProduct(vertex);
-
-                //Stores the distance to the point. 
-                if (newWidth > maxWidth)
-                {
-                    maxWidth = newWidth;
-                }
-                //Changes the starting point when detecting distance for later vertices.
-                if (newWidth < minWidth)
-                {
-                    sideVertex.X = vertex.X;
-                    sideVertex.Y = vertex.Y;
-                    sideVertex.Z = vertex.Z;
-
-                    minWidth = newWidth;
-                }
-
-                //These two statements result in an end where the starting point is on one side of the wheel, and the distance that is being
-                //      calculated and stored is for a vertex on the other side of the wheel.
-            }
-        }
-
-        return maxWidth;
     }
 
     /// <summary>
@@ -213,26 +79,7 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     private void btnSave_Click(object sender, EventArgs e)
     {
-        WheelDriverMeta wheelDriver;
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
-        double maxRadius = 0;
-        Vector rotationAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector();
-        ComponentOccurrence treadPart = null;
-        Matrix asmToPart = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateMatrix();
-        Matrix transformedVector = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateMatrix();
-        Inventor.Point origin;
-        Vector partXAxis;
-        Vector partYAxis;
-        Vector partZAxis;
-        Vector asmXAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(1, 0, 0);
-        Vector asmYAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 1, 0);
-        Vector asmZAxis = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 1);
 
         joint.cDriver = new JointDriver(cType);
 
@@ -242,50 +89,12 @@ public partial class DriveChooser : Form
         joint.cDriver.upperLimit = (float) txtHighLimit.Value;
 
         //Only need to store wheel driver if run by motor and is a wheel.
-        if (JointDriver.IsMotor(cType) && position != WheelPosition.NO_WHEEL)
+        if (JointDriver.IsMotor(cType) && wheelType != null)
         {
-            wheelDriver = new WheelDriverMeta();
-            wheelDriver.position = this.position;
-
-            if (joint is RotationalJoint)
-            {
-                foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
-                {
-                    //Takes the part axes and the assembly axes and creates a transformation from one to the other.
-                    component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
-
-                    asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
-
-                    transformedVector.Cell[1, 1] = ((RotationalJoint)joint).axis.x;
-                    transformedVector.Cell[2, 1] = ((RotationalJoint)joint).axis.y;
-                    transformedVector.Cell[3, 1] = ((RotationalJoint)joint).axis.z;
-
-                    Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
-
-                    transformedVector.TransformBy(asmToPart);
-
-                    rotationAxis.X = transformedVector.Cell[1, 1];
-                    rotationAxis.Y = transformedVector.Cell[2, 1];
-                    rotationAxis.Z = transformedVector.Cell[3, 1];
-
-                    Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
-
-                    maxRadius = FindMaxRadius(component, rotationAxis, 0.0, out treadPart);
-                }
-
-                wheelDriver.radius = (float)maxRadius;
-                wheelDriver.width = (float)FindWheelWidth(treadPart, rotationAxis);
-            }
-
-            joint.cDriver.AddInfo(wheelDriver);
+            WheelAnalyzer.SaveToJoint(joint, wheelType, friction);
         }
 
         Hide();
-    }
-
-    private void cmbWheelPosition_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        position = (WheelPosition) cmbWheelPosition.SelectedIndex;
     }
 
     private void txtPortA_ValueChanged(object sender, EventArgs e)
@@ -316,5 +125,20 @@ public partial class DriveChooser : Form
     private void groupBox1_Enter(object sender, EventArgs e)
     {
 
+    }
+
+    private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        wheelType = (WheelType)cmbWheelType.SelectedIndex;
+    }
+
+    private void groupBox2_Enter(object sender, EventArgs e)
+    {
+
+    }
+
+    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
     }
 }
