@@ -122,9 +122,7 @@ class FindRadiusThread
                 vertex.Y = verticeCoords[i + 1];
                 vertex.Z = verticeCoords[i + 2];
 
-                projectedVector = myRotationAxis.CrossProduct(vertex);
-
-                newRadius = projectedVector.Length;
+                newRadius = myRotationAxis.CrossProduct(vertex).Length;
 
                 if (newRadius > localMaxRadius)
                 {
