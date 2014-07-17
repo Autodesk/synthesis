@@ -44,38 +44,13 @@ public class FakeInit : MonoBehaviour
 	void FixedUpdate ()
 	{
 		
-		// Pressing buttons takes presedence over using joysticks or the default vertical/horizontal axese
-		if (Input.anyKey) {
-			// Uncomment to use as necessary
-			
-			// To be used with custom keys (which have no axis values)
-			// These have a defined value of True or False, I have not found a way to treat them as axes like the WSAD keys
-			/*if (Input.GetKey (Controls.forward)){
-								Controls.setSetOfMotors (PWMAssignments, speed, 0, motors);
-								//Controls.setMotor (PWMAssignments [1], speed);
-								//Controls.setMotor (PWMAssignments [2], speed);
-								//Controls.setMotor (PWMAssignments [3], speed);
-								//Controls.setMotor (PWMAssignments [4], speed);
-						}
-						if (Input.GetKey (Controls.backward)) {
-								Controls.setSetOfMotors (PWMAssignments, -speed, 0, motors);
-								//Controls.setMotor (PWMAssignments [1], -speed);
-								//Controls.setMotor (PWMAssignments [2], -speed);
-								//Controls.setMotor (PWMAssignments [3], -speed);
-								//Controls.setMotor (PWMAssignments [4], -speed);
-						}
-						if (Input.GetKey (Controls.left)) {
-								Controls.setMotor (PWMAssignments [4], -speed, 0);
-								Controls.setMotor (PWMAssignments [1], -speed, 0);
-								Controls.setMotor (PWMAssignments [2], speed, 0);
-								Controls.setMotor (PWMAssignments [3], speed, 0);
-						}
-						if (Input.GetKey (Controls.right)) {
-								Controls.setMotor (PWMAssignments [4], speed, 0);
-								Controls.setMotor (PWMAssignments [1], speed, 0);
-								Controls.setMotor (PWMAssignments [2], -speed, 0);
-								Controls.setMotor (PWMAssignments [3], -speed, 0);
-						}*/
+		// If you want to use the default vertical/horizontal axese
+		if (Input.GetAxis ("Vertical") != 0 || Input.GetAxis ("Horizontal") != 0) {
+			// For use if you just want to work with analog joysticks and the default vertical/horizontal axis
+			Controls.setMotor (PWMAssignments [4], 10 * (Input.GetAxis ("Vertical") + Input.GetAxis ("Horizontal")), 0);
+			Controls.setMotor (PWMAssignments [3], 10 * (Input.GetAxis ("Vertical") - Input.GetAxis ("Horizontal")), 0);
+			Controls.setMotor (PWMAssignments [1], 10 * (Input.GetAxis ("Vertical") + Input.GetAxis ("Horizontal")), 0);
+			Controls.setMotor (PWMAssignments [2], 10 * (Input.GetAxis ("Vertical") - Input.GetAxis ("Horizontal")), 0);
 			
 			// For use with JoySticks if you want to turn left and right using the two bumpers
 			if (Input.GetKey (KeyCode.JoystickButton4)) {
@@ -89,18 +64,46 @@ public class FakeInit : MonoBehaviour
 				Controls.setMotor (PWMAssignments [2], -speed, 0);
 				Controls.setMotor (PWMAssignments [3], -speed, 0);
 			}
-			// If you are using anolog input, this will execute
-		} else if (Input.GetAxis ("Vertical") != 0 || Input.GetAxis ("Horizontal") != 0) {
-			// For use if you just want to work with analog joysticks and the default vertical/horizontal axis
-			Controls.setMotor (PWMAssignments [4], 10 * (Input.GetAxis ("Vertical") + Input.GetAxis ("Horizontal")), 0);
-			Controls.setMotor (PWMAssignments [3], 10 * (Input.GetAxis ("Vertical") - Input.GetAxis ("Horizontal")), 0);
-			Controls.setMotor (PWMAssignments [1], 10 * (Input.GetAxis ("Vertical") + Input.GetAxis ("Horizontal")), 0);
-			Controls.setMotor (PWMAssignments [2], 10 * (Input.GetAxis ("Vertical") - Input.GetAxis ("Horizontal")), 0);
+			
+			// If you are using manual controls
+		} else if (Input.GetKey (Controls.forward) || Input.GetKey (Controls.backward) || Input.GetKey (Controls.left) || Input.GetKey (Controls.right)) {
+			// Uncomment to use as necessary
+			
+			// To be used with custom keys (which have no axis values)
+			// These have a defined value of True or False, I have not found a way to treat them as axes like the WSAD keys
+			if (Input.GetKey (Controls.forward)){
+				Controls.setSetOfMotors (PWMAssignments, speed, 0, motors);
+				//Controls.setMotor (PWMAssignments [1], speed);
+				//Controls.setMotor (PWMAssignments [2], speed);
+				//Controls.setMotor (PWMAssignments [3], speed);
+				//Controls.setMotor (PWMAssignments [4], speed);
+			}
+			if (Input.GetKey (Controls.backward)) {
+				Controls.setSetOfMotors (PWMAssignments, -speed, 0, motors);
+				//Controls.setMotor (PWMAssignments [1], -speed);
+				//Controls.setMotor (PWMAssignments [2], -speed);
+				//Controls.setMotor (PWMAssignments [3], -speed);
+				//Controls.setMotor (PWMAssignments [4], -speed);
+			}
+			if (Input.GetKey (Controls.left)) {
+				Controls.setMotor (PWMAssignments [4], -speed, 0);
+				Controls.setMotor (PWMAssignments [1], -speed, 0);
+				Controls.setMotor (PWMAssignments [2], speed, 0);
+				Controls.setMotor (PWMAssignments [3], speed, 0);
+			}
+			if (Input.GetKey (Controls.right)) {
+				Controls.setMotor (PWMAssignments [4], speed, 0);
+				Controls.setMotor (PWMAssignments [1], speed, 0);
+				Controls.setMotor (PWMAssignments [2], -speed, 0);
+				Controls.setMotor (PWMAssignments [3], -speed, 0);
+			}
+			
 			
 			// If you aren't pressing anything, the wheels will begin to stop
 		} else {
 			Controls.stopAllMotors (PWMAssignments);
 		}
+
 	}
 	
 	
