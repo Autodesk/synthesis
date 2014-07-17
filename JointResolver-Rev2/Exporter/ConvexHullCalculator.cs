@@ -21,23 +21,33 @@ public class ConvexHullCalculator
 
     public static BXDAMesh.BXDASubMesh GetHull(IEnumerable<BXDAMesh.BXDASubMesh> meshes, int faceLimit = 255)
     {
-        IEnumerator<BXDAMesh.BXDASubMesh> en = meshes.GetEnumerator();
-        en.MoveNext();
-        BXDAMesh.BXDASubMesh subMesh = en.Current;
-
         ConvexAPI.iConvexDecomposition ic = new ConvexAPI.iConvexDecomposition();
-        float[] copy = new float[subMesh.verts.Length];
-        for (int i = 0; i < copy.Length; i++)
+        int vertCount = 0;
+        int indexCount = 0;
+        foreach (BXDAMesh.BXDASubMesh mesh in meshes)
         {
-            copy[i] = (float) subMesh.verts[i];
+            vertCount += mesh.verts.Length;
+            indexCount += mesh.indicies.Length;
         }
-        uint[] index = new uint[subMesh.indicies.Length];
-        for (int i = 0; i < index.Length; i++)
+        float[] copy = new float[vertCount];
+        uint[] index = new uint[indexCount];
+        vertCount = 0;
+        indexCount = 0;
+        foreach (BXDAMesh.BXDASubMesh mesh in meshes)
         {
-            index[i] = (uint) subMesh.indicies[i]-1;
+            for (int i = 0; i < mesh.verts.Length; i++)
+            {
+                copy[vertCount + i] = (float) mesh.verts[i];
+            }
+            for (int i = 0; i < mesh.indicies.Length; i++)
+            {
+                index[indexCount + i] = (uint) (mesh.indicies[i] - 1 + (vertCount/3));
+            }
+            indexCount += mesh.indicies.Length;
+            vertCount += mesh.verts.Length;
         }
-        Console.WriteLine("Start: " + (subMesh.verts.Length / 3) + ", " + (subMesh.indicies.Length / 3));
-        ic.setMesh((uint) subMesh.verts.Length / 3, copy, (uint) subMesh.indicies.Length / 3, index);
+
+        ic.setMesh((uint) copy.Length / 3, copy, (uint) index.Length / 3, index);
 
         ic.computeConvexDecomposition();
 
@@ -46,7 +56,6 @@ public class ConvexHullCalculator
             Console.WriteLine("Computing the convex decomposition in a background thread.");
             System.Threading.Thread.Sleep(1000);
         }
-
         uint hullCount = ic.getHullCount();
         Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
 
@@ -56,23 +65,24 @@ public class ConvexHullCalculator
         uint tcount_total = 0;
         for (uint i = 0; i < hullCount; i++)
         {
-            System.IO.StreamWriter writer = new System.IO.StreamWriter("C:/Temp/hulls-" + i + ".obj");
+            System.IO.StreamWriter writer = new System.IO.StreamWriter("C:/Temp/out/hulls-" + i + ".obj");
             ConvexAPI.ConvexHullResult result = ic.getConvexHullResult(i);
+            uint trisCount = result.getTriangleCount();
+            uint vertCount2 = result.getVertexCount();
             float[] verts = result.getVertices();
             uint[] inds = result.getIndicies();
-            vcount_total += result.getVertexCount();
-            tcount_total += result.getTriangleCount();
-            for (uint i2 = 0; i2 < result.getVertexCount(); i2++)
+            vcount_total += vertCount2;
+            tcount_total += trisCount;
+            for (uint i2 = 0; i2 < vertCount2; i2++)
             {
                 writer.WriteLine("v " + verts[i2 * 3] + " " + verts[i2 * 3 + 1] + " " + verts[i2 * 3 + 2]);
             }
-            for (uint i2 = 0; i2 < result.getTriangleCount(); i2++)
+            for (uint i2 = 0; i2 < trisCount; i2++)
             {
                 uint b = i2 * 3;
                 writer.WriteLine("f " + (inds[b] + vcount_base) + " " + (inds[b + 1] + vcount_base) + " " + (inds[b + 2] + vcount_base));
             }
             writer.Close();
-            //vcount_base += result.getVertexCount();
         }
         Console.WriteLine("Output contains " + vcount_total + " vertices and " + tcount_total + " triangles.");
         return null;

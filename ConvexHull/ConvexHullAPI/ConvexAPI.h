@@ -2,7 +2,6 @@
 #include "NvConvexDecomposition.h"
 #include <string.h>
 #include <stdio.h>
-
 using namespace System;
 
 namespace ConvexAPI {
@@ -41,7 +40,7 @@ namespace ConvexAPI {
 
 		bool setMesh(NxU32 vertCount, array<NxF32> ^verts, NxU32 faceCount, array<NxU32> ^facets);
 		NxU32 computeConvexDecomposition() {
-			return backing->computeConvexDecomposition(0,8,64,0.5,50,5);
+			return backing->computeConvexDecomposition(0,8,255,.05,1000,.5,false,false,true);
 		}
 
 		// skinWidth =0

@@ -18,9 +18,14 @@ static class Program
         {
             exp.ExportAll(b);
         }
+        foreach (SurfaceBody b in doc.ComponentDefinition.SurfaceBodies)
+        {
+            exp.AddFacets(b);
+        }
         BXDAMesh mesh = exp.GetOutput();
 
         BXDAMesh.BXDASubMesh hull = ConvexHullCalculator.GetHull(mesh);
+        Console.ReadLine();
     }
 
     public static Matrix GetWorldTransformation(ComponentOccurrence comp)

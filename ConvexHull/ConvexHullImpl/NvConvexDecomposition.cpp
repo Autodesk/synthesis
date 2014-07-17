@@ -468,8 +468,6 @@ namespace CONVEX_DECOMPOSITION
 
 			NxU32 *out_indices 	= (NxU32 *)MEMALLOC_MALLOC( sizeof(NxU32)*tcount*3 );
 			NxF32 *out_vertices = (NxF32 *)MEMALLOC_MALLOC( sizeof(NxF32)*3*vcount );
-			
-			printf("vCount: %d, tCount: %d\n", vcount, tcount);
 
 			NxU32 out_vcount = fm_copyUniqueVertices( vcount, vertices, out_vertices, tcount, indices, out_indices );
 			// get a copy of only the unique vertices which are actually being used.
@@ -580,14 +578,10 @@ namespace CONVEX_DECOMPOSITION
 			// first thing we should do is compute the overall mesh volume.
 			NxU32 *out_indices 	= (NxU32 *)MEMALLOC_MALLOC( sizeof(NxU32)*tcount*3 );
 			NxF32 *out_vertices = (NxF32 *)MEMALLOC_MALLOC( sizeof(NxF32)*3*vcount );
-			
-			printf("vCount: %d, tCount: %d\n", vcount, tcount);
-			for (int i = 0; i<tcount*3; i++){
-				//printf("%d (%d)\n", indices[i], vcount);
-			}
 
 			NxU32 out_vcount = fm_copyUniqueVertices( vcount, vertices, out_vertices, tcount, indices, out_indices );
 			// get a copy of only the unique vertices which are actually being used.
+			printf("Using 2 %d of %d\n", tcount, this->facetCount);
 
 			HullDesc hd;
 			hd.mVcount 			= out_vcount;
@@ -759,8 +753,6 @@ namespace CONVEX_DECOMPOSITION
 	private:
 		bool				mComplete;
 		bool				mCancel;
-		//fm_VertexIndex 		*mVertexIndex;
-		//NxU32Array			mIndices;
 		NxF32 *verticies;
 		NxU32 *indicies;
 		NxU32 facetCount;
