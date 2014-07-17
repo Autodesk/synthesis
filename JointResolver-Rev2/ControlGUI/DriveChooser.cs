@@ -22,10 +22,13 @@ public partial class DriveChooser : Form
     private SkeletalJoint_Base joint;
     private WheelType wheelType;
     private FrictionLevel friction;
+    RigidNode node;
 
-    public void ShowDialog(SkeletalJoint_Base joint)
+
+    public void ShowDialog(SkeletalJoint_Base joint, RigidNode node)
     {
         this.joint = joint;
+        this.node = node;
         typeOptions = JointDriver.GetAllowedDrivers(joint);
         cmbJointDriver.Items.Clear();
         foreach (JointDriverType type in typeOptions)
@@ -79,6 +82,7 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     private void btnSave_Click(object sender, EventArgs e)
     {
+
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
 
         joint.cDriver = new JointDriver(cType);
@@ -91,7 +95,7 @@ public partial class DriveChooser : Form
         //Only need to store wheel driver if run by motor and is a wheel.
         if (JointDriver.IsMotor(cType) && wheelType != WheelType.NOT_A_WHEEL)
         {
-            WheelAnalyzer.SaveToJoint(joint, wheelType, friction);
+            WheelAnalyzer.SaveToJoint(wheelType, friction, node);
         }
 
         Hide();

@@ -58,7 +58,7 @@ public partial class ControlGroups
                         wheelData!=null?Convert.ToString(wheelData.radius) + " cm":"None",
                         wheelData!=null?Convert.ToString(wheelData.width) + " cm":"None",
                         wheelData!=null?wheelData.center.ToString():"None"});
-                    item.Tag = joint;
+                    item.Tag = node;
                     lstJoints.Items.Add(item);
                 }
             }
@@ -125,10 +125,10 @@ public partial class ControlGroups
 
     private void lstJoints_DoubleClick(object sender, EventArgs e)
     {
-        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint_Base)
+        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
         {
-            SkeletalJoint_Base joint = (SkeletalJoint_Base)lstJoints.SelectedItems[0].Tag;
-            driveChooser.ShowDialog(joint);
+            SkeletalJoint_Base joint = ((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
+            driveChooser.ShowDialog(joint, (RigidNode)lstJoints.SelectedItems[0].Tag);
             UpdateJointList();
         }
     }

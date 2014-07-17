@@ -8,6 +8,68 @@ using System.Threading;
 
 class WheelAnalyzer
 {
+    public delegate void DeferredCalculation(RigidNode node);
+
+    public static void StartCalculations(RigidNode node)
+    {
+        SkeletalJoint_Base joint = node.GetSkeletalJoint();
+        FindRadiusThread newRadiusThread;
+        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
+        ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
+        double maxWidth = 0; //The width of the part of the wheel with the largest radius.
+        Vector center; //The average center of all the vertex coordinates.
+        Matrix invertedTransform; //Stores the transfrom from part axes to assembly axes.
+        WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
+
+        wheelDriver = joint.cDriver.GetInfo<WheelDriverMeta>();
+
+        FindRadiusThread.Reset(); //Prepares the shared memeory for the next component.
+
+        //Only need to worry about wheels if it is a rotational joint.
+        if (joint is RotationalJoint)
+        {
+            foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
+            {
+                newRadiusThread = new FindRadiusThread(component, ((RotationalJoint)joint).axis);
+                radiusThreadList.Add(newRadiusThread);
+                newRadiusThread.Start();
+            }
+
+            //Waits for all radii to be found before operating on the final values.
+            foreach(FindRadiusThread thread in radiusThreadList)
+            {
+                thread.Join();
+            }
+
+            //Finds width.
+            treadPart = FindRadiusThread.GetWidthComponent();
+            WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
+
+            invertedTransform = treadPart.Transformation;
+            invertedTransform.Invert();
+
+            center.TransformBy(invertedTransform);
+
+            //Beings saving calculated values to the driver.
+            wheelDriver.radius = (float)FindRadiusThread.GetRadius();
+            wheelDriver.width = (float)maxWidth;
+            wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
+            wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
+            wheelDriver.center.z = (float)(center.Z + treadPart.Transformation.Translation.Z);
+
+            Console.WriteLine("Center of " + treadPart.Name + "found to be:");
+            Console.WriteLine(wheelDriver.center.x + ", " + wheelDriver.center.y + ", " + wheelDriver.center.z);
+            Console.WriteLine("Whilst the node coordinates are: ");
+            Console.WriteLine(treadPart.Transformation.Translation.X + ", " + treadPart.Transformation.Translation.Y + ", "  + 
+                treadPart.Transformation.Translation.Z);
+        }
+
+
+        //Finally saves the bundle of info to the driver attached to the wheel.
+        joint.cDriver.AddInfo(wheelDriver);
+    }
+
+
     /// <summary>
     /// Saves all of the informations for a wheel collider, such as width, radius, and center, to a joint.
     /// </summary>
@@ -20,17 +82,11 @@ class WheelAnalyzer
     /// <param name="friction">
     /// The tier of friction that was selected by DriveChooser.
     /// </param>
-    public static void SaveToJoint(SkeletalJoint_Base joint, WheelType type, FrictionLevel friction)
+    public static void SaveToJoint(WheelType type, FrictionLevel friction, RigidNode node)
     {
+        SkeletalJoint_Base joint = node.GetSkeletalJoint();
         WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
-        Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        Vector rotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation for the rigidgroup in assembly terms.
-        double maxWidth = 0; //The width of the part of the wheel with the largest radius.
-        ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
-        Vector center; //The average center of all the vertex coordinates.
-        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
-        FindRadiusThread newRadiusThread;
-        Matrix invertedTransform; //Stores the transfrom from part axes to assembly axes.
+        RigidNode.DeferredCalculation newCalculation;
 
         wheelDriver.type = type;
 
@@ -102,49 +158,10 @@ class WheelAnalyzer
                 break;
         }
 
-        FindRadiusThread.Reset(); //Prepares the shared memeory for the next component.
-
-        //Only need to worry about wheels if it is a rotational joint.
-        if (joint is RotationalJoint)
-        {
-            foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
-            {
-                newRadiusThread = new FindRadiusThread(component, ((RotationalJoint)joint).axis);
-                radiusThreadList.Add(newRadiusThread);
-                newRadiusThread.Start();
-            }
-
-            //Waits for all radii to be found before operating on the final values.
-            foreach(FindRadiusThread thread in radiusThreadList)
-            {
-                thread.Join();
-            }
-
-            //Finds width.
-            treadPart = FindRadiusThread.GetWidthComponent();
-            WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
-
-            invertedTransform = treadPart.Transformation;
-            invertedTransform.Invert();
-
-            center.TransformBy(invertedTransform);
-
-            //Beings saving calculated values to the driver.
-            wheelDriver.radius = (float)FindRadiusThread.GetRadius();
-            wheelDriver.width = (float)maxWidth;
-            wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
-            wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
-            wheelDriver.center.z = (float)(center.Z + treadPart.Transformation.Translation.Z);
-
-            Console.WriteLine("Center of " + treadPart.Name + "found to be:");
-            Console.WriteLine(wheelDriver.center.x + ", " + wheelDriver.center.y + ", " + wheelDriver.center.z);
-            Console.WriteLine("Whilst the node coordinates are: ");
-            Console.WriteLine(treadPart.Transformation.Translation.X + ", " + treadPart.Transformation.Translation.Y + ", "  + 
-                treadPart.Transformation.Translation.Z);
-        }
-
-        //Finally saves the bundle of info to the driver attached to the wheel.
         joint.cDriver.AddInfo(wheelDriver);
+
+        newCalculation = StartCalculations;
+        node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);
     }
 
     /// <summary>

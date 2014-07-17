@@ -121,7 +121,8 @@ public class WheelDriverMeta : JointDriverMeta
 
     //Reads the position of the wheel from the file.
     protected override void ReadDataInternal(BinaryReader reader)
-    {        type = (WheelType)reader.ReadByte();
+    {        
+        type = (WheelType)reader.ReadByte();
         radius = reader.ReadSingle();
         width = reader.ReadSingle();
 

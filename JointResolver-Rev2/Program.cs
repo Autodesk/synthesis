@@ -5,7 +5,6 @@ using System.IO;
 
 static class Program
 {
-
     public static Application INVENTOR_APPLICATION;
     private const int MAX_VERTICIES = 8192;
     public static unsafe void Main(String[] args)
