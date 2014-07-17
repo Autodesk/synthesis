@@ -13,19 +13,19 @@ public class Init : MonoBehaviour
 		{
 				string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 				//Now you can use a default directory to load all of the files
-				Directory.CreateDirectory(homePath + "/Documents/MagicBot/Skeleton");
-				string path = homePath + "/Documents/MagicBot/Skeleton/";
+				Directory.CreateDirectory(homePath + "/Documents/Skeleton/Skeleton/");
+				string path = homePath + "/Documents/Skeleton/Skeleton/";
 				
 	
 				List<RigidNode_Base> names = new List<RigidNode_Base> ();
 				RigidNode_Base.NODE_FACTORY = new UnityRigidNodeFactory ();
-				RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton (homePath + "/Documents/MagicBot/Skeleton/skeleton.bxdj");
+				RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton (homePath + "/Documents/Skeleton/Skeleton/skeleton.bxdj");
 
 				skeleton.ListAllNodes (names);
 				foreach (RigidNode_Base node in names) {
 						UnityRigidNode uNode = (UnityRigidNode)node;
 						uNode.CreateTransform (transform);
-						transform.localScale = new Vector3(0.01f,0.01f,0.01f);			
+									
 						uNode.CreateMesh (path + uNode.GetModelFileName ());
 						uNode.CreateJoint ();
 						
@@ -34,7 +34,8 @@ public class Init : MonoBehaviour
 					
 				}
 				transform.Rotate(new Vector3(-90.0f,0.0f,0.0f));
-
+				//transform.localScale = new Vector3 (0.01f, 0.01f, 0.01f);
+				
 
 		}
 

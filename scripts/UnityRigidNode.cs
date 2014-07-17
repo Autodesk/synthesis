@@ -3,12 +3,12 @@ using System.Collections;
 
 public class UnityRigidNode : RigidNode_Base
 {
-		protected GameObject unityObject, collider;
+		protected GameObject unityObject, collider, subObject;
 		protected ConfigurableJoint joint;
 		protected WheelDriverMeta wheel;
 		private BXDAMesh mesh;
-		private SoftJointLimit low, high;
-
+		private SoftJointLimit low, high, linear;
+		private float center, current;
 
 		//The root transform for the whole object model is determined in this constructor passively
 		public void CreateTransform (Transform root)
@@ -64,15 +64,32 @@ public class UnityRigidNode : RigidNode_Base
 		//converts inventor's limit information to the modular system unity uses (180/-180)
 		private void AngularLimit (float[] limit)
 		{
-				for (int i = 0; i < limit.Length; i++) {
-						limit [i] = (Mathf.Abs (limit [i]) > 180.0f) ? 360.0f - Mathf.Abs (limit [i]) : limit [i];  
 				
-						Debug.Log ("Value: " + limit [i] + " limit index: " + i);
+				for (int i = 0; i < limit.Length; i++) {
+						if ((limit [2] - limit [1]) >= Mathf.Abs (360.0f)) {
+								joint.angularXMotion = ConfigurableJointMotion.Free;
+								return;
+						}	
+						limit [i] = (Mathf.Abs (limit [i]) > 180.0f) ? 360.0f - Mathf.Abs (limit [i]) : limit [i];  
+						//Debug.Log ("Value: " + limit [i] + " limit index: " + i);
 				}
 				low.limit = limit [0] == limit [1] ? limit [0] - limit [1] : limit [1];
 				high.limit = limit [0] == limit [2] ? limit [0] - limit [2] : limit [2];
+				joint.lowAngularXLimit = low;
+				joint.highAngularXLimit = high;	
 		}
+		
+		private void LinearLimit (float[] limit)
+		{
+				center = (limit [0] - limit [1]) / 2.0f;
+				current = limit [2] - center;
 
+				subObject.transform.position = joint.axis * current;
+				linear.limit = Mathf.Abs (center);
+				joint.linearLimit = linear;
+	
+		}
+	
 		//creates the configurable joint then preforms the appropriate alterations based on the joint type
 		public void CreateJoint ()
 		{
@@ -88,57 +105,74 @@ public class UnityRigidNode : RigidNode_Base
 						
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
 						joint = ConfigJointInternal (ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.axis));
-						
-						
 						joint.angularXMotion = !nodeR.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
 						
-						
-						
 						if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
-								float[] limit = {
+								float[] aLimit = {
 										nodeR.currentAngularPosition * (180.0f / Mathf.PI),
 										nodeR.angularLimitLow * (180.0f / Mathf.PI),
 										nodeR.angularLimitHigh * (180.0f / Mathf.PI)
 								};
-								AngularLimit (limit);
-								
 
-								joint.lowAngularXLimit = low;
-								joint.highAngularXLimit = high;
-								Debug.Log ("Lower: " + nodeR.angularLimitLow * (180.0f / Mathf.PI) + " Upper: " + nodeR.angularLimitHigh * (180.0f / Mathf.PI) + " Current: " + nodeR.currentAngularPosition * (180.0f / Mathf.PI));
+								AngularLimit (aLimit);
+							
 						}
-
-						
 						//if the mesh contains information which identifies it as a wheel then create a wheel collider.
 						wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
-						if (wheel != null && wheel.position != WheelPosition.NO_WHEEL) {
+						if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL) {
 								
 								//don't worry, I'm a doctor
 								JointDrive drMode = new JointDrive ();
 								drMode.mode = JointDriveMode.Velocity;
 								CreateWheel (nodeR);
 								joint.angularXDrive = drMode;	
-								
 						}
 					
 				} else if (nodeX.GetJointType () == SkeletalJointType.CYLINDRICAL) {
-						CylindricalJoint_Base nodeQ = (CylindricalJoint_Base)nodeX;
+						CylindricalJoint_Base nodeC = (CylindricalJoint_Base)nodeX;
 						
-						joint = ConfigJointInternal (ConvertV3 (nodeQ.basePoint), ConvertV3 (nodeQ.axis));
-						Debug.Log ("BasePoint (init): " + nodeQ.basePoint);
-						nodeQ.basePoint.x = nodeQ.currentLinearPosition;
-						Debug.Log ("BasePoint (final): " + nodeQ.basePoint);
-
+						joint = ConfigJointInternal (ConvertV3 (nodeC.basePoint), ConvertV3 (nodeC.axis));
+						
+	
 						joint.xMotion = ConfigurableJointMotion.Limited;
-						joint.angularXMotion = !nodeQ.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
-						Debug.Log ("Start: " + nodeQ.linearLimitStart + " End: " + nodeQ.linearLimitEnd);
-						joint.anchor = ConvertV3 (nodeQ.basePoint);
+						joint.angularXMotion = !nodeC.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
 
-						if (joint.xMotion == ConfigurableJointMotion.Limited) {
-							
-						}
+						Debug.Log ("Start: " + nodeC.linearLimitStart + " End: " + nodeC.linearLimitEnd);
+						float[] lLimit = {
+								nodeC.linearLimitEnd,
+								nodeC.linearLimitStart,
+								nodeC.currentLinearPosition
+						};
+						LinearLimit (lLimit);
 						
+
+						Debug.Log ("Center: " + center + " Current Distance: " + current);
+						//if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
+						float[] aLimit = {
+								nodeC.currentAngularPosition * (180.0f / Mathf.PI),
+								nodeC.angularLimitLow * (180.0f / Mathf.PI),
+								nodeC.angularLimitHigh * (180.0f / Mathf.PI)
+						};
+						AngularLimit (aLimit);
+						//Debug.Log (low.limit + " " + high.limit);
+											
+			
+						//	}
 						
+				} else if (nodeX.GetJointType () == SkeletalJointType.LINEAR) {
+						LinearJoint_Base nodeL = (LinearJoint_Base)nodeX;
+			
+						joint = ConfigJointInternal (ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.axis));
+			
+			
+						joint.xMotion = ConfigurableJointMotion.Limited;
+
+						float[] lLimit = {
+								nodeL.linearLimitLow,
+								nodeL.linearLimitHigh,
+								nodeL.currentLinearPosition
+						};
+						LinearLimit (lLimit);
 						
 				}
 					
@@ -156,7 +190,7 @@ public class UnityRigidNode : RigidNode_Base
 		
 				for (int j = 0; j < mCount; j++) {
 						//new gameobject is made for the submesh
-						GameObject subObject = new GameObject (unityObject.name + " Subpart" + j);
+						subObject = new GameObject (unityObject.name + " Subpart" + j);
 						//it is passively assigned as a child to the root transform 
 						subObject.transform.parent = unityObject.transform;
 						subObject.transform.position = new Vector3 (0, 0, 0);
