@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MIConvexHull;
+//using MIConvexHull;
 using Inventor;
 using System.Collections;
 
 public class ConvexHullCalculator
 {
-    public static BXDAMesh.BXDASubMesh GetHull(BXDAMesh mesh, int faceLimit = 255)
+   /* public static BXDAMesh.BXDASubMesh GetHull(BXDAMesh mesh, int faceLimit = 255)
     {
         return GetHull(mesh.meshes, faceLimit);
     }
@@ -240,5 +240,5 @@ public class ConvexHullCalculator
 
         subMesh.indicies = indicies;
         return subMesh;
-    }
+    }*/
 }

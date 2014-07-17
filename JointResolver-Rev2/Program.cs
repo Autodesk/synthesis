@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Inventor;
 using System.IO;
-using MIConvexHull;
 
 static class Program
 {
@@ -14,6 +13,13 @@ static class Program
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         //AnalyzeRigidResults();
         AssemblyDocument doc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
+        foreach (AttributeSet set in doc.ComponentDefinition.RepresentationsManager.ActiveDesignViewRepresentation.AttributeSets)
+        {
+            foreach (Attribute at in set)
+            {
+                bool t = false;
+            }
+        }
         SurfaceExporter exp = new SurfaceExporter();
         foreach (ComponentOccurrence b in doc.ComponentDefinition.Occurrences)
         {
@@ -21,7 +27,7 @@ static class Program
         }
         BXDAMesh mesh = exp.GetOutput();
 
-        BXDAMesh.BXDASubMesh hull = ConvexHullCalculator.GetHull(mesh);
+        //BXDAMesh.BXDASubMesh hull = ConvexHullCalculator.GetHull(mesh);
     }
 
     public static Matrix GetWorldTransformation(ComponentOccurrence comp)

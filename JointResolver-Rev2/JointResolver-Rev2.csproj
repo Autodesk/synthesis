@@ -109,10 +109,6 @@
     <Content Include="BXDJ File Format.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConvexHull\ConvexHull.csproj">
-      <Project>{6c7cff8e-98c3-46f9-9d23-0e8c6d44ef95}</Project>
-      <Name>ConvexHull</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
