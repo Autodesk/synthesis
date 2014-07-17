@@ -1,6 +1,7 @@
 // ConvexAPI.h
 #include "NvConvexDecomposition.h"
 #include <string.h>
+#include <stdio.h>
 
 using namespace System;
 
@@ -19,18 +20,8 @@ namespace ConvexAPI {
 		NxU32 getVertexCount() {
 			return backing->mVcount;
 		}
-		cli::array<NxF32> ^getVertices(){
-			cli::array<NxF32> ^verts = gcnew cli::array<NxF32>(backing->mVcount * 3);
-			System::Runtime::InteropServices::Marshal::Copy(IntPtr((void*)backing->mVertices),verts,0,verts->Length);
-			return verts;
-		}
-		cli::array<NxU32> ^getIndicies(){
-			cli::array<NxU32> ^verts = gcnew cli::array<NxU32>(backing->mTcount * 3);
-			pin_ptr<NxU32> ptr = &verts[0];
-			int cpyCount = backing->mTcount * 3 * sizeof(NxU32);
-			memcpy_s(ptr, cpyCount, backing->mIndices, cpyCount);
-			return verts;
-		}
+		cli::array<NxF32> ^getVertices();
+		cli::array<NxU32> ^getIndicies();
 	};
 
 	public ref class iConvexDecomposition
@@ -48,16 +39,9 @@ namespace ConvexAPI {
 
 		void reset(void) {backing->reset();}
 
-		bool addTriangle(array<NxF32> ^p1,array<NxF32> ^p2,array<NxF32> ^p3)
-		{
-			pin_ptr<NxF32> p1p = &p1[0];
-			pin_ptr<NxF32> p2p = &p2[0];
-			pin_ptr<NxF32> p3p = &p3[0];
-			return backing->addTriangle(p1p, p2p, p3p);
-		}
-
+		bool setMesh(NxU32 vertCount, array<NxF32> ^verts, NxU32 faceCount, array<NxU32> ^facets);
 		NxU32 computeConvexDecomposition() {
-			return backing->computeConvexDecomposition();
+			return backing->computeConvexDecomposition(0,8,64,0.5,50,5);
 		}
 
 		// skinWidth =0

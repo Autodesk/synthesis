@@ -75,7 +75,7 @@ class iConvexDecomposition
 public:
 	virtual void reset(void) = 0; // reset the input mesh data.
 
-	virtual bool addTriangle(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3) = 0; // add the input mesh one triangle at a time.
+	virtual bool setMesh(const NxU32 vertCount, const NxF32 *verts, const NxU32 faceCount, const NxU32 *faces) = 0;
 
 	virtual NxU32 computeConvexDecomposition(NxF32 skinWidth=0,			// Skin width on the convex hulls generated
 											 NxU32 decompositionDepth=8, // recursion depth for convex decomposition.
