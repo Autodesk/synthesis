@@ -62,16 +62,30 @@ public class Controls : MonoBehaviour
 				}
 		}
 
-		public static void setMotor (UnityRigidNode wheel, float speed)
+		public static void setMotor (UnityRigidNode wheel, float speed, float brakeTorque)
 		{
+				wheel.GetWheelCollider ().brakeTorque = brakeTorque;
 				wheel.GetWheelCollider ().motorTorque = speed;
 				wheel.GetConfigJoint ().targetAngularVelocity = new Vector3 (wheel.GetWheelCollider ().rpm * 6 * Time.deltaTime, 0, 0);
 		}
 
-		public static void setSetOfMotors (Dictionary<int, UnityRigidNode> dictionary, int speed, params int[] pwmPorts)
+		public static void setSetOfMotors (Dictionary<int, UnityRigidNode> dictionary, float speed, float brakeTorque, params int[] pwmPorts)
 		{
 				foreach (int pwmPort in pwmPorts) {
-						setMotor (dictionary [pwmPort], speed);
+						setMotor (dictionary [pwmPort], speed, brakeTorque);
+				}
+		}
+
+	public static void initiateMechanums(Dictionary<int, UnityRigidNode> wheels) {
+		
+	}
+
+		public static void stopAllMotors (Dictionary<int, UnityRigidNode> wheels)
+		{
+				foreach (KeyValuePair<int, UnityRigidNode> wheel in wheels) {
+						wheel.Value.GetWheelCollider ().motorTorque = 0;
+						wheel.Value.GetWheelCollider ().brakeTorque = 20;
+						wheel.Value.GetConfigJoint ().targetAngularVelocity = new Vector3 (0, 0, 0);
 				}
 		}
 
