@@ -89,7 +89,7 @@ public partial class DriveChooser : Form
         joint.cDriver.upperLimit = (float) txtHighLimit.Value;
 
         //Only need to store wheel driver if run by motor and is a wheel.
-        if (JointDriver.IsMotor(cType) && wheelType != null)
+        if (JointDriver.IsMotor(cType) && wheelType != WheelType.NOT_A_WHEEL)
         {
             WheelAnalyzer.SaveToJoint(joint, wheelType, friction);
         }
@@ -130,6 +130,15 @@ public partial class DriveChooser : Form
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
         wheelType = (WheelType)cmbWheelType.SelectedIndex;
+
+        if (wheelType == WheelType.NOT_A_WHEEL)
+        {
+            cmbFrictionLevel.Visible = false;
+        }
+        else
+        {
+            cmbFrictionLevel.Visible = true;
+        }
     }
 
     private void groupBox2_Enter(object sender, EventArgs e)

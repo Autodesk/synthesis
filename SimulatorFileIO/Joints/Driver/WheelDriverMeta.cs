@@ -2,9 +2,10 @@
 
 public enum WheelType : byte
 {
-    NORMAL = 0, //As in, not omni or mecanum.
-    OMNI = 1,
-    MECANUM = 2
+    NOT_A_WHEEL = 0,
+    NORMAL = 1, //As in, not omni or mecanum.
+    OMNI = 2,
+    MECANUM = 3
 }
 
 public enum FrictionLevel : byte

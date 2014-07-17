@@ -38,8 +38,8 @@ partial class DriveChooser
             this.txtPortA = new System.Windows.Forms.NumericUpDown();
             this.btnSave = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.cmbFrictionLevel = new System.Windows.Forms.ComboBox();
+            this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
@@ -198,20 +198,6 @@ partial class DriveChooser
             this.groupBox2.Text = "Wheel Type";
             this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
-            // cmbWheelType
-            // 
-            this.cmbWheelType.FormattingEnabled = true;
-            this.cmbWheelType.Items.AddRange(new object[] {
-            "Normal",
-            "Omni",
-            "Mecanum"});
-            this.cmbWheelType.Location = new System.Drawing.Point(16, 21);
-            this.cmbWheelType.Name = "cmbWheelType";
-            this.cmbWheelType.Size = new System.Drawing.Size(149, 24);
-            this.cmbWheelType.TabIndex = 0;
-            this.cmbWheelType.Text = "Wheel Type";
-            this.cmbWheelType.SelectedIndexChanged += new System.EventHandler(this.cmbWheelType_SelectedIndexChanged);
-            // 
             // cmbFrictionLevel
             // 
             this.cmbFrictionLevel.FormattingEnabled = true;
@@ -225,6 +211,21 @@ partial class DriveChooser
             this.cmbFrictionLevel.TabIndex = 1;
             this.cmbFrictionLevel.Text = "Friction Level";
             this.cmbFrictionLevel.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // cmbWheelType
+            // 
+            this.cmbWheelType.FormattingEnabled = true;
+            this.cmbWheelType.Items.AddRange(new object[] {
+            "Not a Wheel",
+            "Normal",
+            "Omni",
+            "Mecanum"});
+            this.cmbWheelType.Location = new System.Drawing.Point(16, 21);
+            this.cmbWheelType.Name = "cmbWheelType";
+            this.cmbWheelType.Size = new System.Drawing.Size(149, 24);
+            this.cmbWheelType.TabIndex = 0;
+            this.cmbWheelType.Text = "Wheel Type";
+            this.cmbWheelType.SelectedIndexChanged += new System.EventHandler(this.cmbWheelType_SelectedIndexChanged);
             // 
             // DriveChooser
             // 
