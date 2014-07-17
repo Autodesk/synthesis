@@ -102,7 +102,7 @@ public class UnityRigidNode : RigidNode_Base
 				if (nodeX.GetJointType () == SkeletalJointType.ROTATIONAL) {
 					
 						RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
-						
+					
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
 						joint = ConfigJointInternal (ConvertV3 (nodeR.basePoint), ConvertV3 (nodeR.axis));
 						joint.angularXMotion = !nodeR.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
@@ -113,9 +113,7 @@ public class UnityRigidNode : RigidNode_Base
 										nodeR.angularLimitLow * (180.0f / Mathf.PI),
 										nodeR.angularLimitHigh * (180.0f / Mathf.PI)
 								};
-
 								AngularLimit (aLimit);
-							
 						}
 						//if the mesh contains information which identifies it as a wheel then create a wheel collider.
 						wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
@@ -124,6 +122,7 @@ public class UnityRigidNode : RigidNode_Base
 								//don't worry, I'm a doctor
 								JointDrive drMode = new JointDrive ();
 								drMode.mode = JointDriveMode.Velocity;
+								drMode.maximumForce = 100.0f;
 								CreateWheel (nodeR);
 								joint.angularXDrive = drMode;	
 						}
@@ -132,8 +131,6 @@ public class UnityRigidNode : RigidNode_Base
 						CylindricalJoint_Base nodeC = (CylindricalJoint_Base)nodeX;
 						
 						joint = ConfigJointInternal (ConvertV3 (nodeC.basePoint), ConvertV3 (nodeC.axis));
-						
-	
 						joint.xMotion = ConfigurableJointMotion.Limited;
 						joint.angularXMotion = !nodeC.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
 
@@ -145,26 +142,21 @@ public class UnityRigidNode : RigidNode_Base
 						};
 						LinearLimit (lLimit);
 						
-
+		
 						Debug.Log ("Center: " + center + " Current Distance: " + current);
-						//if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
-						float[] aLimit = {
+						if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
+								float[] aLimit = {
 								nodeC.currentAngularPosition * (180.0f / Mathf.PI),
 								nodeC.angularLimitLow * (180.0f / Mathf.PI),
 								nodeC.angularLimitHigh * (180.0f / Mathf.PI)
 						};
-						AngularLimit (aLimit);
-						//Debug.Log (low.limit + " " + high.limit);
-											
-			
-						//	}
+								AngularLimit (aLimit);
+						}
 						
 				} else if (nodeX.GetJointType () == SkeletalJointType.LINEAR) {
 						LinearJoint_Base nodeL = (LinearJoint_Base)nodeX;
 			
 						joint = ConfigJointInternal (ConvertV3 (nodeL.basePoint), ConvertV3 (nodeL.axis));
-			
-			
 						joint.xMotion = ConfigurableJointMotion.Limited;
 
 						float[] lLimit = {
@@ -231,8 +223,9 @@ public class UnityRigidNode : RigidNode_Base
 						unityMesh.normals = normals;
 						unityMesh.colors32 = colors;
 						unityMesh.uv = uvs;
-
 						subObject.AddComponent<BoxCollider> ();
+						
+
 				}
 				//if the object doesn't have a rigidbody then attach one
 				if (!unityObject.GetComponent<Rigidbody> ()) {
