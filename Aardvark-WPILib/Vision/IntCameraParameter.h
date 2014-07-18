@@ -7,8 +7,6 @@
 #ifndef __INT_CAMERA_PARAMETER_H__
 #define __INT_CAMERA_PARAMETER_H__
 
-#include <vxWorks.h>
-
 /**
  * Integer camera parameter.
  * This class represents a camera parameter that takes an integer value.

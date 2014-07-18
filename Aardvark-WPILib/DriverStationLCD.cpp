@@ -7,9 +7,8 @@
 #include "DriverStationLCD.h"
 #include "NetworkCommunication/FRCComm.h"
 #include "NetworkCommunication/UsageReporting.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
-#include <strLib.h>
 
 const uint32_t DriverStationLCD::kSyncTimeout_ms;
 const uint16_t DriverStationLCD::kFullDisplayTextCommand;
@@ -24,14 +23,14 @@ DriverStationLCD* DriverStationLCD::m_instance = NULL;
  */
 DriverStationLCD::DriverStationLCD()
 	: m_textBuffer (NULL)
-	, m_textBufferSemaphore (NULL)
+	//, m_textBufferSemaphore (NULL)
 {
 	m_textBuffer = new char[USER_DS_LCD_DATA_SIZE];
 	memset(m_textBuffer, ' ', USER_DS_LCD_DATA_SIZE);
 
 	*((uint16_t *)m_textBuffer) = kFullDisplayTextCommand;
 
-	m_textBufferSemaphore = semMCreate(SEM_DELETE_SAFE);
+	//m_textBufferSemaphore = semMCreate(SEM_DELETE_SAFE);
 
 	nUsageReporting::report(nUsageReporting::kResourceType_DriverStationLCD, 0);
 
@@ -40,7 +39,7 @@ DriverStationLCD::DriverStationLCD()
 
 DriverStationLCD::~DriverStationLCD()
 {
-	semDelete(m_textBufferSemaphore);
+	//semDelete(m_textBufferSemaphore);
 	delete [] m_textBuffer;
 	m_instance = NULL;
 }
@@ -103,11 +102,11 @@ void DriverStationLCD::VPrintf(Line line, int32_t startingColumn, const char *wr
 
 	{
 		Synchronized sync(m_textBufferSemaphore);
-		// snprintf appends NULL to its output.  Therefore we can't write directly to the buffer.
-		int32_t length = vsnprintf(lineBuffer, kLineLength + 1, writeFmt, args);
+		// sprintf_s appends NULL to its output.  Therefore we can't write directly to the buffer.
+		int32_t length = vsprintf_s(lineBuffer, kLineLength + 1, writeFmt, args);
 		if (length < 0) length = kLineLength;
 
-		memcpy(m_textBuffer + start + line * kLineLength + sizeof(uint16_t), lineBuffer, std::min(maxLength,length));
+		memcpy(m_textBuffer + start + line * kLineLength + sizeof(uint16_t), lineBuffer, min(maxLength,length));
 	}
 }
 
@@ -140,8 +139,8 @@ void DriverStationLCD::VPrintfLine(Line line, const char *writeFmt, va_list args
 
 	{
 		Synchronized sync(m_textBufferSemaphore);
-		// snprintf appends NULL to its output.  Therefore we can't write directly to the buffer.
-		int32_t length = std::min(vsnprintf(lineBuffer, kLineLength + 1, writeFmt, args), (int)kLineLength);
+		// sprintf_s appends NULL to its output.  Therefore we can't write directly to the buffer.
+		int32_t length = min(vsprintf_s(lineBuffer, kLineLength + 1, writeFmt, args), (int)kLineLength);
 		if (length < 0) length = kLineLength;
 
 		// Fill the rest of the buffer

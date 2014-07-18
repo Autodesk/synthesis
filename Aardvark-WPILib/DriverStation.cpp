@@ -6,20 +6,19 @@
 
 #include "DriverStation.h"
 #include "AnalogChannel.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "Timer.h"
 #include "NetworkCommunication/FRCComm.h"
 #include "NetworkCommunication/UsageReporting.h"
 #include "MotorSafetyHelper.h"
 #include "Utility.h"
 #include "WPIErrors.h"
-#include <strLib.h>
 
 const uint32_t DriverStation::kBatteryModuleNumber;
 const uint32_t DriverStation::kBatteryChannel;
 const uint32_t DriverStation::kJoystickPorts;
 const uint32_t DriverStation::kJoystickAxes;
-constexpr float DriverStation::kUpdatePeriod;
+const float DriverStation::kUpdatePeriod = 0.02;
 DriverStation* DriverStation::m_instance = NULL;
 uint8_t DriverStation::m_updateNumber = 0;
 
@@ -32,16 +31,17 @@ DriverStation::DriverStation()
 	: m_controlData (NULL)
 	, m_digitalOut (0)
 	, m_batteryChannel (NULL)
-	, m_statusDataSemaphore (semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE))
-	, m_task ("DriverStation", (FUNCPTR)DriverStation::InitTask)
+	//, m_statusDataSemaphore (semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE))
+	, m_statusDataSemaphore()
+	, m_task ("DriverStation", DriverStation::InitTask)
 	, m_dashboardHigh(m_statusDataSemaphore)
 	, m_dashboardLow(m_statusDataSemaphore)
 	, m_dashboardInUseHigh(&m_dashboardHigh)
 	, m_dashboardInUseLow(&m_dashboardLow)
-	, m_newControlData(0)
-	, m_packetDataAvailableSem (0)
+	, m_newControlData()
+	, m_packetDataAvailableSem ()
 	, m_enhancedIO()
-	, m_waitForDataSem(0)
+	, m_waitForDataSem()
 	, m_approxMatchTimeOffset(-1.0)
 	, m_userInDisabled(false)
 	, m_userInAutonomous(false)
@@ -49,14 +49,14 @@ DriverStation::DriverStation()
 	, m_userInTest(false)
 {
 	// Create a new semaphore
-	m_packetDataAvailableSem = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
-	m_newControlData = semBCreate (SEM_Q_FIFO, SEM_EMPTY);
+	//m_packetDataAvailableSem = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
+	//m_newControlData = semBCreate (SEM_Q_FIFO, SEM_EMPTY);
 
 	// Register that semaphore with the network communications task.
 	// It will signal when new packet data is available. 
-	setNewDataSem(m_packetDataAvailableSem);
+	setNewDataSem(&m_packetDataAvailableSem);
 
-	m_waitForDataSem = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
+	//m_waitForDataSem = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
 
 	m_controlData = new FRCCommonControlData;
 
@@ -89,7 +89,7 @@ DriverStation::DriverStation()
 
 	AddToSingletonList();
 
-	if (!m_task.Start((int32_t)this))
+	if (!m_task.Start(this))
 	{
 		wpi_setWPIError(DriverStationTaskError);
 	}
@@ -98,19 +98,20 @@ DriverStation::DriverStation()
 DriverStation::~DriverStation()
 {
 	m_task.Stop();
-	semDelete(m_statusDataSemaphore);
+	//semDelete(m_statusDataSemaphore);
 	delete m_batteryChannel;
 	delete m_controlData;
 	m_instance = NULL;
-	semDelete(m_waitForDataSem);
+	//semDelete(m_waitForDataSem);
 	// Unregister our semaphore.
-	setNewDataSem(0);
-	semDelete(m_packetDataAvailableSem);
+	//setNewDataSem(0);
+	//semDelete(m_packetDataAvailableSem);
 }
 
-void DriverStation::InitTask(DriverStation *ds)
+DWORD WINAPI DriverStation::InitTask(LPVOID ds)
 {
-	ds->Run();
+	((DriverStation*)ds)->Run();
+	return 0;
 }
 
 void DriverStation::Run()
@@ -118,11 +119,11 @@ void DriverStation::Run()
 	int period = 0;
 	while (true)
 	{
-		semTake(m_packetDataAvailableSem, WAIT_FOREVER);
+		m_packetDataAvailableSem.take();
 		SetData();
 		m_enhancedIO.UpdateData();
 		GetData();
-		semFlush(m_waitForDataSem);
+		//semFlush(m_waitForDataSem);
 		if (++period >= 4)
 		{
 			MotorSafetyHelper::CheckMotors();
@@ -159,7 +160,7 @@ DriverStation* DriverStation::GetInstance()
 void DriverStation::GetData()
 {
 	static bool lastEnabled = false;
-	getCommonControlData(m_controlData, WAIT_FOREVER);
+	getCommonControlData(m_controlData, -1);	// WAIT_FOREVER		https://www.youtube.com/watch?v=VXOFZaDjoFs
 	if (!lastEnabled && IsEnabled()) 
 	{
 		// If starting teleop, assume that autonomous just took up 15 seconds
@@ -173,7 +174,7 @@ void DriverStation::GetData()
 		m_approxMatchTimeOffset = -1.0;
 	}
 	lastEnabled = IsEnabled();
-	semGive(m_newControlData);
+	m_newControlData.give();
 }
 
 /**
@@ -191,7 +192,7 @@ void DriverStation::SetData()
 	m_dashboardInUseHigh->GetStatusBuffer(&userStatusDataHigh, &userStatusDataHighSize);
 	m_dashboardInUseLow->GetStatusBuffer(&userStatusDataLow, &userStatusDataLowSize);
 	setStatusData(GetBatteryVoltage(), m_digitalOut, m_updateNumber,
-		userStatusDataHigh, userStatusDataHighSize, userStatusDataLow, userStatusDataLowSize, WAIT_FOREVER);
+		userStatusDataHigh, userStatusDataHighSize, userStatusDataLow, userStatusDataLowSize, -1);	// WAIT_FOREVER
 	
 	m_dashboardInUseHigh->Flush();
 	m_dashboardInUseLow->Flush();
@@ -421,7 +422,7 @@ bool DriverStation::IsTest()
  */
 bool DriverStation::IsNewControlData()
 {
-	return semTake(m_newControlData, NO_WAIT) == 0;
+	return m_newControlData.takeImmediate();
 }
 
 /**
@@ -476,7 +477,7 @@ uint32_t DriverStation::GetLocation()
  */
 void DriverStation::WaitForData()
 {
-	semTake(m_waitForDataSem, WAIT_FOREVER);
+	m_waitForDataSem.take();
 }
 
 /**

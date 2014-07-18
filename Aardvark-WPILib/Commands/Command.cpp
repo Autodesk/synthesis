@@ -33,7 +33,7 @@ void Command::InitCommand(const char *name, double timeout)
 	{
 		// Don't have a way to find the subclass name like java, so use the address
 		char buf[32];
-		snprintf(buf, 32, "Command_%p", this);
+		sprintf_s(buf, 32, "Command_%p", this);
 		m_name = buf;
 	}
 	else
@@ -280,7 +280,7 @@ bool Command::AssertUnlocked(const char *message)
 	if (m_locked)
 	{
 		char buf[128];
-		snprintf(buf, 128, "%s after being started or being added to a command group", message);
+		sprintf_s(buf, 128, "%s after being started or being added to a command group", message);
 		wpi_setWPIErrorWithContext(CommandIllegalUse, buf);
 		return false;
 	}

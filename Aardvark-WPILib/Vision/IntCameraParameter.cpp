@@ -84,7 +84,7 @@ void IntCameraParameter::GetParamFromString(const char *string, int stringLength
  */
 int IntCameraParameter::SearchForParam(const char *pattern, const char *searchString, int searchStringLen, char *result)
 {
-	int vectorLen = 10;
+	const int vectorLen = 10;
 	int resultVector[vectorLen];
 	const char *error;
 	int erroffset;

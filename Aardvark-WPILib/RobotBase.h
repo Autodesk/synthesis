@@ -8,7 +8,7 @@
 #define ROBOT_H_
 
 #include "Base.h"
-#include "Task.h"
+#include "OSAL\Task.h"
 #include "Watchdog.h"
 
 class DriverStation;
@@ -21,7 +21,7 @@ class DriverStation;
 	extern "C" { \
 		int32_t FRC_UserProgram_StartupLibraryInit() \
 		{ \
-			RobotBase::startRobotTask((FUNCPTR)FRC_userClassFactory); \
+			RobotBase::startRobotTask(FRC_userClassFactory); \
 			return 0; \
 		} \
 	}
@@ -34,6 +34,8 @@ class DriverStation;
  * completion before the OperatorControl code could start. In the future the Autonomous code
  * might be spawned as a task, then killed at the end of the Autonomous period.
  */
+typedef void* (*RobotFactory)();
+
 class RobotBase {
 	friend class RobotDeleter;
 public:
@@ -48,8 +50,8 @@ public:
 	bool IsSystemActive();
 	bool IsNewDataAvailable();
 	Watchdog &GetWatchdog();
-	static void startRobotTask(FUNCPTR factory);
-	static void robotTask(FUNCPTR factory, Task *task);
+	static void startRobotTask(RobotFactory factory);
+	static DWORD WINAPI robotTask(LPVOID obj);
 
 protected:
 	virtual ~RobotBase();

@@ -11,7 +11,7 @@
 #include "NetworkCommunication/FRCComm.h"
 #include <stack>
 #include <vector>
-#include <vxWorks.h>
+
 
 /**
  * Pack data into the "user data" field that gets sent to the dashboard laptop
@@ -20,7 +20,7 @@
 class Dashboard : public DashboardBase
 {
 public:
-	explicit Dashboard(SEM_ID statusDataSemaphore);
+	explicit Dashboard(ReentrantSemaphore &statusDataSemaphore);
 	virtual ~Dashboard();
 
 	enum Type {kI8, kI16, kI32, kU8, kU16, kU32, kFloat, kDouble, kBoolean, kString, kOther};
@@ -67,8 +67,8 @@ private:
 	std::vector<int32_t> m_arrayElementCount;
 	std::vector<int32_t*> m_arraySizePtr;
 	std::stack<ComplexType> m_complexTypeStack;
-	SEM_ID m_printSemaphore;
-	SEM_ID m_statusDataSemaphore;
+	ReentrantSemaphore m_printSemaphore;
+	ReentrantSemaphore m_statusDataSemaphore;
 };
 
 #endif

@@ -10,6 +10,7 @@
 #include "MotorSafety.h"
 #include "Timer.h"
 #include "WPIErrors.h"
+#include "OSAL/Synchronized.h"
 
 #include <stdio.h>
 
@@ -113,7 +114,7 @@ void MotorSafetyHelper::Check()
 		char buf[128];
 		char desc[64];
 		m_safeObject->GetDescription(desc);
-		snprintf(buf, 128, "%s... Output not updated often enough.", desc);
+		sprintf_s(buf, 128, "%s... Output not updated often enough.", desc);
 		wpi_setWPIErrorWithContext(Timeout, buf);
 		m_safeObject->StopMotor();
 	}

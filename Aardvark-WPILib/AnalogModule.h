@@ -22,10 +22,10 @@ class AnalogModule: public Module
     friend class Module;
 
 public:
-	static const long kTimebase = 40000000; ///< 40 MHz clock
-	static const long kDefaultOversampleBits = 0;
-	static const long kDefaultAverageBits = 7;
-	static constexpr float kDefaultSampleRate = 50000.0;
+	static const long kTimebase; ///< 40 MHz clock
+	static const long kDefaultOversampleBits;
+	static const long kDefaultAverageBits;
+	static const float kDefaultSampleRate;
 
 	void SetSampleRate(float samplesPerSecond);
 	float GetSampleRate();
@@ -48,7 +48,7 @@ protected:
 	virtual ~AnalogModule();
 
 private:
-	static SEM_ID m_registerWindowSemaphore;
+	static ReentrantSemaphore *m_registerWindowSemaphore;
 
 	uint32_t GetNumActiveChannels();
 	uint32_t GetNumChannelsToActivate();

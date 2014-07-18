@@ -7,7 +7,7 @@
 #ifndef __DASHBOARDBASE_H__
 #define __DASHBOARDBASE_H__
 
-#include <vxWorks.h>
+
 #include "ErrorBase.h"
 
 class DashboardBase : public ErrorBase {

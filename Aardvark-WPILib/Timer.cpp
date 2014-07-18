@@ -6,11 +6,9 @@
 
 #include "Timer.h"
 
-#include <sysLib.h> // for sysClkRateGet
 #include <time.h>
-#include <usrLib.h> // for taskDelay
 
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "Utility.h"
 
 /**
@@ -25,7 +23,7 @@
 void Wait(double seconds)
 {
 	if (seconds < 0.0) return;
-	taskDelay((int32_t)((double)sysClkRateGet() * seconds));
+	Sleep((DWORD)(seconds * 1000));
 }
 
 /*
@@ -44,12 +42,7 @@ double GetClock()
 */
 double GetTime()  
 {
-	struct timespec tp;
-	
-	clock_gettime(CLOCK_REALTIME,&tp);
-	double realTime = (double)tp.tv_sec + (double)((double)tp.tv_nsec*1e-9);
-	
-	return (realTime);
+	return 0.0;	// BAD TODO
 }
 
 /**
@@ -62,17 +55,17 @@ Timer::Timer()
 	: m_startTime (0.0)
 	, m_accumulatedTime (0.0)
 	, m_running (false)
-	, m_semaphore (0)
+	, m_semaphore ()// creates semaphore
 {
 	//Creates a semaphore to control access to critical regions.
 	//Initially 'open'
-	m_semaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+	//m_semaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
 	Reset();
 }
 
 Timer::~Timer()
 {
-	semDelete(m_semaphore);
+	//semDelete(m_semaphore);
 }
 
 /**

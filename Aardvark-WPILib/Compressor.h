@@ -11,7 +11,7 @@
 
 #include "SensorBase.h"
 #include "Relay.h"
-#include "Task.h"
+#include "OSAL/Task.h"
 #include "LiveWindow/LiveWindowSendable.h"
 
 class DigitalInput;

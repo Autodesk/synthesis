@@ -10,7 +10,8 @@
 #include "EnumCameraParameter.h"
 #include "ErrorBase.h"
 #include "IntCameraParameter.h"
-#include "Task.h"
+#include "OSAL/Task.h"
+#include "OSAL/Synchronized.h"
 #include <vector>
 
 /**
@@ -59,7 +60,7 @@ protected:
 	virtual void RestartCameraTask() = 0;
 	int CreateCameraSocket(const char *requestString);
 
-	static int s_ParamTaskFunction(AxisCameraParams* thisPtr);
+	static DWORD WINAPI s_ParamTaskFunction(LPVOID thisPtr);
 	int ParamTaskFunction();
 
 	int UpdateCamParam(const char *param);
@@ -67,8 +68,8 @@ protected:
 
 	Task m_paramTask;
 	uint32_t m_ipAddress; // IPv4
-	SEM_ID m_paramChangedSem;
-	SEM_ID m_socketPossessionSem;
+	ReentrantSemaphore m_paramChangedSem;
+	ReentrantSemaphore m_socketPossessionSem;
 
 	//Camera Properties
 	IntCameraParameter *m_brightnessParam;

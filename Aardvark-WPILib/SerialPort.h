@@ -8,7 +8,7 @@
 #define __SerialPort_h__
 
 #include "ErrorBase.h"
-#include <vxWorks.h>
+
 
 /**
  * Driver for the RS-232 serial port on the cRIO.

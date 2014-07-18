@@ -6,7 +6,7 @@
 #include <vxWorks_compat.h>
 #define EXPORT_FUNC __declspec(dllexport) __cdecl
 #else
-#include <vxWorks.h>
+
 #define EXPORT_FUNC
 #endif
 

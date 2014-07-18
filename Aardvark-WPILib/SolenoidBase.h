@@ -10,7 +10,7 @@
 #include "Resource.h"
 #include "SensorBase.h"
 #include "ChipObject.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 
 /**
  * SolenoidBase class is the common base class for the Solenoid and

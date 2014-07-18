@@ -54,8 +54,8 @@ const char* ClientConnectionState_ProtocolUnsuppotedByServer::toString(){
  * @param e
  */
 ClientConnectionState_Error::ClientConnectionState_Error(std::exception& _e):ClientConnectionState("CLIENT_ERROR"),e(_e){
-  strcpy(msg, "CLIENT_ERROR: ");
-  strcat(msg, e.what());
+  strcpy_s(msg, "CLIENT_ERROR: ");
+  strcat_s(msg, e.what());
 }
 ClientConnectionState_Error::~ClientConnectionState_Error() {
 }

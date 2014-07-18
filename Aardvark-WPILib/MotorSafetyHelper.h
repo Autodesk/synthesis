@@ -8,8 +8,8 @@
 #define __MOTOR_SAFETY_HELPER__
 
 #include "ErrorBase.h"
-#include "Synchronized.h"
-#include <semLib.h>
+#include "OSAL/Synchronized.h"
+
 
 class MotorSafety;
 

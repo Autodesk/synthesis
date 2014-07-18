@@ -7,8 +7,7 @@
 #ifndef __PC_VIDEO_SERVER_H__
 #define __PC_VIDEO_SERVER_H__
 
-#include "Task.h"
-#include <semLib.h>
+#include "OSAL/Task.h"
 
 /** port for sending video to laptop */
 #define VIDEO_TO_PC_PORT 1180
@@ -26,12 +25,12 @@ public:
 	void Stop();
 
 private:
-	static int s_ServerTask(PCVideoServer *thisPtr);
+	static DWORD WINAPI s_ServerTask(LPVOID thisPtr);
 	int ServerTask();
 	int StartServerTask();
 
 	Task m_serverTask;
-	SEM_ID m_newImageSem;
+	NTReentrantSemaphore m_newImageSem;
 	bool m_stopServer;
 };
 

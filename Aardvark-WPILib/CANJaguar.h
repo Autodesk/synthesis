@@ -13,8 +13,8 @@
 #include "MotorSafetyHelper.h"
 #include "PIDOutput.h"
 #include "SpeedController.h"
-#include <semLib.h>
-#include <vxWorks.h>
+
+
 #include "LiveWindow/LiveWindowSendable.h"
 #include "tables/ITable.h"
 
@@ -29,8 +29,8 @@ class CANJaguar : public MotorSafety,
 {
 public:
 	// The internal PID control loop in the Jaguar runs at 1kHz.
-	static const int32_t kControllerRate = 1000;
-	static constexpr double kApproxBusVoltage = 12.0;
+	static const int32_t kControllerRate;
+	static const double kApproxBusVoltage;
 
 	typedef enum {kPercentVbus, kCurrent, kSpeed, kPosition, kVoltage} ControlMode;
 	typedef enum {kCurrentFault = 1, kTemperatureFault = 2, kBusVoltageFault = 4, kGateDriverFault = 8} Faults;
@@ -114,7 +114,7 @@ protected:
 
 	uint8_t m_deviceNumber;
 	ControlMode m_controlMode;
-	SEM_ID m_transactionSemaphore;
+	ReentrantSemaphore m_transactionSemaphore;
 	double m_maxOutputVoltage;
 
 	MotorSafetyHelper *m_safetyHelper;

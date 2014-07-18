@@ -10,69 +10,68 @@
 #include "NetworkCommunication/UsageReporting.h"
 #include "SPI.h"
 
-const uint8_t ADXL345_SPI::kPowerCtlRegister;
-const uint8_t ADXL345_SPI::kDataFormatRegister;
-const uint8_t ADXL345_SPI::kDataRegister;
-
-constexpr double ADXL345_SPI::kGsPerLSB;
+const uint8_t ADXL345_SPI::kPowerCtlRegister = 0x2D;
+const uint8_t ADXL345_SPI::kDataFormatRegister = 0x31;
+const uint8_t ADXL345_SPI::kDataRegister = 0x32;
+const double ADXL345_SPI::kGsPerLSB = 0.00390625;
 
 /**
- * Constructor.
- * 
- * @param clk The GPIO the clock signal is wired to.
- * @param mosi The GPIO the MOSI (Master Out Slave In) signal is wired to.
- * @param miso The GPIO the MISO (Master In Slave Out) signal is wired to.
- * @param cs The GPIO the CS (Chip Select) signal is wired to.
- * @param range The range (+ or -) that the accelerometer will measure.
- */
+* Constructor.
+* 
+* @param clk The GPIO the clock signal is wired to.
+* @param mosi The GPIO the MOSI (Master Out Slave In) signal is wired to.
+* @param miso The GPIO the MISO (Master In Slave Out) signal is wired to.
+* @param cs The GPIO the CS (Chip Select) signal is wired to.
+* @param range The range (+ or -) that the accelerometer will measure.
+*/
 ADXL345_SPI::ADXL345_SPI(DigitalOutput &clk, DigitalOutput &mosi, DigitalInput &miso,
-	DigitalOutput &cs, DataFormat_Range range)
-	: m_clk (NULL)
-	, m_mosi (NULL)
-	, m_miso (NULL)
-	, m_cs (NULL)
-	, m_spi (NULL)
+						 DigitalOutput &cs, DataFormat_Range range)
+						 : m_clk (NULL)
+						 , m_mosi (NULL)
+						 , m_miso (NULL)
+						 , m_cs (NULL)
+						 , m_spi (NULL)
 {
 	Init(&clk, &mosi, &miso, &cs, range);
 }
 
 /**
- * Constructor.
- * 
- * @param clk The GPIO the clock signal is wired to.
- * @param mosi The GPIO the MOSI (Master Out Slave In) signal is wired to.
- * @param miso The GPIO the MISO (Master In Slave Out) signal is wired to.
- * @param cs The GPIO the CS (Chip Select) signal is wired to.
- * @param range The range (+ or -) that the accelerometer will measure.
- */
+* Constructor.
+* 
+* @param clk The GPIO the clock signal is wired to.
+* @param mosi The GPIO the MOSI (Master Out Slave In) signal is wired to.
+* @param miso The GPIO the MISO (Master In Slave Out) signal is wired to.
+* @param cs The GPIO the CS (Chip Select) signal is wired to.
+* @param range The range (+ or -) that the accelerometer will measure.
+*/
 ADXL345_SPI::ADXL345_SPI(DigitalOutput *clk, DigitalOutput *mosi, DigitalInput *miso,
-	DigitalOutput *cs, DataFormat_Range range)
-	: m_clk (NULL)
-	, m_mosi (NULL)
-	, m_miso (NULL)
-	, m_cs (NULL)
-	, m_spi (NULL)
+						 DigitalOutput *cs, DataFormat_Range range)
+						 : m_clk (NULL)
+						 , m_mosi (NULL)
+						 , m_miso (NULL)
+						 , m_cs (NULL)
+						 , m_spi (NULL)
 {
 	Init(clk, mosi, miso, cs, range);
 }
 
 /**
- * Constructor.
- * 
- * @param moduleNumber The digital module with the sensor attached.
- * @param clk The GPIO the clock signal is wired to.
- * @param mosi The GPIO the MOSI (Master Out Slave In) signal is wired to.
- * @param miso The GPIO the MISO (Master In Slave Out) signal is wired to.
- * @param cs The GPIO the CS (Chip Select) signal is wired to.
- * @param range The range (+ or -) that the accelerometer will measure.
- */
+* Constructor.
+* 
+* @param moduleNumber The digital module with the sensor attached.
+* @param clk The GPIO the clock signal is wired to.
+* @param mosi The GPIO the MOSI (Master Out Slave In) signal is wired to.
+* @param miso The GPIO the MISO (Master In Slave Out) signal is wired to.
+* @param cs The GPIO the CS (Chip Select) signal is wired to.
+* @param range The range (+ or -) that the accelerometer will measure.
+*/
 ADXL345_SPI::ADXL345_SPI(uint8_t moduleNumber, uint32_t clk, uint32_t mosi, uint32_t miso,
-		uint32_t cs, ADXL345_SPI::DataFormat_Range range)
-	: m_clk (NULL)
-	, m_mosi (NULL)
-	, m_miso (NULL)
-	, m_cs (NULL)
-	, m_spi (NULL)
+						 uint32_t cs, ADXL345_SPI::DataFormat_Range range)
+						 : m_clk (NULL)
+						 , m_mosi (NULL)
+						 , m_miso (NULL)
+						 , m_cs (NULL)
+						 , m_spi (NULL)
 {
 	m_clk = new DigitalOutput(moduleNumber, clk);
 	m_mosi = new DigitalOutput(moduleNumber, mosi);
@@ -82,10 +81,10 @@ ADXL345_SPI::ADXL345_SPI(uint8_t moduleNumber, uint32_t clk, uint32_t mosi, uint
 }
 
 /**
- * Internal common init function.
- */
+* Internal common init function.
+*/
 void ADXL345_SPI::Init(DigitalOutput *clk, DigitalOutput *mosi, DigitalInput *miso,
-	DigitalOutput *cs, DataFormat_Range range)
+					   DigitalOutput *cs, DataFormat_Range range)
 {
 	if (clk != NULL && mosi != NULL && miso != NULL && cs != NULL)
 	{
@@ -115,8 +114,8 @@ void ADXL345_SPI::Init(DigitalOutput *clk, DigitalOutput *mosi, DigitalInput *mi
 }
 
 /**
- * Destructor.
- */
+* Destructor.
+*/
 ADXL345_SPI::~ADXL345_SPI()
 {
 	delete m_spi;
@@ -132,11 +131,11 @@ ADXL345_SPI::~ADXL345_SPI()
 }
 
 /**
- * Get the acceleration of one axis in Gs.
- * 
- * @param axis The axis to read from.
- * @return Acceleration of the ADXL345 in Gs.
- */
+* Get the acceleration of one axis in Gs.
+* 
+* @param axis The axis to read from.
+* @return Acceleration of the ADXL345 in Gs.
+*/
 double ADXL345_SPI::GetAcceleration(ADXL345_SPI::Axes axis)
 {
 	int16_t rawAccel = 0;
@@ -152,10 +151,10 @@ double ADXL345_SPI::GetAcceleration(ADXL345_SPI::Axes axis)
 }
 
 /**
- * Get the acceleration of all axes in Gs.
- * 
- * @return Acceleration measured on all axes of the ADXL345 in Gs.
- */
+* Get the acceleration of all axes in Gs.
+* 
+* @return Acceleration measured on all axes of the ADXL345 in Gs.
+*/
 ADXL345_SPI::AllAxes ADXL345_SPI::GetAccelerations()
 {
 	AllAxes data = {0.0};

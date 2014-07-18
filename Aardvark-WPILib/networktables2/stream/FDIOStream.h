@@ -20,8 +20,7 @@ class FDIOStream;
 
 class FDIOStream : public IOStream{
 private:
-    //FILE* f;
-    int fd;
+	FILE* f;
 public:
 	FDIOStream(int fd);
 	virtual ~FDIOStream();

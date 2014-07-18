@@ -15,8 +15,8 @@
 /*  must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib. */
 /*----------------------------------------------------------------------------*/
 
-#include "stdioLib.h" 
-#include "vxWorks.h" 
+#include <stdio.h>
+#include <stdarg.h>
 
 #include "BaeUtilities.h"
 #include "FrcError.h"

@@ -7,6 +7,7 @@
 #ifndef DIGITAL_MODULE_H_
 #define DIGITAL_MODULE_H_
 
+#include "OSAL/Synchronized.h"
 #include "Module.h"
 #include "ChipObject.h"
 
@@ -57,9 +58,9 @@ public:
 	static uint8_t UnmapDigitalChannel(uint32_t channel) { return 15 - channel; }; // TODO: Need channel validation
 
 private:
-	SEM_ID m_digitalSemaphore;
-	SEM_ID m_relaySemaphore;
-	SEM_ID m_doPwmSemaphore;
+	NTReentrantSemaphore m_digitalSemaphore;
+	NTReentrantSemaphore m_relaySemaphore;
+	NTReentrantSemaphore m_doPwmSemaphore;
 	tDIO *m_fpgaDIO;
 };
 

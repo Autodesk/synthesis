@@ -11,9 +11,6 @@
 #include "NetworkCommunication/symModuleLink.h"
 #include "NetworkCommunication/UsageReporting.h"
 #include "Utility.h"
-#include <moduleLib.h>
-#include <taskLib.h>
-#include <unldLib.h>
 #include <cstring>
 
 RobotBase* RobotBase::m_instance = NULL;
@@ -138,11 +135,10 @@ bool RobotBase::IsNewDataAvailable()
 /**
  * Static interface that will start the competition in the new task.
  */
-void RobotBase::robotTask(FUNCPTR factory, Task *task)
+DWORD WINAPI RobotBase::robotTask(void *ptr)
 {
-	RobotBase::setInstance((RobotBase*)factory());
-	RobotBase::getInstance().m_task = task;
 	RobotBase::getInstance().StartCompetition();
+	return 0;
 }
 
 void RobotBase::WriteVersionString() {
@@ -161,40 +157,29 @@ void RobotBase::WriteVersionString() {
  * interrupts. Therefore the program experiences hard to debug and unpredictable results. So the
  * LVRT code starts this function, and it, in turn, starts the actual user program.
  */
-void RobotBase::startRobotTask(FUNCPTR factory)
+void RobotBase::startRobotTask(RobotFactory factory)
 {
-#ifdef SVN_REV
-	if (strlen(SVN_REV))
-	{
-		printf("WPILib was compiled from SVN revision %s\n", SVN_REV);
-	}
-	else
-	{
-		printf("WPILib was compiled from a location that is not source controlled.\n");
-	}
-#else
 	printf("WPILib was compiled without -D'SVN_REV=nnnn'\n");
-#endif
 
 	// Check for startup code already running
-	int32_t oldId = taskNameToId(const_cast<char*>("FRC_RobotTask"));
-	if (oldId != ERROR)
-	{
-		// Find the startup code module.
-		char moduleName[256];
-		moduleNameFindBySymbolName("FRC_UserProgram_StartupLibraryInit", moduleName);
-		MODULE_ID startupModId = moduleFindByName(moduleName);
-		if (startupModId != NULL)
-		{
-			// Remove the startup code.
-			unldByModuleId(startupModId, 0);
-			printf("!!!   Error: Default code was still running... It was unloaded for you... Please try again.\n");
-			return;
-		}
-		// This case should no longer get hit.
-		printf("!!!   Error: Other robot code is still running... Unload it and then try again.\n");
-		return;
-	}
+	//int32_t oldId = taskNameToId(const_cast<char*>("FRC_RobotTask"));
+	//if (oldId != ERROR)
+	//{
+	//	// Find the startup code module.
+	//	char moduleName[256];
+	//	moduleNameFindBySymbolName("FRC_UserProgram_StartupLibraryInit", moduleName);
+	//	MODULE_ID startupModId = moduleFindByName(moduleName);
+	//	if (startupModId != NULL)
+	//	{
+	//		// Remove the startup code.
+	//		unldByModuleId(startupModId, 0);
+	//		printf("!!!   Error: Default code was still running... It was unloaded for you... Please try again.\n");
+	//		return;
+	//	}
+	//	// This case should no longer get hit.
+	//	printf("!!!   Error: Other robot code is still running... Unload it and then try again.\n");
+	//	return;
+	//}
 
 	// Let the framework know that we are starting a new user program so the Driver Station can disable.
 	FRC_NetworkCommunication_observeUserProgramStarting();
@@ -207,8 +192,10 @@ void RobotBase::startRobotTask(FUNCPTR factory)
 	// Start robot task
 	// This is done to ensure that the C++ robot task is spawned with the floating point
 	// context save parameter.
-	Task *task = new Task("RobotTask", (FUNCPTR)RobotBase::robotTask, Task::kDefaultPriority, 64000);
-	task->Start((int32_t)factory, (int32_t)task);
+	Task *task = new Task("RobotTask", RobotBase::robotTask, Task::kDefaultPriority, 64000);
+	RobotBase::setInstance((RobotBase*) factory());
+	RobotBase::getInstance().m_task = task;
+	task->Start(NULL);
 }
 
 /**

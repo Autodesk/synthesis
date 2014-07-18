@@ -14,10 +14,9 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <string.h>
 #include <math.h>
-#include <stdioLib.h> 
+#include <stdio.h> 
  
 #include "BaeUtilities.h"
 #include "Servo.h"
@@ -296,7 +295,7 @@ be one property=value entry on each line, i.e. "exposure=auto"
 int processFile(char *inputFile, char *outputString, int lineNumber)
 {
 	FILE *infile;
-	int stringSize = 80;		// max size of one line in file 
+	const int stringSize = 80;		// max size of one line in file 
 	char inputStr[stringSize];
 	int lineCount=0;
 	  

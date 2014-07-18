@@ -45,7 +45,7 @@ private:
 	DISALLOW_COPY_AND_ASSIGN(DriverStationLCD);
 
 	char *m_textBuffer;
-	SEM_ID m_textBufferSemaphore;
+	ReentrantSemaphore m_textBufferSemaphore;
 };
 
 #endif

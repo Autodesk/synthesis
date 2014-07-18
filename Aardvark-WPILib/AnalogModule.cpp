@@ -5,16 +5,17 @@
 /*----------------------------------------------------------------------------*/
 
 #include "AnalogModule.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "Timer.h"
 #include "WPIErrors.h"
 #include "NetworkCommunication/AICalibration.h"
 
-const long AnalogModule::kTimebase; ///< 40 MHz clock
-const long AnalogModule::kDefaultOversampleBits;
-const long AnalogModule::kDefaultAverageBits;
-constexpr float AnalogModule::kDefaultSampleRate;
-SEM_ID AnalogModule::m_registerWindowSemaphore = NULL;
+const long AnalogModule::kTimebase = 40000000; ///< 40 MHz clock
+const long AnalogModule::kDefaultOversampleBits =0;
+const long AnalogModule::kDefaultAverageBits = 7;
+const float AnalogModule::kDefaultSampleRate = 50000.0;
+
+ReentrantSemaphore *AnalogModule::m_registerWindowSemaphore = NULL;
 
 /**
  * Get an instance of an Analog Module.
@@ -34,7 +35,7 @@ AnalogModule* AnalogModule::GetInstance(uint8_t moduleNumber)
 
 	// If this wasn't caught before now, make sure we say what's wrong before we crash
 	char buf[64];
-	snprintf(buf, 64, "Analog Module %d", moduleNumber);
+	sprintf_s(buf, 64, "Analog Module %d", moduleNumber);
 	wpi_setGlobalWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 
 	return NULL;
@@ -75,7 +76,7 @@ AnalogModule::AnalogModule(uint8_t moduleNumber)
 	if (m_registerWindowSemaphore == NULL)
 	{
 		// Needs to be global since the protected resource spans both module singletons.
-		m_registerWindowSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+		m_registerWindowSemaphore = new ReentrantSemaphore();//semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
 	}
 }
 

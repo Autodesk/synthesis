@@ -9,7 +9,7 @@
 
 #include "ChipObject.h"
 #include "ErrorBase.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 
 typedef void (*TimerEventHandler)(void *param);
 
@@ -40,7 +40,7 @@ private:
 	Notifier *m_nextEvent;					// next Nofifier event
 	bool m_periodic;						// true if this is a periodic event
 	bool m_queued;							// indicates if this entry is queued
-	SEM_ID m_handlerSemaphore;				// held by interrupt manager task while handler call is in progress 
+	ReentrantSemaphore m_handlerSemaphore;				// held by interrupt manager task while handler call is in progress 
 	DISALLOW_COPY_AND_ASSIGN(Notifier);
 };
 

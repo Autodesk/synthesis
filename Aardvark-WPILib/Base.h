@@ -7,10 +7,10 @@
 #ifndef _BASE_H
 #define _BASE_H
 
-// If don't have C++11, define constexpr as const for WindRiver
-#if __cplusplus < 201103L
-#define constexpr const
-#endif
+// If don't have C++11, define const as const for WindRiver
+//#if __cplusplus < 201103L
+//#define const const
+//#endif
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class

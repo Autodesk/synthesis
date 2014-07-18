@@ -7,11 +7,6 @@
 #ifndef __AXIS_CAMERA_H__
 #define __AXIS_CAMERA_H__
 
-#include <taskLib.h>
-#include <vxWorks.h> 
-#include <sockLib.h> 
-#include <inetLib.h>
-
 #include "Vision/AxisCameraParams.h"
 #if JAVA_CAMERA_LIB != 1
 #include "Vision/ColorImage.h"
@@ -19,7 +14,7 @@
 #endif
 #include "nivision.h"
 #include <set>
-#include "Task.h"
+#include "OSAL/Task.h"
 
 class PCVideoServer;
 
@@ -41,7 +36,7 @@ public:
 	static void DeleteInstance();
 
 	bool IsFreshImage();
-	SEM_ID GetNewImageSem();
+	ReentrantSemaphore GetNewImageSem();
 
 	int GetImage(Image *imaqImage);
 #if JAVA_CAMERA_LIB != 1
@@ -52,7 +47,7 @@ public:
 	int CopyJPEG(char **destImage, int &destImageSize, int &destImageBufferSize);
 
 private:
-	static int s_ImageStreamTaskFunction(AxisCamera *thisPtr);
+	static DWORD WINAPI s_ImageStreamTaskFunction(LPVOID thisPtr);
 	int ImageStreamTaskFunction();
 
 	int ReadImagesFromCamera();
@@ -62,13 +57,13 @@ private:
 
 	static AxisCamera *_instance;
 	int m_cameraSocket;
-	typedef std::set<SEM_ID> SemSet_t;
+	typedef std::set<ReentrantSemaphore> SemSet_t;
 	SemSet_t m_newImageSemSet;
 
 	char* m_protectedImageBuffer;
 	int m_protectedImageBufferLength;
 	int m_protectedImageSize;
-	SEM_ID m_protectedImageSem;
+	ReentrantSemaphore m_protectedImageSem;
 	bool m_freshImage;
 
 	Task m_imageStreamTask;

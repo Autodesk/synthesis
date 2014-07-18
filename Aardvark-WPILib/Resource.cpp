@@ -7,6 +7,7 @@
 #include "Resource.h"
 #include "WPIErrors.h"
 #include "ErrorBase.h"
+#include "OSAL/Synchronized.h"
 
 ReentrantSemaphore Resource::m_createLock;
 

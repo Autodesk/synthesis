@@ -19,31 +19,31 @@ void DoubleSolenoid::InitSolenoid()
 	char buf[64];
 	if (!CheckSolenoidModule(m_moduleNumber))
 	{
-		snprintf(buf, 64, "Solenoid Module %lu", m_moduleNumber);
+		sprintf_s(buf, 64, "Solenoid Module %lu", m_moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckSolenoidChannel(m_forwardChannel))
 	{
-		snprintf(buf, 64, "Solenoid Channel %lu", m_forwardChannel);
+		sprintf_s(buf, 64, "Solenoid Channel %lu", m_forwardChannel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckSolenoidChannel(m_reverseChannel))
 	{
-		snprintf(buf, 64, "Solenoid Channel %lu", m_reverseChannel);
+		sprintf_s(buf, 64, "Solenoid Channel %lu", m_reverseChannel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 	Resource::CreateResourceObject(&m_allocated, tSolenoid::kNumDO7_0Elements * kSolenoidChannels);
 
-	snprintf(buf, 64, "Solenoid %lu (Module %lu)", m_forwardChannel, m_moduleNumber);
+	sprintf_s(buf, 64, "Solenoid %lu (Module %lu)", m_forwardChannel, m_moduleNumber);
 	if (m_allocated->Allocate((m_moduleNumber - 1) * kSolenoidChannels + m_forwardChannel - 1, buf) == ~0ul)
 	{
 		CloneError(m_allocated);
 		return;
 	}
-	snprintf(buf, 64, "Solenoid %lu (Module %lu)", m_reverseChannel, m_moduleNumber);
+	sprintf_s(buf, 64, "Solenoid %lu (Module %lu)", m_reverseChannel, m_moduleNumber);
 	if (m_allocated->Allocate((m_moduleNumber - 1) * kSolenoidChannels + m_reverseChannel - 1, buf) == ~0ul)
 	{
 		CloneError(m_allocated);

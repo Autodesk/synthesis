@@ -7,9 +7,8 @@
 #include "Dashboard.h"
 #include "DriverStation.h"
 #include "NetworkCommunication/UsageReporting.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
-#include <strLib.h>
 
 const int32_t Dashboard::kMaxDashboardDataSize;
 
@@ -18,13 +17,13 @@ const int32_t Dashboard::kMaxDashboardDataSize;
  * 
  * This is only called once when the DriverStation constructor is called.
  */
-Dashboard::Dashboard(SEM_ID statusDataSem)
+Dashboard::Dashboard(ReentrantSemaphore &statusDataSem)
 	: m_userStatusData (NULL)
 	, m_userStatusDataSize (0)
 	, m_localBuffer (NULL)
 	, m_localPrintBuffer (NULL)
 	, m_packPtr (NULL)
-	, m_printSemaphore (0)
+	, m_printSemaphore()
 	, m_statusDataSemaphore (statusDataSem)
 {
 	m_userStatusData = new char[kMaxDashboardDataSize];
@@ -32,7 +31,7 @@ Dashboard::Dashboard(SEM_ID statusDataSem)
 	m_localPrintBuffer = new char[kMaxDashboardDataSize * 2];
 	m_localPrintBuffer[0] = 0;
 	m_packPtr = m_localBuffer;
-	m_printSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+	//m_printSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
 }
 
 /**
@@ -42,7 +41,7 @@ Dashboard::Dashboard(SEM_ID statusDataSem)
  */
 Dashboard::~Dashboard()
 {
-	semDelete(m_printSemaphore);
+	//semDelete(m_printSemaphore);
 	m_packPtr = NULL;
 	delete [] m_localPrintBuffer;
 	m_localPrintBuffer = NULL;

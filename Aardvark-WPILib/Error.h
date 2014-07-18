@@ -10,7 +10,6 @@
 #include "Base.h"
 #include "ChipObject/NiRio.h"
 #include <string>
-#include <vxWorks.h>
 
 //  Forward declarations
 class ErrorBase;
@@ -26,13 +25,13 @@ public:
 	Error();
 	~Error();
 	void Clone(Error &error);
-	Code GetCode() const;
-	const char *GetMessage() const;
-	const char *GetFilename() const;
-	const char *GetFunction() const;
-	uint32_t GetLineNumber() const;
-	const ErrorBase* GetOriginatingObject() const;
-	double GetTime() const;
+	Code GetCode();
+	const char *GetMessagae();
+	const char *GetFilename();
+	const char *GetFunction();
+	uint32_t GetLineNumber();
+	const ErrorBase* GetOriginatingObject();
+	double GetTime();
 	void Clear();
 	void Set(Code code, const char* contextMessage, const char* filename,
 		const char *function, uint32_t lineNumber, const ErrorBase* originatingObject);

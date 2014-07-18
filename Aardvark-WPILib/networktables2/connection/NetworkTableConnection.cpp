@@ -127,7 +127,7 @@ void NetworkTableConnection::read(ConnectionAdapter& adapter) {
 		NetworkTableEntryType* entryType = typeManager.GetType(typeId);
 		if (!entryType){
 			char exceptionMessageBuffer[50];
-			sprintf (exceptionMessageBuffer, "Unknown data type: %#x", typeId);
+			sprintf_s (exceptionMessageBuffer, "Unknown data type: %#x", typeId);
 			throw BadMessageException(exceptionMessageBuffer);
 		}
 		EntryId entryId = ioStream->read2BytesBE();
@@ -144,7 +144,7 @@ void NetworkTableConnection::read(ConnectionAdapter& adapter) {
 		NetworkTableEntry* entry = adapter.GetEntry(entryId);
 		if (!entry){
 			char exceptionMessageBuffer[50];
-			sprintf (exceptionMessageBuffer, "Received update for unknown entry id: %d", entryId);
+			sprintf_s (exceptionMessageBuffer, "Received update for unknown entry id: %d", entryId);
 			throw BadMessageException(exceptionMessageBuffer);
 		}
 		EntryValue value = entry->GetType()->readValue(*ioStream);
@@ -155,7 +155,7 @@ void NetworkTableConnection::read(ConnectionAdapter& adapter) {
 	}
 	default:
 		char exceptionMessageBuffer[50];
-		sprintf (exceptionMessageBuffer, "Unknown Network Table Message Type: %d", messageType);
+		sprintf_s (exceptionMessageBuffer, "Unknown Network Table Message Type: %d", messageType);
 		throw BadMessageException(exceptionMessageBuffer);
 	}
 }

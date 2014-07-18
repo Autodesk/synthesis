@@ -6,9 +6,8 @@
 
 #include "DriverStationEnhancedIO.h"
 #include "NetworkCommunication/UsageReporting.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
-#include <strLib.h>
 
 /**
  * DriverStationEnhancedIO contructor.
@@ -21,14 +20,14 @@ DriverStationEnhancedIO::DriverStationEnhancedIO()
 	, m_configChanged (false)
 	, m_requestEnhancedEnable (false)
 {
-	bzero((char*)&m_inputData, sizeof(m_inputData));
-	bzero((char*)&m_outputData, sizeof(m_outputData));
+	memset((char*)&m_inputData, 0, sizeof(m_inputData));
+	memset((char*)&m_outputData, 0, sizeof(m_outputData));
 	m_outputData.size = sizeof(m_outputData) - 1;
 	m_outputData.id = kOutputBlockID;
 	// Expected to be active low, so initialize inactive.
 	m_outputData.data.fixed_digital_out = 0x3;
-	m_inputDataSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
-	m_outputDataSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+	//m_inputDataSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+	//m_outputDataSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
 	m_encoderOffsets[0] = 0;
 	m_encoderOffsets[1] = 0;
 }
@@ -40,8 +39,8 @@ DriverStationEnhancedIO::DriverStationEnhancedIO()
  */
 DriverStationEnhancedIO::~DriverStationEnhancedIO()
 {
-	semDelete(m_outputDataSemaphore);
-	semDelete(m_inputDataSemaphore);
+	//semDelete(m_outputDataSemaphore);
+	//semDelete(m_inputDataSemaphore);
 }
 
 /**

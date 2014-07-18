@@ -8,7 +8,7 @@
 #define ULTRASONIC_H_
 
 #include "SensorBase.h"
-#include "Task.h"
+#include "OSAL/Task.h"
 #include "PIDSource.h"
 #include "LiveWindow/LiveWindowSendable.h"
 
@@ -63,17 +63,17 @@ public:
 private:
 	void Initialize();
 
-	static void UltrasonicChecker();
+	static DWORD WINAPI UltrasonicChecker(LPVOID param);
 
-	static constexpr double kPingTime = 10 * 1e-6;	///< Time (sec) for the ping trigger pulse.
-	static const uint32_t kPriority = 90;	///< Priority that the ultrasonic round robin task runs.
-	static constexpr double kMaxUltrasonicTime = 0.1;	///< Max time (ms) between readings.
-	static constexpr double kSpeedOfSoundInchesPerSec = 1130.0 * 12.0;
+	static const double kPingTime;	///< Time (sec) for the ping trigger pulse.
+	static const uint32_t kPriority;	///< Priority that the ultrasonic round robin task runs.
+	static const double kMaxUltrasonicTime;	///< Max time (ms) between readings.
+	static const double kSpeedOfSoundInchesPerSec;
 
 	static Task m_task; // task doing the round-robin automatic sensing
 	static Ultrasonic *m_firstSensor; // head of the ultrasonic sensor list
 	static bool m_automaticEnabled; // automatic round robin mode
-	static SEM_ID m_semaphore; // synchronize access to the list of sensors
+	static ReentrantSemaphore m_semaphore; // synchronize access to the list of sensors
 
 	DigitalInput *m_echoChannel;
 	DigitalOutput *m_pingChannel;

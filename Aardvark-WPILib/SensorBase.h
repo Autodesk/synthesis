@@ -36,16 +36,16 @@ public:
 	static bool CheckAnalogChannel(uint32_t channel);
 	static bool CheckSolenoidChannel(uint32_t channel);
 
-	static const uint32_t kSystemClockTicksPerMicrosecond = 40;
-	static const uint32_t kDigitalChannels = 14;
-	static const uint32_t kAnalogChannels = 8;
-	static const uint32_t kAnalogModules = 2;
-	static const uint32_t kDigitalModules = 2;
-	static const uint32_t kSolenoidChannels = 8;
-	static const uint32_t kSolenoidModules = 2;
-	static const uint32_t kPwmChannels = 10;
-	static const uint32_t kRelayChannels = 8;
-	static const uint32_t kChassisSlots = 8;
+	static const uint32_t kSystemClockTicksPerMicrosecond;
+	static const uint32_t kDigitalChannels;
+	static const uint32_t kAnalogChannels;
+	static const uint32_t kAnalogModules;
+	static const uint32_t kDigitalModules;
+	static const uint32_t kSolenoidChannels;
+	static const uint32_t kSolenoidModules;
+	static const uint32_t kPwmChannels;
+	static const uint32_t kRelayChannels;
+	static const uint32_t kChassisSlots;
 protected:
 	void AddToSingletonList();
 

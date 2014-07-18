@@ -11,7 +11,7 @@
 #include "NetworkCommunication/FRCComm.h"
 #include <stack>
 #include <vector>
-#include <vxWorks.h>
+
 
 #define kAnalogInputResolution ((double)((1<<14)-1))
 #define kAnalogInputReference 3.3
@@ -138,8 +138,8 @@ private:
 
 	control_block_t m_inputData;
 	status_block_t m_outputData;
-	SEM_ID m_inputDataSemaphore;
-	SEM_ID m_outputDataSemaphore;
+	ReentrantSemaphore m_inputDataSemaphore;
+	ReentrantSemaphore m_outputDataSemaphore;
 	bool m_inputValid;
 	bool m_outputValid;
 	bool m_configChanged;

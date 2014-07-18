@@ -13,7 +13,6 @@
 /*----------------------------------------------------------------------------*/
 
 #include "string.h"
-#include "vxWorks.h" 
 
 #include "AxisCamera.h" 
 #include "FrcError.h"
@@ -267,7 +266,7 @@ int FindColor(ColorMode mode, const Range* plane1Range, const Range* plane2Range
 			/* first filter out the other particles */
 			ParticleFilterCriteria2 criteria;
 			ParticleFilterOptions* options = NULL;
-			Rect rect;
+			Rect rect = Rect();
 			int numParticles;
 			success = frcParticleFilter(cameraImage, cameraImage, &criteria, 1, options, 
 					rect, &numParticles);

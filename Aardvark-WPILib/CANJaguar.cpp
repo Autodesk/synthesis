@@ -23,8 +23,8 @@
 
 #define kFullMessageIDMask (CAN_MSGID_API_M | CAN_MSGID_MFR_M | CAN_MSGID_DTYPE_M)
 
-const int32_t CANJaguar::kControllerRate;
-constexpr double CANJaguar::kApproxBusVoltage;
+const int32_t CANJaguar::kControllerRate = 1000;
+const double CANJaguar::kApproxBusVoltage = 12.0;
 
 /**
  * Common initialization code called by all constructors.
@@ -32,11 +32,11 @@ constexpr double CANJaguar::kApproxBusVoltage;
 void CANJaguar::InitCANJaguar()
 {
 	m_table = NULL;
-	m_transactionSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+	// Should exist		m_transactionSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
 	if (m_deviceNumber < 1 || m_deviceNumber > 63)
 	{
 		char buf[256];
-		snprintf(buf, 256, "device number \"%d\" must be between 1 and 63", m_deviceNumber);
+		sprintf_s(buf, 256, "device number \"%d\" must be between 1 and 63", m_deviceNumber);
 		wpi_setWPIErrorWithContext(ParameterOutOfRange, buf);
 		return;
 	}
@@ -49,11 +49,11 @@ void CANJaguar::InitCANJaguar()
 		char buf[256];
 		if (fwVer < 3330)
 		{
-			snprintf(buf, 256, "Jag #%d firmware (%lu) is too old (must be at least version 101 of the FIRST approved firmware)", m_deviceNumber, fwVer);
+			sprintf_s(buf, 256, "Jag #%d firmware (%lu) is too old (must be at least version 101 of the FIRST approved firmware)", m_deviceNumber, fwVer);
 		}
 		else
 		{
-			snprintf(buf, 256, "Jag #%d firmware (%lu) is not FIRST approved (must be at least version 101 of the FIRST approved firmware)", m_deviceNumber, fwVer);
+			sprintf_s(buf, 256, "Jag #%d firmware (%lu) is not FIRST approved (must be at least version 101 of the FIRST approved firmware)", m_deviceNumber, fwVer);
 		}
 		wpi_setWPIErrorWithContext(JaguarVersionError, buf);
 		return;
@@ -82,7 +82,7 @@ void CANJaguar::InitCANJaguar()
 CANJaguar::CANJaguar(uint8_t deviceNumber, ControlMode controlMode)
 	: m_deviceNumber (deviceNumber)
 	, m_controlMode (controlMode)
-	, m_transactionSemaphore (NULL)
+	, m_transactionSemaphore ()
 	, m_maxOutputVoltage (kApproxBusVoltage)
 	, m_safetyHelper (NULL)
 {
@@ -93,8 +93,7 @@ CANJaguar::~CANJaguar()
 {
 	delete m_safetyHelper;
 	m_safetyHelper = NULL;
-	semDelete(m_transactionSemaphore);
-	m_transactionSemaphore = NULL;
+//	semDelete(m_transactionSemaphore);
 }
 
 /**
@@ -403,7 +402,8 @@ void CANJaguar::setTransaction(uint32_t messageID, const uint8_t *data, uint8_t 
 		return;
 
 	// Make sure we don't have more than one transaction with the same Jaguar outstanding.
-	semTake(m_transactionSemaphore, WAIT_FOREVER);
+	m_transactionSemaphore.take();
+	//m_transactionSemaphore.take();
 
 	// Throw away any stale acks.
 	receiveMessage(&ackMessageID, NULL, 0, 0.0f);
@@ -415,7 +415,8 @@ void CANJaguar::setTransaction(uint32_t messageID, const uint8_t *data, uint8_t 
 	wpi_setErrorWithContext(localStatus, "receiveMessage");
 
 	// Transaction complete.
-	semGive(m_transactionSemaphore);
+	m_transactionSemaphore.give();
+	//m_transactionSemaphore.give();
 }
 
 /**
@@ -442,7 +443,7 @@ void CANJaguar::getTransaction(uint32_t messageID, uint8_t *data, uint8_t *dataS
 	}
 
 	// Make sure we don't have more than one transaction with the same Jaguar outstanding.
-	semTake(m_transactionSemaphore, WAIT_FOREVER);
+	m_transactionSemaphore.take();
 
 	// Throw away any stale responses.
 	receiveMessage(&targetedMessageID, NULL, 0, 0.0f);
@@ -456,7 +457,7 @@ void CANJaguar::getTransaction(uint32_t messageID, uint8_t *data, uint8_t *dataS
 	wpi_setErrorWithContext(localStatus, "receiveMessage");
 
 	// Transaction complete.
-	semGive(m_transactionSemaphore);
+	m_transactionSemaphore.give();
 }
 
 /**

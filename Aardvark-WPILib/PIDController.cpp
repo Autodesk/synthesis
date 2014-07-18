@@ -10,7 +10,7 @@
 #include "PIDSource.h"
 #include "PIDOutput.h"
 #include <math.h>
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 
 static const char *kP = "p";
 static const char *kI = "i";
@@ -21,49 +21,47 @@ static const char *kEnabled = "enabled";
 
 
 /**
- * Allocate a PID object with the given constants for P, I, D
- * @param Kp the proportional coefficient
- * @param Ki the integral coefficient
- * @param Kd the derivative coefficient
- * @param source The PIDSource object that is used to get values
- * @param output The PIDOutput object that is set to the output value
- * @param period the loop time for doing calculations. This particularly effects calculations of the
- * integral and differental terms. The default is 50ms.
- */
+* Allocate a PID object with the given constants for P, I, D
+* @param Kp the proportional coefficient
+* @param Ki the integral coefficient
+* @param Kd the derivative coefficient
+* @param source The PIDSource object that is used to get values
+* @param output The PIDOutput object that is set to the output value
+* @param period the loop time for doing calculations. This particularly effects calculations of the
+* integral and differental terms. The default is 50ms.
+*/
 PIDController::PIDController(float Kp, float Ki, float Kd,
-								PIDSource *source, PIDOutput *output,
-								float period) :
-	m_semaphore (0)
+							 PIDSource *source, PIDOutput *output,
+							 float period) :
+m_semaphore ()
 {
 	Initialize(Kp, Ki, Kd, 0.0f, source, output, period);
 }
 
 /**
- * Allocate a PID object with the given constants for P, I, D
- * @param Kp the proportional coefficient
- * @param Ki the integral coefficient
- * @param Kd the derivative coefficient
- * @param source The PIDSource object that is used to get values
- * @param output The PIDOutput object that is set to the output value
- * @param period the loop time for doing calculations. This particularly effects calculations of the
- * integral and differental terms. The default is 50ms.
- */
+* Allocate a PID object with the given constants for P, I, D
+* @param Kp the proportional coefficient
+* @param Ki the integral coefficient
+* @param Kd the derivative coefficient
+* @param source The PIDSource object that is used to get values
+* @param output The PIDOutput object that is set to the output value
+* @param period the loop time for doing calculations. This particularly effects calculations of the
+* integral and differental terms. The default is 50ms.
+*/
 PIDController::PIDController(float Kp, float Ki, float Kd, float Kf,
-								PIDSource *source, PIDOutput *output,
-								float period) :
-	m_semaphore (0)
+							 PIDSource *source, PIDOutput *output,
+							 float period) :
+m_semaphore ()
 {
 	Initialize(Kp, Ki, Kd, Kf, source, output, period);
 }
 
 
 void PIDController::Initialize(float Kp, float Ki, float Kd, float Kf,
-								PIDSource *source, PIDOutput *output,
-								float period)
+							   PIDSource *source, PIDOutput *output,
+							   float period)
 {
 	m_table = NULL;
-	
-	m_semaphore = semMCreate(SEM_Q_PRIORITY);
 
 	m_controlLoop = new Notifier(PIDController::CallCalculate, this);
 
@@ -71,7 +69,7 @@ void PIDController::Initialize(float Kp, float Ki, float Kd, float Kf,
 	m_I = Ki;
 	m_D = Kd;
 	m_F = Kf;
-	
+
 	m_maximumOutput = 1.0;
 	m_minimumOutput = -1.0;
 
@@ -97,37 +95,38 @@ void PIDController::Initialize(float Kp, float Ki, float Kd, float Kf,
 	static int32_t instances = 0;
 	instances++;
 	nUsageReporting::report(nUsageReporting::kResourceType_PIDController, instances);
-	
+
 	m_toleranceType = kNoTolerance;
 }
 
 /**
- * Free the PID object
- */
+* Free the PID object
+*/
 PIDController::~PIDController()
 {
-	semFlush(m_semaphore);
+	//semFlush(m_semaphore);
+	m_semaphore.give();
 	delete m_controlLoop;
 }
 
 /**
- * Call the Calculate method as a non-static method. This avoids having to prepend
- * all local variables in that method with the class pointer. This way the "this"
- * pointer will be set up and class variables can be called more easily.
- * This method is static and called by the Notifier class.
- * @param controller the address of the PID controller object to use in the background loop
- */
+* Call the Calculate method as a non-static method. This avoids having to prepend
+* all local variables in that method with the class pointer. This way the "this"
+* pointer will be set up and class variables can be called more easily.
+* This method is static and called by the Notifier class.
+* @param controller the address of the PID controller object to use in the background loop
+*/
 void PIDController::CallCalculate(void *controller)
 {
 	PIDController *control = (PIDController*) controller;
 	control->Calculate();
 }
 
- /**
-  * Read the input, calculate the output accordingly, and write to the output.
-  * This should only be called by the Notifier indirectly through CallCalculate
-  * and is created during initialization.
-  */	
+/**
+* Read the input, calculate the output accordingly, and write to the output.
+* This should only be called by the Notifier indirectly through CallCalculate
+* and is created during initialization.
+*/	
 void PIDController::Calculate()
 {
 	bool enabled;
@@ -165,7 +164,7 @@ void PIDController::Calculate()
 					}
 				}
 			}
-			
+
 			if(m_I != 0)
 			{
 				double potentialIGain = (m_totalError + m_error) * m_I;
@@ -197,12 +196,12 @@ void PIDController::Calculate()
 }
 
 /**
- * Set the PID Controller gain parameters.
- * Set the proportional, integral, and differential coefficients.
- * @param p Proportional coefficient
- * @param i Integral coefficient
- * @param d Differential coefficient
- */
+* Set the PID Controller gain parameters.
+* Set the proportional, integral, and differential coefficients.
+* @param p Proportional coefficient
+* @param i Integral coefficient
+* @param d Differential coefficient
+*/
 void PIDController::SetPID(float p, float i, float d)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -221,13 +220,13 @@ void PIDController::SetPID(float p, float i, float d)
 }
 
 /**
- * Set the PID Controller gain parameters.
- * Set the proportional, integral, and differential coefficients.
- * @param p Proportional coefficient
- * @param i Integral coefficient
- * @param d Differential coefficient
- * @param f Feed forward coefficient
- */
+* Set the PID Controller gain parameters.
+* Set the proportional, integral, and differential coefficients.
+* @param p Proportional coefficient
+* @param i Integral coefficient
+* @param d Differential coefficient
+* @param f Feed forward coefficient
+*/
 void PIDController::SetPID(float p, float i, float d, float f)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -248,9 +247,9 @@ void PIDController::SetPID(float p, float i, float d, float f)
 }
 
 /**
- * Get the Proportional coefficient
- * @return proportional coefficient
- */
+* Get the Proportional coefficient
+* @return proportional coefficient
+*/
 float PIDController::GetP()
 {
 	CRITICAL_REGION(m_semaphore)
@@ -261,9 +260,9 @@ float PIDController::GetP()
 }
 
 /**
- * Get the Integral coefficient
- * @return integral coefficient
- */
+* Get the Integral coefficient
+* @return integral coefficient
+*/
 float PIDController::GetI()
 {
 	CRITICAL_REGION(m_semaphore)
@@ -274,9 +273,9 @@ float PIDController::GetI()
 }
 
 /**
- * Get the Differential coefficient
- * @return differential coefficient
- */
+* Get the Differential coefficient
+* @return differential coefficient
+*/
 float PIDController::GetD()
 {
 	CRITICAL_REGION(m_semaphore)
@@ -287,9 +286,9 @@ float PIDController::GetD()
 }
 
 /**
- * Get the Feed forward coefficient
- * @return Feed forward coefficient
- */
+* Get the Feed forward coefficient
+* @return Feed forward coefficient
+*/
 float PIDController::GetF()
 {
 	CRITICAL_REGION(m_semaphore)
@@ -300,10 +299,10 @@ float PIDController::GetF()
 }
 
 /**
- * Return the current PID result
- * This is always centered on zero and constrained the the max and min outs
- * @return the latest calculated output
- */
+* Return the current PID result
+* This is always centered on zero and constrained the the max and min outs
+* @return the latest calculated output
+*/
 float PIDController::Get()
 {
 	float result;
@@ -316,12 +315,12 @@ float PIDController::Get()
 }
 
 /**
- *  Set the PID controller to consider the input to be continuous,
- *  Rather then using the max and min in as constraints, it considers them to
- *  be the same point and automatically calculates the shortest route to
- *  the setpoint.
- * @param continuous Set to true turns on continuous, false turns off continuous
- */
+*  Set the PID controller to consider the input to be continuous,
+*  Rather then using the max and min in as constraints, it considers them to
+*  be the same point and automatically calculates the shortest route to
+*  the setpoint.
+* @param continuous Set to true turns on continuous, false turns off continuous
+*/
 void PIDController::SetContinuous(bool continuous)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -333,11 +332,11 @@ void PIDController::SetContinuous(bool continuous)
 }
 
 /**
- * Sets the maximum and minimum values expected from the input.
- * 
- * @param minimumInput the minimum value expected from the input
- * @param maximumInput the maximum value expected from the output
- */
+* Sets the maximum and minimum values expected from the input.
+* 
+* @param minimumInput the minimum value expected from the input
+* @param maximumInput the maximum value expected from the output
+*/
 void PIDController::SetInputRange(float minimumInput, float maximumInput)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -351,11 +350,11 @@ void PIDController::SetInputRange(float minimumInput, float maximumInput)
 }
 
 /**
- * Sets the minimum and maximum values to write.
- * 
- * @param minimumOutput the minimum value to write to the output
- * @param maximumOutput the maximum value to write to the output
- */
+* Sets the minimum and maximum values to write.
+* 
+* @param minimumOutput the minimum value to write to the output
+* @param maximumOutput the maximum value to write to the output
+*/
 void PIDController::SetOutputRange(float minimumOutput, float maximumOutput)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -367,9 +366,9 @@ void PIDController::SetOutputRange(float minimumOutput, float maximumOutput)
 }
 
 /**
- * Set the setpoint for the PIDController
- * @param setpoint the desired setpoint
- */
+* Set the setpoint for the PIDController
+* @param setpoint the desired setpoint
+*/
 void PIDController::SetSetpoint(float setpoint)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -389,16 +388,16 @@ void PIDController::SetSetpoint(float setpoint)
 		}
 	}
 	END_REGION;	
-	
+
 	if (m_table != NULL) {
 		m_table->PutNumber("setpoint", m_setpoint);
 	}
 }
 
 /**
- * Returns the current setpoint of the PIDController
- * @return the current setpoint
- */
+* Returns the current setpoint of the PIDController
+* @return the current setpoint
+*/
 float PIDController::GetSetpoint()
 {
 	float setpoint;
@@ -411,9 +410,9 @@ float PIDController::GetSetpoint()
 }
 
 /**
- * Retruns the current difference of the input from the setpoint
- * @return the current error
- */
+* Retruns the current difference of the input from the setpoint
+* @return the current error
+*/
 float PIDController::GetError()
 {
 	float error;
@@ -426,10 +425,10 @@ float PIDController::GetError()
 }
 
 /*
- * Set the percentage error which is considered tolerable for use with
- * OnTarget.
- * @param percentage error which is tolerable
- */
+* Set the percentage error which is considered tolerable for use with
+* OnTarget.
+* @param percentage error which is tolerable
+*/
 void PIDController::SetTolerance(float percent)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -441,10 +440,10 @@ void PIDController::SetTolerance(float percent)
 }
 
 /*
- * Set the percentage error which is considered tolerable for use with
- * OnTarget.
- * @param percentage error which is tolerable
- */
+* Set the percentage error which is considered tolerable for use with
+* OnTarget.
+* @param percentage error which is tolerable
+*/
 void PIDController::SetPercentTolerance(float percent)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -456,10 +455,10 @@ void PIDController::SetPercentTolerance(float percent)
 }
 
 /*
- * Set the absolute error which is considered tolerable for use with
- * OnTarget.
- * @param percentage error which is tolerable
- */
+* Set the absolute error which is considered tolerable for use with
+* OnTarget.
+* @param percentage error which is tolerable
+*/
 void PIDController::SetAbsoluteTolerance(float absTolerance)
 {
 	CRITICAL_REGION(m_semaphore)
@@ -471,16 +470,16 @@ void PIDController::SetAbsoluteTolerance(float absTolerance)
 }
 
 /*
- * Return true if the error is within the percentage of the total input range,
- * determined by SetTolerance. This asssumes that the maximum and minimum input
- * were set using SetInput.
- * Currently this just reports on target as the actual value passes through the setpoint.
- * Ideally it should be based on being within the tolerance for some period of time.
- */
+* Return true if the error is within the percentage of the total input range,
+* determined by SetTolerance. This asssumes that the maximum and minimum input
+* were set using SetInput.
+* Currently this just reports on target as the actual value passes through the setpoint.
+* Ideally it should be based on being within the tolerance for some period of time.
+*/
 bool PIDController::OnTarget()
 {
-    bool temp = false;
-    CRITICAL_REGION(m_semaphore)
+	bool temp = false;
+	CRITICAL_REGION(m_semaphore)
 	{
 		switch (m_toleranceType) {
 		case kPercentTolerance:
@@ -489,7 +488,7 @@ bool PIDController::OnTarget()
 		case kAbsoluteTolerance:
 			temp = fabs(GetError()) < m_tolerance;
 			break;
-		//TODO: this case needs an error
+			//TODO: this case needs an error
 		case kNoTolerance:
 			temp = false;
 			break;
@@ -502,8 +501,8 @@ bool PIDController::OnTarget()
 }
 
 /**
- * Begin running the PIDController
- */
+* Begin running the PIDController
+*/
 void PIDController::Enable()
 {
 	CRITICAL_REGION(m_semaphore)
@@ -511,15 +510,15 @@ void PIDController::Enable()
 		m_enabled = true;
 	}
 	END_REGION;	
-	
+
 	if (m_table != NULL) {
 		m_table->PutBoolean("enabled", true);
 	}
 }
 
 /**
- * Stop running the PIDController, this sets the output to zero before stopping.
- */
+* Stop running the PIDController, this sets the output to zero before stopping.
+*/
 void PIDController::Disable()
 {
 	CRITICAL_REGION(m_semaphore)
@@ -528,15 +527,15 @@ void PIDController::Disable()
 		m_enabled = false;
 	}
 	END_REGION;
-	
+
 	if (m_table != NULL) {
 		m_table->PutBoolean("enabled", false);
 	}
 }
 
 /**
- * Return true if PIDController is enabled.
- */
+* Return true if PIDController is enabled.
+*/
 bool PIDController::IsEnabled()
 {
 	bool enabled;
@@ -549,8 +548,8 @@ bool PIDController::IsEnabled()
 }
 
 /**
- * Reset the previous error,, the integral term, and disable the controller.
- */
+* Reset the previous error,, the integral term, and disable the controller.
+*/
 void PIDController::Reset()
 {
 	Disable();
@@ -604,7 +603,7 @@ void PIDController::ValueChanged(ITable* source, const std::string& key, EntryVa
 }
 
 void PIDController::UpdateTable() {
-	
+
 }
 
 void PIDController::StartLiveWindowMode() {
@@ -612,5 +611,5 @@ void PIDController::StartLiveWindowMode() {
 }
 
 void PIDController::StopLiveWindowMode() {
-	
+
 }

@@ -5,17 +5,15 @@
 /*----------------------------------------------------------------------------*/
 
 #include "ErrorBase.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "nivision.h"
 #define WPI_ERRORS_DEFINE_STRINGS
 #include "WPIErrors.h"
 
-#include <errnoLib.h>
-#include <symLib.h>
-#include <sysSymTbl.h>
 #include <cstdio>
 
-SEM_ID ErrorBase::_globalErrorMutex = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+ReentrantSemaphore ErrorBase::_globalErrorMutex = ReentrantSemaphore();
+
 Error ErrorBase::_globalError;
 /**
  * @brief Initialize the instance status to 0 for now.
@@ -60,22 +58,14 @@ void ErrorBase::SetErrnoError(const char *contextMessage,
 		const char* filename, const char* function, uint32_t lineNumber) const
 {
 	char err[256];
-	int errNo = errnoGet();
+	int errNo = errno;
 	if (errNo == 0)
 	{
 		sprintf(err, "OK: %s", contextMessage);
 	}
 	else
 	{
-		char *statName = new char[MAX_SYS_SYM_LEN + 1];
-		int pval;
-		SYM_TYPE ptype;
-		symFindByValue(statSymTbl, errNo, statName, &pval, &ptype);
-		if (pval != errNo)
-			snprintf(err, 256, "Unknown errno 0x%08X: %s", errNo, contextMessage);
-		else
-			snprintf(err, 256, "%s (0x%08X): %s", statName, errNo, contextMessage);
-		delete [] statName;
+		sprintf(err, "Stuffdowrong %d: %s", errNo, contextMessage);
 	}
 
 	//  Set the current error information for this object.
@@ -153,7 +143,7 @@ void ErrorBase::SetWPIError(const char *errorMessage, const char *contextMessage
 		const char* filename, const char* function, uint32_t lineNumber) const
 {
 	char err[256];
-	sprintf(err, "%s: %s", errorMessage, contextMessage);
+	sprintf_s(err, "%s: %s", errorMessage, contextMessage);
 
 	//  Set the current error information for this object.
 	m_error.Set(-1, err, filename, function, lineNumber, this);
@@ -196,7 +186,7 @@ void ErrorBase::SetGlobalWPIError(const char *errorMessage, const char *contextM
         const char* filename, const char* function, uint32_t lineNumber)
 {
 	char err[256];
-	sprintf(err, "%s: %s", errorMessage, contextMessage);
+	sprintf_s(err, "%s: %s", errorMessage, contextMessage);
 
 	Synchronized mutex(_globalErrorMutex);
 	if (_globalError.GetCode() != 0) {

@@ -21,17 +21,17 @@ class DriverStation;
 class Joystick : public GenericHID, public ErrorBase
 {
 public:
-	static const uint32_t kDefaultXAxis = 1;
-	static const uint32_t kDefaultYAxis = 2;
-	static const uint32_t kDefaultZAxis = 3;
-	static const uint32_t kDefaultTwistAxis = 4;
-	static const uint32_t kDefaultThrottleAxis = 3;
+	static const uint32_t kDefaultXAxis;
+	static const uint32_t kDefaultYAxis;
+	static const uint32_t kDefaultZAxis;
+	static const uint32_t kDefaultTwistAxis;
+	static const uint32_t kDefaultThrottleAxis;
+	static const uint32_t kDefaultTriggerButton;
+	static const uint32_t kDefaultTopButton;
 	typedef enum
 	{
 		kXAxis, kYAxis, kZAxis, kTwistAxis, kThrottleAxis, kNumAxisTypes
 	} AxisType;
-	static const uint32_t kDefaultTriggerButton = 1;
-	static const uint32_t kDefaultTopButton = 2;
 	typedef enum
 	{
 		kTriggerButton, kTopButton, kNumButtonTypes

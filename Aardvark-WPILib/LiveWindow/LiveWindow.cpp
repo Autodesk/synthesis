@@ -109,9 +109,7 @@ void LiveWindow::AddSensor(std::string type, int module, int channel, LiveWindow
 	std::ostringstream oss;
 	oss << type << "[" << module << "," << channel << "]";
 	std::string types(oss.str());
-	char* cc = new char[types.size() + 1];
-	types.copy(cc, types.size());
-	cc[types.size()]='\0';
+	const char* cc = types.c_str();
 	AddSensor("Ungrouped", cc, component);
 	if (std::find(m_sensors.begin(), m_sensors.end(), component) == m_sensors.end())
 		m_sensors.push_back(component);
@@ -125,9 +123,7 @@ void LiveWindow::AddActuator(std::string type, int module, int channel, LiveWind
 	std::ostringstream oss;
 	oss << type << "[" << module << "," << channel << "]";
 	std::string types(oss.str());
-	char* cc = new char[types.size() + 1];
-	types.copy(cc, types.size());
-	cc[types.size()]='\0';
+	const char* cc = types.c_str();
 	AddActuator("Ungrouped", cc, component);
 }
 

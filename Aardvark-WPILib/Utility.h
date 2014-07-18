@@ -6,8 +6,8 @@
 
 #ifndef UTILITY_H_
 #define UTILITY_H_
-
-#include <taskLib.h>
+#include <stdint.h>
+#include <stddef.h>
 
 #define wpi_assert(condition) wpi_assert_impl(condition, #condition, NULL, __FILE__, __LINE__, __FUNCTION__)
 #define wpi_assertWithMessage(condition, message) wpi_assert_impl(condition, #condition, message, __FILE__, __LINE__, __FUNCTION__)
@@ -18,24 +18,24 @@
 #define wpi_assertNotEqual(a, b) wpi_assertNotEqual_impl(a, b, NULL, __FILE__, __LINE__, __FUNCTION__)
 #define wpi_assertNotEqualWithMessage(a, b, message) wpi_assertNotEqual_impl(a, b, message, __FILE__, __LINE__, __FUNCTION__)
 
-bool wpi_assert_impl(bool conditionValue, const char *conditionText, const char *message, const char *fileName, uint32_t lineNumber, const char *funcName);
-bool wpi_assertEqual_impl(int valueA, int valueB, const char *message, const char *fileName,uint32_t lineNumber, const char *funcName);
-bool wpi_assertNotEqual_impl(int valueA, int valueB, const char *message, const char *fileName,uint32_t lineNumber, const char *funcName);
+extern bool wpi_assert_impl(bool conditionValue, const char *conditionText, const char *message, const char *fileName, uint32_t lineNumber, const char *funcName);
+extern bool wpi_assertEqual_impl(int valueA, int valueB, const char *message, const char *fileName,uint32_t lineNumber, const char *funcName);
+extern bool wpi_assertNotEqual_impl(int valueA, int valueB, const char *message, const char *fileName,uint32_t lineNumber, const char *funcName);
 
-char *wpi_getLabel(UINT addr, int32_t *found = NULL);
-void wpi_selfTrace();
-void wpi_suspendOnAssertEnabled(bool enabled);
-void wpi_stackTraceOnAssertEnable(bool enabled);
+extern char *wpi_getLabel(uint32_t addr, int32_t *found = NULL);
+extern void wpi_selfTrace();
+extern void wpi_suspendOnAssertEnabled(bool enabled);
+extern void wpi_stackTraceOnAssertEnable(bool enabled);
 
-uint16_t GetFPGAVersion();
-uint32_t GetFPGARevision();
-uint32_t GetFPGATime();
-int32_t GetRIOUserSwitch();
-void SetRIOUserLED(uint32_t state);
-int32_t GetRIOUserLED();
-int32_t ToggleRIOUserLED();
-void SetRIO_FPGA_LED(uint32_t state);
-int32_t GetRIO_FPGA_LED();
-int32_t ToggleRIO_FPGA_LED();
+extern uint16_t GetFPGAVersion();
+extern uint32_t GetFPGARevision();
+extern uint32_t GetFPGATime();
+extern int32_t GetRIOUserSwitch();
+extern void SetRIOUserLED(uint32_t state);
+extern int32_t GetRIOUserLED();
+extern int32_t ToggleRIOUserLED();
+extern void SetRIO_FPGA_LED(uint32_t state);
+extern int32_t GetRIO_FPGA_LED();
+extern int32_t ToggleRIO_FPGA_LED();
 
 #endif // UTILITY_H_

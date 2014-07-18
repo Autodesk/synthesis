@@ -7,8 +7,8 @@
 #ifndef GENERIC_HID_H
 #define GENERIC_HID_H
 
-#include <vxWorks.h>
 
+#include <stdint.h>
 /** GenericHID Interface
  */
 class GenericHID

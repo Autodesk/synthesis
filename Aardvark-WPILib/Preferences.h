@@ -8,29 +8,29 @@
 #define __PREFERENCES_H__
 
 #include "ErrorBase.h"
-#include "Task.h"
+#include "OSAL/Task.h"
 #include <map>
-#include <semLib.h>
+
 #include <string>
 #include <vector>
 #include "tables/ITableListener.h"
 #include "networktables/NetworkTable.h"
 
 /**
- * The preferences class provides a relatively simple way to save important values to
- * the cRIO to access the next time the cRIO is booted.
- *
- * <p>This class loads and saves from a file
- * inside the cRIO.  The user can not access the file directly, but may modify values at specific
- * fields which will then be saved to the file when {@link Preferences#Save() Save()} is called.</p>
- *
- * <p>This class is thread safe.</p>
- *
- * <p>This will also interact with {@link NetworkTable} by creating a table called "Preferences" with all the
- * key-value pairs.  To save using {@link NetworkTable}, simply set the boolean at position "~S A V E~" to true.
- * Also, if the value of any variable is " in the {@link NetworkTable}, then that represents non-existence in the
- * {@link Preferences} table</p>
- */
+* The preferences class provides a relatively simple way to save important values to
+* the cRIO to access the next time the cRIO is booted.
+*
+* <p>This class loads and saves from a file
+* inside the cRIO.  The user can not access the file directly, but may modify values at specific
+* fields which will then be saved to the file when {@link Preferences#Save() Save()} is called.</p>
+*
+* <p>This class is thread safe.</p>
+*
+* <p>This will also interact with {@link NetworkTable} by creating a table called "Preferences" with all the
+* key-value pairs.  To save using {@link NetworkTable}, simply set the boolean at position "~S A V E~" to true.
+* Also, if the value of any variable is " in the {@link NetworkTable}, then that represents non-existence in the
+* {@link Preferences} table</p>
+*/
 class Preferences : public ErrorBase, public ITableListener
 {
 public:
@@ -53,7 +53,7 @@ public:
 	void Save();
 	bool ContainsKey(const char *key);
 	void Remove(const char *key);
-	
+
 	void ValueChanged(ITable* source, const std::string& key, EntryValue value, bool isNew);
 
 protected:
@@ -67,17 +67,17 @@ private:
 	void ReadTaskRun();
 	void WriteTaskRun();
 
-	static int InitReadTask(Preferences *obj) {obj->ReadTaskRun();return 0;}
-	static int InitWriteTask(Preferences *obj) {obj->WriteTaskRun();return 0;}
+	static DWORD WINAPI InitReadTask(LPVOID  obj) {((Preferences*)obj)->ReadTaskRun();return 0;}
+	static DWORD WINAPI InitWriteTask(LPVOID obj) {((Preferences*)obj)->WriteTaskRun();return 0;}
 
 	static Preferences *_instance;
 
 	/** The semaphore for accessing the file */
-	SEM_ID m_fileLock;
+	ReentrantSemaphore m_fileLock;
 	/** The semaphore for beginning reads and writes to the file */
-	SEM_ID m_fileOpStarted;
+	ReentrantSemaphore m_fileOpStarted;
 	/** The semaphore for reading from the table */
-	SEM_ID m_tableLock;
+	ReentrantSemaphore m_tableLock;
 	typedef std::map<std::string, std::string> StringMap;
 	/** The actual values (String->String) */
 	StringMap m_values;

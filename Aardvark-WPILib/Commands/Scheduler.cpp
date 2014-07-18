@@ -9,21 +9,21 @@
 #include "Buttons/ButtonScheduler.h"
 #include "Commands/Subsystem.h"
 #include "NetworkCommunication/UsageReporting.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
 #include <iostream>
 #include <set>
-#include <semLib.h>
+
 #include <algorithm>
 
 Scheduler *Scheduler::_instance = NULL;
 
 Scheduler::Scheduler() :
-	m_buttonsLock(NULL), m_additionsLock(NULL), m_adding(false) {
-	m_buttonsLock = semMCreate(
-			SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
-	m_additionsLock = semMCreate(
-			SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+	m_buttonsLock(), m_additionsLock(), m_adding(false) {
+//	m_buttonsLock = semMCreate(
+//			SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+//	m_additionsLock = semMCreate(
+//			SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
 
 	nUsageReporting::report(nUsageReporting::kResourceType_Command,
 			nUsageReporting::kCommand_Scheduler);
@@ -33,11 +33,11 @@ Scheduler::Scheduler() :
 }
 
 Scheduler::~Scheduler() {
-	semTake(m_additionsLock, WAIT_FOREVER);
-	semDelete(m_additionsLock);
+	//m_additionsLock.take();
+	//semDelete(m_additionsLock);
 
-	semTake(m_buttonsLock, WAIT_FOREVER);
-	semDelete(m_buttonsLock);
+	//m_buttonsLock.take();
+	//semDelete(m_buttonsLock);
 }
 
 /**

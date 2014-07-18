@@ -9,7 +9,7 @@
 
 #include "ErrorBase.h"
 #include <stdlib.h>
-#include <vxWorks.h>
+
 #include "MotorSafety.h"
 #include "MotorSafetyHelper.h"
 

@@ -32,7 +32,7 @@ Notifier::Notifier(TimerEventHandler handler, void *param)
 	m_period = 0;
 	m_nextEvent = NULL;
 	m_queued = false;
-	m_handlerSemaphore = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	//m_handlerSemaphore = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	tRioStatusCode localStatus = NiFpga_Status_Success;
 	{
 		Synchronized sync(queueSemaphore);
@@ -76,9 +76,9 @@ Notifier::~Notifier()
 
 	// Acquire the semaphore; this makes certain that the handler is 
 	// not being executed by the interrupt manager.
-	semTake(m_handlerSemaphore, WAIT_FOREVER);
+	//m_handlerSemaphore.take();
 	// Delete while holding the semaphore so there can be no race.
-	semDelete(m_handlerSemaphore);
+	//semDelete(m_handlerSemaphore);
 }
 
 /**
@@ -135,11 +135,11 @@ void Notifier::ProcessQueue(uint32_t mask, void *params)
 			}
 			// Take handler semaphore while holding queue semaphore to make sure
 			//  the handler will execute to completion in case we are being deleted.
-			semTake(current->m_handlerSemaphore, WAIT_FOREVER);
+			current->m_handlerSemaphore.take();
 		}
 
 		current->m_handler(current->m_param);	// call the event handler
-		semGive(current->m_handlerSemaphore);
+		current->m_handlerSemaphore.give();
 	}
 	// reschedule the first item in the queue
 	Synchronized sync(queueSemaphore);

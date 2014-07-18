@@ -7,11 +7,10 @@
 #include "I2C.h"
 #include "DigitalModule.h"
 #include "NetworkCommunication/UsageReporting.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
-#include <taskLib.h>
 
-SEM_ID I2C::m_semaphore = NULL;
+ReentrantSemaphore I2C::m_semaphore;
 uint32_t I2C::m_objCount = 0;
 
 /**
@@ -25,10 +24,10 @@ I2C::I2C(DigitalModule *module, uint8_t deviceAddress)
 	, m_deviceAddress (deviceAddress)
 	, m_compatibilityMode (true)
 {
-	if (m_semaphore == NULL)
+	/*if (m_semaphore == NULL)
 	{
 		m_semaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
-	}
+	}*/
 	m_objCount++;
 
 	nUsageReporting::report(nUsageReporting::kResourceType_I2C, deviceAddress, module->GetNumber() - 1);
@@ -42,8 +41,8 @@ I2C::~I2C()
 	m_objCount--;
 	if (m_objCount <= 0)
 	{
-		semDelete(m_semaphore);
-		m_semaphore = NULL;
+		//semDelete(m_semaphore);
+		//m_semaphore = NULL;
 	}
 }
 
@@ -95,8 +94,8 @@ bool I2C::Transaction(uint8_t *dataToSend, uint8_t sendSize, uint8_t *dataReceiv
 		m_module->m_fpgaDIO->writeI2CConfig_BitwiseHandshake(m_compatibilityMode, &localStatus);
 		uint8_t transaction = m_module->m_fpgaDIO->readI2CStatus_Transaction(&localStatus);
 		m_module->m_fpgaDIO->strobeI2CStart(&localStatus);
-		while(transaction == m_module->m_fpgaDIO->readI2CStatus_Transaction(&localStatus)) taskDelay(1);
-		while(!m_module->m_fpgaDIO->readI2CStatus_Done(&localStatus)) taskDelay(1);
+		while(transaction == m_module->m_fpgaDIO->readI2CStatus_Transaction(&localStatus)) Sleep(1);
+		while(!m_module->m_fpgaDIO->readI2CStatus_Done(&localStatus)) Sleep(1);
 		aborted = m_module->m_fpgaDIO->readI2CStatus_Aborted(&localStatus);
 		if (receiveSize > 0) data = m_module->m_fpgaDIO->readI2CDataReceived(&localStatus);
 		if (receiveSize > sizeof(data)) dataHigh = m_module->m_fpgaDIO->readI2CStatus_DataReceivedHigh(&localStatus);

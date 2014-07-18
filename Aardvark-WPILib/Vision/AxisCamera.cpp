@@ -8,7 +8,7 @@
 
 #include <string.h>
 #include "NetworkCommunication/UsageReporting.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "Vision/PCVideoServer.h"
 #include "WPIErrors.h"
 
@@ -30,19 +30,21 @@ AxisCamera::AxisCamera(const char *ipAddress)
 	, m_protectedImageBuffer(NULL)
 	, m_protectedImageBufferLength(0)
 	, m_protectedImageSize(0)
-	, m_protectedImageSem(NULL)
+	, m_protectedImageSem()
 	, m_freshImage(false)
-	, m_imageStreamTask("cameraTask", (FUNCPTR)s_ImageStreamTaskFunction)
+	, m_imageStreamTask("cameraTask", s_ImageStreamTaskFunction)
 	, m_videoServer(NULL)
 {
-	m_protectedImageSem = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
 
-#if JAVA_CAMERA_LIB != 1
-	nUsageReporting::report(nUsageReporting::kResourceType_AxisCamera, ipAddress == NULL ? 1 : 2);
-#endif
+//#if JAVA_CAMERA_LIB != 1
+//	nUsageReporting::report(nUsageReporting::kResourceType_AxisCamera, ipAddress == NULL ? 1 : 2);
+//#endif
+//
+//	if (!StatusIsFatal())
+//		m_imageStreamTask.Start((int)this); 
 
-	if (!StatusIsFatal())
-		m_imageStreamTask.Start((int)this); 
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -50,7 +52,7 @@ AxisCamera::AxisCamera(const char *ipAddress)
  */
 AxisCamera::~AxisCamera()
 {
-	delete m_videoServer;
+	/*delete m_videoServer;
 	m_videoServer = NULL;
 
 	m_imageStreamTask.Stop();
@@ -64,7 +66,10 @@ AxisCamera::~AxisCamera()
 	}
 	m_newImageSemSet.clear();
 
-	semDelete(m_protectedImageSem);
+	semDelete(m_protectedImageSem);*/
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -74,14 +79,17 @@ AxisCamera::~AxisCamera()
  */
 AxisCamera &AxisCamera::GetInstance(const char *cameraIP)
 {
-	if (NULL == _instance)
-	{
-		_instance = new AxisCamera(cameraIP);
+	//if (NULL == _instance)
+	//{
+	//	_instance = new AxisCamera(cameraIP);
 
-		_instance->m_videoServer = new PCVideoServer();
-	}
+	//	_instance->m_videoServer = new PCVideoServer();
+	//}
 
-	return *_instance;
+	//return *_instance;
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -89,8 +97,11 @@ AxisCamera &AxisCamera::GetInstance(const char *cameraIP)
  */
 void AxisCamera::DeleteInstance()
 {
-	delete _instance;
-	_instance = NULL;
+	/*delete _instance;
+	_instance = NULL;*/
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -110,11 +121,14 @@ bool AxisCamera::IsFreshImage()
  * The semaphore is owned by the AxisCamera class and will be deleted when the class is destroyed.
  * @return A semaphore to notify when new image is received
  */
-SEM_ID AxisCamera::GetNewImageSem()
+ReentrantSemaphore AxisCamera::GetNewImageSem()
 {
-	SEM_ID sem = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
+	/*ReentrantSemaphore sem = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
 	m_newImageSemSet.insert(sem);
-	return sem;
+	return sem;*/
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -125,13 +139,16 @@ SEM_ID AxisCamera::GetNewImageSem()
  */
 int AxisCamera::GetImage(Image* imaqImage)
 {
-	if (m_protectedImageBuffer == NULL)
+	/*if (m_protectedImageBuffer == NULL)
 		return 0;
 	Synchronized sync(m_protectedImageSem);
 	Priv_ReadJPEGString_C(imaqImage,
 		(unsigned char*)m_protectedImageBuffer, m_protectedImageSize);
 	m_freshImage = false;
-	return 1;
+	return 1;*/
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 #if JAVA_CAMERA_LIB != 1
@@ -171,38 +188,41 @@ HSLImage* AxisCamera::GetImage()
  */
 int AxisCamera::CopyJPEG(char **destImage, int &destImageSize, int &destImageBufferSize)
 {
-	Synchronized sync(m_protectedImageSem);
-	if (destImage == NULL)
-		wpi_setWPIErrorWithContext(NullParameter, "destImage must not be NULL");
+	//Synchronized sync(m_protectedImageSem);
+	//if (destImage == NULL)
+	//	wpi_setWPIErrorWithContext(NullParameter, "destImage must not be NULL");
 
-	if (m_protectedImageBuffer == NULL || m_protectedImageSize <= 0)
-		return 0; // if no source image
+	//if (m_protectedImageBuffer == NULL || m_protectedImageSize <= 0)
+	//	return 0; // if no source image
 
-	if (destImageBufferSize < m_protectedImageSize) // if current destination buffer too small
-	{
-		if (*destImage != NULL) delete [] *destImage;
-		destImageBufferSize = m_protectedImageSize + kImageBufferAllocationIncrement;
-		*destImage = new char[destImageBufferSize];
-		if (*destImage == NULL) return 0;
-	}
-	// copy this image into destination buffer
-	if (*destImage == NULL)
-	{
-		wpi_setWPIErrorWithContext(NullParameter, "*destImage must not be NULL");
-	}
-	// TODO: Is this copy realy necessary... perhaps we can simply transmit while holding the protected buffer
-	memcpy(*destImage, m_protectedImageBuffer, m_protectedImageSize);
-	destImageSize = m_protectedImageSize;
-	return 1;
+	//if (destImageBufferSize < m_protectedImageSize) // if current destination buffer too small
+	//{
+	//	if (*destImage != NULL) delete [] *destImage;
+	//	destImageBufferSize = m_protectedImageSize + kImageBufferAllocationIncrement;
+	//	*destImage = new char[destImageBufferSize];
+	//	if (*destImage == NULL) return 0;
+	//}
+	//// copy this image into destination buffer
+	//if (*destImage == NULL)
+	//{
+	//	wpi_setWPIErrorWithContext(NullParameter, "*destImage must not be NULL");
+	//}
+	//// TODO: Is this copy realy necessary... perhaps we can simply transmit while holding the protected buffer
+	//memcpy(*destImage, m_protectedImageBuffer, m_protectedImageSize);
+	//destImageSize = m_protectedImageSize;
+	//return 1;
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
  * Static interface that will cause an instantiation if necessary.
  * This static stub is directly spawned as a task to read images from the camera.
  */
-int AxisCamera::s_ImageStreamTaskFunction(AxisCamera *thisPtr)
+DWORD WINAPI AxisCamera::s_ImageStreamTaskFunction(LPVOID thisPtr)
 {
-	return thisPtr->ImageStreamTaskFunction();
+	return ((AxisCamera*)thisPtr)->ImageStreamTaskFunction();
 }
 
 /**
@@ -212,29 +232,32 @@ int AxisCamera::s_ImageStreamTaskFunction(AxisCamera *thisPtr)
  */
 int AxisCamera::ImageStreamTaskFunction()
 {
-	// Loop on trying to setup the camera connection. This happens in a background
-	// thread so it shouldn't effect the operation of user programs.
-	while (1)
-	{
-		const char *requestString = "GET /mjpg/video.mjpg HTTP/1.1\n\
-User-Agent: HTTPStreamClient\n\
-Connection: Keep-Alive\n\
-Cache-Control: no-cache\n\
-Authorization: Basic RlJDOkZSQw==\n\n";
-		semTake(m_socketPossessionSem, WAIT_FOREVER);
-		m_cameraSocket = CreateCameraSocket(requestString);
-		if (m_cameraSocket == ERROR)
-		{
-			// Don't hammer the camera if it isn't ready.
-			semGive(m_socketPossessionSem);
-			taskDelay(1000);
-		}
-		else
-		{
-			ReadImagesFromCamera();
-		}
-	}
-	return 0;
+//	// Loop on trying to setup the camera connection. This happens in a background
+//	// thread so it shouldn't effect the operation of user programs.
+//	while (1)
+//	{
+//		const char *requestString = "GET /mjpg/video.mjpg HTTP/1.1\n\
+//User-Agent: HTTPStreamClient\n\
+//Connection: Keep-Alive\n\
+//Cache-Control: no-cache\n\
+//Authorization: Basic RlJDOkZSQw==\n\n";
+//		m_socketPossessionSem.take();
+//		m_cameraSocket = CreateCameraSocket(requestString);
+//		if (m_cameraSocket == ERROR)
+//		{
+//			// Don't hammer the camera if it isn't ready.
+//			m_socketPossessionSem.give();
+//			taskDelay(1000);
+//		}
+//		else
+//		{
+//			ReadImagesFromCamera();
+//		}
+//	}
+//	return 0;
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -242,87 +265,90 @@ Authorization: Basic RlJDOkZSQw==\n\n";
  */
 int AxisCamera::ReadImagesFromCamera()
 {
-	char *imgBuffer = NULL;
-	int imgBufferLength = 0;
-	//Infinite loop, task deletion handled by taskDeleteHook
-	// Socket cleanup handled by destructor
+	//char *imgBuffer = NULL;
+	//int imgBufferLength = 0;
+	////Infinite loop, task deletion handled by taskDeleteHook
+	//// Socket cleanup handled by destructor
 
-	// TODO: these recv calls must be non-blocking. Otherwise if the camera
-	// fails during a read, the code hangs and never retries when the camera comes
-	// back up.
+	//// TODO: these recv calls must be non-blocking. Otherwise if the camera
+	//// fails during a read, the code hangs and never retries when the camera comes
+	//// back up.
 
-	int counter = 2;
-	while (1)
-	{
-		char initialReadBuffer[kMaxPacketSize] = "";
-		char intermediateBuffer[1];
-		char *trailingPtr = initialReadBuffer;
-		int trailingCounter = 0;
-		while (counter)
-		{
-			// TODO: fix me... this cannot be the most efficient way to approach this, reading one byte at a time.
-			if(recv(m_cameraSocket, intermediateBuffer, 1, 0) == ERROR)
-			{
-				wpi_setErrnoErrorWithContext("Failed to read image header");
-				close (m_cameraSocket);
-				return ERROR;
-			}
-			strncat(initialReadBuffer, intermediateBuffer, 1);
-			// trailingCounter ensures that we start looking for the 4 byte string after
-			// there is at least 4 bytes total. Kind of obscure.
-			// look for 2 blank lines (\r\n)
-			if (NULL != strstr(trailingPtr, "\r\n\r\n"))
-			{
-				--counter;
-			}
-			if (++trailingCounter >= 4)
-			{
-				trailingPtr++;
-			}
-		}
-		counter = 1;
-		char *contentLength = strstr(initialReadBuffer, "Content-Length: ");
-		if (contentLength == NULL)
-		{
-			wpi_setWPIErrorWithContext(IncompatibleMode, "No content-length token found in packet");
-			close(m_cameraSocket);
-			return ERROR;
-		}
-		contentLength = contentLength + 16; // skip past "content length"
-		int readLength = atol(contentLength); // get the image byte count
+	//int counter = 2;
+	//while (1)
+	//{
+	//	char initialReadBuffer[kMaxPacketSize] = "";
+	//	char intermediateBuffer[1];
+	//	char *trailingPtr = initialReadBuffer;
+	//	int trailingCounter = 0;
+	//	while (counter)
+	//	{
+	//		// TODO: fix me... this cannot be the most efficient way to approach this, reading one byte at a time.
+	//		if(recv(m_cameraSocket, intermediateBuffer, 1, 0) == ERROR)
+	//		{
+	//			wpi_setErrnoErrorWithContext("Failed to read image header");
+	//			close (m_cameraSocket);
+	//			return ERROR;
+	//		}
+	//		strncat(initialReadBuffer, intermediateBuffer, 1);
+	//		// trailingCounter ensures that we start looking for the 4 byte string after
+	//		// there is at least 4 bytes total. Kind of obscure.
+	//		// look for 2 blank lines (\r\n)
+	//		if (NULL != strstr(trailingPtr, "\r\n\r\n"))
+	//		{
+	//			--counter;
+	//		}
+	//		if (++trailingCounter >= 4)
+	//		{
+	//			trailingPtr++;
+	//		}
+	//	}
+	//	counter = 1;
+	//	char *contentLength = strstr(initialReadBuffer, "Content-Length: ");
+	//	if (contentLength == NULL)
+	//	{
+	//		wpi_setWPIErrorWithContext(IncompatibleMode, "No content-length token found in packet");
+	//		close(m_cameraSocket);
+	//		return ERROR;
+	//	}
+	//	contentLength = contentLength + 16; // skip past "content length"
+	//	int readLength = atol(contentLength); // get the image byte count
 
-		// Make sure buffer is large enough
-		if (imgBufferLength < readLength)
-		{
-			if (imgBuffer) delete[] imgBuffer;
-			imgBufferLength = readLength + kImageBufferAllocationIncrement;
-			imgBuffer = new char[imgBufferLength];
-			if (imgBuffer == NULL)
-			{
-				imgBufferLength = 0;
-				continue;
-			}
-		}
+	//	// Make sure buffer is large enough
+	//	if (imgBufferLength < readLength)
+	//	{
+	//		if (imgBuffer) delete[] imgBuffer;
+	//		imgBufferLength = readLength + kImageBufferAllocationIncrement;
+	//		imgBuffer = new char[imgBufferLength];
+	//		if (imgBuffer == NULL)
+	//		{
+	//			imgBufferLength = 0;
+	//			continue;
+	//		}
+	//	}
 
-		// Read the image data for "Content-Length" bytes
-		int bytesRead = 0;
-		int remaining = readLength;
-		while(bytesRead < readLength)
-		{
-			int bytesThisRecv = recv(m_cameraSocket, &imgBuffer[bytesRead], remaining, 0);
-			bytesRead += bytesThisRecv;
-			remaining -= bytesThisRecv;
-		}
-		// Update image
-		UpdatePublicImageFromCamera(imgBuffer, readLength);
-		if (semTake(m_paramChangedSem, NO_WAIT) == OK)
-		{
-			// params need to be updated: close the video stream; release the camera.
-			close(m_cameraSocket);
-			semGive(m_socketPossessionSem);
-			return 0;
-		}
-	}
+	//	// Read the image data for "Content-Length" bytes
+	//	int bytesRead = 0;
+	//	int remaining = readLength;
+	//	while(bytesRead < readLength)
+	//	{
+	//		int bytesThisRecv = recv(m_cameraSocket, &imgBuffer[bytesRead], remaining, 0);
+	//		bytesRead += bytesThisRecv;
+	//		remaining -= bytesThisRecv;
+	//	}
+	//	// Update image
+	//	UpdatePublicImageFromCamera(imgBuffer, readLength);
+	//	if (m_paramChangedSem.takeImmediate())
+	//	{
+	//		// params need to be updated: close the video stream; release the camera.
+	//		close(m_cameraSocket);
+	//		m_socketPossessionSem.give();
+	//		return 0;
+	//	}
+	//}
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -332,34 +358,37 @@ int AxisCamera::ReadImagesFromCamera()
  */
 void AxisCamera::UpdatePublicImageFromCamera(char *imgBuffer, int imgSize)
 {
-	{
-		Synchronized sync(m_protectedImageSem);
+	//{
+	//	Synchronized sync(m_protectedImageSem);
 
-		// Adjust the buffer size if current destination buffer is too small.
-		if (m_protectedImageBufferLength < imgSize)
-		{
-			if (m_protectedImageBuffer != NULL) delete [] m_protectedImageBuffer;
-			m_protectedImageBufferLength = imgSize + kImageBufferAllocationIncrement;
-			m_protectedImageBuffer = new char[m_protectedImageBufferLength];
-			if (m_protectedImageBuffer == NULL)
-			{
-				m_protectedImageBufferLength = 0;
-				return;
-			}
-		}
+	//	// Adjust the buffer size if current destination buffer is too small.
+	//	if (m_protectedImageBufferLength < imgSize)
+	//	{
+	//		if (m_protectedImageBuffer != NULL) delete [] m_protectedImageBuffer;
+	//		m_protectedImageBufferLength = imgSize + kImageBufferAllocationIncrement;
+	//		m_protectedImageBuffer = new char[m_protectedImageBufferLength];
+	//		if (m_protectedImageBuffer == NULL)
+	//		{
+	//			m_protectedImageBufferLength = 0;
+	//			return;
+	//		}
+	//	}
 
-		memcpy(m_protectedImageBuffer, imgBuffer, imgSize);
-		m_protectedImageSize = imgSize;
-	}
+	//	memcpy(m_protectedImageBuffer, imgBuffer, imgSize);
+	//	m_protectedImageSize = imgSize;
+	//}
 
-	m_freshImage = true;
-	// Notify everyone who is interested.
-	SemSet_t::iterator it = m_newImageSemSet.begin();
-	SemSet_t::iterator end = m_newImageSemSet.end();
-	for (;it != end; it++)
-	{
-		semGive(*it);
-	}
+	//m_freshImage = true;
+	//// Notify everyone who is interested.
+	//SemSet_t::iterator it = m_newImageSemSet.begin();
+	//SemSet_t::iterator end = m_newImageSemSet.end();
+	//for (;it != end; it++)
+	//{
+	//	(*it).give();
+	//}
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 /**
@@ -367,8 +396,11 @@ void AxisCamera::UpdatePublicImageFromCamera(char *imgBuffer, int imgSize)
  */
 void AxisCamera::RestartCameraTask()
 {
-	m_imageStreamTask.Stop();
-	m_imageStreamTask.Start((int)this);
+	/*m_imageStreamTask.Stop();
+	m_imageStreamTask.Start((int)this);*/
+
+	fprintf(stderr, "NO Axis Camera Support\n");
+	exit(1);
 }
 
 #if JAVA_CAMERA_LIB == 1

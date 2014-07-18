@@ -7,8 +7,6 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include <vxWorks.h>
-
 /**
  * Interface for Controllers
  * Common interface for controllers. Controllers run control loops, the most common

@@ -20,6 +20,7 @@
 #define __AXISCAMERA_H__
 
 #include "nivision.h"
+#include <stdint.h>
 
 /** port for communicating with camera */
 #define CAMERA_PORT 80

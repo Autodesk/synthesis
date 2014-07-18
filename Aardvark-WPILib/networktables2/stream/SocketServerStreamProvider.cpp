@@ -9,36 +9,10 @@
 #include "networktables2/stream/FDIOStream.h"
 #include "networktables2/util/IOException.h"
 
-#include <strings.h>
+#include <string.h>
 #include <cstring>
 #include <errno.h>
-#ifdef _WRS_KERNEL
-#include <inetLib.h>
-#include <selectLib.h>
-#include <sockLib.h>
-#include <taskLib.h>
-#include <usrLib.h>
-#include <ioLib.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#else
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
-#ifdef WIN32
 #include <windows.h>
-#include <winsock.h>
-#include <winsock2.h>
-#include <wininet.h>
-#include <ws2tcpip.h>
-#else
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#endif
-#endif
 
 #ifndef _WRS_KERNEL
 #define ERROR -1
@@ -75,13 +49,13 @@ SocketServerStreamProvider::SocketServerStreamProvider(int port){
 	// Bind socket to local address.
 	if (bind(serverSocket, (struct sockaddr *)&serverAddr, sockAddrSize) == ERROR)
 	{
-		::close(serverSocket);
+		::closesocket(serverSocket);
 		throw IOException("Could not bind server socket", errno);
 	}
 
 	if (listen(serverSocket, 1) == ERROR)
 	{
-		::close(serverSocket);
+		::closesocket(serverSocket);
 		throw IOException("Could not listen on server socket", errno);
 	}
 }
@@ -123,5 +97,5 @@ IOStream* SocketServerStreamProvider::accept(){
 }
 
 void SocketServerStreamProvider::close(){
-	::close(serverSocket);
+	::closesocket(serverSocket);
 }

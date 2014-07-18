@@ -6,8 +6,10 @@
 
 #include "SolenoidBase.h"
 
+#include "OSAL/Synchronized.h"
+
 // Needs to be global since the protected resource spans all Solenoid objects.
-ReentrantSemaphore SolenoidBase::m_semaphore;
+ReentrantSemaphore SolenoidBase::m_semaphore = ReentrantSemaphore();
 Resource *SolenoidBase::m_allocated = NULL;
 
 tSolenoid *SolenoidBase::m_fpgaSolenoidModule = NULL;

@@ -9,18 +9,19 @@
 #include "NetworkCommunication/UsageReporting.h"
 #include "I2C.h"
 
-const uint8_t ADXL345_I2C::kAddress;
-const uint8_t ADXL345_I2C::kPowerCtlRegister;
-const uint8_t ADXL345_I2C::kDataFormatRegister;
-const uint8_t ADXL345_I2C::kDataRegister;
-constexpr double ADXL345_I2C::kGsPerLSB;
+
+const uint8_t ADXL345_I2C::kAddress = 0x3A;
+const uint8_t ADXL345_I2C::kPowerCtlRegister = 0x2D;
+const uint8_t ADXL345_I2C::kDataFormatRegister = 0x31;
+const uint8_t ADXL345_I2C::kDataRegister = 0x32;
+const double ADXL345_I2C::kGsPerLSB = 0.00390625;
 
 /**
- * Constructor.
- * 
- * @param moduleNumber The digital module that the sensor is plugged into (1 or 2).
- * @param range The range (+ or -) that the accelerometer will measure.
- */
+* Constructor.
+* 
+* @param moduleNumber The digital module that the sensor is plugged into (1 or 2).
+* @param range The range (+ or -) that the accelerometer will measure.
+*/
 ADXL345_I2C::ADXL345_I2C(uint8_t moduleNumber, ADXL345_I2C::DataFormat_Range range)
 	: m_i2c (NULL)
 {
@@ -39,8 +40,8 @@ ADXL345_I2C::ADXL345_I2C(uint8_t moduleNumber, ADXL345_I2C::DataFormat_Range ran
 }
 
 /**
- * Destructor.
- */
+* Destructor.
+*/
 ADXL345_I2C::~ADXL345_I2C()
 {
 	delete m_i2c;
@@ -48,11 +49,11 @@ ADXL345_I2C::~ADXL345_I2C()
 }
 
 /**
- * Get the acceleration of one axis in Gs.
- * 
- * @param axis The axis to read from.
- * @return Acceleration of the ADXL345 in Gs.
- */
+* Get the acceleration of one axis in Gs.
+* 
+* @param axis The axis to read from.
+* @return Acceleration of the ADXL345 in Gs.
+*/
 double ADXL345_I2C::GetAcceleration(ADXL345_I2C::Axes axis)
 {
 	int16_t rawAccel = 0;
@@ -67,10 +68,10 @@ double ADXL345_I2C::GetAcceleration(ADXL345_I2C::Axes axis)
 }
 
 /**
- * Get the acceleration of all axes in Gs.
- * 
- * @return Acceleration measured on all axes of the ADXL345 in Gs.
- */
+* Get the acceleration of all axes in Gs.
+* 
+* @return Acceleration measured on all axes of the ADXL345 in Gs.
+*/
 ADXL345_I2C::AllAxes ADXL345_I2C::GetAccelerations()
 {
 	AllAxes data = {0.0};

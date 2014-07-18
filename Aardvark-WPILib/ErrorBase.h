@@ -10,8 +10,8 @@
 #include "Base.h"
 #include "ChipObject/NiRio.h"
 #include "Error.h"
-#include <semLib.h>
-#include <vxWorks.h>
+#include "OSAL/Synchronized.h"
+
 
 #define wpi_setErrnoErrorWithContext(context)   (this->SetErrnoError((context), __FILE__, __FUNCTION__, __LINE__))
 #define wpi_setErrnoError()   (wpi_setErrnoErrorWithContext(""))
@@ -60,7 +60,7 @@ public:
 protected:
 	mutable Error m_error;
 	// TODO: Replace globalError with a global list of all errors.
-	static SEM_ID _globalErrorMutex;
+	static NTReentrantSemaphore _globalErrorMutex;
 	static Error _globalError;
 	ErrorBase();
 private:

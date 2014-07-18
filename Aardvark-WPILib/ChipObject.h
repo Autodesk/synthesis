@@ -7,7 +7,6 @@
 #ifndef __ChipObject_h__
 #define __ChipObject_h__
 
-#include <vxWorks.h>
 #include "ChipObject/NiRio.h"
 
 #include "ChipObject/tAccumulator.h"

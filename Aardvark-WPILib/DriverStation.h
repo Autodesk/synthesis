@@ -10,7 +10,7 @@
 #include "Dashboard.h"
 #include "DriverStationEnhancedIO.h"
 #include "SensorBase.h"
-#include "Task.h"
+#include "OSAL/Task.h"
 
 struct FRCCommonControlData;
 class AnalogChannel;
@@ -75,7 +75,7 @@ public:
 	DriverStationEnhancedIO& GetEnhancedIO() { return m_enhancedIO; }
 
 	void IncrementUpdateNumber() { m_updateNumber++; }
-	SEM_ID GetUserStatusDataSem() { return m_statusDataSemaphore; }
+	ReentrantSemaphore GetUserStatusDataSem() { return m_statusDataSemaphore; }
 
 	/** Only to be used to tell the Driver Station what code you claim to be executing
 	 *   for diagnostic purposes only
@@ -101,27 +101,27 @@ protected:
 	void SetData();
 
 private:
-	static void InitTask(DriverStation *ds);
+	static DWORD WINAPI InitTask(LPVOID ds);
 	static DriverStation *m_instance;
 	static uint8_t m_updateNumber;
 	///< TODO: Get rid of this and use the semaphore signaling
-	static constexpr float kUpdatePeriod = 0.02;
+	static const float kUpdatePeriod;
 
 	void Run();
 
 	struct FRCCommonControlData *m_controlData;
 	uint8_t m_digitalOut;
 	AnalogChannel *m_batteryChannel;
-	SEM_ID m_statusDataSemaphore;
+	ReentrantSemaphore m_statusDataSemaphore;
 	Task m_task;
 	Dashboard m_dashboardHigh;  // the default dashboard packers
 	Dashboard m_dashboardLow;
 	DashboardBase* m_dashboardInUseHigh;  // the current dashboard packers in use
 	DashboardBase* m_dashboardInUseLow;
-	SEM_ID m_newControlData;
-	SEM_ID m_packetDataAvailableSem;
+	ReentrantSemaphore m_newControlData;
+	ReentrantSemaphore m_packetDataAvailableSem;
 	DriverStationEnhancedIO m_enhancedIO;
-	SEM_ID m_waitForDataSem;
+	ReentrantSemaphore m_waitForDataSem;
 	double m_approxMatchTimeOffset;
 	bool m_userInDisabled;
 	bool m_userInAutonomous;

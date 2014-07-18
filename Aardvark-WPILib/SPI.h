@@ -67,7 +67,7 @@ public:
 	virtual void ClearReceivedData();
 
 protected:
-	static SEM_ID m_semaphore;
+	static ReentrantSemaphore m_semaphore;
 
 	tSPI* m_spi;
 	tSPI::tConfig m_config;

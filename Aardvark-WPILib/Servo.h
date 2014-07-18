@@ -44,8 +44,8 @@ private:
 	void InitServo();
 	float GetServoAngleRange() {return kMaxServoAngle - kMinServoAngle;}
 
-	static constexpr float kMaxServoAngle = 170.0;
-	static constexpr float kMinServoAngle = 0.0;
+	static const float kMaxServoAngle;
+	static const float kMinServoAngle;
 };
 
 #endif

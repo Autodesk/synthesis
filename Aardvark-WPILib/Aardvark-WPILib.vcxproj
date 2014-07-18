@@ -45,6 +45,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -196,10 +197,8 @@
     <ClCompile Include="Solenoid.cpp" />
     <ClCompile Include="SolenoidBase.cpp" />
     <ClCompile Include="SPI.cpp" />
-    <ClCompile Include="Synchronized.cpp" />
     <ClCompile Include="tables\TableKeyNotDefinedException.cpp" />
     <ClCompile Include="Talon.cpp" />
-    <ClCompile Include="Task.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Ultrasonic.cpp" />
     <ClCompile Include="Utility.cpp" />
@@ -251,7 +250,6 @@
     <ClInclude Include="CAN\JaguarCANDriver.h" />
     <ClInclude Include="ChipObject.h" />
     <ClInclude Include="ChipObject\chipObjectAliases.h" />
-    <ClInclude Include="ChipObject\fpgainterfacecapi\NiFpga.h" />
     <ClInclude Include="ChipObject\NiFpga.h" />
     <ClInclude Include="ChipObject\NiRio.h" />
     <ClInclude Include="ChipObject\printFpgaVersion.h" />
@@ -414,7 +412,6 @@
     <ClInclude Include="SolenoidBase.h" />
     <ClInclude Include="SpeedController.h" />
     <ClInclude Include="SPI.h" />
-    <ClInclude Include="Synchronized.h" />
     <ClInclude Include="tables\IRemote.h" />
     <ClInclude Include="tables\IRemoteConnectionListener.h" />
     <ClInclude Include="tables\ITable.h" />
@@ -422,7 +419,6 @@
     <ClInclude Include="tables\ITableProvider.h" />
     <ClInclude Include="tables\TableKeyNotDefinedException.h" />
     <ClInclude Include="Talon.h" />
-    <ClInclude Include="Task.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Ultrasonic.h" />
     <ClInclude Include="Utility.h" />

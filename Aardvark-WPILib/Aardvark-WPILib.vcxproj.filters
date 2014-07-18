@@ -171,13 +171,7 @@
     <ClCompile Include="SPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Synchronized.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Talon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
@@ -683,13 +677,7 @@
     <ClInclude Include="SPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Synchronized.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Talon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Task.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
@@ -756,9 +744,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CAN\JaguarCANDriver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\fpgainterfacecapi\NiFpga.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChipObject\chipObjectAliases.h">

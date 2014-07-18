@@ -7,8 +7,8 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-#include "semLib.h"
 #include "Base.h"
+#include "OSAL\Synchronized.h"
 
 typedef void (*TimerInterruptHandler)(void *param);
 
@@ -42,7 +42,7 @@ private:
 	double m_startTime;
 	double m_accumulatedTime;
 	bool m_running;
-	SEM_ID m_semaphore;
+	NTReentrantSemaphore m_semaphore;
 	DISALLOW_COPY_AND_ASSIGN(Timer);
 };
 

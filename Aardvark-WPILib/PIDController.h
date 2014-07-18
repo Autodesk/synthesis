@@ -8,7 +8,6 @@
 #define PIDCONTROLLER_H_
 
 #include "Base.h"
-#include "semLib.h"
 #include "Controller.h"
 #include "LiveWindow/LiveWindow.h"
 
@@ -82,7 +81,7 @@ private:
 	float m_result;
 	float m_period;
 	
-	SEM_ID m_semaphore;
+	ReentrantSemaphore m_semaphore;
 	
 	PIDSource *m_pidInput;
 	PIDOutput *m_pidOutput;

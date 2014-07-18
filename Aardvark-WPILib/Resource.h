@@ -8,8 +8,8 @@
 #define RESOURCE_H_
 
 #include "ErrorBase.h"
-#include "Synchronized.h"
-#include <vxWorks.h>
+#include "OSAL/Synchronized.h"
+
 
 /**
  * The Resource class is a convenient way to track allocated resources.

@@ -8,10 +8,10 @@
 #include "I2C.h"
 #include "PWM.h"
 #include "Resource.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
 #include <math.h>
-#include <taskLib.h>
+#include "OSAL/Task.h"
 
 static Resource *DIOChannels = NULL;
 static Resource *DO_PWMGenerators[tDIO::kNumSystems] = {NULL};
@@ -32,7 +32,7 @@ DigitalModule* DigitalModule::GetInstance(uint8_t moduleNumber)
 
 	// If this wasn't caught before now, make sure we say what's wrong before we crash
 	char buf[64];
-	snprintf(buf, 64, "Digital Module %d", moduleNumber);
+	sprintf_s(buf, "Digital Module %d", moduleNumber);
 	wpi_setGlobalWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 
 	return NULL;
@@ -59,12 +59,12 @@ DigitalModule::DigitalModule(uint8_t moduleNumber)
 	wpi_setError(localStatus);
 
 	// Make sure that the 9403 IONode has had a chance to initialize before continuing.
-	while(m_fpgaDIO->readLoopTiming(&localStatus) == 0) taskDelay(1);
+	while(m_fpgaDIO->readLoopTiming(&localStatus) == 0) Sleep(1);//taskDelay(1);
 	
 	if (m_fpgaDIO->readLoopTiming(&localStatus) != kExpectedLoopTiming)
 	{
 		char err[128];
-		sprintf(err, "DIO LoopTiming: %d, expecting: %lu\n", m_fpgaDIO->readLoopTiming(&localStatus), kExpectedLoopTiming);
+		sprintf_s(err, "DIO LoopTiming: %d, expecting: %lu\n", m_fpgaDIO->readLoopTiming(&localStatus), kExpectedLoopTiming);
 		wpi_setWPIErrorWithContext(LoopTimingError, err);
 	}
 	
@@ -87,25 +87,25 @@ DigitalModule::DigitalModule(uint8_t moduleNumber)
 	wpi_setError(localStatus);
 
 	// Create a semaphore to protect changes to the digital output values
-	m_digitalSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+//	m_digitalSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
 
 	// Create a semaphore to protect changes to the relay values
-	m_relaySemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+//	m_relaySemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
 
 	// Create a semaphore to protect changes to the DO PWM config
-	m_doPwmSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
+//	m_doPwmSemaphore = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE);
 
 	AddToSingletonList();
 }
 
 DigitalModule::~DigitalModule()
 {
-	semDelete(m_doPwmSemaphore);
-	m_doPwmSemaphore = NULL;
-	semDelete(m_relaySemaphore);
-	m_relaySemaphore = NULL;
-	semDelete(m_digitalSemaphore);
-	m_digitalSemaphore = NULL;
+	//semDelete(m_doPwmSemaphore);
+	//m_doPwmSemaphore = NULL;
+	//semDelete(m_relaySemaphore);
+	//m_relaySemaphore = NULL;
+	//semDelete(m_digitalSemaphore);
+	//m_digitalSemaphore = NULL;
 	delete m_fpgaDIO;
 }
 
@@ -252,7 +252,7 @@ uint8_t DigitalModule::GetRelayReverse()
 bool DigitalModule::AllocateDIO(uint32_t channel, bool input)
 {
 	char buf[64];
-	snprintf(buf, 64, "DIO %lu (Module %d)", channel, m_moduleNumber);
+	sprintf_s(buf, 64, "DIO %lu (Module %d)", channel, m_moduleNumber);
 	if (DIOChannels->Allocate(kDigitalChannels * (m_moduleNumber - 1) + channel - 1, buf) == ~0ul) return false;
 	tRioStatusCode localStatus = NiFpga_Status_Success;
 	{
@@ -433,7 +433,7 @@ bool DigitalModule::IsPulsing()
 uint32_t DigitalModule::AllocateDO_PWM()
 {
 	char buf[64];
-	snprintf(buf, 64, "DO_PWM (Module: %d)", m_moduleNumber);
+	sprintf_s(buf, 64, "DO_PWM (Module: %d)", m_moduleNumber);
 	return DO_PWMGenerators[(m_moduleNumber - 1)]->Allocate(buf);
 }
 

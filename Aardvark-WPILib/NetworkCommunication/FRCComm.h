@@ -14,13 +14,10 @@
 #ifndef __FRC_COMM_H__
 #define __FRC_COMM_H__
 
-#ifdef SIMULATION
-#include <vxWorks_compat.h>
-#define EXPORT_FUNC __declspec(dllexport) __cdecl
-#else
-#include <vxWorks.h>
-#define EXPORT_FUNC
-#endif
+#include <stdint.h>
+#include "OSAL/Synchronized.h"
+
+#define EXPORT_FUNC extern
 
 // Commandeer some bytes at the end for advanced I/O feedback.
 #define IO_CONFIG_DATA_SIZE 32
@@ -32,18 +29,6 @@ struct FRCCommonControlData{
 	uint16_t packetIndex;
 	union {
 		uint8_t control;
-#ifdef SIMULATION
-		struct {
-			uint8_t checkVersions :1;
-			uint8_t test :1;
-			uint8_t resync : 1;
-			uint8_t fmsAttached:1;
-			uint8_t autonomous : 1;
-			uint8_t enabled : 1;
-			uint8_t notEStop : 1;
-			uint8_t reset : 1;
-		};
-#else
 		struct {
 			uint8_t reset : 1;
 			uint8_t notEStop : 1;
@@ -54,7 +39,6 @@ struct FRCCommonControlData{
 			uint8_t test :1;
 			uint8_t checkVersions :1;
 		};
-#endif
 	};
 	uint8_t dsDigitalIn;
 	uint16_t teamID;
@@ -120,7 +104,7 @@ struct FRCCommonControlData{
 	uint16_t analog3;
 	uint16_t analog4;
 
-	UINT64 cRIOChecksum;
+	uint64_t cRIOChecksum;
 	uint32_t FPGAChecksum0;
 	uint32_t FPGAChecksum1;
 	uint32_t FPGAChecksum2;
@@ -140,9 +124,7 @@ struct FRCCommonControlData{
 #define kFRC_NetworkCommunication_DynamicType_Kinect_Custom 25
 
 extern "C" {
-#ifndef SIMULATION
 	void EXPORT_FUNC getFPGAHardwareVersion(uint16_t *fpgaVersion, uint32_t *fpgaRevision);
-#endif
 	int EXPORT_FUNC getCommonControlData(FRCCommonControlData *data, int wait_ms);
 	int EXPORT_FUNC getRecentCommonControlData(FRCCommonControlData *commonData, int wait_ms);
 	int EXPORT_FUNC getRecentStatusData(uint8_t *batteryInt, uint8_t *batteryDec, uint8_t *dsDigitalOut, int wait_ms);
@@ -157,17 +139,13 @@ extern "C" {
 	int EXPORT_FUNC setUserDsLcdData(const char *userDsLcdData, int userDsLcdDataLength, int wait_ms);
 	int EXPORT_FUNC overrideIOConfig(const char *ioConfig, int wait_ms);
 
-	void EXPORT_FUNC setNewDataSem(SEM_ID);
-#ifndef SIMULATION
-	void EXPORT_FUNC setResyncSem(SEM_ID);
+	void EXPORT_FUNC setNewDataSem(ReentrantSemaphore*);
+	void EXPORT_FUNC setResyncSem(ReentrantSemaphore*);
 	void EXPORT_FUNC signalResyncActionDone(void);
-#endif
 
 	// this uint32_t is really a LVRefNum
 	void EXPORT_FUNC setNewDataOccurRef(uint32_t refnum);
-#ifndef SIMULATION
 	void EXPORT_FUNC setResyncOccurRef(uint32_t refnum);
-#endif
 
 	void EXPORT_FUNC FRC_NetworkCommunication_getVersionString(char *version);
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramStarting(void);

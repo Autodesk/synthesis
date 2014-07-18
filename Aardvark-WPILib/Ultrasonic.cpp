@@ -15,14 +15,14 @@
 #include "WPIErrors.h"
 #include "LiveWindow/LiveWindow.h"
 
-constexpr double Ultrasonic::kPingTime;	///< Time (sec) for the ping trigger pulse.
-const uint32_t Ultrasonic::kPriority;	///< Priority that the ultrasonic round robin task runs.
-constexpr double Ultrasonic::kMaxUltrasonicTime;	///< Max time (ms) between readings.
-constexpr double Ultrasonic::kSpeedOfSoundInchesPerSec;
-Task Ultrasonic::m_task("UltrasonicChecker", (FUNCPTR)UltrasonicChecker); // task doing the round-robin automatic sensing
+const double Ultrasonic::kPingTime = 10.0e-6;	///< Time (sec) for the ping trigger pulse.
+const uint32_t Ultrasonic::kPriority = 90;	///< Priority that the ultrasonic round robin task runs.
+const double Ultrasonic::kMaxUltrasonicTime = 0.1;	///< Max time (ms) between readings.
+const double Ultrasonic::kSpeedOfSoundInchesPerSec = 1130.0 * 12.0;
+Task Ultrasonic::m_task("UltrasonicChecker", UltrasonicChecker); // task doing the round-robin automatic sensing
 Ultrasonic *Ultrasonic::m_firstSensor = NULL; // head of the ultrasonic sensor list
 bool Ultrasonic::m_automaticEnabled = false; // automatic round robin mode
-SEM_ID Ultrasonic::m_semaphore = 0;
+ReentrantSemaphore Ultrasonic::m_semaphore;
 
 /**
  * Background task that goes through the list of ultrasonic sensors and pings each one in turn. The counter
@@ -33,18 +33,19 @@ SEM_ID Ultrasonic::m_semaphore = 0;
  * running. If one does, then this will certainly break. Make sure to disable automatic mode before changing
  * anything with the sensors!!
  */
-void Ultrasonic::UltrasonicChecker()
+DWORD WINAPI Ultrasonic::UltrasonicChecker(LPVOID param)
 {
 	Ultrasonic *u = NULL;
 	while (m_automaticEnabled)
 	{
 		if (u == NULL) u = m_firstSensor;
-		if (u == NULL) return;
+		if (u == NULL) return 0;
 		if (u->IsEnabled())
 			u->m_pingChannel->Pulse(kPingTime);	// do the ping
 		u = u->m_nextSensor;
 		Wait(0.1);							// wait for ping to return
 	}
+	return 0;
 }
 
 /**
@@ -58,14 +59,16 @@ void Ultrasonic::Initialize()
 {
 	m_table = NULL;
 	bool originalMode = m_automaticEnabled;
-	if (m_semaphore == 0) m_semaphore = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	//if (m_semaphore == 0) m_semaphore = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	SetAutomaticMode(false); // kill task when adding a new sensor
-	semTake(m_semaphore, WAIT_FOREVER); // link this instance on the list
+	//semTake(m_semaphore, WAIT_FOREVER); // link this instance on the list
+	m_semaphore.take();
 	{
 		m_nextSensor = m_firstSensor;
 		m_firstSensor = this;
 	}
-	semGive(m_semaphore);
+	m_semaphore.give();
+	//m_semaphore.give();
 
 	m_counter = new Counter(m_echoChannel); // set up counter for this sensor
 	m_counter->SetMaxPeriod(1.0);
@@ -176,7 +179,7 @@ Ultrasonic::~Ultrasonic()
 	}
 	wpi_assert(m_firstSensor != NULL);
 
-	semTake(m_semaphore, WAIT_FOREVER);
+	m_semaphore.take();
 	{
 		if (this == m_firstSensor)
 		{
@@ -199,7 +202,7 @@ Ultrasonic::~Ultrasonic()
 			}
 		}
 	}
-	semGive(m_semaphore);
+	m_semaphore.give();
 	if (m_firstSensor != NULL && wasAutomaticMode)
 		SetAutomaticMode(true);
 }
@@ -229,7 +232,7 @@ void Ultrasonic::SetAutomaticMode(bool enabling)
 		}
 		// Start round robin task
 		wpi_assert(m_task.Verify() == false);	// should be false since was previously disabled
-		m_task.Start();
+		m_task.Start(NULL);
 	}
 	else
 	{

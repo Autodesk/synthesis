@@ -7,7 +7,7 @@
 #ifndef SPEED_CONTROLLER_H
 #define SPEED_CONTROLLER_H
 
-#include <vxWorks.h>
+
 #include "PIDOutput.h"
 
 /**

@@ -10,7 +10,7 @@
 #include "NetworkCommunication/FRCComm.h"
 #include "NetworkCommunication/UsageReporting.h"
 #include "Skeleton.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
 #include <cstring>
 
@@ -22,18 +22,19 @@ Kinect *Kinect::_instance = NULL;
 
 Kinect::Kinect() :
 	m_recentPacketNumber(0),
-	m_numberOfPlayers(0)
+	m_numberOfPlayers(0),
+	m_dataLock()
 {
 	AddToSingletonList();
-	m_dataLock = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+//	m_dataLock = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
 
 	nUsageReporting::report(nUsageReporting::kResourceType_Kinect, 0);
 }
 
 Kinect::~Kinect()
 {
-	semTake(m_dataLock, WAIT_FOREVER);
-	semDelete(m_dataLock);
+	//semTake(m_dataLock, WAIT_FOREVER);
+	//semDelete(m_dataLock);
 }
 
 /**

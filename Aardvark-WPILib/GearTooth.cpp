@@ -7,7 +7,7 @@
 #include "GearTooth.h"
 #include "LiveWindow/LiveWindow.h"
 
-constexpr double GearTooth::kGearToothThreshold;
+const double GearTooth::kGearToothThreshold = 55e-6;
 
 /**
  * Common code called by the constructors.

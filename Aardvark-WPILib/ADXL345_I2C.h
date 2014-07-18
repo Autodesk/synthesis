@@ -12,19 +12,19 @@
 class I2C;
 
 /**
- * ADXL345 Accelerometer on I2C.
- * 
- * This class alows access to a Analog Devices ADXL345 3-axis accelerometer on an I2C bus.
- * This class assumes the default (not alternate) sensor address of 0x3A (8-bit address).
- */
+* ADXL345 Accelerometer on I2C.
+* 
+* This class alows access to a Analog Devices ADXL345 3-axis accelerometer on an I2C bus.
+* This class assumes the default (not alternate) sensor address of 0x3A (8-bit address).
+*/
 class ADXL345_I2C : public SensorBase
 {
 protected:
-	static const uint8_t kAddress = 0x3A;
-	static const uint8_t kPowerCtlRegister = 0x2D;
-	static const uint8_t kDataFormatRegister = 0x31;
-	static const uint8_t kDataRegister = 0x32;
-	static constexpr double kGsPerLSB = 0.00390625;
+	static const uint8_t kAddress;
+	static const uint8_t kPowerCtlRegister;
+	static const uint8_t kDataFormatRegister;
+	static const uint8_t kDataRegister;
+	static const double kGsPerLSB;
 	enum PowerCtlFields {kPowerCtl_Link=0x20, kPowerCtl_AutoSleep=0x10, kPowerCtl_Measure=0x08, kPowerCtl_Sleep=0x04};
 	enum DataFormatFields {kDataFormat_SelfTest=0x80, kDataFormat_SPI=0x40, kDataFormat_IntInvert=0x20,
 		kDataFormat_FullRes=0x08, kDataFormat_Justify=0x04};

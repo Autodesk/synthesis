@@ -18,6 +18,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include "OSAL/Synchronized.h"
 
 class ButtonScheduler;
 class Subsystem;
@@ -50,11 +51,11 @@ private:
 
 	static Scheduler *_instance;
 	Command::SubsystemSet m_subsystems;
-	SEM_ID m_buttonsLock;
+	ReentrantSemaphore m_buttonsLock;
 	typedef std::vector<ButtonScheduler *> ButtonVector;
 	ButtonVector m_buttons;
 	typedef std::vector<Command *> CommandVector;
-	SEM_ID m_additionsLock;
+	ReentrantSemaphore m_additionsLock;
 	CommandVector m_additions;
 	typedef std::set<Command *> CommandSet;
 	CommandSet m_commands;

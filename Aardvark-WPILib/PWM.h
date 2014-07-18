@@ -64,16 +64,16 @@ protected:
      * kDefaultPwmPeriod is the 1x period (5.05 ms).  In hardware, the period scaling is implemented as an
      * output squelch to get longer periods for old devices.
      */
-    static constexpr float kDefaultPwmPeriod = 5.05;
+    static const float kDefaultPwmPeriod;
     /**
      * kDefaultPwmCenter is the PWM range center in ms
      */
-    static constexpr float kDefaultPwmCenter = 1.5;
+    static const float kDefaultPwmCenter;
     /**
      * kDefaultPWMStepsDown is the number of PWM steps below the centerpoint
      */
-    static const int32_t kDefaultPwmStepsDown = 128;
-	static const int32_t kPwmDisabled = 0;
+    static const int32_t kDefaultPwmStepsDown;
+	static const int32_t kPwmDisabled;
 
 	virtual void SetPosition(float pos);
 	virtual float GetPosition();

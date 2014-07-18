@@ -18,8 +18,9 @@
  * 
  * Do not call this function directly.
  */
-static void CompressorChecker(Compressor *c)
+static DWORD WINAPI CompressorChecker(LPVOID ca)
 {
+	Compressor *c = (Compressor*) ca;
 	while (1)
 	{
 		if (c->Enabled())
@@ -32,6 +33,7 @@ static void CompressorChecker(Compressor *c)
 		}
 		Wait(0.5);
 	}
+	return 0;
 }
 
 /**
@@ -54,7 +56,7 @@ void Compressor::InitCompressor(uint8_t pressureSwitchModuleNumber,
 
 	nUsageReporting::report(nUsageReporting::kResourceType_Compressor, 0);
 
-	if (!m_task.Start((int32_t)this))
+	if (!m_task.Start(this))
 	{
 		wpi_setWPIError(CompressorTaskError);
 	}
@@ -75,7 +77,7 @@ Compressor::Compressor(uint8_t pressureSwitchModuleNumber,
 		uint32_t pressureSwitchChannel,
 		uint8_t compresssorRelayModuleNumber,
 		uint32_t compressorRelayChannel)
-	: m_task ("Compressor", (FUNCPTR)CompressorChecker)
+	: m_task ("Compressor", CompressorChecker)
 {
 	InitCompressor(pressureSwitchModuleNumber,
 		pressureSwitchChannel,
@@ -94,7 +96,7 @@ Compressor::Compressor(uint8_t pressureSwitchModuleNumber,
  * @param compressorRelayChannel The relay channel that the compressor relay is attached to.
  */
 Compressor::Compressor(uint32_t pressureSwitchChannel, uint32_t compressorRelayChannel)
-	: m_task ("Compressor", (FUNCPTR)CompressorChecker)
+	: m_task ("Compressor", CompressorChecker)
 {
 	InitCompressor(GetDefaultDigitalModule(),
 			pressureSwitchChannel,

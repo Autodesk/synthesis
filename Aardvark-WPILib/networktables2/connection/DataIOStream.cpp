@@ -75,11 +75,7 @@ std::string* DataIOStream::readString()
 {
 	
 	unsigned int byteLength = read2BytesBE();
-#ifndef WIN32
-	uint8_t bytes[byteLength+1];//FIXME figure out why this doesn't work on windows
-#else
 	uint8_t* bytes = (uint8_t*)alloca(byteLength+1);
-#endif
 	iostream->read(bytes, byteLength);
 	bytes[byteLength] = 0;
 	return new std::string((char*)bytes);//FIXME implement UTF-8 aware version

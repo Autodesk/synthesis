@@ -27,18 +27,18 @@ void AnalogChannel::InitChannel(uint8_t moduleNumber, uint32_t channel)
 	Resource::CreateResourceObject(&channels, kAnalogModules * kAnalogChannels);
 	if (!CheckAnalogModule(moduleNumber))
 	{
-		snprintf(buf, 64, "Analog Module %d", moduleNumber);
+		sprintf_s(buf, 64, "Analog Module %d", moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckAnalogChannel(channel))
 	{
-		snprintf(buf, 64, "Analog Channel %lu", channel);
+		sprintf_s(buf, 64, "Analog Channel %lu", channel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 
-	snprintf(buf, 64, "Analog Input %lu (Module: %d)", channel, moduleNumber);
+	sprintf_s(buf, 64, "Analog Input %lu (Module: %d)", channel, moduleNumber);
 	if (channels->Allocate((moduleNumber - 1) * kAnalogChannels + channel - 1, buf) == ~0ul)
 	{
 		CloneError(channels);

@@ -9,41 +9,43 @@
 #include "NetworkCommunication/LoadOut.h"
 #include "WPIErrors.h"
 
-const uint32_t SensorBase::kSystemClockTicksPerMicrosecond;
-const uint32_t SensorBase::kDigitalChannels;
-const uint32_t SensorBase::kAnalogChannels;
-const uint32_t SensorBase::kAnalogModules;
-const uint32_t SensorBase::kDigitalModules;
-const uint32_t SensorBase::kSolenoidChannels;
-const uint32_t SensorBase::kSolenoidModules;
-const uint32_t SensorBase::kPwmChannels;
-const uint32_t SensorBase::kRelayChannels;
-const uint32_t SensorBase::kChassisSlots;
+
+const uint32_t SensorBase::kSystemClockTicksPerMicrosecond = 40;
+const uint32_t SensorBase::kDigitalChannels = 14;
+const uint32_t SensorBase::kAnalogChannels = 8;
+const uint32_t SensorBase::kAnalogModules = 2;
+const uint32_t SensorBase::kDigitalModules = 2;
+const uint32_t SensorBase::kSolenoidChannels = 8;
+const uint32_t SensorBase::kSolenoidModules = 2;
+const uint32_t SensorBase::kPwmChannels = 10;
+const uint32_t SensorBase::kRelayChannels = 8;
+const uint32_t SensorBase::kChassisSlots = 8;
+
 SensorBase *SensorBase::m_singletonList = NULL;
 
 /**
- * Creates an instance of the sensor base and gets an FPGA handle
- */
+* Creates an instance of the sensor base and gets an FPGA handle
+*/
 SensorBase::SensorBase()
 {
 }
 
 /**
- * Frees the resources for a SensorBase.
- */
+* Frees the resources for a SensorBase.
+*/
 SensorBase::~SensorBase()
 {
 }
 
 /**
- * Add sensor to the singleton list.
- * Add this sensor to the list of singletons that need to be deleted when
- * the robot program exits. Each of the sensors on this list are singletons,
- * that is they aren't allocated directly with new, but instead are allocated
- * by the static GetInstance method. As a result, they are never deleted when
- * the program exits. Consequently these sensors may still be holding onto
- * resources and need to have their destructors called at the end of the program.
- */
+* Add sensor to the singleton list.
+* Add this sensor to the list of singletons that need to be deleted when
+* the robot program exits. Each of the sensors on this list are singletons,
+* that is they aren't allocated directly with new, but instead are allocated
+* by the static GetInstance method. As a result, they are never deleted when
+* the program exits. Consequently these sensors may still be holding onto
+* resources and need to have their destructors called at the end of the program.
+*/
 void SensorBase::AddToSingletonList()
 {
 	m_nextSingleton = m_singletonList;
@@ -51,10 +53,10 @@ void SensorBase::AddToSingletonList()
 }
 
 /**
- * Delete all the singleton classes on the list.
- * All the classes that were allocated as singletons need to be deleted so
- * their resources can be freed.
- */
+* Delete all the singleton classes on the list.
+* All the classes that were allocated as singletons need to be deleted so
+* their resources can be freed.
+*/
 void SensorBase::DeleteSingletons()
 {
 	for (SensorBase *next = m_singletonList; next != NULL;)
@@ -67,10 +69,10 @@ void SensorBase::DeleteSingletons()
 }
 
 /**
- * Check that the analog module number is valid.
- * 
- * @return Analog module is valid and present
- */
+* Check that the analog module number is valid.
+* 
+* @return Analog module is valid and present
+*/
 bool SensorBase::CheckAnalogModule(uint8_t moduleNumber)
 {
 	if (nLoadOut::getModulePresence(nLoadOut::kModuleType_Analog, moduleNumber - 1))
@@ -79,10 +81,10 @@ bool SensorBase::CheckAnalogModule(uint8_t moduleNumber)
 }
 
 /**
- * Check that the digital module number is valid.
- * 
- * @return Digital module is valid and present
- */
+* Check that the digital module number is valid.
+* 
+* @return Digital module is valid and present
+*/
 bool SensorBase::CheckDigitalModule(uint8_t moduleNumber)
 {
 	if (nLoadOut::getModulePresence(nLoadOut::kModuleType_Digital, moduleNumber - 1))
@@ -91,30 +93,30 @@ bool SensorBase::CheckDigitalModule(uint8_t moduleNumber)
 }
 
 /**
- * Check that the digital module number is valid.
- * 
- * @return Digital module is valid and present
- */
+* Check that the digital module number is valid.
+* 
+* @return Digital module is valid and present
+*/
 bool SensorBase::CheckPWMModule(uint8_t moduleNumber)
 {
 	return CheckDigitalModule(moduleNumber);
 }
 
 /**
- * Check that the digital module number is valid.
- * 
- * @return Digital module is valid and present
- */
+* Check that the digital module number is valid.
+* 
+* @return Digital module is valid and present
+*/
 bool SensorBase::CheckRelayModule(uint8_t moduleNumber)
 {
 	return CheckDigitalModule(moduleNumber);
 }
 
 /**
- * Check that the solenoid module number is valid.
- * 
- * @return Solenoid module is valid and present
- */
+* Check that the solenoid module number is valid.
+* 
+* @return Solenoid module is valid and present
+*/
 bool SensorBase::CheckSolenoidModule(uint8_t moduleNumber)
 {
 	if (nLoadOut::getModulePresence(nLoadOut::kModuleType_Solenoid, moduleNumber - 1))
@@ -123,12 +125,12 @@ bool SensorBase::CheckSolenoidModule(uint8_t moduleNumber)
 }
 
 /**
- * Check that the digital channel number is valid.
- * Verify that the channel number is one of the legal channel numbers. Channel numbers are
- * 1-based.
- * 
- * @return Digital channel is valid
- */
+* Check that the digital channel number is valid.
+* Verify that the channel number is one of the legal channel numbers. Channel numbers are
+* 1-based.
+* 
+* @return Digital channel is valid
+*/
 bool SensorBase::CheckDigitalChannel(uint32_t channel)
 {
 	if (channel > 0 && channel <= kDigitalChannels)
@@ -137,12 +139,12 @@ bool SensorBase::CheckDigitalChannel(uint32_t channel)
 }
 
 /**
- * Check that the digital channel number is valid.
- * Verify that the channel number is one of the legal channel numbers. Channel numbers are
- * 1-based.
- * 
- * @return Relay channel is valid
- */
+* Check that the digital channel number is valid.
+* Verify that the channel number is one of the legal channel numbers. Channel numbers are
+* 1-based.
+* 
+* @return Relay channel is valid
+*/
 bool SensorBase::CheckRelayChannel(uint32_t channel)
 {
 	if (channel > 0 && channel <= kRelayChannels)
@@ -151,12 +153,12 @@ bool SensorBase::CheckRelayChannel(uint32_t channel)
 }
 
 /**
- * Check that the digital channel number is valid.
- * Verify that the channel number is one of the legal channel numbers. Channel numbers are
- * 1-based.
- * 
- * @return PWM channel is valid
- */
+* Check that the digital channel number is valid.
+* Verify that the channel number is one of the legal channel numbers. Channel numbers are
+* 1-based.
+* 
+* @return PWM channel is valid
+*/
 bool SensorBase::CheckPWMChannel(uint32_t channel)
 {
 	if (channel > 0 && channel <= kPwmChannels)
@@ -165,12 +167,12 @@ bool SensorBase::CheckPWMChannel(uint32_t channel)
 }
 
 /**
- * Check that the analog channel number is value.
- * Verify that the analog channel number is one of the legal channel numbers. Channel numbers
- * are 1-based.
- * 
- * @return Analog channel is valid
- */
+* Check that the analog channel number is value.
+* Verify that the analog channel number is one of the legal channel numbers. Channel numbers
+* are 1-based.
+* 
+* @return Analog channel is valid
+*/
 bool SensorBase::CheckAnalogChannel(uint32_t channel)
 {
 	if (channel > 0 && channel <= kAnalogChannels)
@@ -179,10 +181,10 @@ bool SensorBase::CheckAnalogChannel(uint32_t channel)
 }
 
 /**
- * Verify that the solenoid channel number is within limits.
- * 
- * @return Solenoid channel is valid
- */
+* Verify that the solenoid channel number is within limits.
+* 
+* @return Solenoid channel is valid
+*/
 bool SensorBase::CheckSolenoidChannel(uint32_t channel)
 {
 	if (channel > 0 && channel <= kSolenoidChannels)

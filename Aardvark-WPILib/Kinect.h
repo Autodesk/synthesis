@@ -10,7 +10,7 @@
 #include "SensorBase.h"
 #include "Skeleton.h"
 
-#include <semLib.h>
+
 
 #define kNumSkeletons 1
 
@@ -52,7 +52,7 @@ private:
 	DISALLOW_COPY_AND_ASSIGN(Kinect);
 
 	uint32_t m_recentPacketNumber;
-	SEM_ID m_dataLock;
+	ReentrantSemaphore m_dataLock;
 	int m_numberOfPlayers;
 	Point4 m_floorClipPlane;
 	Point4 m_gravityNormal;

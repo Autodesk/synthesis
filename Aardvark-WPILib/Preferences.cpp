@@ -7,7 +7,7 @@
 #include "Preferences.h"
 
 #include "NetworkCommunication/UsageReporting.h"
-#include "Synchronized.h"
+#include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
 
 #include <stdio.h>
@@ -30,30 +30,30 @@ static const char *kValueSuffix = "\"\n";
 Preferences *Preferences::_instance = NULL;
 
 Preferences::Preferences() :
-	m_fileLock(NULL),
-	m_fileOpStarted(NULL),
-	m_tableLock(NULL),
-	m_readTask("PreferencesReadTask", (FUNCPTR)Preferences::InitReadTask),
-	m_writeTask("PreferencesWriteTask", (FUNCPTR)Preferences::InitWriteTask)
+	m_fileLock(),
+	m_fileOpStarted(),
+	m_tableLock(),
+	m_readTask("PreferencesReadTask", Preferences::InitReadTask),
+	m_writeTask("PreferencesWriteTask", Preferences::InitWriteTask)
 {
-	m_fileLock = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
-	m_fileOpStarted = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
-	m_tableLock = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+	//m_fileLock = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
+	//m_fileOpStarted = semBCreate (SEM_Q_PRIORITY, SEM_EMPTY);
+	//m_tableLock = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);
 
 	Synchronized sync(m_fileLock);
-	m_readTask.Start((uint32_t)this);
-	semTake(m_fileOpStarted, WAIT_FOREVER);
+	m_readTask.Start(this);
+	m_fileOpStarted.take();
 
 	nUsageReporting::report(nUsageReporting::kResourceType_Preferences, 0);
 }
 
 Preferences::~Preferences()
 {
-	semTake(m_tableLock, WAIT_FOREVER);
-	semDelete(m_tableLock);
-	semTake(m_fileLock, WAIT_FOREVER);
-	semDelete(m_fileOpStarted);
-	semDelete(m_fileLock);
+	//m_tableLock.take();
+	//semDelete(m_tableLock);
+	//m_fileLock.take();
+	//semDelete(m_fileOpStarted);
+	//semDelete(m_fileLock);
 }
 
 /**
@@ -236,7 +236,7 @@ void Preferences::PutString(const char *key, const char *value)
 void Preferences::PutInt(const char *key, int value)
 {
 	char buf[32];
-	snprintf(buf, 32, "%d", value);
+	sprintf_s(buf, 32, "%d", value);
 	Put(key, buf);
 }
 
@@ -254,7 +254,7 @@ void Preferences::PutInt(const char *key, int value)
 void Preferences::PutDouble(const char *key, double value)
 {
 	char buf[32];
-	snprintf(buf, 32, "%f", value);
+	sprintf_s(buf, 32, "%f", value);
 	Put(key, buf);
 }
 
@@ -272,7 +272,7 @@ void Preferences::PutDouble(const char *key, double value)
 void Preferences::PutFloat(const char *key, float value)
 {
 	char buf[32];
-	snprintf(buf, 32, "%f", value);
+	sprintf_s(buf, 32, "%f", value);
 	Put(key, buf);
 }
 
@@ -306,7 +306,7 @@ void Preferences::PutBoolean(const char *key, bool value)
 void Preferences::PutLong(const char *key, INT64 value)
 {
 	char buf[32];
-	snprintf(buf, 32, "%lld", value);
+	sprintf_s(buf, 32, "%lld", value);
 	Put(key, buf);
 }
 
@@ -324,8 +324,8 @@ void Preferences::PutLong(const char *key, INT64 value)
 void Preferences::Save()
 {
 	Synchronized sync(m_fileLock);
-	m_writeTask.Start((uint32_t)this);
-	semTake(m_fileOpStarted, WAIT_FOREVER);
+	m_writeTask.Start(this);
+	m_fileOpStarted.take();
 }
 
 /**
@@ -410,7 +410,7 @@ void Preferences::Put(const char *key, std::string value)
 void Preferences::ReadTaskRun()
 {
 	Synchronized sync(m_tableLock);
-	semGive(m_fileOpStarted);
+	m_fileOpStarted.give();
 
 	std::string comment;
 
@@ -534,7 +534,7 @@ void Preferences::ReadTaskRun()
 void Preferences::WriteTaskRun()
 {
 	Synchronized sync(m_tableLock);
-	semGive(m_fileOpStarted);
+	m_fileOpStarted.give();
 
 	FILE *file = NULL;
 	Priv_SetWriteFileAllowed(1);

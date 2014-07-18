@@ -8,24 +8,24 @@
 
 #include "NetworkCommunication/UsageReporting.h"
 #include "WPIErrors.h"
-#include <errnoLib.h>
 #include <string.h>
-#include <taskLib.h>
-#include <usrLib.h>
+#include <stdint.h>
+#include <Windows.h>
 
 const UINT32 NTTask::kDefaultPriority;
 const INT32 NTTask::kInvalidTaskID;
 
 /**
- * Create but don't launch a task.
- * @param name The name of the task.  "FRC_" will be prepended to the task name.
- * @param function The address of the function to run as the new task.
- * @param priority The VxWorks priority for the task.
- * @param stackSize The size of the stack for the task
- */
-NTTask::NTTask(const char* name, FUNCPTR function, INT32 priority, UINT32 stackSize)
+* Create but don't launch a task.
+* @param name The name of the task.  "FRC_" will be prepended to the task name.
+* @param function The address of the function to run as the new task.
+* @param priority The VxWorks priority for the task.
+* @param stackSize The size of the stack for the task
+*/
+NTTask::NTTask(const char* name, PTHREAD_START_ROUTINE function, INT32 priority, UINT32 stackSize)
 {
-	m_taskID = kInvalidTaskID;
+	m_ID = kInvalidTaskID;
+	m_Handle = 0;
 	m_function = function;
 	m_priority = priority;
 	m_stackSize = stackSize;
@@ -40,177 +40,187 @@ NTTask::NTTask(const char* name, FUNCPTR function, INT32 priority, UINT32 stackS
 
 NTTask::~NTTask()
 {
-	if (m_taskID != kInvalidTaskID) Stop();
+	if (m_ID != kInvalidTaskID) Stop();
 	delete [] m_taskName;
 	m_taskName = NULL;
 }
 
 /**
- * Starts this task.
- * If it is already running or unable to start, it fails and returns false.
- */
-bool NTTask::Start(UINT32 arg0, UINT32 arg1, UINT32 arg2, UINT32 arg3, UINT32 arg4, 
-		UINT32 arg5, UINT32 arg6, UINT32 arg7, UINT32 arg8, UINT32 arg9)
+* Starts this task.
+* If it is already running or unable to start, it fails and returns false.
+*/
+bool NTTask::Start(void *arg)
 {
-	m_taskID = taskSpawn(m_taskName,
-						m_priority,
-						VX_FP_TASK,							// options
-						m_stackSize,						// stack size
-						m_function,							// function to start
-						arg0, arg1, arg2, arg3, arg4,	// parameter 1 - pointer to this class
-						arg5, arg6, arg7, arg8, arg9);// additional unused parameters
-	bool ok = HandleError(m_taskID);
-	if (!ok) m_taskID = kInvalidTaskID;
-	return ok;
+	//m_taskID = taskSpawn(m_taskName,
+	//					m_priority,
+	//					VX_FP_TASK,							// options
+	//					m_stackSize,						// stack size
+	//					m_function,							// function to start
+	//					arg0, arg1, arg2, arg3, arg4,	// parameter 1 - pointer to this class
+	//					arg5, arg6, arg7, arg8, arg9);// additional unused parameters
+	m_Handle = CreateThread(NULL,m_stackSize, m_function,m_Arg= arg, 0,&m_ID);
+	//bool ok = HandleError(m_taskID);
+	//if (!ok) m_taskID = kInvalidTaskID;
+	if (m_Handle == NULL) {
+		m_ID = kInvalidTaskID;
+		return false;
+	}
+	return true;
 }
 
 /**
- * Restarts a running task.
- * If the task isn't started, it starts it.
- * @return false if the task is running and we are unable to kill the previous instance
- */
+* Restarts a running task.
+* If the task isn't started, it starts it.
+* @return false if the task is running and we are unable to kill the previous instance
+*/
 bool NTTask::Restart()
 {
-	return HandleError(taskRestart(m_taskID));
+	if (!Stop()) return false;
+	return Start(m_Arg);
 }
 
 /**
- * Kills the running task.
- * @returns true on success false if the task doesn't exist or we are unable to kill it.
- */
+* Kills the running task.
+* @returns true on success false if the task doesn't exist or we are unable to kill it.
+*/
 bool NTTask::Stop()
 {
 	bool ok = true;
 	if (Verify())
 	{
-		ok = HandleError(taskDelete(m_taskID));
+		DWORD exit = 0;
+		ok = HandleError("NTTask::Stop()", TerminateThread(m_Handle, exit));
+		CloseHandle(m_Handle);
 	}
-	m_taskID = kInvalidTaskID;
+	m_ID = kInvalidTaskID;
+	m_Handle = NULL;
 	return ok;
 }
 
 /**
- * Returns true if the task is ready to execute (i.e. not suspended, delayed, or blocked).
- * @return true if ready, false if not ready.
- */
+* Returns true if the task is ready to execute (i.e. not suspended, delayed, or blocked).
+* @return true if ready, false if not ready.
+*/
 bool NTTask::IsReady()
 {
-	return taskIsReady(m_taskID);
+	return true;//taskIsReady(m_taskID);
 }
 
 /**
- * Returns true if the task was explicitly suspended by calling Suspend()
- * @return true if suspended, false if not suspended.
- */
+* Returns true if the task was explicitly suspended by calling Suspend()
+* @return true if suspended, false if not suspended.
+*/
 bool NTTask::IsSuspended()
 {
-	return taskIsSuspended(m_taskID);
+	return false;//GetThread(m_taskID);
 }
 
 /**
- * Pauses a running task.
- * Returns true on success, false if unable to pause or the task isn't running.
- */
+* Pauses a running task.
+* Returns true on success, false if unable to pause or the task isn't running.
+*/
 bool NTTask::Suspend()
 {
-	return HandleError(taskSuspend(m_taskID));
+	//return HandleError("NTTask::Suspend", SuspendThread(m_Handle));
+	printf("I hate you (NTTask::Suspend)\n");
+	return false;
 }
 
 /**
- * Resumes a paused task.
- * Returns true on success, false if unable to resume or if the task isn't running/paused.
- */
+* Resumes a paused task.
+* Returns true on success, false if unable to resume or if the task isn't running/paused.
+*/
 bool NTTask::Resume()
 {
-	return HandleError(taskResume(m_taskID));
+	//return HandleError("NTTask::Resume", ResumeThread(m_Handle));
+	printf("I hate you (NTTask::Resume)\n");
+	return false;
 }
 
 /**
- * Verifies a task still exists.
- * @returns true on success.
- */
+* Verifies a task still exists.
+* @returns true on success.
+*/
 bool NTTask::Verify()
 {
-	return taskIdVerify(m_taskID) == OK;
+	return m_ID != kInvalidTaskID && m_Handle != NULL;//taskIdVerify(m_taskID) == OK;
 }
 
 /**
- * Gets the priority of a task.
- * @returns task priority or 0 if an error occured
- */
+* Gets the priority of a task.
+* @returns task priority or 0 if an error occured
+*/
 INT32 NTTask::GetPriority()
 {
-	if (HandleError(taskPriorityGet(m_taskID, &m_priority)))
-		return m_priority;
-	else
-		return 0;
+	return GetThreadPriority(m_Handle);
 }
 
 /**
- * This routine changes a task's priority to a specified priority.
- * Priorities range from 0, the highest priority, to 255, the lowest priority.
- * Default task priority is 100.
- * @param priority The priority the task should run at.
- * @returns true on success.
- */
+* This routine changes a task's priority to a specified priority.
+* Priorities range from 0, the highest priority, to 255, the lowest priority.
+* Default task priority is 100.
+* @param priority The priority the task should run at.
+* @returns true on success.
+*/
 bool NTTask::SetPriority(INT32 priority)
 {
 	m_priority = priority;
-	return HandleError(taskPrioritySet(m_taskID, m_priority));
+	return HandleError("NTTask::SetPriority", SetThreadPriority(m_Handle, priority));
 }
 
 /**
- * Returns the name of the task.
- * @returns Pointer to the name of the task or NULL if not allocated
- */
+* Returns the name of the task.
+* @returns Pointer to the name of the task or NULL if not allocated
+*/
 const char* NTTask::GetName()
 {
 	return m_taskName;
 }
 
 /**
- * Get the ID of a task
- * @returns Task ID of this task.  Task::kInvalidTaskID (-1) if the task has not been started or has already exited.
- */
+* Get the ID of a task
+* @returns Task ID of this task.  Task::kInvalidTaskID (-1) if the task has not been started or has already exited.
+*/
 INT32 NTTask::GetID()
 {
 	if (Verify())
-		return m_taskID;
+		return m_ID;
 	return kInvalidTaskID;
 }
 
 /**
- * Handles errors generated by task related code.
- */
-bool NTTask::HandleError(STATUS results)
+* Handles errors generated by task related code.
+*/
+bool NTTask::HandleError(char *lpszFunction, int code)
 {
-	if (results != ERROR) return true;
-	switch(errnoGet())
-	{
-	case S_objLib_OBJ_ID_ERROR:
-		wpi_setWPIErrorWithContext(TaskIDError, m_taskName);
-		break;
-		
-	case S_objLib_OBJ_DELETED:
-		wpi_setWPIErrorWithContext(TaskDeletedError, m_taskName);
-		break;
-		
-	case S_taskLib_ILLEGAL_OPTIONS:
-		wpi_setWPIErrorWithContext(TaskOptionsError, m_taskName);
-		break;
-		
-	case S_memLib_NOT_ENOUGH_MEMORY:
-		wpi_setWPIErrorWithContext(TaskMemoryError, m_taskName);
-		break;
-		
-	case S_taskLib_ILLEGAL_PRIORITY:
-		wpi_setWPIErrorWithContext(TaskPriorityError, m_taskName);
-		break;
+	if (code == 0 && Verify()) return true;
+	LPVOID lpMsgBuf;
+    LPVOID lpDisplayBuf;
+    DWORD dw = GetLastError(); 
 
-	default:
-		printErrno(errnoGet());
-		wpi_setWPIErrorWithContext(TaskError, m_taskName);
-	}
-	return false;
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        dw,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR) &lpMsgBuf,
+        0, NULL );
+
+    // Display the error message.
+
+    lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, 
+        (lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) lpszFunction) + 40) * sizeof(TCHAR)); 
+    sprintf_s((LPTSTR)lpDisplayBuf, 
+        LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+        TEXT("%s failed with error %d: %s"), 
+        lpszFunction, dw, lpMsgBuf); 
+    MessageBox(NULL, (LPCTSTR) lpDisplayBuf, TEXT("Error"), MB_OK); 
+
+    // Free error-handling buffer allocations.
+
+    LocalFree(lpMsgBuf);
+    LocalFree(lpDisplayBuf);
 }
 
