@@ -86,8 +86,22 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
         }
         return false;
     }
+
+    //private FindPartMatches
+
     public RotationalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
+        Matrix transformation = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
+        Point jointOrigin;
+        Vector jointXAxis;
+        Vector jointYAxis;
+        Vector jointZAxis;
+        Point subOrigin;
+        Vector subXAxis;
+        Vector subYAxis;
+        Vector subZAxis;
+        Matrix transformedJoint;
+
         if (!(IsRotationalJoint(rigidJoint)))
             throw new Exception("Not a rotational joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
@@ -103,13 +117,15 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
         }
 
-        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float) wrapped.asmJoint.AngularPosition.Value : 0;
+
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if ((hasAngularLimit))
         {
             angularLimitLow = (float) wrapped.asmJoint.AngularPositionStartLimit.Value;
             angularLimitHigh = (float) wrapped.asmJoint.AngularPositionEndLimit.Value;
+            wrapped.asmJoint.AngularPosition = (hasAngularLimit ? angularLimitLow : 0.0);
         }
+        currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
     }
 
     protected override string ToString_Internal()

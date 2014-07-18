@@ -156,25 +156,28 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         }
 
         currentLinearPosition = wrapped.asmJoint.LinearPosition != null ? (float)wrapped.asmJoint.LinearPosition.Value : 0;
-        currentAngularPosition = wrapped.asmJoint.AngularPosition != null ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
 
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;
         if (hasAngularLimit)
         {
             angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
             angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
+            wrapped.asmJoint.AngularPosition = (hasAngularLimit ? angularLimitLow : 0.0);
         }
+        currentAngularPosition = wrapped.asmJoint.AngularPosition != null ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
 
         hasLinearStartLimit = wrapped.asmJoint.HasLinearPositionStartLimit;
         if (hasLinearStartLimit)
         {
             linearLimitStart = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
+            wrapped.asmJoint.LinearPosition = linearLimitStart;
         }
 
         hasLinearEndLimit = wrapped.asmJoint.HasLinearPositionEndLimit;
         if (hasLinearEndLimit)
         {
             linearLimitEnd = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
+            wrapped.asmJoint.LinearPosition = linearLimitEnd;
         }
     }
 

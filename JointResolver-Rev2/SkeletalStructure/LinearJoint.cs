@@ -104,15 +104,19 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
             basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
         }
 
-        currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? ((float) wrapped.asmJoint.LinearPosition.Value) : 0;
         if (hasUpperLimit = wrapped.asmJoint.HasLinearPositionEndLimit)
         {
             linearLimitHigh = (float) wrapped.asmJoint.LinearPositionEndLimit.Value;
+            wrapped.asmJoint.LinearPosition = linearLimitHigh;
         }
         if (hasLowerLimit = wrapped.asmJoint.HasLinearPositionStartLimit)
         {
             linearLimitLow = (float) wrapped.asmJoint.LinearPositionStartLimit.Value;
+            wrapped.asmJoint.LinearPosition = linearLimitLow;
+
         }
+        currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
+
     }
 
     protected override string ToString_Internal()
