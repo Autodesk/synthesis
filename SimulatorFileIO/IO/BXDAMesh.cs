@@ -47,7 +47,7 @@ public class BXDAMesh
             int vertCount = mesh.verts.Length / 3;
             int facetCount = mesh.indicies.Length / 3;
 
-            byte flags = (byte) ((mesh.colors != null ? 1 : 0) | (mesh.textureCoords != null ? 2 : 0));
+            byte flags = (byte) ((mesh.colors != null ? 1 : 0) | (mesh.textureCoords != null ? 2 : 0) | (mesh.norms != null ? 4 :0));
             writer.Write(flags);
             writer.Write(vertCount);
             for (int i = 0; i < vertCount; i++)
@@ -58,9 +58,11 @@ public class BXDAMesh
                 writer.Write(mesh.verts[vecI]);
                 writer.Write(mesh.verts[vecI + 1]);
                 writer.Write(mesh.verts[vecI + 2]);
-                writer.Write(mesh.norms[vecI]);
-                writer.Write(mesh.norms[vecI + 1]);
-                writer.Write(mesh.norms[vecI + 2]);
+                if (mesh.norms != null) {
+                    writer.Write(mesh.norms[vecI]);
+                    writer.Write(mesh.norms[vecI + 1]);
+                    writer.Write(mesh.norms[vecI + 2]);
+                }
                 if (mesh.colors != null)
                 {
                     writer.Write(mesh.colors[colI]);
@@ -104,7 +106,7 @@ public class BXDAMesh
             byte flags = reader.ReadByte();
             int vertCount = reader.ReadInt32();
             mesh.verts = new double[vertCount * 3];
-            mesh.norms = new double[vertCount * 3];
+            mesh.norms = (flags & 4) == 4 ? new double[vertCount * 3] : null;
             mesh.colors = (flags & 1) == 1 ? new uint[vertCount] : null;
             mesh.textureCoords = (flags & 2) == 2 ? new double[vertCount * 2] : null;
             for (int i = 0; i < vertCount; i++)
@@ -115,10 +117,12 @@ public class BXDAMesh
                 mesh.verts[vecI] = reader.ReadDouble();
                 mesh.verts[vecI + 1] = reader.ReadDouble();
                 mesh.verts[vecI + 2] = reader.ReadDouble();
-
-                mesh.norms[vecI] = reader.ReadDouble();
-                mesh.norms[vecI + 1] = reader.ReadDouble();
-                mesh.norms[vecI + 2] = reader.ReadDouble();
+                if (mesh.norms != null)
+                {
+                    mesh.norms[vecI] = reader.ReadDouble();
+                    mesh.norms[vecI + 1] = reader.ReadDouble();
+                    mesh.norms[vecI + 2] = reader.ReadDouble();
+                }
                 if (mesh.colors != null)
                 {
                     mesh.colors[colI] = reader.ReadUInt32();
