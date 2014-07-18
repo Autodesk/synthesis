@@ -8,7 +8,8 @@ public class SurfaceExporter
 {
     private const int TMP_VERTICIES = ushort.MaxValue;
 
-    private bool adaptiveIgnoring = false;
+    private bool adaptiveIgnoring = true;
+    private double adaptiveDegredation = 5; // Higher = less dropping
 
     // Temporary output
     private double[] tmpVerts = new double[TMP_VERTICIES * 3];
@@ -52,7 +53,7 @@ public class SurfaceExporter
                 bestIndex = i;
             }
         }
-        Console.WriteLine("(" + postVertCount + "v/" + postFacetCount + "f)\tExporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
+      //  Console.WriteLine("(" + postVertCount + "v/" + postFacetCount + "f)\tExporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
 
         if (separateFaces)
         {
@@ -218,7 +219,7 @@ public class SurfaceExporter
         {
             totalVolume += occ2.MassProperties.Volume;
         }
-        totalVolume /= occ.SubOccurrences.Count * 5;
+        totalVolume /= occ.SubOccurrences.Count * adaptiveDegredation;
 
         foreach (ComponentOccurrence item in occ.SubOccurrences)
         {
@@ -275,7 +276,7 @@ public class SurfaceExporter
         {
             totalVolume += occ.MassProperties.Volume;
         }
-        totalVolume /= group.occurrences.Count * 5;
+        totalVolume /= group.occurrences.Count * adaptiveDegredation;
 
         foreach (ComponentOccurrence occ in group.occurrences)
         {

@@ -73,9 +73,14 @@ static class Program
                         Console.WriteLine("Running deffered calculations for " + node.GetModelID());
                         ((RigidNode) node).DoDeferredCalculations();
                         Console.WriteLine("Exporting " + node.GetModelID());
+                        CustomRigidGroup group = (CustomRigidGroup) node.GetModel();
                         surfs.Reset();
-                        surfs.ExportAll((CustomRigidGroup) node.GetModel());
-                        surfs.GetOutput().WriteBXDA(pathBase + "\\" + node.GetModelFileName());
+                        surfs.ExportAll(group);
+                        BXDAMesh output = surfs.GetOutput();
+                        Console.WriteLine("Computing colliders for " + node.GetModelID());
+                        output.colliders.Clear();
+                        output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));
+                        output.WriteBXDA(pathBase + "\\" + node.GetModelFileName());
                     }
                 }
             }
