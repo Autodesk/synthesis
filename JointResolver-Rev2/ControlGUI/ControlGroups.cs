@@ -54,10 +54,7 @@ public partial class ControlGroups
                     Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
                         wrapped!=null?wrapped.parentGroup.ToString():"from-file",
                         wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver",
-                        wheelData!=null?wheelData.GetTypeString():"No Wheel",
-                        wheelData!=null?Convert.ToString(wheelData.radius) + " cm":"None",
-                        wheelData!=null?Convert.ToString(wheelData.width) + " cm":"None",
-                        wheelData!=null?wheelData.center.ToString():"None"});
+                        wheelData!=null?wheelData.GetTypeString():"No Wheel"});
                     item.Tag = node;
                     lstJoints.Items.Add(item);
                 }

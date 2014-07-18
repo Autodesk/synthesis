@@ -91,17 +91,6 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
 
     public RotationalJoint(CustomRigidGroup parent, CustomRigidJoint rigidJoint)
     {
-        Matrix transformation = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        Point jointOrigin;
-        Vector jointXAxis;
-        Vector jointYAxis;
-        Vector jointZAxis;
-        Point subOrigin;
-        Vector subXAxis;
-        Vector subYAxis;
-        Vector subZAxis;
-        Matrix transformedJoint;
-
         if (!(IsRotationalJoint(rigidJoint)))
             throw new Exception("Not a rotational joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
