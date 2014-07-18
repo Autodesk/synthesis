@@ -27,27 +27,28 @@ public class BXDAMesh
         private set;
     }
 
+    public List<BXDASubMesh> colliders
+    {
+        get;
+        private set;
+    }
+
     public BXDAMesh()
     {
         physics = new PhysicalProperties();
         meshes = new List<BXDASubMesh>();
+        colliders = new List<BXDASubMesh>();
     }
 
-    /// <summary>
-    /// Writes the current mesh storage structure as a segmented BXDA to the given file path.
-    /// </summary>
-    /// <param name="path">Output path</param>
-    public void WriteBXDA(String path)
+    private static void WriteMeshList(BinaryWriter writer, List<BXDASubMesh> meshes)
     {
-        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
-        writer.Write(BXDIO.FORMAT_VERSION);
         writer.Write(meshes.Count);
         foreach (BXDASubMesh mesh in meshes)
         {
             int vertCount = mesh.verts.Length / 3;
             int facetCount = mesh.indicies.Length / 3;
 
-            byte flags = (byte) ((mesh.colors != null ? 1 : 0) | (mesh.textureCoords != null ? 2 : 0) | (mesh.norms != null ? 4 :0));
+            byte flags = (byte) ((mesh.colors != null ? 1 : 0) | (mesh.textureCoords != null ? 2 : 0) | (mesh.norms != null ? 4 : 0));
             writer.Write(flags);
             writer.Write(vertCount);
             for (int i = 0; i < vertCount; i++)
@@ -58,7 +59,8 @@ public class BXDAMesh
                 writer.Write(mesh.verts[vecI]);
                 writer.Write(mesh.verts[vecI + 1]);
                 writer.Write(mesh.verts[vecI + 2]);
-                if (mesh.norms != null) {
+                if (mesh.norms != null)
+                {
                     writer.Write(mesh.norms[vecI]);
                     writer.Write(mesh.norms[vecI + 1]);
                     writer.Write(mesh.norms[vecI + 2]);
@@ -82,23 +84,10 @@ public class BXDAMesh
                 writer.Write(mesh.indicies[fI + 2] - 1);
             }
         }
-        physics.WriteData(writer);
-        writer.Close();
     }
 
-    public void ReadBXDA(string path)
+    private static void ReadMeshList(BinaryReader reader, List<BXDASubMesh> meshes)
     {
-        meshes.Clear();
-        BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
-
-        // Sanity check
-        uint version = reader.ReadUInt32();
-        if (version != BXDIO.FORMAT_VERSION)
-        {
-            reader.Close();
-            throw new Exception("\"" + path + "\" was created with format version " + BXDIO.VersionToString(version) + ", this library was compiled to read version " + BXDIO.VersionToString(BXDIO.FORMAT_VERSION));
-        }
-
         int meshCount = reader.ReadInt32();
         for (int id = 0; id < meshCount; id++)
         {
@@ -145,6 +134,39 @@ public class BXDAMesh
             }
             meshes.Add(mesh);
         }
+    }
+
+    /// <summary>
+    /// Writes the current mesh storage structure as a segmented BXDA to the given file path.
+    /// </summary>
+    /// <param name="path">Output path</param>
+    public void WriteBXDA(String path)
+    {
+        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
+        writer.Write(BXDIO.FORMAT_VERSION);
+        WriteMeshList(writer, meshes);
+        WriteMeshList(writer, colliders);
+        physics.WriteData(writer);
+        writer.Close();
+    }
+
+    public void ReadBXDA(string path)
+    {
+        meshes.Clear();
+        BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
+
+        // Sanity check
+        uint version = reader.ReadUInt32();
+        if (version != BXDIO.FORMAT_VERSION)
+        {
+            reader.Close();
+            throw new Exception("\"" + path + "\" was created with format version " + BXDIO.VersionToString(version) + ", this library was compiled to read version " + BXDIO.VersionToString(BXDIO.FORMAT_VERSION));
+        }
+        meshes.Clear();
+        colliders.Clear();
+        ReadMeshList(reader, meshes);
+        ReadMeshList(reader, colliders);
+
         physics.ReadData(reader);
         reader.Close();
     }

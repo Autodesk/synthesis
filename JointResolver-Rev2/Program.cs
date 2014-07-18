@@ -11,24 +11,7 @@ static class Program
     public static unsafe void Main(String[] args)
     {
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-        //AnalyzeRigidResults();
-        AssemblyDocument doc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
-        SurfaceExporter exp = new SurfaceExporter();
-        foreach (ComponentOccurrence b in doc.ComponentDefinition.Occurrences)
-        {
-            exp.ExportAll(b);
-        }
-        foreach (SurfaceBody b in doc.ComponentDefinition.SurfaceBodies)
-        {
-            exp.AddFacets(b);
-        }
-        BXDAMesh mesh = exp.GetOutput();
-
-        List<BXDAMesh.BXDASubMesh> hull = ConvexHullCalculator.GetHull(mesh, true);
-        BXDAMesh collider = new BXDAMesh();
-        collider.meshes.AddRange(hull);
-        collider.WriteBXDA("C:/Temp/test.bxda");
-        Console.ReadLine();
+        AnalyzeRigidResults();
     }
 
     public static Matrix GetWorldTransformation(ComponentOccurrence comp)
