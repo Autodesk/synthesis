@@ -71,7 +71,7 @@ public partial class ControlGroups
         foreach (CustomRigidGroup group in groupList)
         {
             System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {group.ToString(),
-                group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No"});
+                group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No", group.convex?"Convex":"Concave"});
             item.Tag = group;
             lstGroups.Items.Add(item);
         }
@@ -175,6 +175,12 @@ public partial class ControlGroups
                 bool cVal = ((CustomRigidGroup)item.Tag).highRes;
                 ((CustomRigidGroup)item.Tag).highRes = !cVal;
                 item.SubItems[3].Text = !cVal ? "Yes" : "No";
+            }
+            else if (column == 4)
+            {
+                bool cVal = ((CustomRigidGroup)item.Tag).convex;
+                ((CustomRigidGroup)item.Tag).convex = !cVal;
+                item.SubItems[4].Text = !cVal ? "Convex" : "Concave";
             }
         }
     }

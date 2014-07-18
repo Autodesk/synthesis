@@ -41,6 +41,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.btnCalculate = new System.Windows.Forms.Button();
+            this.groups_chConcavity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -159,7 +160,8 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chName,
             this.groups_chGrounded,
             this.groups_chFaceColor,
-            this.groups_chHighRes});
+            this.groups_chHighRes,
+            this.groups_chConcavity});
             this.lstGroups.FullRowSelect = true;
             this.lstGroups.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lstGroups.HoverSelection = true;
@@ -226,6 +228,11 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.Visible = false;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
             // 
+            // groups_chConcavity
+            // 
+            this.groups_chConcavity.Text = "Concavity";
+            this.groups_chConcavity.Width = 85;
+            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -273,4 +280,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader item_chRadius;
     private System.Windows.Forms.ColumnHeader item_chWidth;
     private System.Windows.Forms.ColumnHeader item_chCenter;
+    private System.Windows.Forms.ColumnHeader groups_chConcavity;
 }
