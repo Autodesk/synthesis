@@ -5,25 +5,12 @@ using System.IO;
 
 static class Program
 {
-
     public static Application INVENTOR_APPLICATION;
     private const int MAX_VERTICIES = 8192;
     public static unsafe void Main(String[] args)
     {
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         AnalyzeRigidResults();
-    }
-
-    public static Matrix GetWorldTransformation(ComponentOccurrence comp)
-    {
-        Matrix trans = INVENTOR_APPLICATION.TransientGeometry.CreateMatrix();
-        trans.SetToIdentity();
-        if (!((comp.ParentOccurrence == null)))
-        {
-            trans.TransformBy(GetWorldTransformation(comp.ParentOccurrence));
-        }
-        trans.TransformBy(comp.Transformation);
-        return trans;
     }
 
     public static void AnalyzeRigidResults()
@@ -77,19 +64,23 @@ static class Program
         if (controlGUI.formState == FormState.SUBMIT)
         {
             SurfaceExporter surfs = new SurfaceExporter();
-            Dictionary<RigidNode_Base, string> bxdaOutputPath;
-            BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode, out bxdaOutputPath);
-            foreach (KeyValuePair<RigidNode_Base, string> output in bxdaOutputPath)
             {
-                if (output.Key != null && output.Key.GetModel() != null && output.Key.GetModel() is CustomRigidGroup)
+                BXDJSkeleton.SetupFileNames(baseNode);
+                foreach (RigidNode_Base node in nodes)
                 {
-                    CustomRigidGroup group = (CustomRigidGroup) output.Key.GetModel();
-                    Console.WriteLine("Output " + group.ToString() + " to " + output.Value);
-                    surfs.Reset();
-                    surfs.ExportAll(group);
-                    surfs.GetOutput().WriteBXDA(output.Value);
+                    if (node is RigidNode && node.GetModel() != null && node.GetModelFileName() != null && node.GetModel() is CustomRigidGroup)
+                    {
+                        Console.WriteLine("Running deffered calculations for " + node.GetModelID());
+                        ((RigidNode) node).DoDeferredCalculations();
+                        Console.WriteLine("Exporting " + node.GetModelID());
+                        surfs.Reset();
+                        surfs.ExportAll((CustomRigidGroup) node.GetModel());
+                        surfs.GetOutput().WriteBXDA(pathBase + "\\" + node.GetModelFileName());
+                    }
                 }
             }
+            Console.WriteLine("Writing skeleton");
+            BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode);
         }
     }
 }

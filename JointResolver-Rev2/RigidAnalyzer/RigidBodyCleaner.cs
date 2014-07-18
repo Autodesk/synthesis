@@ -102,6 +102,9 @@ static class RigidBodyCleaner
         }
     }
 
+    /// <summary>
+    /// Represents a joint that will be created once preprocessing is complete.
+    /// </summary>
     private class PlannedJoint
     {
         public RigidNode node;

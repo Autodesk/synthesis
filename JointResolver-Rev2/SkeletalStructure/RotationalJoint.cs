@@ -92,8 +92,16 @@ public class RotationalJoint : RotationalJoint_Base, InventorSkeletalJoint
             throw new Exception("Not a rotational joint");
         wrapped = new SkeletalJoint(parent, rigidJoint);
 
-        axis = Utilities.ToBXDVector(rigidJoint.geomOne.Normal);
-        basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.Center);
+        try
+        {
+            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Normal);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.Center);
+        }
+        catch
+        {
+            axis = Utilities.ToBXDVector(rigidJoint.geomOne.Direction);
+            basePoint = Utilities.ToBXDVector(rigidJoint.geomOne.RootPoint);
+        }
 
         currentAngularPosition = !((wrapped.asmJoint.AngularPosition == null)) ? (float) wrapped.asmJoint.AngularPosition.Value : 0;
         hasAngularLimit = wrapped.asmJoint.HasAngularPositionLimits;

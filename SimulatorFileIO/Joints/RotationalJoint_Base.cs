@@ -30,6 +30,8 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             writer.Write(angularLimitLow);
             writer.Write(angularLimitHigh);
         }
+
+        writer.Write(currentAngularPosition);
     }
 
     protected override void ReadJoint(System.IO.BinaryReader reader)
@@ -43,5 +45,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             angularLimitLow = reader.ReadSingle();
             angularLimitHigh = reader.ReadSingle();
         }
+
+        currentAngularPosition = reader.ReadSingle();
     }
 }

@@ -43,9 +43,11 @@ public class CustomRigidGroup
     public List<ComponentOccurrence> occurrences = new List<ComponentOccurrence>();
 
     public bool grounded;
-
+    
     public bool highRes = false;
     public bool colorFaces = false;
+
+    public bool convex = true;
 
     public string fullQualifier;
     public static string GetGroupQualifier(RigidBodyGroup group)

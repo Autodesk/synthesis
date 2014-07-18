@@ -27,6 +27,8 @@ public partial class ControlGroups
 
     private void UpdateJointList()
     {
+        WheelDriverMeta wheelData = null;
+
         if ((nodeList == null))
             return;
         lstJoints.Items.Clear();
@@ -39,11 +41,24 @@ public partial class ControlGroups
                 {
                     SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint)joint).GetWrapped() : null);
 
+                    if (joint is RotationalJoint && joint.cDriver != null)
+                    {
+                        wheelData = ((RotationalJoint)joint).cDriver.GetInfo<WheelDriverMeta>();
+                    }
+                    else
+                    {
+                        wheelData = null;
+                    }
+
                     System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
-                wrapped!=null?wrapped.parentGroup.ToString():"from-file",
-                wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver" });
-                    item.Tag = joint;
+                    Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
+                        wrapped!=null?wrapped.parentGroup.ToString():"from-file",
+                        wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver",
+                        wheelData!=null?wheelData.GetTypeString():"No Wheel",
+                        wheelData!=null?Convert.ToString(wheelData.radius) + " cm":"None",
+                        wheelData!=null?Convert.ToString(wheelData.width) + " cm":"None",
+                        wheelData!=null?wheelData.center.ToString():"None"});
+                    item.Tag = node;
                     lstJoints.Items.Add(item);
                 }
             }
@@ -56,7 +71,7 @@ public partial class ControlGroups
         foreach (CustomRigidGroup group in groupList)
         {
             System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {group.ToString(),
-            group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No"});
+                group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No", group.convex?"Convex":"Concave"});
             item.Tag = group;
             lstGroups.Items.Add(item);
         }
@@ -110,10 +125,10 @@ public partial class ControlGroups
 
     private void lstJoints_DoubleClick(object sender, EventArgs e)
     {
-        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is SkeletalJoint_Base)
+        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
         {
-            SkeletalJoint_Base joint = (SkeletalJoint_Base)lstJoints.SelectedItems[0].Tag;
-            driveChooser.ShowDialog(joint);
+            SkeletalJoint_Base joint = ((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
+            driveChooser.ShowDialog(joint, (RigidNode)lstJoints.SelectedItems[0].Tag);
             UpdateJointList();
         }
     }
@@ -160,6 +175,12 @@ public partial class ControlGroups
                 bool cVal = ((CustomRigidGroup)item.Tag).highRes;
                 ((CustomRigidGroup)item.Tag).highRes = !cVal;
                 item.SubItems[3].Text = !cVal ? "Yes" : "No";
+            }
+            else if (column == 4)
+            {
+                bool cVal = ((CustomRigidGroup)item.Tag).convex;
+                ((CustomRigidGroup)item.Tag).convex = !cVal;
+                item.SubItems[4].Text = !cVal ? "Convex" : "Concave";
             }
         }
     }

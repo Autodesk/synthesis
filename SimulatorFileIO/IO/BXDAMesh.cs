@@ -4,23 +4,53 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
+/// <summary>
+/// Represents a 3D object composed of one or more <see cref="BXDAMesh.BXDASubMesh"/> and physical properties of the object.
+/// </summary>
 public class BXDAMesh
 {
+    /// <summary>
+    /// Represents an indexed triangle mesh with normals and optional colors and texture coordinates.
+    /// </summary>
     public class BXDASubMesh
     {
+        /// <summary>
+        /// Vertex positions.  Three values (X, Y, Z) per vertex.
+        /// </summary>
         public double[] verts;
+        /// <summary>
+        /// Vertex normals.  Three values (X, Y, Z) composing a unit vector per vertex.
+        /// </summary>
         public double[] norms;
+        /// <summary>
+        /// Texture mapping values.  Two values (U, V) per vertex.  If the mesh has no texture mapping set this to null.
+        /// </summary>
         public double[] textureCoords;
+        /// <summary>
+        /// Color mapping values.  One value per vertex.  If the mesh has no colors set this to null.
+        /// </summary>
+        /// <remarks>
+        /// Colors are laid out with one byte per component.  Least significant to most significant byte it is red, green, blue, alpha.
+        /// </remarks>
         public uint[] colors;
+        /// <summary>
+        /// The indicies for this mesh.  Three vertex indicies per triangle.
+        /// </summary>
         public int[] indicies;
     }
 
+    /// <summary>
+    /// The physical properties of this object.
+    /// </summary>
     public PhysicalProperties physics
     {
         get;
         private set;
     }
 
+    /// <summary>
+    /// This object's sub meshes.
+    /// </summary>
     public List<BXDASubMesh> meshes
     {
         get;
@@ -150,6 +180,11 @@ public class BXDAMesh
         writer.Close();
     }
 
+    /// <summary>
+    /// Reads the BXDA file stored at the given path.
+    /// </summary>
+    /// <param name="path">The file to read from</param>
+    /// <exception cref="FormatException">If the given file was created by a different API version.</exception>
     public void ReadBXDA(string path)
     {
         meshes.Clear();

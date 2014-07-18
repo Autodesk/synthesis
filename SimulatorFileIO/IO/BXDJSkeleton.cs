@@ -5,12 +5,28 @@ using System.IO;
 public class BXDJSkeleton
 {
     /// <summary>
+    /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generate name.
+    /// </summary>
+    /// <param name="baseNode">The base node of the skeleton</param>
+    public static void SetupFileNames(RigidNode_Base baseNode)
+    {
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        baseNode.ListAllNodes(nodes);
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].GetModelFileName() == null)
+            {
+                nodes[i].SetModelFileName("node_" + i + ".bxda");
+            }
+        }
+    }
+
+    /// <summary>
     /// Writes out the skeleton file for the skeleton with the base provided to the path provided.
     /// </summary>
     /// <param name="path">The output file path</param>
     /// <param name="baseNode">The base node of the skeleton</param>
-    /// <param name="bxdaOutputPath">Returns a mapping of node to expected output path of the BXDA file</param>
-    public static void WriteSkeleton(String path, RigidNode_Base baseNode, out Dictionary<RigidNode_Base, string> bxdaOutputPath)
+    public static void WriteSkeleton(String path, RigidNode_Base baseNode)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
@@ -45,11 +61,9 @@ public class BXDJSkeleton
         }
 
         // Begin IO
-        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
+        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.Create));
 
         writer.Write(BXDIO.FORMAT_VERSION);
-
-        bxdaOutputPath = new Dictionary<RigidNode_Base, string>(); // Prepare output paths
 
         // Write node values
         writer.Write(nodes.Count);
@@ -60,7 +74,6 @@ public class BXDJSkeleton
 
             writer.Write(nodes[i].GetModelFileName());
             writer.Write(nodes[i].GetModelID());
-            bxdaOutputPath.Add(nodes[i], Directory.GetParent(path) + "\\" + nodes[i].GetModelFileName());
             if (parentID[i] >= 0)
             {
                 writer.Write(driverID[i]);
