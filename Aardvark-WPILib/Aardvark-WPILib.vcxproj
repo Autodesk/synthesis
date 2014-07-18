@@ -1,0 +1,456 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{35D57FF3-6647-4B8C-AFB9-E680D60DE40E}</ProjectGuid>
+    <RootNamespace>AardvarkWPILib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Accelerometer.cpp" />
+    <ClCompile Include="ADXL345_I2C.cpp" />
+    <ClCompile Include="ADXL345_SPI.cpp" />
+    <ClCompile Include="AnalogChannel.cpp" />
+    <ClCompile Include="AnalogModule.cpp" />
+    <ClCompile Include="AnalogPotentiometer.cpp" />
+    <ClCompile Include="AnalogTrigger.cpp" />
+    <ClCompile Include="AnalogTriggerOutput.cpp" />
+    <ClCompile Include="Buttons\AnalogIOButton.cpp" />
+    <ClCompile Include="Buttons\Button.cpp" />
+    <ClCompile Include="Buttons\ButtonScheduler.cpp" />
+    <ClCompile Include="Buttons\CancelButtonScheduler.cpp" />
+    <ClCompile Include="Buttons\DigitalIOButton.cpp" />
+    <ClCompile Include="Buttons\HeldButtonScheduler.cpp" />
+    <ClCompile Include="Buttons\InternalButton.cpp" />
+    <ClCompile Include="Buttons\JoystickButton.cpp" />
+    <ClCompile Include="Buttons\NetworkButton.cpp" />
+    <ClCompile Include="Buttons\PressedButtonScheduler.cpp" />
+    <ClCompile Include="Buttons\ReleasedButtonScheduler.cpp" />
+    <ClCompile Include="Buttons\ToggleButtonScheduler.cpp" />
+    <ClCompile Include="Buttons\Trigger.cpp" />
+    <ClCompile Include="CANJaguar.cpp" />
+    <ClCompile Include="Commands\Command.cpp" />
+    <ClCompile Include="Commands\CommandGroup.cpp" />
+    <ClCompile Include="Commands\CommandGroupEntry.cpp" />
+    <ClCompile Include="Commands\PIDCommand.cpp" />
+    <ClCompile Include="Commands\PIDSubsystem.cpp" />
+    <ClCompile Include="Commands\PrintCommand.cpp" />
+    <ClCompile Include="Commands\Scheduler.cpp" />
+    <ClCompile Include="Commands\StartCommand.cpp" />
+    <ClCompile Include="Commands\Subsystem.cpp" />
+    <ClCompile Include="Commands\WaitCommand.cpp" />
+    <ClCompile Include="Commands\WaitForChildren.cpp" />
+    <ClCompile Include="Commands\WaitUntilCommand.cpp" />
+    <ClCompile Include="Compressor.cpp" />
+    <ClCompile Include="Counter.cpp" />
+    <ClCompile Include="Dashboard.cpp" />
+    <ClCompile Include="DigitalInput.cpp" />
+    <ClCompile Include="DigitalModule.cpp" />
+    <ClCompile Include="DigitalOutput.cpp" />
+    <ClCompile Include="DigitalSource.cpp" />
+    <ClCompile Include="DoubleSolenoid.cpp" />
+    <ClCompile Include="DriverStation.cpp" />
+    <ClCompile Include="DriverStationEnhancedIO.cpp" />
+    <ClCompile Include="DriverStationLCD.cpp" />
+    <ClCompile Include="Encoder.cpp" />
+    <ClCompile Include="Error.cpp" />
+    <ClCompile Include="ErrorBase.cpp" />
+    <ClCompile Include="GearTooth.cpp" />
+    <ClCompile Include="Gyro.cpp" />
+    <ClCompile Include="HiTechnicColorSensor.cpp" />
+    <ClCompile Include="HiTechnicCompass.cpp" />
+    <ClCompile Include="I2C.cpp" />
+    <ClCompile Include="InterruptableSensorBase.cpp" />
+    <ClCompile Include="IterativeRobot.cpp" />
+    <ClCompile Include="Jaguar.cpp" />
+    <ClCompile Include="Joystick.cpp" />
+    <ClCompile Include="Kinect.cpp" />
+    <ClCompile Include="KinectStick.cpp" />
+    <ClCompile Include="LiveWindow\LiveWindow.cpp" />
+    <ClCompile Include="LiveWindow\LiveWindowStatusListener.cpp" />
+    <ClCompile Include="Module.cpp" />
+    <ClCompile Include="MotorSafetyHelper.cpp" />
+    <ClCompile Include="networktables2\AbstractNetworkTableEntryStore.cpp" />
+    <ClCompile Include="networktables2\client\ClientConnectionAdapter.cpp" />
+    <ClCompile Include="networktables2\client\ClientConnectionState.cpp" />
+    <ClCompile Include="networktables2\client\ClientNetworkTableEntryStore.cpp" />
+    <ClCompile Include="networktables2\client\NetworkTableClient.cpp" />
+    <ClCompile Include="networktables2\connection\BadMessageException.cpp" />
+    <ClCompile Include="networktables2\connection\ConnectionMonitorThread.cpp" />
+    <ClCompile Include="networktables2\connection\DataIOStream.cpp" />
+    <ClCompile Include="networktables2\connection\NetworkTableConnection.cpp" />
+    <ClCompile Include="networktables2\NetworkTableEntry.cpp" />
+    <ClCompile Include="networktables2\NetworkTableNode.cpp" />
+    <ClCompile Include="networktables2\OutgoingEntryReciever.cpp" />
+    <ClCompile Include="networktables2\server\NetworkTableServer.cpp" />
+    <ClCompile Include="networktables2\server\ServerConnectionAdapter.cpp" />
+    <ClCompile Include="networktables2\server\ServerConnectionList.cpp" />
+    <ClCompile Include="networktables2\server\ServerConnectionState.cpp" />
+    <ClCompile Include="networktables2\server\ServerIncomingStreamMonitor.cpp" />
+    <ClCompile Include="networktables2\server\ServerNetworkTableEntryStore.cpp" />
+    <ClCompile Include="networktables2\stream\FDIOStream.cpp" />
+    <ClCompile Include="networktables2\stream\SocketServerStreamProvider.cpp" />
+    <ClCompile Include="networktables2\stream\SocketStreamFactory.cpp" />
+    <ClCompile Include="networktables2\stream\SocketStreams.cpp" />
+    <ClCompile Include="networktables2\TableKeyExistsWithDifferentTypeException.cpp" />
+    <ClCompile Include="networktables2\thread\DefaultThreadManger.cpp" />
+    <ClCompile Include="networktables2\TransactionDirtier.cpp" />
+    <ClCompile Include="networktables2\type\ArrayData.cpp" />
+    <ClCompile Include="networktables2\type\ArrayEntryType.cpp" />
+    <ClCompile Include="networktables2\type\BooleanArray.cpp" />
+    <ClCompile Include="networktables2\type\ComplexData.cpp" />
+    <ClCompile Include="networktables2\type\ComplexEntryType.cpp" />
+    <ClCompile Include="networktables2\type\DefaultEntryTypes.cpp" />
+    <ClCompile Include="networktables2\type\NetworkTableEntryType.cpp" />
+    <ClCompile Include="networktables2\type\NetworkTableEntryTypeManager.cpp" />
+    <ClCompile Include="networktables2\type\NumberArray.cpp" />
+    <ClCompile Include="networktables2\type\StringArray.cpp" />
+    <ClCompile Include="networktables2\util\EOFException.cpp" />
+    <ClCompile Include="networktables2\util\IllegalStateException.cpp" />
+    <ClCompile Include="networktables2\util\IOException.cpp" />
+    <ClCompile Include="networktables2\util\StringCache.cpp" />
+    <ClCompile Include="networktables2\util\System.cpp" />
+    <ClCompile Include="networktables2\WriteManager.cpp" />
+    <ClCompile Include="networktables\NetworkTable.cpp" />
+    <ClCompile Include="networktables\NetworkTableConnectionListenerAdapter.cpp" />
+    <ClCompile Include="networktables\NetworkTableKeyListenerAdapter.cpp" />
+    <ClCompile Include="networktables\NetworkTableListenerAdapter.cpp" />
+    <ClCompile Include="networktables\NetworkTableMode.cpp" />
+    <ClCompile Include="networktables\NetworkTableProvider.cpp" />
+    <ClCompile Include="networktables\NetworkTableSubListenerAdapter.cpp" />
+    <ClCompile Include="Notifier.cpp" />
+    <ClCompile Include="OSAL\Synchronized.cpp" />
+    <ClCompile Include="OSAL\Task.cpp" />
+    <ClCompile Include="PIDController.cpp" />
+    <ClCompile Include="Preferences.cpp" />
+    <ClCompile Include="PWM.cpp" />
+    <ClCompile Include="Relay.cpp" />
+    <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="RobotBase.cpp" />
+    <ClCompile Include="RobotDrive.cpp" />
+    <ClCompile Include="SafePWM.cpp" />
+    <ClCompile Include="SensorBase.cpp" />
+    <ClCompile Include="SerialPort.cpp" />
+    <ClCompile Include="Servo.cpp" />
+    <ClCompile Include="SimpleRobot.cpp" />
+    <ClCompile Include="SmartDashboard\SendableChooser.cpp" />
+    <ClCompile Include="SmartDashboard\SmartDashboard.cpp" />
+    <ClCompile Include="Solenoid.cpp" />
+    <ClCompile Include="SolenoidBase.cpp" />
+    <ClCompile Include="SPI.cpp" />
+    <ClCompile Include="Synchronized.cpp" />
+    <ClCompile Include="tables\TableKeyNotDefinedException.cpp" />
+    <ClCompile Include="Talon.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Ultrasonic.cpp" />
+    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="Victor.cpp" />
+    <ClCompile Include="Vision2009\AxisCamera.cpp" />
+    <ClCompile Include="Vision2009\BaeUtilities.cpp" />
+    <ClCompile Include="Vision2009\FrcError.cpp" />
+    <ClCompile Include="Vision2009\TrackAPI.cpp" />
+    <ClCompile Include="Vision2009\VisionAPI.cpp" />
+    <ClCompile Include="Vision\AxisCamera.cpp" />
+    <ClCompile Include="Vision\AxisCameraParams.cpp" />
+    <ClCompile Include="Vision\BinaryImage.cpp" />
+    <ClCompile Include="Vision\ColorImage.cpp" />
+    <ClCompile Include="Vision\EnumCameraParameter.cpp" />
+    <ClCompile Include="Vision\HSLImage.cpp" />
+    <ClCompile Include="Vision\ImageBase.cpp" />
+    <ClCompile Include="Vision\IntCameraParameter.cpp" />
+    <ClCompile Include="Vision\MonoImage.cpp" />
+    <ClCompile Include="Vision\PCVideoServer.cpp" />
+    <ClCompile Include="Vision\RGBImage.cpp" />
+    <ClCompile Include="Vision\Threshold.cpp" />
+    <ClCompile Include="Watchdog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Accelerometer.h" />
+    <ClInclude Include="ADXL345_I2C.h" />
+    <ClInclude Include="ADXL345_SPI.h" />
+    <ClInclude Include="AnalogChannel.h" />
+    <ClInclude Include="AnalogModule.h" />
+    <ClInclude Include="AnalogPotentiometer.h" />
+    <ClInclude Include="AnalogTrigger.h" />
+    <ClInclude Include="AnalogTriggerOutput.h" />
+    <ClInclude Include="Base.h" />
+    <ClInclude Include="Buttons\AnalogIOButton.h" />
+    <ClInclude Include="Buttons\Button.h" />
+    <ClInclude Include="Buttons\ButtonScheduler.h" />
+    <ClInclude Include="Buttons\CancelButtonScheduler.h" />
+    <ClInclude Include="Buttons\DigitalIOButton.h" />
+    <ClInclude Include="Buttons\HeldButtonScheduler.h" />
+    <ClInclude Include="Buttons\InternalButton.h" />
+    <ClInclude Include="Buttons\JoystickButton.h" />
+    <ClInclude Include="Buttons\NetworkButton.h" />
+    <ClInclude Include="Buttons\PressedButtonScheduler.h" />
+    <ClInclude Include="Buttons\ReleasedButtonScheduler.h" />
+    <ClInclude Include="Buttons\ToggleButtonScheduler.h" />
+    <ClInclude Include="Buttons\Trigger.h" />
+    <ClInclude Include="CANJaguar.h" />
+    <ClInclude Include="CAN\can_proto.h" />
+    <ClInclude Include="CAN\JaguarCANDriver.h" />
+    <ClInclude Include="ChipObject.h" />
+    <ClInclude Include="ChipObject\chipObjectAliases.h" />
+    <ClInclude Include="ChipObject\fpgainterfacecapi\NiFpga.h" />
+    <ClInclude Include="ChipObject\NiFpga.h" />
+    <ClInclude Include="ChipObject\NiRio.h" />
+    <ClInclude Include="ChipObject\printFpgaVersion.h" />
+    <ClInclude Include="ChipObject\tAccumulator.h" />
+    <ClInclude Include="ChipObject\tAI.h" />
+    <ClInclude Include="ChipObject\tAlarm.h" />
+    <ClInclude Include="ChipObject\tAnalogTrigger.h" />
+    <ClInclude Include="ChipObject\tCounter.h" />
+    <ClInclude Include="ChipObject\tDIO.h" />
+    <ClInclude Include="ChipObject\tDMA.h" />
+    <ClInclude Include="ChipObject\tDMAManager.h" />
+    <ClInclude Include="ChipObject\tEncoder.h" />
+    <ClInclude Include="ChipObject\tGlobal.h" />
+    <ClInclude Include="ChipObject\tInterrupt.h" />
+    <ClInclude Include="ChipObject\tInterruptManager.h" />
+    <ClInclude Include="ChipObject\tSolenoid.h" />
+    <ClInclude Include="ChipObject\tSPI.h" />
+    <ClInclude Include="ChipObject\tSystem.h" />
+    <ClInclude Include="ChipObject\tSystemInterface.h" />
+    <ClInclude Include="ChipObject\tWatchdog.h" />
+    <ClInclude Include="Commands\Command.h" />
+    <ClInclude Include="Commands\CommandGroup.h" />
+    <ClInclude Include="Commands\CommandGroupEntry.h" />
+    <ClInclude Include="Commands\PIDCommand.h" />
+    <ClInclude Include="Commands\PIDSubsystem.h" />
+    <ClInclude Include="Commands\PrintCommand.h" />
+    <ClInclude Include="Commands\Scheduler.h" />
+    <ClInclude Include="Commands\StartCommand.h" />
+    <ClInclude Include="Commands\Subsystem.h" />
+    <ClInclude Include="Commands\WaitCommand.h" />
+    <ClInclude Include="Commands\WaitForChildren.h" />
+    <ClInclude Include="Commands\WaitUntilCommand.h" />
+    <ClInclude Include="Compressor.h" />
+    <ClInclude Include="Controller.h" />
+    <ClInclude Include="Counter.h" />
+    <ClInclude Include="CounterBase.h" />
+    <ClInclude Include="Dashboard.h" />
+    <ClInclude Include="DashboardBase.h" />
+    <ClInclude Include="DigitalInput.h" />
+    <ClInclude Include="DigitalModule.h" />
+    <ClInclude Include="DigitalOutput.h" />
+    <ClInclude Include="DigitalSource.h" />
+    <ClInclude Include="DoubleSolenoid.h" />
+    <ClInclude Include="DriverStation.h" />
+    <ClInclude Include="DriverStationEnhancedIO.h" />
+    <ClInclude Include="DriverStationLCD.h" />
+    <ClInclude Include="Encoder.h" />
+    <ClInclude Include="Error.h" />
+    <ClInclude Include="ErrorBase.h" />
+    <ClInclude Include="GearTooth.h" />
+    <ClInclude Include="GenericHID.h" />
+    <ClInclude Include="Gyro.h" />
+    <ClInclude Include="HiTechnicColorSensor.h" />
+    <ClInclude Include="HiTechnicCompass.h" />
+    <ClInclude Include="I2C.h" />
+    <ClInclude Include="Interfaces\Potentiometer.h" />
+    <ClInclude Include="InterruptableSensorBase.h" />
+    <ClInclude Include="IterativeRobot.h" />
+    <ClInclude Include="Jaguar.h" />
+    <ClInclude Include="Joystick.h" />
+    <ClInclude Include="Kinect.h" />
+    <ClInclude Include="KinectStick.h" />
+    <ClInclude Include="LiveWindow\LiveWindow.h" />
+    <ClInclude Include="LiveWindow\LiveWindowSendable.h" />
+    <ClInclude Include="LiveWindow\LiveWindowStatusListener.h" />
+    <ClInclude Include="Module.h" />
+    <ClInclude Include="MotorSafety.h" />
+    <ClInclude Include="MotorSafetyHelper.h" />
+    <ClInclude Include="NetworkCommunication\AICalibration.h" />
+    <ClInclude Include="NetworkCommunication\FRCComm.h" />
+    <ClInclude Include="NetworkCommunication\LoadOut.h" />
+    <ClInclude Include="NetworkCommunication\symModuleLink.h" />
+    <ClInclude Include="NetworkCommunication\UsageReporting.h" />
+    <ClInclude Include="networktables2\AbstractNetworkTableEntryStore.h" />
+    <ClInclude Include="networktables2\client\ClientConnectionAdapter.h" />
+    <ClInclude Include="networktables2\client\ClientConnectionListenerManager.h" />
+    <ClInclude Include="networktables2\client\ClientConnectionState.h" />
+    <ClInclude Include="networktables2\client\ClientNetworkTableEntryStore.h" />
+    <ClInclude Include="networktables2\client\NetworkTableClient.h" />
+    <ClInclude Include="networktables2\connection\BadMessageException.h" />
+    <ClInclude Include="networktables2\connection\ConnectionAdapter.h" />
+    <ClInclude Include="networktables2\connection\ConnectionMonitorThread.h" />
+    <ClInclude Include="networktables2\connection\DataIOStream.h" />
+    <ClInclude Include="networktables2\connection\NetworkTableConnection.h" />
+    <ClInclude Include="networktables2\FlushableOutgoingEntryReceiver.h" />
+    <ClInclude Include="networktables2\IncomingEntryReceiver.h" />
+    <ClInclude Include="networktables2\NetworkTableEntry.h" />
+    <ClInclude Include="networktables2\NetworkTableMessageType.h" />
+    <ClInclude Include="networktables2\NetworkTableNode.h" />
+    <ClInclude Include="networktables2\OutgoingEntryReceiver.h" />
+    <ClInclude Include="networktables2\server\NetworkTableServer.h" />
+    <ClInclude Include="networktables2\server\ServerAdapterManager.h" />
+    <ClInclude Include="networktables2\server\ServerConnectionAdapter.h" />
+    <ClInclude Include="networktables2\server\ServerConnectionList.h" />
+    <ClInclude Include="networktables2\server\ServerConnectionState.h" />
+    <ClInclude Include="networktables2\server\ServerIncomingConnectionListener.h" />
+    <ClInclude Include="networktables2\server\ServerIncomingStreamMonitor.h" />
+    <ClInclude Include="networktables2\server\ServerNetworkTableEntryStore.h" />
+    <ClInclude Include="networktables2\stream\FDIOStream.h" />
+    <ClInclude Include="networktables2\stream\IOStream.h" />
+    <ClInclude Include="networktables2\stream\IOStreamFactory.h" />
+    <ClInclude Include="networktables2\stream\IOStreamProvider.h" />
+    <ClInclude Include="networktables2\stream\SocketServerStreamProvider.h" />
+    <ClInclude Include="networktables2\stream\SocketStreamFactory.h" />
+    <ClInclude Include="networktables2\stream\SocketStreams.h" />
+    <ClInclude Include="networktables2\TableKeyExistsWithDifferentTypeException.h" />
+    <ClInclude Include="networktables2\thread\DefaultThreadManager.h" />
+    <ClInclude Include="networktables2\thread\NTThread.h" />
+    <ClInclude Include="networktables2\thread\NTThreadManager.h" />
+    <ClInclude Include="networktables2\thread\PeriodicRunnable.h" />
+    <ClInclude Include="networktables2\TransactionDirtier.h" />
+    <ClInclude Include="networktables2\type\ArrayData.h" />
+    <ClInclude Include="networktables2\type\ArrayEntryType.h" />
+    <ClInclude Include="networktables2\type\BooleanArray.h" />
+    <ClInclude Include="networktables2\type\ComplexData.h" />
+    <ClInclude Include="networktables2\type\ComplexEntryType.h" />
+    <ClInclude Include="networktables2\type\DefaultEntryTypes.h" />
+    <ClInclude Include="networktables2\type\NetworkTableEntryType.h" />
+    <ClInclude Include="networktables2\type\NetworkTableEntryTypeManager.h" />
+    <ClInclude Include="networktables2\type\NumberArray.h" />
+    <ClInclude Include="networktables2\type\StringArray.h" />
+    <ClInclude Include="networktables2\util\EOFException.h" />
+    <ClInclude Include="networktables2\util\IllegalStateException.h" />
+    <ClInclude Include="networktables2\util\IOException.h" />
+    <ClInclude Include="networktables2\util\StringCache.h" />
+    <ClInclude Include="networktables2\util\System.h" />
+    <ClInclude Include="networktables2\WriteManager.h" />
+    <ClInclude Include="networktables\NetworkTable.h" />
+    <ClInclude Include="networktables\NetworkTableConnectionListenerAdapter.h" />
+    <ClInclude Include="networktables\NetworkTableKeyListenerAdapter.h" />
+    <ClInclude Include="networktables\NetworkTableListenerAdapter.h" />
+    <ClInclude Include="networktables\NetworkTableMode.h" />
+    <ClInclude Include="networktables\NetworkTableProvider.h" />
+    <ClInclude Include="networktables\NetworkTableSubListenerAdapter.h" />
+    <ClInclude Include="nivision.h" />
+    <ClInclude Include="Notifier.h" />
+    <ClInclude Include="OSAL\Synchronized.h" />
+    <ClInclude Include="OSAL\Task.h" />
+    <ClInclude Include="pcre.h" />
+    <ClInclude Include="PIDController.h" />
+    <ClInclude Include="PIDOutput.h" />
+    <ClInclude Include="PIDSource.h" />
+    <ClInclude Include="Preferences.h" />
+    <ClInclude Include="PWM.h" />
+    <ClInclude Include="Relay.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="RobotBase.h" />
+    <ClInclude Include="RobotDrive.h" />
+    <ClInclude Include="SafePWM.h" />
+    <ClInclude Include="SensorBase.h" />
+    <ClInclude Include="SerialPort.h" />
+    <ClInclude Include="Servo.h" />
+    <ClInclude Include="SimpleRobot.h" />
+    <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="SmartDashboard\NamedSendable.h" />
+    <ClInclude Include="SmartDashboard\Sendable.h" />
+    <ClInclude Include="SmartDashboard\SendableChooser.h" />
+    <ClInclude Include="SmartDashboard\SmartDashboard.h" />
+    <ClInclude Include="Solenoid.h" />
+    <ClInclude Include="SolenoidBase.h" />
+    <ClInclude Include="SpeedController.h" />
+    <ClInclude Include="SPI.h" />
+    <ClInclude Include="Synchronized.h" />
+    <ClInclude Include="tables\IRemote.h" />
+    <ClInclude Include="tables\IRemoteConnectionListener.h" />
+    <ClInclude Include="tables\ITable.h" />
+    <ClInclude Include="tables\ITableListener.h" />
+    <ClInclude Include="tables\ITableProvider.h" />
+    <ClInclude Include="tables\TableKeyNotDefinedException.h" />
+    <ClInclude Include="Talon.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Ultrasonic.h" />
+    <ClInclude Include="Utility.h" />
+    <ClInclude Include="Victor.h" />
+    <ClInclude Include="visa\visa.h" />
+    <ClInclude Include="visa\visatype.h" />
+    <ClInclude Include="Vision2009\AxisCamera.h" />
+    <ClInclude Include="Vision2009\BaeUtilities.h" />
+    <ClInclude Include="Vision2009\FrcError.h" />
+    <ClInclude Include="Vision2009\TrackAPI.h" />
+    <ClInclude Include="Vision2009\VisionAPI.h" />
+    <ClInclude Include="Vision\AxisCamera.h" />
+    <ClInclude Include="Vision\AxisCameraParams.h" />
+    <ClInclude Include="Vision\BinaryImage.h" />
+    <ClInclude Include="Vision\ColorImage.h" />
+    <ClInclude Include="Vision\EnumCameraParameter.h" />
+    <ClInclude Include="Vision\HSLImage.h" />
+    <ClInclude Include="Vision\ImageBase.h" />
+    <ClInclude Include="Vision\IntCameraParameter.h" />
+    <ClInclude Include="Vision\MonoImage.h" />
+    <ClInclude Include="Vision\PCVideoServer.h" />
+    <ClInclude Include="Vision\RGBImage.h" />
+    <ClInclude Include="Vision\Threshold.h" />
+    <ClInclude Include="Watchdog.h" />
+    <ClInclude Include="WPIErrors.h" />
+    <ClInclude Include="WPILib.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
