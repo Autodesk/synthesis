@@ -28,4 +28,28 @@ namespace ConvexAPI {
 		memcpy_s(ptr, cpyCount, backing->mIndices, cpyCount);
 		return verts;
 	}
+
+	void StandaloneConvexHull::computeFor(NxU32 vertCount, array<NxF32> ^verts){
+		if (backing != NULL){
+			library->ReleaseResult(*backing);
+		}
+
+		pin_ptr<NxF32> vertsP = &verts[0];
+		//NxF32 *vertCopy = (NxF32*) malloc(sizeof(NxF32) * vertCount);
+		CONVEX_DECOMPOSITION::HullDesc desc(CONVEX_DECOMPOSITION::HullFlag::QF_TRIANGLES,vertCount, vertsP,sizeof(NxF32)*3);
+		CONVEX_DECOMPOSITION::HullError error = library->CreateConvexHull(desc, *backing);
+		printf("Error: %d\n", error);
+	}
+	cli::array<NxF32> ^StandaloneConvexHull::getVertices(){
+		cli::array<NxF32> ^verts = gcnew cli::array<NxF32>(backing->mNumOutputVertices * 3);
+		System::Runtime::InteropServices::Marshal::Copy(IntPtr((void*)backing->mOutputVertices),verts,0,verts->Length);
+		return verts;
+	}
+	cli::array<NxU32> ^StandaloneConvexHull::getIndicies(){
+		cli::array<NxU32> ^verts = gcnew cli::array<NxU32>(backing->mNumFaces * 3);
+		pin_ptr<NxU32> ptr = &verts[0];
+		int cpyCount = backing->mNumFaces * 3 * sizeof(NxU32);
+		memcpy_s(ptr, cpyCount, backing->mIndices, cpyCount);
+		return verts;
+	}
 }

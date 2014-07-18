@@ -24,7 +24,10 @@ static class Program
         }
         BXDAMesh mesh = exp.GetOutput();
 
-        BXDAMesh.BXDASubMesh hull = ConvexHullCalculator.GetHull(mesh);
+        List<BXDAMesh.BXDASubMesh> hull = ConvexHullCalculator.GetHull(mesh, true);
+        BXDAMesh collider = new BXDAMesh();
+        collider.meshes.AddRange(hull);
+        collider.WriteBXDA("C:/Temp/test.bxda");
         Console.ReadLine();
     }
 

@@ -20,7 +20,6 @@
     <ClCompile Include="NvSplitMesh.cpp" />
     <ClCompile Include="NvStanHull.cpp" />
     <ClCompile Include="NvThreadConfig.cpp" />
-    <ClCompile Include="wavefront.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NvConcavityVolume.h" />
@@ -35,7 +34,6 @@
     <ClInclude Include="NvStanHull.h" />
     <ClInclude Include="NvThreadConfig.h" />
     <ClInclude Include="NvUserMemAlloc.h" />
-    <ClInclude Include="wavefront.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NvFloatMath.inl" />

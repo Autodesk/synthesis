@@ -2360,8 +2360,9 @@ int4 FindSimplex(float3 *verts,NxI32 verts_count,Array<NxI32> &allow)
 	NxI32 p0 = maxdirsterid(verts,verts_count, basis[0],allow);
 	NxI32	p1 = maxdirsterid(verts,verts_count,-basis[0],allow);
 	basis[0] = verts[p0]-verts[p1];
-	if(p0==p1 || basis[0]==float3(0,0,0)) 
+	if(p0==p1 || basis[0]==float3(0,0,0)) {
 		return int4(-1,-1,-1,-1);
+	}
 	basis[1] = cross(float3(     1, 0.02f, 0),basis[0]);
 	basis[2] = cross(float3(-0.02f,     1, 0),basis[0]);
 	basis[1] = normalize( (magnitude(basis[1])>magnitude(basis[2])) ? basis[1]:basis[2]);
@@ -2370,14 +2371,16 @@ int4 FindSimplex(float3 *verts,NxI32 verts_count,Array<NxI32> &allow)
 	{
 		p2 = maxdirsterid(verts,verts_count,-basis[1],allow);
 	}
-	if(p2 == p0 || p2 == p1) 
+	if(p2 == p0 || p2 == p1)  {
 		return int4(-1,-1,-1,-1);
+	}
 	basis[1] = verts[p2] - verts[p0];
 	basis[2] = normalize(cross(basis[1],basis[0]));
 	NxI32 p3 = maxdirsterid(verts,verts_count,basis[2],allow);
 	if(p3==p0||p3==p1||p3==p2||!hasVolume(verts, p0, p1, p2, p3)) p3 = maxdirsterid(verts,verts_count,-basis[2],allow);
-	if(p3==p0||p3==p1||p3==p2) 
+	if(p3==p0||p3==p1||p3==p2)  {
 		return int4(-1,-1,-1,-1);
+	}
 	assert(!(p0==p1||p0==p2||p0==p3||p1==p2||p1==p3||p2==p3));
 	if(dot(verts[p3]-verts[p0],cross(verts[p1]-verts[p0],verts[p2]-verts[p0])) <0) {Swap(p2,p3);}
 	return int4(p0,p1,p2,p3);
@@ -2849,7 +2852,6 @@ HullError HullLibrary::CreateConvexHull(const HullDesc       &desc,           //
 
 	if ( ok )
 	{
-
 
 		{
 			for (NxU32 i=0; i<ovcount; i++)

@@ -1,5 +1,6 @@
 // ConvexAPI.h
 #include "NvConvexDecomposition.h"
+#include "NvStanHull.h"
 #include <string.h>
 #include <stdio.h>
 using namespace System;
@@ -76,5 +77,32 @@ namespace ConvexAPI {
 		ConvexHullResult ^getConvexHullResult(NxU32 hullIndex);
 	};
 
+	public ref class StandaloneConvexHull {
+	private:
+		CONVEX_DECOMPOSITION::HullLibrary *library;
+		CONVEX_DECOMPOSITION::HullResult *backing;
+	public:
+		StandaloneConvexHull(){
+			backing = new CONVEX_DECOMPOSITION::HullResult();
+			library = new CONVEX_DECOMPOSITION::HullLibrary();
+		}
+		~StandaloneConvexHull(){
+			if (backing != NULL){
+				library->ReleaseResult(*backing);
+				delete backing;
+				backing = NULL;
+			}
+			delete library;
+		}
+		void computeFor(NxU32 vertCount, array<NxF32> ^verts);
 
+		NxU32 getTriangleCount() {
+			return backing->mNumFaces;
+		}
+		NxU32 getVertexCount() {
+			return backing->mNumOutputVertices;
+		}
+		cli::array<NxF32> ^getVertices();
+		cli::array<NxU32> ^getIndicies();
+	};
 }; // end of namespace
