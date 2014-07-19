@@ -6,7 +6,7 @@
  */
 
 #include "networktables2/client/ClientConnectionAdapter.h"
-#include "networktables2/util/System.h"
+#include "OSAL/System.h"
 
 void ClientConnectionAdapter::gotoState(ClientConnectionState* newState){
 	{

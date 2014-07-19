@@ -8,7 +8,7 @@
 #define ROBOT_H_
 
 #include "Base.h"
-#include "OSAL\Task.h"
+#include "OSAL/Task.h"
 #include "Watchdog.h"
 
 class DriverStation;

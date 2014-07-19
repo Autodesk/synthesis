@@ -58,13 +58,13 @@ public:
 
 	bool IsAccumulatorChannel();
 	void InitAccumulator();
-	void SetAccumulatorInitialValue(INT64 value);
+	void SetAccumulatorInitialValue(int64_t value);
 	void ResetAccumulator();
 	void SetAccumulatorCenter(int32_t center);
 	void SetAccumulatorDeadband(int32_t deadband);
-	INT64 GetAccumulatorValue();
+	int64_t GetAccumulatorValue();
 	uint32_t GetAccumulatorCount();
-	void GetAccumulatorOutput(INT64 *value, uint32_t *count);
+	void GetAccumulatorOutput(int64_t *value, uint32_t *count);
 	void SetVoltageForPID(bool shouldUseVoltageForPID);
 	
 	double PIDGet();
@@ -81,7 +81,7 @@ private:
 	uint32_t m_channel;
 	AnalogModule *m_module;
 	tAccumulator *m_accumulator;
-	INT64 m_accumulatorOffset;
+	int64_t m_accumulatorOffset;
 	bool m_shouldUseVoltageForPID;
 	
 	ITable *m_table;

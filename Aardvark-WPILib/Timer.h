@@ -8,7 +8,7 @@
 #define TIMER_H_
 
 #include "Base.h"
-#include "OSAL\Synchronized.h"
+#include "OSAL/Synchronized.h"
 
 typedef void (*TimerInterruptHandler)(void *param);
 

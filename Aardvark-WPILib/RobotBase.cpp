@@ -192,7 +192,7 @@ void RobotBase::startRobotTask(RobotFactory factory)
 	// Start robot task
 	// This is done to ensure that the C++ robot task is spawned with the floating point
 	// context save parameter.
-	Task *task = new Task("RobotTask", RobotBase::robotTask, Task::kDefaultPriority, 64000);
+	Task *task = new Task("RobotTask", RobotBase::robotTask);
 	RobotBase::setInstance((RobotBase*) factory());
 	RobotBase::getInstance().m_task = task;
 	task->Start(NULL);

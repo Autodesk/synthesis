@@ -8,18 +8,29 @@
 #define __NTTASK_H__
 
 #include "ErrorBase.h"
+#include <stdint.h>
+#include "OSAL/OSAL.h"
 
 /**
  * WPI task is a wrapper for the native Task object.
  * All WPILib tasks are managed by a static task manager for simplified cleanup.
  **/
-class NTTask : public ErrorBase
-{
+class NTTask: public ErrorBase {
 public:
-	static const UINT32 kDefaultPriority = 101;
-	static const INT32 kInvalidTaskID = -1;
+	enum NTTaskPriority {
+		kBackgroundBegin = 0x00010000,
+		kBackgroundEnd = 0x00020000,
+		kAboveNormal = 1,
+		kBelowNormal = -1,
+		kHighest = 2,
+		kIdle = -15,
+		kLowest = -2,
+		kNormal = 0,
+		kCritical = 15,
+	};
 
-	NTTask(const char* name, PTHREAD_START_ROUTINE function, INT32 priority = kDefaultPriority, UINT32 stackSize = 20000);
+	NTTask(const char* name, PTHREAD_START_ROUTINE function, NTTaskPriority priority =
+			kNormal);
 	virtual ~NTTask();
 
 	bool Start(void * arg0);
@@ -34,24 +45,25 @@ public:
 	bool Resume();
 
 	bool Verify();
-
-	INT32 GetPriority();
-	bool SetPriority(INT32 priority);
 	const char* GetName();
-	INT32 GetID();
 
 	PTHREAD_START_ROUTINE m_function;
 	void * m_Arg;
 private:
 	char* m_taskName;
+	NTTaskPriority m_priority;
 
 	bool StartInternal();
+#if USE_WINAPI
 	HANDLE m_Handle;
-	DWORD m_ID;
-	UINT32 m_stackSize;
-	INT32 m_priority;
-	bool HandleError(char *lpszFunction, int code = 0);
-	DISALLOW_COPY_AND_ASSIGN(NTTask);
+#elif USE_POSIX
+	pthread_t m_Handle;
+	bool valid;
+	static void* funcWrapper(void *task);
+#endif
+	bool HandleError(char *lpszFunction, int code = 0);DISALLOW_COPY_AND_ASSIGN(NTTask);
 };
+
 typedef NTTask Task ;
+
 #endif // __TASK_H__

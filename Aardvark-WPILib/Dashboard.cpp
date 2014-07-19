@@ -9,6 +9,8 @@
 #include "NetworkCommunication/UsageReporting.h"
 #include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
+#include <stdarg.h>
+#include <string.h>
 
 /**
  * Dashboard contructor.

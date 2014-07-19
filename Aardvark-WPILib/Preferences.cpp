@@ -176,13 +176,13 @@ bool Preferences::GetBoolean(const char *key, bool defaultValue)
 }
 
 /**
- * Returns the long (INT64) at the given key.  If this table does not have a value
+ * Returns the long (int64_t) at the given key.  If this table does not have a value
  * for that position, then the given defaultValue value will be returned.
  * @param key the key
  * @param defaultValue the value to return if none exists in the table
  * @return either the value in the table, or the defaultValue
  */
-INT64 Preferences::GetLong(const char *key, INT64 defaultValue)
+int64_t Preferences::GetLong(const char *key, int64_t defaultValue)
 {
 	std::string value = Get(key);
 	if (value.empty())
@@ -190,8 +190,8 @@ INT64 Preferences::GetLong(const char *key, INT64 defaultValue)
 
 	// Ummm... not available in our VxWorks...
 	//return strtoll(value.c_str(), NULL, 0);
-	INT64 intVal;
-	sscanf(value.c_str(), "%lld", &intVal);
+	int64_t intVal;
+	sscanf(value.c_str(), "%ld", &intVal);
 	return intVal;
 }
 
@@ -236,7 +236,7 @@ void Preferences::PutString(const char *key, const char *value)
 void Preferences::PutInt(const char *key, int value)
 {
 	char buf[32];
-	sprintf_s(buf, 32, "%d", value);
+	sprintf(buf, "%d", value);
 	Put(key, buf);
 }
 
@@ -254,7 +254,7 @@ void Preferences::PutInt(const char *key, int value)
 void Preferences::PutDouble(const char *key, double value)
 {
 	char buf[32];
-	sprintf_s(buf, 32, "%f", value);
+	sprintf(buf, "%f", value);
 	Put(key, buf);
 }
 
@@ -272,7 +272,7 @@ void Preferences::PutDouble(const char *key, double value)
 void Preferences::PutFloat(const char *key, float value)
 {
 	char buf[32];
-	sprintf_s(buf, 32, "%f", value);
+	sprintf(buf, "%f", value);
 	Put(key, buf);
 }
 
@@ -293,7 +293,7 @@ void Preferences::PutBoolean(const char *key, bool value)
 }
 
 /**
- * Puts the given long (INT64) into the preferences table.
+ * Puts the given long (int64_t) into the preferences table.
  *
  * <p>The key may not have any whitespace nor an equals sign</p>
  *
@@ -303,10 +303,10 @@ void Preferences::PutBoolean(const char *key, bool value)
  * @param key the key
  * @param value the value
  */
-void Preferences::PutLong(const char *key, INT64 value)
+void Preferences::PutLong(const char *key, int64_t value)
 {
 	char buf[32];
-	sprintf_s(buf, 32, "%lld", value);
+	sprintf(buf, "%ld", value);
 	Put(key, buf);
 }
 

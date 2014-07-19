@@ -5,6 +5,7 @@
  *      Author: Mitchell Wills
  */
 
+#include "OSAL/OSAL.h"
 #include "OSAL/Task.h"
 #include "networktables2/thread/DefaultThreadManager.h"
 #include <stdio.h>

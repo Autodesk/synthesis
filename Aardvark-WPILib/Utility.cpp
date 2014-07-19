@@ -12,12 +12,13 @@
 #include <stdio.h>
 #include "nivision.h"
 #include <stdint.h>
-#include <Windows.h>
+#include <string.h>
 
 #define DBG_DEMANGLE_PRINT_LEN 256  /* Num chars of demangled names to print */
 
-char *wpi_getLabel(UINT addr, int32_t *found)
-{return "TROLLLL";// Yeah no
+char *wpi_getLabel(uint32_t addr, int32_t *found)
+{
+	return "TROLLLL";// Yeah no
 }
 
 static int32_t wpiStackTask(int32_t taskId)
@@ -81,10 +82,10 @@ bool wpi_assert_impl(bool conditionValue,
 		// If an error message was specified, include it
 		// Build error string
 		if(message != NULL) {
-			sprintf_s(error, "Assertion failed: \"%s\", \"%s\" failed in %s() in %s at line %ld\n", 
+			sprintf(error, "Assertion failed: \"%s\", \"%s\" failed in %s() in %s at line %d\n",
 				message, conditionText, funcName, fileName, lineNumber);
 		} else {
-			sprintf_s(error, "Assertion failed: \"%s\" in %s() in %s at line %ld\n", 
+			sprintf(error, "Assertion failed: \"%s\" in %s() in %s at line %d\n",
 				conditionText, funcName, fileName, lineNumber);
 		}
 
@@ -116,10 +117,10 @@ void wpi_assertEqual_common_impl(int valueA,
 	// If an error message was specified, include it
 	// Build error string
 	if(message != NULL) {
-		sprintf_s(error, "Assertion failed: \"%s\", \"%d\" %s \"%d\" in %s() in %s at line %ld\n", 
+		sprintf(error, "Assertion failed: \"%s\", \"%d\" %s \"%d\" in %s() in %s at line %d\n",
 			message, valueA, equalityType, valueB, funcName, fileName, lineNumber);
 	} else {
-		sprintf_s(error, "Assertion failed: \"%d\" %s \"%d\" in %s() in %s at line %ld\n", 
+		sprintf(error, "Assertion failed: \"%d\" %s \"%d\" in %s() in %s at line %d\n",
 			valueA, equalityType, valueB, funcName, fileName, lineNumber);
 	}
 

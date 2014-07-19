@@ -32,18 +32,18 @@ void PWM::InitPWM(uint8_t moduleNumber, uint32_t channel)
 	Resource::CreateResourceObject(&allocated, tDIO::kNumSystems * kPwmChannels);
 	if (!CheckPWMModule(moduleNumber))
 	{
-		sprintf_s(buf, 64, "Digital Module %d", moduleNumber);
+		sprintf(buf, "Digital Module %d", moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckPWMChannel(channel))
 	{
-		sprintf_s(buf, 64, "PWM Channel %lu", channel);
+		sprintf(buf, "PWM Channel %lu", channel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 
-	sprintf_s(buf, 64, "PWM %lu (Module: %d)", channel, moduleNumber);
+	sprintf(buf, "PWM %lu (Module: %d)", channel, moduleNumber);
 	if (allocated->Allocate((moduleNumber - 1) * kPwmChannels + channel - 1, buf) == ~0ul)
 	{
 		CloneError(allocated);

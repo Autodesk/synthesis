@@ -51,18 +51,18 @@ typedef ViEvent      _VI_PTR ViPEvent;
 typedef ViObject             ViFindList;
 typedef ViFindList   _VI_PTR ViPFindList;
 
-#if defined(_VI_INT64_UINT64_DEFINED) && defined(_VISA_ENV_IS_64_BIT)
-typedef ViUInt64             ViBusAddress;
-typedef ViUInt64             ViBusSize;
-typedef ViUInt64             ViAttrState;
+#if defined(_VI_int64_t_Uint64_t_DEFINED) && defined(_VISA_ENV_IS_64_BIT)
+typedef ViUint64_t             ViBusAddress;
+typedef ViUint64_t             ViBusSize;
+typedef ViUint64_t             ViAttrState;
 #else
 typedef ViUInt32             ViBusAddress;
 typedef ViUInt32             ViBusSize;
 typedef ViUInt32             ViAttrState;
 #endif
 
-#if defined(_VI_INT64_UINT64_DEFINED)
-typedef ViUInt64             ViBusAddress64;
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
+typedef ViUint64_t             ViBusAddress64;
 typedef ViBusAddress64 _VI_PTR ViPBusAddress64;
 #endif
 
@@ -177,11 +177,11 @@ ViStatus _VI_FUNC  viIn32          (ViSession vi, ViUInt16 space,
 ViStatus _VI_FUNC  viOut32         (ViSession vi, ViUInt16 space,
                                     ViBusAddress offset, ViUInt32  val32);
 
-#if defined(_VI_INT64_UINT64_DEFINED)
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
 ViStatus _VI_FUNC  viIn64          (ViSession vi, ViUInt16 space,
-                                    ViBusAddress offset, ViPUInt64 val64);
+                                    ViBusAddress offset, ViPUint64_t val64);
 ViStatus _VI_FUNC  viOut64         (ViSession vi, ViUInt16 space,
-                                    ViBusAddress offset, ViUInt64  val64);
+                                    ViBusAddress offset, ViUint64_t  val64);
 
 ViStatus _VI_FUNC  viIn8Ex         (ViSession vi, ViUInt16 space,
                                     ViBusAddress64 offset, ViPUInt8  val8);
@@ -196,9 +196,9 @@ ViStatus _VI_FUNC  viIn32Ex        (ViSession vi, ViUInt16 space,
 ViStatus _VI_FUNC  viOut32Ex       (ViSession vi, ViUInt16 space,
                                     ViBusAddress64 offset, ViUInt32  val32);
 ViStatus _VI_FUNC  viIn64Ex        (ViSession vi, ViUInt16 space,
-                                    ViBusAddress64 offset, ViPUInt64 val64);
+                                    ViBusAddress64 offset, ViPUint64_t val64);
 ViStatus _VI_FUNC  viOut64Ex       (ViSession vi, ViUInt16 space,
-                                    ViBusAddress64 offset, ViUInt64  val64);
+                                    ViBusAddress64 offset, ViUint64_t  val64);
 #endif
 
 ViStatus _VI_FUNC  viMoveIn8       (ViSession vi, ViUInt16 space, ViBusAddress offset,
@@ -214,11 +214,11 @@ ViStatus _VI_FUNC  viMoveIn32      (ViSession vi, ViUInt16 space, ViBusAddress o
 ViStatus _VI_FUNC  viMoveOut32     (ViSession vi, ViUInt16 space, ViBusAddress offset,
                                     ViBusSize length, ViAUInt32 buf32);
 
-#if defined(_VI_INT64_UINT64_DEFINED)
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
 ViStatus _VI_FUNC  viMoveIn64      (ViSession vi, ViUInt16 space, ViBusAddress offset,
-                                    ViBusSize length, ViAUInt64 buf64);
+                                    ViBusSize length, ViAUint64_t buf64);
 ViStatus _VI_FUNC  viMoveOut64     (ViSession vi, ViUInt16 space, ViBusAddress offset,
-                                    ViBusSize length, ViAUInt64 buf64);
+                                    ViBusSize length, ViAUint64_t buf64);
 
 ViStatus _VI_FUNC  viMoveIn8Ex     (ViSession vi, ViUInt16 space, ViBusAddress64 offset,
                                     ViBusSize length, ViAUInt8  buf8);
@@ -233,9 +233,9 @@ ViStatus _VI_FUNC  viMoveIn32Ex    (ViSession vi, ViUInt16 space, ViBusAddress64
 ViStatus _VI_FUNC  viMoveOut32Ex   (ViSession vi, ViUInt16 space, ViBusAddress64 offset,
                                     ViBusSize length, ViAUInt32 buf32);
 ViStatus _VI_FUNC  viMoveIn64Ex    (ViSession vi, ViUInt16 space, ViBusAddress64 offset,
-                                    ViBusSize length, ViAUInt64 buf64);
+                                    ViBusSize length, ViAUint64_t buf64);
 ViStatus _VI_FUNC  viMoveOut64Ex   (ViSession vi, ViUInt16 space, ViBusAddress64 offset,
-                                    ViBusSize length, ViAUInt64 buf64);
+                                    ViBusSize length, ViAUint64_t buf64);
 #endif
 
 ViStatus _VI_FUNC  viMove          (ViSession vi, ViUInt16 srcSpace, ViBusAddress srcOffset,
@@ -247,7 +247,7 @@ ViStatus _VI_FUNC  viMoveAsync     (ViSession vi, ViUInt16 srcSpace, ViBusAddres
                                     ViBusAddress destOffset, ViUInt16 destWidth, 
                                     ViBusSize srcLength, ViPJobId jobId);
 
-#if defined(_VI_INT64_UINT64_DEFINED)
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
 ViStatus _VI_FUNC  viMoveEx        (ViSession vi, ViUInt16 srcSpace, ViBusAddress64 srcOffset,
                                     ViUInt16 srcWidth, ViUInt16 destSpace, 
                                     ViBusAddress64 destOffset, ViUInt16 destWidth, 
@@ -263,7 +263,7 @@ ViStatus _VI_FUNC  viMapAddress    (ViSession vi, ViUInt16 mapSpace, ViBusAddres
                                     ViAddr suggested, ViPAddr address);
 ViStatus _VI_FUNC  viUnmapAddress  (ViSession vi);
 
-#if defined(_VI_INT64_UINT64_DEFINED)
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
 ViStatus _VI_FUNC  viMapAddressEx  (ViSession vi, ViUInt16 mapSpace, ViBusAddress64 mapOffset,
                                     ViBusSize mapSize, ViBoolean access,
                                     ViAddr suggested, ViPAddr address);
@@ -276,9 +276,9 @@ void     _VI_FUNC  viPoke16        (ViSession vi, ViAddr address, ViUInt16  val1
 void     _VI_FUNC  viPeek32        (ViSession vi, ViAddr address, ViPUInt32 val32);
 void     _VI_FUNC  viPoke32        (ViSession vi, ViAddr address, ViUInt32  val32);
 
-#if defined(_VI_INT64_UINT64_DEFINED)
-void     _VI_FUNC  viPeek64        (ViSession vi, ViAddr address, ViPUInt64 val64);
-void     _VI_FUNC  viPoke64        (ViSession vi, ViAddr address, ViUInt64  val64);
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
+void     _VI_FUNC  viPeek64        (ViSession vi, ViAddr address, ViPUint64_t val64);
+void     _VI_FUNC  viPoke64        (ViSession vi, ViAddr address, ViUint64_t  val64);
 #endif
 
 /*- Shared Memory Operations ------------------------------------------------*/
@@ -286,7 +286,7 @@ void     _VI_FUNC  viPoke64        (ViSession vi, ViAddr address, ViUInt64  val6
 ViStatus _VI_FUNC  viMemAlloc      (ViSession vi, ViBusSize size, ViPBusAddress offset);
 ViStatus _VI_FUNC  viMemFree       (ViSession vi, ViBusAddress offset);
 
-#if defined(_VI_INT64_UINT64_DEFINED)
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
 ViStatus _VI_FUNC  viMemAllocEx    (ViSession vi, ViBusSize size, ViPBusAddress64 offset);
 ViStatus _VI_FUNC  viMemFreeEx     (ViSession vi, ViBusAddress64 offset);
 #endif
@@ -467,7 +467,7 @@ ViStatus _VI_FUNC  viUsbControlIn  (ViSession vi, ViInt16 bmRequestType, ViInt16
 
 /*- Attributes (platform dependent size) ------------------------------------*/
 
-#if defined(_VI_INT64_UINT64_DEFINED) && defined(_VISA_ENV_IS_64_BIT)
+#if defined(_VI_int64_t_Uint64_t_DEFINED) && defined(_VISA_ENV_IS_64_BIT)
 #define VI_ATTR_USER_DATA_64        (0x3FFF000AUL)
 #define VI_ATTR_RET_COUNT_64        (0x3FFF4028UL)
 #define VI_ATTR_USER_DATA           (VI_ATTR_USER_DATA_64)
@@ -477,13 +477,13 @@ ViStatus _VI_FUNC  viUsbControlIn  (ViSession vi, ViInt16 bmRequestType, ViInt16
 #define VI_ATTR_RET_COUNT           (VI_ATTR_RET_COUNT_32)
 #endif
 
-#if defined(_VI_INT64_UINT64_DEFINED)
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
 #define VI_ATTR_WIN_BASE_ADDR_64    (0x3FFF009BUL)
 #define VI_ATTR_WIN_SIZE_64         (0x3FFF009CUL)
 #define VI_ATTR_MEM_BASE_64         (0x3FFF00D0UL)
 #define VI_ATTR_MEM_SIZE_64         (0x3FFF00D1UL)
 #endif
-#if defined(_VI_INT64_UINT64_DEFINED) && defined(_VISA_ENV_IS_64_BIT)
+#if defined(_VI_int64_t_Uint64_t_DEFINED) && defined(_VISA_ENV_IS_64_BIT)
 #define VI_ATTR_WIN_BASE_ADDR       (VI_ATTR_WIN_BASE_ADDR_64)
 #define VI_ATTR_WIN_SIZE            (VI_ATTR_WIN_SIZE_64)
 #define VI_ATTR_MEM_BASE            (VI_ATTR_MEM_BASE_64)

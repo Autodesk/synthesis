@@ -25,13 +25,13 @@ void DigitalInput::InitDigitalInput(uint8_t moduleNumber, uint32_t channel)
 	Resource::CreateResourceObject(&interruptsResource, tInterrupt::kNumSystems);
 	if (!CheckDigitalModule(moduleNumber))
 	{
-		sprintf_s(buf, 64, "Digital Module %d", moduleNumber);
+		sprintf(buf, "Digital Module %d", moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckDigitalChannel(channel))
 	{
-		sprintf_s(buf, 64, "Digital Channel %lu", channel);
+		sprintf(buf, "Digital Channel %u", channel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}

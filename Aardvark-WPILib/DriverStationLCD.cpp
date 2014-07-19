@@ -9,6 +9,9 @@
 #include "NetworkCommunication/UsageReporting.h"
 #include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
+#include <string.h>
+#include <stdarg.h>
+#include <algorithm>
 
 const uint32_t DriverStationLCD::kSyncTimeout_ms;
 const uint16_t DriverStationLCD::kFullDisplayTextCommand;
@@ -103,10 +106,10 @@ void DriverStationLCD::VPrintf(Line line, int32_t startingColumn, const char *wr
 	{
 		Synchronized sync(m_textBufferSemaphore);
 		// sprintf_s appends NULL to its output.  Therefore we can't write directly to the buffer.
-		int32_t length = vsprintf_s(lineBuffer, kLineLength + 1, writeFmt, args);
+		int32_t length = vsprintf(lineBuffer, writeFmt, args);
 		if (length < 0) length = kLineLength;
 
-		memcpy(m_textBuffer + start + line * kLineLength + sizeof(uint16_t), lineBuffer, min(maxLength,length));
+		memcpy(m_textBuffer + start + line * kLineLength + sizeof(uint16_t), lineBuffer, std::min(maxLength,length));
 	}
 }
 
@@ -140,7 +143,7 @@ void DriverStationLCD::VPrintfLine(Line line, const char *writeFmt, va_list args
 	{
 		Synchronized sync(m_textBufferSemaphore);
 		// sprintf_s appends NULL to its output.  Therefore we can't write directly to the buffer.
-		int32_t length = min(vsprintf_s(lineBuffer, kLineLength + 1, writeFmt, args), (int)kLineLength);
+		int32_t length = std::min(vsprintf(lineBuffer, writeFmt, args), (int)kLineLength);
 		if (length < 0) length = kLineLength;
 
 		// Fill the rest of the buffer

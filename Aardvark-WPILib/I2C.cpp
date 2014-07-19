@@ -8,6 +8,7 @@
 #include "DigitalModule.h"
 #include "NetworkCommunication/UsageReporting.h"
 #include "OSAL/Synchronized.h"
+#include "OSAL/System.h"
 #include "WPIErrors.h"
 
 ReentrantSemaphore I2C::m_semaphore;
@@ -94,8 +95,8 @@ bool I2C::Transaction(uint8_t *dataToSend, uint8_t sendSize, uint8_t *dataReceiv
 		m_module->m_fpgaDIO->writeI2CConfig_BitwiseHandshake(m_compatibilityMode, &localStatus);
 		uint8_t transaction = m_module->m_fpgaDIO->readI2CStatus_Transaction(&localStatus);
 		m_module->m_fpgaDIO->strobeI2CStart(&localStatus);
-		while(transaction == m_module->m_fpgaDIO->readI2CStatus_Transaction(&localStatus)) Sleep(1);
-		while(!m_module->m_fpgaDIO->readI2CStatus_Done(&localStatus)) Sleep(1);
+		while(transaction == m_module->m_fpgaDIO->readI2CStatus_Transaction(&localStatus)) sleep_ms(1);
+		while(!m_module->m_fpgaDIO->readI2CStatus_Done(&localStatus)) sleep_ms(1);
 		aborted = m_module->m_fpgaDIO->readI2CStatus_Aborted(&localStatus);
 		if (receiveSize > 0) data = m_module->m_fpgaDIO->readI2CDataReceived(&localStatus);
 		if (receiveSize > sizeof(data)) dataHigh = m_module->m_fpgaDIO->readI2CStatus_DataReceivedHigh(&localStatus);

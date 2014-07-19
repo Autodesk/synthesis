@@ -56,12 +56,12 @@
 
 /*- VISA Types --------------------------------------------------------------*/
 
-#ifndef _VI_INT64_UINT64_DEFINED
+#ifndef _VI_int64_t_Uint64_t_DEFINED
 #if defined(_WIN64) || ((defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)) && !defined(_NI_mswin16_))
 #if (defined(_MSC_VER) && (_MSC_VER >= 1200)) || (defined(_CVI_) && (_CVI_ >= 700)) || (defined(__BORLANDC__) && (__BORLANDC__ >= 0x0520))
-typedef unsigned   __int64  ViUInt64;
-typedef _VI_SIGNED __int64  ViInt64;
-#define _VI_INT64_UINT64_DEFINED
+typedef unsigned   __int64_t  ViUint64_t;
+typedef _VI_SIGNED __int64_t  Viint64_t;
+#define _VI_int64_t_Uint64_t_DEFINED
 #if defined(_WIN64)
 #define _VISA_ENV_IS_64_BIT
 #else
@@ -71,9 +71,9 @@ typedef _VI_SIGNED __int64  ViInt64;
 #elif defined(__GNUC__) && (__GNUC__ >= 3)
 #include <limits.h>
 #include <sys/types.h>
-typedef u_int64_t           ViUInt64;
-typedef int64_t             ViInt64;
-#define _VI_INT64_UINT64_DEFINED
+typedef u_int64_t           ViUint64_t;
+typedef int64_t             Viint64_t;
+#define _VI_int64_t_Uint64_t_DEFINED
 #if defined(LONG_MAX) && (LONG_MAX > 0x7FFFFFFFL)
 #define _VISA_ENV_IS_64_BIT
 #else
@@ -84,11 +84,11 @@ typedef int64_t             ViInt64;
 #endif
 #endif
 
-#if defined(_VI_INT64_UINT64_DEFINED)
-typedef ViUInt64    _VI_PTR ViPUInt64;
-typedef ViUInt64    _VI_PTR ViAUInt64;
-typedef ViInt64     _VI_PTR ViPInt64;
-typedef ViInt64     _VI_PTR ViAInt64;
+#if defined(_VI_int64_t_Uint64_t_DEFINED)
+typedef ViUint64_t    _VI_PTR ViPUint64_t;
+typedef ViUint64_t    _VI_PTR ViAUint64_t;
+typedef Viint64_t     _VI_PTR ViPint64_t;
+typedef Viint64_t     _VI_PTR ViAint64_t;
 #endif
 
 #if defined(LONG_MAX) && (LONG_MAX > 0x7FFFFFFFL)

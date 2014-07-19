@@ -30,20 +30,20 @@ void Relay::InitRelay (uint8_t moduleNumber)
 	Resource::CreateResourceObject(&relayChannels, tDIO::kNumSystems * kRelayChannels * 2);
 	if (!SensorBase::CheckRelayModule(moduleNumber))
 	{
-		sprintf_s(buf, 64, "Digital Module %d", moduleNumber);
+		sprintf(buf, "Digital Module %d", moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!SensorBase::CheckRelayChannel(m_channel))
 	{
-		sprintf_s(buf, 64, "Relay Channel %lu", m_channel);
+		sprintf(buf, "Relay Channel %lu", m_channel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 
 	if (m_direction == kBothDirections || m_direction == kForwardOnly)
 	{
-		sprintf_s(buf, 64, "Forward Relay %lu (Module: %d)", m_channel, moduleNumber);
+		sprintf(buf, "Forward Relay %lu (Module: %d)", m_channel, moduleNumber);
 		if (relayChannels->Allocate(((moduleNumber - 1) * kRelayChannels + m_channel - 1) * 2, buf) == ~0ul)
 		{
 			CloneError(relayChannels);
@@ -54,7 +54,7 @@ void Relay::InitRelay (uint8_t moduleNumber)
 	}
 	if (m_direction == kBothDirections || m_direction == kReverseOnly)
 	{
-		sprintf_s(buf, 64, "Reverse Relay %lu (Module: %d)", m_channel, moduleNumber);
+		sprintf(buf, "Reverse Relay %lu (Module: %d)", m_channel, moduleNumber);
 		if (relayChannels->Allocate(((moduleNumber - 1) * kRelayChannels + m_channel - 1) * 2 + 1, buf) == ~0ul)
 		{
 			CloneError(relayChannels);

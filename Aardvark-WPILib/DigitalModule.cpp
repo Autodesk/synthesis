@@ -12,6 +12,7 @@
 #include "WPIErrors.h"
 #include <math.h>
 #include "OSAL/Task.h"
+#include "OSAL/System.h"
 
 static Resource *DIOChannels = NULL;
 static Resource *DO_PWMGenerators[tDIO::kNumSystems] = {NULL};
@@ -32,7 +33,7 @@ DigitalModule* DigitalModule::GetInstance(uint8_t moduleNumber)
 
 	// If this wasn't caught before now, make sure we say what's wrong before we crash
 	char buf[64];
-	sprintf_s(buf, "Digital Module %d", moduleNumber);
+	sprintf(buf, "Digital Module %d", moduleNumber);
 	wpi_setGlobalWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 
 	return NULL;
@@ -59,12 +60,12 @@ DigitalModule::DigitalModule(uint8_t moduleNumber)
 	wpi_setError(localStatus);
 
 	// Make sure that the 9403 IONode has had a chance to initialize before continuing.
-	while(m_fpgaDIO->readLoopTiming(&localStatus) == 0) Sleep(1);//taskDelay(1);
+	while(m_fpgaDIO->readLoopTiming(&localStatus) == 0) sleep_ms(1);//taskDelay(1);
 	
 	if (m_fpgaDIO->readLoopTiming(&localStatus) != kExpectedLoopTiming)
 	{
 		char err[128];
-		sprintf_s(err, "DIO LoopTiming: %d, expecting: %lu\n", m_fpgaDIO->readLoopTiming(&localStatus), kExpectedLoopTiming);
+		sprintf(err, "DIO LoopTiming: %d, expecting: %u\n", m_fpgaDIO->readLoopTiming(&localStatus), kExpectedLoopTiming);
 		wpi_setWPIErrorWithContext(LoopTimingError, err);
 	}
 	
@@ -135,7 +136,7 @@ uint8_t DigitalModule::GetPWM(uint32_t channel)
 	CheckPWMChannel(channel);
 	tRioStatusCode localStatus = NiFpga_Status_Success;
 	return m_fpgaDIO->readPWMValue(channel - 1, &localStatus);
-	wpi_setError(localStatus);
+	//wpi_setError(localStatus);
 }
 
 /**
@@ -252,7 +253,7 @@ uint8_t DigitalModule::GetRelayReverse()
 bool DigitalModule::AllocateDIO(uint32_t channel, bool input)
 {
 	char buf[64];
-	sprintf_s(buf, 64, "DIO %lu (Module %d)", channel, m_moduleNumber);
+	sprintf(buf, "DIO %u (Module %d)", channel, m_moduleNumber);
 	if (DIOChannels->Allocate(kDigitalChannels * (m_moduleNumber - 1) + channel - 1, buf) == ~0ul) return false;
 	tRioStatusCode localStatus = NiFpga_Status_Success;
 	{
@@ -433,7 +434,7 @@ bool DigitalModule::IsPulsing()
 uint32_t DigitalModule::AllocateDO_PWM()
 {
 	char buf[64];
-	sprintf_s(buf, 64, "DO_PWM (Module: %d)", m_moduleNumber);
+	sprintf(buf, "DO_PWM (Module: %d)", m_moduleNumber);
 	return DO_PWMGenerators[(m_moduleNumber - 1)]->Allocate(buf);
 }
 

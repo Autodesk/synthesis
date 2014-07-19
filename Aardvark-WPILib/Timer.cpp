@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include "OSAL/Synchronized.h"
+#include "OSAL/System.h"
 #include "Utility.h"
 
 /**
@@ -23,7 +24,7 @@
 void Wait(double seconds)
 {
 	if (seconds < 0.0) return;
-	Sleep((DWORD)(seconds * 1000));
+	sleep_ms((DWORD)(seconds * 1000));
 }
 
 /*
@@ -179,8 +180,8 @@ double Timer::GetFPGATimestamp()
 // Internal function that reads the PPC timestamp counter.
 extern "C"
 {
-	uint32_t niTimestamp32(void);
-	UINT64 niTimestamp64(void);
+	extern uint32_t niTimestamp32(void);
+	extern uint64_t niTimestamp64(void);
 }
 
 /*

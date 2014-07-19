@@ -8,6 +8,7 @@
 #include "NetworkCommunication/UsageReporting.h"
 #include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
+#include <string.h>
 
 /**
  * DriverStationEnhancedIO contructor.

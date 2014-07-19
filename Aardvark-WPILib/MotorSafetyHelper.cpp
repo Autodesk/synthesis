@@ -114,7 +114,7 @@ void MotorSafetyHelper::Check()
 		char buf[128];
 		char desc[64];
 		m_safeObject->GetDescription(desc);
-		sprintf_s(buf, 128, "%s... Output not updated often enough.", desc);
+		sprintf(buf, "%s... Output not updated often enough.", desc);
 		wpi_setWPIErrorWithContext(Timeout, buf);
 		m_safeObject->StopMotor();
 	}

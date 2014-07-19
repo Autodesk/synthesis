@@ -3,6 +3,8 @@
 #ifndef __tSystemInterface_h__
 #define __tSystemInterface_h__
 
+#include "NiRio.h"
+
 namespace nFPGA
 {
 

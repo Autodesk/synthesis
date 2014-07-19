@@ -11,6 +11,7 @@
 #include "SmartDashboard/SmartDashboard.h"
 #include "LiveWindow/LiveWindow.h"
 #include "networktables/NetworkTable.h"
+#include "OSAL/System.h"
 
 const double IterativeRobot::kDefaultPeriod=0.0;
 
@@ -281,7 +282,7 @@ void IterativeRobot::DisabledPeriodic()
 		printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
-	Sleep(1);
+	sleep_ms(1);
 }
 
 /**
@@ -298,7 +299,7 @@ void IterativeRobot::AutonomousPeriodic()
 		printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
-	Sleep(1);
+	sleep_ms(1);
 }
 
 /**
@@ -315,7 +316,7 @@ void IterativeRobot::TeleopPeriodic()
 		printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
-	Sleep(1);
+	sleep_ms(1);
 }
 
 /**
@@ -332,6 +333,6 @@ void IterativeRobot::TestPeriodic()
 		printf("Default %s() method... Overload me!\n", __FUNCTION__);
 		firstRun = false;
 	}
-	Sleep(1);
+	sleep_ms(1);
 }
 

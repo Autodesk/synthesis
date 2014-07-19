@@ -2,9 +2,14 @@
 #ifndef __UsageReporting_h__
 #define __UsageReporting_h__
 
+#ifndef EXPORT_FUNC
 #define EXPORT_FUNC
+#endif
 
 #define kUsageReporting_version 1
+
+#include <stdint.h>
+#include <stddef.h>
 
 namespace nUsageReporting
 {

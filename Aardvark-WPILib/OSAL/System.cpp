@@ -5,20 +5,39 @@
 *      Author: Mitchell Wills
 */
 
-#include "networktables2/util/System.h"
+#include "System.h"
 #include <stdio.h>
-#include <Windows.h>
 #include <stdint.h>
+#include "OSAL/OSAL.h"
+
+#if USE_WINAPI
+#include <Windows.h>
+#elif USE_POSIX
+#include <sys/time.h>
+#include <unistd.h>
+#endif
 
 void sleep_ms(unsigned long ms){
+#if USE_WINAPI
 	Sleep(ms);
+#elif USE_POSIX
+	usleep(ms * 1000000);
+#endif
 }
+
 unsigned long currentTimeMillis(){
+#if USE_WINAPI
 	FILETIME ft_now;
 	GetSystemTimeAsFileTime(&ft_now);
 	uint64_t ll_now = (LONGLONG)ft_now.dwLowDateTime + ((LONGLONG)(ft_now.dwHighDateTime) << 32LL);
 	return (long)(ll_now / 10000);
+#elif USE_POSIX
+	timeval tt;
+	gettimeofday(&tt, NULL);
+	return (long) (tt.tv_sec * 1000L) + (long)(tt.tv_usec / 1000000L);
+#endif
 }
+
 void writeWarning(const char* message){
 	fprintf(stderr, "%s\n", message);
 	fflush(stderr);

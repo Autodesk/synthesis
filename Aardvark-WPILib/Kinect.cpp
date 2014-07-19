@@ -22,8 +22,8 @@ Kinect *Kinect::_instance = NULL;
 
 Kinect::Kinect() :
 	m_recentPacketNumber(0),
-	m_numberOfPlayers(0),
-	m_dataLock()
+	m_dataLock(),
+	m_numberOfPlayers(0)
 {
 	AddToSingletonList();
 //	m_dataLock = semMCreate(SEM_Q_PRIORITY | SEM_INVERSION_SAFE | SEM_DELETE_SAFE);

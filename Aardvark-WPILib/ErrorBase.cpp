@@ -9,7 +9,7 @@
 #include "nivision.h"
 #define WPI_ERRORS_DEFINE_STRINGS
 #include "WPIErrors.h"
-
+#include <errno.h>
 #include <cstdio>
 
 ReentrantSemaphore ErrorBase::_globalErrorMutex = ReentrantSemaphore();
@@ -145,7 +145,7 @@ void ErrorBase::SetWPIError(const char *errorMessage, const char *contextMessage
 		const char* filename, const char* function, uint32_t lineNumber) const
 {
 	char err[256];
-	sprintf_s(err, "%s: %s", errorMessage, contextMessage);
+	sprintf(err, "%s: %s", errorMessage, contextMessage);
 
 	//  Set the current error information for this object.
 	m_error.Set(-1, err, filename, function, lineNumber, this);
@@ -188,7 +188,7 @@ void ErrorBase::SetGlobalWPIError(const char *errorMessage, const char *contextM
         const char* filename, const char* function, uint32_t lineNumber)
 {
 	char err[256];
-	sprintf_s(err, "%s: %s", errorMessage, contextMessage);
+	sprintf(err, "%s: %s", errorMessage, contextMessage);
 
 	Synchronized mutex(_globalErrorMutex);
 	if (_globalError.GetCode() != 0) {

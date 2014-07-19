@@ -9,7 +9,6 @@
 #include "PCVideoServer.h"
 
 #include <cstring>
-#include <Windows.h>
 #include "NetworkCommunication/UsageReporting.h"
 #include "OSAL/Task.h"
 #include "Timer.h"
@@ -30,9 +29,9 @@ public:
 	}
 
 	~ScopedSocket() {
-		if (m_camSock != ERROR) {
+		/*if (m_camSock != ERROR) {
 			//close(m_camSock);
-		}
+		}*/
 
 		fprintf(stderr, "NO PC Video Server Support\n");
 		exit(1);

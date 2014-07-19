@@ -43,13 +43,13 @@ public:
 	double GetDouble(const char *key, double defaultValue = 0.0);
 	float GetFloat(const char *key, float defaultValue = 0.0);
 	bool GetBoolean(const char *key, bool defaultValue = false);
-	INT64 GetLong(const char *key, INT64 defaultValue = 0);
+	int64_t GetLong(const char *key, int64_t defaultValue = 0);
 	void PutString(const char *key, const char *value);
 	void PutInt(const char *key, int value);
 	void PutDouble(const char *key, double value);
 	void PutFloat(const char *key, float value);
 	void PutBoolean(const char *key, bool value);
-	void PutLong(const char *key, INT64 value);
+	void PutLong(const char *key, int64_t value);
 	void Save();
 	bool ContainsKey(const char *key);
 	void Remove(const char *key);

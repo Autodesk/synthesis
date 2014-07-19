@@ -7,7 +7,7 @@
 #include "Error.h"
 
 #include <stdio.h>
-#include <string>
+#include <string.h>
 
 #include "NetworkCommunication/FRCComm.h"
 #include "Timer.h"
@@ -81,12 +81,12 @@ void Error::Report()
 	// Build error strings
 	if (m_code != -1)
 	{
-		sprintf_s(error, 256, "%s: status = %ld (0x%08lX) %s ...in %s() in %s at line %lu\n",
+		sprintf(error, "%s: status = %d (0x%08X) %s ...in %s() in %s at line %u\n",
 				m_code < 0 ? "ERROR" : "WARNING", (int32_t)m_code, (uint32_t)m_code, m_message.c_str(),
 				m_function.c_str(), m_filename.c_str(), m_lineNumber);
-		sprintf(error_with_code,"<Code>%ld %s", (int32_t)m_code, error);
+		sprintf(error_with_code,"<Code>%d %s", (int32_t)m_code, error);
 	} else {
-		sprintf_s(error, 256, "ERROR: %s ...in %s() in %s at line %lu\n", m_message.c_str(),
+		sprintf(error, "ERROR: %s ...in %s() in %s at line %u\n", m_message.c_str(),
 				m_function.c_str(), m_filename.c_str(), m_lineNumber);
 		strcpy(error_with_code, error);
 	}

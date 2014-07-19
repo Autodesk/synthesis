@@ -53,7 +53,7 @@ void Gyro::InitGyro()
 	m_analog->InitAccumulator();
 	Wait(kCalibrationSampleTime);
 
-	INT64 value;
+	int64_t value;
 	uint32_t count;
 	m_analog->GetAccumulatorOutput(&value, &count);
 
@@ -157,11 +157,11 @@ Gyro::~Gyro()
  */
 float Gyro::GetAngle( void )
 {
-	INT64 rawValue;
+	int64_t rawValue;
 	uint32_t count;
 	m_analog->GetAccumulatorOutput(&rawValue, &count);
 
-	INT64 value = rawValue - (INT64)((float)count * m_offset);
+	int64_t value = rawValue - (int64_t)((float)count * m_offset);
 
 	double scaledValue = value * 1e-9 * (double)m_analog->GetLSBWeight() * (double)(1 << m_analog->GetAverageBits()) /
 		(m_analog->GetModule()->GetSampleRate() * m_voltsPerDegreePerSecond);

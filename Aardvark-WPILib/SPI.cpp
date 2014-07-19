@@ -12,6 +12,7 @@
 #include "DigitalOutput.h"
 #include "NetworkCommunication/UsageReporting.h"
 #include "OSAL/Synchronized.h"
+#include "OSAL/System.h"
 #include "WPIErrors.h"
 
 #include <math.h>
@@ -441,7 +442,7 @@ void SPI::Write(uint32_t data)
 	Synchronized sync(m_semaphore);
 
 	while (GetOutputFIFOAvailable() == 0)
-		Sleep(1);
+		sleep_ms(1);
 
 	tRioStatusCode localStatus = NiFpga_Status_Success;
 	m_spi->writeDataToLoad(data, &localStatus);
@@ -493,7 +494,7 @@ uint32_t SPI::Read(bool initiate)
 
 			// Wait for the transaction to complete
 			while (GetNumReceived() == 0)
-				Sleep(1);
+				sleep_ms(1);
 		}
 
 		m_spi->strobeReadReceivedData(&localStatus);

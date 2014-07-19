@@ -12,7 +12,20 @@
 #include <string.h>
 #include <cstring>
 #include <errno.h>
+#include <unistd.h>
+#include "OSAL/OSAL.h"
+
+#if USE_WINAPI
 #include <windows.h>
+
+#elif USE_POSIX
+
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+#endif
 
 #ifndef _WRS_KERNEL
 #define ERROR -1
@@ -49,13 +62,13 @@ SocketServerStreamProvider::SocketServerStreamProvider(int port){
 	// Bind socket to local address.
 	if (bind(serverSocket, (struct sockaddr *)&serverAddr, sockAddrSize) == ERROR)
 	{
-		::closesocket(serverSocket);
+		close();
 		throw IOException("Could not bind server socket", errno);
 	}
 
 	if (listen(serverSocket, 1) == ERROR)
 	{
-		::closesocket(serverSocket);
+		close();
 		throw IOException("Could not listen on server socket", errno);
 	}
 }
@@ -97,5 +110,5 @@ IOStream* SocketServerStreamProvider::accept(){
 }
 
 void SocketServerStreamProvider::close(){
-	::closesocket(serverSocket);
+	::socketclose(serverSocket);
 }

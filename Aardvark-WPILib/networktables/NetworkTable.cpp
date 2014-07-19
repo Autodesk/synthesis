@@ -92,7 +92,7 @@ void NetworkTable::SetServerMode(){
 
 void NetworkTable::SetTeam(int team){
 	char tmp[30];
-	sprintf_s(tmp, "%d.%d.%d.%d\n", 10, team/100, team%100, 2);
+	sprintf(tmp, "%d.%d.%d.%d\n", 10, team/100, team%100, 2);
 	SetIPAddress(tmp);
 }
 

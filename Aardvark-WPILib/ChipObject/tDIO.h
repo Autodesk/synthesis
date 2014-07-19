@@ -5,6 +5,7 @@
 #define __nFRC_2012_1_6_4_DIO_h__
 
 #include "tSystemInterface.h"
+#include "NiRio.h"
 
 namespace nFPGA
 {

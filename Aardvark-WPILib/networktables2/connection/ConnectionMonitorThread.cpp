@@ -7,7 +7,7 @@
 
 #include "networktables2/connection/ConnectionMonitorThread.h"
 #include "networktables2/connection/BadMessageException.h"
-#include "networktables2/util/System.h"
+#include "OSAL/System.h"
 
 ConnectionMonitorThread::ConnectionMonitorThread(ConnectionAdapter& _adapter, NetworkTableConnection& _connection) :
 	adapter(_adapter), connection(_connection) {

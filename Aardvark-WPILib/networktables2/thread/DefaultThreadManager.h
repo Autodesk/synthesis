@@ -16,9 +16,9 @@ class PeriodicNTThread;
 #include "networktables2/thread/PeriodicRunnable.h"
 #include "networktables2/thread/NTThreadManager.h"
 #include "networktables2/thread/NTThread.h"
-#include "OSAL/Task.h"
 
-#include <Windows.h>
+#include "OSAL/OSAL.h"
+#include "OSAL/Task.h"
 
 class DefaultThreadManager : public NTThreadManager{
 public:

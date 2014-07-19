@@ -10,7 +10,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include "OSAL/OSAL.h"
+
+#if USE_WINAPI
 #include <Windows.h>
+#elif USE_POSIX
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#endif
+
 #include "networktables2/stream/FDIOStream.h"
 #include "networktables2/stream/SocketStreamFactory.h"
 

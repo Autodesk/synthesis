@@ -25,18 +25,18 @@ void AnalogChannel::InitChannel(uint8_t moduleNumber, uint32_t channel)
 	Resource::CreateResourceObject(&channels, kAnalogModules * kAnalogChannels);
 	if (!CheckAnalogModule(moduleNumber))
 	{
-		sprintf_s(buf, 64, "Analog Module %d", moduleNumber);
+		sprintf(buf, "Analog Module %d", moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckAnalogChannel(channel))
 	{
-		sprintf_s(buf, 64, "Analog Channel %lu", channel);
+		sprintf(buf, "Analog Channel %lu", channel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 
-	sprintf_s(buf, 64, "Analog Input %lu (Module: %d)", channel, moduleNumber);
+	sprintf(buf, "Analog Input %lu (Module: %d)", channel, moduleNumber);
 	if (channels->Allocate((moduleNumber - 1) * kAnalogChannels + channel - 1, buf) == ~0ul)
 	{
 		CloneError(channels);
@@ -288,7 +288,7 @@ void AnalogChannel::InitAccumulator()
  * This will be added to all values returned to the user.
  * @param initialValue The value that the accumulator should start from when reset.
  */
-void AnalogChannel::SetAccumulatorInitialValue(INT64 initialValue)
+void AnalogChannel::SetAccumulatorInitialValue(int64_t initialValue)
 {
 	if (StatusIsFatal()) return;
 	m_accumulatorOffset = initialValue;
@@ -357,7 +357,7 @@ void AnalogChannel::SetAccumulatorDeadband(int32_t deadband)
  * 
  * @return The 64-bit value accumulated since the last Reset().
  */
-INT64 AnalogChannel::GetAccumulatorValue()
+int64_t AnalogChannel::GetAccumulatorValue()
 {
 	if (StatusIsFatal()) return 0;
 	if (m_accumulator == NULL)
@@ -366,7 +366,7 @@ INT64 AnalogChannel::GetAccumulatorValue()
 		return 0;
 	}
 	tRioStatusCode localStatus = NiFpga_Status_Success;
-	INT64 value = m_accumulator->readOutput_Value(&localStatus) + m_accumulatorOffset;
+	int64_t value = m_accumulator->readOutput_Value(&localStatus) + m_accumulatorOffset;
 	wpi_setError(localStatus);
 	return value;
 }
@@ -402,7 +402,7 @@ uint32_t AnalogChannel::GetAccumulatorCount()
  * @param value Pointer to the 64-bit accumulated output.
  * @param count Pointer to the number of accumulation cycles.
  */
-void AnalogChannel::GetAccumulatorOutput(INT64 *value, uint32_t *count)
+void AnalogChannel::GetAccumulatorOutput(int64_t *value, uint32_t *count)
 {
 	if (StatusIsFatal()) return;
 	if (m_accumulator == NULL)

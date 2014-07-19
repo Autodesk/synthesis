@@ -23,18 +23,18 @@ void DigitalOutput::InitDigitalOutput(uint8_t moduleNumber, uint32_t channel)
 	char buf[64];
 	if (!CheckDigitalModule(moduleNumber))
 	{
-		sprintf_s(buf, 64, "Digital Module %d", moduleNumber);
+		sprintf(buf, "Digital Module %d", moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckDigitalChannel(channel))
 	{
-		sprintf_s(buf, 64, "Digital Channel %lu", channel);
+		sprintf(buf, "Digital Channel %u", channel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 	m_channel = channel;
-	m_pwmGenerator = ~0ul;
+	m_pwmGenerator = ~(0u);
 	m_module = DigitalModule::GetInstance(moduleNumber);
 	m_module->AllocateDIO(m_channel, false);
 

@@ -10,6 +10,7 @@
 #include "EnumCameraParameter.h"
 #include "ErrorBase.h"
 #include "IntCameraParameter.h"
+#include "OSAL/OSAL.h"
 #include "OSAL/Task.h"
 #include "OSAL/Synchronized.h"
 #include <vector>

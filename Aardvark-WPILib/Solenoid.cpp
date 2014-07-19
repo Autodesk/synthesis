@@ -18,19 +18,19 @@ void Solenoid::InitSolenoid()
 	char buf[64];
 	if (!CheckSolenoidModule(m_moduleNumber))
 	{
-		sprintf_s(buf, 64, "Solenoid Module %lu", m_moduleNumber);
+		sprintf(buf, "Solenoid Module %lu", m_moduleNumber);
 		wpi_setWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 		return;
 	}
 	if (!CheckSolenoidChannel(m_channel))
 	{
-		sprintf_s(buf, 64, "Solenoid Channel %lu", m_channel);
+		sprintf(buf, "Solenoid Channel %lu", m_channel);
 		wpi_setWPIErrorWithContext(ChannelIndexOutOfRange, buf);
 		return;
 	}
 	Resource::CreateResourceObject(&m_allocated, tSolenoid::kNumDO7_0Elements * kSolenoidChannels);
 
-	sprintf_s(buf, 64, "Solenoid %lu (Module: %lu)", m_channel, m_moduleNumber);
+	sprintf(buf, "Solenoid %lu (Module: %lu)", m_channel, m_moduleNumber);
 	if (m_allocated->Allocate((m_moduleNumber - 1) * kSolenoidChannels + m_channel - 1, buf) == ~0ul)
 	{
 		CloneError(m_allocated);

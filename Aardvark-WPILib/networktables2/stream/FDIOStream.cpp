@@ -11,20 +11,21 @@
 
 #include <errno.h>
 #include <stdlib.h>
-#include <Windows.h>
 #include <string.h>
 #include <stdio.h>
 #include <iostream>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <OSAL/OSAL.h>
 
 
 FDIOStream::FDIOStream(int _fd){
 	//fd = _fd;
-	f = _fdopen(_fd, "rbwb");
+	f = fdopen(_fd, "rbwb");
 	if(f==NULL)
 		throw IOException("Could not open stream from file descriptor", errno);
 }
+
 FDIOStream::~FDIOStream(){
 	close();
 }

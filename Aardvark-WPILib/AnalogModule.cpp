@@ -35,7 +35,7 @@ AnalogModule* AnalogModule::GetInstance(uint8_t moduleNumber)
 
 	// If this wasn't caught before now, make sure we say what's wrong before we crash
 	char buf[64];
-	sprintf_s(buf, 64, "Analog Module %d", moduleNumber);
+	sprintf(buf, "Analog Module %d", moduleNumber);
 	wpi_setGlobalWPIErrorWithContext(ModuleIndexOutOfRange, buf);
 
 	return NULL;

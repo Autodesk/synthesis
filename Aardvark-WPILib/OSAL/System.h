@@ -7,8 +7,8 @@
  *      Author: Mitchell Wills
  */
 
-#ifndef TIME_H_
-#define TIME_H_
+#ifndef CSYSTEM_H_
+#define CSYSTEM_H_
 
 /**
  * Causes the current thread to sleep at least the
