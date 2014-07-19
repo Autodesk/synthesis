@@ -12,9 +12,6 @@
 #include <stdint.h>
 #include <Windows.h>
 
-const UINT32 NTTask::kDefaultPriority;
-const INT32 NTTask::kInvalidTaskID;
-
 /**
 * Create but don't launch a task.
 * @param name The name of the task.  "FRC_" will be prepended to the task name.

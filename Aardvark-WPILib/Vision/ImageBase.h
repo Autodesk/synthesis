@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "nivision.h"
 #include "ErrorBase.h"
+#if ENABLE_NIVISION
 
 #define DEFAULT_BORDER_SIZE 3
 
@@ -25,5 +26,6 @@ public:
 protected:
 	Image *m_imaqImage;
 };
+#endif
 
 #endif

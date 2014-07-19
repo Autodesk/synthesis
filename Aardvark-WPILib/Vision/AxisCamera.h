@@ -26,6 +26,7 @@ class PCVideoServer;
  * - parameter handler task in the base class that monitors for changes to
  *     parameters and updates the camera
  */
+	#if ENABLE_NIVISION
 class AxisCamera : public AxisCameraParams
 {
 private:
@@ -105,5 +106,7 @@ extern "C" {
 }
 #endif
 #endif // JAVA_CAMERA_LIB == 1
+
+#endif
 
 #endif

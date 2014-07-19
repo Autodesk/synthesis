@@ -5,7 +5,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "HSLImage.h"
-
+#if ENABLE_NIVISION
 /**
  * Create a new image that uses the Hue, Saturation, and Luminance planes.
  */
@@ -26,3 +26,4 @@ HSLImage::HSLImage(const char *fileName) : ColorImage(IMAQ_IMAGE_HSL)
 HSLImage::~HSLImage()
 {
 }
+#endif

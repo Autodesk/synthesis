@@ -9,6 +9,7 @@
 
 #include "ColorImage.h"
 
+#if ENABLE_NIVISION
 /**
  * A color image represented in RGB color space at 3 bytes per pixel.
  */
@@ -19,5 +20,5 @@ public:
     RGBImage(const char *fileName);
     virtual ~RGBImage();
 };
-
+#endif
 #endif

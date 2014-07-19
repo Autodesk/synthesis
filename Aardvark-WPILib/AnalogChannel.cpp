@@ -13,8 +13,6 @@
 
 static Resource *channels = NULL;
 
-const uint8_t AnalogChannel::kAccumulatorModuleNumber;
-const uint32_t AnalogChannel::kAccumulatorNumChannels;
 const uint32_t AnalogChannel::kAccumulatorChannels[] = {1, 2};
 
 /**

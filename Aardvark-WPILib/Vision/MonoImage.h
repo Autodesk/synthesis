@@ -12,7 +12,7 @@
 #include <vector>
 
 using namespace std;
-
+#if ENABLE_NIVISION
 class MonoImage : public ImageBase
 {
 public:
@@ -20,10 +20,11 @@ public:
 	virtual ~MonoImage();
 
 	vector<EllipseMatch> * DetectEllipses(EllipseDescriptor *ellipseDescriptor,
-					CurveOptions *curveOptions,
-					ShapeDetectionOptions *shapeDetectionOptions,
-					ROI *roi);
+		CurveOptions *curveOptions,
+		ShapeDetectionOptions *shapeDetectionOptions,
+		ROI *roi);
 	vector<EllipseMatch> * DetectEllipses(EllipseDescriptor *ellipseDescriptor);
 };
+#endif
 
 #endif

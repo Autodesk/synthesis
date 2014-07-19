@@ -30,6 +30,7 @@ public:
 	static const uint32_t kBatteryChannel = 8;
 	static const uint32_t kJoystickPorts = 4;
 	static const uint32_t kJoystickAxes = 6;
+	static const float kUpdatePeriod;
 
 	float GetStickAxis(uint32_t stick, uint32_t axis);
 	short GetStickButtons(uint32_t stick);
@@ -105,7 +106,6 @@ private:
 	static DriverStation *m_instance;
 	static uint8_t m_updateNumber;
 	///< TODO: Get rid of this and use the semaphore signaling
-	static const float kUpdatePeriod;
 
 	void Run();
 

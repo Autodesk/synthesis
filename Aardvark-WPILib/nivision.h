@@ -7,6 +7,8 @@
 /* Title:       NIVision.h                                                    */
 /*                                                                            */
 /*============================================================================*/
+#define ENABLE_NIVISION 0
+#if ENABLE_NIVISION
 #if !defined(NiVision_h)
 #define NiVision_h
 
@@ -5341,3 +5343,4 @@ IMAQ_FUNC ColorHistogramReport*  IMAQ_STDCALL imaqColorHistogram(Image* image, i
 IMAQ_FUNC RakeReport*            IMAQ_STDCALL imaqRake(const Image* image, const ROI* roi, RakeDirection direction, EdgeProcess process, const RakeOptions* options);
 #endif
 
+#endif

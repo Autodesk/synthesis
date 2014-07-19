@@ -8,7 +8,7 @@
 #define __HSL_IMAGE_H__
 
 #include "ColorImage.h"
-
+#if ENABLE_NIVISION
 /**
  * A color image represented in HSL color space at 3 bytes per pixel.
  */
@@ -19,6 +19,7 @@ public:
     HSLImage(const char *fileName);
     virtual ~HSLImage();
 };
+#endif
 
 #endif
 

@@ -11,6 +11,8 @@
 #include "BinaryImage.h"
 #include "Threshold.h"
 
+#if ENABLE_NIVISION
+
 class ColorImage : public ImageBase
 {
 public:
@@ -66,3 +68,4 @@ private:
 
 #endif
 
+#endif

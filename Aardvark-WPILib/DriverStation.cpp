@@ -14,13 +14,9 @@
 #include "Utility.h"
 #include "WPIErrors.h"
 
-const uint32_t DriverStation::kBatteryModuleNumber;
-const uint32_t DriverStation::kBatteryChannel;
-const uint32_t DriverStation::kJoystickPorts;
-const uint32_t DriverStation::kJoystickAxes;
-const float DriverStation::kUpdatePeriod = 0.02;
-DriverStation* DriverStation::m_instance = NULL;
 uint8_t DriverStation::m_updateNumber = 0;
+DriverStation* DriverStation::m_instance = NULL;
+const float DriverStation::kUpdatePeriod = 0.02f;
 
 /**
  * DriverStation contructor.

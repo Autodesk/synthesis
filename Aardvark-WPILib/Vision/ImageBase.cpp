@@ -6,7 +6,7 @@
 
 #include "ImageBase.h"
 #include "nivision.h"
-
+#if ENABLE_NIVISION
 /** Private NI function needed to write to the VxWorks target */
 IMAQ_FUNC int Priv_SetWriteFileAllowed(uint32_t enable); 
 
@@ -75,3 +75,4 @@ Image *ImageBase::GetImaqImage()
 	return m_imaqImage;
 }
 
+#endif

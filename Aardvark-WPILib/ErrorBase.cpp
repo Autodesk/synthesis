@@ -89,6 +89,7 @@ void ErrorBase::SetErrnoError(const char *contextMessage,
  */
 void ErrorBase::SetImaqError(int success, const char *contextMessage, const char* filename, const char* function, uint32_t lineNumber) const
 {
+#if ENABLE_NIVISION
 	//  If there was an error
 	if (success <= 0) {
 		char err[256];
@@ -103,6 +104,7 @@ void ErrorBase::SetImaqError(int success, const char *contextMessage, const char
 			_globalError.Clone(m_error);
 		}
 	}
+#endif
 }
 
 /**

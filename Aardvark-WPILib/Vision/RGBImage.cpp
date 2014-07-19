@@ -6,6 +6,7 @@
 
 #include "RGBImage.h"
 
+#if ENABLE_NIVISION
 /**
  * Create a new image that uses Red, Green, and Blue planes.
  */
@@ -26,3 +27,4 @@ RGBImage::RGBImage(const char *fileName) : ColorImage(IMAQ_IMAGE_RGB)
 RGBImage::~RGBImage()
 {
 }
+#endif

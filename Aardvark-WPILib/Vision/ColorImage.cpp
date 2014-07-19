@@ -7,7 +7,7 @@
 #include "ColorImage.h"
 
 #include "WPIErrors.h"
-
+#if ENABLE_NIVISION
 ColorImage::ColorImage(ImageType type) : ImageBase(type)
 {
 }
@@ -463,3 +463,4 @@ void ColorImage::LuminanceEqualize()
 {
 	Equalize(false);
 }
+#endif

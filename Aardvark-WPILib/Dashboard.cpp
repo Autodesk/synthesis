@@ -10,8 +10,6 @@
 #include "OSAL/Synchronized.h"
 #include "WPIErrors.h"
 
-const int32_t Dashboard::kMaxDashboardDataSize;
-
 /**
  * Dashboard contructor.
  * 

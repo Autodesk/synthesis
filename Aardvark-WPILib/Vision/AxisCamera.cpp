@@ -12,6 +12,7 @@
 #include "Vision/PCVideoServer.h"
 #include "WPIErrors.h"
 
+#if ENABLE_NIVISION
 /** Private NI function to decode JPEG */
 IMAQ_FUNC int Priv_ReadJPEGString_C(Image* _image, const unsigned char* _string, uint32_t _stringLength);
 
@@ -532,3 +533,4 @@ int AxisCameraFreshImage()
 
 #endif // JAVA_CAMERA_LIB == 1
 
+#endif

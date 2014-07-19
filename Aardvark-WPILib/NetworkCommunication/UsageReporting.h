@@ -2,13 +2,7 @@
 #ifndef __UsageReporting_h__
 #define __UsageReporting_h__
 
-#ifdef SIMULATION
-#include <vxWorks_compat.h>
-#define EXPORT_FUNC __declspec(dllexport) __cdecl
-#else
-
 #define EXPORT_FUNC
-#endif
 
 #define kUsageReporting_version 1
 

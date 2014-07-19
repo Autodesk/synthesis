@@ -7,7 +7,7 @@
 #include "BinaryImage.h"
 #include "WPIErrors.h"
 #include <cstring>
-
+#if ENABLE_NIVISION
 /** Private NI function needed to write to the VxWorks target */
 IMAQ_FUNC int Priv_SetWriteFileAllowed(uint32_t enable); 
 
@@ -221,3 +221,4 @@ BinaryImage *BinaryImage::ParticleFilter(ParticleFilterCriteria2 *criteria, int 
 	return result;
 }
 
+#endif

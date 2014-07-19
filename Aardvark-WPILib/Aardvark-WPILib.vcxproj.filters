@@ -465,21 +465,6 @@
     <ClCompile Include="Vision\Threshold.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vision2009\AxisCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vision2009\BaeUtilities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vision2009\FrcError.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vision2009\TrackAPI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vision2009\VisionAPI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Accelerometer.h">
@@ -1131,21 +1116,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vision\Threshold.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vision2009\AxisCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vision2009\BaeUtilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vision2009\FrcError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vision2009\TrackAPI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vision2009\VisionAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

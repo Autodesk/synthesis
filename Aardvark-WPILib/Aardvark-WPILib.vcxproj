@@ -46,6 +46,8 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <UseFullPaths>false</UseFullPaths>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -203,11 +205,6 @@
     <ClCompile Include="Ultrasonic.cpp" />
     <ClCompile Include="Utility.cpp" />
     <ClCompile Include="Victor.cpp" />
-    <ClCompile Include="Vision2009\AxisCamera.cpp" />
-    <ClCompile Include="Vision2009\BaeUtilities.cpp" />
-    <ClCompile Include="Vision2009\FrcError.cpp" />
-    <ClCompile Include="Vision2009\TrackAPI.cpp" />
-    <ClCompile Include="Vision2009\VisionAPI.cpp" />
     <ClCompile Include="Vision\AxisCamera.cpp" />
     <ClCompile Include="Vision\AxisCameraParams.cpp" />
     <ClCompile Include="Vision\BinaryImage.cpp" />
@@ -425,11 +422,6 @@
     <ClInclude Include="Victor.h" />
     <ClInclude Include="visa\visa.h" />
     <ClInclude Include="visa\visatype.h" />
-    <ClInclude Include="Vision2009\AxisCamera.h" />
-    <ClInclude Include="Vision2009\BaeUtilities.h" />
-    <ClInclude Include="Vision2009\FrcError.h" />
-    <ClInclude Include="Vision2009\TrackAPI.h" />
-    <ClInclude Include="Vision2009\VisionAPI.h" />
     <ClInclude Include="Vision\AxisCamera.h" />
     <ClInclude Include="Vision\AxisCameraParams.h" />
     <ClInclude Include="Vision\BinaryImage.h" />

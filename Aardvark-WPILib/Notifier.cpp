@@ -9,7 +9,6 @@
 #include "Utility.h"
 #include "WPIErrors.h"
 
-const uint32_t Notifier::kTimerInterruptNumber;
 Notifier *Notifier::timerQueueHead = NULL;
 ReentrantSemaphore Notifier::queueSemaphore;
 tAlarm *Notifier::talarm = NULL;

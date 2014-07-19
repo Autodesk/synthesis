@@ -6,7 +6,7 @@
 
 #include "MonoImage.h"
 #include "nivision.h"
-
+#if ENABLE_NIVISION
 MonoImage::MonoImage() : ImageBase(IMAQ_IMAGE_U8)
 {
 }
@@ -51,3 +51,4 @@ vector<EllipseMatch> * MonoImage::DetectEllipses(
 			NULL, NULL);
 	return ellipses;
 }
+#endif

@@ -8,15 +8,34 @@
 #define __BINARY_IMAGE_H__
 
 #include "MonoImage.h"
-/**
- * Included for ParticleAnalysisReport definition
- * TODO: Eliminate this dependency! 
- */
-#include "Vision2009/VisionAPI.h"
 
 #include <vector>
 #include <algorithm>
 using namespace std;
+
+#if ENABLE_NIVISION
+typedef struct ParticleAnalysisReport_struct {
+	int 	imageHeight;
+	int 	imageWidth;
+	double 	imageTimestamp;				
+	int		particleIndex;				// the particle index analyzed
+	/* X-coordinate of the point representing the average position of the 
+	 * total particle mass, assuming every point in the particle has a constant density */
+	int 	center_mass_x;  			// MeasurementType: IMAQ_MT_CENTER_OF_MASS_X 
+	/* Y-coordinate of the point representing the average position of the 
+	 * total particle mass, assuming every point in the particle has a constant density */
+	int 	center_mass_y;  			// MeasurementType: IMAQ_MT_CENTER_OF_MASS_Y 
+	double 	center_mass_x_normalized;  	//Center of mass x value normalized to -1.0 to +1.0 range
+	double 	center_mass_y_normalized;  	//Center of mass y value normalized to -1.0 to +1.0 range
+	/* Area of the particle */
+	double 	particleArea;				// MeasurementType: IMAQ_MT_AREA
+	/* Bounding Rectangle */
+	Rect 	boundingRect;				// left/top/width/height
+	/* Percentage of the particle Area covering the Image Area. */
+	double 	particleToImagePercent;		// MeasurementType: IMAQ_MT_AREA_BY_IMAGE_AREA
+	/* Percentage of the particle Area in relation to its Particle and Holes Area */
+	double 	particleQuality;			// MeasurementType: IMAQ_MT_AREA_BY_PARTICLE_AND_HOLES_AREA
+} ParticleAnalysisReport;
 
 class BinaryImage : public MonoImage
 {
@@ -39,4 +58,5 @@ private:
 	static bool CompareParticleSizes(ParticleAnalysisReport particle1, ParticleAnalysisReport particle2);
 };
 
+#endif
 #endif
