@@ -2,6 +2,8 @@
 #ifndef __LoadOut_h__
 #define __LoadOut_h__
 
+#include <stdint.h>
+
 #define kMaxModuleNumber 2
 namespace nLoadOut
 {

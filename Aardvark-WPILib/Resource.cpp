@@ -8,7 +8,6 @@
 #include "WPIErrors.h"
 #include "ErrorBase.h"
 #include "OSAL/Synchronized.h"
-
 ReentrantSemaphore Resource::m_createLock;
 
 /**
@@ -39,7 +38,7 @@ Resource::Resource(uint32_t elements)
  */
 /*static*/ void Resource::CreateResourceObject(Resource **r, uint32_t elements)
 {
-	Synchronized sync(m_createLock);
+	//Synchronized sync(m_createLock);
 	if (*r == NULL)
 	{
 		*r = new Resource(elements);

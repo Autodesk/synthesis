@@ -12,7 +12,9 @@ NiFpgaState *state;
 }
 
 int main(int argc, char ** argv) {
+	printf("Start now!\n");
 	NiFpga_Initialize();
+	printf("Init FPGA\n");
 	Talon *t = new Talon(1, 1);
 	float j = 0;
 	while (true) {

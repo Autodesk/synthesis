@@ -10,6 +10,7 @@
 #include "ChipObject/tDIOImpl.h"
 #include "ChipObject/tAIImpl.h"
 #include "ChipObject/tSolenoidImpl.h"
+#include "ChipObject/tGlobalImpl.h"
 
 namespace nFPGA {
 
@@ -18,13 +19,18 @@ NiFpgaState::NiFpgaState() {
 	solenoid = NULL;
 	dio = new tDIO_Impl*[DIO_COUNT];
 	ai = new tAI_Impl*[ANALOG_COUNT];
+	accum = new tAccumulator_Impl*[ACCUM_COUNT];
 	solenoid = NULL;
+	global = NULL;
 
 	for (int i = 0; i < DIO_COUNT; i++) {
 		dio[i] = NULL;
 	}
 	for (int i = 0; i < ANALOG_COUNT; i++) {
 		ai[i] = NULL;
+	}
+	for (int i = 0; i < ACCUM_COUNT; i++) {
+		accum[i] = NULL;
 	}
 }
 
@@ -45,11 +51,25 @@ tAI_Impl *NiFpgaState::getAnalog(unsigned char module) {
 	return ai[module];
 }
 
+tAccumulator_Impl *NiFpgaState::getAccumulator(unsigned char sys_index) {
+	if (accum[sys_index] == NULL) {
+		//accum[sys_index] = new tAccumulator_Impl(this, sys_index);
+	}
+	return accum[sys_index];
+}
+
 tSolenoid_Impl *NiFpgaState::getSolenoid() {
 	if (solenoid == NULL) {
-		//solenoid[module] = new tSolenoid_Impl(this, module);
+		//solenoid[module] = new tSolenoid_Impl(this);
 	}
 	return solenoid;
+}
+
+tGlobal_Impl *NiFpgaState::getGlobal() {
+	if (global == NULL) {
+		//global = new tGlobal_Impl(this);
+	}
+	return global;
 }
 
 const uint16_t NiFpgaState::getExpectedFPGAVersion() {

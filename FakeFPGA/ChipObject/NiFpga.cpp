@@ -3,8 +3,10 @@
 #include <stdlib.h>
 
 #include <tDIO.h>
+#include <tGlobal.h>
 #include <tSolenoid.h>
 #include <tAI.h>
+#include <tAccumulator.h>
 
 extern "C" {
 nFPGA::NiFpgaState *state;
@@ -13,7 +15,7 @@ nFPGA::NiFpgaState *state;
 nFPGA::nFRC_2012_1_6_4::tDIO *nFPGA::nFRC_2012_1_6_4::tDIO::create(
 		unsigned char sys_index, tRioStatusCode *status) {
 	status = NiFpga_Status_Success;
-	return (nFPGA::nFRC_2012_1_6_4::tDIO*) state->getAnalog(sys_index);
+	return (nFPGA::nFRC_2012_1_6_4::tDIO*) state->getDIO(sys_index);
 }
 
 nFPGA::nFRC_2012_1_6_4::tAI *nFPGA::nFRC_2012_1_6_4::tAI::create(
@@ -28,8 +30,21 @@ nFPGA::nFRC_2012_1_6_4::tSolenoid *nFPGA::nFRC_2012_1_6_4::tSolenoid::create(
 	return (nFPGA::nFRC_2012_1_6_4::tSolenoid*) state->getSolenoid();
 }
 
+nFPGA::nFRC_2012_1_6_4::tAccumulator *nFPGA::nFRC_2012_1_6_4::tAccumulator::create(
+		unsigned char sys_index, tRioStatusCode *status) {
+	status = NiFpga_Status_Success;
+	return (nFPGA::nFRC_2012_1_6_4::tAccumulator*) state->getAccumulator(
+			sys_index);
+}
+
+nFPGA::nFRC_2012_1_6_4::tGlobal *nFPGA::nFRC_2012_1_6_4::tGlobal::create(
+		tRioStatusCode *status) {
+	status = NiFpga_Status_Success;
+	return (nFPGA::nFRC_2012_1_6_4::tGlobal *) state->getGlobal();
+}
+
 NiFpga_Status NiFpga_Initialize(void) {
-	// Setup FPGA
+// Setup FPGA
 	state = new nFPGA::NiFpgaState();
 
 	return NiFpga_Status_Success;

@@ -21,10 +21,10 @@
  * 
  * @param seconds Length of time to pause, in seconds.
  */
-void Wait(double seconds)
-{
-	if (seconds < 0.0) return;
-	sleep_ms((DWORD)(seconds * 1000));
+void Wait(double seconds) {
+	if (seconds < 0.0)
+		return;
+	sleep_ms((DWORD) (seconds * 1000));
 }
 
 /*
@@ -32,17 +32,15 @@ void Wait(double seconds)
  * This is deprecated and just forwards to Timer::GetFPGATimestamp().
  * @returns Robot running time in seconds.
  */
-double GetClock()
-{
+double GetClock() {
 	return Timer::GetFPGATimestamp();
 }
 
 /**
  * @brief Gives real-time clock system time with nanosecond resolution
  * @return The time, just in case you want the robot to start autonomous at 8pm on Saturday.
-*/
-double GetTime()  
-{
+ */
+double GetTime() {
 	return 0.0;	// BAD TODO
 }
 
@@ -52,11 +50,8 @@ double GetTime()
  * Create a new timer object and reset the time to zero. The timer is initially not running and
  * must be started.
  */
-Timer::Timer()
-	: m_startTime (0.0)
-	, m_accumulatedTime (0.0)
-	, m_running (false)
-	, m_semaphore ()// creates semaphore
+Timer::Timer() :
+		m_startTime(0.0), m_accumulatedTime(0.0), m_running(false), m_semaphore()// creates semaphore
 {
 	//Creates a semaphore to control access to critical regions.
 	//Initially 'open'
@@ -64,8 +59,7 @@ Timer::Timer()
 	Reset();
 }
 
-Timer::~Timer()
-{
+Timer::~Timer() {
 	//semDelete(m_semaphore);
 }
 
@@ -76,20 +70,16 @@ Timer::~Timer()
  * 
  * @return unsigned Current time value for this timer in seconds
  */
-double Timer::Get()
-{
+double Timer::Get() {
 	double result;
 	double currentTime = GetFPGATimestamp();
 
 	Synchronized sync(m_semaphore);
-	if(m_running)
-	{
+	if (m_running) {
 		// This math won't work if the timer rolled over (71 minutes after boot).
 		// TODO: Check for it and compensate.
 		result = (currentTime - m_startTime) + m_accumulatedTime;
-	}
-	else
-	{
+	} else {
 		result = m_accumulatedTime;
 	}
 
@@ -101,8 +91,7 @@ double Timer::Get()
  * 
  * Make the timer startTime the current time so new requests will be relative to now
  */
-void Timer::Reset()
-{
+void Timer::Reset() {
 	Synchronized sync(m_semaphore);
 	m_accumulatedTime = 0;
 	m_startTime = GetFPGATimestamp();
@@ -113,11 +102,9 @@ void Timer::Reset()
  * Just set the running flag to true indicating that all time requests should be
  * relative to the system clock.
  */
-void Timer::Start()
-{
+void Timer::Start() {
 	Synchronized sync(m_semaphore);
-	if (!m_running)
-	{
+	if (!m_running) {
 		m_startTime = GetFPGATimestamp();
 		m_running = true;
 	}
@@ -129,14 +116,12 @@ void Timer::Start()
  * subsequent time requests to be read from the accumulated time rather than
  * looking at the system clock.
  */
-void Timer::Stop()
-{
+void Timer::Stop() {
 	double temp = Get();
 
 	Synchronized sync(m_semaphore);
-	if (m_running)
-	{
-		m_accumulatedTime = temp;	
+	if (m_running) {
+		m_accumulatedTime = temp;
 		m_running = false;
 	}
 }
@@ -149,10 +134,8 @@ void Timer::Stop()
  * @param period The period to check for (in seconds).
  * @return If the period has passed.
  */
-bool Timer::HasPeriodPassed(double period)
-{
-	if (Get() > period)
-	{
+bool Timer::HasPeriodPassed(double period) {
+	if (Get() > period) {
 		Synchronized sync(m_semaphore);
 		// Advance the start time by the period.
 		// Don't set it to the current time... we want to avoid drift.
@@ -170,18 +153,10 @@ bool Timer::HasPeriodPassed(double period)
  * Rolls over after 71 minutes.
  * @returns Robot running time in seconds.
  */
-double Timer::GetFPGATimestamp()
-{
+double Timer::GetFPGATimestamp() {
 	// FPGA returns the timestamp in microseconds
 	// Call the helper GetFPGATime() in Utility.cpp
 	return GetFPGATime() * 1.0e-6;
-}
-
-// Internal function that reads the PPC timestamp counter.
-extern "C"
-{
-	extern uint32_t niTimestamp32(void);
-	extern uint64_t niTimestamp64(void);
 }
 
 /*
@@ -190,8 +165,7 @@ extern "C"
  * This is lower overhead than GetFPGATimestamp() but not synchronized with other FPGA timestamps.
  * @returns Robot running time in seconds.
  */
-double Timer::GetPPCTimestamp()
-{
+double Timer::GetPPCTimestamp() {
 	// PPC system clock is 33MHz
-	return niTimestamp64() / 33.0e6;
+	return (double) clock() / (double) CLOCKS_PER_SEC;
 }
