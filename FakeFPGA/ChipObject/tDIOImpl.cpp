@@ -35,6 +35,9 @@ tDIO_Impl::tDIO_Impl(NiFpgaState *state, unsigned char index) {
 }
 
 tDIO_Impl::~tDIO_Impl() {
+	if (this->state->dio[this->index] == this) {
+		this->state->dio[this->index] = NULL;
+	}
 }
 
 nFPGA::tSystemInterface* tDIO_Impl::getSystemInterface() {
@@ -411,7 +414,7 @@ void tDIO_Impl::strobeI2CStart(tRioStatusCode* status) {
 
 unsigned short tDIO_Impl::readLoopTiming(tRioStatusCode* status) {
 	status = NiFpga_Status_Success;
-	return loopTiming;
+	return loopTiming = 260;	// Shouldn't change but yeah
 }
 
 void tDIO_Impl::writePWMConfig(nFPGA::nFRC_2012_1_6_4::tDIO::tPWMConfig value, tRioStatusCode* status) {

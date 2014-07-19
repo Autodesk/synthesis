@@ -1,9 +1,9 @@
 /*
-* System.cpp
-*
-*  Created on: Sep 26, 2012
-*      Author: Mitchell Wills
-*/
+ * System.cpp
+ *
+ *  Created on: Sep 26, 2012
+ *      Author: Mitchell Wills
+ */
 
 #include "System.h"
 #include <stdio.h>
@@ -17,7 +17,9 @@
 #include <unistd.h>
 #endif
 
-void sleep_ms(unsigned long ms){
+extern "C" {
+
+void sleep_ms(unsigned long ms) {
 #if USE_WINAPI
 	Sleep(ms);
 #elif USE_POSIX
@@ -25,21 +27,45 @@ void sleep_ms(unsigned long ms){
 #endif
 }
 
-unsigned long currentTimeMillis(){
+unsigned long currentTimeMillis() {
 #if USE_WINAPI
 	FILETIME ft_now;
 	GetSystemTimeAsFileTime(&ft_now);
 	uint64_t ll_now = (LONGLONG)ft_now.dwLowDateTime + ((LONGLONG)(ft_now.dwHighDateTime) << 32LL);
-	return (long)(ll_now / 10000);
+	return (unsigned long)(ll_now / 10000);
 #elif USE_POSIX
 	timeval tt;
 	gettimeofday(&tt, NULL);
-	return (long) (tt.tv_sec * 1000L) + (long)(tt.tv_usec / 1000000L);
+	return (unsigned long) (tt.tv_sec * 1000L) + (long) (tt.tv_usec / 1000000L);
 #endif
 }
 
-void writeWarning(const char* message){
+unsigned long threadTimeMicros() {
+#if USE_WINAPI
+	static uint64_t threadBaseTime = 0;
+	FILETIME ft_now;
+	GetSystemTimeAsFileTime(&ft_now);
+	uint64_t ll_now = (LONGLONG)ft_now.dwLowDateTime + ((LONGLONG)(ft_now.dwHighDateTime) << 32LL);
+	if (threadBaseTime == 0) {
+		threadBaseTime = ll_now;
+	}
+	return (unsigned long)((ll_now-threadBaseTime) / 10);
+#elif USE_POSIX
+	static __time_t threadBaseTime = 0;
+	timeval tt;
+	gettimeofday(&tt, NULL);
+	if (threadBaseTime == 0) {
+		threadBaseTime = tt.tv_sec;
+	}
+	return (unsigned long) ((tt.tv_sec - threadBaseTime) * 1000000UL)
+			+ (long) (tt.tv_usec / 1000UL);
+#endif
+}
+
+void writeWarning(const char* message) {
 	fprintf(stderr, "%s\n", message);
 	fflush(stderr);
 	//TODO implement write warning with wpilib error stuff
+}
+
 }

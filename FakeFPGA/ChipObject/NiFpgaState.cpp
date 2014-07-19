@@ -11,6 +11,7 @@
 #include "ChipObject/tAIImpl.h"
 #include "ChipObject/tSolenoidImpl.h"
 #include "ChipObject/tGlobalImpl.h"
+#include <stdio.h>
 
 namespace nFPGA {
 
@@ -26,7 +27,7 @@ NiFpgaState::NiFpgaState() {
 	for (int i = 0; i < DIO_COUNT; i++) {
 		dio[i] = NULL;
 	}
-	for (int i = 0; i < ANALOG_COUNT; i++) {
+	for (int i = 0; i < ANALOG_COUNT;i++) {
 		ai[i] = NULL;
 	}
 	for (int i = 0; i < ACCUM_COUNT; i++) {
@@ -67,7 +68,7 @@ tSolenoid_Impl *NiFpgaState::getSolenoid() {
 
 tGlobal_Impl *NiFpgaState::getGlobal() {
 	if (global == NULL) {
-		//global = new tGlobal_Impl(this);
+		global = new tGlobal_Impl(this);
 	}
 	return global;
 }

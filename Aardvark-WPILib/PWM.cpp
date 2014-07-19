@@ -143,8 +143,6 @@ void PWM::SetBounds(int32_t max, int32_t deadbandMax, int32_t center, int32_t de
 */
 void PWM::SetBounds(double max, double deadbandMax, double center, double deadbandMin, double min)
 {
-	if (StatusIsFatal()) return;
-
 	double loopTime = m_module->GetLoopTiming()/(kSystemClockTicksPerMicrosecond*1e3);
 
 	m_maxPwm = (int32_t)((max-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);

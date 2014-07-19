@@ -1,4 +1,5 @@
 #include "NiFpga.h"
+#include "NiFakeFpga.h"
 #include "ChipObject/NiFpgaState.h"
 #include <stdlib.h>
 
@@ -9,49 +10,58 @@
 #include <tAccumulator.h>
 
 extern "C" {
-nFPGA::NiFpgaState *state;
+nFPGA::NiFpgaState *state = NULL;
+}
+
+nFPGA::NiFpgaState *GetFakeFPGA() {
+	if (state == NULL) {
+		state = new nFPGA::NiFpgaState();
+	}
+	return state;
 }
 
 nFPGA::nFRC_2012_1_6_4::tDIO *nFPGA::nFRC_2012_1_6_4::tDIO::create(
 		unsigned char sys_index, tRioStatusCode *status) {
 	status = NiFpga_Status_Success;
-	return (nFPGA::nFRC_2012_1_6_4::tDIO*) state->getDIO(sys_index);
+	return (nFPGA::nFRC_2012_1_6_4::tDIO*) GetFakeFPGA()->getDIO(sys_index);
 }
 
 nFPGA::nFRC_2012_1_6_4::tAI *nFPGA::nFRC_2012_1_6_4::tAI::create(
 		unsigned char sys_index, tRioStatusCode *status) {
 	status = NiFpga_Status_Success;
-	return (nFPGA::nFRC_2012_1_6_4::tAI*) state->getAnalog(sys_index);
+	return (nFPGA::nFRC_2012_1_6_4::tAI*) GetFakeFPGA()->getAnalog(sys_index);
 }
 
 nFPGA::nFRC_2012_1_6_4::tSolenoid *nFPGA::nFRC_2012_1_6_4::tSolenoid::create(
 		tRioStatusCode *status) {
 	status = NiFpga_Status_Success;
-	return (nFPGA::nFRC_2012_1_6_4::tSolenoid*) state->getSolenoid();
+	return (nFPGA::nFRC_2012_1_6_4::tSolenoid*) GetFakeFPGA()->getSolenoid();
 }
 
 nFPGA::nFRC_2012_1_6_4::tAccumulator *nFPGA::nFRC_2012_1_6_4::tAccumulator::create(
 		unsigned char sys_index, tRioStatusCode *status) {
 	status = NiFpga_Status_Success;
-	return (nFPGA::nFRC_2012_1_6_4::tAccumulator*) state->getAccumulator(
+	return (nFPGA::nFRC_2012_1_6_4::tAccumulator*) GetFakeFPGA()->getAccumulator(
 			sys_index);
 }
 
 nFPGA::nFRC_2012_1_6_4::tGlobal *nFPGA::nFRC_2012_1_6_4::tGlobal::create(
 		tRioStatusCode *status) {
 	status = NiFpga_Status_Success;
-	return (nFPGA::nFRC_2012_1_6_4::tGlobal *) state->getGlobal();
+	return (nFPGA::nFRC_2012_1_6_4::tGlobal *) GetFakeFPGA()->getGlobal();
 }
 
 NiFpga_Status NiFpga_Initialize(void) {
 // Setup FPGA
-	state = new nFPGA::NiFpgaState();
+	GetFakeFPGA();
 
 	return NiFpga_Status_Success;
 }
 
 NiFpga_Status NiFpga_Finalize(void) {
+	// Should delete the fake FPGA.
 	delete state;
+	state = NULL;
 	return NiFpga_Status_Success;
 }
 

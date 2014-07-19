@@ -20,6 +20,11 @@ class tAccumulator_Impl;
 class tGlobal_Impl;
 
 class NiFpgaState: public tSystemInterface {
+	friend class tDIO_Impl;
+	friend class tAI_Impl;
+	friend class tSolenoid_Impl;
+	friend class tAccumulator_Impl;
+	friend class tGlobal_Impl;
 private:
 	static const int DIO_COUNT = 4;
 	static const int ANALOG_COUNT = 4;

@@ -10,6 +10,7 @@
 #ifndef CSYSTEM_H_
 #define CSYSTEM_H_
 
+extern "C" {
 /**
  * Causes the current thread to sleep at least the
  * given number of milliseconds.
@@ -26,12 +27,20 @@ void sleep_ms(unsigned long ms);
 unsigned long currentTimeMillis();
 
 /**
+ * Retrieves the time base in microseconds.
+ * Not wall-clock time.
+ *
+ * @return Thread time in microseconds
+ */
+unsigned long threadTimeMicros();
+
+/**
  * Writes a warning message to the standard error
  * stream.
  * 
  * @param message The string message to write.
  */
 void writeWarning(const char* message);
-
+}
 
 #endif /* TIME_H_ */
