@@ -36,6 +36,7 @@ public:
 	unsigned short pwmPeriod;
 	unsigned short pwmMinHigh;
 	uint8_t pwmValue[8];
+	uint8_t pwmTypes[8];
 
 	unsigned short loopTiming;	// This better be 260
 public:
