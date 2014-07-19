@@ -44,6 +44,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -64,7 +66,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="StatePacket.h" />
+    <ClInclude Include="StateNetwork\StatePacket.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ChipObject\NiFpga.c" />
+    <ClCompile Include="emulator_main.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Aardvark-WPILib\Aardvark-WPILib.vcxproj">
+      <Project>{35d57ff3-6647-4b8c-afb9-e680d60de40e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

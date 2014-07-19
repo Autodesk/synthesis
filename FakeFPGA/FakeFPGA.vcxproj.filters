@@ -15,7 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StatePacket.h">
+    <ClCompile Include="emulator_main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChipObject\NiFpga.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="StateNetwork\StatePacket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
