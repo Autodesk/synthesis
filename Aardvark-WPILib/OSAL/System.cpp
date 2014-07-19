@@ -14,6 +14,7 @@
 #include <Windows.h>
 #elif USE_POSIX
 #include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 #endif
 
@@ -36,7 +37,7 @@ unsigned long currentTimeMillis() {
 #elif USE_POSIX
 	timeval tt;
 	gettimeofday(&tt, NULL);
-	return (unsigned long) (tt.tv_sec * 1000L) + (long) (tt.tv_usec / 1000000L);
+	return (unsigned long) (tt.tv_sec * 1000L) + (long) (tt.tv_usec / 1000L);
 #endif
 }
 
@@ -52,13 +53,13 @@ unsigned long threadTimeMicros() {
 	return (unsigned long)((ll_now-threadBaseTime) / 10);
 #elif USE_POSIX
 	static __time_t threadBaseTime = 0;
-	timeval tt;
-	gettimeofday(&tt, NULL);
+	timespec tt;
+	clock_gettime(CLOCK_MONOTONIC, &tt);
 	if (threadBaseTime == 0) {
 		threadBaseTime = tt.tv_sec;
 	}
 	return (unsigned long) ((tt.tv_sec - threadBaseTime) * 1000000UL)
-			+ (long) (tt.tv_usec / 1000UL);
+			+ (long) (tt.tv_nsec / 1000);
 #endif
 }
 

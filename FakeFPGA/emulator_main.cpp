@@ -8,6 +8,7 @@
 #include <tDIO.h>
 #include <unistd.h>
 #include "ChipObject/tDIOImpl.h"
+#include "OSAL/System.h"
 
 int main(int argc, char ** argv) {
 	printf("Start now!\n");
