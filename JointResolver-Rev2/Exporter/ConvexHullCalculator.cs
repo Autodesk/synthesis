@@ -1,5 +1,5 @@
 ﻿// Yay or nay to fancy things
-#define FANCY_SIMPLIFY_GRAPHICS
+// #define FANCY_SIMPLIFY_GRAPHICS
 
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ public class ConvexHullCalculator
 
     private class SimplificationVertex
     {
-        public uint finalIndex;
+        public int finalIndex = -99;
         public float[] pos = new float[3];
         public List<SimplificationFace> faces = new List<SimplificationFace>();
 
@@ -182,7 +182,7 @@ public class ConvexHullCalculator
 
         // Time for shenanigans!  We are going to naively pick the shortest edge and then remove it.  Destroys two faces per loop typically.
         // Give it 2000 tries at most.
-        for (int i = 0; i < 2000 && simplFace.Count > 250; i++)
+        for (int i = 0; i < 2000 && simplFace.Count > 150; i++)
         {
             SimplificationFace bFace = simplFace[0];
             // This is the edge to remove
@@ -269,7 +269,7 @@ public class ConvexHullCalculator
         for (int i = 0; i < simplVerts.Count; i++)
         {
             int off = i * 3;
-            simplVerts[i].finalIndex = (uint) (i + 1);  // We chose to make indicies 1-based?  What type of programmers are we?
+            simplVerts[i].finalIndex = (i);  // Our indices are zero based <3
             Console.WriteLine(simplVerts[i].finalIndex);
             Array.Copy(simplVerts[i].pos, 0, verts, off, 3);
         }
@@ -278,9 +278,9 @@ public class ConvexHullCalculator
         for (int i = 0; i < simplFace.Count; i++)
         {
             int off = i * 3;
-            inds[off] = simplFace[i].verts[0].finalIndex;
-            inds[off + 1] = simplFace[i].verts[1].finalIndex;
-            inds[off + 2] = simplFace[i].verts[2].finalIndex;
+            inds[off] = (uint) simplFace[i].verts[0].finalIndex;
+            inds[off + 1] = (uint) simplFace[i].verts[1].finalIndex;
+            inds[off + 2] = (uint) simplFace[i].verts[2].finalIndex;
         }
     }
 
@@ -302,9 +302,9 @@ public class ConvexHullCalculator
         for (uint i2 = 0; i2 < trisCount; i2++)
         {
             uint off = i2 * 3;
-            sub.indicies[off + 0] = (int) inds[off + 0] + 1;
-            sub.indicies[off + 1] = (int) inds[off + 1] + 1;
-            sub.indicies[off + 2] = (int) inds[off + 2] + 1;
+            sub.indicies[off + 0] = (int) inds[off + 0];
+            sub.indicies[off + 1] = (int) inds[off + 1];
+            sub.indicies[off + 2] = (int) inds[off + 2];
         }
 
         return sub;
@@ -331,7 +331,7 @@ public class ConvexHullCalculator
             }
             for (int i = 0; i < mesh.indicies.Length; i++)
             {
-                index[indexCount + i] = (uint) (mesh.indicies[i] - 1 + vertCount);
+                index[indexCount + i] = (uint) (mesh.indicies[i] + vertCount);
             }
             indexCount += mesh.indicies.Length;
             vertCount += mesh.verts.Length / 3;

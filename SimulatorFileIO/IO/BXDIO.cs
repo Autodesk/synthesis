@@ -8,9 +8,9 @@ public class BXDIO
     private const byte MAJOR_VERSION = 0;           // Bump on stable releases
     private const byte MINOR_VERSION = 0;           // Bump on beta releases
     private const byte REVISION_VERSION = 6;        // Bump on major IO changes.
-    private const byte REVISION_PORTION = 3;        // Bump on minor additions and removals from IO.
+    private const byte REVISION_PORTION = 4;        // Bump on minor additions and removals from IO.
 
-    public const string ASSEMBLY_VERSION = "0.0.6.3";   // I'm so sorry that this isn't dynamic :'(
+    public const string ASSEMBLY_VERSION = "0.0.6.4";   // I'm so sorry that this isn't dynamic :'(
 
     /// <summary>
     /// The version of the BXDJ file format this file can read and write.

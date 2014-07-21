@@ -109,9 +109,18 @@ public class BXDAMesh
             for (int i = 0; i < facetCount; i++)
             {
                 int fI = i * 3;
-                writer.Write(mesh.indicies[fI] - 1);
-                writer.Write(mesh.indicies[fI + 1] - 1);
-                writer.Write(mesh.indicies[fI + 2] - 1);
+                // Integrity check
+                for (int j = 0; j < 3; j++)
+                {
+                    if (mesh.indicies[fI + j] < 0 || mesh.indicies[fI + j] >= mesh.verts.Length)
+                    {
+                        Console.WriteLine("Tris #" + i + " failed.  Index is " + mesh.indicies[fI + j]);
+                        Console.ReadLine();
+                    }
+                }
+                writer.Write(mesh.indicies[fI]);
+                writer.Write(mesh.indicies[fI + 1]);
+                writer.Write(mesh.indicies[fI + 2]);
             }
         }
     }

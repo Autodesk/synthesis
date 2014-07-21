@@ -139,7 +139,8 @@ public class SurfaceExporter
         int indxOffset = postFacetCount * 3;
         for (int i = 0; i < tmpFacetCount * 3; i++)
         {
-            postIndicies[i + indxOffset] = tmpIndicies[i] + postVertCount;
+            postIndicies[i + indxOffset] = tmpIndicies[i] + postVertCount - 1;
+            // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
         }
         postFacetCount += tmpFacetCount;
         postVertCount += tmpVertCount;
