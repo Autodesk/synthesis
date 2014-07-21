@@ -14,15 +14,15 @@ namespace nUsageReporting {
 			case kResourceType_Victor:
 			case kResourceType_Servo:
 			case kResourceType_Talon: {
-				GetFakeFPGA()->getDIO(context)->pwmTypes[instanceNumber] = resource;
+				GetFakeFPGA()->getDIO(context)->pwmTypes[instanceNumber-1] = resource;
 				break;
 									  }
 			case kResourceType_PWM: {
 				uint8_t type = GetFakeFPGA()->getDIO(context)->pwmTypes[instanceNumber];
 				// Don't overwrite the more specific ones
 				if (type != kResourceType_Jaguar && type != kResourceType_Victor
-					&& type != kResourceType_Talon) {
-						GetFakeFPGA()->getDIO(context)->pwmTypes[instanceNumber] = resource;
+					&& type != kResourceType_Talon && type != kResourceType_Servo) {
+						GetFakeFPGA()->getDIO(context)->pwmTypes[instanceNumber-1] = resource;
 				}
 				break;
 									}

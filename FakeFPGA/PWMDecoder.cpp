@@ -35,14 +35,16 @@ float PWMDecoder::decodePWM(nFPGA::tDIO_Impl *dio, uint8_t reg_index) {
 		deadbandMin = 1.5;
 		min = 0.743;
 		break;
+	case nUsageReporting::kResourceType_PWM:
 	case nUsageReporting::kResourceType_Talon:
-	default:
 		max = 2.037;
 		deadbandMax = 1.539;
 		center = 1.513;
 		deadbandMin = 1.487;
 		min = 0.989;
 		break;
+	default:
+		return 0;
 	}
 
 	int32_t m_maxPwm = (int32_t)((max-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);

@@ -54,6 +54,9 @@
     <ClCompile Include="PWMDecoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StateNetwork\StateNetworkServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateNetwork\StatePacket.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PWMDecoder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateNetwork\StateNetworkServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
