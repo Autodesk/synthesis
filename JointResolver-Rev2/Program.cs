@@ -10,7 +10,13 @@ static class Program
     public static unsafe void Main(String[] args)
     {
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-        AnalyzeRigidResults();
+        //AnalyzeRigidResults();
+        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
+        SurfaceExporter exp = new SurfaceExporter();
+        foreach (ComponentOccurrence cc in asmDoc.ComponentDefinition.Occurrences){
+            exp.ExportAll(cc);
+        }
+        List<BXDAMesh.BXDASubMesh> subs = ConvexHullCalculator.GetHull(exp.GetOutput());
     }
 
     public static void AnalyzeRigidResults()
