@@ -21,6 +21,7 @@
 *.la
 
 *.a
+*.lib
 # Compiled Object files
 *.slo
 *.lo
