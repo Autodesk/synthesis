@@ -113,7 +113,10 @@ public class LinearJoint : LinearJoint_Base, InventorSkeletalJoint
         {
             linearLimitLow = (float) wrapped.asmJoint.LinearPositionStartLimit.Value;
             wrapped.asmJoint.LinearPosition = linearLimitLow;
-
+        }
+        if (hasUpperLimit && hasLowerLimit)
+        {
+            wrapped.asmJoint.LinearPosition = (linearLimitLow + linearLimitHigh) / 2;
         }
         currentLinearPosition = !((wrapped.asmJoint.LinearPosition == null)) ? ((float)wrapped.asmJoint.LinearPosition.Value) : 0;
 
