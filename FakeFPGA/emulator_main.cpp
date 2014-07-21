@@ -8,6 +8,7 @@
 #include <tDIO.h>
 #include "ChipObject/tDIOImpl.h"
 #include "OSAL/System.h"
+#include "PWMDecoder.h"
 
 int main(int argc, char ** argv) {
 	printf("Start now!\n");
@@ -19,8 +20,9 @@ int main(int argc, char ** argv) {
 		j += 0.1;
 		float val = (float) sin(j);
 		t->Set(val);
-		printf("VALUE: %f->%f\t\t%d\n", val, t->Get(),
-				GetFakeFPGA()->getDIO(0)->pwmValue[0]);
+		float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), t->GetChannel()-1);
+		printf("VALUE: %f->%f\t\t%d\t(%f)\t\tError: %f\n", val, t->Get(),
+				GetFakeFPGA()->getDIO(0)->pwmValue[0], curr, val-curr);
 		sleep_ms(1000);
 	}
 }

@@ -51,6 +51,9 @@
     <ClCompile Include="nUsageReporting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PWMDecoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateNetwork\StatePacket.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChipObject\tGlobalImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PWMDecoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

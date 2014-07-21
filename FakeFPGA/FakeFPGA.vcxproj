@@ -74,6 +74,7 @@
     <ClInclude Include="ChipObject\tDIOImpl.h" />
     <ClInclude Include="ChipObject\tGlobalImpl.h" />
     <ClInclude Include="ChipObject\tSolenoidImpl.h" />
+    <ClInclude Include="PWMDecoder.h" />
     <ClInclude Include="StateNetwork\StatePacket.h" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +89,7 @@
     <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
     <ClCompile Include="emulator_main.cpp" />
     <ClCompile Include="nUsageReporting.cpp" />
+    <ClCompile Include="PWMDecoder.cpp" />
     <ClCompile Include="StateNetwork\FRCNetCommDummy.cpp" />
   </ItemGroup>
   <ItemGroup>
