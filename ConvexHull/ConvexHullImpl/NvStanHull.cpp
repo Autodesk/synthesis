@@ -64,7 +64,7 @@ NvStanHull.cpp : A convex hull generator written by Stan Melax
 
 #include "NvStanHull.h"
 
-#define KILL_CLOSE_POINTS 0		/* SUUUPA EXPENSIVE */
+#define KILL_CLOSE_POINTS 1		/* SUUUPA EXPENSIVE */
 
 namespace CONVEX_DECOMPOSITION
 {
@@ -3029,7 +3029,8 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 	if ( svcount == 0 ) return false;
 
 
-	#define EPSILON 0.000001f // close enough to consider two floating point numbers to be 'the same'.
+	#define EPSILON 0.01f // close enough to consider two floating point numbers to be 'the same'.
+	// Reduced for the sake of speed
 
 	vcount = 0;
 
@@ -3138,6 +3139,7 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 
 	vtx = (const char *) svertices;
 
+	int lastPercent = 0;
 	for (NxU32 i=0; i<svcount; i++)
 	{
 
@@ -3157,9 +3159,9 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 
 		{
 #pragma region KILL_CLOSE_POINTS
-			NxU32 j;
+			NxI32 j;
 #if KILL_CLOSE_POINTS
-			for (j=0; j<vcount; j++)
+			for (j=vcount-1; j>=0; j--)
 			{
 				NxF32 *v = &vertices[j*3];
 
@@ -3191,10 +3193,10 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 				}
 			}
 #else
-			j = vcount;
+			j = -1;
 #endif
 #pragma endregion
-			if ( j == vcount )
+			if ( j == -1 )
 			{
 				NxF32 *dest = &vertices[vcount*3];
 				dest[0] = px;
@@ -3203,8 +3205,13 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 				vcount++;
 			}
 		}
+		int cpa = (int)(i * 100 / svcount);
+		if (cpa != lastPercent) {
+			printf("Cleaning: %d/%d\t%d%%\n", i, svcount, cpa);
+			lastPercent = cpa;
+		}
 	}
-
+	printf("Pruned to %d verts\n", vcount);
 	// ok..now make sure we didn't prune so many vertices it is now invalid.
 	{
 		NxF32 bmin[3] = {  FLT_MAX,  FLT_MAX,  FLT_MAX };
