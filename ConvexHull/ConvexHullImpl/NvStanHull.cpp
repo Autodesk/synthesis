@@ -64,6 +64,8 @@ NvStanHull.cpp : A convex hull generator written by Stan Melax
 
 #include "NvStanHull.h"
 
+#define KILL_CLOSE_POINTS 0		/* SUUUPA EXPENSIVE */
+
 namespace CONVEX_DECOMPOSITION
 {
 
@@ -1600,7 +1602,7 @@ public:
 	NxU32 *mIndices;
 };
 
-bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 maxverts,NxF32 inflate);
+bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 maxverts,NxF32 inflate, bool progress = false);
 void ReleaseHull(PHullResult &result);
 
 //*****************************************************
@@ -2762,7 +2764,7 @@ static NxI32 overhullv(float3 *verts, NxI32 verts_count,NxI32 maxplanes,
 //*****************************************************
 
 
-bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 vlimit,NxF32 inflate)
+bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 vlimit,NxF32 inflate, bool progress)
 {
 
 	NxI32 index_count;
@@ -2831,7 +2833,7 @@ void ReleaseHull(PHullResult &result)
 
 
 HullError HullLibrary::CreateConvexHull(const HullDesc       &desc,           // describes the input request
-																				HullResult           &result)         // contains the resulst
+																				HullResult           &result, bool progress)         // contains the resulst
 {
 	HullError ret = QE_FAIL;
 
@@ -2847,8 +2849,14 @@ HullError HullLibrary::CreateConvexHull(const HullDesc       &desc,           //
 	NxF32 scale[3];
 
 	NxU32 ovcount;
-
+	
+	if (progress){
+	printf("Preparing point cloud...\n");
+	}
 	bool ok = CleanupVertices(desc.mVcount,desc.mVertices, desc.mVertexStride, ovcount, vsource, desc.mNormalEpsilon, scale ); // normalize point cloud, remove duplicates!
+	if (progress){
+	printf("Cleaned and normalized point cloud\n");
+	}
 
 	if ( ok )
 	{
@@ -2867,7 +2875,8 @@ HullError HullLibrary::CreateConvexHull(const HullDesc       &desc,           //
 		if ( desc.HasHullFlag(QF_SKIN_WIDTH) ) 
 			skinwidth = desc.mSkinWidth;
 
-		ok = ComputeHull(ovcount,vsource,hr,desc.mMaxVertices,skinwidth);
+		ok = ComputeHull(ovcount,vsource,hr,desc.mMaxVertices,skinwidth, progress);
+		printf("Computed hull\n");
 
 		if ( ok )
 		{
@@ -2945,6 +2954,7 @@ HullError HullLibrary::CreateConvexHull(const HullDesc       &desc,           //
 					}
 				}
 			}
+			printf("Re-indexed triangle mesh\n");
 			// ReleaseHull frees memory for hr.mVertices, which can be the
 			// same pointer as vsource, so be sure to set it to NULL if necessary
 			if ( hr.mVertices == vsource) vsource = NULL;
@@ -3146,8 +3156,9 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 		}
 
 		{
+#pragma region KILL_CLOSE_POINTS
 			NxU32 j;
-
+#if KILL_CLOSE_POINTS
 			for (j=0; j<vcount; j++)
 			{
 				NxF32 *v = &vertices[j*3];
@@ -3179,7 +3190,10 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 					break;
 				}
 			}
-
+#else
+			j = vcount;
+#endif
+#pragma endregion
 			if ( j == vcount )
 			{
 				NxF32 *dest = &vertices[vcount*3];
