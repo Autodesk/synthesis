@@ -109,9 +109,9 @@ public partial class ControlGroups
 
     private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (chkHighlightComponents.Checked && lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is InventorSkeletalJoint)
+        if (chkHighlightComponents.Checked && lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
         {
-            InventorSkeletalJoint joint = (InventorSkeletalJoint) lstJoints.SelectedItems[0].Tag;
+            InventorSkeletalJoint joint = ((InventorSkeletalJoint)((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
             joint.GetWrapped().DoHighlight();
         }
         else
