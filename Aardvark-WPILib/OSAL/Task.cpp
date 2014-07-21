@@ -65,7 +65,8 @@ bool NTTask::Start(void *arg)
 	//					arg5, arg6, arg7, arg8, arg9);// additional unused parameters
 	m_Arg = arg;
 #if USE_WINAPI
-	m_Handle = CreateThread(NULL,m_stackSize, m_function,arg, 0,&m_ID);
+	DWORD m_ID;
+	m_Handle = CreateThread(NULL,20000, m_function,arg, 0,&m_ID);
 	valid = m_Handle != NULL;
 #elif USE_POSIX
 	pthread_attr_t attr;
@@ -186,36 +187,36 @@ bool NTTask::HandleError(char *lpszFunction, int code)
 	if (code == 0 && Verify()) return true;
 #if USE_WINAPI
 	LPVOID lpMsgBuf;
-    LPVOID lpDisplayBuf;
-    DWORD dw = GetLastError(); 
+	LPVOID lpDisplayBuf;
+	DWORD dw = GetLastError(); 
 
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-        FORMAT_MESSAGE_FROM_SYSTEM |
-        FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL,
-        dw,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR) &lpMsgBuf,
-        0, NULL );
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		dw,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR) &lpMsgBuf,
+		0, NULL );
 
-    // Display the error message.
+	// Display the error message.
 
-    lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, 
-        (lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) lpszFunction) + 40) * sizeof(TCHAR)); 
-    sprintf_s((LPTSTR)lpDisplayBuf, 
-        LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-        TEXT("%s failed with error %d: %s"), 
-        lpszFunction, dw, lpMsgBuf); 
-    MessageBox(NULL, (LPCTSTR) lpDisplayBuf, TEXT("Error"), MB_OK); 
+	lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, 
+		(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) lpszFunction) + 40) * sizeof(TCHAR)); 
+	sprintf_s((LPTSTR)lpDisplayBuf, 
+		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+		TEXT("%s failed with error %d: %s"), 
+		lpszFunction, dw, lpMsgBuf); 
+	MessageBox(NULL, (LPCTSTR) lpDisplayBuf, TEXT("Error"), MB_OK); 
 
-    // Free error-handling buffer allocations.
+	// Free error-handling buffer allocations.
 
-    LocalFree(lpMsgBuf);
-    LocalFree(lpDisplayBuf);
+	LocalFree(lpMsgBuf);
+	LocalFree(lpDisplayBuf);
 #elif USE_POSIX
-    printf("PThread Error: %s\n", lpszFunction);
+	printf("PThread Error: %s\n", lpszFunction);
 #endif
-    return false;
+	return false;
 }
 

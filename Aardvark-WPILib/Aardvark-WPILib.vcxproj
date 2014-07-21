@@ -170,7 +170,6 @@
     <ClCompile Include="networktables2\util\IllegalStateException.cpp" />
     <ClCompile Include="networktables2\util\IOException.cpp" />
     <ClCompile Include="networktables2\util\StringCache.cpp" />
-    <ClCompile Include="networktables2\util\System.cpp" />
     <ClCompile Include="networktables2\WriteManager.cpp" />
     <ClCompile Include="networktables\NetworkTable.cpp" />
     <ClCompile Include="networktables\NetworkTableConnectionListenerAdapter.cpp" />
@@ -181,6 +180,7 @@
     <ClCompile Include="networktables\NetworkTableSubListenerAdapter.cpp" />
     <ClCompile Include="Notifier.cpp" />
     <ClCompile Include="OSAL\Synchronized.cpp" />
+    <ClCompile Include="OSAL\System.cpp" />
     <ClCompile Include="OSAL\Task.cpp" />
     <ClCompile Include="PIDController.cpp" />
     <ClCompile Include="Preferences.cpp" />
@@ -372,7 +372,6 @@
     <ClInclude Include="networktables2\util\IllegalStateException.h" />
     <ClInclude Include="networktables2\util\IOException.h" />
     <ClInclude Include="networktables2\util\StringCache.h" />
-    <ClInclude Include="networktables2\util\System.h" />
     <ClInclude Include="networktables2\WriteManager.h" />
     <ClInclude Include="networktables\NetworkTable.h" />
     <ClInclude Include="networktables\NetworkTableConnectionListenerAdapter.h" />
@@ -383,7 +382,9 @@
     <ClInclude Include="networktables\NetworkTableSubListenerAdapter.h" />
     <ClInclude Include="nivision.h" />
     <ClInclude Include="Notifier.h" />
+    <ClInclude Include="OSAL\OSAL.h" />
     <ClInclude Include="OSAL\Synchronized.h" />
+    <ClInclude Include="OSAL\System.h" />
     <ClInclude Include="OSAL\Task.h" />
     <ClInclude Include="pcre.h" />
     <ClInclude Include="PIDController.h" />

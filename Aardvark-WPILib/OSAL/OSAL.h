@@ -14,7 +14,8 @@ typedef void* LPVOID ;
 typedef int DWORD ;
 typedef DWORD (*PTHREAD_START_ROUTINE)(LPVOID) ;
 #define WINAPI /**/
-#define socketclose close
+#define closesocket close
+#define min(a,b) ((a<b) ? (a) : (b))
 
 #endif
 #endif

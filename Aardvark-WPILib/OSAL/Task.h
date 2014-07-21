@@ -54,11 +54,11 @@ private:
 	NTTaskPriority m_priority;
 
 	bool StartInternal();
+	bool valid;
 #if USE_WINAPI
 	HANDLE m_Handle;
 #elif USE_POSIX
 	pthread_t m_Handle;
-	bool valid;
 	static void* funcWrapper(void *task);
 #endif
 	bool HandleError(char *lpszFunction, int code = 0);DISALLOW_COPY_AND_ASSIGN(NTTask);

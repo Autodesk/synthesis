@@ -18,6 +18,9 @@
 #include <sys/stat.h>
 #include <OSAL/OSAL.h>
 
+#if USE_WINAPI
+#include <Windows.h>
+#endif
 
 FDIOStream::FDIOStream(int _fd){
 	//fd = _fd;

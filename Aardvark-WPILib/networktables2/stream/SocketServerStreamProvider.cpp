@@ -12,7 +12,6 @@
 #include <string.h>
 #include <cstring>
 #include <errno.h>
-#include <unistd.h>
 #include "OSAL/OSAL.h"
 
 #if USE_WINAPI
@@ -24,6 +23,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <unistd.h>
 
 #endif
 
@@ -42,6 +42,11 @@ SocketServerStreamProvider::SocketServerStreamProvider(int port){
 	struct sockaddr_in serverAddr;
 	int sockAddrSize = sizeof(serverAddr);
 	memset(&serverAddr, 0, sockAddrSize);
+
+#if USE_WINAPI
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2,2), &wsaData);
+#endif
 
 #ifdef _WRS_KERNEL
 	serverAddr.sin_len = (u_char)sockAddrSize;
@@ -110,5 +115,5 @@ IOStream* SocketServerStreamProvider::accept(){
 }
 
 void SocketServerStreamProvider::close(){
-	::socketclose(serverSocket);
+	::closesocket(serverSocket);
 }

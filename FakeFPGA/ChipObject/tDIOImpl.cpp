@@ -169,7 +169,7 @@ nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus tDIO_Impl::readI2CStatus(
 		tRioStatusCode* status) {
 	status = NiFpga_Status_Success;
 	printf("Please no I2C\n");
-	nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus res;
+	nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus res = nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus();
 	return res;
 }
 
@@ -302,7 +302,7 @@ nFPGA::nFRC_2012_1_6_4::tDIO::tI2CConfig tDIO_Impl::readI2CConfig(
 		tRioStatusCode* status) {
 	status = NiFpga_Status_Success;
 	printf("Please no I2C\n");
-	nFPGA::nFRC_2012_1_6_4::tDIO::tI2CConfig cfg;
+	nFPGA::nFRC_2012_1_6_4::tDIO::tI2CConfig cfg = nFPGA::nFRC_2012_1_6_4::tDIO::tI2CConfig();
 	return cfg;
 }
 

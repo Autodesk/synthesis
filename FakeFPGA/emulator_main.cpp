@@ -6,7 +6,6 @@
 #include <WPILib.h>
 #include <math.h>
 #include <tDIO.h>
-#include <unistd.h>
 #include "ChipObject/tDIOImpl.h"
 #include "OSAL/System.h"
 
@@ -22,6 +21,6 @@ int main(int argc, char ** argv) {
 		t->Set(val);
 		printf("VALUE: %f->%f\t\t%d\n", val, t->Get(),
 				GetFakeFPGA()->getDIO(0)->pwmValue[0]);
-		sleep(1);
+		sleep_ms(1000);
 	}
 }

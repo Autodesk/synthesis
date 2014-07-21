@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChipObject\NiFpga.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ChipObject\NiFpga.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

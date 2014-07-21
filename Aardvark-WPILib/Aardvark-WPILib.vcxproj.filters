@@ -390,9 +390,6 @@
     <ClCompile Include="networktables2\util\StringCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="networktables2\util\System.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="networktables2\AbstractNetworkTableEntryStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -463,6 +460,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Vision\Threshold.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OSAL\System.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1007,9 +1007,6 @@
     <ClInclude Include="networktables2\util\StringCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="networktables2\util\System.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="networktables2\AbstractNetworkTableEntryStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1110,6 +1107,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vision\Threshold.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OSAL\OSAL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OSAL\System.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
