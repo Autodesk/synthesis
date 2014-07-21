@@ -11,6 +11,15 @@ static class Program
     {
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         AnalyzeRigidResults();
+        //AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
+        //SurfaceExporter exp = new SurfaceExporter();
+        //foreach (ComponentOccurrence cc in asmDoc.ComponentDefinition.Occurrences){
+        //    exp.ExportAll(cc);
+        //}
+        //List<BXDAMesh.BXDASubMesh> subs = ConvexHullCalculator.GetHull(exp.GetOutput());
+        //BXDAMesh mesh = new BXDAMesh();
+        //mesh.meshes.AddRange(subs);
+        //mesh.WriteBXDA("C:/Temp/test.bxda");
     }
 
     public static void AnalyzeRigidResults()
