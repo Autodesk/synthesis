@@ -184,9 +184,9 @@ public partial class ControlGroups
 
     private void btnCalculate_Click_1(object sender, EventArgs e)
     {
-        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is InventorSkeletalJoint)
+        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
         {
-            InventorSkeletalJoint joint = (InventorSkeletalJoint)lstJoints.SelectedItems[0].Tag;
+            InventorSkeletalJoint joint = (InventorSkeletalJoint)((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
             joint.DetermineLimits();
         }
     }
