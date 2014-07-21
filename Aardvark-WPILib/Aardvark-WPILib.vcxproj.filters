@@ -1076,12 +1076,6 @@
     <ClInclude Include="tables\TableKeyNotDefinedException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="visa\visa.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="visa\visatype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vision\AxisCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>

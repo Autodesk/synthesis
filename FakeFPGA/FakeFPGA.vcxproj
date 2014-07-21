@@ -66,11 +66,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ChipObject\NiFakeFpga.h" />
+    <ClInclude Include="ChipObject\NiFpgaState.h" />
+    <ClInclude Include="ChipObject\tAccumulatorImpl.h" />
+    <ClInclude Include="ChipObject\tAIImpl.h" />
+    <ClInclude Include="ChipObject\tDIOImpl.h" />
+    <ClInclude Include="ChipObject\tGlobalImpl.h" />
+    <ClInclude Include="ChipObject\tSolenoidImpl.h" />
     <ClInclude Include="StateNetwork\StatePacket.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChipObject\NiFpga.c" />
-    <ClCompile Include="emulator_main.c" />
+    <ClCompile Include="ChipObject\NiFpga.cpp" />
+    <ClCompile Include="ChipObject\NiFpgaState.cpp" />
+    <ClCompile Include="ChipObject\niLoadOut.cpp" />
+    <ClCompile Include="ChipObject\NiRio.cpp" />
+    <ClCompile Include="ChipObject\tAccumulatorImpl.cpp" />
+    <ClCompile Include="ChipObject\tAIImpl.cpp" />
+    <ClCompile Include="ChipObject\tDIOImpl.cpp" />
+    <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
+    <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
+    <ClCompile Include="emulator_main.cpp" />
+    <ClCompile Include="nUsageReporting.cpp" />
+    <ClCompile Include="StateNetwork\FRCNetCommDummy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aardvark-WPILib\Aardvark-WPILib.vcxproj">

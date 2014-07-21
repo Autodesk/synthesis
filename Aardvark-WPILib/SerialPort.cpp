@@ -7,7 +7,7 @@
 #include "SerialPort.h"
 
 #include "NetworkCommunication/UsageReporting.h"
-#include "visa/visa.h"
+//#include "visa/visa.h"
 
 //static ViStatus _VI_FUNCH ioCompleteHandler (ViSession vi, ViEventType eventType, ViEvent event, ViAddr userHandle);
 
@@ -24,7 +24,7 @@ SerialPort::SerialPort(uint32_t baudRate, uint8_t dataBits, SerialPort::Parity p
 	, m_portHandle (0)
 	, m_consoleModeEnabled (false)
 {
-	ViStatus localStatus = VI_SUCCESS;
+	/*ViStatus localStatus = VI_SUCCESS;
 	localStatus = viOpenDefaultRM((ViSession*)&m_resourceManagerHandle);
 	wpi_setError(localStatus);
 
@@ -56,7 +56,10 @@ SerialPort::SerialPort(uint32_t baudRate, uint8_t dataBits, SerialPort::Parity p
 	//viInstallHandler(m_portHandle, VI_EVENT_IO_COMPLETION, ioCompleteHandler, this);
 	//viEnableEvent(m_portHandle, VI_EVENT_IO_COMPLETION, VI_HNDLR, VI_NULL);
 
-	nUsageReporting::report(nUsageReporting::kResourceType_SerialPort, 0);
+	nUsageReporting::report(nUsageReporting::kResourceType_SerialPort, 0);*/
+
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -64,12 +67,14 @@ SerialPort::SerialPort(uint32_t baudRate, uint8_t dataBits, SerialPort::Parity p
  */
 SerialPort::~SerialPort()
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		//viUninstallHandler(m_portHandle, VI_EVENT_IO_COMPLETION, ioCompleteHandler, this);
 		viClose(m_portHandle);
 	}
-	viClose(m_resourceManagerHandle);
+	viClose(m_resourceManagerHandle);*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -79,11 +84,13 @@ SerialPort::~SerialPort()
  */
 void SerialPort::SetFlowControl(SerialPort::FlowControl flowControl)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viSetAttribute (m_portHandle, VI_ATTR_ASRL_FLOW_CNTRL, flowControl);
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -97,12 +104,14 @@ void SerialPort::SetFlowControl(SerialPort::FlowControl flowControl)
  */
 void SerialPort::EnableTermination(char terminator)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		viSetAttribute(m_portHandle, VI_ATTR_TERMCHAR_EN, VI_TRUE); 
 		viSetAttribute(m_portHandle, VI_ATTR_TERMCHAR, terminator);
 		viSetAttribute(m_portHandle, VI_ATTR_ASRL_END_IN, VI_ASRL_END_TERMCHAR);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -110,11 +119,13 @@ void SerialPort::EnableTermination(char terminator)
  */
 void SerialPort::DisableTermination()
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		viSetAttribute(m_portHandle, VI_ATTR_TERMCHAR_EN, VI_FALSE); 
 		viSetAttribute(m_portHandle, VI_ATTR_ASRL_END_IN, VI_ASRL_END_NONE);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -124,13 +135,15 @@ void SerialPort::DisableTermination()
  */
 int32_t SerialPort::GetBytesReceived()
 {
-	int32_t bytes = 0;
+	/*int32_t bytes = 0;
 	if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viGetAttribute(m_portHandle, VI_ATTR_ASRL_AVAIL_NUM, &bytes);
 		wpi_setError(localStatus);
 	}
-	return bytes;
+	return bytes;*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -142,14 +155,17 @@ int32_t SerialPort::GetBytesReceived()
  */
 void SerialPort::Printf(const char *writeFmt, ...)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		va_list args;
 		va_start (args, writeFmt);
 		ViStatus localStatus = viVPrintf(m_portHandle, (ViString)writeFmt, args);
 		va_end (args);
 		wpi_setError(localStatus);
-	}
+	}*/
+	
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -161,14 +177,16 @@ void SerialPort::Printf(const char *writeFmt, ...)
  */
 void SerialPort::Scanf(const char *readFmt, ...)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		va_list args;
 		va_start (args, readFmt);
 		ViStatus localStatus = viVScanf(m_portHandle, (ViString)readFmt, args);
 		va_end (args);
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -180,21 +198,23 @@ void SerialPort::Scanf(const char *readFmt, ...)
  */ 
 uint32_t SerialPort::Read(char *buffer, int32_t count)
 {
-	uint32_t retCount = 0;
-	if (!m_consoleModeEnabled)
-	{
-		ViStatus localStatus = viBufRead(m_portHandle, (ViPBuf)buffer, count, (ViPUInt32)&retCount);
-		switch (localStatus)
-		{
-		case VI_SUCCESS_TERM_CHAR:
-		case VI_SUCCESS_MAX_CNT:
-		case VI_ERROR_TMO: // Timeout
-			break;
-		default:
-			wpi_setError(localStatus);
-		}
-	}
-	return retCount;
+	//uint32_t retCount = 0;
+	//if (!m_consoleModeEnabled)
+	//{
+	//	ViStatus localStatus = viBufRead(m_portHandle, (ViPBuf)buffer, count, (ViPUInt32)&retCount);
+	//	switch (localStatus)
+	//	{
+	//	case VI_SUCCESS_TERM_CHAR:
+	//	case VI_SUCCESS_MAX_CNT:
+	//	case VI_ERROR_TMO: // Timeout
+	//		break;
+	//	default:
+	//		wpi_setError(localStatus);
+	//	}
+	//}
+	//return retCount;
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -206,13 +226,15 @@ uint32_t SerialPort::Read(char *buffer, int32_t count)
  */ 
 uint32_t SerialPort::Write(const char *buffer, int32_t count)
 {
-	uint32_t retCount = 0;
+	/*uint32_t retCount = 0;
 	if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viBufWrite(m_portHandle, (ViPBuf)buffer, count, (ViPUInt32)&retCount);
 		wpi_setError(localStatus);
 	}
-	return retCount;
+	return retCount;*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -225,11 +247,13 @@ uint32_t SerialPort::Write(const char *buffer, int32_t count)
  */
 void SerialPort::SetTimeout(float timeout)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viSetAttribute(m_portHandle, VI_ATTR_TMO_VALUE, (uint32_t)(timeout * 1e3));
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -246,11 +270,13 @@ void SerialPort::SetTimeout(float timeout)
  */
 void SerialPort::SetReadBufferSize(uint32_t size)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viSetBuf(m_portHandle, VI_READ_BUF, size);
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -263,11 +289,13 @@ void SerialPort::SetReadBufferSize(uint32_t size)
  */
 void SerialPort::SetWriteBufferSize(uint32_t size)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viSetBuf(m_portHandle, VI_WRITE_BUF, size);
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -283,11 +311,13 @@ void SerialPort::SetWriteBufferSize(uint32_t size)
  */
 void SerialPort::SetWriteBufferMode(SerialPort::WriteBufferMode mode)
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viSetAttribute(m_portHandle, VI_ATTR_WR_BUF_OPER_MODE, mode);
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -298,11 +328,13 @@ void SerialPort::SetWriteBufferMode(SerialPort::WriteBufferMode mode)
  */
 void SerialPort::Flush()
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viFlush(m_portHandle, VI_WRITE_BUF);
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 /**
@@ -312,11 +344,13 @@ void SerialPort::Flush()
  */
 void SerialPort::Reset()
 {
-	if (!m_consoleModeEnabled)
+	/*if (!m_consoleModeEnabled)
 	{
 		ViStatus localStatus = viClear(m_portHandle);
 		wpi_setError(localStatus);
-	}
+	}*/
+	fprintf(stderr, "Yeah we don't support serial ports either.  Try a cat.  Cats support all different types of serial ports.\n");
+	exit(1);
 }
 
 //void SerialPort::_internalHandler(uint32_t port, uint32_t eventType, uint32_t event)

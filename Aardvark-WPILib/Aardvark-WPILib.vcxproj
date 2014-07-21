@@ -420,8 +420,6 @@
     <ClInclude Include="Ultrasonic.h" />
     <ClInclude Include="Utility.h" />
     <ClInclude Include="Victor.h" />
-    <ClInclude Include="visa\visa.h" />
-    <ClInclude Include="visa\visatype.h" />
     <ClInclude Include="Vision\AxisCamera.h" />
     <ClInclude Include="Vision\AxisCameraParams.h" />
     <ClInclude Include="Vision\BinaryImage.h" />
