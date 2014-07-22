@@ -77,6 +77,9 @@
     <ClInclude Include="ChipObject\tGlobalImpl.h" />
     <ClInclude Include="ChipObject\tSolenoidImpl.h" />
     <ClInclude Include="ChipObject\tWatchcatImpl.h" />
+    <ClInclude Include="FRCNetComm\crc32.h" />
+    <ClInclude Include="FRCNetComm\FRCNetImpl.h" />
+    <ClInclude Include="FRCNetComm\FRCNetStructures.h" />
     <ClInclude Include="PWMDecoder.h" />
     <ClInclude Include="StateNetwork\StateNetworkServer.h" />
     <ClInclude Include="StateNetwork\StatePacket.h" />
@@ -96,10 +99,11 @@
     <ClCompile Include="ChipObject\tSystem.cpp" />
     <ClCompile Include="ChipObject\tWatchcatImpl.cpp" />
     <ClCompile Include="emulator_main.cpp" />
+    <ClCompile Include="FRCNetComm\FRCNetImpl.cpp" />
     <ClCompile Include="nUsageReporting.cpp" />
     <ClCompile Include="PWMDecoder.cpp" />
     <ClCompile Include="StateNetwork\StateNetworkServer.cpp" />
-    <ClCompile Include="StateNetwork\FRCNetCommDummy.cpp" />
+    <ClCompile Include="FRCNetComm\FRCNetComm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aardvark-WPILib\Aardvark-WPILib.vcxproj">
