@@ -8,6 +8,7 @@ public class AssetProperties
     public AssetTexture colorTexture = null;
     public double generic_glossiness;
     public double generic_transparency;
+    public double generic_translucency;
 
     public AssetProperties(Asset asset)
     {
@@ -41,9 +42,13 @@ public class AssetProperties
             }
             */
             //opacity is a double
-            else if (val.Name.Equals("Opacity") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
+            else if (val.DisplayName.Equals("Transparency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
             {
                 generic_transparency = ((FloatAssetValue)val).Value;
+            }
+            else if (val.DisplayName.Equals("Translucency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
+            {
+                generic_translucency = ((FloatAssetValue)val).Value;
             }
             else if (val.ValueType == AssetValueTypeEnum.kAssetValueTextureType)
             {
