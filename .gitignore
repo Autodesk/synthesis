@@ -48,6 +48,7 @@ build/*
 *.*swp
 *.*~
 *.*orig
+*.v11.suo
 
 #DB
 *.sdf
