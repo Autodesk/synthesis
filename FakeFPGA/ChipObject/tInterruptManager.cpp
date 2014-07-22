@@ -16,16 +16,6 @@ namespace nFPGA {
 	ni::dsc::osdep::CriticalSection *tInterruptManager::_globalInterruptMaskSemaphore = new ni::dsc::osdep::CriticalSection();
 	tInterruptManager *tInterruptManager::_globalInterruptRef[sizeof(uint32_t) * 8];
 
-	static void doInterruptManager(uint32_t mask) {
-		for (int i = 0; i<sizeof(uint32_t) * 8; i++) {
-			uint32_t bitMask = (1 << i);
-			if ((mask & bitMask) && (_globalInterruptMask & bitMask) && _globalInterruptRef[i] != NULL) {
-				// This is in use
-				_globalInterruptRef[i]->acknowledge();
-			}
-		}
-	}
-
 	tInterruptManager::tInterruptManager(uint32_t interruptMask, bool watcher, tRioStatusCode *status) : tSystem(status){
 		this->_interruptMask = interruptMask;
 		this->_watcher = watcher;
@@ -44,6 +34,10 @@ namespace nFPGA {
 
 	uint32_t tInterruptManager::watch(int32_t timeoutInMs, tRioStatusCode *status)
 	{
+		if (timeoutInMs == NiFpga_InfiniteTimeout) {
+			timeoutInMs = INFINITE;
+		}
+		NiFpga_WaitOnIrqs(_DeviceHandle, NULL, _interruptMask, timeoutInMs, NULL, NULL);
 		return 0;// wth guys.  plz explain
 	}
 	void tInterruptManager::enable(tRioStatusCode *status){
@@ -71,7 +65,9 @@ namespace nFPGA {
 	}
 
 	// wth do these do.
-	void tInterruptManager::acknowledge(tRioStatusCode *status){}
+	void tInterruptManager::acknowledge(tRioStatusCode *status){
+		// This isn't needed with my sketchy implementation!
+	}
 
 	void tInterruptManager::reserve(tRioStatusCode *status){
 		tInterruptManager::_globalInterruptMaskSemaphore->sem.take();

@@ -69,6 +69,7 @@
   <ItemGroup>
     <ClInclude Include="ChipObject\NiFakeFpga.h" />
     <ClInclude Include="ChipObject\NiFpgaState.h" />
+    <ClInclude Include="ChipObject\NiIRQImpl.h" />
     <ClInclude Include="ChipObject\tAccumulatorImpl.h" />
     <ClInclude Include="ChipObject\tAIImpl.h" />
     <ClInclude Include="ChipObject\tDIOImpl.h" />
@@ -85,10 +86,12 @@
     <ClCompile Include="ChipObject\NiRio.cpp" />
     <ClCompile Include="ChipObject\tAccumulatorImpl.cpp" />
     <ClCompile Include="ChipObject\tAIImpl.cpp" />
+    <ClCompile Include="ChipObject\tAlarm.cpp" />
     <ClCompile Include="ChipObject\tDIOImpl.cpp" />
     <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
     <ClCompile Include="ChipObject\tInterruptManager.cpp" />
     <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
+    <ClCompile Include="ChipObject\tSystem.cpp" />
     <ClCompile Include="emulator_main.cpp" />
     <ClCompile Include="nUsageReporting.cpp" />
     <ClCompile Include="PWMDecoder.cpp" />

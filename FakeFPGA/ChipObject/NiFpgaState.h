@@ -11,6 +11,8 @@
 #include <NiRio.h>
 #include <tSystemInterface.h>
 
+class NiIRQ_Impl;
+
 namespace nFPGA {
 
 	class tDIO_Impl;
@@ -35,6 +37,8 @@ namespace nFPGA {
 		tAccumulator_Impl **accum;
 		tSolenoid_Impl *solenoid;
 		tGlobal_Impl *global;
+
+		NiIRQ_Impl *irqManager;
 	public:
 		NiFpgaState();
 		virtual ~NiFpgaState();
@@ -44,6 +48,7 @@ namespace nFPGA {
 		tAccumulator_Impl *getAccumulator(unsigned char sys_index);
 		tSolenoid_Impl *getSolenoid();
 		tGlobal_Impl *getGlobal();
+		NiIRQ_Impl *getIRQManager();
 
 		virtual const uint16_t getExpectedFPGAVersion();
 		virtual const uint32_t getExpectedFPGARevision();

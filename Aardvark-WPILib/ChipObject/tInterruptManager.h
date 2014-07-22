@@ -55,8 +55,6 @@ private:
 
 #pragma region WPILIB HACKS
    static tInterruptManager *_globalInterruptRef[sizeof(uint32_t) * 8];		// Added when modifying WPI LIB
-public:
-   static void doInterrupts(uint32_t mask);
 #pragma endregion
 };
 

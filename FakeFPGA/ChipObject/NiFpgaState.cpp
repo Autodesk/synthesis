@@ -11,11 +11,14 @@
 #include "ChipObject/tAIImpl.h"
 #include "ChipObject/tSolenoidImpl.h"
 #include "ChipObject/tGlobalImpl.h"
+#include "ChipObject/NiIRQImpl.h"
 #include <stdio.h>
 
 namespace nFPGA {
 
 	NiFpgaState::NiFpgaState() {
+		irqManager = new NiIRQ_Impl();
+
 		ai = NULL;
 		solenoid = NULL;
 		dio = new tDIO_Impl*[DIO_COUNT];
@@ -36,6 +39,22 @@ namespace nFPGA {
 	}
 
 	NiFpgaState::~NiFpgaState() {
+		delete[] accum;
+		delete[] ai;
+		delete[] dio;
+		if (solenoid != NULL){
+			delete solenoid;
+		}
+		if (global != NULL) {
+			delete global;
+		}
+		if (irqManager != NULL) {
+			delete irqManager;
+		}
+	}
+
+	NiIRQ_Impl *NiFpgaState::getIRQManager() {
+		return irqManager;
 	}
 
 	tDIO_Impl *NiFpgaState::getDIO(unsigned char module) {

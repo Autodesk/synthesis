@@ -1115,5 +1115,8 @@
     <ClInclude Include="OSAL\System.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OSAL\WaitSemaphore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

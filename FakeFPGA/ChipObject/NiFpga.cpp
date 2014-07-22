@@ -1,6 +1,7 @@
 #include "NiFpga.h"
 #include "NiFakeFpga.h"
 #include "ChipObject/NiFpgaState.h"
+#include "ChipObject/NiIRQImpl.h"
 #include <stdlib.h>
 
 #include <tDIO.h>
@@ -228,22 +229,19 @@ NiFpga_Status NiFpga_ReadArrayI16(NiFpga_Session session, uint32_t indicator,
 									  return NiFpga_Status_ResourceNotFound;
 }
 
-NiFpga_Status NiFpga_ReadArrayU16(NiFpga_Session session, uint32_t indicator,
-								  uint16_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayU16(NiFpga_Session session, uint32_t indicator, uint16_t* array, size_t size) {
+	exit(1);
+	return NiFpga_Status_ResourceNotFound;
 }
 
-NiFpga_Status NiFpga_ReadArrayI32(NiFpga_Session session, uint32_t indicator,
-								  int32_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayI32(NiFpga_Session session, uint32_t indicator, int32_t* array, size_t size) {
+	exit(1);
+	return NiFpga_Status_ResourceNotFound;
 }
 
-NiFpga_Status NiFpga_ReadArrayU32(NiFpga_Session session, uint32_t indicator,
-								  uint32_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayU32(NiFpga_Session session, uint32_t indicator, uint32_t* array, size_t size) {
+	exit(1);
+	return NiFpga_Status_ResourceNotFound;
 }
 
 NiFpga_Status NiFpga_ReadArrayI64(NiFpga_Session session, uint32_t indicator,
@@ -312,28 +310,23 @@ NiFpga_Status NiFpga_WriteArrayU64(NiFpga_Session session, uint32_t control,
 									   return NiFpga_Status_ResourceNotFound;
 }
 
-NiFpga_Status NiFpga_ReserveIrqContext(NiFpga_Session session,
-									   NiFpga_IrqContext* context) {
-										   exit(1);
-										   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReserveIrqContext(NiFpga_Session session, NiFpga_IrqContext* context) {
+	return NiFpga_Status_Success;	// This isn't needed with my sketchy implementation!
 }
 
-NiFpga_Status NiFpga_UnreserveIrqContext(NiFpga_Session session,
-										 NiFpga_IrqContext context) {
-											 exit(1);
-											 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_UnreserveIrqContext(NiFpga_Session session, NiFpga_IrqContext context) {
+	return NiFpga_Status_Success;	// This isn't needed with my sketchy implementation!
 }
 
-NiFpga_Status NiFpga_WaitOnIrqs(NiFpga_Session session,
-								NiFpga_IrqContext context, uint32_t irqs, uint32_t timeout,
-								uint32_t* irqsAsserted, NiFpga_Bool* timedOut) {
-									exit(1);
-									return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WaitOnIrqs(NiFpga_Session session, NiFpga_IrqContext context, uint32_t irqs, uint32_t timeout, uint32_t* irqsAsserted, NiFpga_Bool* timedOut) {
+	/*exit(1);
+	return NiFpga_Status_ResourceNotFound;*/
+	GetFakeFPGA()->getIRQManager()->waitFor(irqs, timeout, irqsAsserted, timedOut);
+	return NiFpga_Status_Success;
 }
 
 NiFpga_Status NiFpga_AcknowledgeIrqs(NiFpga_Session session, uint32_t irqs) {
-	exit(1);
-	return NiFpga_Status_ResourceNotFound;
+	return NiFpga_Status_Success;	// This isn't needed with my sketchy implementation!
 }
 
 NiFpga_Status NiFpga_ConfigureFifo(NiFpga_Session session, uint32_t fifo,

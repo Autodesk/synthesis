@@ -386,6 +386,7 @@
     <ClInclude Include="OSAL\Synchronized.h" />
     <ClInclude Include="OSAL\System.h" />
     <ClInclude Include="OSAL\Task.h" />
+    <ClInclude Include="OSAL\WaitSemaphore.h" />
     <ClInclude Include="pcre.h" />
     <ClInclude Include="PIDController.h" />
     <ClInclude Include="PIDOutput.h" />
