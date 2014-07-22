@@ -72,6 +72,7 @@
     <ClInclude Include="ChipObject\NiIRQImpl.h" />
     <ClInclude Include="ChipObject\tAccumulatorImpl.h" />
     <ClInclude Include="ChipObject\tAIImpl.h" />
+    <ClInclude Include="ChipObject\tAlarmImpl.h" />
     <ClInclude Include="ChipObject\tDIOImpl.h" />
     <ClInclude Include="ChipObject\tGlobalImpl.h" />
     <ClInclude Include="ChipObject\tSolenoidImpl.h" />
@@ -86,7 +87,7 @@
     <ClCompile Include="ChipObject\NiRio.cpp" />
     <ClCompile Include="ChipObject\tAccumulatorImpl.cpp" />
     <ClCompile Include="ChipObject\tAIImpl.cpp" />
-    <ClCompile Include="ChipObject\tAlarm.cpp" />
+    <ClCompile Include="ChipObject\tAlarmImpl.cpp" />
     <ClCompile Include="ChipObject\tDIOImpl.cpp" />
     <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
     <ClCompile Include="ChipObject\tInterruptManager.cpp" />

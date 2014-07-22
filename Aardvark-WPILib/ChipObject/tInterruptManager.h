@@ -6,6 +6,8 @@
 
 #include "tSystem.h"
 
+class NTTask;
+
 namespace ni
 {
    namespace dsc
@@ -52,10 +54,6 @@ private:
    // maintain the interrupts that are already dealt with.
    static uint32_t _globalInterruptMask;
    static ni::dsc::osdep::CriticalSection *_globalInterruptMaskSemaphore;
-
-#pragma region WPILIB HACKS
-   static tInterruptManager *_globalInterruptRef[sizeof(uint32_t) * 8];		// Added when modifying WPI LIB
-#pragma endregion
 };
 
 }

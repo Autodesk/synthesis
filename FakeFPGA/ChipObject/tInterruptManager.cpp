@@ -11,20 +11,35 @@ public:
 
 #endif
 
+#include <OSAL/Task.h>
+
 namespace nFPGA {
 	uint32_t tInterruptManager::_globalInterruptMask = 0;
 	ni::dsc::osdep::CriticalSection *tInterruptManager::_globalInterruptMaskSemaphore = new ni::dsc::osdep::CriticalSection();
-	tInterruptManager *tInterruptManager::_globalInterruptRef[sizeof(uint32_t) * 8];
 
 	tInterruptManager::tInterruptManager(uint32_t interruptMask, bool watcher, tRioStatusCode *status) : tSystem(status){
 		this->_interruptMask = interruptMask;
 		this->_watcher = watcher;
 		this->_enabled = false;
+		this->_handler = NULL;
 		*status = NiFpga_Status_Success;
 	}
 
 	tInterruptManager::~tInterruptManager() {
 	}
+
+	class tInterruptManager::tInterruptThread {
+	private:
+		friend class tInterruptManager;
+		NTTask task;
+		static DWORD WINAPI invokeInternal(LPVOID param){
+			return tInterruptManager::handlerWrapper((tInterruptManager*) param);
+		}
+		tInterruptThread() :
+			task("Interruptwaiter", &tInterruptThread::invokeInternal)
+		{
+		}
+	};
 
 	void tInterruptManager::registerHandler(tInterruptHandler handler, void *param, tRioStatusCode *status) {
 		this->_handler = handler;
@@ -42,13 +57,23 @@ namespace nFPGA {
 	}
 	void tInterruptManager::enable(tRioStatusCode *status){
 		*status = NiFpga_Status_Success;
+		reserve(status);
+		bool old = this->_enabled;
 		this->_enabled = true;
-		unreserve(status);
+		if (old) {
+			this->_thread->task.Stop();
+		}
+		this->_thread = new tInterruptThread();
+		this->_thread->task.Start(this);
 	}
 	void tInterruptManager::disable(tRioStatusCode *status){
 		*status = NiFpga_Status_Success;
-		this->_enabled = false;
 		unreserve(status);
+		bool old = this->_enabled;
+		this->_enabled = false;
+		if (old) {
+			this->_thread->task.Stop();
+		}
 	}
 	bool tInterruptManager::isEnabled(tRioStatusCode *status){
 		*status = NiFpga_Status_Success;
@@ -56,11 +81,19 @@ namespace nFPGA {
 	}
 
 	void tInterruptManager::handler(){
-		this->_handler(this->_interruptMask, this->_userParam);//Wth is this interrupt asserted mask
+		// Don't use this.  It is stupid.  Doesn't provide irqsAsserted
 	}
 
 	int tInterruptManager::handlerWrapper(tInterruptManager *pInterrupt){
-		pInterrupt->handler();
+		while (pInterrupt->_enabled) {
+			NiFpga_Bool failed = false;
+			uint32_t irqsAsserted = pInterrupt->_interruptMask;
+			NiFpga_WaitOnIrqs(_DeviceHandle, NULL, pInterrupt->_interruptMask, INFINITE, NULL, &failed);
+			if (!failed && pInterrupt->_handler!=NULL) {
+				pInterrupt->handler();
+				pInterrupt->_handler(irqsAsserted, pInterrupt->_userParam);//Wth is this interrupt asserted mask
+			}
+		}
 		return 0;		// No error, right?  Right.
 	}
 
@@ -80,22 +113,12 @@ namespace nFPGA {
 			return;
 		}
 		tInterruptManager::_globalInterruptMask |= this->_interruptMask;
-		for (int i = 0; i<sizeof(uint32_t) * 8; i++) {
-			if (this->_interruptMask & (1 << i)) {
-				_globalInterruptRef[i] = this;
-			}
-		}
 		*status = NiFpga_Status_Success;
 		tInterruptManager::_globalInterruptMaskSemaphore->sem.give();
 	}
 	void tInterruptManager::unreserve(tRioStatusCode *status){
 		tInterruptManager::_globalInterruptMaskSemaphore->sem.take();
 		tInterruptManager::_globalInterruptMask &= ~this->_interruptMask;
-		for (int i = 0; i<sizeof(uint32_t) * 8; i++) {
-			if (this->_interruptMask & (1 << i)) {
-				_globalInterruptRef[i] = NULL;
-			}
-		}
 		tInterruptManager::_globalInterruptMaskSemaphore->sem.give();
 		*status = NiFpga_Status_Success;
 	}

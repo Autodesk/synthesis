@@ -2,8 +2,10 @@
 #include "NiFakeFpga.h"
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/NiIRQImpl.h"
+#include "ChipObject/tAlarmImpl.h"
 #include <stdlib.h>
 
+#include <tAlarm.h>
 #include <tDIO.h>
 #include <tGlobal.h>
 #include <tSolenoid.h>
@@ -50,6 +52,12 @@ nFPGA::nFRC_2012_1_6_4::tGlobal *nFPGA::nFRC_2012_1_6_4::tGlobal::create(
 	tRioStatusCode *status) {
 		*status =  NiFpga_Status_Success;
 		return (nFPGA::nFRC_2012_1_6_4::tGlobal *) GetFakeFPGA()->getGlobal();
+}
+
+nFPGA::nFRC_2012_1_6_4::tAlarm *nFPGA::nFRC_2012_1_6_4::tAlarm::create(
+	tRioStatusCode *status) {
+		*status =  NiFpga_Status_Success;
+		return new tAlarm_Impl(GetFakeFPGA());
 }
 
 NiFpga_Status NiFpga_Initialize(void) {

@@ -60,10 +60,10 @@
     <ClCompile Include="ChipObject\tInterruptManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChipObject\tAlarm.cpp">
+    <ClCompile Include="ChipObject\tSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChipObject\tSystem.cpp">
+    <ClCompile Include="ChipObject\tAlarmImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -99,6 +99,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChipObject\NiIRQImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChipObject\tAlarmImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
