@@ -4,18 +4,19 @@ using System.Collections.Generic;
 
 public class UnityRigidNode : RigidNode_Base
 {
-		protected GameObject unityObject, subObject, subCollider, colliderV;
+		protected GameObject unityObject, subObject, subCollider, wCollider;
 		protected ConfigurableJoint joint;
 		protected WheelDriverMeta wheel;
 		private BXDAMesh mesh;
 		private SoftJointLimit low, high, linear;
 		private float center, current;
 			
-		public delegate void HandleJoint ();
+		public delegate void HandleJoint (ConfigurableJoint jointSub);
+
 		public delegate void HandleWheel (GameObject center);
 
 		//public delegate void Action(); //reminder of how action and function work
-
+		
 		//The root transform for the whole object model is determined in this constructor passively
 		public void CreateTransform (Transform root)
 		{
@@ -26,7 +27,7 @@ public class UnityRigidNode : RigidNode_Base
 		}
 
 		//creates a uniform configurable joint which can be altered through conditionals.
-		private ConfigurableJoint ConfigJointInternal (Vector3 pos, Vector3 axis)
+		private ConfigurableJoint ConfigJointInternal (Vector3 pos, Vector3 axis, HandleJoint jointType)
 		{
 		
 				GameObject rigid = ((UnityRigidNode)GetParent ()).unityObject;
@@ -52,19 +53,20 @@ public class UnityRigidNode : RigidNode_Base
 				joint.xMotion = ConfigurableJointMotion.Locked;
 				joint.yMotion = ConfigurableJointMotion.Locked;
 				joint.zMotion = ConfigurableJointMotion.Locked;
+				jointType (joint);
 				return joint;
 		}
 		//creates a wheel collider and centers it on the current transform
 		private void CreateWheel (RotationalJoint_Base center, HandleWheel wheelC)
 		{
-				colliderV = new GameObject (unityObject.name + " Collider");
+				wCollider = new GameObject (unityObject.name + " Collider");
 				
-				colliderV.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
-				colliderV.transform.position = auxFunctions.ConvertV3 (center.basePoint);
-				colliderV.AddComponent<WheelCollider> ();
-				colliderV.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.15f);
-				//colliderV.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
-				wheelC (colliderV);
+				wCollider.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
+				wCollider.transform.position = auxFunctions.ConvertV3 (center.basePoint);
+				wCollider.AddComponent<WheelCollider> ();
+				wCollider.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.15f);
+				//wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
+				wheelC (wCollider);
 		
 				//I want the grandfather to have a rigidbody
 				
@@ -116,18 +118,19 @@ public class UnityRigidNode : RigidNode_Base
 						RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
 					
 						//takes the x, y, and z axis information from a custom vector class to unity's vector class
-						joint = ConfigJointInternal (auxFunctions.ConvertV3 (nodeR.basePoint), auxFunctions.ConvertV3 (nodeR.axis));
-						joint.angularXMotion = !nodeR.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
-						
-						if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
-								
-								float[] aLimit = {
-														nodeR.currentAngularPosition * (180.0f / Mathf.PI),
-														nodeR.angularLimitLow * (180.0f / Mathf.PI),
-														nodeR.angularLimitHigh * (180.0f / Mathf.PI)
-								};
-								AngularLimit (aLimit);
-						}
+						joint = ConfigJointInternal (auxFunctions.ConvertV3 (nodeR.basePoint), auxFunctions.ConvertV3 (nodeR.axis), delegate(ConfigurableJoint jointSub) {
+								jointSub.angularXMotion = !nodeR.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
+								if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
+										float[] aLimit = {
+											nodeR.currentAngularPosition * (180.0f / Mathf.PI),
+											nodeR.angularLimitLow * (180.0f / Mathf.PI),
+											nodeR.angularLimitHigh * (180.0f / Mathf.PI)
+										};
+										AngularLimit (aLimit);
+								}
+						});
+			
+			
 						//if the mesh contains information which identifies it as a wheel then create a wheel collider.
 						wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta> () : null;
 						if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL) {
@@ -136,12 +139,12 @@ public class UnityRigidNode : RigidNode_Base
 								JointDrive drMode = new JointDrive ();
 								drMode.mode = JointDriveMode.Velocity;
 								drMode.maximumForce = 100.0f;
-								CreateWheel (nodeR, delegate (GameObject colliderV) {
-										colliderV.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
+								CreateWheel (nodeR, delegate (GameObject wCollider) {
+										wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 
 								});	
-								CreateWheel (nodeR, delegate (GameObject colliderV) {
-										colliderV.GetComponent<WheelCollider> ().transform.Rotate (0, 0, 90);
+								CreateWheel (nodeR, delegate (GameObject wCollider) {
+										wCollider.GetComponent<WheelCollider> ().transform.Rotate (0, 90, 90);
 					
 								});
 								joint.angularXDrive = drMode;	
@@ -150,33 +153,30 @@ public class UnityRigidNode : RigidNode_Base
 				} else if (nodeX.GetJointType () == SkeletalJointType.CYLINDRICAL) {
 						CylindricalJoint_Base nodeC = (CylindricalJoint_Base)nodeX;
 						
-						joint = ConfigJointInternal (auxFunctions.ConvertV3 (nodeC.basePoint), auxFunctions.ConvertV3 (nodeC.axis));
-						joint.xMotion = ConfigurableJointMotion.Limited;
-						joint.angularXMotion = !nodeC.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
-
-						Debug.Log ("Start: " + nodeC.linearLimitStart + " End: " + nodeC.linearLimitEnd);
-						Dictionary<string, float> lLimit = new Dictionary<string, float> () {
-												{"end",nodeC.linearLimitEnd},
-												{"start",nodeC.linearLimitStart},
-												{"current",nodeC.currentLinearPosition}
-						};
-						LinearLimit (lLimit);
-						
-		
-						Debug.Log ("Center: " + center + " Current Distance: " + current);
-						if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
-								float[] aLimit = {
-										nodeC.currentAngularPosition * (180.0f / Mathf.PI),
-										nodeC.angularLimitLow * (180.0f / Mathf.PI),
-										nodeC.angularLimitHigh * (180.0f / Mathf.PI)
+						joint = ConfigJointInternal (auxFunctions.ConvertV3 (nodeC.basePoint), auxFunctions.ConvertV3 (nodeC.axis), delegate(ConfigurableJoint jointSub) {
+								joint.xMotion = ConfigurableJointMotion.Limited;
+								joint.angularXMotion = !nodeC.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
+								Dictionary<string, float> lLimit = new Dictionary<string, float> () {
+															{"end",nodeC.linearLimitEnd},
+															{"start",nodeC.linearLimitStart},
+															{"current",nodeC.currentLinearPosition}
+								};
+								LinearLimit (lLimit);
+								if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
+										float[] aLimit = {
+												nodeC.currentAngularPosition * (180.0f / Mathf.PI),
+												nodeC.angularLimitLow * (180.0f / Mathf.PI),
+												nodeC.angularLimitHigh * (180.0f / Mathf.PI)
 								};
 								AngularLimit (aLimit);
-						}
-						
+								}
+						});
+			
+			
 				} else if (nodeX.GetJointType () == SkeletalJointType.LINEAR) {
 						LinearJoint_Base nodeL = (LinearJoint_Base)nodeX;
 			
-						joint = ConfigJointInternal (auxFunctions.ConvertV3 (nodeL.basePoint), auxFunctions.ConvertV3 (nodeL.axis));
+						joint = ConfigJointInternal (auxFunctions.ConvertV3 (nodeL.basePoint), auxFunctions.ConvertV3 (nodeL.axis), delegate(ConfigurableJoint jointSub){
 						joint.xMotion = ConfigurableJointMotion.Limited;
 
 						Dictionary<string, float> lLimit = new Dictionary<string, float> () {
@@ -184,8 +184,9 @@ public class UnityRigidNode : RigidNode_Base
 												{"start",nodeL.linearLimitLow},
 												{"current",nodeL.currentLinearPosition}
 						};
-						
 						LinearLimit (lLimit);
+					});
+						
 				}
 		}		
 		
@@ -245,7 +246,7 @@ public class UnityRigidNode : RigidNode_Base
 		
 		public WheelCollider GetWheelCollider ()
 		{
-				return colliderV != null ? colliderV.GetComponent<WheelCollider> () : null;
+				return wCollider != null ? wCollider.GetComponent<WheelCollider> () : null;
 		}
 
 		public ConfigurableJoint GetConfigJoint ()
