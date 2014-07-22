@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IO\BXDAMesh.cs" />
+    <Compile Include="IO\BXDASurface.cs" />
     <Compile Include="IO\BXDIO.cs" />
     <Compile Include="Joints\BallJoint_Base.cs" />
     <Compile Include="Joints\CylindricalJoint_Base.cs" />
