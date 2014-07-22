@@ -87,6 +87,7 @@
     <ClCompile Include="ChipObject\tAIImpl.cpp" />
     <ClCompile Include="ChipObject\tDIOImpl.cpp" />
     <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
+    <ClCompile Include="ChipObject\tInterruptManager.cpp" />
     <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
     <ClCompile Include="emulator_main.cpp" />
     <ClCompile Include="nUsageReporting.cpp" />

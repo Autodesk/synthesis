@@ -52,6 +52,12 @@ private:
    // maintain the interrupts that are already dealt with.
    static uint32_t _globalInterruptMask;
    static ni::dsc::osdep::CriticalSection *_globalInterruptMaskSemaphore;
+
+#pragma region WPILIB HACKS
+   static tInterruptManager *_globalInterruptRef[sizeof(uint32_t) * 8];		// Added when modifying WPI LIB
+public:
+   static void doInterrupts(uint32_t mask);
+#pragma endregion
 };
 
 }

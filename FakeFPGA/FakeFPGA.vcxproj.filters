@@ -57,6 +57,9 @@
     <ClCompile Include="StateNetwork\StateNetworkServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChipObject\tInterruptManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateNetwork\StatePacket.h">

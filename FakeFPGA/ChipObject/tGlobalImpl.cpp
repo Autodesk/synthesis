@@ -1,9 +1,9 @@
 /*
- * tGlobalImpl.cpp
- *
- *  Created on: Jul 19, 2014
- *      Author: localadmin
- */
+* tGlobalImpl.cpp
+*
+*  Created on: Jul 19, 2014
+*      Author: localadmin
+*/
 
 #include <ChipObject/NiFpgaState.h>
 #include <ChipObject/tGlobalImpl.h>
@@ -11,43 +11,43 @@
 
 namespace nFPGA {
 
-tGlobal_Impl::tGlobal_Impl(NiFpgaState* state) {
-	this->state = state;
-}
-
-tGlobal_Impl::~tGlobal_Impl() {
-	if (this->state->global == this) {
-		this->state->global = NULL;
+	tGlobal_Impl::tGlobal_Impl(NiFpgaState* state) {
+		this->state = state;
 	}
-}
 
-tSystemInterface* tGlobal_Impl::getSystemInterface() {
-	return state;
-}
+	tGlobal_Impl::~tGlobal_Impl() {
+		if (this->state->global == this) {
+			this->state->global = NULL;
+		}
+	}
 
-unsigned short tGlobal_Impl::readVersion(tRioStatusCode* status) {
-	status = NiFpga_Status_Success;
-	return FPGA_VERSION;
-}
+	tSystemInterface* tGlobal_Impl::getSystemInterface() {
+		return state;
+	}
 
-unsigned int tGlobal_Impl::readLocalTime(tRioStatusCode* status) {
-	status = NiFpga_Status_Success;
-	// Time in microseconds since start.
-	return threadTimeMicros();
-}
+	unsigned short tGlobal_Impl::readVersion(tRioStatusCode* status) {
+		*status =  NiFpga_Status_Success;
+		return FPGA_VERSION;
+	}
 
-void tGlobal_Impl::writeFPGA_LED(bool value, tRioStatusCode* status) {
-	status = NiFpga_Status_Success;
-}
+	unsigned int tGlobal_Impl::readLocalTime(tRioStatusCode* status) {
+		*status =  NiFpga_Status_Success;
+		// Time in microseconds since start.
+		return threadTimeMicros();
+	}
 
-bool tGlobal_Impl::readFPGA_LED(tRioStatusCode* status) {
-	status = NiFpga_Status_Success;
-	return false;
-}
+	void tGlobal_Impl::writeFPGA_LED(bool value, tRioStatusCode* status) {
+		*status =  NiFpga_Status_Success;
+	}
 
-unsigned int tGlobal_Impl::readRevision(tRioStatusCode* status) {
-	status = NiFpga_Status_Success;
-	return FPGA_REVISION;
-}
+	bool tGlobal_Impl::readFPGA_LED(tRioStatusCode* status) {
+		*status =  NiFpga_Status_Success;
+		return false;
+	}
+
+	unsigned int tGlobal_Impl::readRevision(tRioStatusCode* status) {
+		*status =  NiFpga_Status_Success;
+		return FPGA_REVISION;
+	}
 
 } /* namespace nFPGA */
