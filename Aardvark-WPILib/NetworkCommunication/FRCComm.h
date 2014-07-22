@@ -16,6 +16,7 @@
 
 #include <stdint.h>
 #include "OSAL/Synchronized.h"
+#include "OSAL/WaitSemaphore.h"
 
 #define EXPORT_FUNC extern
 
@@ -139,8 +140,8 @@ extern "C" {
 	int EXPORT_FUNC setUserDsLcdData(const char *userDsLcdData, int userDsLcdDataLength, int wait_ms);
 	int EXPORT_FUNC overrideIOConfig(const char *ioConfig, int wait_ms);
 
-	void EXPORT_FUNC setNewDataSem(ReentrantSemaphore*);
-	void EXPORT_FUNC setResyncSem(ReentrantSemaphore*);
+	void EXPORT_FUNC setNewDataSem(WaitSemaphore*);
+	void EXPORT_FUNC setResyncSem(WaitSemaphore*);
 	void EXPORT_FUNC signalResyncActionDone(void);
 
 	// this uint32_t is really a LVRefNum

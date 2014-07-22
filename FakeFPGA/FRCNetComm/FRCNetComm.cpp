@@ -44,9 +44,9 @@ extern "C" {
 		return 0;
 	}
 
-	void EXPORT_FUNC setNewDataSem(ReentrantSemaphore* r) {
+	void EXPORT_FUNC setNewDataSem(WaitSemaphore* r) {
 	}
-	void EXPORT_FUNC setResyncSem(ReentrantSemaphore* r) {
+	void EXPORT_FUNC setResyncSem(WaitSemaphore* r) {
 	}
 	void EXPORT_FUNC signalResyncActionDone(void) {
 	}

@@ -3,6 +3,7 @@
 
 #include <OSAL/OSAL.h>
 #include <OSAL/Synchronized.h>
+#include <OSAL/WaitSemaphore.h>
 #if USE_WINAPI
 #include <Windows.h>
 #endif
@@ -29,8 +30,8 @@ private:
 	* THIS HANDLES ENDIANS!
 	*/
 	FRCCommonControlData lastDataPacket;
-	ReentrantSemaphore *newDataSem;
-	ReentrantSemaphore *resyncSem;
+	WaitSemaphore *newDataSem;
+	WaitSemaphore *resyncSem;
 	ReentrantSemaphore readingSem;
 
 	char sendBuffer[2048];

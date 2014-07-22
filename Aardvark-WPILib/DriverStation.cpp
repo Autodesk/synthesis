@@ -115,11 +115,11 @@ void DriverStation::Run()
 	int period = 0;
 	while (true)
 	{
-		m_packetDataAvailableSem.take();
+		m_packetDataAvailableSem.wait();
 		SetData();
 		m_enhancedIO.UpdateData();
 		GetData();
-		//semFlush(m_waitForDataSem);
+		m_waitForDataSem.notify();
 		if (++period >= 4)
 		{
 			MotorSafetyHelper::CheckMotors();
@@ -473,7 +473,7 @@ uint32_t DriverStation::GetLocation()
  */
 void DriverStation::WaitForData()
 {
-	m_waitForDataSem.take();
+	m_waitForDataSem.wait();
 }
 
 /**

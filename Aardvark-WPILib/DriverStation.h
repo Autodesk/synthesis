@@ -11,6 +11,7 @@
 #include "DriverStationEnhancedIO.h"
 #include "SensorBase.h"
 #include "OSAL/Task.h"
+#include "OSAL/WaitSemaphore.h"
 
 struct FRCCommonControlData;
 class AnalogChannel;
@@ -119,9 +120,9 @@ private:
 	DashboardBase* m_dashboardInUseHigh;  // the current dashboard packers in use
 	DashboardBase* m_dashboardInUseLow;
 	ReentrantSemaphore m_newControlData;
-	ReentrantSemaphore m_packetDataAvailableSem;
+	WaitSemaphore m_packetDataAvailableSem;
 	DriverStationEnhancedIO m_enhancedIO;
-	ReentrantSemaphore m_waitForDataSem;
+	WaitSemaphore m_waitForDataSem;
 	double m_approxMatchTimeOffset;
 	bool m_userInDisabled;
 	bool m_userInAutonomous;

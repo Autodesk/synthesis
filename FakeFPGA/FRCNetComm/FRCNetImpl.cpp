@@ -90,9 +90,14 @@ int FRCNetImpl::runThread() {
 		lastDataPacket.packetIndex = ntohs(lastDataPacket.packetIndex);
 		lastDataPacket.teamID = ntohs(lastDataPacket.teamID);
 		readingSem.give();
+		if (newDataSem != NULL) {
+			newDataSem->notify();
+		}
 		// Shenanigans with semaphores
 		if (lastDataPacket.resync) {
-			// More shenanigans
+			if (resyncSem != NULL){
+				resyncSem->notify();
+			}
 		}
 	}
 
