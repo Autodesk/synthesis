@@ -47,7 +47,7 @@ tDIO_Impl *NiFpgaState::getDIO(unsigned char module) {
 
 tAI_Impl *NiFpgaState::getAnalog(unsigned char module) {
 	if (ai[module] == NULL) {
-		//ai[module] = new tAI_Impl(this, module);
+		ai[module] = new tAI_Impl(this, module);
 	}
 	return ai[module];
 }
@@ -61,7 +61,7 @@ tAccumulator_Impl *NiFpgaState::getAccumulator(unsigned char sys_index) {
 
 tSolenoid_Impl *NiFpgaState::getSolenoid() {
 	if (solenoid == NULL) {
-		//solenoid[module] = new tSolenoid_Impl(this);
+		solenoid = new tSolenoid_Impl(this);
 	}
 	return solenoid;
 }

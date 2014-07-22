@@ -7,6 +7,7 @@
 #include <math.h>
 #include <tDIO.h>
 #include "ChipObject/tDIOImpl.h"
+#include "ChipObject/tSolenoidImpl.h"
 #include "OSAL/System.h"
 #include "PWMDecoder.h"
 #include "StateNetwork/StatePacket.h"
@@ -21,6 +22,7 @@ int main(int argc, char ** argv) {
 	StatePacket pack = StatePacket();
 	StateNetworkServer serv = StateNetworkServer();
 	serv.Open();
+	tRioStatusCode status;
 	while (true) {
 		j += 0.1;
 		float val = (float) sin(j);
@@ -29,6 +31,7 @@ int main(int argc, char ** argv) {
 			float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
 			pack.pwmValues[i] = curr;
 		}
+		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
 		serv.SendStatePacket(pack);
 		sleep_ms(50);
 	}
