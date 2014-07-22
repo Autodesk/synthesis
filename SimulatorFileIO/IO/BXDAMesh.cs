@@ -181,11 +181,6 @@ public class BXDAMesh
                 {
                     mesh.translucencies[transI] = reader.ReadSingle();
                 }
-
-                if (mesh.transparencies[transI] != 0)
-                {
-                    int test = 5;
-                }
             }
 
             int facetCount = reader.ReadInt32();
