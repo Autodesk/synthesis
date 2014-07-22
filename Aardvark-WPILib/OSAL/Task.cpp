@@ -184,11 +184,12 @@ const char* NTTask::GetName()
 */
 bool NTTask::HandleError(char *lpszFunction, int code)
 {
-	if (code == 0 && Verify()) return true;
+	if (code == 0) return true;
 #if USE_WINAPI
 	LPVOID lpMsgBuf;
 	LPVOID lpDisplayBuf;
-	DWORD dw = GetLastError(); 
+	DWORD dw = GetLastError();
+	if (dw == 0) return true;
 
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER | 

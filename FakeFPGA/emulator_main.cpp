@@ -32,25 +32,25 @@ public:
 START_ROBOT_CLASS(RobotDemo)
 #endif
 
-int main(int argc, char ** argv) {
-	printf("Start now!\n");
-	NiFpga_Initialize();
-	printf("Init FPGA\n");
-	FRC_UserProgram_StartupLibraryInit();
-	/*StatePacket pack = StatePacket();
-	StateNetworkServer serv = StateNetworkServer();
-	serv.Open();
-	tRioStatusCode status;
-	while (true) {
-		/*j += 0.1;
-		float val = (float) sin(j);
-		t->Set(val);
-		for (int i = 0; i<8; i++){
-		float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
-		pack.pwmValues[i] = curr;
+	int main(int argc, char ** argv) {
+		printf("Start now!\n");
+		NiFpga_Initialize();
+		printf("Init FPGA\n");
+		FRC_UserProgram_StartupLibraryInit();
+		StatePacket pack = StatePacket();
+		StateNetworkServer serv = StateNetworkServer();
+		serv.Open();
+		tRioStatusCode status;
+		while (true) {
+			printf("PWM:\t");
+			for (int i = 0; i<8; i++){
+				float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
+				pack.pwmValues[i] = curr;
+				printf("%.04f\t", pack.pwmValues[i]);
+			}
+			printf("\n");
+			pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
+			serv.SendStatePacket(pack);
+			sleep_ms(50);
 		}
-		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
-		serv.SendStatePacket(pack);
-		sleep_ms(50);
-	}*/
 }
