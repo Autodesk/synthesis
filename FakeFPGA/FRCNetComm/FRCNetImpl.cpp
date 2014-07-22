@@ -64,14 +64,14 @@ int FRCNetImpl::runThread() {
 	}
 
 	if (bind(robotSocket, (struct sockaddr *)&robotAddress, sizeof(robotAddress)) == SOCKET_ERROR) {
-		fprintf(stderr, "Could not bind socket ROBOT!\n");
+		fprintf(stderr, "Could not bind socket ROBOT!  Did you configure your loopback adapters?\n");
 		scanf_s("\n");
 		exit(2);
 	}
 
 	dsSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (dsSocket < 0) {
-		fprintf(stderr, "Could not create socket DS!\n");
+		fprintf(stderr, "Could not create socket DS!  Did you configure your loopback adapters?\n");
 		scanf_s("\n");
 		exit(2);
 	}
