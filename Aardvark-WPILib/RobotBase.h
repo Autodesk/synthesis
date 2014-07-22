@@ -14,7 +14,7 @@
 class DriverStation;
 
 #define START_ROBOT_CLASS(_ClassName_) \
-	RobotBase *FRC_userClassFactory() \
+	void *FRC_userClassFactory() \
 	{ \
 		return new _ClassName_(); \
 	} \

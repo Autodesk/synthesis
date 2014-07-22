@@ -76,6 +76,7 @@
     <ClInclude Include="ChipObject\tDIOImpl.h" />
     <ClInclude Include="ChipObject\tGlobalImpl.h" />
     <ClInclude Include="ChipObject\tSolenoidImpl.h" />
+    <ClInclude Include="ChipObject\tWatchcatImpl.h" />
     <ClInclude Include="PWMDecoder.h" />
     <ClInclude Include="StateNetwork\StateNetworkServer.h" />
     <ClInclude Include="StateNetwork\StatePacket.h" />
@@ -93,6 +94,7 @@
     <ClCompile Include="ChipObject\tInterruptManager.cpp" />
     <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
     <ClCompile Include="ChipObject\tSystem.cpp" />
+    <ClCompile Include="ChipObject\tWatchcatImpl.cpp" />
     <ClCompile Include="emulator_main.cpp" />
     <ClCompile Include="nUsageReporting.cpp" />
     <ClCompile Include="PWMDecoder.cpp" />

@@ -17,8 +17,6 @@
 
 #define max(x, y) (((x) > (y)) ? (x) : (y))
 
-const int32_t RobotDrive::kMaxNumberOfMotors;
-
 /*
  * Driving functions
  * These functions provide an interface to multiple motors that is used for C programming

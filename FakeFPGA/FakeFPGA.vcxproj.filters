@@ -66,6 +66,9 @@
     <ClCompile Include="ChipObject\tAlarmImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ChipObject\tWatchcatImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StateNetwork\StatePacket.h">
@@ -102,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ChipObject\tAlarmImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChipObject\tWatchcatImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

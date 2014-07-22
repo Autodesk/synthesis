@@ -13,19 +13,31 @@
 #include "StateNetwork/StatePacket.h"
 #include "StateNetwork/StateNetworkServer.h"
 
-void callback(void *param) {
-	printf("Callback!\n");
-}
+#ifndef __ROBOTDEMO
+#define __ROBOTDEMO
+class RobotDemo : public SimpleRobot {
+private:
+	RobotDrive drive;
+	Joystick joy;
+public:
+	RobotDemo(void): drive(1,2), joy(1) {
+	}
+	void Autonomous(void) {
+		printf("Entering autonomous!\n");
+	}
+	void OperatorControl(void) {
+		printf("Entering teleop!\n");
+	}
+};
+START_ROBOT_CLASS(RobotDemo)
+#endif
 
 int main(int argc, char ** argv) {
 	printf("Start now!\n");
 	NiFpga_Initialize();
 	printf("Init FPGA\n");
-	//Talon *t = new Talon(1, 1);
-	Notifier *notifier = new Notifier(callback, NULL);
-	notifier->StartPeriodic(1.0);
-	float j = 0;
-	StatePacket pack = StatePacket();
+	FRC_UserProgram_StartupLibraryInit();
+	/*StatePacket pack = StatePacket();
 	StateNetworkServer serv = StateNetworkServer();
 	serv.Open();
 	tRioStatusCode status;
@@ -38,7 +50,7 @@ int main(int argc, char ** argv) {
 		pack.pwmValues[i] = curr;
 		}
 		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
-		serv.SendStatePacket(pack);*/
+		serv.SendStatePacket(pack);
 		sleep_ms(50);
-	}
+	}*/
 }

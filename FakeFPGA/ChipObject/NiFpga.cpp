@@ -3,6 +3,7 @@
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/NiIRQImpl.h"
 #include "ChipObject/tAlarmImpl.h"
+#include "ChipObject/tWatchcatImpl.h"
 #include <stdlib.h>
 
 #include <tAlarm.h>
@@ -11,6 +12,7 @@
 #include <tSolenoid.h>
 #include <tAI.h>
 #include <tAccumulator.h>
+#include <tWatchdog.h>
 
 extern "C" {
 	nFPGA::NiFpgaState *state = NULL;
@@ -59,6 +61,13 @@ nFPGA::nFRC_2012_1_6_4::tAlarm *nFPGA::nFRC_2012_1_6_4::tAlarm::create(
 		*status =  NiFpga_Status_Success;
 		return new tAlarm_Impl(GetFakeFPGA());
 }
+
+nFPGA::nFRC_2012_1_6_4::tWatchdog *nFPGA::nFRC_2012_1_6_4::tWatchdog::create(
+	tRioStatusCode *status) {
+	*status = NiFpga_Status_Success;
+	return new tWatchcat_Impl(GetFakeFPGA());
+}
+
 
 NiFpga_Status NiFpga_Initialize(void) {
 	// Setup FPGA
