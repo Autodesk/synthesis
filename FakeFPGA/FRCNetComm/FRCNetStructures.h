@@ -7,14 +7,6 @@
 #include <NetworkCommunication/FRCComm.h>
 
 // To DS
-
-namespace fakeRIO {
-	class FRCNetStructure {
-	public:
-		FRCNetStructure();
-};
-}
-
 struct FRCRobotControl {
 	union {
 		uint8_t control;

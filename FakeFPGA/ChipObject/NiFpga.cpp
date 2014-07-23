@@ -23,14 +23,14 @@
 #include <tAnalogTrigger.h>
 
 extern "C" {
-	nFPGA::NiFpgaState *state = NULL;
+	nFPGA::NiFpgaState *frcFPGAInstance = NULL;
 }
 
 nFPGA::NiFpgaState *GetFakeFPGA() {
-	if (state == NULL) {
-		state = new nFPGA::NiFpgaState();
+	if (frcFPGAInstance == NULL) {
+		frcFPGAInstance = new nFPGA::NiFpgaState();
 	}
-	return state;
+	return frcFPGAInstance;
 }
 
 nFPGA::nFRC_2012_1_6_4::tDIO *nFPGA::nFRC_2012_1_6_4::tDIO::create(
@@ -106,8 +106,8 @@ NiFpga_Status NiFpga_Initialize(void) {
 
 NiFpga_Status NiFpga_Finalize(void) {
 	// Should delete the fake FPGA.
-	delete state;
-	state = NULL;
+	delete frcFPGAInstance;
+	frcFPGAInstance = NULL;
 	return NiFpga_Status_Success;
 }
 

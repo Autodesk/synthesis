@@ -5,14 +5,14 @@
 #include "FRCFakeNetComm.h"
 
 extern "C" {
-	FRCNetImpl *state = NULL;
+	FRCNetImpl *frcNetInstance = NULL;
 }
 
-FRCNetImpl *frcNetworkState() {
-	if (state == NULL) {
-		state = new FRCNetImpl();
+FRCNetImpl *GetFakeNetComm() {
+	if (frcNetInstance == NULL) {
+		frcNetInstance = new FRCNetImpl();
 	}
-	return state;
+	return frcNetInstance;
 }
 	
 FRCNetImpl::FRCNetImpl(void)
