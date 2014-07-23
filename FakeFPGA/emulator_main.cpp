@@ -20,8 +20,9 @@ class RobotDemo : public SimpleRobot {
 private:
 	RobotDrive drive;
 	Joystick joy;
+	Encoder enc;
 public:
-	RobotDemo(void): drive(1,2), joy(1) {
+	RobotDemo(void): drive(1,2), joy(1),enc(1,2) {
 	}
 	void Autonomous(void) {
 		printf("Entering autonomous!\n");
@@ -38,7 +39,7 @@ START_ROBOT_CLASS(RobotDemo)
 		NiFpga_Initialize();
 		printf("Init FPGA\n");
 		FRCNetImpl netImpl;
-		netImpl.start();
+		//netImpl.start();
 		FRCRobotControl robotCtl;
 		robotCtl.notEStop = true;
 		FRC_UserProgram_StartupLibraryInit();

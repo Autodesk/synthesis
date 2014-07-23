@@ -4,6 +4,10 @@
 #include "ChipObject/NiIRQImpl.h"
 #include "ChipObject/tAlarmImpl.h"
 #include "ChipObject/tWatchcatImpl.h"
+#include "ChipObject/tEncoderImpl.h"
+#include "ChipObject/tInterruptImpl.h"
+#include "ChipObject/tCounterImpl.h"
+#include "ChipObject/tAnalogTriggerImpl.h"
 #include <stdlib.h>
 
 #include <tAlarm.h>
@@ -13,6 +17,10 @@
 #include <tAI.h>
 #include <tAccumulator.h>
 #include <tWatchdog.h>
+#include <tEncoder.h>
+#include <tInterrupt.h>
+#include <tCounter.h>
+#include <tAnalogTrigger.h>
 
 extern "C" {
 	nFPGA::NiFpgaState *state = NULL;
@@ -64,8 +72,28 @@ nFPGA::nFRC_2012_1_6_4::tAlarm *nFPGA::nFRC_2012_1_6_4::tAlarm::create(
 
 nFPGA::nFRC_2012_1_6_4::tWatchdog *nFPGA::nFRC_2012_1_6_4::tWatchdog::create(
 	tRioStatusCode *status) {
+		*status = NiFpga_Status_Success;
+		return new tWatchcat_Impl(GetFakeFPGA());
+}
+
+nFPGA::nFRC_2012_1_6_4::tEncoder *nFPGA::nFRC_2012_1_6_4::tEncoder::create(unsigned char sys_index, tRioStatusCode *status) {
 	*status = NiFpga_Status_Success;
-	return new tWatchcat_Impl(GetFakeFPGA());
+	return GetFakeFPGA()->getEncoder(sys_index);
+}
+
+nFPGA::nFRC_2012_1_6_4::tInterrupt *nFPGA::nFRC_2012_1_6_4::tInterrupt::create(unsigned char sys_index, tRioStatusCode *status) {
+	*status = NiFpga_Status_Success;
+	return GetFakeFPGA()->getInterrupt(sys_index);
+}
+
+nFPGA::nFRC_2012_1_6_4::tCounter *nFPGA::nFRC_2012_1_6_4::tCounter::create(unsigned char sys_index, tRioStatusCode *status) {
+	*status = NiFpga_Status_Success;
+	return GetFakeFPGA()->getCounter(sys_index);
+}
+
+nFPGA::nFRC_2012_1_6_4::tAnalogTrigger *nFPGA::nFRC_2012_1_6_4::tAnalogTrigger::create(unsigned char sys_index, tRioStatusCode *status) {
+	*status = NiFpga_Status_Success;
+	return GetFakeFPGA()->getAnalogTrigger(sys_index);
 }
 
 

@@ -11,6 +11,12 @@
 #include "ChipObject/tAIImpl.h"
 #include "ChipObject/tSolenoidImpl.h"
 #include "ChipObject/tGlobalImpl.h"
+#include "ChipObject/tEncoderImpl.h"
+#include "ChipObject/tAccumulatorImpl.h"
+#include "ChipObject/tInterruptImpl.h"
+#include "ChipObject/tCounterImpl.h"
+#include "ChipObject/tAnalogTriggerImpl.h"
+
 #include "ChipObject/NiIRQImpl.h"
 #include <stdio.h>
 
@@ -21,20 +27,36 @@ namespace nFPGA {
 
 		ai = NULL;
 		solenoid = NULL;
-		dio = new tDIO_Impl*[DIO_COUNT];
-		ai = new tAI_Impl*[ANALOG_COUNT];
-		accum = new tAccumulator_Impl*[ACCUM_COUNT];
+		dio = new tDIO_Impl*[tDIO_Impl::kNumSystems];
+		ai = new tAI_Impl*[tAI_Impl::kNumSystems];
+		accum = new tAccumulator_Impl*[tAccumulator_Impl::kNumSystems];
+		encoder = new tEncoder_Impl*[tEncoder_Impl::kNumSystems];
+		interrupt = new tInterrupt_Impl*[tInterrupt_Impl::kNumSystems];
+		counter = new tCounter_Impl*[tCounter_Impl::kNumSystems];
+		analogTrigger = new tAnalogTrigger_Impl*[tAnalogTrigger_Impl::kNumSystems];
 		solenoid = NULL;
 		global = NULL;
 
-		for (int i = 0; i < DIO_COUNT; i++) {
+		for (int i = 0; i < tDIO_Impl::kNumSystems; i++) {
 			dio[i] = NULL;
 		}
-		for (int i = 0; i < ANALOG_COUNT;i++) {
+		for (int i = 0; i < tAI_Impl::kNumSystems;i++) {
 			ai[i] = NULL;
 		}
-		for (int i = 0; i < ACCUM_COUNT; i++) {
+		for (int i = 0; i < tAccumulator_Impl::kNumSystems; i++) {
 			accum[i] = NULL;
+		}
+		for (int i = 0; i < tEncoder_Impl::kNumSystems; i++) {
+			encoder[i] = NULL;
+		}
+		for (int i = 0; i < tInterrupt_Impl::kNumSystems; i++) {
+			interrupt[i] = NULL;
+		}
+		for (int i = 0; i < tCounter_Impl::kNumSystems; i++) {
+			counter[i] = NULL;
+		}
+		for (int i = 0; i < tAnalogTrigger_Impl::kNumSystems; i++) {
+			analogTrigger[i] = NULL;
 		}
 	}
 
@@ -42,6 +64,9 @@ namespace nFPGA {
 		delete[] accum;
 		delete[] ai;
 		delete[] dio;
+		delete[] encoder;
+		delete[] interrupt;
+		delete[] analogTrigger;
 		if (solenoid != NULL){
 			delete solenoid;
 		}
@@ -90,6 +115,34 @@ namespace nFPGA {
 			global = new tGlobal_Impl(this);
 		}
 		return global;
+	}
+
+	tEncoder_Impl *NiFpgaState::getEncoder(unsigned char sys_index) {
+		if (encoder[sys_index] == NULL) {
+			encoder[sys_index] = new tEncoder_Impl(this, sys_index);
+		}
+		return encoder[sys_index];
+	}
+
+	tInterrupt_Impl *NiFpgaState::getInterrupt(unsigned char sys_index) {
+		if (interrupt[sys_index] == NULL) {
+			interrupt[sys_index] = new tInterrupt_Impl(this, sys_index);
+		}
+		return interrupt[sys_index];
+	}
+	
+	tCounter_Impl *NiFpgaState::getCounter(unsigned char sys_index) {
+		if (counter[sys_index] == NULL) {
+			counter[sys_index] = new tCounter_Impl(this, sys_index);
+		}
+		return counter[sys_index];
+	}
+
+	tAnalogTrigger_Impl *NiFpgaState::getAnalogTrigger(unsigned char sys_index) {
+		if (analogTrigger[sys_index] == NULL) {
+			analogTrigger[sys_index] = new tAnalogTrigger_Impl(this, sys_index);
+		}
+		return analogTrigger[sys_index];
 	}
 
 	const uint16_t NiFpgaState::getExpectedFPGAVersion() {

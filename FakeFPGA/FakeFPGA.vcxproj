@@ -73,8 +73,12 @@
     <ClInclude Include="ChipObject\tAccumulatorImpl.h" />
     <ClInclude Include="ChipObject\tAIImpl.h" />
     <ClInclude Include="ChipObject\tAlarmImpl.h" />
+    <ClInclude Include="ChipObject\tAnalogTriggerImpl.h" />
+    <ClInclude Include="ChipObject\tCounterImpl.h" />
     <ClInclude Include="ChipObject\tDIOImpl.h" />
+    <ClInclude Include="ChipObject\tEncoderImpl.h" />
     <ClInclude Include="ChipObject\tGlobalImpl.h" />
+    <ClInclude Include="ChipObject\tInterruptImpl.h" />
     <ClInclude Include="ChipObject\tSolenoidImpl.h" />
     <ClInclude Include="ChipObject\tWatchcatImpl.h" />
     <ClInclude Include="FRCNetComm\crc32.h" />
@@ -92,8 +96,12 @@
     <ClCompile Include="ChipObject\tAccumulatorImpl.cpp" />
     <ClCompile Include="ChipObject\tAIImpl.cpp" />
     <ClCompile Include="ChipObject\tAlarmImpl.cpp" />
+    <ClCompile Include="ChipObject\tAnalogTriggerImpl.cpp" />
+    <ClCompile Include="ChipObject\tCounterImpl.cpp" />
     <ClCompile Include="ChipObject\tDIOImpl.cpp" />
+    <ClCompile Include="ChipObject\tEncoderImpl.cpp" />
     <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
+    <ClCompile Include="ChipObject\tInterruptImpl.cpp" />
     <ClCompile Include="ChipObject\tInterruptManager.cpp" />
     <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
     <ClCompile Include="ChipObject\tSystem.cpp" />

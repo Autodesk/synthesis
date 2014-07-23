@@ -20,6 +20,10 @@ namespace nFPGA {
 	class tSolenoid_Impl;
 	class tAccumulator_Impl;
 	class tGlobal_Impl;
+	class tEncoder_Impl;
+	class tInterrupt_Impl;
+	class tCounter_Impl;
+	class tAnalogTrigger_Impl;
 
 	class NiFpgaState: public tSystemInterface {
 		friend class tDIO_Impl;
@@ -27,16 +31,21 @@ namespace nFPGA {
 		friend class tSolenoid_Impl;
 		friend class tAccumulator_Impl;
 		friend class tGlobal_Impl;
-	private:
-		static const int DIO_COUNT = 4;
-		static const int ANALOG_COUNT = 4;
-		static const int ACCUM_COUNT = 8;
+		friend class tEncoder_Impl;
+		friend class tInterrupt_Impl;
+		friend class tCounter_Impl;
+		friend class tAnalogTrigger_Impl;
 
+	private:
 		tDIO_Impl **dio;
 		tAI_Impl **ai;
 		tAccumulator_Impl **accum;
 		tSolenoid_Impl *solenoid;
 		tGlobal_Impl *global;
+		tEncoder_Impl **encoder;
+		tInterrupt_Impl **interrupt;
+		tCounter_Impl **counter;
+		tAnalogTrigger_Impl **analogTrigger;
 
 		NiIRQ_Impl *irqManager;
 	public:
@@ -48,6 +57,11 @@ namespace nFPGA {
 		tAccumulator_Impl *getAccumulator(unsigned char sys_index);
 		tSolenoid_Impl *getSolenoid();
 		tGlobal_Impl *getGlobal();
+		tEncoder_Impl *getEncoder(unsigned char sys_index);
+		tInterrupt_Impl *getInterrupt(unsigned char sys_index);
+		tCounter_Impl *getCounter(unsigned char sys_index);
+		tAnalogTrigger_Impl *getAnalogTrigger(unsigned char sys_index);
+
 		NiIRQ_Impl *getIRQManager();
 
 		virtual const uint16_t getExpectedFPGAVersion();
