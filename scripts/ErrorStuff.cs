@@ -9,5 +9,19 @@ namespace ErrorHandling
 				{
 				}
 		}
+
+		public class SolenoidConflictException: Exception
+		{
+				public SolenoidConflictException (int x):base(string.Format("Error, you are attempting to assign Solenoid port {0}, but it has already been assigned.", x))
+				{
+				}
+		}
+
+		public class WheelDifferenceException: Exception
+		{
+				public WheelDifferenceException (string message):base(message)
+				{
+				}
+		}
 }
 
