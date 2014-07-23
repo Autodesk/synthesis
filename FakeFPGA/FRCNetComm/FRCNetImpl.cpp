@@ -8,7 +8,7 @@ extern "C" {
 	FRCNetImpl *state = NULL;
 }
 
-FRCNetImpl *frcNetworkInstance() {
+FRCNetImpl *frcNetworkState() {
 	if (state == NULL) {
 		state = new FRCNetImpl();
 	}

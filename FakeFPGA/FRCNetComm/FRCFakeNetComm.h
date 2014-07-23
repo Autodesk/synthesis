@@ -4,6 +4,5 @@
 class FRCNetImpl;
 
 FRCNetImpl *GetFakeNetComm();
-FRCNetImpl *frcNetworkInstance();
 
 #endif
