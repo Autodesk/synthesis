@@ -182,15 +182,15 @@ public class ConvexHullCalculator
 
         // Time for shenanigans!  We are going to naively pick the shortest edge and then remove it.  Destroys two faces per loop typically.
         // Give it 2000 tries at most.
-        for (int i = 0; i < 2000 && simplFace.Count > 150; i++)
+        for (int i = 0; i < 2000 && simplFace.Count > 64; i++)
         {
             SimplificationFace bFace = simplFace[0];
             // This is the edge to remove
             SimplificationVertex[] remove = new SimplificationVertex[] {
                 bFace.verts[bFace.minEdge], bFace.verts[(bFace.minEdge + 1) % bFace.verts.Length] };
 
-           
-        #region FANCY_SIMPLIFY_GRAPHICS
+
+            #region FANCY_SIMPLIFY_GRAPHICS
 #if FANCY_SIMPLIFY_GRAPHICS
                 // Highlight
                 Array.Copy(bFace.verts[0].pos, 0, minor, 0, 3);
@@ -208,6 +208,7 @@ public class ConvexHullCalculator
                 center[0] += vert.pos[0] / 2.0f;
                 center[1] += vert.pos[1] / 2.0f;
                 center[2] += vert.pos[2] / 2.0f;
+                vert.faces.Clear(); // Really, never use vertex again.
             }
             SimplificationVertex newVertex = new SimplificationVertex(center[0], center[1], center[2]);
 
@@ -270,7 +271,6 @@ public class ConvexHullCalculator
         {
             int off = i * 3;
             simplVerts[i].finalIndex = (i);  // Our indices are zero based <3
-            Console.WriteLine(simplVerts[i].finalIndex);
             Array.Copy(simplVerts[i].pos, 0, verts, off, 3);
         }
         trisCount = (uint) simplFace.Count;
