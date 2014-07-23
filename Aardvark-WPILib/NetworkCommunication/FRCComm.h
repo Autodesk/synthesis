@@ -141,7 +141,7 @@ extern "C" {
 	int EXPORT_FUNC overrideIOConfig(const char *ioConfig, int wait_ms);
 
 	void EXPORT_FUNC setNewDataSem(WaitSemaphore*);
-	void EXPORT_FUNC setResyncSem(WaitSemaphore*);
+	void EXPORT_FUNC setResyncSem(ReentrantSemaphore*);
 	void EXPORT_FUNC signalResyncActionDone(void);
 
 	// this uint32_t is really a LVRefNum

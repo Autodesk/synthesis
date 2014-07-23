@@ -11,6 +11,7 @@ extern "C" {
 FRCNetImpl *GetFakeNetComm() {
 	if (frcNetInstance == NULL) {
 		frcNetInstance = new FRCNetImpl();
+		frcNetInstance->start();
 	}
 	return frcNetInstance;
 }
@@ -92,6 +93,9 @@ int FRCNetImpl::runThread() {
 
 	// Read from DS thread
 	while (enabled) {
+		if (resyncSem != NULL) {
+			resyncSem->take();
+		}
 		int len = recv(robotSocket, (char*) &buffer, sizeof(buffer), 0);
 		if (len < 0) {
 			printf("Read failed\n");
@@ -102,13 +106,16 @@ int FRCNetImpl::runThread() {
 		lastDataPacket.packetIndex = ntohs(lastDataPacket.packetIndex);
 		lastDataPacket.teamID = ntohs(lastDataPacket.teamID);
 		readingSem.give();
+		newDataSemInternal.notify();
 		if (newDataSem != NULL) {
 			newDataSem->notify();
 		}
 		// Shenanigans with semaphores
 		if (lastDataPacket.resync) {
 			if (resyncSem != NULL){
-				resyncSem->notify();
+				resyncSem->give();
+				Sleep(250);
+				resyncSem->take();
 			}
 		}
 	}
@@ -144,4 +151,8 @@ FRCCommonControlData FRCNetImpl::getLastPacket() {
 	copy = lastDataPacket;
 	readingSem.give();
 	return copy;
+}
+
+bool FRCNetImpl::waitForNewPacket(int wait_ms) {
+	return newDataSemInternal.wait(wait_ms);
 }

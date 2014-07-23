@@ -30,12 +30,14 @@ private:
 	* THIS HANDLES ENDIANS!
 	*/
 	FRCCommonControlData lastDataPacket;
-	WaitSemaphore *newDataSem;
-	WaitSemaphore *resyncSem;
+	WaitSemaphore newDataSemInternal;
 	ReentrantSemaphore readingSem;
 
 	char sendBuffer[2048];
 public:
+	WaitSemaphore *newDataSem;
+	ReentrantSemaphore *resyncSem;
+
 	FRCNetImpl();
 	~FRCNetImpl();
 	/**
@@ -45,6 +47,7 @@ public:
 	void start();
 	void stop();
 	FRCCommonControlData getLastPacket();
+	bool waitForNewPacket(int wait_ms);
 };
 
 #endif

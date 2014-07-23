@@ -38,18 +38,9 @@ START_ROBOT_CLASS(RobotDemo)
 		printf("Start now!\n");
 		NiFpga_Initialize();
 		printf("Init FPGA\n");
-		FRCNetImpl netImpl;
-		//netImpl.start();
-		FRCRobotControl robotCtl;
-		robotCtl.notEStop = true;
 		FRC_UserProgram_StartupLibraryInit();
-		while (true) {
-			FRCCommonControlData commonCtl = netImpl.getLastPacket();
-			robotCtl.packetIndex = commonCtl.packetIndex;
-			netImpl.sendControl(robotCtl);
-		}
-		/*FRC_UserProgram_StartupLibraryInit();
-		StatePacket pack = StatePacket();
+		while (true) {Sleep(1000);}
+		/*StatePacket pack = StatePacket();
 		StateNetworkServer serv = StateNetworkServer();
 		serv.Open();
 		tRioStatusCode status;
