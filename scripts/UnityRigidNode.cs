@@ -139,14 +139,17 @@ public class UnityRigidNode : RigidNode_Base
 								JointDrive drMode = new JointDrive ();
 								drMode.mode = JointDriveMode.Velocity;
 								drMode.maximumForce = 100.0f;
+								
 								CreateWheel (nodeR, delegate (GameObject wCollider) {
 										wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 
 								});	
+				/*
 								CreateWheel (nodeR, delegate (GameObject wCollider) {
 										wCollider.GetComponent<WheelCollider> ().transform.Rotate (0, 90, 90);
 					
 								});
+				*/
 								joint.angularXDrive = drMode;	
 						}
 					
@@ -216,9 +219,9 @@ public class UnityRigidNode : RigidNode_Base
 				});	
 				
 				auxFunctions.ReadMeshSet (mesh.colliders, delegate(int id, Mesh meshu) {
-						if (meshu.triangles.Length / 3 > 255) {
-								Debug.Log (unityObject.name + " " + id + " tris: " + meshu.triangles.Length / 3);
-						}
+						//if (meshu.triangles.Length / 3 > 255) {
+						Debug.Log (unityObject.name + " " + id + " tris: " + meshu.triangles.Length / 3 + " Vertices: " + meshu.vertexCount);
+						//}
 						subCollider = new GameObject (unityObject.name + " Subcollider" + id);
 						subCollider.transform.parent = unityObject.transform;
 						subCollider.transform.position = new Vector3 (0, 0, 0);
