@@ -32,8 +32,10 @@ private:
 	FRCCommonControlData lastDataPacket;
 	WaitSemaphore newDataSemInternal;
 	ReentrantSemaphore readingSem;
+	ReentrantSemaphore writingSem;
 
 	char sendBuffer[2048];
+	FRCRobotControl ctl;
 public:
 	WaitSemaphore *newDataSem;
 	ReentrantSemaphore *resyncSem;

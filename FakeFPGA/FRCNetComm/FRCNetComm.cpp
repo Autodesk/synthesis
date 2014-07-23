@@ -67,12 +67,13 @@ extern "C" {
 	int EXPORT_FUNC setStatusData(float battery, uint8_t dsDigitalOut,
 		uint8_t updateNumber, const char *userDataHigh, int userDataHighLength,
 		const char *userDataLow, int userDataLowLength, int wait_ms) {
-		int bInt = (int) battery;
-		uint8_t chunkA = ((bInt/10) << 4) | (bInt % 10);
-		int bFrac = (float)((battery - (float) bInt) * 100.0f);
-		uint8_t chunkB = ((bFrac/10) << 4) | (bFrac % 10);
-		return setStatusDataFloatAsInt((chunkA << 8) | chunkB, dsDigitalOut, updateNumber, userDataHigh, userDataHighLength, userDataLow, userDataLowLength, wait_ms);
+			int bInt = (int) battery;
+			uint8_t chunkA = ((bInt/10) << 4) | (bInt % 10);
+			int bFrac = (float)((battery - (float) bInt) * 100.0f);
+			uint8_t chunkB = ((bFrac/10) << 4) | (bFrac % 10);
+			return setStatusDataFloatAsInt((chunkA << 8) | chunkB, dsDigitalOut, updateNumber, userDataHigh, userDataHighLength, userDataLow, userDataLowLength, wait_ms);
 	}
+
 	int EXPORT_FUNC setStatusDataFloatAsInt(int battery, uint8_t dsDigitalOut,
 		uint8_t updateNumber, const char *userDataHigh, int userDataHighLength,
 		const char *userDataLow, int userDataLowLength, int wait_ms) {
@@ -134,30 +135,30 @@ extern "C" {
 	void EXPORT_FUNC FRC_NetworkCommunication_getVersionString(char *version) {
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramStarting(void) {
-		robotControlData.control =0;
+		robotControlData.control = 0;
 		robotControlData.notEStop = 1;
 		GetFakeNetComm()->sendControl(robotControlData);
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramDisabled(void) {
-		robotControlData.control =0;
+		robotControlData.control = 0;
 		robotControlData.notEStop = 1;
 		GetFakeNetComm()->sendControl(robotControlData);
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramAutonomous(void) {
-		robotControlData.control =0;
+		robotControlData.control = 0;
 		robotControlData.notEStop = 1;
 		robotControlData.enabled = 1;
 		robotControlData.autonomous = 1;
 		GetFakeNetComm()->sendControl(robotControlData);
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramTeleop(void) {
-		robotControlData.control =0;
+		robotControlData.control = 0;
 		robotControlData.notEStop = 1;
 		robotControlData.enabled = 1;
 		GetFakeNetComm()->sendControl(robotControlData);
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramTest(void) {
-		robotControlData.control =0;
+		robotControlData.control = 0;
 		robotControlData.notEStop = 1;
 		robotControlData.enabled = 1;
 		robotControlData.test = 1;

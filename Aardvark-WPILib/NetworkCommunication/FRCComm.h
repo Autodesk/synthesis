@@ -31,14 +31,14 @@ struct FRCCommonControlData{
 	union {
 		uint8_t control;
 		struct {
-			uint8_t reset : 1;
-			uint8_t notEStop : 1;
-			uint8_t enabled : 1;
-			uint8_t autonomous : 1;
-			uint8_t fmsAttached:1;
+			uint8_t checkVersions : 1;
+			uint8_t test : 1;
 			uint8_t resync : 1;
-			uint8_t test :1;
-			uint8_t checkVersions :1;
+			uint8_t fmsAttached : 1;
+			uint8_t autonomous:1;
+			uint8_t enabled : 1;
+			uint8_t notEStop :1;
+			uint8_t reset :1;
 		};
 	};
 	uint8_t dsDigitalIn;

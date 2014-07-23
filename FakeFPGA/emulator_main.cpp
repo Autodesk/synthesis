@@ -26,9 +26,15 @@ public:
 	}
 	void Autonomous(void) {
 		printf("Entering autonomous!\n");
+		drive.SetSafetyEnabled(false);
 	}
 	void OperatorControl(void) {
 		printf("Entering teleop!\n");
+		drive.SetSafetyEnabled(true);
+		while (IsOperatorControl() && !IsDisabled()) {
+			drive.ArcadeDrive(joy);
+			Sleep(15);
+		}
 	}
 };
 START_ROBOT_CLASS(RobotDemo)
@@ -39,21 +45,17 @@ START_ROBOT_CLASS(RobotDemo)
 		NiFpga_Initialize();
 		printf("Init FPGA\n");
 		FRC_UserProgram_StartupLibraryInit();
-		while (true) {Sleep(1000);}
-		/*StatePacket pack = StatePacket();
+		StatePacket pack = StatePacket();
 		StateNetworkServer serv = StateNetworkServer();
 		serv.Open();
 		tRioStatusCode status;
 		while (true) {
-		printf("PWM:\t");
-		for (int i = 0; i<8; i++){
-		float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
-		pack.pwmValues[i] = curr;
-		printf("%.04f\t", pack.pwmValues[i]);
+			for (int i = 0; i<8; i++){
+				float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
+				pack.pwmValues[i] = curr;
+			}
+			pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
+			serv.SendStatePacket(pack);
+			sleep_ms(50);
 		}
-		printf("\n");
-		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
-		serv.SendStatePacket(pack);
-		sleep_ms(50);
-		}*/
 }

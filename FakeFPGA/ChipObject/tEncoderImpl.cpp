@@ -9,7 +9,7 @@ namespace nFPGA {
 		this->encoderConfig.Enable = false;
 
 		this->encoderOutput.Value = 0;
-		this->encoderOutput.Direction =0;
+		this->encoderOutput.Direction = 0;
 
 		this->timerOutput.value = 0;
 		this->timerConfig.value = 0;

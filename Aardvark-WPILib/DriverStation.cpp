@@ -187,8 +187,8 @@ void DriverStation::SetData()
 
 	m_dashboardInUseHigh->GetStatusBuffer(&userStatusDataHigh, &userStatusDataHighSize);
 	m_dashboardInUseLow->GetStatusBuffer(&userStatusDataLow, &userStatusDataLowSize);
-	setStatusData(GetBatteryVoltage(), m_digitalOut, m_updateNumber,
-		userStatusDataHigh, userStatusDataHighSize, userStatusDataLow, userStatusDataLowSize, -1);	// WAIT_FOREVER
+	setStatusData(GetBatteryVoltage(), m_digitalOut, (*m_controlData).packetIndex,
+		userStatusDataHigh, userStatusDataHighSize, userStatusDataLow, userStatusDataLowSize, INFINITE);	// WAIT_FOREVER
 	
 	m_dashboardInUseHigh->Flush();
 	m_dashboardInUseLow->Flush();
@@ -204,13 +204,14 @@ void DriverStation::SetData()
  */
 float DriverStation::GetBatteryVoltage()
 {
-	if (m_batteryChannel == NULL)
+return 12.21f;
+	/*if (m_batteryChannel == NULL)
 		wpi_setWPIError(NullParameter);
 
 	// The Analog bumper has a voltage divider on the battery source.
 	// Vbatt *--/\/\/\--* Vsample *--/\/\/\--* Gnd
 	//         680 Ohms            1000 Ohms
-	return m_batteryChannel->GetAverageVoltage() * (1680.0 / 1000.0);
+	return m_batteryChannel->GetAverageVoltage() * (1680.0 / 1000.0);*/
 }
 
 /**

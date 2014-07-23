@@ -8,7 +8,7 @@ namespace nFPGA {
 		this->lowerLimit = 0;
 		this->upperLimit = 0;
 		this->source.value = 0;
-		for (int i =0; i<kNumOutputElements; i++){
+		for (int i = 0; i<kNumOutputElements; i++){
 			this->output[i].value = 0;
 		}
 		// TODO actually implement these
