@@ -144,12 +144,19 @@ public class UnityRigidNode : RigidNode_Base
 										wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 
 								});	
+<<<<<<< HEAD
 				/*
 								CreateWheel (nodeR, delegate (GameObject wCollider) {
 										wCollider.GetComponent<WheelCollider> ().transform.Rotate (0, 90, 90);
 					
 								});
 				*/
+=======
+								//CreateWheel (nodeR, delegate (GameObject wCollider) {
+								//		wCollider.GetComponent<WheelCollider> ().transform.Rotate (0, 90, 90);
+					
+								//});
+>>>>>>> origin/master
 								joint.angularXDrive = drMode;	
 						}
 					
@@ -210,7 +217,7 @@ public class UnityRigidNode : RigidNode_Base
 						subObject.AddComponent <MeshFilter> ();
 						subObject.GetComponent<MeshFilter> ().mesh = meshu;
 						subObject.AddComponent <MeshRenderer> ();
-						subObject.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Diffuse"));
+						subObject.GetComponent<MeshRenderer> ().material = new Material (Shader.Find ("Custom/VertexColors"));
 						//subObject.AddComponent<MeshCollider> ().convex = true;
 
 						if (!unityObject.GetComponent<Rigidbody> ()) {
