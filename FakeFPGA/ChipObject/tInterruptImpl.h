@@ -5,8 +5,10 @@
 
 namespace nFPGA {
 	class NiFpgaState;
+	class tDIO_Impl;
 
 	class tInterrupt_Impl : public nFPGA::nFRC_2012_1_6_4::tInterrupt {
+		friend class tDIO_Impl;
 	private:
 		NiFpgaState *state;
 		unsigned char sys_index;

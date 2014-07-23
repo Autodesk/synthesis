@@ -169,11 +169,13 @@ namespace nFPGA {
 				changeType.Falling = values[i] > nvalues[i];
 				changeType.Rising = values[i] < nvalues[i];
 				for (int t = 0; t < tAnalogTrigger_Impl::kNumSystems; t++) {
-					if (state->analogTrigger[t]->source.Module == sys_index && state->analogTrigger[t]->source.Channel == i) {
-						changeType.OverLimit = nvalues[i] >= state->analogTrigger[t]->upperLimit;
-						changeType.InHysteresis = nvalues[i] >= state->analogTrigger[t]->lowerLimit && !changeType.OverLimit;
-						if (state->analogTrigger[t]->output[state->analogTrigger[t]->sys_index].value != changeType.value){
-							state->analogTrigger[t]->output[state->analogTrigger[t]->sys_index] = changeType;
+					tAnalogTrigger_Impl *trigger = state->analogTrigger[t];
+					if (trigger != NULL && 
+					trigger->source.Module == sys_index && trigger->source.Channel == i) {
+						changeType.OverLimit = nvalues[i] >= trigger->upperLimit;
+						changeType.InHysteresis = nvalues[i] >= trigger->lowerLimit && !changeType.OverLimit;
+						if (trigger->output[trigger->sys_index].value != changeType.value){
+							trigger->output[trigger->sys_index] = changeType;
 							// Signal it somehow?  Not entirely sure how this signal is routed.
 							// Plan:  Make IRQs 64 bit.  if analog trigger shift left by 32.
 						}

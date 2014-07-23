@@ -18,7 +18,7 @@ namespace nFPGA {
 	private:
 		NiFpgaState *state;
 		unsigned char index;
-	public:
+	private:
 		unsigned short digitalOutputPort;
 		unsigned short digitalOutputState;
 		unsigned short digitalOutputPulse;
@@ -34,10 +34,12 @@ namespace nFPGA {
 
 		tPWMConfig pwmConfig;
 		uint8_t pwmPeriodScale[kNumPWMPeriodScaleElements];
+
+		unsigned short loopTiming;	// This better be 260
+	public:
 		uint8_t pwmValue[kNumPWMValueRegisters];
 		uint8_t pwmTypes[kNumPWMValueRegisters];
 
-		unsigned short loopTiming;	// This better be 260
 	public:
 		tDIO_Impl(NiFpgaState *state, unsigned char index);
 		virtual ~tDIO_Impl();
@@ -163,6 +165,8 @@ namespace nFPGA {
 			tRioStatusCode *status);
 		virtual unsigned char readPWMValue(unsigned char reg_index,
 			tRioStatusCode *status);
+
+		void writeDigitalPort(unsigned short nDigitalPort, unsigned short nDigitalMask);
 	};
 
 }

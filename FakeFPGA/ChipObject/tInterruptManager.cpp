@@ -23,6 +23,9 @@ namespace nFPGA {
 		this->_enabled = false;
 		this->_handler = NULL;
 		*status = NiFpga_Status_Success;
+		if (!watcher) {
+			enable(status);
+		}
 	}
 
 	tInterruptManager::~tInterruptManager() {

@@ -9,6 +9,8 @@
 #include "ChipObject/NiFpgaState.h"
 #include <tSystemInterface.h>
 #include <stdio.h>
+#include "tInterruptImpl.h"
+#include "NiIRQImpl.h"
 
 namespace nFPGA {
 
@@ -77,7 +79,7 @@ namespace nFPGA {
 
 	void tDIO_Impl::writeDO(unsigned short value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		digitalOutputPort = value;
+		writeDigitalPort(value, digitalOutputState);		// Only output the ones configured for output
 	}
 
 	unsigned short tDIO_Impl::readDO(tRioStatusCode* status) {
@@ -464,5 +466,24 @@ namespace nFPGA {
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
 			return pwmValue[reg_index];
+	}
+
+	void tDIO_Impl::writeDigitalPort(unsigned short nDPort, unsigned short nDMask) {
+		for (int i = 0; i < sizeof(nDPort) * 8; i++) {
+			unsigned short tmpMask = 1 << i;
+			if ((nDMask & tmpMask) && (nDPort & tmpMask) != (digitalOutputPort & tmpMask)) {
+				bool falling = !(nDPort & tmpMask) && (digitalOutputPort & tmpMask);
+				bool rising = (nDPort & tmpMask) && !(digitalOutputPort & tmpMask);
+				// Changed!  Check for triggering
+				for (int t = 0; t < tInterrupt_Impl::kNumSystems; t++) {
+					tInterrupt_Impl *interrupt = state->interrupt[t];
+					if (interrupt != NULL && !interrupt->config.Source_AnalogTrigger && interrupt->config.Source_Module == this->index && interrupt->config.Source_Channel == i && ((interrupt->config.FallingEdge && falling) || (interrupt->config.RisingEdge && rising))) {
+						// Signal it!
+						state->getIRQManager()->signal(1 << interrupt->sys_index);
+					}
+				}
+			}
+		}
+		digitalOutputPort = (digitalOutputPort & ~nDMask) | (nDPort & nDMask);
 	}
 }
