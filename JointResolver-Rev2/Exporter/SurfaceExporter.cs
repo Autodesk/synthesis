@@ -36,9 +36,8 @@ public class SurfaceExporter
     private double[] tolerances = new double[10];
     private int tmpToleranceCount = 0;
 
-    uint colorVal;
-    float transparency;
-    float translucency;
+    float[] transparencies = new float[TMP_VERTICIES * 3];
+    float[] translucencies = new float[TMP_VERTICIES * 3];
 
     /// <summary>
     /// Copies mesh information for the given surface body into the mesh storage structure.
@@ -46,7 +45,7 @@ public class SurfaceExporter
     /// <param name="surf">The surface body to export</param>
     /// <param name="bestResolution">Use the best possible resolution</param>
     /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
-    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = true)
+    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
         int bestIndex = -1;
@@ -92,24 +91,25 @@ public class SurfaceExporter
     {
         if (postVertCount == 0 || postFacetCount == 0)
             return;
-        BXDASurface subObject = new BXDASurface();
-        subObject.subMesh.verts = new double[postVertCount * 3];
-        subObject.subMesh.norms = new double[postVertCount * 3];
-        subObject.subMesh.textureCoords = new double[postVertCount * 2];
-        subObject.subMesh.indicies = new int[postFacetCount * 3];
-        Array.Copy(postVerts, 0, subObject.subMesh.verts, 0, postVertCount * 3);
-        Array.Copy(postNorms, 0, subObject.subMesh.norms, 0, postVertCount * 3);
-        Array.Copy(postTextureCoords, 0, subObject.subMesh.textureCoords, 0, postVertCount * 2);
-        Array.Copy(postIndicies, 0, subObject.subMesh.indicies, 0, postFacetCount * 3);
-
-        subObject.color = colorVal;
-        subObject.transparency = transparency;
-        subObject.translucency = translucency;
-
-        Console.WriteLine("Mesh segment " + outputMesh.surfaces.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
+        BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
+        subObject.verts = new double[postVertCount * 3];
+        subObject.norms = new double[postVertCount * 3];
+        subObject.textureCoords = new double[postVertCount * 2];
+        subObject.colors = new uint[postVertCount];
+        subObject.indicies = new int[postFacetCount * 3];
+        subObject.transparencies = new float[postFacetCount * 3];
+        subObject.translucencies = new float[postFacetCount * 3];
+        Array.Copy(postVerts, 0, subObject.verts, 0, postVertCount * 3);
+        Array.Copy(postNorms, 0, subObject.norms, 0, postVertCount * 3);
+        Array.Copy(postTextureCoords, 0, subObject.textureCoords, 0, postVertCount * 2);
+        Array.Copy(postIndicies, 0, subObject.indicies, 0, postFacetCount * 3);
+        Array.Copy(postColors, 0, subObject.colors, 0, postVertCount);
+        Array.Copy(this.transparencies, 0, subObject.transparencies, 0, postVertCount);
+        Array.Copy(this.translucencies, 0, subObject.translucencies, 0, postVertCount);
+        Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
         postVertCount = 0;
         postFacetCount = 0;
-        outputMesh.surfaces.Add(subObject);
+        outputMesh.meshes.Add(subObject);
     }
 
     /// <summary>
@@ -133,15 +133,21 @@ public class SurfaceExporter
         Array.Copy(tmpNorms, 0, postNorms, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpTextureCoords, 0, postTextureCoords, postVertCount * 2, tmpVertCount * 2);
 
-        colorVal = 0xFFFFFFFF;
+        uint colorVal = 0xFFFFFFFF;
+        float transparency = 0.0f;
+        float translucency = 0.0f;
 
         if (assetProps.color != null)
         {
             colorVal = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
         }
-
-        transparency = (float)assetProps.generic_transparency;
-        translucency = (float)assetProps.generic_translucency;
+        for (int i = postVertCount; i < postVertCount + tmpVertCount; i++)
+        {
+            postColors[i] = colorVal;
+            transparencies[i] = (float)assetProps.generic_transparency;
+            translucencies[i] = (float)assetProps.generic_translucency;
+        }
+        
 
         // Now we must manually copy the indicies
         int indxOffset = postFacetCount * 3;
