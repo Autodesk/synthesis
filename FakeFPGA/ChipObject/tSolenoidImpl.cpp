@@ -12,7 +12,7 @@ namespace nFPGA {
 
 	tSolenoid_Impl::tSolenoid_Impl(NiFpgaState *state) {
 		this->state = state;
-		for (int i = 0; i<MAX_SOLENOID_MODULES; i++){
+		for (int i = 0; i<kNumDO7_0Elements; i++){
 			solenoidState[i] = 0;
 		}
 	}
@@ -28,7 +28,7 @@ namespace nFPGA {
 	}
 
 	void tSolenoid_Impl::writeDO7_0(unsigned char bitfield_index, unsigned char value, tRioStatusCode *status) {
-		if (bitfield_index < 0 || bitfield_index >= MAX_SOLENOID_MODULES) {
+		if (bitfield_index < 0 || bitfield_index >= kNumDO7_0Elements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return;
 		}
@@ -37,7 +37,7 @@ namespace nFPGA {
 	}
 
 	unsigned char tSolenoid_Impl::readDO7_0(unsigned char bitfield_index, tRioStatusCode *status) {
-		if (bitfield_index < 0 || bitfield_index >= MAX_SOLENOID_MODULES) {
+		if (bitfield_index < 0 || bitfield_index >= kNumDO7_0Elements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return 0;
 		}

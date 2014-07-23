@@ -14,20 +14,18 @@ namespace nFPGA {
 	class NiFpgaState;
 	class tAI_Impl: public nFPGA::nFRC_2012_1_6_4::tAI {
 	private:
-		static const int CHANNEL_COUNT = 16;
-
 		unsigned char sys_index;
 		NiFpgaState *state;
 
 		tConfig config;
-		unsigned char averageBits[CHANNEL_COUNT];
-		unsigned char oversampleBits[CHANNEL_COUNT];
-		unsigned char scanList[CHANNEL_COUNT];
+		unsigned char averageBits[kNumAverageBitsElements];
+		unsigned char oversampleBits[kNumOversampleBitsElements];
+		unsigned char scanList[kNumScanListElements];
 
 		tReadSelect readSelect;
 
 	public:
-		signed int values[CHANNEL_COUNT];
+		signed int values[kNumScanListElements];
 
 		tAI_Impl(NiFpgaState *state, unsigned char sys_index);
 		virtual ~tAI_Impl();

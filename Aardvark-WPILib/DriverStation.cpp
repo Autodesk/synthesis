@@ -156,7 +156,7 @@ DriverStation* DriverStation::GetInstance()
 void DriverStation::GetData()
 {
 	static bool lastEnabled = false;
-	getCommonControlData(m_controlData, -1);	// WAIT_FOREVER		https://www.youtube.com/watch?v=VXOFZaDjoFs
+	getCommonControlData(m_controlData, INFINITE);	// WAIT_FOREVER		https://www.youtube.com/watch?v=VXOFZaDjoFs
 	if (!lastEnabled && IsEnabled()) 
 	{
 		// If starting teleop, assume that autonomous just took up 15 seconds

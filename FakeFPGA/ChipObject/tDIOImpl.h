@@ -28,15 +28,14 @@ namespace nFPGA {
 		unsigned char relayReverse;
 		unsigned char i2cHeader;
 
-		uint16_t pwmPeriodScale;
-		uint8_t pwmDutyCycle[8];
+		uint8_t doPWMPeriod[kNumDO_PWMDutyCycleElements];
+		uint8_t doPWMDutyCycle[kNumDO_PWMDutyCycleElements];
 		tDO_PWMConfig doPwmConfig;
 
 		tPWMConfig pwmConfig;
-		unsigned short pwmPeriod;
-		unsigned short pwmMinHigh;
-		uint8_t pwmValue[8];
-		uint8_t pwmTypes[8];
+		uint8_t pwmPeriodScale[kNumPWMPeriodScaleElements];
+		uint8_t pwmValue[kNumPWMValueRegisters];
+		uint8_t pwmTypes[kNumPWMValueRegisters];
 
 		unsigned short loopTiming;	// This better be 260
 	public:

@@ -15,10 +15,9 @@ namespace nFPGA {
 
 	class tSolenoid_Impl: public nFPGA::nFRC_2012_1_6_4::tSolenoid {
 	private:
-		static const int MAX_SOLENOID_MODULES = 4;
 		NiFpgaState *state;
 	public:
-		unsigned char solenoidState[MAX_SOLENOID_MODULES];
+		unsigned char solenoidState[kNumDO7_0Elements];
 
 		tSolenoid_Impl(NiFpgaState *state);
 		virtual tSystemInterface* getSystemInterface();

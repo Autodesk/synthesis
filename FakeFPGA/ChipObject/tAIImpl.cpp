@@ -64,7 +64,7 @@ namespace nFPGA {
 	}
 
 	void tAI_Impl::writeOversampleBits(unsigned char bitfield_index, unsigned char value, tRioStatusCode *status){
-		if (bitfield_index < 0 || bitfield_index >= CHANNEL_COUNT) {
+		if (bitfield_index < 0 || bitfield_index >= kNumOversampleBitsElements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return;
 		}
@@ -72,7 +72,7 @@ namespace nFPGA {
 		oversampleBits[bitfield_index] = value;
 	}
 	unsigned char tAI_Impl::readOversampleBits(unsigned char bitfield_index, tRioStatusCode *status){
-		if (bitfield_index < 0 || bitfield_index >= CHANNEL_COUNT) {
+		if (bitfield_index < 0 || bitfield_index >= kNumOversampleBitsElements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return 0;
 		}
@@ -81,7 +81,7 @@ namespace nFPGA {
 	}
 
 	void tAI_Impl::writeAverageBits(unsigned char bitfield_index, unsigned char value, tRioStatusCode *status){
-		if (bitfield_index < 0 || bitfield_index >= CHANNEL_COUNT) {
+		if (bitfield_index < 0 || bitfield_index >= kNumAverageBitsElements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return;
 		}
@@ -89,7 +89,7 @@ namespace nFPGA {
 		averageBits[sys_index] = value;
 	}
 	unsigned char tAI_Impl::readAverageBits(unsigned char bitfield_index, tRioStatusCode *status){
-		if (bitfield_index < 0 || bitfield_index >= CHANNEL_COUNT) {
+		if (bitfield_index < 0 || bitfield_index >= kNumAverageBitsElements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return 0;
 		}
@@ -98,7 +98,7 @@ namespace nFPGA {
 	}
 
 	void tAI_Impl::writeScanList(unsigned char bitfield_index, unsigned char value, tRioStatusCode *status){
-		if (bitfield_index < 0 || bitfield_index >= CHANNEL_COUNT) {
+		if (bitfield_index < 0 || bitfield_index >= kNumScanListElements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return;
 		}
@@ -106,7 +106,7 @@ namespace nFPGA {
 		scanList[bitfield_index] = value;
 	}
 	unsigned char tAI_Impl::readScanList(unsigned char bitfield_index, tRioStatusCode *status){
-		if (bitfield_index < 0 || bitfield_index >= CHANNEL_COUNT) {
+		if (bitfield_index < 0 || bitfield_index >= kNumScanListElements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return 0;
 		}
@@ -148,7 +148,7 @@ namespace nFPGA {
 	}
 
 	signed int tAI_Impl::readOutput(tRioStatusCode *status){
-		if (readSelect.Channel < 0 || readSelect.Channel >= CHANNEL_COUNT) {
+		if (readSelect.Channel < 0 || readSelect.Channel >= kNumScanListElements) {
 			*status = NiFpga_Status_ResourceNotFound;
 			return 0;
 		}

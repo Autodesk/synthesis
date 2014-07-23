@@ -23,11 +23,13 @@ namespace nFPGA {
 		this->digitalOutputPulseLength = 0;
 		this->i2cHeader = 0;
 		this->pwmConfig.value = 0;
-		this->pwmMinHigh = 0;
-		this->pwmPeriod = 0;
-		this->pwmPeriodScale = 0;
-		for (int p = 0; p < 8; p++) {
-			this->pwmDutyCycle[p] = 0;
+		for (int p = 0; p < kNumDO_PWMDutyCycleElements; p++) {
+			this->doPWMDutyCycle[p] = 0;
+			this->doPWMPeriod[p] = 0;
+		}
+		for (int p = 0; p < kNumPWMValueRegisters; p++) {
+			this->pwmPeriodScale[p] = 0;
+			this->pwmTypes[p] = 0;
 			this->pwmValue[p] = 0;
 		}
 		this->relayForward = 0;
@@ -222,27 +224,25 @@ namespace nFPGA {
 	void tDIO_Impl::writePWMPeriodScale(unsigned char bitfield_index,
 		unsigned char value, tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			uint16_t mask = 3 << (bitfield_index * 2);
-			pwmPeriodScale = (pwmPeriodScale & (~mask))
-				| ((value << (bitfield_index * 2)) & mask);
+			pwmPeriodScale[bitfield_index] = value;
 	}
 
 	unsigned char tDIO_Impl::readPWMPeriodScale(unsigned char bitfield_index,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return (pwmPeriodScale >> (bitfield_index * 2)) & 3;
+			return pwmPeriodScale[bitfield_index];
 	}
 
 	void tDIO_Impl::writeDO_PWMDutyCycle(unsigned char bitfield_index,
 		unsigned char value, tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			pwmDutyCycle[bitfield_index] = value;
+			doPWMDutyCycle[bitfield_index] = value;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMDutyCycle(unsigned char bitfield_index,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return pwmDutyCycle[bitfield_index];
+			return doPWMDutyCycle[bitfield_index];
 	}
 
 	void tDIO_Impl::writeBFL(bool value, tRioStatusCode* status) {
@@ -336,6 +336,7 @@ namespace nFPGA {
 		return false;
 	}
 
+#pragma region writeDO_PWMConfig
 	void tDIO_Impl::writeDO_PWMConfig(tDO_PWMConfig value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
 		doPwmConfig = value;
@@ -370,7 +371,9 @@ namespace nFPGA {
 			*status =  NiFpga_Status_Success;
 			doPwmConfig.OutputSelect_3 = value;
 	}
+#pragma endregion
 
+#pragma region readDO_PWMConfig
 	nFPGA::nFRC_2012_1_6_4::tDIO::tDO_PWMConfig tDIO_Impl::readDO_PWMConfig(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
@@ -405,6 +408,7 @@ namespace nFPGA {
 			*status =  NiFpga_Status_Success;
 			return doPwmConfig.OutputSelect_3;
 	}
+#pragma endregion
 
 	void tDIO_Impl::strobeI2CStart(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
@@ -425,13 +429,13 @@ namespace nFPGA {
 	void tDIO_Impl::writePWMConfig_Period(unsigned short value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			pwmPeriod = value;
+			pwmConfig.Period = value;
 	}
 
 	void tDIO_Impl::writePWMConfig_MinHigh(unsigned short value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			pwmMinHigh = value;
+			pwmConfig.MinHigh = value;
 	}
 
 	nFPGA::nFRC_2012_1_6_4::tDIO::tPWMConfig tDIO_Impl::readPWMConfig(
@@ -442,12 +446,12 @@ namespace nFPGA {
 
 	unsigned short tDIO_Impl::readPWMConfig_Period(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return pwmPeriod;
+		return pwmConfig.Period;
 	}
 
 	unsigned short tDIO_Impl::readPWMConfig_MinHigh(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return pwmMinHigh;
+		return pwmConfig.MinHigh;
 	}
 
 	void tDIO_Impl::writePWMValue(unsigned char reg_index, unsigned char value,
