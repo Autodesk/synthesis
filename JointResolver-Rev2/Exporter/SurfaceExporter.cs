@@ -46,7 +46,7 @@ public class SurfaceExporter
     /// <param name="surf">The surface body to export</param>
     /// <param name="bestResolution">Use the best possible resolution</param>
     /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
-    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = true)
+    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
         int bestIndex = -1;
@@ -86,6 +86,8 @@ public class SurfaceExporter
             }
             AddFacetsInternal(assetProps);
         }
+
+        DumpMeshBuffer();
     }
 
     private void DumpMeshBuffer()
