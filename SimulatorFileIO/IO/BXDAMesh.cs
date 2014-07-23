@@ -37,9 +37,6 @@ public class BXDAMesh
         /// The indicies for this mesh.  Three vertex indicies per triangle.
         /// </summary>
         public int[] indicies;
-
-        public float[] transparencies;
-        public float[] translucencies;
     }
 
     /// <summary>
@@ -89,7 +86,6 @@ public class BXDAMesh
                 int vecI = i * 3;
                 int texI = i * 2;
                 int colI = i;
-                int transI = i;
                 writer.Write(mesh.verts[vecI]);
                 writer.Write(mesh.verts[vecI + 1]);
                 writer.Write(mesh.verts[vecI + 2]);
@@ -107,14 +103,6 @@ public class BXDAMesh
                 {
                     writer.Write(mesh.textureCoords[texI]);
                     writer.Write(mesh.textureCoords[texI + 1]);
-                }
-                if (mesh.transparencies != null)
-                {
-                    writer.Write(mesh.transparencies[transI]);
-                }
-                if (mesh.translucencies != null)
-                {
-                    writer.Write(mesh.translucencies[transI]);
                 }
             }
             writer.Write(facetCount);
@@ -154,7 +142,6 @@ public class BXDAMesh
                 int vecI = i * 3;
                 int texI = i * 2;
                 int colI = i;
-                int transI = i;
                 mesh.verts[vecI] = reader.ReadDouble();
                 mesh.verts[vecI + 1] = reader.ReadDouble();
                 mesh.verts[vecI + 2] = reader.ReadDouble();
@@ -172,19 +159,6 @@ public class BXDAMesh
                 {
                     mesh.textureCoords[texI] = reader.ReadDouble();
                     mesh.textureCoords[texI + 1] = reader.ReadDouble();
-                }
-                if (mesh.transparencies != null)
-                {
-                    mesh.transparencies[transI] = reader.ReadSingle();
-                }
-                if (mesh.translucencies != null)
-                {
-                    mesh.translucencies[transI] = reader.ReadSingle();
-                }
-
-                if (mesh.transparencies[transI] != 0)
-                {
-                    int test = 5;
                 }
             }
 

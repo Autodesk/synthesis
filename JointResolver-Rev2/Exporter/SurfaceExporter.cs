@@ -36,9 +36,6 @@ public class SurfaceExporter
     private double[] tolerances = new double[10];
     private int tmpToleranceCount = 0;
 
-    float[] transparencies = new float[TMP_VERTICIES * 3];
-    float[] translucencies = new float[TMP_VERTICIES * 3];
-
     /// <summary>
     /// Copies mesh information for the given surface body into the mesh storage structure.
     /// </summary>
@@ -97,15 +94,11 @@ public class SurfaceExporter
         subObject.textureCoords = new double[postVertCount * 2];
         subObject.colors = new uint[postVertCount];
         subObject.indicies = new int[postFacetCount * 3];
-        subObject.transparencies = new float[postFacetCount * 3];
-        subObject.translucencies = new float[postFacetCount * 3];
         Array.Copy(postVerts, 0, subObject.verts, 0, postVertCount * 3);
         Array.Copy(postNorms, 0, subObject.norms, 0, postVertCount * 3);
         Array.Copy(postTextureCoords, 0, subObject.textureCoords, 0, postVertCount * 2);
         Array.Copy(postIndicies, 0, subObject.indicies, 0, postFacetCount * 3);
         Array.Copy(postColors, 0, subObject.colors, 0, postVertCount);
-        Array.Copy(this.transparencies, 0, subObject.transparencies, 0, postVertCount);
-        Array.Copy(this.translucencies, 0, subObject.translucencies, 0, postVertCount);
         Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
         postVertCount = 0;
         postFacetCount = 0;
@@ -132,11 +125,7 @@ public class SurfaceExporter
         Array.Copy(tmpVerts, 0, postVerts, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpNorms, 0, postNorms, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpTextureCoords, 0, postTextureCoords, postVertCount * 2, tmpVertCount * 2);
-
         uint colorVal = 0xFFFFFFFF;
-        float transparency = 0.0f;
-        float translucency = 0.0f;
-
         if (assetProps.color != null)
         {
             colorVal = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
@@ -144,10 +133,7 @@ public class SurfaceExporter
         for (int i = postVertCount; i < postVertCount + tmpVertCount; i++)
         {
             postColors[i] = colorVal;
-            transparencies[i] = (float)assetProps.generic_transparency;
-            translucencies[i] = (float)assetProps.generic_translucency;
         }
-        
 
         // Now we must manually copy the indicies
         int indxOffset = postFacetCount * 3;
