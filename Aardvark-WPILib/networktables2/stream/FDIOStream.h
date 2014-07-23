@@ -15,14 +15,15 @@ class FDIOStream;
 
 #include "networktables2/stream/IOStream.h"
 #include <stdio.h>
+#include <winsock.h>
 
 
 
 class FDIOStream : public IOStream{
 private:
-	FILE* f;
+	SOCKET f;
 public:
-	FDIOStream(int fd);
+	FDIOStream(SOCKET fd);
 	virtual ~FDIOStream();
 	int read(void* ptr, int numbytes);
 	int write(const void* ptr, int numbytes);

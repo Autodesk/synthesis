@@ -22,11 +22,8 @@
 #include <Windows.h>
 #endif
 
-FDIOStream::FDIOStream(int _fd){
-	//fd = _fd;
-	f = fdopen(_fd, "rbwb");
-	if(f==NULL)
-		throw IOException("Could not open stream from file descriptor", errno);
+FDIOStream::FDIOStream(SOCKET _fd){
+	f = _fd;
 }
 
 FDIOStream::~FDIOStream(){
@@ -53,7 +50,8 @@ int FDIOStream::read(void* ptr, int numbytes){
 
 		int numRead = 0;
 		//if (FD_ISSET(fd, &fdSet)) {
-		numRead = fread(bufferPointer,sizeof(char), numbytes-totalRead, f);
+		//numRead = fread(bufferPointer,sizeof(char), numbytes-totalRead, f);
+		numRead = recv(f, bufferPointer, sizeof(char) * (numbytes-totalRead), 0);
 
 		if(numRead == 0){
 			throw EOFException();
@@ -70,7 +68,7 @@ int FDIOStream::read(void* ptr, int numbytes){
 	return totalRead;
 }
 int FDIOStream::write(const void* ptr, int numbytes){
-	int numWrote = fwrite((char*)ptr, sizeof(char), numbytes,f);//TODO: this is bad
+	int numWrote = send(f, ((char*)ptr), numbytes, 0);
 	//int numWrote = fwrite(ptr, 1, numbytes, f);
 	if(numWrote==numbytes)
 		return numWrote;
@@ -80,11 +78,11 @@ int FDIOStream::write(const void* ptr, int numbytes){
 
 }
 void FDIOStream::flush(){
-	if(fflush(f)==EOF)
-		throw EOFException();
+	//if(fflush(f)==EOF)
+	//	throw EOFException();
 }
 void FDIOStream::close(){
-	fclose(f);//ignore any errors closing
+	//fclose(f);//ignore any errors closing
 	//pclose(fd);
 }
 

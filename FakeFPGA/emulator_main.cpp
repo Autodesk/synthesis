@@ -40,7 +40,8 @@ START_ROBOT_CLASS(RobotDemo)
 		FRCNetImpl netImpl;
 		netImpl.start();
 		FRCRobotControl robotCtl;
-		robotCtl.notEStop = false;
+		robotCtl.notEStop = true;
+		FRC_UserProgram_StartupLibraryInit();
 		while (true) {
 			FRCCommonControlData commonCtl = netImpl.getLastPacket();
 			robotCtl.packetIndex = commonCtl.packetIndex;
