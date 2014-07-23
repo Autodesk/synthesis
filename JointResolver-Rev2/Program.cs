@@ -20,6 +20,15 @@ static class Program
         //BXDAMesh mesh = new BXDAMesh();
         //mesh.meshes.AddRange(subs);
         //mesh.WriteBXDA("C:/Temp/test.bxda");
+
+        BXDAMesh testMesh = new BXDAMesh();
+        testMesh.ReadBXDA("C:/Users/t_miler/Downloads/Skeleton/node_0.bxda");
+        testMesh.ReadBXDA("C:/Users/t_miler/Downloads/Skeleton/node_1.bxda");
+        testMesh.ReadBXDA("C:/Users/t_miler/Downloads/Skeleton/node_2.bxda");
+        testMesh.ReadBXDA("C:/Users/t_miler/Downloads/Skeleton/node_3.bxda");
+        testMesh.ReadBXDA("C:/Users/t_miler/Downloads/Skeleton/node_4.bxda");
+        testMesh.ReadBXDA("C:/Users/t_miler/Downloads/Skeleton/node_5.bxda");
+        testMesh.ReadBXDA("C:/Users/t_miler/Downloads/Skeleton/node_6.bxda");
     }
 
     public static void AnalyzeRigidResults()
