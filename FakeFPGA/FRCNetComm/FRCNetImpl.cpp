@@ -2,7 +2,19 @@
 #include <OSAL/Task.h>
 #include <stdint.h>
 #include "crc32.h"
+#include "FRCFakeNetComm.h"
 
+extern "C" {
+	FRCNetImpl *state = NULL;
+}
+
+FRCNetImpl *frcNetworkState() {
+	if (state == NULL) {
+		state = new FRCNetImpl();
+	}
+	return state;
+}
+	
 FRCNetImpl::FRCNetImpl(void)
 {
 	enabled = false;
