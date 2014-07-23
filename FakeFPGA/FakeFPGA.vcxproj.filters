@@ -122,5 +122,8 @@
     <ClInclude Include="FRCNetComm\FRCNetStructures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FRCNetComm\FRCFakeNetComm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

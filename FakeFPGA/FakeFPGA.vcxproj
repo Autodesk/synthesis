@@ -80,6 +80,7 @@
     <ClInclude Include="FRCNetComm\crc32.h" />
     <ClInclude Include="FRCNetComm\FRCNetImpl.h" />
     <ClInclude Include="FRCNetComm\FRCNetStructures.h" />
+    <ClInclude Include="FRCNetComm\FRCFakeNetComm.h" />
     <ClInclude Include="PWMDecoder.h" />
     <ClInclude Include="StateNetwork\StateNetworkServer.h" />
     <ClInclude Include="StateNetwork\StatePacket.h" />
