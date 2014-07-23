@@ -20,6 +20,9 @@ namespace nFPGA
 
 	tAlarm_Impl::~tAlarm_Impl(void)
 	{
+		if (this->state->alarm == this) {
+			this->state->alarm = NULL;
+		}
 		delete this->notifierTask;
 	}
 
@@ -36,13 +39,13 @@ namespace nFPGA
 			unsigned int delta = (impl->triggerTime - cTime) / 1000;
 			if (!impl->enabled || impl->triggerTime < cTime) {
 				if (!signaled) {
-					impl->state->getIRQManager()->signal(0xFFFFFFFF);// SIGNAL ALL THE THINGS (wth?)
+					impl->state->getIRQManager()->signal(1 << kTimerInterruptNumber);
 					signaled = true;
 				}
 				impl->changeSemaphore.wait();
 			} else if (delta < 2) {
 				sleep_ms(2);
-				impl->state->getIRQManager()->signal(0xFFFFFFFF);// SIGNAL ALL THE THINGS (wth?)
+				impl->state->getIRQManager()->signal(1 << kTimerInterruptNumber);
 				signaled = true;
 			} else {
 				sleep_ms(delta * 0.75);

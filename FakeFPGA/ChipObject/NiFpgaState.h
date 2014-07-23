@@ -20,6 +20,7 @@ namespace nFPGA {
 	class tSolenoid_Impl;
 	class tAccumulator_Impl;
 	class tGlobal_Impl;
+	class tAlarm_Impl;
 	class tEncoder_Impl;
 	class tInterrupt_Impl;
 	class tCounter_Impl;
@@ -35,6 +36,7 @@ namespace nFPGA {
 		friend class tInterrupt_Impl;
 		friend class tCounter_Impl;
 		friend class tAnalogTrigger_Impl;
+		friend class tAlarm_Impl;
 
 	private:
 		tDIO_Impl **dio;
@@ -46,6 +48,7 @@ namespace nFPGA {
 		tInterrupt_Impl **interrupt;
 		tCounter_Impl **counter;
 		tAnalogTrigger_Impl **analogTrigger;
+		tAlarm_Impl *alarm;
 
 		NiIRQ_Impl *irqManager;
 	public:
@@ -61,6 +64,7 @@ namespace nFPGA {
 		tInterrupt_Impl *getInterrupt(unsigned char sys_index);
 		tCounter_Impl *getCounter(unsigned char sys_index);
 		tAnalogTrigger_Impl *getAnalogTrigger(unsigned char sys_index);
+		tAlarm_Impl *getAlarm();
 
 		NiIRQ_Impl *getIRQManager();
 

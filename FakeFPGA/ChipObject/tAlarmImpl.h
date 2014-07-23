@@ -18,6 +18,8 @@ namespace nFPGA
 		public nFPGA::nFRC_2012_1_6_4::tAlarm
 	{
 	private:
+		static const uint32_t kTimerInterruptNumber = 28;
+
 		NiFpgaState *state;
 		bool enabled;
 		unsigned int triggerTime;

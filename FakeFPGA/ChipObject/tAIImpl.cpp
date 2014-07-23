@@ -8,6 +8,7 @@
 #include "tAIImpl.h"
 #include "tAI.h"
 #include "NiFpgaState.h"
+#include "tAnalogTriggerImpl.h"
 
 namespace nFPGA {
 	tAI_Impl::tAI_Impl(NiFpgaState *state, unsigned char sys_index) {
@@ -158,5 +159,28 @@ namespace nFPGA {
 	void tAI_Impl::strobeLatchOutput(tRioStatusCode *status){
 		*status =  NiFpga_Status_Success;
 		// Doesn't seem to do anything important.
+	}
+
+	void tAI_Impl::updateValues(signed int nvalues[]) {
+		for (int i = 0; i < kNumScanListElements; i++) {
+			if (nvalues[i] != values[i]) {
+				// Changed!  Check for triggering
+				tAnalogTrigger_Impl::tOutput changeType;
+				changeType.Falling = values[i] > nvalues[i];
+				changeType.Rising = values[i] < nvalues[i];
+				for (int t = 0; t < tAnalogTrigger_Impl::kNumSystems; t++) {
+					if (state->analogTrigger[t]->source.Module == sys_index && state->analogTrigger[t]->source.Channel == i) {
+						changeType.OverLimit = nvalues[i] >= state->analogTrigger[t]->upperLimit;
+						changeType.InHysteresis = nvalues[i] >= state->analogTrigger[t]->lowerLimit && !changeType.OverLimit;
+						if (state->analogTrigger[t]->output[state->analogTrigger[t]->sys_index].value != changeType.value){
+							state->analogTrigger[t]->output[state->analogTrigger[t]->sys_index] = changeType;
+							// Signal it somehow?  Not entirely sure how this signal is routed.
+							// Plan:  Make IRQs 64 bit.  if analog trigger shift left by 32.
+						}
+					}
+				}
+			}
+			values[i] = nvalues[i];
+		}
 	}
 }

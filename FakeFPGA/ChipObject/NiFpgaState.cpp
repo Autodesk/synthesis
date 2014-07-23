@@ -16,6 +16,7 @@
 #include "ChipObject/tInterruptImpl.h"
 #include "ChipObject/tCounterImpl.h"
 #include "ChipObject/tAnalogTriggerImpl.h"
+#include "ChipObject/tAlarmImpl.h"
 
 #include "ChipObject/NiIRQImpl.h"
 #include <stdio.h>
@@ -34,6 +35,7 @@ namespace nFPGA {
 		interrupt = new tInterrupt_Impl*[tInterrupt_Impl::kNumSystems];
 		counter = new tCounter_Impl*[tCounter_Impl::kNumSystems];
 		analogTrigger = new tAnalogTrigger_Impl*[tAnalogTrigger_Impl::kNumSystems];
+		alarm = NULL;
 		solenoid = NULL;
 		global = NULL;
 
@@ -72,6 +74,9 @@ namespace nFPGA {
 		}
 		if (global != NULL) {
 			delete global;
+		}
+		if (alarm != NULL){
+			delete alarm;
 		}
 		if (irqManager != NULL) {
 			delete irqManager;
@@ -130,7 +135,7 @@ namespace nFPGA {
 		}
 		return interrupt[sys_index];
 	}
-	
+
 	tCounter_Impl *NiFpgaState::getCounter(unsigned char sys_index) {
 		if (counter[sys_index] == NULL) {
 			counter[sys_index] = new tCounter_Impl(this, sys_index);
@@ -143,6 +148,13 @@ namespace nFPGA {
 			analogTrigger[sys_index] = new tAnalogTrigger_Impl(this, sys_index);
 		}
 		return analogTrigger[sys_index];
+	}
+
+	tAlarm_Impl *NiFpgaState::getAlarm() {
+		if (alarm == NULL) {
+			alarm = new tAlarm_Impl(this);
+		}
+		return alarm;
 	}
 
 	const uint16_t NiFpgaState::getExpectedFPGAVersion() {

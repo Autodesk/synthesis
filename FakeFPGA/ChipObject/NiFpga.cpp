@@ -67,7 +67,7 @@ nFPGA::nFRC_2012_1_6_4::tGlobal *nFPGA::nFRC_2012_1_6_4::tGlobal::create(
 nFPGA::nFRC_2012_1_6_4::tAlarm *nFPGA::nFRC_2012_1_6_4::tAlarm::create(
 	tRioStatusCode *status) {
 		*status =  NiFpga_Status_Success;
-		return new tAlarm_Impl(GetFakeFPGA());
+		return GetFakeFPGA()->getAlarm();
 }
 
 nFPGA::nFRC_2012_1_6_4::tWatchdog *nFPGA::nFRC_2012_1_6_4::tWatchdog::create(

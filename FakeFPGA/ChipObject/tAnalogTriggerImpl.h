@@ -5,11 +5,13 @@
 
 namespace nFPGA {
 	class NiFpgaState;
+	class tAI_Impl;
 	class tAnalogTrigger_Impl : public nFPGA::nFRC_2012_1_6_4::tAnalogTrigger {
+		friend class tAI_Impl;
 	private:
 		NiFpgaState *state;
 		unsigned char sys_index;
-		tOutput output[kNumOutputElements];
+		tOutput output[kNumOutputElements];	// Why is this an array? TODO
 		tSourceSelect source;
 
 		signed int upperLimit, lowerLimit;

@@ -23,10 +23,9 @@ namespace nFPGA {
 		unsigned char scanList[kNumScanListElements];
 
 		tReadSelect readSelect;
-
-	public:
+		
 		signed int values[kNumScanListElements];
-
+	public:
 		tAI_Impl(NiFpgaState *state, unsigned char sys_index);
 		virtual ~tAI_Impl();
 		virtual tSystemInterface* getSystemInterface();
@@ -61,6 +60,8 @@ namespace nFPGA {
 
 		virtual signed int readOutput(tRioStatusCode *status);
 		virtual void strobeLatchOutput(tRioStatusCode *status);
+
+		void updateValues(signed int values[kNumScanListElements]);
 	};
 }
 
