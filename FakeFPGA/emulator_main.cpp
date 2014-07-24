@@ -28,10 +28,14 @@ int StartEmulator() {
 		for (int i = 0; i<8; i++){
 			float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
 			pack.pwmValues[i] = curr;
-			printf("%.04f\t", pack.pwmValues[i]);
+			printf("%.03f ", pack.pwmValues[i]);
+		}
+		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
+		printf("\t");
+		for (int i =0; i<8; i++) {
+			printf("%d ", (pack.solenoidValues >> i) & 1);
 		}
 		printf("\n");
-		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
 		serv.SendStatePacket(pack);
 		sleep_ms(50);
 	}

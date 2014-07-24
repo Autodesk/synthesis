@@ -13,10 +13,6 @@
 #include <stdarg.h>
 #include <algorithm>
 
-const uint32_t DriverStationLCD::kSyncTimeout_ms;
-const uint16_t DriverStationLCD::kFullDisplayTextCommand;
-const int32_t DriverStationLCD::kLineLength;
-const int32_t DriverStationLCD::kNumLines;
 DriverStationLCD* DriverStationLCD::m_instance = NULL;
 
 /**

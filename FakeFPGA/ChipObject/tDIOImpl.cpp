@@ -67,13 +67,13 @@ namespace nFPGA {
 
 	void tDIO_Impl::writeI2CDataToSend(unsigned int value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return;	//  I'll get to this
 	}
 
 	unsigned int tDIO_Impl::readI2CDataToSend(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;	//  I'll get to this...
 	}
 
@@ -84,7 +84,7 @@ namespace nFPGA {
 
 	unsigned short tDIO_Impl::readDO(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return digitalOutputPort;
+		return digitalOutputPort & digitalOutputState;
 	}
 
 	void tDIO_Impl::writeFilterPeriod(unsigned char bitfield_index,
@@ -172,45 +172,44 @@ namespace nFPGA {
 	nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus tDIO_Impl::readI2CStatus(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			printf("Please no I2C\n");
+			printf("Please no I2C\t(%s)\n", __FUNCTION__);
 			nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus res = nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus();
 			return res;
 	}
 
 	unsigned char tDIO_Impl::readI2CStatus_Transaction(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;
 	}
 
 	bool tDIO_Impl::readI2CStatus_Done(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return true;
 	}
 
 	bool tDIO_Impl::readI2CStatus_Aborted(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return true;
 	}
 
 	unsigned int tDIO_Impl::readI2CStatus_DataReceivedHigh(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;
 	}
 
 	unsigned int tDIO_Impl::readI2CDataReceived(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;
 	}
 
 	unsigned short tDIO_Impl::readDI(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
-		return 0;
+		return digitalOutputPort & ~digitalOutputState;
 	}
 
 	void tDIO_Impl::writePulseLength(unsigned char value, tRioStatusCode* status) {
@@ -261,80 +260,80 @@ namespace nFPGA {
 
 	void tDIO_Impl::writeI2CConfig(tI2CConfig value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return;
 	}
 
 	void tDIO_Impl::writeI2CConfig_Address(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			printf("Please no I2C\n");
+			printf("Please no I2C\t(%s)\n", __FUNCTION__);
 			return;
 	}
 
 	void tDIO_Impl::writeI2CConfig_BytesToRead(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			printf("Please no I2C\n");
+			printf("Please no I2C\t(%s)\n", __FUNCTION__);
 			return;
 	}
 
 	void tDIO_Impl::writeI2CConfig_BytesToWrite(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			printf("Please no I2C\n");
+			printf("Please no I2C\t(%s)\n", __FUNCTION__);
 			return;
 	}
 
 	void tDIO_Impl::writeI2CConfig_DataToSendHigh(unsigned short value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			printf("Please no I2C\n");
+			printf("Please no I2C\t(%s)\n", __FUNCTION__);
 			return;
 	}
 
 	void tDIO_Impl::writeI2CConfig_BitwiseHandshake(bool value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			printf("Please no I2C\n");
+			printf("Please no I2C\t(%s)\n", __FUNCTION__);
 			return;
 	}
 
 	nFPGA::nFRC_2012_1_6_4::tDIO::tI2CConfig tDIO_Impl::readI2CConfig(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			printf("Please no I2C\n");
+			printf("Please no I2C\t(%s)\n", __FUNCTION__);
 			nFPGA::nFRC_2012_1_6_4::tDIO::tI2CConfig cfg = nFPGA::nFRC_2012_1_6_4::tDIO::tI2CConfig();
 			return cfg;
 	}
 
 	unsigned char tDIO_Impl::readI2CConfig_Address(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;
 	}
 
 	unsigned char tDIO_Impl::readI2CConfig_BytesToRead(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;
 	}
 
 	unsigned char tDIO_Impl::readI2CConfig_BytesToWrite(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;
 	}
 
 	unsigned short tDIO_Impl::readI2CConfig_DataToSendHigh(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return 0;
 	}
 
 	bool tDIO_Impl::readI2CConfig_BitwiseHandshake(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return false;
 	}
 
@@ -414,7 +413,7 @@ namespace nFPGA {
 
 	void tDIO_Impl::strobeI2CStart(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		printf("Please no I2C\n");
+		printf("Please no I2C\t(%s)\n", __FUNCTION__);
 		return;
 	}
 
