@@ -47,6 +47,7 @@ extern "C" {
 	*/
 	int EXPORT_FUNC getDynamicControlData(uint8_t type, char *dynamicData,
 		int32_t maxLength, int wait_ms) {
+			GetFakeNetComm()->getDynamicData(type,dynamicData, maxLength);
 			return 0;
 	}
 

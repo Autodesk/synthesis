@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "crc32.h"
 #include "FRCFakeNetComm.h"
+#include "DriverStationEnhancedIO.h"
 
 extern "C" {
 	FRCNetImpl *frcNetInstance = NULL;
@@ -90,7 +91,10 @@ int FRCNetImpl::runThread() {
 	}
 
 	char buffer[1024];
-
+	for (int i = 0; i < 32; i++)
+	{
+		memset (&lastDynamicControlPacket [i], 0, sizeof(lastDynamicControlPacket [i]));
+	}
 	// Read from DS thread
 	while (enabled) {
 		if (resyncSem != NULL) {
@@ -105,6 +109,25 @@ int FRCNetImpl::runThread() {
 		// Handle endians
 		lastDataPacket.packetIndex = ntohs(lastDataPacket.packetIndex);
 		lastDataPacket.teamID = ntohs(lastDataPacket.teamID);
+
+		// Reading dynamic data
+		{
+			int head = 115;
+			uint8_t size;
+			uint8_t id;
+			while (head < 1024 && (size = buffer[head]) > 0) {
+				uint8_t id = buffer[head+1];
+				lastDynamicControlPacket [id].id=id;
+				lastDynamicControlPacket [id].size=size;
+				if (lastDynamicControlPacket [id].data != NULL) {
+					delete lastDynamicControlPacket [id].data;
+					lastDynamicControlPacket [id].data = NULL;
+				}
+				lastDynamicControlPacket [id].data = (uint8_t*) malloc(size +2);
+				memcpy(lastDynamicControlPacket [id].data, &buffer[head], size+2);
+				head += size;
+			}
+		}
 		readingSem.give();
 		newDataSemInternal.notify();
 		if (newDataSem != NULL) {
@@ -164,4 +187,15 @@ FRCCommonControlData FRCNetImpl::getLastPacket() {
 
 bool FRCNetImpl::waitForNewPacket(int wait_ms) {
 	return newDataSemInternal.wait(wait_ms);
+}
+
+uint8_t FRCNetImpl::getDynamicData(uint8_t type, char *dynamicData, int32_t maxLength) {
+	uint8_t len = 0;
+	readingSem.take();
+	len = lastDynamicControlPacket [type].size;
+	if (len > 0) {
+		memcpy (dynamicData, lastDynamicControlPacket [type].data,min(len+1, maxLength)); 
+	}
+	readingSem.give();
+	return len;
 }

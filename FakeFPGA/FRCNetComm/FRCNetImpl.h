@@ -30,6 +30,7 @@ private:
 	* THIS HANDLES ENDIANS!
 	*/
 	FRCCommonControlData lastDataPacket;
+	DynamicControlData lastDynamicControlPacket [32];
 	WaitSemaphore newDataSemInternal;
 	ReentrantSemaphore readingSem;
 	ReentrantSemaphore writingSem;
@@ -50,6 +51,8 @@ public:
 	void stop();
 	FRCCommonControlData getLastPacket();
 	bool waitForNewPacket(int wait_ms);
+	uint8_t getDynamicData(uint8_t type, char *dynamicData,
+		int32_t maxLength);
 };
 
 #endif

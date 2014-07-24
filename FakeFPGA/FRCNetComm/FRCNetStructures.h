@@ -40,4 +40,11 @@ struct FRCRobotControl {
 	uint16_t packetIndex;		// This is backwards endian-wise
 };
 
+typedef struct
+{
+	uint8_t size;
+	uint8_t id;
+	uint8_t *data;
+} DynamicControlData;
+
 #endif
