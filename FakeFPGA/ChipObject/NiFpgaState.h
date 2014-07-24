@@ -26,6 +26,7 @@ namespace nFPGA {
 	class tCounter_Impl;
 	class tAnalogTrigger_Impl;
 
+	// Represents and maintains instances of all the systems in the FPGA
 	class NiFpgaState: public tSystemInterface {
 		friend class tDIO_Impl;
 		friend class tAI_Impl;
@@ -55,6 +56,7 @@ namespace nFPGA {
 		NiFpgaState();
 		virtual ~NiFpgaState();
 
+		// These all just get-or-create instances of the given modules.
 		tDIO_Impl *getDIO(unsigned char module);
 		tAI_Impl *getAnalog(unsigned char module);
 		tAccumulator_Impl *getAccumulator(unsigned char sys_index);
@@ -66,6 +68,7 @@ namespace nFPGA {
 		tAnalogTrigger_Impl *getAnalogTrigger(unsigned char sys_index);
 		tAlarm_Impl *getAlarm();
 
+		/// Gets the interrupt manager
 		NiIRQ_Impl *getIRQManager();
 
 		virtual const uint16_t getExpectedFPGAVersion();

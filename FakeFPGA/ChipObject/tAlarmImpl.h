@@ -14,6 +14,7 @@ namespace nFPGA
 {
 	class NiFpgaState;
 
+	/// Broadcasts an interrupt on IRQ 28 once the specified trigger time has been reached.
 	class tAlarm_Impl :
 		public nFPGA::nFRC_2012_1_6_4::tAlarm
 	{

@@ -87,11 +87,12 @@ namespace nFPGA {
 		// Don't use this.  It is stupid.  Doesn't provide irqsAsserted
 	}
 
+	/// Background task to wait on the IRQ signal until seen, then call the handler.
 	int tInterruptManager::handlerWrapper(tInterruptManager *pInterrupt){
 		while (pInterrupt->_enabled) {
 			NiFpga_Bool failed = false;
 			uint32_t irqsAsserted = pInterrupt->_interruptMask;
-			NiFpga_WaitOnIrqs(_DeviceHandle, NULL, pInterrupt->_interruptMask, INFINITE, NULL, &failed);
+			NiFpga_WaitOnIrqs(_DeviceHandle, NULL, pInterrupt->_interruptMask, INFINITE, &irqsAsserted, &failed);
 			if (!failed && pInterrupt->_handler!=NULL) {
 				pInterrupt->handler();
 				pInterrupt->_handler(irqsAsserted, pInterrupt->_userParam);//Wth is this interrupt asserted mask

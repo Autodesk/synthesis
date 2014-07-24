@@ -166,6 +166,9 @@ namespace nFPGA {
 		virtual unsigned char readPWMValue(unsigned char reg_index,
 			tRioStatusCode *status);
 
+		/// Updates the state of the digital IO port and calls the correct interrupts.
+		/// @param nDigitalPort The new state of the digital port
+		/// @param nDigitalMask The port mask to update
 		void writeDigitalPort(unsigned short nDigitalPort, unsigned short nDigitalMask);
 	};
 

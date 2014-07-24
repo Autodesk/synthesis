@@ -61,6 +61,8 @@ namespace nFPGA {
 		virtual signed int readOutput(tRioStatusCode *status);
 		virtual void strobeLatchOutput(tRioStatusCode *status);
 
+		/// Callback to set the sensors to the given state and call any interrupts.
+		/// @param values The new sensor state
 		void updateValues(signed int values[kNumScanListElements]);
 	};
 }

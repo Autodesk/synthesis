@@ -15,6 +15,8 @@ public:
 
 	}
 
+	/// Signals all the tasks waiting on any of the interrupts specified by the mask.
+	/// @param mask The bitfield of interrupts to signal
 	void signal(uint32_t mask) {
 		waitQueueMutex.take();
 		lastSignal = mask;
@@ -28,6 +30,11 @@ public:
 		waitQueueMutex.give();
 	}
 
+	/// Waits for a signal on any of the interrupts specified by the mask.
+	/// @param mask The bitfield of interrupts to signal
+	/// @param time The maximum wait time for a signal in milliseconds
+	/// @param signaled Optional pointer that the signal's mask is written to
+	/// @param timedout Optional pointer that the specifies if the function timed out
 	void waitFor(uint32_t mask, unsigned long time = INFINITE, uint32_t *signaled = NULL, uint8_t *timedout = NULL) {
 		WaitSemaphore *sig = new WaitSemaphore();
 		// Add signals...
@@ -43,6 +50,7 @@ public:
 		if (timedout != NULL) {
 			*timedout = !success;
 		}
+		if (!success) return;
 		// Remove signals
 		waitQueueMutex.take();
 		if (signaled != NULL){
@@ -60,6 +68,9 @@ public:
 		}
 		waitQueueMutex.give();
 		delete sig;
+		if (timedout != NULL) {
+			*timedout = false;
+		}
 	}
 };
 
