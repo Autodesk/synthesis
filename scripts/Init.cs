@@ -50,7 +50,7 @@ public class Init : MonoBehaviour
 		
 				PWMAssignments = MotorInit.assignListOfMotors (skeleton);
 
-				//foreach (KeyValuePair<int, UnityRigidNode> node in PWMAssignments) {
+				//foreach (KeyValuePair<int, List<UnityRigidNode>> node in PWMAssignments) {
 				//		DriveTrain.initiateMecanum (node.Value);
 				//}
 		
@@ -66,7 +66,10 @@ public class Init : MonoBehaviour
 		{
 				if (Input.anyKey) {
 					//DriveTrain.driveSwerve(PWMAssignments, 5, 10);
-					DriveTrain.discoDrive(PWMAssignments, 1,2,3,4);
+					//DriveTrain.discoDrive(PWMAssignments, 1,2,3,4);
+					//DriveTrain.swerveDrive(PWMAssignments, 5, 10);
+					//DriveTrain.MecanumDrive(PWMAssignments,40,1,2,3,4);
+					DriveTrain.TankDrive(PWMAssignments, 40, 1,2,3,4);
 				} else {
 						DriveTrain.stopAllWheelColliders (PWMAssignments);
 				}
