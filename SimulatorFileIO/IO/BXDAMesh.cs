@@ -75,7 +75,7 @@ public class BXDAMesh
         foreach (BXDASubMesh mesh in meshes)
         {
             int vertCount = mesh.verts.Length / 3;
-            byte meshFlags = (byte)((mesh.norms != null ? 4 : 0));
+            byte meshFlags = (byte)((mesh.norms != null ? 1 : 0));
 
             writer.Write(meshFlags);
             writer.Write(vertCount);           
@@ -158,10 +158,11 @@ public class BXDAMesh
 
             int surfaceCount = reader.ReadInt32();
 
+
+
             for (int i = 0; i < surfaceCount; i++)
             {
                 BXDASurface nextSurface = new BXDASurface();
-                Byte surfaceFlags = reader.ReadByte();
 
                 nextSurface.hasColor = reader.ReadBoolean();
 
