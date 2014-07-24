@@ -119,6 +119,7 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         {
             wrapped.asmJoint.LinearPositionEndLimit.Value = linearLimitEnd;
         }
+
         wrapped.asmJoint.HasAngularPositionLimits = hasAngularLimit;
         if (hasAngularLimit)
         {
@@ -162,7 +163,6 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         {
             angularLimitLow = (float)wrapped.asmJoint.AngularPositionStartLimit.Value;
             angularLimitHigh = (float)wrapped.asmJoint.AngularPositionEndLimit.Value;
-            wrapped.asmJoint.AngularPosition.Value = (wrapped.asmJoint.AngularPositionStartLimit.Value + wrapped.asmJoint.AngularPositionEndLimit.Value) / 2.0;
         }
         currentAngularPosition = wrapped.asmJoint.AngularPosition != null ? (float)wrapped.asmJoint.AngularPosition.Value : 0;
 
@@ -172,16 +172,10 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         if (hasLinearStartLimit)
         {
             linearLimitStart = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
-            wrapped.asmJoint.LinearPosition = (float)linearLimitStart - .01;
         }
         if (hasLinearEndLimit)
         {
             linearLimitEnd = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
-            wrapped.asmJoint.LinearPosition = (float)linearLimitEnd + .01;
-        }
-        if (hasLinearStartLimit && hasLinearEndLimit)
-        {
-            wrapped.asmJoint.LinearPosition = ((float)linearLimitStart + (float)linearLimitEnd) / 2;
         }
         wrapped.asmJoint.LinearPosition = wrapped.asmJoint.LinearPosition;
     }
