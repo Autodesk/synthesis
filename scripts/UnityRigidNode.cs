@@ -9,8 +9,8 @@ public class UnityRigidNode : RigidNode_Base
 		protected WheelDriverMeta wheel;
 		private BXDAMesh mesh;
 		private SoftJointLimit low, high, linear;
-		private float center, current;
-			
+		private float center;
+
 		public delegate void HandleJoint (ConfigurableJoint jointSub);
 
 		public delegate void HandleWheel (GameObject center);
@@ -60,9 +60,8 @@ public class UnityRigidNode : RigidNode_Base
 		private void CreateWheel (RotationalJoint_Base center, HandleWheel wheelC)
 		{
 				wCollider = new GameObject (unityObject.name + " Collider");
-				
 				wCollider.transform.parent = GetParent () != null ? ((UnityRigidNode)GetParent ()).unityObject.transform : unityObject.transform;
-				wCollider.transform.position = auxFunctions.ConvertV3 (center.basePoint);
+				wCollider.transform.position = auxFunctions.ConvertV3 (wheel.center);
 				wCollider.AddComponent<WheelCollider> ();
 				wCollider.GetComponent<WheelCollider> ().radius = wheel.radius + (wheel.radius * 0.15f);
 				//wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
@@ -81,7 +80,7 @@ public class UnityRigidNode : RigidNode_Base
 						return;
 				} else {
 						limit [1] = (limit [2] - limit [1]) / 2.0f;
-						limit [2] = limit [1] < 0.0f ? Mathf.Abs(limit [1]) : -(limit [1]);  
+						limit [2] = limit [1] < 0.0f ? Mathf.Abs (limit [1]) : -(limit [1]);  
 						low.limit = limit [1];
 						high.limit = limit [2];
 				}
@@ -100,9 +99,8 @@ public class UnityRigidNode : RigidNode_Base
 		private void LinearLimit (Dictionary<string, float> limit)
 		{
 				center = (limit ["end"] - limit ["start"]) / 2.0f;
-				current = center - limit ["current"];
-				Debug.Log ("center: " + center + " current: " + current);
-				subObject.transform.position = subCollider.transform.position = joint.axis * current;
+				//current = center - limit ["current"];
+				//subObject.transform.position = subCollider.transform.position = joint.axis * current;
 				
 				linear.limit = Mathf.Abs (center);
 				joint.linearLimit = linear;
