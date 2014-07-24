@@ -1,6 +1,6 @@
 using System;
 
-namespace ErrorHandling
+namespace ExceptionHandling
 {
 		// I am simply creating my own exception. This seems fairly self explanatory
 		public class PWMAssignedException: Exception
