@@ -13,54 +13,26 @@
 #include "StateNetwork/StatePacket.h"
 #include "StateNetwork/StateNetworkServer.h"
 #include "FRCNetComm/FRCNetImpl.h"
+#include "emulator.h"
 
-#ifndef __ROBOTDEMO
-#define __ROBOTDEMO
-class RobotDemo : public SimpleRobot {
-private:
-	RobotDrive drive;
-	Joystick joy;
-	Encoder enc;
-public:
-	RobotDemo(void): drive(1,2), joy(1),enc(1,2) {
-	}
-	void Autonomous(void) {
-		printf("Entering autonomous!\n");
-		drive.SetSafetyEnabled(false);
-	}
-	void OperatorControl(void) {
-		printf("Entering teleop!\n");
-		drive.SetSafetyEnabled(true);
-		while (IsOperatorControl() && !IsDisabled()) {
-			drive.ArcadeDrive(joy);
-			printf("Buttons:\t");
-			for (int i =0; i<16; i++){
-				printf("%d ", joy.GetRawButton(i));
-			}
-			printf("\n");
-			Sleep(15);
+int StartEmulator() {
+	printf("Start now!\n");
+	NiFpga_Initialize();
+	printf("Init FPGA\n");
+	FRC_UserProgram_StartupLibraryInit();
+	StatePacket pack = StatePacket();
+	StateNetworkServer serv = StateNetworkServer();
+	serv.Open();
+	tRioStatusCode status;
+	while (true) {
+		for (int i = 0; i<8; i++){
+			float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
+			pack.pwmValues[i] = curr;
+			printf("%.04f\t", pack.pwmValues[i]);
 		}
+		printf("\n");
+		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
+		serv.SendStatePacket(pack);
+		sleep_ms(50);
 	}
-};
-START_ROBOT_CLASS(RobotDemo)
-#endif
-
-	int main(int argc, char ** argv) {
-		printf("Start now!\n");
-		NiFpga_Initialize();
-		printf("Init FPGA\n");
-		FRC_UserProgram_StartupLibraryInit();
-		StatePacket pack = StatePacket();
-		StateNetworkServer serv = StateNetworkServer();
-		serv.Open();
-		tRioStatusCode status;
-		while (true) {
-			for (int i = 0; i<8; i++){
-				float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
-				pack.pwmValues[i] = curr;
-			}
-			pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
-			serv.SendStatePacket(pack);
-			sleep_ms(50);
-		}
 }

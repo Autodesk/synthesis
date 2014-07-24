@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Aardvark-WPILib", "Aardvark
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FakeFPGA", "FakeFPGA\FakeFPGA.vcxproj", "{64B9921C-8B16-48DA-AECB-EFBCB1252CA8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleTemplate", "SimpleTemplate\SimpleTemplate.vcxproj", "{777BF122-057B-4C8E-A629-D1FF46AB7B7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -19,6 +21,10 @@ Global
 		{64B9921C-8B16-48DA-AECB-EFBCB1252CA8}.Debug|Win32.Build.0 = Debug|Win32
 		{64B9921C-8B16-48DA-AECB-EFBCB1252CA8}.Release|Win32.ActiveCfg = Release|Win32
 		{64B9921C-8B16-48DA-AECB-EFBCB1252CA8}.Release|Win32.Build.0 = Release|Win32
+		{777BF122-057B-4C8E-A629-D1FF46AB7B7E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{777BF122-057B-4C8E-A629-D1FF46AB7B7E}.Debug|Win32.Build.0 = Debug|Win32
+		{777BF122-057B-4C8E-A629-D1FF46AB7B7E}.Release|Win32.ActiveCfg = Release|Win32
+		{777BF122-057B-4C8E-A629-D1FF46AB7B7E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
