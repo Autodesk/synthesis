@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using ErrorHandling;
+using ExceptionHandling;
 
 public class Controls : MonoBehaviour
 {
