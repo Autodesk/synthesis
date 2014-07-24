@@ -169,13 +169,15 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         hasLinearStartLimit = wrapped.asmJoint.HasLinearPositionStartLimit;
         hasLinearEndLimit = wrapped.asmJoint.HasLinearPositionEndLimit;
 
-        if (hasLinearStartLimit)
+        if (hasLinearStartLimit && hasLinearEndLimit)
         {
             linearLimitStart = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
-        }
-        if (hasLinearEndLimit)
-        {
             linearLimitEnd = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
+
+        }
+        else
+        {
+            throw new Exception("Joints with linear motion need two limits.");
         }
         wrapped.asmJoint.LinearPosition = wrapped.asmJoint.LinearPosition;
     }
