@@ -36,6 +36,9 @@ public class SurfaceExporter
     private double[] tolerances = new double[10];
     private int tmpToleranceCount = 0;
 
+    private List<BXDAMesh.BXDASurface> tmpSurfaces = new List<BXDAMesh.BXDASurface>();
+    private BXDAMesh.BXDASurface nextSurface;
+
     /// <summary>
     /// Copies mesh information for the given surface body into the mesh storage structure.
     /// </summary>
@@ -44,6 +47,8 @@ public class SurfaceExporter
     /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
     public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
+        BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
+
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
         int bestIndex = -1;
         for (int i = 0; i < tmpToleranceCount; i++)
@@ -91,18 +96,35 @@ public class SurfaceExporter
         BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
         subObject.verts = new double[postVertCount * 3];
         subObject.norms = new double[postVertCount * 3];
-        subObject.textureCoords = new double[postVertCount * 2];
-        subObject.colors = new uint[postVertCount];
-        subObject.indicies = new int[postFacetCount * 3];
         Array.Copy(postVerts, 0, subObject.verts, 0, postVertCount * 3);
         Array.Copy(postNorms, 0, subObject.norms, 0, postVertCount * 3);
-        Array.Copy(postTextureCoords, 0, subObject.textureCoords, 0, postVertCount * 2);
-        Array.Copy(postIndicies, 0, subObject.indicies, 0, postFacetCount * 3);
-        Array.Copy(postColors, 0, subObject.colors, 0, postVertCount);
         Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
+        subObject.surfaces = new List<BXDAMesh.BXDASurface>(tmpSurfaces);
+        outputMesh.meshes.Add(subObject);
+
         postVertCount = 0;
         postFacetCount = 0;
-        outputMesh.meshes.Add(subObject);
+        tmpSurfaces = new List<BXDAMesh.BXDASurface>();
+
+        foreach(BXDAMesh.BXDASurface surface in subObject.surfaces)
+        {
+            int facetCount = surface.indicies.Length / 3;
+
+            for (int i = 0; i < facetCount; i++)
+            {
+                int fI = i * 3;
+                // Integrity check
+                for (int j = 0; j < 3; j++)
+                {
+                    if (surface.indicies[fI + j] < 0 || surface.indicies[fI + j] >= subObject.verts.Length)
+                    {
+                        Console.WriteLine("Tris #" + i + " failed.  Index is " + surface.indicies[fI + j]);
+                        Console.ReadLine();
+                    }
+                }
+            }
+        }
+        
     }
 
     /// <summary>
@@ -125,23 +147,25 @@ public class SurfaceExporter
         Array.Copy(tmpVerts, 0, postVerts, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpNorms, 0, postNorms, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpTextureCoords, 0, postTextureCoords, postVertCount * 2, tmpVertCount * 2);
-        uint colorVal = 0xFFFFFFFF;
-        if (assetProps.color != null)
-        {
-            colorVal = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
-        }
-        for (int i = postVertCount; i < postVertCount + tmpVertCount; i++)
-        {
-            postColors[i] = colorVal;
-        }
+
+        nextSurface = new BXDAMesh.BXDASurface();
+
+        nextSurface.color = 0xFFFFFFFF;
+
+        nextSurface.color = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
+        nextSurface.transparency = (float)assetProps.generic_transparency;
+        nextSurface.translucency = (float)assetProps.generic_translucency;
 
         // Now we must manually copy the indicies
         int indxOffset = postFacetCount * 3;
         for (int i = 0; i < tmpFacetCount * 3; i++)
         {
-            postIndicies[i + indxOffset] = tmpIndicies[i] + postVertCount - 1;
+            nextSurface.indicies[i + indxOffset] = tmpIndicies[i] + postVertCount - 1;
             // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
         }
+
+        tmpSurfaces.Add(nextSurface);
+
         postFacetCount += tmpFacetCount;
         postVertCount += tmpVertCount;
     }

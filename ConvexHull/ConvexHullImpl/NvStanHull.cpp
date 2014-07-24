@@ -2433,7 +2433,7 @@ NxI32 calchullgen(float3 *verts,NxI32 verts_count, NxI32 vlimit)
 	NxI32 ilimit = vlimit;
 	while(vlimit >0 && (te=extrudable(epsilon)))
 	{
-		printf("Calc hull step %d of %d\t%f%%\n", (ilimit-vlimit), 180, 100.0f * (1.0f - ((float)vlimit/180.0f));
+		printf("Calc hull step %d of %d\t%f%%\n", (ilimit-vlimit), 180, 100.0f * (1.0f - ((float)vlimit/180.0f)));
 		int3 ti=*te;
 		NxI32 v=te->vmax;
 		assert(!isextreme[v]);  // wtf we've already done this vertex

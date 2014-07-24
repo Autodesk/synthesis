@@ -288,8 +288,6 @@ public class ConvexHullCalculator
     {
         Simplify(ref verts, ref vertCount, ref inds, ref trisCount);
         BXDAMesh.BXDASubMesh sub = new BXDAMesh.BXDASubMesh();
-        sub.colors = null;
-        sub.textureCoords = null;
         sub.norms = null;
 
         sub.verts = new double[verts.Length];
@@ -298,14 +296,20 @@ public class ConvexHullCalculator
         {
             sub.verts[i2] = verts[i2];
         }
-        sub.indicies = new int[inds.Length];
+
+        BXDAMesh.BXDASurface collisionSurface = new BXDAMesh.BXDASurface();
+
+        collisionSurface.indicies = new int[inds.Length];
         for (uint i2 = 0; i2 < trisCount; i2++)
         {
             uint off = i2 * 3;
-            sub.indicies[off + 0] = (int) inds[off + 0];
-            sub.indicies[off + 1] = (int) inds[off + 1];
-            sub.indicies[off + 2] = (int) inds[off + 2];
+            collisionSurface.indicies[off + 0] = (int) inds[off + 0];
+            collisionSurface.indicies[off + 1] = (int) inds[off + 1];
+            collisionSurface.indicies[off + 2] = (int) inds[off + 2];
         }
+
+        sub.surfaces = new List<BXDAMesh.BXDASurface>();
+        sub.surfaces.Add(collisionSurface);
 
         return sub;
     }
@@ -317,7 +321,10 @@ public class ConvexHullCalculator
         foreach (BXDAMesh.BXDASubMesh mesh in meshes)
         {
             vertCount += mesh.verts.Length;
-            indexCount += mesh.indicies.Length;
+            foreach (BXDAMesh.BXDASurface surface in mesh.surfaces)
+            {
+                indexCount += surface.indicies.Length;
+            }
         }
         float[] copy = new float[vertCount];
         uint[] index = new uint[indexCount];
@@ -329,11 +336,16 @@ public class ConvexHullCalculator
             {
                 copy[(vertCount * 3) + i] = (float) mesh.verts[i];
             }
-            for (int i = 0; i < mesh.indicies.Length; i++)
+
+            foreach (BXDAMesh.BXDASurface surface in mesh.surfaces)
             {
-                index[indexCount + i] = (uint) (mesh.indicies[i] + vertCount);
+                for (int i = 0; i < surface.indicies.Length; i++)
+                {
+                    index[indexCount + i] = (uint)(surface.indicies[i] + vertCount);
+                }
+
+                indexCount += surface.indicies.Length;
             }
-            indexCount += mesh.indicies.Length;
             vertCount += mesh.verts.Length / 3;
         }
 
