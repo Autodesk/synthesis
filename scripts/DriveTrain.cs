@@ -52,13 +52,12 @@ public class DriveTrain : MonoBehaviour
 				}
 		}
 
-		public static void initiateMecanum (UnityRigidNode wheel)
+		public static void initiateMecanum (List<UnityRigidNode> wheels)
 		{
-
-				//wheel.GetWheelCollider ().transform.rotation = Quaternion.Euler(45, 90, 270);
-				wheel.GetWheelCollider ().transform.Rotate (0, -315, 0);
-
-				// Friction stuff will go here
+				foreach (UnityRigidNode wheel in wheels) {
+						//wheel.GetWheelCollider ().transform.rotation = Quaternion.Euler(45, 90, 270);
+						wheel.GetWheelCollider ().transform.Rotate (0, -315, 0);
+				}
 		}
 
 		// Combs through all of the skeleton data and finds the pwm port numbers of each wheel (by looking through the UnityRigidNode that it is attatched to)
@@ -158,7 +157,7 @@ public class DriveTrain : MonoBehaviour
 
 
 		// Example Tank drive for 4-wheeled vehicles
-		public static void tankDrive (Dictionary<int, List<UnityRigidNode>> wheels, float speed, int frontLeft, int frontRight, int backLeft, int backRight)
+		public static void TankDrive (Dictionary<int, List<UnityRigidNode>> wheels, float speed, int frontLeft, int frontRight, int backLeft, int backRight)
 		{
 
 				// Equations
@@ -189,7 +188,7 @@ public class DriveTrain : MonoBehaviour
 		}
 
 		// Example Drive Controller for swerve drive. I assume you are not going to do a swerve mecanum drive, but who knows...
-		public static void swerveDrive (Dictionary<int, List<UnityRigidNode>> wheels, float speed, float rotationSpeed)
+		public static void SwerveDrive (Dictionary<int, List<UnityRigidNode>> wheels, float speed, float rotationSpeed)
 		{
 				// Each wheel will be driven, with a given speed, and roated, with a given rotation speed, in the same manner.
 				foreach (KeyValuePair<int, List<UnityRigidNode>> wheelSet in wheels) {
@@ -222,7 +221,7 @@ public class DriveTrain : MonoBehaviour
 				}
 		}
 
-		public void MecanumDrive (Dictionary<int, List<UnityRigidNode>> wheels, float speed, int frontLeft, int frontRight, int backLeft, int backRight)
+		public static void MecanumDrive (Dictionary<int, List<UnityRigidNode>> wheels, float speed, int frontLeft, int frontRight, int backLeft, int backRight)
 		{
 		
 				// Equations
@@ -253,7 +252,7 @@ public class DriveTrain : MonoBehaviour
 		}
 
 		// Don't Question It
-		public static void discoDrive (Dictionary<int, List<UnityRigidNode>> dictionary, int frontLeft, int frontRight, int backLeft, int backRight)
+		public static void DiscoDrive (Dictionary<int, List<UnityRigidNode>> dictionary, int frontLeft, int frontRight, int backLeft, int backRight)
 		{
 				setListOfMotors (dictionary [frontLeft], -150, 0);
 				setListOfMotors (dictionary [backLeft], -150, 0);
@@ -280,11 +279,10 @@ public class otherJoints : MonoBehaviour
 		}
 	
 		// Delegate Experimentation. These may or may not be helpful in the future. (I still have yet to master lambdas, but I will someday)
-		public delegate void mydelegate (UnityRigidNode node,float speed);
+		//public static delegate void mydelegate (UnityRigidNode node,float speed);
 
-		static mydelegate setServo = new mydelegate (setConfigJointMotorX);
-		static mydelegate extendPneumatic = new mydelegate (setConfigJointMotorX);
-		static mydelegate retractPneumatic = new mydelegate (setConfigJointMotorX);
+		//static mydelegate setServo = new mydelegate (setConfigJointMotorX);
+		//static mydelegate setPneumatic = new mydelegate (setConfigJointMotorX);
 
 		public static void freeXDrive (UnityRigidNode node)
 		{
@@ -379,7 +377,7 @@ public class MotorInit : MonoBehaviour
 										} else if (solenoidData.Key.Item1 == unityNode.GetPortB () || solenoidData.Key.Item2 == unityNode.GetPortB ()) {
 												throw new SolenoidConflictException (unityNode.GetPortB ());
 										} else {
-												output [new Tuple<int, int>(unityNode.GetPortA (), unityNode.GetPortB ())] = unityNode;
+												output [new Tuple<int, int> (unityNode.GetPortA (), unityNode.GetPortB ())] = unityNode;
 										}
 					
 								}
@@ -388,10 +386,32 @@ public class MotorInit : MonoBehaviour
 				return output;
 		}
 	
-		// Soon
-		public void updateAll ()
+		// Updates a wheel at the given PWM port with a given value
+		// Note that this also returns true or false, because if a motor is set to 
+		public void updateWheel (Dictionary<int, UnityRigidNode> wheels, int givenPWM, float speed)
 		{
-		
+				if (speed != 0) {
+						DriveTrain.setMotor (wheels [givenPWM], speed, 0);
+						
+				} else {
+						DriveTrain.setMotor (wheels [givenPWM], 0, 100);
+				}
+		}
+
+		// Defaults to a value of 10 (60 PSI)... This is not a realistic value, because velocity depends on the volume of the tank as well as the air pressure. We can figure this out, but it might be something for super happy fun time.
+		public void updatePiston (Dictionary<Tuple<int, int>, UnityRigidNode> piston, float pistonPort1, float pistonPort2)
+		{
+				otherJoints.setConfigJointMotorX (piston [new Tuple<int, int> ((int)pistonPort1, (int)pistonPort2)], 10);
+		}
+
+		public void updateAllWheels (Dictionary<int, UnityRigidNode> wheels, float[] pwm)
+		{
+				for (int i = 0; i<pwm.Length; i++) {
+						if (wheels.ContainsKey (i+1)) {
+								updateWheel (wheels, i+1, pwm [i]);
+						}
+				}
+				// For each float in struct?
+				// I may have to do this explicitly
 		}
 }
-
