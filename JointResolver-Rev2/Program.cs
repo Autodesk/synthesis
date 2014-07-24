@@ -40,13 +40,9 @@ static class Program
                 {
                     joint.Definition.LinearPosition = (joint.Definition.LinearPositionStartLimit.Value + joint.Definition.LinearPositionEndLimit.Value) / 2.0;
                 }
-                else if (joint.Definition.HasLinearPositionStartLimit)
+                else
                 {
-                    joint.Definition.LinearPosition = joint.Definition.LinearPositionStartLimit.Value;
-                }
-                else if (joint.Definition.HasLinearPositionEndLimit)
-                {
-                    joint.Definition.LinearPosition.Value = joint.Definition.LinearPositionEndLimit.Value;
+                    throw new Exception("Joints with linear motion require limits.");
                 }
             }
         }
@@ -68,10 +64,7 @@ static class Program
 
         foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
         {
-            if (component.SubOccurrences.Count != 0) //Only need to move joints in sub assembies.
-            {
-                CenterAllJoints(component);
-            }
+            CenterAllJoints(component);            
         }
         Console.WriteLine("All joints centered");
 
