@@ -9,6 +9,13 @@ public class ArrayUtilities
     public delegate T MakeVector3<T>(double x, double y, double z);
     public delegate T MakeColor<T>(byte r, byte g, byte b, byte a);
 
+    /// <summary>
+    /// Wraps the given array of 2D vector elements into an array of 2D vectors
+    /// </summary>
+    /// <typeparam name="T">The type to create</typeparam>
+    /// <param name="maker">The delegate to create an instance</param>
+    /// <param name="array">The vector element array</param>
+    /// <returns>The wrapped array</returns>
     public static T[] WrapArray<T>(MakeVector2<T> maker, double[] array)
     {
         T[] results = new T[array.Length / 2];
@@ -19,6 +26,13 @@ public class ArrayUtilities
         return results;
     }
 
+    /// <summary>
+    /// Wraps the given array of 3D vector elements into an array of 3D vectors
+    /// </summary>
+    /// <typeparam name="T">The type to create</typeparam>
+    /// <param name="maker">The delegate to create an instance</param>
+    /// <param name="array">The vector element array</param>
+    /// <returns>The wrapped array</returns>
     public static T[] WrapArray<T>(MakeVector3<T> maker, double[] array)
     {
         T[] results = new T[array.Length / 3];
@@ -29,6 +43,13 @@ public class ArrayUtilities
         return results;
     }
 
+    /// <summary>
+    /// Wraps the given array of 4D color elements into an array of colors
+    /// </summary>
+    /// <typeparam name="T">The type to create</typeparam>
+    /// <param name="maker">The delegate to create an instance</param>
+    /// <param name="array">The vector element array</param>
+    /// <returns>The wrapped array</returns>
     public static T[] WrapArray<T>(MakeColor<T> maker, uint[] array)
     {
         T[] results = new T[array.Length];

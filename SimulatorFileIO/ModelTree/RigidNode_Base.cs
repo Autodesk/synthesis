@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
 
+/// <summary>
+/// Factory interface so custom node types can be used with the existing IO architecture.
+/// </summary>
 public interface RigidNodeFactory
 {
-    RigidNode_Base Create();
+    RigidNode_Base Create();    // This could all be delegates or lambdas.
 }
 
+/// <summary>
+/// Simple instance of <see cref="RigidNodeFactory"/> that creates the base type of rigid node.
+/// </summary>
 public class BaseRigidNodeFactory : RigidNodeFactory
 {
     public RigidNode_Base Create()
@@ -13,6 +19,9 @@ public class BaseRigidNodeFactory : RigidNodeFactory
     }
 }
 
+/// <summary>
+/// Represents a node inside the hierarchy representing how a robot moves.
+/// </summary>
 public class RigidNode_Base
 {
     /// <summary>
@@ -21,14 +30,45 @@ public class RigidNode_Base
     /// </summary>
     public static RigidNodeFactory NODE_FACTORY = new BaseRigidNodeFactory();
 
+    /// <summary>
+    /// How far down in the hierarchy this element is.  The higher it is the farther from the root node.
+    /// </summary>
     protected int level;
+    /// <summary>
+    /// The node that represents the parent of this node.  If this is null then this is a root node.
+    /// </summary>
     private RigidNode_Base parent;
+    /// <summary>
+    /// The joint that connects this node to its parent.
+    /// </summary>
     private SkeletalJoint_Base parentConnection;
-    protected string modelFileName;
-    protected string modelFullID;
+    /// <summary>
+    /// The name of the file holding this node's model.
+    /// </summary>
+    public string modelFileName
+    {
+        get;
+        set;
+    }
+    /// <summary>
+    /// A very verbose identifier that represents the element this node is in the overall structure.
+    /// </summary>
+    public string modelFullID
+    {
+        protected get;
+        set;
+    }
 
+    /// <summary>
+    /// A mapping between each child node of this node and the joint connection between the two.
+    /// </summary>
     public Dictionary<SkeletalJoint_Base, RigidNode_Base> children = new Dictionary<SkeletalJoint_Base, RigidNode_Base>();
 
+    /// <summary>
+    /// Adds the given node as a child of this node.
+    /// </summary>
+    /// <param name="joint">The joint connecting this node to the child</param>
+    /// <param name="child">The child node</param>
     public void AddChild(SkeletalJoint_Base joint, RigidNode_Base child)
     {
         children.Add(joint, child);
@@ -37,45 +77,49 @@ public class RigidNode_Base
         child.level = this.level + 1;
     }
 
+    /// <summary>
+    /// Gets the parent node for this node.
+    /// </summary>
+    /// <returns>The parent node, or null if this node is a root node</returns>
     public RigidNode_Base GetParent()
     {
         return parent;
     }
 
+    /// <summary>
+    /// Gets the skeletal joint connecting this node to its parent.
+    /// </summary>
+    /// <remarks>
+    /// This should always be non-null when the current node isn't a root node.
+    /// </remarks>
+    /// <returns>The joint connection, or null if no connection exists.</returns>
     public SkeletalJoint_Base GetSkeletalJoint()
     {
         return parentConnection;
     }
 
-    public string GetModelFileName()
-    {
-        return modelFileName;
-    }
-
-    public virtual string GetModelID()
-    {
-        return modelFullID;
-    }
-
-    public void SetModelFileName(string s)
-    {
-        modelFileName = s;
-    }
-
-    public void SetModelID(string s)
-    {
-        modelFullID = s;
-    }
-
+    /// <summary>
+    /// Gets the actual object visually representing this rigid node if such an item exists.
+    /// </summary>
+    /// <returns>The representation, or null</returns>
     public virtual object GetModel()
     {
         return null;
     }
 
+    /// <summary>
+    /// Gets a very verbose identifier that represents the element this node is in the overall structure.
+    /// </summary>
+    /// <returns>The model identifier</returns>
+    public virtual string GetModelID()
+    {
+        return modelFullID;
+    }
+
     public override string ToString()
     {
         string result = new string('\t', level) + "Rigid Node" + System.Environment.NewLine;
-        result += new string('\t', level) + "ID: " + GetModelID() + System.Environment.NewLine;
+        result += new string('\t', level) + "ID: " + modelFullID + System.Environment.NewLine;
         if (parentConnection != null && parentConnection.cDriver != null)
         {
             result += new string('\t', level) + "Driver: " + ("\n" + parentConnection.cDriver.ToString()).Replace("\n", "\n" + new string('\t', level + 1));
@@ -93,6 +137,21 @@ public class RigidNode_Base
         return result;
     }
 
+    /// <summary>
+    /// Gets a list of all the rigid nodes at or below this item in the tree.
+    /// </summary>
+    /// <returns>The list of nodes</returns>
+    public List<RigidNode_Base> ListAllNodes()
+    {
+        List<RigidNode_Base> list = new List<RigidNode_Base>();
+        ListAllNodes(list);
+        return list;
+    }
+
+    /// <summary>
+    /// Gets a list of all the rigid nodes at or below this item in the tree.
+    /// </summary>
+    /// <param name="list">The list to write the nodes to</param>
     public void ListAllNodes(List<RigidNode_Base> list)
     {
         list.Add(this);

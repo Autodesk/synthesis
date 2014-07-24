@@ -14,9 +14,9 @@ public class BXDJSkeleton
         baseNode.ListAllNodes(nodes);
         for (int i = 0; i < nodes.Count; i++)
         {
-            if (nodes[i].GetModelFileName() == null)
+            if (nodes[i].modelFileName == null)
             {
-                nodes[i].SetModelFileName("node_" + i + ".bxda");
+                nodes[i].modelFileName = ("node_" + i + ".bxda");
             }
         }
     }
@@ -70,9 +70,9 @@ public class BXDJSkeleton
         for (int i = 0; i < nodes.Count; i++)
         {
             writer.Write(parentID[i]);
-            nodes[i].SetModelFileName(FileUtilities.SanatizeFileName("node_" + i + ".bxda"));
+            nodes[i].modelFileName = (FileUtilities.SanatizeFileName("node_" + i + ".bxda"));
 
-            writer.Write(nodes[i].GetModelFileName());
+            writer.Write(nodes[i].modelFileName);
             writer.Write(nodes[i].GetModelID());
             if (parentID[i] >= 0)
             {
@@ -121,8 +121,8 @@ public class BXDJSkeleton
             {
                 nodes[i] = RigidNode_Base.NODE_FACTORY.Create();
                 int parent = reader.ReadInt32();
-                nodes[i].SetModelFileName(reader.ReadString());
-                nodes[i].SetModelID(reader.ReadString());
+                nodes[i].modelFileName = (reader.ReadString());
+                nodes[i].modelFullID = (reader.ReadString());
                 if (parent != -1)
                 {
                     driveIndex[i] = reader.ReadInt32();

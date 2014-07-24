@@ -114,7 +114,7 @@ static class Program
                 BXDJSkeleton.SetupFileNames(baseNode);
                 foreach (RigidNode_Base node in nodes)
                 {
-                    if (node is RigidNode && node.GetModel() != null && node.GetModelFileName() != null && node.GetModel() is CustomRigidGroup)
+                    if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)
                     {
                         Console.WriteLine("Running deffered calculations for " + node.GetModelID());
                         ((RigidNode) node).DoDeferredCalculations();
@@ -126,7 +126,7 @@ static class Program
                         Console.WriteLine("Computing colliders for " + node.GetModelID());
                         output.colliders.Clear();
                         output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));
-                        output.WriteBXDA(pathBase + "\\" + node.GetModelFileName());
+                        output.WriteBXDA(pathBase + "\\" + node.modelFileName);
                     }
                 }
             }

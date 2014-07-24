@@ -1,4 +1,5 @@
-﻿// Yay or nay to fancy things
+﻿// Yay or nay to fancy things.
+// If this is defined then the program will show the simplification progress on each hull.
 // #define FANCY_SIMPLIFY_GRAPHICS
 
 using System;
@@ -6,23 +7,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using MIConvexHull;
 using Inventor;
 using System.Collections;
 
+/// <summary>
+/// Computes and simplifies convex hulls for BXDA meshes.
+/// </summary>
 public class ConvexHullCalculator
 {
+    /// <summary>
+    /// Maximum number of triangles a convex hull is allowed to have.
+    /// </summary>
+    private const int CONVEX_HULL_FACET_LIMIT = 64;
 
+    /// <summary>
+    /// Computes a convex hull, or convex hull set for the given mesh.
+    /// </summary>
+    /// <param name="mesh">Mesh to compute for</param>
+    /// <param name="decompose">If a set of convex hulls is required</param>
+    /// <returns>The resulting list of convex hulls.</returns>
     public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh mesh, bool decompose = false)
     {
         return GetHull(mesh.meshes, decompose);
     }
 
+    /// <summary>
+    /// Computes a convex hull, or convex hull set for the given meshes.
+    /// </summary>
+    /// <param name="mesh">Meshes to compute for</param>
+    /// <param name="decompose">If a set of convex hulls is required</param>
+    /// <returns>The resulting list of convex hulls.</returns>
     public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh.BXDASubMesh mesh, bool decompose = false)
     {
         return GetHull(new BXDAMesh.BXDASubMesh[] { mesh }, decompose);
     }
 
+    /// <summary>
+    /// Represents a vertex with a list of attached faces and an index buffer item.
+    /// </summary>
     private class SimplificationVertex
     {
         public int finalIndex = -99;
@@ -36,13 +58,19 @@ public class ConvexHullCalculator
             pos[2] = z;
         }
     }
+
+    /// <summary>
+    /// Represents a face to be simplified, containing edge lengths.
+    /// </summary>
     private class SimplificationFace : IComparable<SimplificationFace>
     {
         public SimplificationVertex[] verts = new SimplificationVertex[3];
         public float[] edgeLengths = new float[3];
         public int minEdge = 0;
-        public int tmpHead;
 
+        /// <summary>
+        /// Updates the cached edge lengths
+        /// </summary>
         public void updateInfo()
         {
             float best = 999999999;
@@ -62,13 +90,23 @@ public class ConvexHullCalculator
             }
         }
 
+        /// <summary>
+        /// Compare two simplification faces for the one with the smallest edge.
+        /// </summary>
+        /// <param name="other">The other face</param>
         int IComparable<SimplificationFace>.CompareTo(SimplificationFace other)
         {
-            // The best ones have coplanar neighbors.
             return edgeLengths[minEdge].CompareTo(other.edgeLengths[other.minEdge]);
         }
     }
 
+    /// <summary>
+    /// Simplifies the mesh provided, then places it back into the parameters.
+    /// </summary>
+    /// <param name="verts">The original and final verticies. (3 elements per vertex)</param>
+    /// <param name="vertCount">The original and final vertex counts.</param>
+    /// <param name="inds">The original and final index buffer.  (3 element per triangle, zero based)</param>
+    /// <param name="trisCount">The original and final triangle counts.</param>
     private static void Simplify(ref float[] verts, ref uint vertCount, ref uint[] inds, ref  uint trisCount)
     {
         // Setup edge relations, compute min edge lengths...
@@ -86,7 +124,7 @@ public class ConvexHullCalculator
             face.verts[2] = simplVerts[(int) inds[i + 2]];
             foreach (SimplificationVertex v in face.verts)
             {
-                v.faces.Add(face);
+                v.faces.Add(face);  // Make sure all verticies know their neighbors
             }
             simplFace.Add(face);
         }
@@ -182,7 +220,7 @@ public class ConvexHullCalculator
 
         // Time for shenanigans!  We are going to naively pick the shortest edge and then remove it.  Destroys two faces per loop typically.
         // Give it 2000 tries at most.
-        for (int i = 0; i < 2000 && simplFace.Count > 64; i++)
+        for (int i = 0; i < 2000 && simplFace.Count > CONVEX_HULL_FACET_LIMIT; i++)
         {
             SimplificationFace bFace = simplFace[0];
             // This is the edge to remove
@@ -284,6 +322,12 @@ public class ConvexHullCalculator
         }
     }
 
+    /// <summary>
+    /// Computes a convex hull, or convex hull set for the given meshes.
+    /// </summary>
+    /// <param name="mesh">Meshes to compute for</param>
+    /// <param name="decompose">If a set of convex hulls is required</param>
+    /// <returns>The resulting list of convex hulls.</returns>
     private static BXDAMesh.BXDASubMesh ExportMeshInternal(float[] verts, uint vertCount, uint[] inds, uint trisCount)
     {
         Simplify(ref verts, ref vertCount, ref inds, ref trisCount);
@@ -310,6 +354,12 @@ public class ConvexHullCalculator
         return sub;
     }
 
+    /// <summary>
+    /// Gets t
+    /// </summary>
+    /// <param name="meshes"></param>
+    /// <param name="decompose"></param>
+    /// <returns></returns>
     public static List<BXDAMesh.BXDASubMesh> GetHull(IEnumerable<BXDAMesh.BXDASubMesh> meshes, bool decompose = false)
     {
         int vertCount = 0;

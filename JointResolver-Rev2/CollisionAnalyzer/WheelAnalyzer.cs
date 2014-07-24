@@ -8,8 +8,6 @@ using System.Threading;
 
 class WheelAnalyzer
 {
-    public delegate void DeferredCalculation(RigidNode node);
-
     public static void StartCalculations(RigidNode node)
     {
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
