@@ -29,6 +29,7 @@ public class BXDAMesh
 
     public class BXDASurface
     {
+        public bool hasColor = false;
         public uint color;
         public float transparency;
         public float translucency;
@@ -74,9 +75,9 @@ public class BXDAMesh
         foreach (BXDASubMesh mesh in meshes)
         {
             int vertCount = mesh.verts.Length / 3;
-            byte flags = (byte)((mesh.norms != null ? 4 : 0));
+            byte meshFlags = (byte)((mesh.norms != null ? 4 : 0));
 
-            writer.Write(flags);
+            writer.Write(meshFlags);
             writer.Write(vertCount);           
 
             for (int i = 0; i < vertCount; i++)
@@ -100,7 +101,11 @@ public class BXDAMesh
             { 
                 int facetCount = surface.indicies.Length / 3;
 
-                writer.Write(surface.color);
+                writer.Write(surface.hasColor);
+                if (surface.hasColor)
+                {
+                    writer.Write(surface.color);
+                }
                 writer.Write(surface.transparency);
                 writer.Write(surface.translucency);
 
@@ -131,10 +136,10 @@ public class BXDAMesh
         for (int id = 0; id < meshCount; id++)
         {
             BXDASubMesh mesh = new BXDASubMesh();
-            byte flags = reader.ReadByte();
+            byte meshFlags = reader.ReadByte();
             int vertCount = reader.ReadInt32();
             mesh.verts = new double[vertCount * 3];
-            mesh.norms = (flags & 4) == 4 ? new double[vertCount * 3] : null;
+            mesh.norms = (meshFlags & 1) == 1 ? new double[vertCount * 3] : null;
             for (int i = 0; i < vertCount; i++)
             {
                 int vecI = i * 3;
@@ -156,8 +161,14 @@ public class BXDAMesh
             for (int i = 0; i < surfaceCount; i++)
             {
                 BXDASurface nextSurface = new BXDASurface();
+                Byte surfaceFlags = reader.ReadByte();
 
-                nextSurface.color = reader.ReadUInt32();
+                nextSurface.hasColor = reader.ReadBoolean();
+
+                if (nextSurface.hasColor)
+                {
+                    nextSurface.color = reader.ReadUInt32();
+                }
                 nextSurface.transparency = reader.ReadSingle();
                 nextSurface.translucency = reader.ReadSingle();
 

@@ -152,7 +152,11 @@ public class SurfaceExporter
 
         nextSurface.color = 0xFFFFFFFF;
 
-        nextSurface.color = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
+        if (assetProps.color != null)
+        {
+            nextSurface.hasColor = true;
+            nextSurface.color = ((uint)assetProps.color.Red << 0) | ((uint)assetProps.color.Green << 8) | ((uint)assetProps.color.Blue << 16) | ((((uint)(assetProps.color.Opacity * 255)) & 0xFF) << 24);
+        }
         nextSurface.transparency = (float)assetProps.generic_transparency;
         nextSurface.translucency = (float)assetProps.generic_translucency;
 

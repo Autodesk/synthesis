@@ -172,12 +172,12 @@ public class CylindricalJoint : CylindricalJoint_Base, InventorSkeletalJoint
         if (hasLinearStartLimit)
         {
             linearLimitStart = (float)wrapped.asmJoint.LinearPositionStartLimit.Value;
-            wrapped.asmJoint.LinearPosition = (float)linearLimitStart - .01;
+            wrapped.asmJoint.LinearPosition = (float)linearLimitStart + .01;
         }
         if (hasLinearEndLimit)
         {
             linearLimitEnd = (float)wrapped.asmJoint.LinearPositionEndLimit.Value;
-            wrapped.asmJoint.LinearPosition = (float)linearLimitEnd + .01;
+            wrapped.asmJoint.LinearPosition = (float)linearLimitEnd - .01;
         }
         if (hasLinearStartLimit && hasLinearEndLimit)
         {
