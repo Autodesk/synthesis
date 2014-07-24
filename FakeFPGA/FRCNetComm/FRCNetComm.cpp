@@ -6,11 +6,12 @@
 #include "FRCFakeNetComm.h"
 
 extern "C" {
-	static FRCRobotControl robotControlData;
+	static RobotControlByte control;
 
 	void EXPORT_FUNC getFPGAHardwareVersion(uint16_t *fpgaVersion,
 		uint32_t *fpgaRevision) {
 	}
+
 	/**
 	* Get the control data from the driver station. The parameter "data"
 	* is only updated when the method returns 0.
@@ -77,11 +78,7 @@ extern "C" {
 	int EXPORT_FUNC setStatusDataFloatAsInt(int battery, uint8_t dsDigitalOut,
 		uint8_t updateNumber, const char *userDataHigh, int userDataHighLength,
 		const char *userDataLow, int userDataLowLength, int wait_ms) {
-			robotControlData.packetIndex = updateNumber;
-			robotControlData.digitalOutputs = dsDigitalOut;
-			robotControlData.batteryVolts = (battery >> 8) & 0xFF;
-			robotControlData.batteryMilliVolts = (battery & 0xFF);
-			robotControlData.teamID = GetFakeNetComm()->getLastPacket().teamID;
+			GetFakeNetComm()->setStatus(battery, dsDigitalOut, updateNumber, userDataHigh, userDataHighLength, userDataLow, userDataLowLength, control.control);
 			// I don't want to deal with the rest.
 			return 0;
 	}
@@ -94,7 +91,7 @@ extern "C" {
 	*/
 	int EXPORT_FUNC setErrorData(const char *errors, int errorsLength,
 		int wait_ms) {
-			printf("%s", errors);
+			GetFakeNetComm()->setEmbeddedDynamicChunk(FRCNetImpl::kEmbeddedErrors, errors, errorsLength);
 			return 0;
 	}
 
@@ -109,7 +106,7 @@ extern "C" {
 			return 0;
 	}
 	int EXPORT_FUNC overrideIOConfig(const char *ioConfig, int wait_ms) {
-		return 0;
+		return 0;	// This is used for enhanced IO ROBOT->DS
 	}
 
 	void EXPORT_FUNC setNewDataSem(WaitSemaphore* r) {
@@ -135,34 +132,29 @@ extern "C" {
 	void EXPORT_FUNC FRC_NetworkCommunication_getVersionString(char *version) {
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramStarting(void) {
-		robotControlData.control = 0;
-		robotControlData.notEStop = 1;
-		GetFakeNetComm()->sendControl(robotControlData);
+		control.control = 0;
+		control.notEStop = 1;
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramDisabled(void) {
-		robotControlData.control = 0;
-		robotControlData.notEStop = 1;
-		GetFakeNetComm()->sendControl(robotControlData);
+		control.control = 0;
+		control.notEStop = 1;
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramAutonomous(void) {
-		robotControlData.control = 0;
-		robotControlData.notEStop = 1;
-		robotControlData.enabled = 1;
-		robotControlData.autonomous = 1;
-		GetFakeNetComm()->sendControl(robotControlData);
+		control.control = 0;
+		control.notEStop = 1;
+		control.enabled = 1;
+		control.autonomous = 1;
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramTeleop(void) {
-		robotControlData.control = 0;
-		robotControlData.notEStop = 1;
-		robotControlData.enabled = 1;
-		GetFakeNetComm()->sendControl(robotControlData);
+		control.control = 0;
+		control.notEStop = 1;
+		control.enabled = 1;
 	}
 	void EXPORT_FUNC FRC_NetworkCommunication_observeUserProgramTest(void) {
-		robotControlData.control = 0;
-		robotControlData.notEStop = 1;
-		robotControlData.enabled = 1;
-		robotControlData.test = 1;
-		GetFakeNetComm()->sendControl(robotControlData);
+		control.control = 0;
+		control.notEStop = 1;
+		control.enabled = 1;
+		control.test = 1;
 	}
 
 	void FRC_NetworkCommunication_JaguarCANDriver_sendMessage(uint32_t messageID, const uint8_t *data, uint8_t dataSize, int32_t *status){

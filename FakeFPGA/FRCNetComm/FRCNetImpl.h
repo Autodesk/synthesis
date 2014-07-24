@@ -14,6 +14,13 @@ class NTTask;
 
 class FRCNetImpl
 {
+public:
+	enum EmbeddedDynamicChunk {
+		kEmbeddedUserDataHigh = 0,
+		kEmbeddedErrors = 1,
+		kEmbeddedUserDataLow = 2,
+		kEmbeddedCount
+	};
 private:
 	NTTask *task;	
 	bool enabled;
@@ -25,7 +32,7 @@ private:
 	struct sockaddr_in dsAddress;
 	SOCKET robotSocket;
 	SOCKET dsSocket;
-	
+
 	/**
 	* THIS HANDLES ENDIANS!
 	*/
@@ -36,6 +43,10 @@ private:
 
 	char sendBuffer[2048];
 	FRCRobotControl ctl;
+	struct {
+		uint32_t dynamicLen;
+		const char *dynamicData;
+	} embeddedDynamicChunks[kEmbeddedCount];
 public:
 	WaitSemaphore *newDataSem;
 	ReentrantSemaphore *resyncSem;
@@ -45,7 +56,10 @@ public:
 	/**
 	* THIS HANDLES ENDIANS!
 	*/
-	void sendControl(FRCRobotControl ctl);
+	void setStatus(int battery, uint8_t dsDigitalOut,
+		uint8_t updateNumber, const char *userDataHigh, int userDataHighLength,
+		const char *userDataLow, int userDataLowLength, uint8_t control);
+	void setEmbeddedDynamicChunk(EmbeddedDynamicChunk chunk, const char *errors, int errorsLength, bool lock = true);
 	void start();
 	void stop();
 	FRCCommonControlData getLastPacket();
