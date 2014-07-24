@@ -103,8 +103,18 @@ int FRCNetImpl::runThread() {
 		readingSem.take();
 		memcpy(&lastDataPacket, &buffer, sizeof(FRCCommonControlData));
 		// Handle endians
-		lastDataPacket.packetIndex = ntohs(lastDataPacket.packetIndex);
-		lastDataPacket.teamID = ntohs(lastDataPacket.teamID);
+		{
+			lastDataPacket.packetIndex = ntohs(lastDataPacket.packetIndex);
+			lastDataPacket.teamID = ntohs(lastDataPacket.teamID);
+			lastDataPacket.analog1 = ntohs(lastDataPacket.analog1);
+			lastDataPacket.analog2 = ntohs(lastDataPacket.analog2);
+			lastDataPacket.analog3 = ntohs(lastDataPacket.analog3);
+			lastDataPacket.analog4 = ntohs(lastDataPacket.analog4);
+			lastDataPacket.stick0Buttons = ntohs(lastDataPacket.stick0Buttons);
+			lastDataPacket.stick1Buttons = ntohs(lastDataPacket.stick1Buttons);
+			lastDataPacket.stick2Buttons = ntohs(lastDataPacket.stick2Buttons);
+			lastDataPacket.stick3Buttons = ntohs(lastDataPacket.stick3Buttons);
+		}
 		readingSem.give();
 		newDataSemInternal.notify();
 		if (newDataSem != NULL) {

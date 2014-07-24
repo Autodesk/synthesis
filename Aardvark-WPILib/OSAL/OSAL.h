@@ -7,7 +7,11 @@
 #define strdup _strdup
 #define fdopen _fdopen
 
+#define __LITTLE_ENDIAN	1
+
 #else
+
+#define __BIG_ENDIAN	1
 
 #define USE_POSIX 1
 typedef void* LPVOID ;
