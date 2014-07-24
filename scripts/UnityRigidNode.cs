@@ -76,16 +76,17 @@ public class UnityRigidNode : RigidNode_Base
 		private void AngularLimit (float[] limit)
 		{
 		
-				for (int i = 0; i < limit.Length; i++) {
-						if ((limit [2] - limit [1]) >= Mathf.Abs (360.0f)) {
-								joint.angularXMotion = ConfigurableJointMotion.Free;
-								return;
-						}	
-						limit [i] = (Mathf.Abs (limit [i]) > 180.0f) ? 360.0f - Mathf.Abs (limit [i]) : limit [i];  
-						//Debug.Log ("Value: " + limit [i] + " limit index: " + i);
+				if ((limit [2] - limit [1]) >= Mathf.Abs (360.0f)) {
+						joint.angularXMotion = ConfigurableJointMotion.Free;
+						return;
+				} else {
+						limit [1] = (limit [2] - limit [1]) / 2.0f;
+						limit [2] = limit [1] < 0.0f ? Mathf.Abs(limit [1]) : -(limit [1]);  
+						low.limit = limit [1];
+						high.limit = limit [2];
 				}
-				low.limit = limit [0] == limit [1] ? limit [0] - limit [1] : limit [1];
-				high.limit = limit [0] == limit [2] ? limit [0] - limit [2] : limit [2];
+				 		
+
 				joint.lowAngularXLimit = low;
 				joint.highAngularXLimit = high;	
 
@@ -100,8 +101,8 @@ public class UnityRigidNode : RigidNode_Base
 		{
 				center = (limit ["end"] - limit ["start"]) / 2.0f;
 				current = center - limit ["current"];
-
-				//subObject.transform.position = subCollider.transform.position = joint.axis * current;
+				Debug.Log ("center: " + center + " current: " + current);
+				subObject.transform.position = subCollider.transform.position = joint.axis * current;
 				
 				linear.limit = Mathf.Abs (center);
 				joint.linearLimit = linear;
@@ -165,6 +166,7 @@ public class UnityRigidNode : RigidNode_Base
 															{"start",nodeC.linearLimitStart},
 															{"current",nodeC.currentLinearPosition}
 								};
+								Debug.Log (string.Format ("{0} : {1} : {2} : hasLimits : {3} {4}", nodeC.linearLimitEnd, nodeC.linearLimitStart, nodeC.currentLinearPosition, nodeC.hasLinearEndLimit, nodeC.hasLinearStartLimit));
 								LinearLimit (lLimit);
 								if (joint.angularXMotion == ConfigurableJointMotion.Limited) {
 										float[] aLimit = {
