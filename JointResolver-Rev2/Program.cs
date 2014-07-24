@@ -22,6 +22,41 @@ static class Program
         //mesh.WriteBXDA("C:/Temp/test.bxda");
     }
 
+    public static void CenterAllJoints(ComponentOccurrence component)
+    {
+        foreach (AssemblyJoint joint in component.Joints)
+        {
+            if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kRotationalJointType)
+            {
+                if (joint.Definition.HasAngularPositionLimits)
+                {
+                    joint.Definition.AngularPosition = (joint.Definition.AngularPositionStartLimit.Value + joint.Definition.AngularPositionEndLimit.Value) / 2.0;
+                }
+            }
+
+            if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+            {
+                if (joint.Definition.HasLinearPositionStartLimit && joint.Definition.HasLinearPositionEndLimit)
+                {
+                    joint.Definition.LinearPosition = (joint.Definition.LinearPositionStartLimit.Value + joint.Definition.LinearPositionEndLimit.Value) / 2.0;
+                }
+                else if (joint.Definition.HasLinearPositionStartLimit)
+                {
+                    joint.Definition.LinearPosition = joint.Definition.LinearPositionStartLimit.Value;
+                }
+                else if (joint.Definition.HasLinearPositionEndLimit)
+                {
+                    joint.Definition.LinearPosition.Value = joint.Definition.LinearPositionEndLimit.Value;
+                }
+            }
+        }
+
+        foreach(ComponentOccurrence subComponent in component.SubOccurrences)
+        {
+            CenterAllJoints(subComponent);
+        }
+    }
+
     public static void AnalyzeRigidResults()
     {
         string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
@@ -30,6 +65,15 @@ static class Program
 
         AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         Console.WriteLine("Get rigid info...");
+
+        foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
+        {
+            if (component.SubOccurrences.Count != 0) //Only need to move joints in sub assembies.
+            {
+                CenterAllJoints(component);
+            }
+        }
+        Console.WriteLine("All joints centered");
 
         NameValueMap options = INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap();
         //options.Add("SuperfluousDOF", true);
