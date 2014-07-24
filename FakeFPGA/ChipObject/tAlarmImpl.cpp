@@ -36,19 +36,19 @@ namespace nFPGA
 		bool signaled = false;
 		while (true) {
 			unsigned int cTime = impl->state->getGlobal()->readLocalTime(&status);
-			unsigned int delta = (impl->triggerTime - cTime) / 1000;
-			if (!impl->enabled || impl->triggerTime < cTime) {
-				if (!signaled) {
+			unsigned int delta = (impl->triggerTime - cTime) / 1000;	// Determine how long before the time we want
+			if (!impl->enabled || impl->triggerTime < cTime) {	// If we aren't enabled or the timer has expired
+				if (!signaled) {	// If we haven't already signaled then signal
 					impl->state->getIRQManager()->signal(1 << kTimerInterruptNumber);
 					signaled = true;
 				}
-				impl->changeSemaphore.wait();
-			} else if (delta < 2) {
+				impl->changeSemaphore.wait();	// Wait for another alarm to be set
+			} else if (delta < 2) {			// If it is really close (2ms) wait directly, then signal
 				sleep_ms(2);
 				impl->state->getIRQManager()->signal(1 << kTimerInterruptNumber);
 				signaled = true;
 			} else {
-				sleep_ms(delta * 0.75);
+				sleep_ms(delta * 0.75);	// Wait for part of the delta
 				signaled = false;
 			}
 		}
@@ -59,7 +59,7 @@ namespace nFPGA
 	{
 		bool oldEnabled = enabled;
 		enabled = value;
-		changeSemaphore.notify();
+		changeSemaphore.notify();	// Notify the sleeper thread that this alarm was enabled
 		*status = NiFpga_Status_Success;
 	}
 	bool tAlarm_Impl::readEnable(tRioStatusCode *status)
@@ -72,7 +72,7 @@ namespace nFPGA
 	{
 		*status = NiFpga_Status_Success;
 		triggerTime = value;
-		changeSemaphore.notify();
+		changeSemaphore.notify();	// Notify the sleeper thread that a new alarm was added
 	}
 	unsigned int tAlarm_Impl::readTriggerTime(tRioStatusCode *status)
 	{

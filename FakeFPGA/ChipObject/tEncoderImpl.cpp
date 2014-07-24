@@ -13,6 +13,7 @@ namespace nFPGA {
 
 		this->timerOutput.value = 0;
 		this->timerConfig.value = 0;
+		// TODO Actually Implement
 	}
 
 	tEncoder_Impl::~tEncoder_Impl() {

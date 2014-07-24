@@ -5,11 +5,15 @@
 #include <OSAL/Synchronized.h>
 #include <OSAL/WaitSemaphore.h>
 
+typedef uint32_t INTERRUPT_MASK;
+
 class NiIRQ_Impl {
+public:
+	static const int INTERRUPT_COUNT = sizeof(INTERRUPT_MASK) * 8;
 private:
-	std::vector<WaitSemaphore*> waitQueue[32];
+	std::vector<WaitSemaphore*> waitQueue[INTERRUPT_COUNT];
 	ReentrantSemaphore waitQueueMutex;
-	uint32_t lastSignal;
+	INTERRUPT_MASK lastSignal;
 public:
 	NiIRQ_Impl() {
 
@@ -17,12 +21,13 @@ public:
 
 	/// Signals all the tasks waiting on any of the interrupts specified by the mask.
 	/// @param mask The bitfield of interrupts to signal
-	void signal(uint32_t mask) {
+	void signal(INTERRUPT_MASK mask) {
 		waitQueueMutex.take();
 		lastSignal = mask;
-		for (int i = 0; i<32; i++) {
-			if (mask & (1 << i)) {
-				for (std::vector<WaitSemaphore*>::iterator itr = waitQueue[i].begin(); itr != waitQueue[i].end(); itr++) {
+		for (int i = 0; i<INTERRUPT_COUNT; i++) {
+			if (mask & (1 << i)) {	// If we want to signal this interrupt
+				for (std::vector<WaitSemaphore*>::iterator itr = waitQueue[i].begin();
+					itr != waitQueue[i].end(); itr++) {	// Notify all waiting threads
 					(*itr)->notify();
 				}
 			}
@@ -39,14 +44,14 @@ public:
 		WaitSemaphore *sig = new WaitSemaphore();
 		// Add signals...
 		waitQueueMutex.take();
-		for (int i = 0; i<32; i++) {
-			if (mask & (1 << i)) {
-				waitQueue[i].push_back(sig);
+		for (int i = 0; i<sizeof(INTERRUPT_MASK) * 8; i++) {
+			if (mask & (1 << i)) {	// If we want to wait on this interrupt
+				waitQueue[i].push_back(sig);	// Add the semaphore to the notification list
 			}
 		}
 		waitQueueMutex.give();
 		// Wait for signal...
-		bool success = sig->wait(time);
+		bool success = sig->wait(time);	// Wait for the semaphore to be notified.
 		if (timedout != NULL) {
 			*timedout = !success;
 		}
@@ -56,9 +61,10 @@ public:
 		if (signaled != NULL){
 			*signaled = lastSignal;
 		}
-		for (int i = 0; i<32; i++) {
-			if (mask & (1 << i)) {
-				for (std::vector<WaitSemaphore*>::iterator itr = waitQueue[i].begin(); itr != waitQueue[i].end(); itr++) {\
+		for (int i = 0; i<INTERRUPT_COUNT; i++) {
+			if (mask & (1 << i)) {	// If we wanted to signal this interrupt
+				// Remove the sempahore from the notification list
+				for (std::vector<WaitSemaphore*>::iterator itr = waitQueue[i].begin(); itr != waitQueue[i].end(); itr++) {
 					if ((*itr) == sig) {
 						waitQueue[i].erase(itr);
 						break;

@@ -6,6 +6,7 @@
 namespace nFPGA {
 	class NiFpgaState;
 
+	/// <summary>Schrodinger's cat.  It won't die unless you ask if it is alive.</summary>
 	class tWatchcat_Impl :
 		public nFPGA::nFRC_2012_1_6_4::tWatchdog
 	{

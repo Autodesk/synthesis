@@ -92,18 +92,16 @@ namespace nFPGA {
 		while (pInterrupt->_enabled) {
 			NiFpga_Bool failed = false;
 			uint32_t irqsAsserted = pInterrupt->_interruptMask;
-			NiFpga_WaitOnIrqs(_DeviceHandle, NULL, pInterrupt->_interruptMask, INFINITE, &irqsAsserted, &failed);
+			NiFpga_WaitOnIrqs(_DeviceHandle, NULL, pInterrupt->_interruptMask, INFINITE, &irqsAsserted, &failed);	// Wait until interrupted
 			if (!failed && pInterrupt->_handler!=NULL) {
-				pInterrupt->handler();
-				pInterrupt->_handler(irqsAsserted, pInterrupt->_userParam);//Wth is this interrupt asserted mask
+				pInterrupt->_handler(irqsAsserted, pInterrupt->_userParam);		// Notify whomever subscribed
 			}
 		}
 		return 0;		// No error, right?  Right.
 	}
 
-	// wth do these do.
 	void tInterruptManager::acknowledge(tRioStatusCode *status){
-		// This isn't needed with my sketchy implementation!
+		// Supposed to tell the IRQ manager that this successfully processed the IRQ.  But that is difficult
 	}
 
 	void tInterruptManager::reserve(tRioStatusCode *status){

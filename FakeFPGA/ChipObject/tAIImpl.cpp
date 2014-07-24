@@ -163,15 +163,14 @@ namespace nFPGA {
 
 	void tAI_Impl::updateValues(signed int nvalues[]) {
 		for (int i = 0; i < kNumScanListElements; i++) {
-			if (nvalues[i] != values[i]) {
-				// Changed!  Check for triggering
+			if (nvalues[i] != values[i]) {		// If this channel changed
 				tAnalogTrigger_Impl::tOutput changeType;
 				changeType.Falling = values[i] > nvalues[i];
 				changeType.Rising = values[i] < nvalues[i];
-				for (int t = 0; t < tAnalogTrigger_Impl::kNumSystems; t++) {
+				for (int t = 0; t < tAnalogTrigger_Impl::kNumSystems; t++) {	// For every analog trigger...
 					tAnalogTrigger_Impl *trigger = state->analogTrigger[t];
 					if (trigger != NULL && 
-					trigger->source.Module == sys_index && trigger->source.Channel == i) {
+					trigger->source.Module == sys_index && trigger->source.Channel == i) {		// If this trigger is on this channel
 						changeType.OverLimit = nvalues[i] >= trigger->upperLimit;
 						changeType.InHysteresis = nvalues[i] >= trigger->lowerLimit && !changeType.OverLimit;
 						if (trigger->output[trigger->sys_index].value != changeType.value){
