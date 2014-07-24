@@ -11,7 +11,6 @@ namespace nFPGA {
 		for (int i = 0; i<kNumOutputElements; i++){
 			this->output[i].value = 0;
 		}
-		// TODO actually implement these
 	}
 
 	tAnalogTrigger_Impl::~tAnalogTrigger_Impl() {

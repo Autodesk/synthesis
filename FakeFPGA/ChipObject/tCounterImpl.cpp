@@ -14,6 +14,8 @@ namespace nFPGA {
 
 		this->timerConfig.value = 0;
 		this->timerOutput.value = 0;
+
+		// TODO Actually Implement
 	}
 
 	tCounter_Impl::~tCounter_Impl() {

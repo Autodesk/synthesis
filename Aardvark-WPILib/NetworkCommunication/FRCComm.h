@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include "OSAL/Synchronized.h"
 #include "OSAL/WaitSemaphore.h"
+#include "OSAL/OSAL.h"
 
 #define EXPORT_FUNC extern
 
@@ -31,6 +32,7 @@ struct FRCCommonControlData{
 	union {
 		uint8_t control;
 		struct {
+#if __LITTLE_ENDIAN
 			uint8_t checkVersions : 1;
 			uint8_t test : 1;
 			uint8_t resync : 1;
@@ -39,6 +41,16 @@ struct FRCCommonControlData{
 			uint8_t enabled : 1;
 			uint8_t notEStop :1;
 			uint8_t reset :1;
+#elif 
+			uint8_t reset :1;
+			uint8_t notEStop :1;
+			uint8_t enabled : 1;
+			uint8_t autonomous:1;
+			uint8_t fmsAttached : 1;
+			uint8_t resync : 1;
+			uint8_t test : 1;
+			uint8_t checkVersions : 1;
+#endif
 		};
 	};
 	uint8_t dsDigitalIn;
@@ -131,11 +143,11 @@ extern "C" {
 	int EXPORT_FUNC getRecentStatusData(uint8_t *batteryInt, uint8_t *batteryDec, uint8_t *dsDigitalOut, int wait_ms);
 	int EXPORT_FUNC getDynamicControlData(uint8_t type, char *dynamicData, int32_t maxLength, int wait_ms);
 	int EXPORT_FUNC setStatusData(float battery, uint8_t dsDigitalOut, uint8_t updateNumber,
-			const char *userDataHigh, int userDataHighLength,
-			const char *userDataLow, int userDataLowLength, int wait_ms);
+		const char *userDataHigh, int userDataHighLength,
+		const char *userDataLow, int userDataLowLength, int wait_ms);
 	int EXPORT_FUNC setStatusDataFloatAsInt(int battery, uint8_t dsDigitalOut, uint8_t updateNumber,
-			const char *userDataHigh, int userDataHighLength,
-			const char *userDataLow, int userDataLowLength, int wait_ms);
+		const char *userDataHigh, int userDataHighLength,
+		const char *userDataLow, int userDataLowLength, int wait_ms);
 	int EXPORT_FUNC setErrorData(const char *errors, int errorsLength, int wait_ms);
 	int EXPORT_FUNC setUserDsLcdData(const char *userDsLcdData, int userDsLcdDataLength, int wait_ms);
 	int EXPORT_FUNC overrideIOConfig(const char *ioConfig, int wait_ms);

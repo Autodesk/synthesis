@@ -37,6 +37,7 @@ namespace nFPGA {
 	bool tWatchcat_Impl::readStatus_Alive(tRioStatusCode *status)
 	{
 		*status = NiFpga_Status_Success;
+		this->status.Alive = !immortal && (lastFed + expiration) > state->getGlobal()->readLocalTime(status);
 		return this->status.Alive;
 	}
 	unsigned short tWatchcat_Impl::readStatus_SysDisableCount(tRioStatusCode *status)

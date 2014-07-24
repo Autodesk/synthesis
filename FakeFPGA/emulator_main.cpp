@@ -33,6 +33,11 @@ public:
 		drive.SetSafetyEnabled(true);
 		while (IsOperatorControl() && !IsDisabled()) {
 			drive.ArcadeDrive(joy);
+			printf("Buttons:\t");
+			for (int i =0; i<16; i++){
+				printf("%d ", joy.GetRawButton(i));
+			}
+			printf("\n");
 			Sleep(15);
 		}
 	}

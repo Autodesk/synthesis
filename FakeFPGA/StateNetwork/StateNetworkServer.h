@@ -11,8 +11,11 @@ private:
 public:
 	StateNetworkServer(void);
 	~StateNetworkServer(void);
+	/// Opens the socket of this network server.
 	void Open();
+	/// Closes the socket of this network server.
 	void Close();
+	/// Sends the given state packet over this network server.
 	void SendStatePacket(StatePacket pack);
 };
 
