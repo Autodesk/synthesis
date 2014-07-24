@@ -95,11 +95,13 @@ int FRCNetImpl::runThread() {
 	}
 
 	char buffer[1024];
+	bool lockedResync = false;
 
 	// Read from DS thread
 	while (enabled) {
-		if (resyncSem != NULL) {
+		if (resyncSem != NULL && !lockedResync) {
 			resyncSem->take();
+			lockedResync = true;
 		}
 		int len = recv(robotSocket, (char*) &buffer, sizeof(buffer), 0);
 		if (len < 0) {
@@ -137,7 +139,7 @@ int FRCNetImpl::runThread() {
 		// Broadcast robot control ideas
 		writingSem.take();
 		memset(&sendBuffer, 0, sizeof(sendBuffer));
-		memcpy(&sendBuffer, &ctl,  0x21);// Don't copy extra data sizeof(FRCRobotControl));
+		memcpy(&sendBuffer, &ctl,  sizeof(FRCRobotControl));
 		uint32_t pos = 0x21;
 		for (int i = 0; i<kEmbeddedCount; i++){
 			uint32_t slen = htonl(embeddedDynamicChunks[i].dynamicLen * (embeddedDynamicChunks[i].dynamicData != NULL ? 1 : 0));
