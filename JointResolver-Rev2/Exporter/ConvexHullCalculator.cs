@@ -323,6 +323,7 @@ public class ConvexHullCalculator
             vertCount += mesh.verts.Length;
             foreach (BXDAMesh.BXDASurface surface in mesh.surfaces)
             {
+                //Get total number of indicies in overall mesh.
                 indexCount += surface.indicies.Length;
             }
         }
@@ -334,6 +335,7 @@ public class ConvexHullCalculator
         {
             for (int i = 0; i < mesh.verts.Length; i++)
             {
+                //Copy all the mesh vertices over, starting at the end of the last mesh copied.
                 copy[(vertCount * 3) + i] = (float) mesh.verts[i];
             }
 
@@ -341,6 +343,7 @@ public class ConvexHullCalculator
             {
                 for (int i = 0; i < surface.indicies.Length; i++)
                 {
+                    //Store all indicies together, updated for the vertice's position in copy.
                     index[indexCount + i] = (uint)(surface.indicies[i] + vertCount);
                 }
 
