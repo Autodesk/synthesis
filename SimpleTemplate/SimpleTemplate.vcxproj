@@ -11,12 +11,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{64B9921C-8B16-48DA-AECB-EFBCB1252CA8}</ProjectGuid>
-    <RootNamespace>FakeFPGA</RootNamespace>
+    <ProjectGuid>{777BF122-057B-4C8E-A629-D1FF46AB7B7E}</ProjectGuid>
+    <RootNamespace>SimpleTemplate</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -38,18 +38,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\FakeFPGA;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)\..\Debug\FakeFPGA.lib;$(ProjectDir)\..\Debug\Aardvark-WPILib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -67,57 +67,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ChipObject\NiFakeFpga.h" />
-    <ClInclude Include="ChipObject\NiFpgaState.h" />
-    <ClInclude Include="ChipObject\NiIRQImpl.h" />
-    <ClInclude Include="ChipObject\tAccumulatorImpl.h" />
-    <ClInclude Include="ChipObject\tAIImpl.h" />
-    <ClInclude Include="ChipObject\tAlarmImpl.h" />
-    <ClInclude Include="ChipObject\tAnalogTriggerImpl.h" />
-    <ClInclude Include="ChipObject\tCounterImpl.h" />
-    <ClInclude Include="ChipObject\tDIOImpl.h" />
-    <ClInclude Include="ChipObject\tEncoderImpl.h" />
-    <ClInclude Include="ChipObject\tGlobalImpl.h" />
-    <ClInclude Include="ChipObject\tInterruptImpl.h" />
-    <ClInclude Include="ChipObject\tSolenoidImpl.h" />
-    <ClInclude Include="ChipObject\tWatchcatImpl.h" />
-    <ClInclude Include="emulator.h" />
-    <ClInclude Include="FRCNetComm\crc32.h" />
-    <ClInclude Include="FRCNetComm\FRCNetImpl.h" />
-    <ClInclude Include="FRCNetComm\FRCNetStructures.h" />
-    <ClInclude Include="FRCNetComm\FRCFakeNetComm.h" />
-    <ClInclude Include="PWMDecoder.h" />
-    <ClInclude Include="StateNetwork\StateNetworkServer.h" />
-    <ClInclude Include="StateNetwork\StatePacket.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="ChipObject\NiFpga.cpp" />
-    <ClCompile Include="ChipObject\NiFpgaState.cpp" />
-    <ClCompile Include="ChipObject\niLoadOut.cpp" />
-    <ClCompile Include="ChipObject\NiRio.cpp" />
-    <ClCompile Include="ChipObject\tAccumulatorImpl.cpp" />
-    <ClCompile Include="ChipObject\tAIImpl.cpp" />
-    <ClCompile Include="ChipObject\tAlarmImpl.cpp" />
-    <ClCompile Include="ChipObject\tAnalogTriggerImpl.cpp" />
-    <ClCompile Include="ChipObject\tCounterImpl.cpp" />
-    <ClCompile Include="ChipObject\tDIOImpl.cpp" />
-    <ClCompile Include="ChipObject\tEncoderImpl.cpp" />
-    <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
-    <ClCompile Include="ChipObject\tInterruptImpl.cpp" />
-    <ClCompile Include="ChipObject\tInterruptManager.cpp" />
-    <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
-    <ClCompile Include="ChipObject\tSystem.cpp" />
-    <ClCompile Include="ChipObject\tWatchcatImpl.cpp" />
-    <ClCompile Include="emulator_main.cpp" />
-    <ClCompile Include="FRCNetComm\FRCNetImpl.cpp" />
-    <ClCompile Include="nUsageReporting.cpp" />
-    <ClCompile Include="PWMDecoder.cpp" />
-    <ClCompile Include="StateNetwork\StateNetworkServer.cpp" />
-    <ClCompile Include="FRCNetComm\FRCNetComm.cpp" />
+    <ClCompile Include="SimpleRobot.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aardvark-WPILib\Aardvark-WPILib.vcxproj">
       <Project>{35d57ff3-6647-4b8c-afb9-e680d60de40e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\FakeFPGA\FakeFPGA.vcxproj">
+      <Project>{64b9921c-8b16-48da-aecb-efbcb1252ca8}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

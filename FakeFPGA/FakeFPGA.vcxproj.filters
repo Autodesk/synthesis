@@ -1,151 +1,52 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
+    <ClCompile Include="ChipObject\NiFpga.cpp" />
+    <ClCompile Include="ChipObject\NiFpgaState.cpp" />
+    <ClCompile Include="ChipObject\niLoadOut.cpp" />
+    <ClCompile Include="ChipObject\NiRio.cpp" />
+    <ClCompile Include="ChipObject\tAccumulatorImpl.cpp" />
+    <ClCompile Include="ChipObject\tAIImpl.cpp" />
+    <ClCompile Include="ChipObject\tAlarmImpl.cpp" />
+    <ClCompile Include="ChipObject\tAnalogTriggerImpl.cpp" />
+    <ClCompile Include="ChipObject\tCounterImpl.cpp" />
+    <ClCompile Include="ChipObject\tDIOImpl.cpp" />
+    <ClCompile Include="ChipObject\tEncoderImpl.cpp" />
+    <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
+    <ClCompile Include="ChipObject\tInterruptImpl.cpp" />
+    <ClCompile Include="ChipObject\tInterruptManager.cpp" />
+    <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
+    <ClCompile Include="ChipObject\tSystem.cpp" />
+    <ClCompile Include="ChipObject\tWatchcatImpl.cpp" />
+    <ClCompile Include="emulator_main.cpp" />
+    <ClCompile Include="FRCNetComm\FRCNetImpl.cpp" />
+    <ClCompile Include="nUsageReporting.cpp" />
+    <ClCompile Include="PWMDecoder.cpp" />
+    <ClCompile Include="StateNetwork\StateNetworkServer.cpp" />
+    <ClCompile Include="FRCNetComm\FRCNetComm.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChipObject\NiFpga.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\NiFpgaState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\niLoadOut.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\NiRio.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tAccumulatorImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tAIImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tDIOImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tGlobalImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tSolenoidImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="emulator_main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="nUsageReporting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PWMDecoder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StateNetwork\StateNetworkServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tInterruptManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tAlarmImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tWatchcatImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FRCNetComm\FRCNetComm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FRCNetComm\FRCNetImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tEncoderImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tInterruptImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tCounterImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChipObject\tAnalogTriggerImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="StateNetwork\StatePacket.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tSolenoidImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\NiFakeFpga.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\NiFpgaState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tAccumulatorImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tAIImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tDIOImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tGlobalImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PWMDecoder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StateNetwork\StateNetworkServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\NiIRQImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tAlarmImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tWatchcatImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FRCNetComm\crc32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FRCNetComm\FRCNetImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FRCNetComm\FRCNetStructures.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tEncoderImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tInterruptImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tCounterImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ChipObject\tAnalogTriggerImpl.h">
-    <ClInclude Include="FRCNetComm\FRCFakeNetComm.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClInclude Include="ChipObject\NiFakeFpga.h" />
+    <ClInclude Include="ChipObject\NiFpgaState.h" />
+    <ClInclude Include="ChipObject\NiIRQImpl.h" />
+    <ClInclude Include="ChipObject\tAccumulatorImpl.h" />
+    <ClInclude Include="ChipObject\tAIImpl.h" />
+    <ClInclude Include="ChipObject\tAlarmImpl.h" />
+    <ClInclude Include="ChipObject\tAnalogTriggerImpl.h" />
+    <ClInclude Include="ChipObject\tCounterImpl.h" />
+    <ClInclude Include="ChipObject\tDIOImpl.h" />
+    <ClInclude Include="ChipObject\tEncoderImpl.h" />
+    <ClInclude Include="ChipObject\tGlobalImpl.h" />
+    <ClInclude Include="ChipObject\tInterruptImpl.h" />
+    <ClInclude Include="ChipObject\tSolenoidImpl.h" />
+    <ClInclude Include="ChipObject\tWatchcatImpl.h" />
+    <ClInclude Include="FRCNetComm\crc32.h" />
+    <ClInclude Include="FRCNetComm\FRCNetImpl.h" />
+    <ClInclude Include="FRCNetComm\FRCNetStructures.h" />
+    <ClInclude Include="FRCNetComm\FRCFakeNetComm.h" />
+    <ClInclude Include="PWMDecoder.h" />
+    <ClInclude Include="StateNetwork\StateNetworkServer.h" />
+    <ClInclude Include="StateNetwork\StatePacket.h" />
+    <ClInclude Include="emulator.h" />
   </ItemGroup>
 </Project>
