@@ -238,8 +238,22 @@ NiFpga_Status NiFpga_WriteU32(NiFpga_Session session, uint32_t control, uint32_t
 	case nFPGA::tCounter_Impl::kCounter6_Reset_Address:
 	case nFPGA::tCounter_Impl::kCounter7_Reset_Address:
 		{
-			for (int cid = 0; cid<8; cid++) {
+			for (int cid = 0; cid<nFPGA::tCounter_Impl::kNumSystems; cid++) {
 				if (control == nFPGA::tCounter_Impl::kReset_Addresses[cid]) {
+					// Do the reset action
+					value = 0;	// Strobe performed
+					break;
+				}
+			}
+		}
+		break;
+	case nFPGA::tEncoder_Impl::kEncoder0_Reset_Address:
+	case nFPGA::tEncoder_Impl::kEncoder1_Reset_Address:
+	case nFPGA::tEncoder_Impl::kEncoder2_Reset_Address:
+	case nFPGA::tEncoder_Impl::kEncoder3_Reset_Address:
+		{
+			for (int cid = 0; cid<nFPGA::tEncoder_Impl::kNumSystems; cid++) {
+				if (control == nFPGA::tEncoder_Impl::kReset_Addresses[cid]) {
 					// Do the reset action
 					value = 0;	// Strobe performed
 					break;

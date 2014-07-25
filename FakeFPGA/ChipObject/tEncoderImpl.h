@@ -8,13 +8,43 @@ namespace nFPGA {
 
 	class tEncoder_Impl : public nFPGA::nFRC_2012_1_6_4::tEncoder {
 	private:
+#pragma region ADDRESSES
+		static const int kEncoder0_Output_Address = 0x8388;
+		static const int kEncoder1_Output_Address = 0x839C;
+		static const int kEncoder2_Output_Address = 0x83B0;
+		static const int kEncoder3_Output_Address = 0x83C4;
+		static const int kOutput_Addresses [];
+		static const int kEncoder0_Config_Address = 0x8380;
+		static const int kEncoder1_Config_Address = 0x8394;
+		static const int kEncoder2_Config_Address = 0x83A8;
+		static const int kEncoder3_Config_Address = 0x83BC;
+		static const int kConfig_Addresses [] ;
+		static const int kEncoder0_TimerOutput_Address = 0x8390;
+		static const int kEncoder1_TimerOutput_Address = 0x83A4;
+		static const int kEncoder2_TimerOutput_Address = 0x83B8;
+		static const int kEncoder3_TimerOutput_Address = 0x83CC;
+		static const int kTimerOutput_Addresses [];
+	public:
+		static const int kEncoder0_Reset_Address = 0x8384;
+		static const int kEncoder1_Reset_Address = 0x8398;
+		static const int kEncoder2_Reset_Address = 0x83AC;
+		static const int kEncoder3_Reset_Address = 0x83C0;
+		static const int kReset_Addresses [];
+	private:
+		static const int kEncoder0_TimerConfig_Address = 0x838C;
+		static const int kEncoder1_TimerConfig_Address = 0x83A0;
+		static const int kEncoder2_TimerConfig_Address = 0x83B4;
+		static const int kEncoder3_TimerConfig_Address = 0x83C8;
+		static const int kTimerConfig_Addresses [];
+#pragma endregion
+	private:
 		NiFpgaState *state;
 		unsigned char sys_index;
 
-		tOutput encoderOutput;
-		tConfig encoderConfig;
-		tTimerOutput timerOutput;
-		tTimerConfig timerConfig;
+		tOutput *encoderOutput;
+		tConfig *encoderConfig;
+		tTimerOutput *timerOutput;
+		tTimerConfig *timerConfig;
 	public:
 		tEncoder_Impl(NiFpgaState *state, unsigned char sys_index);
 		virtual ~tEncoder_Impl();

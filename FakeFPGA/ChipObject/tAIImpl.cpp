@@ -9,6 +9,8 @@
 #include "tAI.h"
 #include "NiFpgaState.h"
 #include "tAnalogTriggerImpl.h"
+#include "NiIRQImpl.h"
+#include <tInterrupt.h>
 
 #define TAI_DECL_ADDRESSES(x) const int tAI_Impl::k ## x ## _Addresses [] = {kAI0_ ## x ## _Address, kAI1_ ## x ## _Address }
 
@@ -218,7 +220,8 @@ namespace nFPGA {
 							if (trigger->readOutput(trigger->sys_index, &status).value != changeType.value){
 								trigger->writeOutput(trigger->sys_index, changeType, &status);
 								// Signal it somehow?  Not entirely sure how this signal is routed. TODO
-								// Plan:  Make IRQs 64 bit.  if analog trigger shift left by 32.
+								// Plan: Shift by 8 bits
+								state->getIRQManager()->signal(1 << (trigger->sys_index + nFPGA::nFRC_2012_1_6_4::tInterrupt::kNumSystems));
 							}
 					}
 				}

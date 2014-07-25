@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "tInterruptImpl.h"
 #include "NiIRQImpl.h"
+#include "tGlobalImpl.h"
 
 #define TDIO_DECL_ADDRESSES(x) const int tDIO_Impl::k ## x ## _Addresses [] = {kDIO0_ ## x ## _Address, kDIO1_ ## x ## _Address }
 
@@ -496,6 +497,9 @@ namespace nFPGA {
 	}
 
 	void tDIO_Impl::writeDigitalPort(unsigned short nDPort, unsigned short nDMask) {
+		tRioStatusCode status;
+		uint32_t timestamp = state->getGlobal()->readLocalTime(&status);
+
 		for (int i = 0; i < sizeof(nDPort) * 8; i++) {
 			unsigned short tmpMask = 1 << i;
 			if ((nDMask & tmpMask) && (nDPort & tmpMask) != (*digitalOutputPort & tmpMask)) {
@@ -504,9 +508,10 @@ namespace nFPGA {
 				// Changed!  Check for triggering
 				for (int t = 0; t < tInterrupt_Impl::kNumSystems; t++) {
 					tInterrupt_Impl *interrupt = state->interrupt[t];
-					if (interrupt != NULL && !interrupt->config.Source_AnalogTrigger && interrupt->config.Source_Module == this->index && interrupt->config.Source_Channel == i && ((interrupt->config.FallingEdge && falling) || (interrupt->config.RisingEdge && rising))) {
+					if (interrupt != NULL && !(*(interrupt->config)).Source_AnalogTrigger && (*(interrupt->config)).Source_Module == this->index && (*(interrupt->config)).Source_Channel == i && (((*(interrupt->config)).FallingEdge && falling) || ((*(interrupt->config)).RisingEdge && rising))) {
 						// Signal it!
 						state->getIRQManager()->signal(1 << interrupt->sys_index);
+						*(interrupt->timestamp) = timestamp;
 					}
 				}
 			}
