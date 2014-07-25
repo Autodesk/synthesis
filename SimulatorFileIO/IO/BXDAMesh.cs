@@ -35,7 +35,7 @@ public class BXDAMesh
         public float translucency;
 
         //Indecies for polygons associated with Facet.
-        public int[] indicies = new int[ushort.MaxValue * 3];
+        public int[] indicies;
     }
 
     /// <summary>

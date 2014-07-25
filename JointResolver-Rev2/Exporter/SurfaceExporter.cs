@@ -101,7 +101,7 @@ public class SurfaceExporter
         Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
         subObject.surfaces = new List<BXDAMesh.BXDASurface>(tmpSurfaces);
         outputMesh.meshes.Add(subObject);
-
+      
         postVertCount = 0;
         postFacetCount = 0;
         tmpSurfaces = new List<BXDAMesh.BXDASurface>();
@@ -160,11 +160,12 @@ public class SurfaceExporter
         nextSurface.transparency = (float)assetProps.transparency;
         nextSurface.translucency = (float)assetProps.translucency;
 
+        nextSurface.indicies = new int[tmpFacetCount * 3];
+
         // Now we must manually copy the indicies
-        int indxOffset = postFacetCount * 3;
         for (int i = 0; i < tmpFacetCount * 3; i++)
         {
-            nextSurface.indicies[i + indxOffset] = tmpIndicies[i] + postVertCount - 1;
+            nextSurface.indicies[i] = tmpIndicies[i] + postVertCount - 1;
             // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
         }
 
