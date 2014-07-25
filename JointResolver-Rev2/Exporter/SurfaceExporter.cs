@@ -157,8 +157,8 @@ public class SurfaceExporter
             nextSurface.hasColor = true;
             nextSurface.color = ((uint)assetProps.color.Red << 0) | ((uint)assetProps.color.Green << 8) | ((uint)assetProps.color.Blue << 16) | ((((uint)(assetProps.color.Opacity * 255)) & 0xFF) << 24);
         }
-        nextSurface.transparency = (float)assetProps.generic_transparency;
-        nextSurface.translucency = (float)assetProps.generic_translucency;
+        nextSurface.transparency = (float)assetProps.transparency;
+        nextSurface.translucency = (float)assetProps.translucency;
 
         // Now we must manually copy the indicies
         int indxOffset = postFacetCount * 3;
