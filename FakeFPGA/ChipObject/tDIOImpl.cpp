@@ -243,8 +243,10 @@ namespace nFPGA {
 	void tDIO_Impl::writePWMPeriodScale(unsigned char bitfield_index,
 		unsigned char value, tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			*pwmPeriodScale &= ~(kPWMPeriodScale_ElementMask << ((kPWMPeriodScale_NumElements - 1 - bitfield_index) * kPWMPeriodScale_ElementSize));
-			*pwmPeriodScale |= ((value & kPWMPeriodScale_ElementMask) << ((kPWMPeriodScale_NumElements - 1 - bitfield_index) * kPWMPeriodScale_ElementSize));
+			uint32_t regValue = *pwmPeriodScale;
+			regValue &= ~(kPWMPeriodScale_ElementMask << ((kPWMPeriodScale_NumElements - 1 - bitfield_index) * kPWMPeriodScale_ElementSize));
+			regValue |= ((value & kPWMPeriodScale_ElementMask) << ((kPWMPeriodScale_NumElements - 1 - bitfield_index) * kPWMPeriodScale_ElementSize));
+			*pwmPeriodScale  = regValue;
 	}
 
 	unsigned char tDIO_Impl::readPWMPeriodScale(unsigned char bitfield_index,
@@ -258,8 +260,10 @@ namespace nFPGA {
 	void tDIO_Impl::writeDO_PWMDutyCycle(unsigned char bitfield_index,
 		unsigned char value, tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			*doPWMDutyCycle  &= ~(kDO_PWMDutyCycle_ElementMask << ((kDO_PWMDutyCycle_NumElements - 1 - bitfield_index) * kDO_PWMDutyCycle_ElementSize));
-			*doPWMDutyCycle  |= ((value & kDO_PWMDutyCycle_ElementMask) << ((kDO_PWMDutyCycle_NumElements - 1 - bitfield_index) * kDO_PWMDutyCycle_ElementSize));
+			uint32_t regValue = *doPWMDutyCycle;
+			regValue  &= ~(kDO_PWMDutyCycle_ElementMask << ((kDO_PWMDutyCycle_NumElements - 1 - bitfield_index) * kDO_PWMDutyCycle_ElementSize));
+			regValue  |= ((value & kDO_PWMDutyCycle_ElementMask) << ((kDO_PWMDutyCycle_NumElements - 1 - bitfield_index) * kDO_PWMDutyCycle_ElementSize));
+			*doPWMDutyCycle = regValue;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMDutyCycle(unsigned char bitfield_index,

@@ -2,6 +2,7 @@
 #include "NiFakeFpga.h"
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/NiIRQImpl.h"
+#include "ChipObject/tAIImpl.h"
 #include "ChipObject/tAlarmImpl.h"
 #include "ChipObject/tWatchcatImpl.h"
 #include "ChipObject/tEncoderImpl.h"
@@ -218,6 +219,20 @@ NiFpga_Status NiFpga_WriteI32(NiFpga_Session session, uint32_t control, int32_t 
 }
 
 NiFpga_Status NiFpga_WriteU32(NiFpga_Session session, uint32_t control, uint32_t value) {
+	// Special strobe cases
+	switch (control) {
+	case nFPGA::tAI_Impl::kAI_LatchOutput_Address:
+		if (value) {	// We are latching to a read select
+			tRioStatusCode status;
+			unsigned char module = GetFakeFPGA()->getAnalog(0)->readReadSelect_Module(&status);
+			NiFpga_WriteI32(session, nFPGA::tAI_Impl::kAI_Output_Address, GetFakeFPGA()->getAnalog(module)->readOutput(&status));
+			value = 0;	// The strobe action is taken, don't set the bit
+		}
+		break;
+	default:
+		{}
+	}
+	// Update value
 	*((uint32_t*)(&GetFakeFPGA()->fpgaRAM[control])) = value;
 	return NiFpga_Status_Success;
 }
