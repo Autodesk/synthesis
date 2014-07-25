@@ -5,33 +5,22 @@ using ExceptionHandling;
 public class DriveJoints : MonoBehaviour
 {
 
-		// Will drive a single motor with a given speed (and brakeTorque)
-		public static void SetMotor (UnityRigidNode wheel, float speed, float brakeTorque)
+		// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor
+		public static void SetListOfMotors (List<UnityRigidNode> setOfWheels, float signal, float brakeTorque)
 		{
-				
-		}
 
-		// A helper function to set a set of motors assigned to a PWM port
-		public static void SetListOfMotors (List<UnityRigidNode> setOfWheels, float speed, float brakeTorque)
-		{
+		// The conversion factor from Oz-In to NM
+		float OzInToNm = .00706155183333f;
+				
 				foreach (UnityRigidNode wheel in setOfWheels) {
 						if (wheel.GetSkeletalJoint ().cDriver.GetInfo<WheelDriverMeta> ().type != WheelType.NOT_A_WHEEL) {
-								wheel.GetWheelCollider ().brakeTorque = brakeTorque;
-								wheel.GetWheelCollider ().motorTorque = speed;
-								wheel.GetConfigJoint ().targetAngularVelocity = new Vector3 (speed * 6 * Time.deltaTime, 0, 0);
+								// Applies a given brakeTorque (value is input as Oz-In but converted to N-M before use)
+								wheel.GetWheelCollider ().brakeTorque = OzInToNm * brakeTorque;
+								// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
+								wheel.GetWheelCollider ().motorTorque = OzInToNm * (signal * 100 * (float)171.1);;
+								wheel.GetConfigJoint ().targetAngularVelocity = new Vector3 (wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
 						}
-						SetMotor (wheel, speed, 0);
-				}
-		}
-
-		public static void StopAllWheelColliders (Dictionary<int, List<UnityRigidNode>> wheels)
-		{
-				foreach (KeyValuePair<int, List<UnityRigidNode>> wheelSet in wheels) {
-						foreach (UnityRigidNode wheel in wheelSet.Value) {
-								wheel.GetWheelCollider ().motorTorque = 0;
-								wheel.GetWheelCollider ().brakeTorque = 500;
-								wheel.GetConfigJoint ().targetAngularVelocity = new Vector3 (0, 0, 0);
-						}
+						
 				}
 		}
 		
@@ -52,20 +41,22 @@ public class DriveJoints : MonoBehaviour
 	
 		// Updates a wheel at the given PWM port with a given value
 		// Note that this also returns true or false, because if a motor is set to 
-		public static void UpdateWheel (Dictionary<int, List<UnityRigidNode>> wheels, int givenPWM, float speed)
+		public static void UpdateWheel (Dictionary<int, List<UnityRigidNode>> wheels, int pwmPort, float speed)
 		{
 				if (speed != 0) {
-						DriveJoints.SetListOfMotors (wheels [givenPWM], speed, 0);
+						DriveJoints.SetListOfMotors (wheels [pwmPort], speed, 0);
 			
 				} else {
-						DriveJoints.SetListOfMotors (wheels [givenPWM], 0, 100);
+						// The maximum brakeTorque of a vex motor is 343.3 oz-in
+						DriveJoints.SetListOfMotors (wheels [pwmPort], 0, 343.3f);
 				}
 		}
 	
 		// Defaults to a value of 10 (60 PSI)... This is not a realistic value, because velocity depends on the volume of the tank as well as the air pressure. We can figure this out, but it might be something for super happy fun time.
 		public static void UpdatePiston (Dictionary<Tuple<int, int>, UnityRigidNode> piston, float pistonPort1, float pistonPort2)
 		{
-				SetConfigJointMotorX (piston [new Tuple<int, int> ((int)pistonPort1, (int)pistonPort2)], 10);
+				// When we get to superHappyFun Time, we will need to calculate some realistic PSI forces and find a way to use that, and the volume of a given tank to calculate an accurate target velocity value for the piston (Hopefull, we can store the data in the UnityRigidNode)
+				SetConfigJointMotorX (piston [new Tuple<int, int> ((int)pistonPort1, (int)pistonPort2)], 30);
 		}
 	
 		public static void UpdateAllWheels (Dictionary<int, List<UnityRigidNode>> wheels, float[] pwm)
@@ -75,8 +66,6 @@ public class DriveJoints : MonoBehaviour
 								UpdateWheel (wheels, i + 1, pwm [i]);
 						}
 				}
-				// For each float in struct?
-				// I may have to do this explicitly
 		}
 }
 
@@ -185,12 +174,15 @@ public class InitializeMotors : MonoBehaviour
 // For example, if i create a instance of the Tuple class, Tuple<int, string>, Item1 (which is assigned the type of X) wil be declared as a public integer. Likewise, Item2 will be declared as a public string.
 // You can set them to use any type of variable in this way (though I am using to make a Tuple-like variable)
 
-public class Tuple<X,Y> {
-	public X Item1 { get; private set;}
-	public Y Item2 { get; private set;}
+public class Tuple<X,Y>
+{
+		public X Item1 { get; private set; }
+
+		public Y Item2 { get; private set; }
 	
-	public Tuple(X item1, Y item2) {
-		Item1 = item1;
-		Item2 = item2;
-	}
+		public Tuple (X item1, Y item2)
+		{
+				Item1 = item1;
+				Item2 = item2;
+		}
 }
