@@ -12,6 +12,10 @@ namespace nFPGA {
 		this->state = state;
 		this->sys_index = sys_index;
 
+		this->lowerLimit = (int32_t*) &(state->fpgaRAM[kLowerLimit_Addresses[sys_index]]);
+		this->upperLimit = (int32_t*) &(state->fpgaRAM[kUpperLimit_Addresses[sys_index]]);
+		this->source = (tSourceSelect*) &(state->fpgaRAM[kSourceSelect_Addresses[sys_index]]);
+
 		*lowerLimit = 0;
 		*upperLimit = 0;
 		(*source).value = 0;

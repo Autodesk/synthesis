@@ -224,9 +224,27 @@ NiFpga_Status NiFpga_WriteU32(NiFpga_Session session, uint32_t control, uint32_t
 	case nFPGA::tAI_Impl::kAI_LatchOutput_Address:
 		if (value) {	// We are latching to a read select
 			tRioStatusCode status;
-			unsigned char module = GetFakeFPGA()->getAnalog(0)->readReadSelect_Module(&status);
-			NiFpga_WriteI32(session, nFPGA::tAI_Impl::kAI_Output_Address, GetFakeFPGA()->getAnalog(module)->readOutput(&status));
+			nFPGA::tAI_Impl::tReadSelect readSelect = GetFakeFPGA()->getAnalog(0)->readReadSelect(&status);
+			NiFpga_WriteI32(session, nFPGA::tAI_Impl::kAI_Output_Address, GetFakeFPGA()->getAnalog(readSelect.Module)->values[readSelect.Channel]);
 			value = 0;	// The strobe action is taken, don't set the bit
+		}
+		break;	
+	case nFPGA::tCounter_Impl::kCounter0_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter1_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter2_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter3_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter4_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter5_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter6_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter7_Reset_Address:
+		{
+			for (int cid = 0; cid<8; cid++) {
+				if (control == nFPGA::tCounter_Impl::kReset_Addresses[cid]) {
+					// Do the reset action
+					value = 0;	// Strobe performed
+					break;
+				}
+			}
 		}
 		break;
 	default:

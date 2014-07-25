@@ -60,9 +60,10 @@ namespace nFPGA {
 
 		int32_t *output;
 
+	public:
+		// Please don't assign
 		// Actual backing sensor values
 		int32_t values[kNumScanListElements];
-	public:
 
 		tAI_Impl(NiFpgaState *state, unsigned char sys_index);
 		virtual ~tAI_Impl();
