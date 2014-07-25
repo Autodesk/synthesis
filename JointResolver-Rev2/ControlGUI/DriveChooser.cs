@@ -70,17 +70,6 @@ public partial class DriveChooser : Form
             this.Height = 300;
             btnSave.Location = new System.Drawing.Point(13, 220);
         }
-        if (JointDriver.IsPneumatic(cType) == true)
-        {
-            btnSave.Visible = true;
-            groupBox2.Visible = false;
-            grpPneumaticSpecs.Visible = true;        
-        }
-        else if (JointDriver.IsPneumatic(cType) == false)
-        {
-            btnSave.Visible = true;
-            grpPneumaticSpecs.Visible = false;
-        }
         if (JointDriver.IsMotor(cType) == true)
         {
             btnSave.Visible = true;
@@ -91,6 +80,17 @@ public partial class DriveChooser : Form
         {
             btnSave.Visible = true;
             groupBox2.Visible = false;
+        }
+        if (JointDriver.IsPneumatic(cType) == true)
+        {
+            btnSave.Visible = true;
+            groupBox2.Visible = false;
+            grpPneumaticSpecs.Visible = true;
+        }
+        else if (JointDriver.IsPneumatic(cType) == false)
+        {
+            btnSave.Visible = true;
+            grpPneumaticSpecs.Visible = false;
         }
     }
 
