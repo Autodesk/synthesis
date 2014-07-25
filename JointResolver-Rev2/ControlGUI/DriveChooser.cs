@@ -59,17 +59,36 @@ public partial class DriveChooser : Form
         lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
-        if (JointDriver.IsMotor(cType) == true)
+        //Dedicated method to change window height
+        if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
         {
             this.Height = 360;
             btnSave.Location = new System.Drawing.Point(13, 280);
-            btnSave.Visible = true;
-            groupBox2.Visible = true;
         }
-        else if (JointDriver.IsMotor(cType) == false)
+        else if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
         {
             this.Height = 300;
             btnSave.Location = new System.Drawing.Point(13, 220);
+        }
+        if (JointDriver.IsPneumatic(cType) == true)
+        {
+            btnSave.Visible = true;
+            groupBox2.Visible = false;
+            grpPneumaticSpecs.Visible = true;        
+        }
+        else if (JointDriver.IsPneumatic(cType) == false)
+        {
+            btnSave.Visible = true;
+            grpPneumaticSpecs.Visible = false;
+        }
+        if (JointDriver.IsMotor(cType) == true)
+        {
+            btnSave.Visible = true;
+            groupBox2.Visible = true;
+            grpPneumaticSpecs.Visible = false;
+        }
+        else if (JointDriver.IsMotor(cType) == false)
+        {
             btnSave.Visible = true;
             groupBox2.Visible = false;
         }
@@ -153,5 +172,15 @@ public partial class DriveChooser : Form
     private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
         friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
+    }
+
+    private void lblForce_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void textBox2_TextChanged(object sender, EventArgs e)
+    {
+
     }
 }

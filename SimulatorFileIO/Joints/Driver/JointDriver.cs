@@ -157,6 +157,18 @@ public class JointDriver
         }
     }
 
+    public static bool IsPneumatic(JointDriverType type)
+    {
+        switch (type)
+        {
+            case JointDriverType.BUMPER_PNEUMATIC:
+            case JointDriverType.RELAY_PNEUMATIC:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     /// <summary>
     /// Gets the maximum port number for the given driver type.
     /// </summary>
