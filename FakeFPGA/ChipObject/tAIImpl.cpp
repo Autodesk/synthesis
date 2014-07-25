@@ -203,6 +203,7 @@ namespace nFPGA {
 	}
 
 	void tAI_Impl::updateValues(signed int nvalues[]) {
+		tRioStatusCode status;
 		for (int i = 0; i < kNumScanListElements; i++) {
 			if (nvalues[i] != values[i]) {		// If this channel changed
 				tAnalogTrigger_Impl::tOutput changeType;
@@ -210,13 +211,13 @@ namespace nFPGA {
 				changeType.Rising = values[i] < nvalues[i];
 				for (int t = 0; t < tAnalogTrigger_Impl::kNumSystems; t++) {	// For every analog trigger...
 					tAnalogTrigger_Impl *trigger = state->analogTrigger[t];
-					if (trigger != NULL && 
-						trigger->source.Module == sys_index && trigger->source.Channel == i) {		// If this trigger is on this channel
-							changeType.OverLimit = nvalues[i] >= trigger->upperLimit;
-							changeType.InHysteresis = nvalues[i] >= trigger->lowerLimit && !changeType.OverLimit;
-							if (trigger->output[trigger->sys_index].value != changeType.value){
-								trigger->output[trigger->sys_index] = changeType;
-								// Signal it somehow?  Not entirely sure how this signal is routed.
+					if (trigger != NULL &&	// If this trigger is on this channel 
+						(*(trigger->source)).Module == sys_index && (*(trigger->source)).Channel == i) {	
+							changeType.OverLimit = nvalues[i] >= *(trigger->upperLimit);
+							changeType.InHysteresis = nvalues[i] >= *(trigger->lowerLimit) && !changeType.OverLimit;
+							if (trigger->readOutput(trigger->sys_index, &status).value != changeType.value){
+								trigger->writeOutput(trigger->sys_index, changeType, &status);
+								// Signal it somehow?  Not entirely sure how this signal is routed. TODO
 								// Plan:  Make IRQs 64 bit.  if analog trigger shift left by 32.
 							}
 					}

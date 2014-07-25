@@ -19,11 +19,15 @@ namespace nFPGA
 		public nFPGA::nFRC_2012_1_6_4::tAlarm
 	{
 	private:
+		static const int kAlarm_TriggerTime_Address = 0x8444;
+		static const int kAlarm_Enable_Address = 0x8448;
+
+	private:
 		static const uint32_t kTimerInterruptNumber = 28;
 
 		NiFpgaState *state;
-		bool enabled;
-		unsigned int triggerTime;
+		uint32_t *enabled;
+		uint32_t *triggerTime;
 		NTTask *notifierTask;
 		WaitSemaphore changeSemaphore;
 

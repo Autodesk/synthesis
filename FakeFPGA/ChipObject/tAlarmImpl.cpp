@@ -12,8 +12,10 @@ namespace nFPGA
 	{
 		this->state = state;
 		this->notifierTask = new NTTask("Notifier", &tAlarm_Impl::runNotifier);
-		this->enabled = false;
-		this->triggerTime = 0;
+		this->enabled = (uint32_t*) &state->fpgaRAM[kAlarm_Enable_Address];
+		this->triggerTime = (uint32_t*) &state->fpgaRAM[kAlarm_TriggerTime_Address];
+		*enabled = false;
+		*triggerTime = 0;
 		this->notifierTask->Start(this);
 	}
 
@@ -36,8 +38,8 @@ namespace nFPGA
 		bool signaled = false;
 		while (true) {
 			unsigned int cTime = impl->state->getGlobal()->readLocalTime(&status);
-			unsigned int delta = (impl->triggerTime - cTime) / 1000;	// Determine how long before the time we want
-			if (!impl->enabled || impl->triggerTime < cTime) {	// If we aren't enabled or the timer has expired
+			unsigned int delta = (*(impl->triggerTime) - cTime) / 1000;	// Determine how long before the time we want
+			if (!impl->enabled || *(impl->triggerTime) < cTime) {	// If we aren't enabled or the timer has expired
 				if (!signaled) {	// If we haven't already signaled then signal
 					impl->state->getIRQManager()->signal(1 << kTimerInterruptNumber);
 					signaled = true;
@@ -58,25 +60,25 @@ namespace nFPGA
 	void tAlarm_Impl::writeEnable(bool value, tRioStatusCode *status)
 	{
 		bool oldEnabled = enabled;
-		enabled = value;
+		*enabled = value;
 		changeSemaphore.notify();	// Notify the sleeper thread that this alarm was enabled
 		*status = NiFpga_Status_Success;
 	}
 	bool tAlarm_Impl::readEnable(tRioStatusCode *status)
 	{
 		*status = NiFpga_Status_Success;
-		return enabled;
+		return *enabled;
 	}
 
 	void tAlarm_Impl::writeTriggerTime(unsigned int value, tRioStatusCode *status)
 	{
 		*status = NiFpga_Status_Success;
-		triggerTime = value;
+		*triggerTime = value;
 		changeSemaphore.notify();	// Notify the sleeper thread that a new alarm was added
 	}
 	unsigned int tAlarm_Impl::readTriggerTime(tRioStatusCode *status)
 	{
 		*status = NiFpga_Status_Success;
-		return triggerTime;
+		return *triggerTime;
 	}
 }
