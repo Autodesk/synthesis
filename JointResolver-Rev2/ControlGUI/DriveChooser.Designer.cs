@@ -37,14 +37,14 @@ partial class DriveChooser
             this.lblPort = new System.Windows.Forms.Label();
             this.txtPortA = new System.Windows.Forms.NumericUpDown();
             this.btnSave = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.grpWheelOptions = new System.Windows.Forms.GroupBox();
             this.cmbFrictionLevel = new System.Windows.Forms.ComboBox();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.grpPneumaticSpecs = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtPneumaticVelocity = new System.Windows.Forms.TextBox();
             this.lblVelocity = new System.Windows.Forms.Label();
             this.lblForce = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtPneumaticForce = new System.Windows.Forms.TextBox();
             this.lblPneumaticVelocityTell = new System.Windows.Forms.Label();
             this.lblPneumaticForceTell = new System.Windows.Forms.Label();
             this.grpChooseDriver.SuspendLayout();
@@ -53,7 +53,7 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
-            this.groupBox2.SuspendLayout();
+            this.grpWheelOptions.SuspendLayout();
             this.grpPneumaticSpecs.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -194,17 +194,17 @@ partial class DriveChooser
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
-            // groupBox2
+            // grpWheelOptions
             // 
-            this.groupBox2.Controls.Add(this.cmbFrictionLevel);
-            this.groupBox2.Controls.Add(this.cmbWheelType);
-            this.groupBox2.Location = new System.Drawing.Point(11, 209);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(339, 63);
-            this.groupBox2.TabIndex = 6;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Wheel Type";
-            this.groupBox2.Enter += new System.EventHandler(this.groupBox2_Enter);
+            this.grpWheelOptions.Controls.Add(this.cmbFrictionLevel);
+            this.grpWheelOptions.Controls.Add(this.cmbWheelType);
+            this.grpWheelOptions.Location = new System.Drawing.Point(11, 209);
+            this.grpWheelOptions.Name = "grpWheelOptions";
+            this.grpWheelOptions.Size = new System.Drawing.Size(339, 63);
+            this.grpWheelOptions.TabIndex = 6;
+            this.grpWheelOptions.TabStop = false;
+            this.grpWheelOptions.Text = "Wheel Type";
+            this.grpWheelOptions.Enter += new System.EventHandler(this.groupBox2_Enter);
             // 
             // cmbFrictionLevel
             // 
@@ -239,10 +239,10 @@ partial class DriveChooser
             // 
             this.grpPneumaticSpecs.Controls.Add(this.lblPneumaticForceTell);
             this.grpPneumaticSpecs.Controls.Add(this.lblPneumaticVelocityTell);
-            this.grpPneumaticSpecs.Controls.Add(this.textBox2);
+            this.grpPneumaticSpecs.Controls.Add(this.txtPneumaticForce);
             this.grpPneumaticSpecs.Controls.Add(this.lblForce);
             this.grpPneumaticSpecs.Controls.Add(this.lblVelocity);
-            this.grpPneumaticSpecs.Controls.Add(this.textBox1);
+            this.grpPneumaticSpecs.Controls.Add(this.txtPneumaticVelocity);
             this.grpPneumaticSpecs.Location = new System.Drawing.Point(11, 209);
             this.grpPneumaticSpecs.Name = "grpPneumaticSpecs";
             this.grpPneumaticSpecs.Size = new System.Drawing.Size(339, 63);
@@ -250,12 +250,12 @@ partial class DriveChooser
             this.grpPneumaticSpecs.TabStop = false;
             this.grpPneumaticSpecs.Text = "Pneumatic Specifications";
             // 
-            // textBox1
+            // txtPneumaticVelocity
             // 
-            this.textBox1.Location = new System.Drawing.Point(7, 22);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 22);
-            this.textBox1.TabIndex = 0;
+            this.txtPneumaticVelocity.Location = new System.Drawing.Point(7, 22);
+            this.txtPneumaticVelocity.Name = "txtPneumaticVelocity";
+            this.txtPneumaticVelocity.Size = new System.Drawing.Size(100, 22);
+            this.txtPneumaticVelocity.TabIndex = 0;
             // 
             // lblVelocity
             // 
@@ -276,13 +276,13 @@ partial class DriveChooser
             this.lblForce.Text = "N";
             this.lblForce.Click += new System.EventHandler(this.lblForce_Click);
             // 
-            // textBox2
+            // txtPneumaticForce
             // 
-            this.textBox2.Location = new System.Drawing.Point(183, 21);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 22);
-            this.textBox2.TabIndex = 3;
-            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.txtPneumaticForce.Location = new System.Drawing.Point(183, 21);
+            this.txtPneumaticForce.Name = "txtPneumaticForce";
+            this.txtPneumaticForce.Size = new System.Drawing.Size(100, 22);
+            this.txtPneumaticForce.TabIndex = 3;
+            this.txtPneumaticForce.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
             // 
             // lblPneumaticVelocityTell
             // 
@@ -308,7 +308,7 @@ partial class DriveChooser
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(362, 314);
             this.Controls.Add(this.grpPneumaticSpecs);
-            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.grpWheelOptions);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grpDriveOptions);
             this.Controls.Add(this.grpChooseDriver);
@@ -321,7 +321,7 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).EndInit();
-            this.groupBox2.ResumeLayout(false);
+            this.grpWheelOptions.ResumeLayout(false);
             this.grpPneumaticSpecs.ResumeLayout(false);
             this.grpPneumaticSpecs.PerformLayout();
             this.ResumeLayout(false);
@@ -340,14 +340,14 @@ partial class DriveChooser
     private System.Windows.Forms.Label lblPort;
     private System.Windows.Forms.NumericUpDown txtPortA;
     private System.Windows.Forms.Button btnSave;
-    private System.Windows.Forms.GroupBox groupBox2;
+    private System.Windows.Forms.GroupBox grpWheelOptions;
     private System.Windows.Forms.ComboBox cmbWheelType;
     private System.Windows.Forms.ComboBox cmbFrictionLevel;
     private System.Windows.Forms.GroupBox grpPneumaticSpecs;
-    private System.Windows.Forms.TextBox textBox2;
+    private System.Windows.Forms.TextBox txtPneumaticForce;
     private System.Windows.Forms.Label lblForce;
     private System.Windows.Forms.Label lblVelocity;
-    private System.Windows.Forms.TextBox textBox1;
+    private System.Windows.Forms.TextBox txtPneumaticVelocity;
     private System.Windows.Forms.Label lblPneumaticForceTell;
     private System.Windows.Forms.Label lblPneumaticVelocityTell;
 }

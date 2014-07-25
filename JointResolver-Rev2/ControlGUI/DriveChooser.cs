@@ -73,18 +73,18 @@ public partial class DriveChooser : Form
         if (JointDriver.IsMotor(cType) == true)
         {
             btnSave.Visible = true;
-            groupBox2.Visible = true;
+            grpWheelOptions.Visible = true;
             grpPneumaticSpecs.Visible = false;
         }
         else if (JointDriver.IsMotor(cType) == false)
         {
             btnSave.Visible = true;
-            groupBox2.Visible = false;
+            grpWheelOptions.Visible = false;
         }
         if (JointDriver.IsPneumatic(cType) == true)
         {
             btnSave.Visible = true;
-            groupBox2.Visible = false;
+            grpWheelOptions.Visible = false;
             grpPneumaticSpecs.Visible = true;
         }
         else if (JointDriver.IsPneumatic(cType) == false)
