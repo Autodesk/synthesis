@@ -15,29 +15,77 @@ namespace nFPGA {
 	class NiFpgaState;
 
 	class tDIO_Impl: public nFPGA::nFRC_2012_1_6_4::tDIO {
+		// Addresses
+	private:
+#pragma region ADDRESSES
+		static const int kDIO_LoopTiming_Address = 0x8200;
+		static const int kDIO0_FilterSelect_Address = 0x8268;
+		static const int kDIO1_FilterSelect_Address = 0x82D4;
+		static const int kFilterSelect_Addresses[];
+		static const int kDIO0_DO_Address = 0x8208;
+		static const int kDIO1_DO_Address = 0x8274;
+		static const int kDO_Addresses [];
+		static const int kFilterPeriod_NumElements = 3;
+		static const int kFilterPeriod_ElementSize = 8;
+		static const int kFilterPeriod_ElementMask = 0xFF;
+		static const int kDIO0_FilterPeriod_Address = 0x8264;
+		static const int kDIO1_FilterPeriod_Address = 0x82D0;
+		static const int kFilterPeriod_Addresses [];
+		static const int kDIO0_OutputEnable_Address = 0x8210;
+		static const int kDIO1_OutputEnable_Address = 0x827C;
+		static const int kOutputEnable_Addresses [];
+		static const int kDIO0_Pulse_Address = 0x825C;
+		static const int kDIO1_Pulse_Address = 0x82C8;
+		static const int kPulse_Addresses [];
+		static const int kDIO0_SlowValue_Address = 0x8254;
+		static const int kDIO1_SlowValue_Address = 0x82C0;
+		static const int kSlowValue_Addresses [];
+		static const int kDIO0_DI_Address = 0x820C;
+		static const int kDIO1_DI_Address = 0x8278;
+		static const int kDI_Addresses [];
+		static const int kDIO0_PulseLength_Address = 0x8260;
+		static const int kDIO1_PulseLength_Address = 0x82CC;
+		static const int kPulseLength_Addresses [];  
+		static const int kPWMPeriodScale_NumElements = 10;
+		static const int kPWMPeriodScale_ElementSize = 2;
+		static const int kPWMPeriodScale_ElementMask = 0x3;
+		static const int kDIO0_PWMPeriodScale_Address = 0x823C;
+		static const int kDIO1_PWMPeriodScale_Address = 0x82A8;
+		static const int kPWMPeriodScale_Addresses [];
+		static const int kDO_PWMDutyCycle_NumElements = 4;
+		static const int kDO_PWMDutyCycle_ElementSize = 8;
+		static const int kDO_PWMDutyCycle_ElementMask = 0xFF;
+		static const int kDIO0_DO_PWMDutyCycle_Address = 0x826C;
+		static const int kDIO1_DO_PWMDutyCycle_Address = 0x82D8;
+		static const int kDO_PWMDutyCycle_Addresses [];
+		static const int kDIO0_DO_PWMConfig_Address = 0x8270;
+		static const int kDIO1_DO_PWMConfig_Address = 0x82DC;
+		static const int kDO_PWMConfig_Addresses [] ;
+		static const int kDIO_PWMConfig_Address = 0x8204;
+		static const int kDIO0_PWMValue_Address = 0x8214;
+		static const int kDIO1_PWMValue_Address = 0x8280;
+		static const int kPWMValue_Addresses[];
+#pragma endregion
 	private:
 		NiFpgaState *state;
 		unsigned char index;
 	private:
-		unsigned short digitalOutputPort;
-		unsigned short digitalOutputState;
-		unsigned short digitalOutputPulse;
-		unsigned char digitalOutputPulseLength;
+		uint32_t *digitalOutputPort;
+		uint32_t *digitalOutputState;
+		uint32_t *digitalOutputPulse;
+		uint32_t *digitalOutputPulseLength;
 
-		unsigned char relayForward;
-		unsigned char relayReverse;
-		unsigned char i2cHeader;
+		tSlowValue *slowValue;
 
-		uint8_t doPWMPeriod[kNumDO_PWMDutyCycleElements];
-		uint8_t doPWMDutyCycle[kNumDO_PWMDutyCycleElements];
-		tDO_PWMConfig doPwmConfig;
+		uint32_t *doPWMDutyCycle;
+		tDO_PWMConfig *doPwmConfig;
 
-		tPWMConfig pwmConfig;
-		uint8_t pwmPeriodScale[kNumPWMPeriodScaleElements];
+		tPWMConfig *pwmConfig;
+		uint32_t *pwmPeriodScale;
 
-		unsigned short loopTiming;	// This better be 260
+		uint32_t *loopTiming;	// This better be 260
 	public:
-		uint8_t pwmValue[kNumPWMValueRegisters];
+		uint32_t *pwmValue;
 		uint8_t pwmTypes[kNumPWMValueRegisters];
 
 	public:

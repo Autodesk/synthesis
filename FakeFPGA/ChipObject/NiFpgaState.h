@@ -40,6 +40,8 @@ namespace nFPGA {
 		friend class tAlarm_Impl;
 
 	private:
+		static const uint32_t FPGA_RAM_SIZE = 0x10000;
+
 		tDIO_Impl **dio;
 		tAI_Impl **ai;
 		tAccumulator_Impl **accum;
@@ -52,7 +54,10 @@ namespace nFPGA {
 		tAlarm_Impl *alarm;
 
 		NiIRQ_Impl *irqManager;
+
 	public:
+		char *fpgaRAM;
+
 		NiFpgaState();
 		virtual ~NiFpgaState();
 
