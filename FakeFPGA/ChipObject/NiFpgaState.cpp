@@ -20,6 +20,8 @@
 
 #include "ChipObject/NiIRQImpl.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h> // memset and memcpy
 
 namespace nFPGA {
 

@@ -5,7 +5,10 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <OSAL/OSAL.h>
+#if USE_WINAPI
 #include <Windows.h>
+#endif
 
 #define UPDC32(octet,crc) (crc_32_tab[((crc)\
      ^ ((BYTE)octet)) & 0xff] ^ ((crc) >> 8))

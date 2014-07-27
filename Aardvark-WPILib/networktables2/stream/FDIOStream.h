@@ -15,7 +15,11 @@ class FDIOStream;
 
 #include "networktables2/stream/IOStream.h"
 #include <stdio.h>
+#include "OSAL/OSAL.h"
+#if USE_WINAPI
 #include <winsock.h>
+#elif USE_POSIX
+#endif
 
 
 

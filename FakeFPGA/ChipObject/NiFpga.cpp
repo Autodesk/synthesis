@@ -22,6 +22,7 @@
 #include <tInterrupt.h>
 #include <tCounter.h>
 #include <tAnalogTrigger.h>
+#include <string.h>	//memcpy and memset
 
 extern "C" {
 	nFPGA::NiFpgaState *frcFPGAInstance = NULL;

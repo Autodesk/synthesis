@@ -7,19 +7,32 @@
 #define strdup _strdup
 #define fdopen _fdopen
 
+#ifndef __LITTLE_ENDIAND
+#ifndef __BIG_ENDIAN
 #define __LITTLE_ENDIAN	1
+#endif
+#endif
 
 #else
 
+#ifndef __LITTLE_ENDIAND
+#ifndef __BIG_ENDIAN
 #define __BIG_ENDIAN	1
+#endif
+#endif
 
 #define USE_POSIX 1
 typedef void* LPVOID ;
-typedef int DWORD ;
+typedef unsigned int DWORD ;
+typedef int SOCKET;
 typedef DWORD (*PTHREAD_START_ROUTINE)(LPVOID) ;
 #define WINAPI /**/
 #define closesocket close
-#define min(a,b) ((a<b) ? (a) : (b))
+#define SOCKET_ERROR (-1)
+#define INFINITE 0xFFFFFFFF
+
+#include <unistd.h>
+inline void Sleep(unsigned int ms) { usleep(ms * 1000); }
 
 #endif
 #endif

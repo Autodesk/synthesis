@@ -6,6 +6,9 @@
 #include <OSAL/WaitSemaphore.h>
 #if USE_WINAPI
 #include <Windows.h>
+#elif USE_POSIX
+#include <sys/socket.h>
+#include <netinet/in.h>
 #endif
 
 #include "FRCNetStructures.h"
