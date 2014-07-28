@@ -261,22 +261,22 @@ NiFpga_Status NiFpga_WriteU32(NiFpga_Session session, uint32_t control, uint32_t
 #pragma region ENCODER_RESET
 	case nFPGA::tEncoder_Impl::kEncoder0_Reset_Address:
 		// Do the reset action
-		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		GetFakeFPGA()->getEncoder(0)->doReset();
 		value = 0;	// Strobe performed
 		break;
 	case nFPGA::tEncoder_Impl::kEncoder1_Reset_Address:
 		// Do the reset action
-		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		GetFakeFPGA()->getEncoder(1)->doReset();
 		value = 0;	// Strobe performed
 		break;
 	case nFPGA::tEncoder_Impl::kEncoder2_Reset_Address:
 		// Do the reset action
-		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		GetFakeFPGA()->getEncoder(2)->doReset();
 		value = 0;	// Strobe performed
 		break;
 	case nFPGA::tEncoder_Impl::kEncoder3_Reset_Address:
 		// Do the reset action
-		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		GetFakeFPGA()->getEncoder(3)->doReset();
 		value = 0;	// Strobe performed
 		break;
 #pragma endregion
@@ -417,6 +417,9 @@ NiFpga_Status NiFpga_WaitOnIrqs(NiFpga_Session session, NiFpga_IrqContext contex
 	/*exit(1);
 	return NiFpga_Status_ResourceNotFound;*/
 	GetFakeFPGA()->getIRQManager()->waitFor(irqs, timeout, irqsAsserted, timedOut);
+	if (timedOut) {
+		return NiFpga_Status_IrqTimeout;
+	}
 	return NiFpga_Status_Success;
 }
 

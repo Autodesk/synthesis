@@ -7,6 +7,7 @@ namespace nFPGA {
 	class NiFpgaState;
 
 	class tCounter_Impl : public nFPGA::nFRC_2012_1_6_4::tCounter {
+	// TODO.  Software implement counter or source values from FPGA.
 	private:
 #pragma region ADDRESSES
 		static const int kCounter0_Output_Address = 0x82E8;

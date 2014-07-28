@@ -19,6 +19,8 @@ namespace nFPGA {
 		this->timerConfig = (tTimerConfig*) &(state->fpgaRAM[kTimerConfig_Addresses[sys_index]]);
 		this->timerOutput = (tTimerOutput*) &(state->fpgaRAM[kTimerOutput_Addresses[sys_index]]);
 
+		this->outputOffset = 0;
+
 		(*encoderConfig).value = 0;
 		(*encoderConfig).Enable = false;
 
@@ -217,4 +219,16 @@ namespace nFPGA {
 		return (*timerConfig).UpdateWhenEmpty;
 	}
 
+	void tEncoder_Impl::doUpdate(int32_t value) {
+		int32_t prev = ((*encoderOutput).Value + outputOffset);
+		bool dir = prev < value;
+		(*encoderOutput).Value = ((*encoderConfig).Reverse ? -1 : 1) * (value - outputOffset);
+		(*encoderOutput).Direction = (*encoderConfig).Reverse ? !dir : dir;
+	}
+
+	void tEncoder_Impl::doReset() {
+		int32_t prev = ((*encoderOutput).Value + outputOffset);
+		outputOffset = prev;
+		doUpdate(prev);
+	}
 }

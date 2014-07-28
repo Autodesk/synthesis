@@ -47,7 +47,10 @@ namespace nFPGA {
 		tConfig *encoderConfig;
 		tTimerOutput *timerOutput;
 		tTimerConfig *timerConfig;
+
+		int32_t outputOffset;
 	public:
+
 		tEncoder_Impl(NiFpgaState *state, unsigned char sys_index);
 		virtual ~tEncoder_Impl();
 
@@ -100,6 +103,9 @@ namespace nFPGA {
 		virtual unsigned int readTimerConfig_StallPeriod(tRioStatusCode *status);
 		virtual unsigned char readTimerConfig_AverageSize(tRioStatusCode *status);
 		virtual bool readTimerConfig_UpdateWhenEmpty(tRioStatusCode *status);
+
+		void doUpdate(int32_t value);
+		void doReset();
 	};
 }
 
