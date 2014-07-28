@@ -1,25 +1,20 @@
 #ifndef __OSAL_H
 #define __OSAL_H
 
-#if _WIN32
-
-#define USE_WINAPI 1
-#define strdup _strdup
-#define fdopen _fdopen
-
 #ifndef __LITTLE_ENDIAND
 #ifndef __BIG_ENDIAN
 #define __LITTLE_ENDIAN	1
 #endif
 #endif
 
-#else
+#if _WIN32
 
-#ifndef __LITTLE_ENDIAND
-#ifndef __BIG_ENDIAN
-#define __BIG_ENDIAN	1
-#endif
-#endif
+#define NOMINMAX
+#define USE_WINAPI 1
+#define strdup _strdup
+#define fdopen _fdopen
+
+#else
 
 #define USE_POSIX 1
 typedef void* LPVOID ;
