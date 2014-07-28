@@ -22,6 +22,9 @@ public partial class DriveChooser : Form
     private SkeletalJoint_Base joint;
     private WheelType wheelType;
     private FrictionLevel friction;
+    public int pneumaticType;
+    public string pnuematicTypeName;
+    private JointDriverType driverType;
     private PneumaticDiameter diameter;
     private PneumaticPressure pressure;
     RigidNode node;
@@ -118,8 +121,52 @@ public partial class DriveChooser : Form
 
         if (JointDriver.IsPneumatic(cType))
         {
-            WheelAnalyzer.SaveToPneumaticJoint(diameter, force, node);
+            WheelAnalyzer.SaveToPneumaticJoint(driverType, diameter, pressure, node);
         }
+
+    }
+
+    private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        wheelType = (WheelType)cmbWheelType.SelectedIndex;
+
+        if (wheelType == WheelType.NOT_A_WHEEL)
+        {
+            cmbFrictionLevel.Visible = false;
+        }
+        else
+        {
+            cmbFrictionLevel.Visible = true;
+        }
+    }
+
+    private void cmbFrictionLevel_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
+    }
+
+    private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        diameter = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex;
+    }
+
+    private void cmbPneumaticForce_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        pressure = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex;
+    }
+
+    private void lblVelocity_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void lblPneumaticVelocityTell_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void lblPneumaticForceTell_Click(object sender, EventArgs e)
+    {
 
     }
 
@@ -148,31 +195,6 @@ public partial class DriveChooser : Form
 
     }
 
-
-    private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        wheelType = (WheelType)cmbWheelType.SelectedIndex;
-
-        if (wheelType == WheelType.NOT_A_WHEEL)
-        {
-            cmbFrictionLevel.Visible = false;
-        }
-        else
-        {
-            cmbFrictionLevel.Visible = true;
-        }
-    }
-
-    private void grpWheelOptions_Enter(object sender, EventArgs e)
-    {
-
-    }
-
-    private void cmbFrictionLevel_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
-    }
-
     private void lblForce_Click(object sender, EventArgs e)
     {
 
@@ -183,27 +205,7 @@ public partial class DriveChooser : Form
 
     }
 
-    private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        diameter = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex;
-    }
-
-    private void cmbPneumaticForce_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        pressure = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex;
-    }
-
-    private void lblVelocity_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void lblPneumaticVelocityTell_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void lblPneumaticForceTell_Click(object sender, EventArgs e)
+    private void grpWheelOptions_Enter(object sender, EventArgs e)
     {
 
     }
