@@ -15,6 +15,19 @@ public enum FrictionLevel : byte
     LOW = 2
 }
 
+//find proper specs for these
+public enum PneumaticVelocity : byte
+{
+    HIGH = 0,
+    MEDIUM = 1,
+    LOW = 2
+}
+
+public enum PneumaticForce : byte
+{
+
+}
+
 public class WheelDriverMeta : JointDriverMeta
 {
     /// <summary>

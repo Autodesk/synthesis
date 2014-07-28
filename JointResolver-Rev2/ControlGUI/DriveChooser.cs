@@ -22,6 +22,8 @@ public partial class DriveChooser : Form
     private SkeletalJoint_Base joint;
     private WheelType wheelType;
     private FrictionLevel friction;
+    private PneumaticVelocity velocity;
+    private PneumaticForce force;
     RigidNode node;
 
 
@@ -42,8 +44,8 @@ public partial class DriveChooser : Form
             cmbJointDriver_SelectedIndexChanged(null, null);
             txtPortA.Value = joint.cDriver.portA;
             txtPortB.Value = joint.cDriver.portB;
-            txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
-            txtHighLimit.Value = (decimal) joint.cDriver.upperLimit;
+            txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
+            txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
         }
         ShowDialog();
     }
@@ -101,10 +103,10 @@ public partial class DriveChooser : Form
 
         joint.cDriver = new JointDriver(cType);
 
-        joint.cDriver.portA = (int) txtPortA.Value;
-        joint.cDriver.portB = (int) txtPortB.Value;
-        joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
-        joint.cDriver.upperLimit = (float) txtHighLimit.Value;
+        joint.cDriver.portA = (int)txtPortA.Value;
+        joint.cDriver.portB = (int)txtPortB.Value;
+        joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
+        joint.cDriver.upperLimit = (float)txtHighLimit.Value;
 
         //Only need to store wheel driver if run by motor and is a wheel.
         if (JointDriver.IsMotor(cType) && wheelType != WheelType.NOT_A_WHEEL)
@@ -113,6 +115,12 @@ public partial class DriveChooser : Form
         }
 
         Hide();
+
+        if (JointDriver.IsPneumatic(cType))
+        {
+            WheelAnalyzer.SaveToPneumaticJoint(velocity, force, node);
+        }
+
     }
 
     private void txtPortA_ValueChanged(object sender, EventArgs e)
@@ -170,13 +178,18 @@ public partial class DriveChooser : Form
 
     }
 
-    private void txtPneumaticForce_TextChanged(object sender, EventArgs e)
+    private void lblOver_Click(object sender, EventArgs e)
     {
 
     }
 
-    private void lblOver_Click(object sender, EventArgs e)
+    private void cmbPneumaticVelocity_SelectedIndexChanged(object sender, EventArgs e)
     {
+        velocity = (PneumaticVelocity)cmbPneumaticVelocity.SelectedIndex;
+    }
 
+    private void cmbPneumaticForce_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        force = (PneumaticForce)cmbPneumaticForce.SelectedIndex;
     }
 }
