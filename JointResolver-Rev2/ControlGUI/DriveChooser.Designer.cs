@@ -41,12 +41,16 @@ partial class DriveChooser
             this.cmbFrictionLevel = new System.Windows.Forms.ComboBox();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.grpPneumaticSpecs = new System.Windows.Forms.GroupBox();
-            this.txtPneumaticVelocity = new System.Windows.Forms.TextBox();
-            this.lblVelocity = new System.Windows.Forms.Label();
-            this.lblForce = new System.Windows.Forms.Label();
-            this.txtPneumaticForce = new System.Windows.Forms.TextBox();
-            this.lblPneumaticVelocityTell = new System.Windows.Forms.Label();
             this.lblPneumaticForceTell = new System.Windows.Forms.Label();
+            this.lblPneumaticVelocityTell = new System.Windows.Forms.Label();
+            this.txtPneumaticForce = new System.Windows.Forms.TextBox();
+            this.lblForce = new System.Windows.Forms.Label();
+            this.lblVelocity = new System.Windows.Forms.Label();
+            this.txtPneumaticVelocity = new System.Windows.Forms.TextBox();
+            this.grpGearRatio = new System.Windows.Forms.GroupBox();
+            this.txtGearRationNum = new System.Windows.Forms.TextBox();
+            this.txtGearRationDenom = new System.Windows.Forms.TextBox();
+            this.lblOver = new System.Windows.Forms.Label();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
@@ -55,6 +59,7 @@ partial class DriveChooser
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
             this.grpWheelOptions.SuspendLayout();
             this.grpPneumaticSpecs.SuspendLayout();
+            this.grpGearRatio.SuspendLayout();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -186,7 +191,7 @@ partial class DriveChooser
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(11, 278);
+            this.btnSave.Location = new System.Drawing.Point(11, 334);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(338, 28);
             this.btnSave.TabIndex = 3;
@@ -250,39 +255,14 @@ partial class DriveChooser
             this.grpPneumaticSpecs.TabStop = false;
             this.grpPneumaticSpecs.Text = "Pneumatic Specifications";
             // 
-            // txtPneumaticVelocity
+            // lblPneumaticForceTell
             // 
-            this.txtPneumaticVelocity.Location = new System.Drawing.Point(7, 22);
-            this.txtPneumaticVelocity.Name = "txtPneumaticVelocity";
-            this.txtPneumaticVelocity.Size = new System.Drawing.Size(100, 22);
-            this.txtPneumaticVelocity.TabIndex = 0;
-            // 
-            // lblVelocity
-            // 
-            this.lblVelocity.AutoSize = true;
-            this.lblVelocity.Location = new System.Drawing.Point(114, 22);
-            this.lblVelocity.Name = "lblVelocity";
-            this.lblVelocity.Size = new System.Drawing.Size(30, 17);
-            this.lblVelocity.TabIndex = 1;
-            this.lblVelocity.Text = "m/s";
-            // 
-            // lblForce
-            // 
-            this.lblForce.AutoSize = true;
-            this.lblForce.Location = new System.Drawing.Point(289, 21);
-            this.lblForce.Name = "lblForce";
-            this.lblForce.Size = new System.Drawing.Size(18, 17);
-            this.lblForce.TabIndex = 2;
-            this.lblForce.Text = "N";
-            this.lblForce.Click += new System.EventHandler(this.lblForce_Click);
-            // 
-            // txtPneumaticForce
-            // 
-            this.txtPneumaticForce.Location = new System.Drawing.Point(183, 21);
-            this.txtPneumaticForce.Name = "txtPneumaticForce";
-            this.txtPneumaticForce.Size = new System.Drawing.Size(100, 22);
-            this.txtPneumaticForce.TabIndex = 3;
-            this.txtPneumaticForce.TextChanged += new System.EventHandler(this.txtPneumaticForce_TextChanged);
+            this.lblPneumaticForceTell.AutoSize = true;
+            this.lblPneumaticForceTell.Location = new System.Drawing.Point(289, 38);
+            this.lblPneumaticForceTell.Name = "lblPneumaticForceTell";
+            this.lblPneumaticForceTell.Size = new System.Drawing.Size(44, 17);
+            this.lblPneumaticForceTell.TabIndex = 5;
+            this.lblPneumaticForceTell.Text = "Force";
             // 
             // lblPneumaticVelocityTell
             // 
@@ -293,20 +273,82 @@ partial class DriveChooser
             this.lblPneumaticVelocityTell.TabIndex = 4;
             this.lblPneumaticVelocityTell.Text = "Velocity";
             // 
-            // lblPneumaticForceTell
+            // txtPneumaticForce
             // 
-            this.lblPneumaticForceTell.AutoSize = true;
-            this.lblPneumaticForceTell.Location = new System.Drawing.Point(289, 38);
-            this.lblPneumaticForceTell.Name = "lblPneumaticForceTell";
-            this.lblPneumaticForceTell.Size = new System.Drawing.Size(44, 17);
-            this.lblPneumaticForceTell.TabIndex = 5;
-            this.lblPneumaticForceTell.Text = "Force";
+            this.txtPneumaticForce.Location = new System.Drawing.Point(183, 21);
+            this.txtPneumaticForce.Name = "txtPneumaticForce";
+            this.txtPneumaticForce.Size = new System.Drawing.Size(100, 22);
+            this.txtPneumaticForce.TabIndex = 3;
+            this.txtPneumaticForce.TextChanged += new System.EventHandler(this.txtPneumaticForce_TextChanged);
+            // 
+            // lblForce
+            // 
+            this.lblForce.AutoSize = true;
+            this.lblForce.Location = new System.Drawing.Point(289, 21);
+            this.lblForce.Name = "lblForce";
+            this.lblForce.Size = new System.Drawing.Size(26, 17);
+            this.lblForce.TabIndex = 2;
+            this.lblForce.Text = "psi";
+            this.lblForce.Click += new System.EventHandler(this.lblForce_Click);
+            // 
+            // lblVelocity
+            // 
+            this.lblVelocity.AutoSize = true;
+            this.lblVelocity.Location = new System.Drawing.Point(114, 22);
+            this.lblVelocity.Name = "lblVelocity";
+            this.lblVelocity.Size = new System.Drawing.Size(30, 17);
+            this.lblVelocity.TabIndex = 1;
+            this.lblVelocity.Text = "m/s";
+            // 
+            // txtPneumaticVelocity
+            // 
+            this.txtPneumaticVelocity.Location = new System.Drawing.Point(7, 22);
+            this.txtPneumaticVelocity.Name = "txtPneumaticVelocity";
+            this.txtPneumaticVelocity.Size = new System.Drawing.Size(100, 22);
+            this.txtPneumaticVelocity.TabIndex = 0;
+            // 
+            // grpGearRatio
+            // 
+            this.grpGearRatio.Controls.Add(this.lblOver);
+            this.grpGearRatio.Controls.Add(this.txtGearRationDenom);
+            this.grpGearRatio.Controls.Add(this.txtGearRationNum);
+            this.grpGearRatio.Location = new System.Drawing.Point(13, 279);
+            this.grpGearRatio.Name = "grpGearRatio";
+            this.grpGearRatio.Size = new System.Drawing.Size(331, 49);
+            this.grpGearRatio.TabIndex = 7;
+            this.grpGearRatio.TabStop = false;
+            this.grpGearRatio.Text = "Gear Ratio";
+            // 
+            // txtGearRationNum
+            // 
+            this.txtGearRationNum.Location = new System.Drawing.Point(6, 20);
+            this.txtGearRationNum.Name = "txtGearRationNum";
+            this.txtGearRationNum.Size = new System.Drawing.Size(100, 22);
+            this.txtGearRationNum.TabIndex = 0;
+            // 
+            // txtGearRationDenom
+            // 
+            this.txtGearRationDenom.Location = new System.Drawing.Point(130, 20);
+            this.txtGearRationDenom.Name = "txtGearRationDenom";
+            this.txtGearRationDenom.Size = new System.Drawing.Size(100, 22);
+            this.txtGearRationDenom.TabIndex = 1;
+            // 
+            // lblOver
+            // 
+            this.lblOver.AutoSize = true;
+            this.lblOver.Location = new System.Drawing.Point(112, 25);
+            this.lblOver.Name = "lblOver";
+            this.lblOver.Size = new System.Drawing.Size(12, 17);
+            this.lblOver.TabIndex = 2;
+            this.lblOver.Text = "/";
+            this.lblOver.Click += new System.EventHandler(this.lblOver_Click);
             // 
             // DriveChooser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 314);
+            this.ClientSize = new System.Drawing.Size(362, 374);
+            this.Controls.Add(this.grpGearRatio);
             this.Controls.Add(this.grpPneumaticSpecs);
             this.Controls.Add(this.grpWheelOptions);
             this.Controls.Add(this.btnSave);
@@ -324,6 +366,8 @@ partial class DriveChooser
             this.grpWheelOptions.ResumeLayout(false);
             this.grpPneumaticSpecs.ResumeLayout(false);
             this.grpPneumaticSpecs.PerformLayout();
+            this.grpGearRatio.ResumeLayout(false);
+            this.grpGearRatio.PerformLayout();
             this.ResumeLayout(false);
 
     }
@@ -350,4 +394,8 @@ partial class DriveChooser
     private System.Windows.Forms.TextBox txtPneumaticVelocity;
     private System.Windows.Forms.Label lblPneumaticForceTell;
     private System.Windows.Forms.Label lblPneumaticVelocityTell;
+    private System.Windows.Forms.GroupBox grpGearRatio;
+    private System.Windows.Forms.TextBox txtGearRationNum;
+    private System.Windows.Forms.Label lblOver;
+    private System.Windows.Forms.TextBox txtGearRationDenom;
 }

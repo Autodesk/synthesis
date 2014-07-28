@@ -60,10 +60,15 @@ public partial class DriveChooser : Form
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
         //Dedicated method to change window height
-        if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
+        if (JointDriver.IsPneumatic(cType) == true)
         {
             this.Height = 360;
             btnSave.Location = new System.Drawing.Point(13, 280);
+        }
+        else if (JointDriver.IsMotor(cType) == true)
+        {
+            this.Height = 420;
+            btnSave.Location = new System.Drawing.Point(13, 340);
         }
         else if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
         {
@@ -176,6 +181,11 @@ public partial class DriveChooser : Form
     }
 
     private void txtPneumaticForce_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void lblOver_Click(object sender, EventArgs e)
     {
 
     }
