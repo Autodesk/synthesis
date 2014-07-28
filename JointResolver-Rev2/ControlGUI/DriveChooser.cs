@@ -68,21 +68,24 @@ public partial class DriveChooser : Form
             grpGearRatio.Visible = false;
             grpPneumaticSpecs.Visible = false;
         }
-        if (JointDriver.IsMotor(cType) == true)
+        else if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
         {
-            this.Height = 420;
-            btnSave.Location = new System.Drawing.Point(13, 340);
-            grpWheelOptions.Visible = true;
-            grpGearRatio.Visible = true;
-            grpPneumaticSpecs.Visible = false;
-        }
-        if (JointDriver.IsPneumatic(cType) == true)
-        {
-            this.Height = 360;
-            btnSave.Location = new System.Drawing.Point(13, 280);
-            grpPneumaticSpecs.Visible = true;
-            grpWheelOptions.Visible = false;
-            grpGearRatio.Visible = false;
+            if (JointDriver.IsMotor(cType) == true)
+            {
+                this.Height = 420;
+                btnSave.Location = new System.Drawing.Point(13, 340);
+                grpWheelOptions.Visible = true;
+                grpGearRatio.Visible = true;
+                grpPneumaticSpecs.Visible = false;
+            }
+            else if (JointDriver.IsPneumatic(cType) == true)
+            {
+                this.Height = 360;
+                btnSave.Location = new System.Drawing.Point(13, 280);
+                grpPneumaticSpecs.Visible = true;
+                grpWheelOptions.Visible = false;
+                grpGearRatio.Visible = false;
+            }
         }
     }
 
