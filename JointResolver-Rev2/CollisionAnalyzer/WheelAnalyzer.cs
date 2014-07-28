@@ -162,36 +162,6 @@ class WheelAnalyzer
         node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);
     }
 
-    public static void SaveToPneumaticJoint(PneumaticDiameter diameter, PneumaticPressure force, RigidNode node)
-    {
-        SkeletalJoint_Base joint = node.GetSkeletalJoint();
-        WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
-        RigidNode.DeferredCalculation newCalculation;
-
-        wheelDriver.type = type;
-
-        //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
-        switch (diameter)
-        {
-            case PneumaticDiameter.HIGH:
-                pneumaticDriver.widthMM = 10;
-
-            case FrictionLevel.MEDIUM:
-                pneumaticDriver.widthMM = 5;
-
-            case FrictionLevel.LOW:
-                pneumaticDriver.widthMM = 1;
-                break;
-        }
-
-        switch (force 
-
-        joint.cDriver.AddInfo(wheelDriver);
-
-        newCalculation = StartCalculations;
-        node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);
-    }
-
     /// <summary>
     /// Calculates the width and centerpoint of a wheel.
     /// </summary>
@@ -295,6 +265,45 @@ class WheelAnalyzer
         Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
     }
 
+    public static void SaveToPneumaticJoint(PneumaticDiameter diameter, PneumaticPressure pressure, RigidNode node)
+    {
+        SkeletalJoint_Base joint = node.GetSkeletalJoint();
+        PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta(); //The info about the wheel attached to the joint.
+        RigidNode.DeferredCalculation newCalculation;
+
+        pneumaticDriver.type = type;
+
+        //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
+        switch (diameter)
+        {
+            case PneumaticDiameter.HIGH:
+                pneumaticDriver.widthMM = 10;
+
+            case PneumaticDiameter.MEDIUM:
+                pneumaticDriver.widthMM = 5;
+
+            case PneumaticDiameter.LOW:
+                pneumaticDriver.widthMM = 1;
+                break;
+        }
+
+        switch (pressure)
+        {
+            case PneumaticPressure.HIGH:
+                pneumaticDriver.pressurePSI = 10;
+
+            case PneumaticPressure.MEDIUM:
+                pneumaticDriver.pressurePSI = 5;
+
+            case PneumaticPressure.LOW:
+                pneumaticDriver.pressurePSI = 1;
+        }
+
+        joint.cDriver.AddInfo(wheelDriver);
+
+        newCalculation = StartCalculations;
+        node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);
+    }
 
 }
 
