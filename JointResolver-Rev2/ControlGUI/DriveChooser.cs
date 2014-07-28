@@ -22,8 +22,8 @@ public partial class DriveChooser : Form
     private SkeletalJoint_Base joint;
     private WheelType wheelType;
     private FrictionLevel friction;
-    private PneumaticVelocity velocity;
-    private PneumaticForce force;
+    private PneumaticDiameter diameter;
+    private PneumaticPressure pressure;
     RigidNode node;
 
 
@@ -118,7 +118,7 @@ public partial class DriveChooser : Form
 
         if (JointDriver.IsPneumatic(cType))
         {
-            WheelAnalyzer.SaveToPneumaticJoint(velocity, force, node);
+            WheelAnalyzer.SaveToPneumaticJoint(diameter, force, node);
         }
 
     }
@@ -183,13 +183,28 @@ public partial class DriveChooser : Form
 
     }
 
-    private void cmbPneumaticVelocity_SelectedIndexChanged(object sender, EventArgs e)
+    private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
     {
-        velocity = (PneumaticVelocity)cmbPneumaticVelocity.SelectedIndex;
+        diameter = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex;
     }
 
     private void cmbPneumaticForce_SelectedIndexChanged(object sender, EventArgs e)
     {
-        force = (PneumaticForce)cmbPneumaticForce.SelectedIndex;
+        pressure = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex;
+    }
+
+    private void lblVelocity_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void lblPneumaticVelocityTell_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void lblPneumaticForceTell_Click(object sender, EventArgs e)
+    {
+
     }
 }

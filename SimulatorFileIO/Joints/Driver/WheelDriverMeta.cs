@@ -16,14 +16,14 @@ public enum FrictionLevel : byte
 }
 
 //find proper specs for these
-public enum PneumaticVelocity : byte
+public enum PneumaticDiameter : byte
 {
     HIGH = 0,
     MEDIUM = 1,
     LOW = 2
 }
 
-public enum PneumaticForce : byte
+public enum PneumaticPressure : byte
 {
 
 }
