@@ -160,13 +160,26 @@ bool NTTask::Resume()
 */
 bool NTTask::Verify()
 {
-	return valid;
+	if (!valid) {
+		return false;
+	}
+#if USE_WINAPI
+	DWORD code = 0;
+	if (!GetExitCodeThread(m_Handle, &code)) {
+		return false;
+	}
+	return code == STILL_ACTIVE;
+#elif USE_POSIX
+	return true;
+#endif
 }
 
 #if USE_POSIX
 void* NTTask::funcWrapper(void *task) {
 	Task *internal = ((Task*)task);
-	return new int(internal->m_function(internal->m_Arg));
+	int code = internal->m_function(internal->m_Arg);
+	internal->valid = false;
+	return (void*) code;
 }
 #endif
 
