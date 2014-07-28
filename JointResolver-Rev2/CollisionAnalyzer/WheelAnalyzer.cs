@@ -264,7 +264,7 @@ class WheelAnalyzer
 
         Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
     }
-
+/*
     public static void SaveToPneumaticJoint(JointDriverType driverType, PneumaticDiameter diameter, PneumaticPressure pressure, RigidNode node)
     {
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
@@ -304,6 +304,6 @@ class WheelAnalyzer
         newCalculation = StartCalculations;
         node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);
     }
-
+*/
 }
 

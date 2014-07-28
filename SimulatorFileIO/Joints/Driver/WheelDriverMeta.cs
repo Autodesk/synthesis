@@ -173,7 +173,7 @@ public class WheelDriverMeta : JointDriverMeta
         return "WheelMeta[rad=" + radius + "]";
     }
 }
-  
+ /* 
  public class PneumaticDriverMeta : JointDriverMeta
 {
     /// <summary>
@@ -280,4 +280,4 @@ public class WheelDriverMeta : JointDriverMeta
     {
         return "WheelMeta[rad=" + radius + "]";
     }
-}
+}*/
