@@ -50,7 +50,7 @@ namespace nFPGA {
 			ai[i] = new tAI_Impl(this, i);
 		}
 		for (int i = 0; i < tAccumulator_Impl::kNumSystems; i++) {
-			accum[i] = NULL;
+			accum[i] = new tAccumulator_Impl(this, i);
 		}
 		for (int i = 0; i < tEncoder_Impl::kNumSystems; i++) {
 			encoder[i] = new tEncoder_Impl(this, i);
@@ -108,7 +108,7 @@ namespace nFPGA {
 
 	tAccumulator_Impl *NiFpgaState::getAccumulator(unsigned char sys_index) {
 		if (accum[sys_index] == NULL) {
-			//accum[sys_index] = new tAccumulator_Impl(this, sys_index);
+			accum[sys_index] = new tAccumulator_Impl(this, sys_index);
 		}
 		return accum[sys_index];
 	}

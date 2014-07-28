@@ -9,6 +9,7 @@
 #include "ChipObject/tInterruptImpl.h"
 #include "ChipObject/tCounterImpl.h"
 #include "ChipObject/tAnalogTriggerImpl.h"
+#include "ChipObject/tAccumulatorImpl.h"
 #include <stdlib.h>
 
 #include <tAlarm.h>
@@ -176,6 +177,15 @@ NiFpga_Status NiFpga_ReadI32(NiFpga_Session session, uint32_t indicator, int32_t
 
 NiFpga_Status NiFpga_ReadU32(NiFpga_Session session, uint32_t indicator, uint32_t* value) {
 	*value = *((uint32_t*) &(GetFakeFPGA()->fpgaRAM[indicator]));
+	switch (indicator) {
+		// Freaking WPI HACK this is bad and stupid
+	case nFPGA::tAccumulator_Impl::kAccumulator0_Output_Address:
+		*value = GetFakeFPGA()->getAccumulator(0)->readOutputChunk();
+		break;
+	case nFPGA::tAccumulator_Impl::kAccumulator1_Output_Address:
+		*value = GetFakeFPGA()->getAccumulator(1)->readOutputChunk();
+		break;
+	}
 	return NiFpga_Status_Success;
 }
 
@@ -248,20 +258,42 @@ NiFpga_Status NiFpga_WriteU32(NiFpga_Session session, uint32_t control, uint32_t
 			}
 		}
 		break;
+#pragma region ENCODER_RESET
 	case nFPGA::tEncoder_Impl::kEncoder0_Reset_Address:
+		// Do the reset action
+		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		value = 0;	// Strobe performed
+		break;
 	case nFPGA::tEncoder_Impl::kEncoder1_Reset_Address:
+		// Do the reset action
+		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		value = 0;	// Strobe performed
+		break;
 	case nFPGA::tEncoder_Impl::kEncoder2_Reset_Address:
+		// Do the reset action
+		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		value = 0;	// Strobe performed
+		break;
 	case nFPGA::tEncoder_Impl::kEncoder3_Reset_Address:
+		// Do the reset action
+		NiFpga_WriteU32(session, nFPGA::tEncoder_Impl::kOutput_Addresses[0], 0);
+		value = 0;	// Strobe performed
+		break;
+#pragma endregion
+#pragma region ACCUMULATOR_RESET
+	case nFPGA::tAccumulator_Impl::kAccumulator0_Reset_Address:
 		{
-			for (int cid = 0; cid<nFPGA::tEncoder_Impl::kNumSystems; cid++) {
-				if (control == nFPGA::tEncoder_Impl::kReset_Addresses[cid]) {
-					// Do the reset action
-					value = 0;	// Strobe performed
-					break;
-				}
-			}
+			GetFakeFPGA()->getAccumulator(0)->output.Value = 0;
+			GetFakeFPGA()->getAccumulator(0)->output.Count = 0;
 		}
 		break;
+	case nFPGA::tAccumulator_Impl::kAccumulator1_Reset_Address:
+		{
+			GetFakeFPGA()->getAccumulator(1)->output.Value = 0;
+			GetFakeFPGA()->getAccumulator(1)->output.Count = 0;
+		}
+		break;
+#pragma endregion
 	default:
 		{}
 	}

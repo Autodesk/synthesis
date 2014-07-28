@@ -13,7 +13,9 @@ namespace nFPGA {
 		static const int kEncoder1_Output_Address = 0x839C;
 		static const int kEncoder2_Output_Address = 0x83B0;
 		static const int kEncoder3_Output_Address = 0x83C4;
+	public:
 		static const int kOutput_Addresses [];
+	private:
 		static const int kEncoder0_Config_Address = 0x8380;
 		static const int kEncoder1_Config_Address = 0x8394;
 		static const int kEncoder2_Config_Address = 0x83A8;
