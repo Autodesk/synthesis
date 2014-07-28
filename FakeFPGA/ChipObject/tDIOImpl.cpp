@@ -11,31 +11,53 @@
 #include <stdio.h>
 #include "tInterruptImpl.h"
 #include "NiIRQImpl.h"
+#include "tGlobalImpl.h"
+
+#define TDIO_DECL_ADDRESSES(x) const int tDIO_Impl::k ## x ## _Addresses [] = {kDIO0_ ## x ## _Address, kDIO1_ ## x ## _Address }
 
 namespace nFPGA {
+	TDIO_DECL_ADDRESSES(FilterSelect);
+	TDIO_DECL_ADDRESSES(DO);
+	TDIO_DECL_ADDRESSES(FilterPeriod);
+	TDIO_DECL_ADDRESSES(OutputEnable);
+	TDIO_DECL_ADDRESSES(Pulse);
+	TDIO_DECL_ADDRESSES(SlowValue);
+	TDIO_DECL_ADDRESSES(DI);
+	TDIO_DECL_ADDRESSES(PulseLength);
+	TDIO_DECL_ADDRESSES(PWMPeriodScale);
+	TDIO_DECL_ADDRESSES(DO_PWMDutyCycle);
+	TDIO_DECL_ADDRESSES(DO_PWMConfig);
+	TDIO_DECL_ADDRESSES(PWMValue);
 
 	tDIO_Impl::tDIO_Impl(NiFpgaState *state, unsigned char index) {
 		this->state = state;
 		this->index = index;
-		this->loopTiming = 260;		// Timing!
+		// Map to ram
+		this->loopTiming = (uint32_t*) &state->fpgaRAM[kDIO_LoopTiming_Address];
+		this->digitalOutputPort = (uint32_t*) &state->fpgaRAM[kDO_Addresses[index]];
+		this->digitalOutputState = (uint32_t*) &state->fpgaRAM[kOutputEnable_Addresses[index]];
+		this->digitalOutputPulse = (uint32_t*) &state->fpgaRAM[kPulse_Addresses[index]];
+		this->digitalOutputPulseLength = (uint32_t*) &state->fpgaRAM[kPulseLength_Addresses[index]];
+		this->slowValue = (tSlowValue*) &state->fpgaRAM[kSlowValue_Addresses[index]];
+		this->pwmConfig = (tPWMConfig*) &state->fpgaRAM[kDIO_PWMConfig_Address];
+		this->doPWMDutyCycle = (uint32_t*) &state->fpgaRAM[kDO_PWMDutyCycle_Addresses[index]];
+		this->pwmPeriodScale = (uint32_t*) &state->fpgaRAM[kPWMPeriodScale_Addresses[index]];
+		this->pwmValue = (uint32_t*) &state->fpgaRAM[kPWMValue_Addresses[index]];
 
-		this->digitalOutputPort = 0;
-		this->digitalOutputState = 0;
-		this->digitalOutputPulse = 0;
-		this->digitalOutputPulseLength = 0;
-		this->i2cHeader = 0;
-		this->pwmConfig.value = 0;
-		for (int p = 0; p < kNumDO_PWMDutyCycleElements; p++) {
-			this->doPWMDutyCycle[p] = 0;
-			this->doPWMPeriod[p] = 0;
-		}
+		*digitalOutputPort = 0;
+		*digitalOutputState = 0;
+		*digitalOutputPulse = 0;
+		*digitalOutputPulseLength = 0;
+		(*slowValue).value = 0;
+		(*pwmConfig).value = 0;
+
+		*doPWMDutyCycle = 0;
+		*pwmPeriodScale = 0;
+
 		for (int p = 0; p < kNumPWMValueRegisters; p++) {
-			this->pwmPeriodScale[p] = 0;
-			this->pwmTypes[p] = 0;
-			this->pwmValue[p] = 0;
+			pwmTypes[p] = 0;
+			pwmValue[p] = 0;
 		}
-		this->relayForward = 0;
-		this->relayReverse = 0;
 	}
 
 	tDIO_Impl::~tDIO_Impl() {
@@ -79,12 +101,12 @@ namespace nFPGA {
 
 	void tDIO_Impl::writeDO(unsigned short value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		writeDigitalPort(value, digitalOutputState);		// Only output the ones configured for output
+		writeDigitalPort(value, *digitalOutputState);		// Only output the ones configured for output
 	}
 
 	unsigned short tDIO_Impl::readDO(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return digitalOutputPort & digitalOutputState;
+		return *digitalOutputPort & *digitalOutputState;
 	}
 
 	void tDIO_Impl::writeFilterPeriod(unsigned char bitfield_index,
@@ -104,69 +126,66 @@ namespace nFPGA {
 	void tDIO_Impl::writeOutputEnable(unsigned short value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			digitalOutputState = value;
+			*digitalOutputState = value;
 	}
 
 	unsigned short tDIO_Impl::readOutputEnable(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return digitalOutputState;
+		return *digitalOutputState;
 	}
 
 	void tDIO_Impl::writePulse(unsigned short value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		digitalOutputPulse = value;
+		*digitalOutputPulse = value;
 	}
 
 	unsigned short tDIO_Impl::readPulse(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return digitalOutputPulse;
+		return *digitalOutputPulse;
 	}
 
 	void tDIO_Impl::writeSlowValue(tSlowValue value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
+		(*slowValue) = value;
 	}
 
 	void tDIO_Impl::writeSlowValue_RelayFwd(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			relayForward = value;
+			(*slowValue).RelayRev = value;
 	}
 
 	void tDIO_Impl::writeSlowValue_RelayRev(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			relayReverse = value;
+			(*slowValue).RelayRev = value;
 	}
 
 	void tDIO_Impl::writeSlowValue_I2CHeader(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			i2cHeader = value;
+			(*slowValue).I2CHeader = value;
 	}
 
 	nFPGA::nFRC_2012_1_6_4::tDIO::tSlowValue tDIO_Impl::readSlowValue(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			nFPGA::nFRC_2012_1_6_4::tDIO::tSlowValue res;
-			res.I2CHeader = i2cHeader;
-			res.RelayFwd = relayForward;
-			res.RelayRev = relayReverse;
-			return res;
+			return *slowValue;
 	}
 
 	unsigned char tDIO_Impl::readSlowValue_RelayFwd(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return relayForward;
+		return (*slowValue).RelayFwd;
 	}
 
 	unsigned char tDIO_Impl::readSlowValue_RelayRev(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return relayReverse;
+		return (*slowValue).RelayRev;
 	}
 
 	unsigned char tDIO_Impl::readSlowValue_I2CHeader(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return i2cHeader;
+		return (*slowValue).I2CHeader;
 	}
 
 	nFPGA::nFRC_2012_1_6_4::tDIO::tI2CStatus tDIO_Impl::readI2CStatus(
@@ -209,41 +228,51 @@ namespace nFPGA {
 
 	unsigned short tDIO_Impl::readDI(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return digitalOutputPort & ~digitalOutputState;
+		return *digitalOutputPort & ~*digitalOutputState;
 	}
 
 	void tDIO_Impl::writePulseLength(unsigned char value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		digitalOutputPulseLength = value;
+		*digitalOutputPulseLength = value;
 	}
 
 	unsigned char tDIO_Impl::readPulseLength(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return digitalOutputPulseLength;
+		return *digitalOutputPulseLength;
 	}
 
 	void tDIO_Impl::writePWMPeriodScale(unsigned char bitfield_index,
 		unsigned char value, tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			pwmPeriodScale[bitfield_index] = value;
+			uint32_t regValue = *pwmPeriodScale;
+			regValue &= ~(kPWMPeriodScale_ElementMask << ((kPWMPeriodScale_NumElements - 1 - bitfield_index) * kPWMPeriodScale_ElementSize));
+			regValue |= ((value & kPWMPeriodScale_ElementMask) << ((kPWMPeriodScale_NumElements - 1 - bitfield_index) * kPWMPeriodScale_ElementSize));
+			*pwmPeriodScale  = regValue;
 	}
 
 	unsigned char tDIO_Impl::readPWMPeriodScale(unsigned char bitfield_index,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return pwmPeriodScale[bitfield_index];
+			uint32_t arrayElementValue = ((*pwmPeriodScale)
+				>> ((kPWMPeriodScale_NumElements - 1 - bitfield_index) * kPWMPeriodScale_ElementSize)) & kPWMPeriodScale_ElementMask;
+			return (unsigned char)((arrayElementValue) & 0x00000003);
 	}
 
 	void tDIO_Impl::writeDO_PWMDutyCycle(unsigned char bitfield_index,
 		unsigned char value, tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			doPWMDutyCycle[bitfield_index] = value;
+			uint32_t regValue = *doPWMDutyCycle;
+			regValue  &= ~(kDO_PWMDutyCycle_ElementMask << ((kDO_PWMDutyCycle_NumElements - 1 - bitfield_index) * kDO_PWMDutyCycle_ElementSize));
+			regValue  |= ((value & kDO_PWMDutyCycle_ElementMask) << ((kDO_PWMDutyCycle_NumElements - 1 - bitfield_index) * kDO_PWMDutyCycle_ElementSize));
+			*doPWMDutyCycle = regValue;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMDutyCycle(unsigned char bitfield_index,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return doPWMDutyCycle[bitfield_index];
+			int arrayElementValue = ((*doPWMDutyCycle)
+				>> ((kDO_PWMDutyCycle_NumElements - 1 - bitfield_index) * kDO_PWMDutyCycle_ElementSize)) & kDO_PWMDutyCycle_ElementMask;
+			return (short)((arrayElementValue) & 0x000000FF);
 	}
 
 	void tDIO_Impl::writeBFL(bool value, tRioStatusCode* status) {
@@ -340,37 +369,37 @@ namespace nFPGA {
 #pragma region writeDO_PWMConfig
 	void tDIO_Impl::writeDO_PWMConfig(tDO_PWMConfig value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		doPwmConfig = value;
+		*doPwmConfig = value;
 	}
 
 	void tDIO_Impl::writeDO_PWMConfig_PeriodPower(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			doPwmConfig.PeriodPower = value;
+			(*doPwmConfig).PeriodPower = value;
 	}
 
 	void tDIO_Impl::writeDO_PWMConfig_OutputSelect_0(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			doPwmConfig.OutputSelect_0 = value;
+			(*doPwmConfig).OutputSelect_0 = value;
 	}
 
 	void tDIO_Impl::writeDO_PWMConfig_OutputSelect_1(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			doPwmConfig.OutputSelect_1 = value;
+			(*doPwmConfig).OutputSelect_1 = value;
 	}
 
 	void tDIO_Impl::writeDO_PWMConfig_OutputSelect_2(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			doPwmConfig.OutputSelect_2 = value;
+			(*doPwmConfig).OutputSelect_2 = value;
 	}
 
 	void tDIO_Impl::writeDO_PWMConfig_OutputSelect_3(unsigned char value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			doPwmConfig.OutputSelect_3 = value;
+			(*doPwmConfig).OutputSelect_3 = value;
 	}
 #pragma endregion
 
@@ -378,36 +407,36 @@ namespace nFPGA {
 	nFPGA::nFRC_2012_1_6_4::tDIO::tDO_PWMConfig tDIO_Impl::readDO_PWMConfig(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return doPwmConfig;
+			return *doPwmConfig;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMConfig_PeriodPower(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return doPwmConfig.PeriodPower;
+		return (*doPwmConfig).PeriodPower;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMConfig_OutputSelect_0(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return doPwmConfig.OutputSelect_0;
+			return (*doPwmConfig).OutputSelect_0;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMConfig_OutputSelect_1(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return doPwmConfig.OutputSelect_1;
+			return (*doPwmConfig).OutputSelect_1;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMConfig_OutputSelect_2(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return doPwmConfig.OutputSelect_2;
+			return (*doPwmConfig).OutputSelect_2;
 	}
 
 	unsigned char tDIO_Impl::readDO_PWMConfig_OutputSelect_3(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return doPwmConfig.OutputSelect_3;
+			return (*doPwmConfig).OutputSelect_3;
 	}
 #pragma endregion
 
@@ -419,40 +448,40 @@ namespace nFPGA {
 
 	unsigned short tDIO_Impl::readLoopTiming(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return loopTiming = 260;	// Shouldn't change but yeah
+		return (*loopTiming = 260);	// Shouldn't change but yeah
 	}
 
 	void tDIO_Impl::writePWMConfig(nFPGA::nFRC_2012_1_6_4::tDIO::tPWMConfig value, tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		pwmConfig = value;
+		*pwmConfig = value;
 	}
 
 	void tDIO_Impl::writePWMConfig_Period(unsigned short value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			pwmConfig.Period = value;
+			(*pwmConfig).Period = value;
 	}
 
 	void tDIO_Impl::writePWMConfig_MinHigh(unsigned short value,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			pwmConfig.MinHigh = value;
+			(*pwmConfig).MinHigh = value;
 	}
 
 	nFPGA::nFRC_2012_1_6_4::tDIO::tPWMConfig tDIO_Impl::readPWMConfig(
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
-			return pwmConfig;
+			return *pwmConfig;
 	}
 
 	unsigned short tDIO_Impl::readPWMConfig_Period(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return pwmConfig.Period;
+		return (*pwmConfig).Period;
 	}
 
 	unsigned short tDIO_Impl::readPWMConfig_MinHigh(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return pwmConfig.MinHigh;
+		return (*pwmConfig).MinHigh;
 	}
 
 	void tDIO_Impl::writePWMValue(unsigned char reg_index, unsigned char value,
@@ -468,21 +497,25 @@ namespace nFPGA {
 	}
 
 	void tDIO_Impl::writeDigitalPort(unsigned short nDPort, unsigned short nDMask) {
+		tRioStatusCode status;
+		uint32_t timestamp = state->getGlobal()->readLocalTime(&status);
+
 		for (int i = 0; i < sizeof(nDPort) * 8; i++) {
 			unsigned short tmpMask = 1 << i;
-			if ((nDMask & tmpMask) && (nDPort & tmpMask) != (digitalOutputPort & tmpMask)) {
-				bool falling = !(nDPort & tmpMask) && (digitalOutputPort & tmpMask);
-				bool rising = (nDPort & tmpMask) && !(digitalOutputPort & tmpMask);
+			if ((nDMask & tmpMask) && (nDPort & tmpMask) != (*digitalOutputPort & tmpMask)) {
+				bool falling = !(nDPort & tmpMask) && (*digitalOutputPort & tmpMask);
+				bool rising = (nDPort & tmpMask) && !(*digitalOutputPort & tmpMask);
 				// Changed!  Check for triggering
 				for (int t = 0; t < tInterrupt_Impl::kNumSystems; t++) {
 					tInterrupt_Impl *interrupt = state->interrupt[t];
-					if (interrupt != NULL && !interrupt->config.Source_AnalogTrigger && interrupt->config.Source_Module == this->index && interrupt->config.Source_Channel == i && ((interrupt->config.FallingEdge && falling) || (interrupt->config.RisingEdge && rising))) {
+					if (interrupt != NULL && !(*(interrupt->config)).Source_AnalogTrigger && (*(interrupt->config)).Source_Module == this->index && (*(interrupt->config)).Source_Channel == i && (((*(interrupt->config)).FallingEdge && falling) || ((*(interrupt->config)).RisingEdge && rising))) {
 						// Signal it!
 						state->getIRQManager()->signal(1 << interrupt->sys_index);
+						*(interrupt->timestamp) = timestamp;
 					}
 				}
 			}
 		}
-		digitalOutputPort = (digitalOutputPort & ~nDMask) | (nDPort & nDMask);
+		*digitalOutputPort = (*digitalOutputPort & ~nDMask) | (nDPort & nDMask);
 	}
 }

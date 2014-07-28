@@ -1,9 +1,12 @@
 #include "FRCNetImpl.h"
+#include <OSAL/OSAL.h>
 #include <OSAL/Task.h>
 #include <stdint.h>
 #include "crc32.h"
 #include "FRCFakeNetComm.h"
 #include "DriverStationEnhancedIO.h"
+#include <string.h> // For memset, memcpy
+#include <stdlib.h>
 
 extern "C" {
 	FRCNetImpl *frcNetInstance = NULL;
@@ -62,8 +65,10 @@ DWORD FRCNetImpl::runThreadWrapper(LPVOID ptr) {
 }
 
 int FRCNetImpl::runThread() {
+#if USE_WINAPI
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2,2),&wsa);		// Hope and pray that this works.
+#endif
 
 	uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
 
@@ -78,21 +83,18 @@ int FRCNetImpl::runThread() {
 	robotSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (robotSocket < 0) {
 		fprintf(stderr, "Could not create socket ROBOT!\n");
-		scanf_s("\n");
-		exit(2);
+		return 2;
 	}
 
-	if (bind(robotSocket, (struct sockaddr *)&robotAddress, sizeof(robotAddress)) == SOCKET_ERROR) {
+	if (bind(robotSocket, (const struct sockaddr *)&robotAddress, sizeof(robotAddress)) == SOCKET_ERROR) {
 		fprintf(stderr, "Could not bind socket ROBOT!  Did you configure your loopback adapters?\n");
-		scanf_s("\n");
-		exit(2);
+		return 2;
 	}
 
 	dsSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (dsSocket < 0) {
 		fprintf(stderr, "Could not create socket DS!  Did you configure your loopback adapters?\n");
-		scanf_s("\n");
-		exit(2);
+		return 2;
 	}
 
 	char buffer[1024];
@@ -187,7 +189,9 @@ int FRCNetImpl::runThread() {
 	// Cleanup
 	closesocket(dsSocket);
 	closesocket(robotSocket);
+#if USE_WINAPI
 	WSACleanup();
+#endif
 
 	return 0;
 }
@@ -241,7 +245,7 @@ uint8_t FRCNetImpl::getDynamicData(uint8_t type, char *dynamicData, int32_t maxL
 	readingSem.take();
 	len = lastDynamicControlPacket [type].size;
 	if (len > 0) {
-		memcpy (dynamicData, lastDynamicControlPacket [type].data,min(len+1, maxLength)); 
+		memcpy (dynamicData, lastDynamicControlPacket [type].data,std::min(len+1, maxLength));
 	}
 	readingSem.give();
 	return len;

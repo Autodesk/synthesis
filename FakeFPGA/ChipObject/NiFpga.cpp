@@ -2,6 +2,7 @@
 #include "NiFakeFpga.h"
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/NiIRQImpl.h"
+#include "ChipObject/tAIImpl.h"
 #include "ChipObject/tAlarmImpl.h"
 #include "ChipObject/tWatchcatImpl.h"
 #include "ChipObject/tEncoderImpl.h"
@@ -21,6 +22,7 @@
 #include <tInterrupt.h>
 #include <tCounter.h>
 #include <tAnalogTrigger.h>
+#include <string.h>	//memcpy and memset
 
 extern "C" {
 	nFPGA::NiFpgaState *frcFPGAInstance = NULL;
@@ -111,10 +113,9 @@ NiFpga_Status NiFpga_Finalize(void) {
 	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_Open(const char* bitfile, const char* signature,
-						  const char* resource, uint32_t attribute, NiFpga_Session* session) {
-							  exit(1);
-							  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_Open(const char* bitfile, const char* signature, const char* resource, uint32_t attribute, NiFpga_Session* session) {
+	exit(1);
+	return NiFpga_Status_ResourceNotFound;
 }
 
 NiFpga_Status NiFpga_Close(NiFpga_Session session, uint32_t attribute) {
@@ -142,218 +143,235 @@ NiFpga_Status NiFpga_Download(NiFpga_Session session) {
 	return NiFpga_Status_ResourceNotFound;
 }
 
-NiFpga_Status NiFpga_ReadBool(NiFpga_Session session, uint32_t indicator,
-							  NiFpga_Bool* value) {
-								  exit(1);
-								  return NiFpga_Status_ResourceNotFound;
+#pragma region MEM_PRIMITIVE
+NiFpga_Status NiFpga_ReadBool(NiFpga_Session session, uint32_t indicator, NiFpga_Bool* value) {
+	*value = GetFakeFPGA()->fpgaRAM[indicator];
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadI8(NiFpga_Session session, uint32_t indicator,
-							int8_t* value) {
-								exit(1);
-								return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadI8(NiFpga_Session session, uint32_t indicator, int8_t* value) {
+	*value = GetFakeFPGA()->fpgaRAM[indicator];
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadU8(NiFpga_Session session, uint32_t indicator,
-							uint8_t* value) {
-								exit(1);
-								return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadU8(NiFpga_Session session, uint32_t indicator, uint8_t* value) {
+	*value = GetFakeFPGA()->fpgaRAM[indicator];
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadI16(NiFpga_Session session, uint32_t indicator,
-							 int16_t* value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadI16(NiFpga_Session session, uint32_t indicator, int16_t* value) {
+	*value = *((int16_t*) &(GetFakeFPGA()->fpgaRAM[indicator]));
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadU16(NiFpga_Session session, uint32_t indicator,
-							 uint16_t* value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadU16(NiFpga_Session session, uint32_t indicator, uint16_t* value) {
+	*value = *((uint16_t*) &(GetFakeFPGA()->fpgaRAM[indicator]));
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadI32(NiFpga_Session session, uint32_t indicator,
-							 int32_t* value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadI32(NiFpga_Session session, uint32_t indicator, int32_t* value) {
+	*value = *((int32_t*) &(GetFakeFPGA()->fpgaRAM[indicator]));
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadU32(NiFpga_Session session, uint32_t indicator,
-							 uint32_t* value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadU32(NiFpga_Session session, uint32_t indicator, uint32_t* value) {
+	*value = *((uint32_t*) &(GetFakeFPGA()->fpgaRAM[indicator]));
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadI64(NiFpga_Session session, uint32_t indicator,
-							 int64_t* value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadI64(NiFpga_Session session, uint32_t indicator, int64_t* value) {
+	*value = *((int64_t*) &(GetFakeFPGA()->fpgaRAM[indicator]));
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadU64(NiFpga_Session session, uint32_t indicator,
-							 uint64_t* value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadU64(NiFpga_Session session, uint32_t indicator, uint64_t* value) {
+	*value = *((uint64_t*) &(GetFakeFPGA()->fpgaRAM[indicator]));
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteBool(NiFpga_Session session, uint32_t control,
-							   NiFpga_Bool value) {
-								   exit(1);
-								   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteBool(NiFpga_Session session, uint32_t control, NiFpga_Bool value) {
+	GetFakeFPGA()->fpgaRAM[control] = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteI8(NiFpga_Session session, uint32_t control,
-							 int8_t value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteI8(NiFpga_Session session, uint32_t control, int8_t value) {
+	GetFakeFPGA()->fpgaRAM[control] = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteU8(NiFpga_Session session, uint32_t control,
-							 uint8_t value) {
-								 exit(1);
-								 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteU8(NiFpga_Session session, uint32_t control, uint8_t value) {
+	GetFakeFPGA()->fpgaRAM[control] = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteI16(NiFpga_Session session, uint32_t control,
-							  int16_t value) {
-								  exit(1);
-								  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteI16(NiFpga_Session session, uint32_t control, int16_t value) {
+	*((int16_t*)(&GetFakeFPGA()->fpgaRAM[control])) = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteU16(NiFpga_Session session, uint32_t control,
-							  uint16_t value) {
-								  exit(1);
-								  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteU16(NiFpga_Session session, uint32_t control, uint16_t value) {
+	*((uint16_t*)(&GetFakeFPGA()->fpgaRAM[control])) = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteI32(NiFpga_Session session, uint32_t control,
-							  int32_t value) {
-								  exit(1);
-								  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteI32(NiFpga_Session session, uint32_t control, int32_t value) {
+	*((int32_t*)(&GetFakeFPGA()->fpgaRAM[control])) = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteU32(NiFpga_Session session, uint32_t control,
-							  uint32_t value) {
-								  exit(1);
-								  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteU32(NiFpga_Session session, uint32_t control, uint32_t value) {
+	// Special strobe cases
+	switch (control) {
+	case nFPGA::tAI_Impl::kAI_LatchOutput_Address:
+		if (value) {	// We are latching to a read select
+			tRioStatusCode status;
+			nFPGA::tAI_Impl::tReadSelect readSelect = GetFakeFPGA()->getAnalog(0)->readReadSelect(&status);
+			NiFpga_WriteI32(session, nFPGA::tAI_Impl::kAI_Output_Address, GetFakeFPGA()->getAnalog(readSelect.Module)->values[readSelect.Channel]);
+			value = 0;	// The strobe action is taken, don't set the bit
+		}
+		break;	
+	case nFPGA::tCounter_Impl::kCounter0_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter1_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter2_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter3_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter4_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter5_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter6_Reset_Address:
+	case nFPGA::tCounter_Impl::kCounter7_Reset_Address:
+		{
+			for (int cid = 0; cid<nFPGA::tCounter_Impl::kNumSystems; cid++) {
+				if (control == nFPGA::tCounter_Impl::kReset_Addresses[cid]) {
+					// Do the reset action
+					value = 0;	// Strobe performed
+					break;
+				}
+			}
+		}
+		break;
+	case nFPGA::tEncoder_Impl::kEncoder0_Reset_Address:
+	case nFPGA::tEncoder_Impl::kEncoder1_Reset_Address:
+	case nFPGA::tEncoder_Impl::kEncoder2_Reset_Address:
+	case nFPGA::tEncoder_Impl::kEncoder3_Reset_Address:
+		{
+			for (int cid = 0; cid<nFPGA::tEncoder_Impl::kNumSystems; cid++) {
+				if (control == nFPGA::tEncoder_Impl::kReset_Addresses[cid]) {
+					// Do the reset action
+					value = 0;	// Strobe performed
+					break;
+				}
+			}
+		}
+		break;
+	default:
+		{}
+	}
+	// Update value
+	*((uint32_t*)(&GetFakeFPGA()->fpgaRAM[control])) = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteI64(NiFpga_Session session, uint32_t control,
-							  int64_t value) {
-								  exit(1);
-								  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteI64(NiFpga_Session session, uint32_t control, int64_t value) {
+	*((int64_t*)(&GetFakeFPGA()->fpgaRAM[control])) = value;
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteU64(NiFpga_Session session, uint32_t control,
-							  uint64_t value) {
-								  exit(1);
-								  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteU64(NiFpga_Session session, uint32_t control, uint64_t value) {
+	*((uint64_t*)(&GetFakeFPGA()->fpgaRAM[control])) = value;
+	return NiFpga_Status_Success;
+}
+#pragma endregion
+
+#pragma region MEM_ARRAY
+NiFpga_Status NiFpga_ReadArrayBool(NiFpga_Session session, uint32_t indicator, NiFpga_Bool* array, size_t size) {
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(NiFpga_Bool) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadArrayBool(NiFpga_Session session, uint32_t indicator,
-								   NiFpga_Bool* array, size_t size) {
-									   exit(1);
-									   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayI8(NiFpga_Session session, uint32_t indicator, int8_t* array, size_t size) {
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(int8_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadArrayI8(NiFpga_Session session, uint32_t indicator,
-								 int8_t* array, size_t size) {
-									 exit(1);
-									 return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayU8(NiFpga_Session session, uint32_t indicator, uint8_t* array, size_t size) {
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(uint8_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadArrayU8(NiFpga_Session session, uint32_t indicator,
-								 uint8_t* array, size_t size) {
-									 exit(1);
-									 return NiFpga_Status_ResourceNotFound;
-}
-
-NiFpga_Status NiFpga_ReadArrayI16(NiFpga_Session session, uint32_t indicator,
-								  int16_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayI16(NiFpga_Session session, uint32_t indicator, int16_t* array, size_t size) {
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(int16_t) * size);
+	return NiFpga_Status_Success;
 }
 
 NiFpga_Status NiFpga_ReadArrayU16(NiFpga_Session session, uint32_t indicator, uint16_t* array, size_t size) {
-	exit(1);
-	return NiFpga_Status_ResourceNotFound;
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(uint16_t) * size);
+	return NiFpga_Status_Success;
 }
 
 NiFpga_Status NiFpga_ReadArrayI32(NiFpga_Session session, uint32_t indicator, int32_t* array, size_t size) {
-	exit(1);
-	return NiFpga_Status_ResourceNotFound;
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(int32_t) * size);
+	return NiFpga_Status_Success;
 }
 
 NiFpga_Status NiFpga_ReadArrayU32(NiFpga_Session session, uint32_t indicator, uint32_t* array, size_t size) {
-	exit(1);
-	return NiFpga_Status_ResourceNotFound;
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(uint32_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadArrayI64(NiFpga_Session session, uint32_t indicator,
-								  int64_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayI64(NiFpga_Session session, uint32_t indicator, int64_t* array, size_t size) {
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(int64_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_ReadArrayU64(NiFpga_Session session, uint32_t indicator,
-								  uint64_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_ReadArrayU64(NiFpga_Session session, uint32_t indicator, uint64_t* array, size_t size) {
+	memcpy(array, &(GetFakeFPGA()->fpgaRAM[indicator]), sizeof(uint64_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayBool(NiFpga_Session session, uint32_t control,
-									const NiFpga_Bool* array, size_t size) {
-										exit(1);
-										return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayBool(NiFpga_Session session, uint32_t control, const NiFpga_Bool* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(NiFpga_Bool) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayI8(NiFpga_Session session, uint32_t control,
-								  const int8_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayI8(NiFpga_Session session, uint32_t control, const int8_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(int8_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayU8(NiFpga_Session session, uint32_t control,
-								  const uint8_t* array, size_t size) {
-									  exit(1);
-									  return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayU8(NiFpga_Session session, uint32_t control, const uint8_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(uint8_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayI16(NiFpga_Session session, uint32_t control,
-								   const int16_t* array, size_t size) {
-									   exit(1);
-									   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayI16(NiFpga_Session session, uint32_t control, const int16_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(int16_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayU16(NiFpga_Session session, uint32_t control,
-								   const uint16_t* array, size_t size) {
-									   exit(1);
-									   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayU16(NiFpga_Session session, uint32_t control, const uint16_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(uint16_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayI32(NiFpga_Session session, uint32_t control,
-								   const int32_t* array, size_t size) {
-									   exit(1);
-									   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayI32(NiFpga_Session session, uint32_t control, const int32_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(int32_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayU32(NiFpga_Session session, uint32_t control,
-								   const uint32_t* array, size_t size) {
-									   exit(1);
-									   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayU32(NiFpga_Session session, uint32_t control, const uint32_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(uint32_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayI64(NiFpga_Session session, uint32_t control,
-								   const int64_t* array, size_t size) {
-									   exit(1);
-									   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayI64(NiFpga_Session session, uint32_t control, const int64_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(int64_t) * size);
+	return NiFpga_Status_Success;
 }
 
-NiFpga_Status NiFpga_WriteArrayU64(NiFpga_Session session, uint32_t control,
-								   const uint64_t* array, size_t size) {
-									   exit(1);
-									   return NiFpga_Status_ResourceNotFound;
+NiFpga_Status NiFpga_WriteArrayU64(NiFpga_Session session, uint32_t control, const uint64_t* array, size_t size) {
+	memcpy(&(GetFakeFPGA()->fpgaRAM[control]), array, sizeof(uint64_t) * size);
+	return NiFpga_Status_Success;
 }
+#pragma endregion
 
 NiFpga_Status NiFpga_ReserveIrqContext(NiFpga_Session session, NiFpga_IrqContext* context) {
 	return NiFpga_Status_Success;	// This isn't needed with my sketchy implementation!
@@ -374,6 +392,7 @@ NiFpga_Status NiFpga_AcknowledgeIrqs(NiFpga_Session session, uint32_t irqs) {
 	return NiFpga_Status_Success;	// This isn't needed with my sketchy implementation!
 }
 
+#pragma region FIFO
 NiFpga_Status NiFpga_ConfigureFifo(NiFpga_Session session, uint32_t fifo,
 								   size_t depth) {
 									   exit(1);
@@ -659,3 +678,5 @@ NiFpga_Status NiFpga_GetPeerToPeerFifoEndpoint(NiFpga_Session session,
 												   exit(1);
 												   return NiFpga_Status_ResourceNotFound;
 }
+
+#pragma endregion

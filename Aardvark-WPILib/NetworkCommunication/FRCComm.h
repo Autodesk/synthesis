@@ -41,7 +41,7 @@ struct FRCCommonControlData{
 			uint8_t enabled : 1;
 			uint8_t notEStop :1;
 			uint8_t reset :1;
-#elif 
+#elif __BIG_ENDIAN
 			uint8_t reset :1;
 			uint8_t notEStop :1;
 			uint8_t enabled : 1;

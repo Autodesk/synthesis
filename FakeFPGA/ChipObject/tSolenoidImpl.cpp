@@ -9,12 +9,11 @@
 #include "NiFpgaState.h"
 
 namespace nFPGA {
-
 	tSolenoid_Impl::tSolenoid_Impl(NiFpgaState *state) {
 		this->state = state;
-		for (int i = 0; i<kNumDO7_0Elements; i++){
-			solenoidState[i] = 0;
-		}
+		this->solenoidState = (uint32_t*) &(state->fpgaRAM[kSolenoid_DO7_0_Address]);
+
+		*solenoidState = 0;
 	}
 
 	tSolenoid_Impl::~tSolenoid_Impl() {
@@ -32,8 +31,12 @@ namespace nFPGA {
 			*status = NiFpga_Status_ResourceNotFound;
 			return;
 		}
-		solenoidState[bitfield_index] = value;
 		*status =  NiFpga_Status_Success;
+		uint32_t shift = (kNumDO7_0Elements - 1 - bitfield_index) * kDO7_0_ElementSize;
+		uint32_t regValue = *solenoidState;
+		regValue &= ~(kDO7_0_ElementMask << shift);
+		regValue |= ((value & kDO7_0_ElementMask) << shift);
+		*solenoidState = regValue;
 	}
 
 	unsigned char tSolenoid_Impl::readDO7_0(unsigned char bitfield_index, tRioStatusCode *status) {
@@ -42,7 +45,9 @@ namespace nFPGA {
 			return 0;
 		}
 		*status =  NiFpga_Status_Success;
-		return solenoidState[bitfield_index];
+		uint32_t shift = (kNumDO7_0Elements - 1 - bitfield_index) * kDO7_0_ElementSize;
+		uint32_t arrayElementValue = ((*solenoidState) >> shift) & kDO7_0_ElementMask;
+		return arrayElementValue & 0x000000FF;
 	}
 
 }

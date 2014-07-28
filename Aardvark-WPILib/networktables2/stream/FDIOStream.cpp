@@ -20,6 +20,8 @@
 
 #if USE_WINAPI
 #include <Windows.h>
+#elif USE_POSIX
+#include <sys/socket.h>
 #endif
 
 FDIOStream::FDIOStream(SOCKET _fd){

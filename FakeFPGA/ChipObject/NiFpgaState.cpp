@@ -20,14 +20,18 @@
 
 #include "ChipObject/NiIRQImpl.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h> // memset and memcpy
 
 namespace nFPGA {
 
 	NiFpgaState::NiFpgaState() {
 		irqManager = new NiIRQ_Impl();
 
-		ai = NULL;
-		solenoid = NULL;
+		fpgaRAM = (char*) malloc(FPGA_RAM_SIZE);
+		memset(fpgaRAM, 0, FPGA_RAM_SIZE);
+
+		solenoid = new tSolenoid_Impl(this);
 		dio = new tDIO_Impl*[tDIO_Impl::kNumSystems];
 		ai = new tAI_Impl*[tAI_Impl::kNumSystems];
 		accum = new tAccumulator_Impl*[tAccumulator_Impl::kNumSystems];
@@ -35,30 +39,30 @@ namespace nFPGA {
 		interrupt = new tInterrupt_Impl*[tInterrupt_Impl::kNumSystems];
 		counter = new tCounter_Impl*[tCounter_Impl::kNumSystems];
 		analogTrigger = new tAnalogTrigger_Impl*[tAnalogTrigger_Impl::kNumSystems];
-		alarm = NULL;
-		solenoid = NULL;
-		global = NULL;
+		alarm = new tAlarm_Impl(this);
+		solenoid = new tSolenoid_Impl(this);
+		global = new tGlobal_Impl(this);
 
 		for (int i = 0; i < tDIO_Impl::kNumSystems; i++) {
-			dio[i] = NULL;
+			dio[i] = new tDIO_Impl(this, i);
 		}
 		for (int i = 0; i < tAI_Impl::kNumSystems;i++) {
-			ai[i] = NULL;
+			ai[i] = new tAI_Impl(this, i);
 		}
 		for (int i = 0; i < tAccumulator_Impl::kNumSystems; i++) {
 			accum[i] = NULL;
 		}
 		for (int i = 0; i < tEncoder_Impl::kNumSystems; i++) {
-			encoder[i] = NULL;
+			encoder[i] = new tEncoder_Impl(this, i);
 		}
 		for (int i = 0; i < tInterrupt_Impl::kNumSystems; i++) {
-			interrupt[i] = NULL;
+			interrupt[i] = new tInterrupt_Impl(this, i);
 		}
 		for (int i = 0; i < tCounter_Impl::kNumSystems; i++) {
-			counter[i] = NULL;
+			counter[i] = new tCounter_Impl(this, i);
 		}
 		for (int i = 0; i < tAnalogTrigger_Impl::kNumSystems; i++) {
-			analogTrigger[i] = NULL;
+			analogTrigger[i] = new tAnalogTrigger_Impl(this, i);
 		}
 	}
 
@@ -81,6 +85,7 @@ namespace nFPGA {
 		if (irqManager != NULL) {
 			delete irqManager;
 		}
+		delete fpgaRAM;
 	}
 
 	NiIRQ_Impl *NiFpgaState::getIRQManager() {

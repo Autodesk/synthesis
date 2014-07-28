@@ -204,14 +204,13 @@ void DriverStation::SetData()
  */
 float DriverStation::GetBatteryVoltage()
 {
-return 12.21f;
-	/*if (m_batteryChannel == NULL)
+	if (m_batteryChannel == NULL)
 		wpi_setWPIError(NullParameter);
 
 	// The Analog bumper has a voltage divider on the battery source.
 	// Vbatt *--/\/\/\--* Vsample *--/\/\/\--* Gnd
 	//         680 Ohms            1000 Ohms
-	return m_batteryChannel->GetAverageVoltage() * (1680.0 / 1000.0);*/
+	return m_batteryChannel->GetAverageVoltage() * (1680.0 / 1000.0);
 }
 
 /**

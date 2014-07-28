@@ -8,12 +8,62 @@ namespace nFPGA {
 
 	class tCounter_Impl : public nFPGA::nFRC_2012_1_6_4::tCounter {
 	private:
+#pragma region ADDRESSES
+		static const int kCounter0_Output_Address = 0x82E8;
+		static const int kCounter1_Output_Address = 0x82FC;
+		static const int kCounter2_Output_Address = 0x8310;
+		static const int kCounter3_Output_Address = 0x8324;
+		static const int kCounter4_Output_Address = 0x8338;
+		static const int kCounter5_Output_Address = 0x834C;
+		static const int kCounter6_Output_Address = 0x8360;
+		static const int kCounter7_Output_Address = 0x8374;
+		static const int kOutput_Addresses [];
+		static const int kCounter0_Config_Address = 0x82E0;
+		static const int kCounter1_Config_Address = 0x82F4;
+		static const int kCounter2_Config_Address = 0x8308;
+		static const int kCounter3_Config_Address = 0x831C;
+		static const int kCounter4_Config_Address = 0x8330;
+		static const int kCounter5_Config_Address = 0x8344;
+		static const int kCounter6_Config_Address = 0x8358;
+		static const int kCounter7_Config_Address = 0x836C;
+		static const int kConfig_Addresses [];
+		static const int kCounter0_TimerOutput_Address = 0x82F0;
+		static const int kCounter1_TimerOutput_Address = 0x8304;
+		static const int kCounter2_TimerOutput_Address = 0x8318;
+		static const int kCounter3_TimerOutput_Address = 0x832C;
+		static const int kCounter4_TimerOutput_Address = 0x8340;
+		static const int kCounter5_TimerOutput_Address = 0x8354;
+		static const int kCounter6_TimerOutput_Address = 0x8368;
+		static const int kCounter7_TimerOutput_Address = 0x837C;
+		static const int kTimerOutput_Addresses [] ;
+public:
+		static const int kCounter0_Reset_Address = 0x82E4;
+		static const int kCounter1_Reset_Address = 0x82F8;
+		static const int kCounter2_Reset_Address = 0x830C;
+		static const int kCounter3_Reset_Address = 0x8320;
+		static const int kCounter4_Reset_Address = 0x8334;
+		static const int kCounter5_Reset_Address = 0x8348;
+		static const int kCounter6_Reset_Address = 0x835C;
+		static const int kCounter7_Reset_Address = 0x8370;
+		static const int kReset_Addresses [];
+private:
+		static const int kCounter0_TimerConfig_Address = 0x82EC;
+		static const int kCounter1_TimerConfig_Address = 0x8300;
+		static const int kCounter2_TimerConfig_Address = 0x8314;
+		static const int kCounter3_TimerConfig_Address = 0x8328;
+		static const int kCounter4_TimerConfig_Address = 0x833C;
+		static const int kCounter5_TimerConfig_Address = 0x8350;
+		static const int kCounter6_TimerConfig_Address = 0x8364;
+		static const int kCounter7_TimerConfig_Address = 0x8378;
+		static const int kTimerConfig_Addresses [];
+#pragma endregion
+	private:
 		NiFpgaState *state;
 		unsigned char sys_index;
-		tOutput counterOutput;
-		tConfig counterConfig;
-		tTimerOutput timerOutput;
-		tTimerConfig timerConfig;
+		tOutput *counterOutput;
+		tConfig *counterConfig;
+		tTimerOutput *timerOutput;
+		tTimerConfig *timerConfig;
 	public:
 		tCounter_Impl(NiFpgaState *state, unsigned char sys_index);
 		virtual ~tCounter_Impl();

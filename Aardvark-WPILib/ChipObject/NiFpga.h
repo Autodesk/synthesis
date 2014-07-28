@@ -8,6 +8,14 @@
 
 #ifndef __NiFpga_h__
 #define __NiFpga_h__
+
+// If we are running on a big endian machine struct layout matches vxworks
+#include "OSAL/OSAL.h"
+#if __BIG_ENDIAN
+#define __vxworks
+#endif
+
+
 /*
 * Determine compiler.
 */

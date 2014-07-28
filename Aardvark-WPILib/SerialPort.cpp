@@ -5,6 +5,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "SerialPort.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "NetworkCommunication/UsageReporting.h"
 //#include "visa/visa.h"
