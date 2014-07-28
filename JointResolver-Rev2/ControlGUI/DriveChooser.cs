@@ -59,44 +59,30 @@ public partial class DriveChooser : Form
         lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
-        //Dedicated method to change window height
-        if (JointDriver.IsPneumatic(cType) == true)
-        {
 
-        }
-        else if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
+        if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
         {
             this.Height = 300;
             btnSave.Location = new System.Drawing.Point(13, 220);
+            grpWheelOptions.Visible = false;
+            grpGearRatio.Visible = false;
+            grpPneumaticSpecs.Visible = false;
         }
         if (JointDriver.IsMotor(cType) == true)
         {
-            btnSave.Visible = true;
-            grpWheelOptions.Visible = true;
-            grpPneumaticSpecs.Visible = false;
-            grpGearRatio.Visible = false;
             this.Height = 420;
             btnSave.Location = new System.Drawing.Point(13, 340);
+            grpWheelOptions.Visible = true;
             grpGearRatio.Visible = true;
-        }
-        else if (JointDriver.IsMotor(cType) == false)
-        {
-            btnSave.Visible = true;
-            grpWheelOptions.Visible = false;
-            grpGearRatio.Visible = false;
+            grpPneumaticSpecs.Visible = false;
         }
         if (JointDriver.IsPneumatic(cType) == true)
         {
-            btnSave.Visible = true;
-            grpWheelOptions.Visible = false;
-            grpPneumaticSpecs.Visible = true;
             this.Height = 360;
             btnSave.Location = new System.Drawing.Point(13, 280);
-        }
-        else if (JointDriver.IsPneumatic(cType) == false)
-        {
-            btnSave.Visible = true;
-            grpPneumaticSpecs.Visible = false;
+            grpPneumaticSpecs.Visible = true;
+            grpWheelOptions.Visible = false;
+            grpGearRatio.Visible = false;
         }
     }
 
