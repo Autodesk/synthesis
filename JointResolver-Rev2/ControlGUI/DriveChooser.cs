@@ -62,13 +62,7 @@ public partial class DriveChooser : Form
         //Dedicated method to change window height
         if (JointDriver.IsPneumatic(cType) == true)
         {
-            this.Height = 360;
-            btnSave.Location = new System.Drawing.Point(13, 280);
-        }
-        else if (JointDriver.IsMotor(cType) == true)
-        {
-            this.Height = 420;
-            btnSave.Location = new System.Drawing.Point(13, 340);
+
         }
         else if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
         {
@@ -80,17 +74,24 @@ public partial class DriveChooser : Form
             btnSave.Visible = true;
             grpWheelOptions.Visible = true;
             grpPneumaticSpecs.Visible = false;
+            grpGearRatio.Visible = false;
+            this.Height = 420;
+            btnSave.Location = new System.Drawing.Point(13, 340);
+            grpGearRatio.Visible = true;
         }
         else if (JointDriver.IsMotor(cType) == false)
         {
             btnSave.Visible = true;
             grpWheelOptions.Visible = false;
+            grpGearRatio.Visible = false;
         }
         if (JointDriver.IsPneumatic(cType) == true)
         {
             btnSave.Visible = true;
             grpWheelOptions.Visible = false;
             grpPneumaticSpecs.Visible = true;
+            this.Height = 360;
+            btnSave.Location = new System.Drawing.Point(13, 280);
         }
         else if (JointDriver.IsPneumatic(cType) == false)
         {
