@@ -145,10 +145,6 @@ public partial class DriveChooser : Form
 
     }
 
-    private void groupBox1_Enter(object sender, EventArgs e)
-    {
-
-    }
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -164,12 +160,12 @@ public partial class DriveChooser : Form
         }
     }
 
-    private void groupBox2_Enter(object sender, EventArgs e)
+    private void grpWheelOptions_Enter(object sender, EventArgs e)
     {
 
     }
 
-    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+    private void cmbFrictionLevel_SelectedIndexChanged(object sender, EventArgs e)
     {
         friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
     }
@@ -179,7 +175,7 @@ public partial class DriveChooser : Form
 
     }
 
-    private void textBox2_TextChanged(object sender, EventArgs e)
+    private void txtPneumaticForce_TextChanged(object sender, EventArgs e)
     {
 
     }

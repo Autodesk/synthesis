@@ -204,7 +204,7 @@ partial class DriveChooser
             this.grpWheelOptions.TabIndex = 6;
             this.grpWheelOptions.TabStop = false;
             this.grpWheelOptions.Text = "Wheel Type";
-            this.grpWheelOptions.Enter += new System.EventHandler(this.groupBox2_Enter);
+            this.grpWheelOptions.Enter += new System.EventHandler(this.grpWheelOptions_Enter);
             // 
             // cmbFrictionLevel
             // 
@@ -218,7 +218,7 @@ partial class DriveChooser
             this.cmbFrictionLevel.Size = new System.Drawing.Size(149, 24);
             this.cmbFrictionLevel.TabIndex = 1;
             this.cmbFrictionLevel.Text = "Friction Level";
-            this.cmbFrictionLevel.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            this.cmbFrictionLevel.SelectedIndexChanged += new System.EventHandler(this.cmbFrictionLevel_SelectedIndexChanged);
             // 
             // cmbWheelType
             // 
@@ -282,7 +282,7 @@ partial class DriveChooser
             this.txtPneumaticForce.Name = "txtPneumaticForce";
             this.txtPneumaticForce.Size = new System.Drawing.Size(100, 22);
             this.txtPneumaticForce.TabIndex = 3;
-            this.txtPneumaticForce.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            this.txtPneumaticForce.TextChanged += new System.EventHandler(this.txtPneumaticForce_TextChanged);
             // 
             // lblPneumaticVelocityTell
             // 
