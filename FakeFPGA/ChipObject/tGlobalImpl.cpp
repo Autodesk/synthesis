@@ -8,6 +8,7 @@
 #include <ChipObject/NiFpgaState.h>
 #include <ChipObject/tGlobalImpl.h>
 #include <OSAL/System.h>
+#include <stdio.h>
 
 namespace nFPGA {
 
@@ -18,6 +19,7 @@ namespace nFPGA {
 	tGlobal_Impl::~tGlobal_Impl() {
 		if (this->state->global == this) {
 			this->state->global = NULL;
+			fprintf(stderr, "DELETED THE SHARED INSTANCE OF tGlobal.  THIS SHOULD NEVER HAPPEN.  DON'T DO THIS.\n");
 		}
 	}
 

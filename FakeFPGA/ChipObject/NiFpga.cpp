@@ -3,6 +3,7 @@
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/NiIRQImpl.h"
 #include "ChipObject/tAIImpl.h"
+#include "ChipObject/tGlobalImpl.h"
 #include "ChipObject/tAlarmImpl.h"
 #include "ChipObject/tWatchcatImpl.h"
 #include "ChipObject/tEncoderImpl.h"
@@ -64,7 +65,11 @@ nFPGA::nFRC_2012_1_6_4::tAccumulator *nFPGA::nFRC_2012_1_6_4::tAccumulator::crea
 nFPGA::nFRC_2012_1_6_4::tGlobal *nFPGA::nFRC_2012_1_6_4::tGlobal::create(
 	tRioStatusCode *status) {
 		*status =  NiFpga_Status_Success;
-		return (nFPGA::nFRC_2012_1_6_4::tGlobal *) GetFakeFPGA()->getGlobal();
+		//return (nFPGA::nFRC_2012_1_6_4::tGlobal *) GetFakeFPGA()->getGlobal();
+		// This causes issues with invalid access when another thread deletes it while another one tries to read it.
+		// Globals are typically acquired, then immediately deleted.  Possible mem leak tho
+		// Very slow mem leak.  4k over 5 minutes
+		return new tGlobal_Impl(GetFakeFPGA());
 }
 
 nFPGA::nFRC_2012_1_6_4::tAlarm *nFPGA::nFRC_2012_1_6_4::tAlarm::create(
