@@ -1,30 +1,30 @@
 using UnityEngine;
 using System.Collections.Generic;
 using ExceptionHandling;
+using System;
 
 public class DriveJoints : MonoBehaviour
 {
 
 	// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor
-	public static void SetListOfMotors(List<UnityRigidNode> setOfWheels, float signal, float brakeTorque)
+	public static void SetMotor(UnityRigidNode wheel, float signal, float brakeTorque)
 	{
+		// The conversion factor from Oz-In to NM. It has a multiplier in it at the moment to help compensate for the robot being the size of a building.
+		float OzInToNm = 10f * .00706155183333f;
 
-		// The conversion factor from Oz-In to NM
-		float OzInToNm = .00706155183333f;
-				
-		foreach (UnityRigidNode wheel in setOfWheels)
+		if (signal == 0)
 		{
-			if (wheel.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
-			{
-				// Applies a given brakeTorque (value is input as Oz-In but converted to N-M before use)
-				wheel.GetWheelCollider().brakeTorque = OzInToNm * brakeTorque;
-				// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
-				wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 100 * (float)171.1);
-				;
-				wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
-			}
-						
+			// If no motor torque is applied, the breaks are applied
+			// The maximum brakeTorque of a vex motor is 343.3 oz-in
+			wheel.GetWheelCollider().brakeTorque = OzInToNm * 343.3f;
 		}
+
+		// Gets rid of any brakeTorque so the robot can move easily
+		wheel.GetWheelCollider().brakeTorque = 0;
+
+		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
+		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * (float)171.1);
+		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
 	}
 		
 	// Rotates a wheel 45 degress to act as a mecanum wheel
@@ -43,7 +43,7 @@ public class DriveJoints : MonoBehaviour
 		configJoint.GetConfigJoint().targetVelocity = new Vector3(speed, 0, 0);
 	}
 	
-	// Updates a wheel at the given PWM port with a given value
+	/*// Updates a wheel at the given PWM port with a given value
 	// Note that this also returns true or false, because if a motor is set to 
 	public static void UpdateWheel(Dictionary<int, List<UnityRigidNode>> wheels, int pwmPort, float speed)
 	{
@@ -56,22 +56,35 @@ public class DriveJoints : MonoBehaviour
 			// The maximum brakeTorque of a vex motor is 343.3 oz-in
 			DriveJoints.SetListOfMotors(wheels [pwmPort], 0, 343.3f);
 		}
-	}
+	}*/
 	
-	// Defaults to a value of 10 (60 PSI)... This is not a realistic value, because velocity depends on the volume of the tank as well as the air pressure. We can figure this out, but it might be something for super happy fun time.
-	public static void UpdatePiston(Dictionary<List<int>, UnityRigidNode> piston, int pistonPort1, int pistonPort2, float targetVelocity)
-	{
-		// When we get to superHappyFun Time, we will need to calculate some realistic PSI forces and find a way to use that, and the volume of a given tank to calculate an accurate target velocity value for the piston (Hopefull, we can store the data in the UnityRigidNode)
-		SetConfigJointMotorX(piston [new List<int>{pistonPort1, pistonPort2}], 30);
-	}
 	
-	public static void UpdateAllWheels(Dictionary<int, List<UnityRigidNode>> wheels, float[] pwm)
+	public static void UpdateAllWheels(RigidNode_Base skeleton, float[] pwm)
 	{
+		List<RigidNode_Base> test = new List<RigidNode_Base>();
+		skeleton.ListAllNodes(test);
+
+		// Cycles through the packet
 		for (int i = 0; i<pwm.Length; i++)
 		{
-			if (wheels.ContainsKey(i + 1))
+			// Cycles through the skeleton
+			foreach (RigidNode_Base subNode in test)
 			{
-				UpdateWheel(wheels, i + 1, pwm [i]);
+				UnityRigidNode unitySubNode = (UnityRigidNode)subNode;
+
+				// If port A matches the index of the array in the packet, (A.K.A: the packet index is reffering to the wheelCollider on the subNode0), then that specific wheel Collider is set.
+				// Note that it also checks to make sure that the node is a wheel (and not a solenoid)
+				try
+				{
+					if (unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && unitySubNode.GetPortA() == i + 1)
+					{
+						SetMotor(unitySubNode, pwm [i], 0);
+
+					}
+				} catch (NullReferenceException)
+				{
+					// Do nothing. There is an object in the skeleton which has not joint, and to compensate for that.
+				}
 			}
 		}
 	}
@@ -148,62 +161,12 @@ public class DriveJoints : MonoBehaviour
 // A class to hold all motor/pnuematic/joint initialization functions
 public class InitializeMotors : MonoBehaviour
 {	
-	// Combs through all of the skeleton data and finds the pwm port numbers of each wheel (by looking through the UnityRigidNode that it is attatched to)
-	// The differene here however, is that more than one wheel can be assigned per motor port (in the case that the team has a chain drive, for example).
-	public static Dictionary<int, List<UnityRigidNode>> AssignListOfMotors(RigidNode_Base skeleton)
-	{
-		// This dictionary will hold all of the data we gather from the skeleton and store it
-		Dictionary<int, List<UnityRigidNode>> functionOutput = new Dictionary<int, List<UnityRigidNode>>();
-		
-		// We will need this to grab and comb through all of the nodes (parts) or the skeleton
-		List<RigidNode_Base> listAllNodes = new List<RigidNode_Base>();
-		skeleton.ListAllNodes(listAllNodes);
-		
-		foreach (RigidNode_Base dropTheBase in listAllNodes)
-		{
-			// UnityRigidNodes have the functions we need (it inherits from RigidNodeBase so we can typecast it)
-			UnityRigidNode unityNode = (UnityRigidNode)dropTheBase;
-			
-			// If it finds a wheelCollider
-			if (unityNode.GetWheelCollider() != null)
-			{
-							
-				// Calculating Wheel Friction (I am not sure if this is already set, but in case it is not,  here it is)
-				WheelFrictionCurve ForwardFriction = new WheelFrictionCurve();
-				ForwardFriction.asymptoteSlip = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().forwardAsympSlip;
-				ForwardFriction.asymptoteValue = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().forwardAsympValue;
-				ForwardFriction.extremumSlip = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().forwardExtremeSlip;
-				ForwardFriction.extremumValue = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().forwardExtremeValue;
-				ForwardFriction.stiffness = 1;
-
-				
-				WheelFrictionCurve SidewaysFriction = new WheelFrictionCurve();
-				SidewaysFriction.asymptoteSlip = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().sideAsympSlip;
-				SidewaysFriction.asymptoteValue = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().sideAsympValue;
-				SidewaysFriction.extremumSlip = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().sideExtremeSlip;
-				SidewaysFriction.extremumValue = unityNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().sideExtremeValue;
-				SidewaysFriction.stiffness = 1;
-								
-				unityNode.GetWheelCollider().forwardFriction = ForwardFriction;
-				unityNode.GetWheelCollider().sidewaysFriction = SidewaysFriction;
-
-				// The code will now attempt to assign each unityNode containing a wheelCollider a unique PWM port value. If it does not, however, it will throw an exception (see ErrorStuff.CS)
-				if (functionOutput.ContainsKey(unityNode.GetPortA()))
-				{
-					functionOutput [unityNode.GetPortA()].Add(unityNode);
-					//Debug.Log (string.Format ("Wheel Name: {0}, PWM Port {1}.", unityNode.GetWheelCollider ().name, unityNode.GetPortA ()));
-					
-					// If it isn't however, the user will have issues
-				} else
-				{
-					functionOutput [unityNode.GetPortA()] = new List<UnityRigidNode>();
-					functionOutput [unityNode.GetPortA()].Add(unityNode);
-				}
-			}
-		}
-		
-		return functionOutput;
-	}
-
-
+	//public static void flipNormalIfIncorrect(RigidNode_Base skeleton) {
+	//	List<RigidNode_Base> listOfNodes = new List<UnityRigidNode>();
+	//	skeleton.ListAllNodes(listOfNodes);
+	//	foreach(RigidNode_Base node in listOfNodes) 
+	//	{
+	//		if
+	//	}
+	//}
 }
