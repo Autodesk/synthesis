@@ -8,6 +8,9 @@
 #include <tDIO.h>
 #include "ChipObject/tDIOImpl.h"
 #include "ChipObject/tSolenoidImpl.h"
+#include "ChipObject/tAIImpl.h"
+#include "ChipObject/tEncoderImpl.h"
+#include "ChipObject/tCounterImpl.h"
 #include "OSAL/System.h"
 #include "PWMDecoder.h"
 #include "StateNetwork/StatePacket.h"
@@ -20,23 +23,36 @@ int StartEmulator() {
 	NiFpga_Initialize();
 	printf("Init FPGA\n");
 	FRC_UserProgram_StartupLibraryInit();
-	StatePacket pack = StatePacket();
+	OutputStatePacket pack = OutputStatePacket();
+	InputStatePacket sensors = InputStatePacket();
 	StateNetworkServer serv = StateNetworkServer();
 	serv.Open();
 	tRioStatusCode status;
 	while (true) {
-		for (int i = 0; i<8; i++){
-			float curr = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(0), i);
-			pack.pwmValues[i] = curr;
-			printf("%.03f ", pack.pwmValues[i]);
+		for (int j = 0; j<2; j++){
+			for (int i = 0; i<8; i++){
+				pack.dio[j].pwmValues[i] = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(j), i);
+			}
+			pack.dio[j].digitalOutput = GetFakeFPGA()->getDIO(j)->readDO(&status);
+			pack.dio[j].relayForward = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
+			pack.dio[j].relayReverse = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
 		}
-		pack.solenoidValues = GetFakeFPGA()->getSolenoid()->readDO7_0(0, &status);
-		printf("\t");
-		for (int i =0; i<8; i++) {
-			printf("%d ", (pack.solenoidValues >> i) & 1);
+		for (int j = 0; j < 1; j++){
+			pack.solenoid[j].state = GetFakeFPGA()->getSolenoid()->readDO7_0(j, &status);
 		}
-		printf("\n");
 		serv.SendStatePacket(pack);
+		if (serv.ReceiveStatePacket(&sensors)) {
+			for (int j = 0; j<2; j++){
+				GetFakeFPGA()->getDIO(j)->writeDigitalPort(sensors.dio[j].digitalInput, GetFakeFPGA()->getDIO(j)->readOutputEnable(&status));
+			}
+			for (int j = 0; j<1; j++) {
+				GetFakeFPGA()->getAnalog(j)->updateValues(sensors.ai[j].analogValues);
+			}
+			for (int j = 0; j<4; j++) {
+				GetFakeFPGA()->getEncoder(j)->doUpdate(sensors.encoder[j].value);
+			}
+			// Counters?
+		}
 		sleep_ms(50);
 	}
 }
