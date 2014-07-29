@@ -60,6 +60,10 @@ public class UnityRigidNode : RigidNode_Base
 	//creates a wheel collider and centers it on the current transform
 	private void CreateWheel(RotationalJoint_Base center, HandleWheel wheelC)
 	{
+
+		Quaternion q = new Quaternion();
+		q.SetFromToRotation(new Vector3(1,0,0), joint.axis);
+
 		wCollider = new GameObject(unityObject.name + " Collider");
 				
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
@@ -68,6 +72,7 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider.GetComponent<WheelCollider>().radius = wheel.radius + (wheel.radius * 0.15f);
 		//wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 		wheelC(wCollider);
+		wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
 				
@@ -128,7 +133,6 @@ public class UnityRigidNode : RigidNode_Base
 		}
 				
 		SkeletalJoint_Base nodeX = GetSkeletalJoint();
-				
 		//this is the conditional for Identified wheels
 		if (nodeX.GetJointType() == SkeletalJointType.ROTATIONAL)
 		{
@@ -159,6 +163,15 @@ public class UnityRigidNode : RigidNode_Base
 				{
 					wCollider.GetComponent<WheelCollider>().transform.Rotate(90, 0, 0);
 					// Do rotaion stuff here
+					//Vector3 difference = auxFunctions.ConvertV3(nodeR.basePoint) - TotalCenterOfMass();
+					/*
+					 * 
+					 *				RotationalJoint_Base rj = (RotationalJoint_Base) uNode.GetSkeletalJoint();
+				Vector3 diff = auxFunctions.ConvertV3(rj.basePoint) - com;
+				double dot = Vector3.Dot(diff,auxFunctions.ConvertV3(rj.axis));
+				if (dot < 0) {
+
+					 */
 
 				});	
 								
