@@ -38,9 +38,26 @@ namespace nFPGA {
 		friend class tCounter_Impl;
 		friend class tAnalogTrigger_Impl;
 		friend class tAlarm_Impl;
-
+	private:
+#pragma region ADDRESSES
+		static const int kFPGA_RESET_REGISTER = 0x8102;
+		static const int kFPGA_COMMAND_REGISTER = 0x8104;
+		static const int kFPGA_COMMAND_ENABLE_CLEAR = 4;
+		static const int kFPGA_COMMAND_ENABLE_IN = 2;
+		static const int kFPGA_INTERRUPT_BASE_ADDRESS = 0x8000;
+	public:
+		static const int kFPGA_SIGNATURE_REGISTER = 0x8108;
+	private:
+		static const int kMITE_IOPCR_REGISTER = 0x470;
+		static const int kMITE_IOPCR_32BIT = 0xC00231;
+#pragma endregion
 	private:
 		static const uint32_t FPGA_RAM_SIZE = 0x10000;
+		static const uint32_t kExpectedFPGASignature[];
+		static const uint32_t kExpectedFPGAVersion = 8210;
+		static const uint32_t kExpectedFPGARevision = 0x00106004;
+
+		uint8_t sigChunk;
 
 		tDIO_Impl **dio;
 		tAI_Impl **ai;
@@ -83,6 +100,9 @@ namespace nFPGA {
 			tRioStatusCode *status);
 		virtual uint32_t getLVHandle(tRioStatusCode *status);
 		virtual uint32_t getHandle();
+
+		// Freaking WPILib hack this is bad and stupid
+		virtual uint32_t readSignatureChunk();
 	};
 
 } /* namespace nFPGA */

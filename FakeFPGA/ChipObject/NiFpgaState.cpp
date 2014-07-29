@@ -24,12 +24,21 @@
 #include <string.h> // memset and memcpy
 
 namespace nFPGA {
+	const uint32_t NiFpgaState::kExpectedFPGASignature[] =
+	{
+		0xA14C11BD,
+		0xE4BB64AE,
+		0xF6A86FC5,
+		0x2A294CD9,
+	};
 
 	NiFpgaState::NiFpgaState() {
 		irqManager = new NiIRQ_Impl();
 
 		fpgaRAM = (char*) malloc(FPGA_RAM_SIZE);
 		memset(fpgaRAM, 0, FPGA_RAM_SIZE);
+
+		sigChunk = 0;
 
 		solenoid = new tSolenoid_Impl(this);
 		dio = new tDIO_Impl*[tDIO_Impl::kNumSystems];
@@ -163,29 +172,36 @@ namespace nFPGA {
 	}
 
 	const uint16_t NiFpgaState::getExpectedFPGAVersion() {
-		return 0;
+		return kExpectedFPGAVersion;
 	}
 
 	const uint32_t NiFpgaState::getExpectedFPGARevision() {
-		return 0;
+		return kExpectedFPGARevision;
 	}
 
 	const uint32_t* const NiFpgaState::getExpectedFPGASignature() {
-		return new uint32_t[3];
+		return &kExpectedFPGASignature[0];
 	}
 
 	void NiFpgaState::getHardwareFpgaSignature(uint32_t* guid_ptr,
 		tRioStatusCode* status) {
 			*status =  NiFpga_Status_Success;
+		memcpy(guid_ptr, kExpectedFPGASignature, sizeof(uint32_t) * 4);
 	}
 
 	uint32_t NiFpgaState::getLVHandle(tRioStatusCode* status) {
 		*status =  NiFpga_Status_Success;
-		return 0;
+		return (uint32_t) this;
 	}
 
 	uint32_t NiFpgaState::getHandle() {
-		return 0;
+		return (uint32_t) this;
 	}
 
+	uint32_t NiFpgaState::readSignatureChunk() {
+		// Stupid WPILib
+		uint32_t val = kExpectedFPGASignature[sigChunk];
+		sigChunk = (sigChunk + 1) % 4;
+		return val;
+	}
 } /* namespace nFPGA */

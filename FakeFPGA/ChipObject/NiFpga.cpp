@@ -190,6 +190,9 @@ NiFpga_Status NiFpga_ReadU32(NiFpga_Session session, uint32_t indicator, uint32_
 	case nFPGA::tAccumulator_Impl::kAccumulator1_Output_Address:
 		*value = GetFakeFPGA()->getAccumulator(1)->readOutputChunk();
 		break;
+	case nFPGA::NiFpgaState::kFPGA_SIGNATURE_REGISTER:
+		*value = GetFakeFPGA()->readSignatureChunk();
+		break;
 	}
 	return NiFpga_Status_Success;
 }
