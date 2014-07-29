@@ -24,7 +24,7 @@ void sleep_ms(unsigned long ms) {
 #if USE_WINAPI
 	Sleep(ms);
 #elif USE_POSIX
-	usleep(ms * 1000000);
+	usleep(ms * 1000);
 #endif
 }
 
