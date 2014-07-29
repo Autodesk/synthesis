@@ -1,5 +1,6 @@
 #include "tEncoderImpl.h"
 #include "NiFpgaState.h"
+#include "ChipObject/tGlobalImpl.h"
 
 #define TENCODER_DECL_ADDRESS(x) const int tEncoder_Impl::k ## x ## _Addresses [] = {kEncoder0_ ## x ## _Address, kEncoder1_ ## x ## _Address, kEncoder2_ ## x ## _Address, kEncoder3_ ## x ## _Address }
 
@@ -20,9 +21,11 @@ namespace nFPGA {
 		this->timerOutput = (tTimerOutput*) &(state->fpgaRAM[kTimerOutput_Addresses[sys_index]]);
 
 		this->outputOffset = 0;
+		this->lastUpdate = 0;
 
 		(*encoderConfig).value = 0;
 		(*encoderConfig).Enable = false;
+		(*encoderConfig).Reverse = false;
 
 		(*encoderOutput).Value = 0;
 		(*encoderOutput).Direction = 0;
@@ -220,9 +223,20 @@ namespace nFPGA {
 	}
 
 	void tEncoder_Impl::doUpdate(int32_t value) {
-		int32_t prev = ((*encoderOutput).Value + outputOffset);
+		tRioStatusCode status;
+
+		int32_t reverse = ((*encoderConfig).Reverse ? -1 : 1);
+		int32_t prev = (reverse * (*encoderOutput).Value + outputOffset);
 		bool dir = prev < value;
-		(*encoderOutput).Value = ((*encoderConfig).Reverse ? -1 : 1) * (value - outputOffset);
+		uint32_t cTime = state->getGlobal()->readLocalTime(&status);
+		// period in micros = (double)(output.Period << 1) / (double)output.Count;
+		if (prev != value) {
+			(*timerOutput).Period = (cTime - lastUpdate);
+			(*timerOutput).Count = (value - prev) << 1;
+			lastUpdate = cTime;
+		}
+		(*timerOutput).Stalled = (*timerOutput).Period < (*timerConfig).StallPeriod;
+		(*encoderOutput).Value = reverse * (value - outputOffset);
 		(*encoderOutput).Direction = (*encoderConfig).Reverse ? !dir : dir;
 	}
 

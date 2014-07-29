@@ -49,6 +49,7 @@ namespace nFPGA {
 		tTimerConfig *timerConfig;
 
 		int32_t outputOffset;
+		uint32_t lastUpdate;
 	public:
 
 		tEncoder_Impl(NiFpgaState *state, unsigned char sys_index);
