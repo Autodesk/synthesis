@@ -9,11 +9,8 @@ public class UnityRigidNode : RigidNode_Base
 	protected WheelDriverMeta wheel;
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
-	private float center;
-
-
-
-		
+	private float center, current;
+			
 	public delegate void HandleJoint(ConfigurableJoint jointSub);
 
 	public delegate void HandleWheel(GameObject center);
@@ -28,10 +25,7 @@ public class UnityRigidNode : RigidNode_Base
 		unityObject.transform.position = new Vector3(0, 0, 0);
 		unityObject.name = base.GetModelFileName(); 
 	}
-	public void testGravity(){
-		Rigidbody[] test = unityObject.transform.parent.GetComponentsInChildren<Rigidbody>();
-		
-	}
+
 	//creates a uniform configurable joint which can be altered through conditionals.
 	private ConfigurableJoint ConfigJointInternal(Vector3 pos, Vector3 axis, HandleJoint jointType)
 	{
@@ -49,6 +43,7 @@ public class UnityRigidNode : RigidNode_Base
 		//configures the joint
 		joint.anchor = pos;
 		joint.connectedAnchor = pos;
+				
 		joint.axis = axis;
 		
 		//joint.secondaryAxis = new Vector3 (0, 0, 1);
@@ -66,10 +61,11 @@ public class UnityRigidNode : RigidNode_Base
 	private void CreateWheel(RotationalJoint_Base center, HandleWheel wheelC)
 	{
 		wCollider = new GameObject(unityObject.name + " Collider");
+				
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
-		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
+		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
 		wCollider.AddComponent<WheelCollider>();
-		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius) + ((wheel.radius) * 0.15f);
+		wCollider.GetComponent<WheelCollider>().radius = wheel.radius + (wheel.radius * 0.15f);
 		//wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
 		wheelC(wCollider);
 		
@@ -107,8 +103,9 @@ public class UnityRigidNode : RigidNode_Base
 	private void LinearLimit(Dictionary<string, float> limit)
 	{
 		center = (limit ["end"] - limit ["start"]) / 2.0f;
-		//current = center - limit ["current"];
-		//subObject.transform.position = subCollider.transform.position = joint.axis * current;
+		current = center - limit ["current"];
+		Debug.Log("center: " + center + " current: " + current);
+		subObject.transform.position = subCollider.transform.position = joint.axis * current;
 				
 		linear.limit = Mathf.Abs(center);
 		joint.linearLimit = linear;
@@ -151,10 +148,7 @@ public class UnityRigidNode : RigidNode_Base
 										};
 					AngularLimit(aLimit);
 				}
-				
 			});
-			
-            
 			//don't worry, I'm a doctor
 						
 			//if the mesh contains information which identifies it as a wheel then create a wheel collider.
@@ -164,6 +158,7 @@ public class UnityRigidNode : RigidNode_Base
 				CreateWheel(nodeR, delegate (GameObject wCollider)
 				{
 					wCollider.GetComponent<WheelCollider>().transform.Rotate(90, 0, 0);
+					// Do rotaion stuff here
 
 				});	
 								
@@ -183,6 +178,7 @@ public class UnityRigidNode : RigidNode_Base
 															{"start",nodeC.linearLimitStart},
 															{"current",nodeC.currentLinearPosition}
 								};
+				Debug.Log(string.Format("{0} : {1} : {2} : hasLimits : {3} {4}", nodeC.linearLimitEnd, nodeC.linearLimitStart, nodeC.currentLinearPosition, nodeC.hasLinearEndLimit, nodeC.hasLinearStartLimit));
 				LinearLimit(lLimit);
 				if (joint.angularXMotion == ConfigurableJointMotion.Limited)
 				{
@@ -289,6 +285,43 @@ public class UnityRigidNode : RigidNode_Base
 	public ConfigurableJoint GetConfigJoint()
 	{
 		return joint != null ? joint : null;
+	}
+
+	// Returns the center of mass of the skeleton. It calculates a weighted average of all the rigiBodies in the gameObject. (Its an average of their positions, weighted by the masses of each rigidBody)
+	public static Vector3 TotalCenterOfMass(GameObject gameObj)
+	{
+		Vector3 centerOfMass = Vector3.zero;
+		float sumOfAllWeights = 0f;
+
+		Rigidbody[] rigidBodyArray = gameObj.GetComponentsInChildren<Rigidbody>();
+		
+		foreach(Rigidbody rigidBase in rigidBodyArray) {
+			centerOfMass += rigidBase.worldCenterOfMass * rigidBase.mass;
+			sumOfAllWeights += rigidBase.mass;
+		}
+		centerOfMass /= sumOfAllWeights;
+		//Debug.Log(centerOfMass.ToString());
+		return centerOfMass;
+	}
+
+	public static void flipNormals(Dictionary<int, List<UnityRigidNode>> wheelContainer, GameObject gameObj) {
+		Vector3 centerOfMass = TotalCenterOfMass(gameObj);
+		foreach(KeyValuePair<int, List<UnityRigidNode>> wheel in wheelContainer) {
+
+			foreach(UnityRigidNode node in wheel.Value) {
+				// The vector between the origin and center of a wheel
+				Vector3 originToWheel = centerOfMass - node.GetConfigJoint().rigidbody.centerOfMass;
+
+				// Find the angle between that vector and the X-axis
+				float angle = Mathf.Cos(Vector3.Angle(originToWheel, new Vector3(1, 0, 0)));
+
+				if (1 - Mathf.Abs(angle) < .5) {
+					Debug.Log(string.Format("Vector:  {0} is in group A.", angle.ToString()));
+				} else {
+					Debug.Log(string.Format("Vector:  {0} is in group B.", angle.ToString()));
+				}
+			}
+		}
 	}
 
 }
