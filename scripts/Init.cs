@@ -22,7 +22,7 @@ public class Init : MonoBehaviour
 
 	void Start()
 	{
-		Physics.gravity = new Vector3(0,-980f,0);
+		//Physics.gravity = new Vector3(0,-980f,0);
 		string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 		//Now you can use a default directory to load all of the files
 		Directory.CreateDirectory(homePath + "/Documents/Skeleton/Skeleton/");
@@ -44,7 +44,7 @@ public class Init : MonoBehaviour
 						
 					
 		}
-		transform.Rotate(new Vector3(-90.0f, 0.0f, 0.0f));
+		//transform.Rotate(new Vector3(-90.0f, 0.0f, 0.0f));
 				
 		skeleton.ListAllNodes(names);
 		
@@ -53,16 +53,17 @@ public class Init : MonoBehaviour
 
 	void OnEnable()
 	{
-		udp.Start();
+		
+		//udp.Start();
 	}
 
 	void OnDisable()
 	{
-		udp.Stop();	
+		//udp.Stop();	
 	}
 
 	void FixedUpdate()
 	{
-		DriveJoints.UpdateAllWheels(PWMAssignments, udp.GetPacket().pwmValues);
+		//DriveJoints.UpdateAllWheels(PWMAssignments, udp.GetPacket().pwmValues);
 	}
 }

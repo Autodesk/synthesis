@@ -15,20 +15,19 @@ public class StatePacket
 public class unityPacket
 {
 	public Thread thread;
-	public volatile bool active = true;
+	public volatile bool active;
+	public bool first;
 	UdpClient udp;
 	StatePacket packet = new StatePacket();
+	
+	public delegate void Bind(UdpClient udp);
 	
 	public void Start()
 	{
 		thread = new Thread(unityPacket.RunServerWrapper);
 		udp = new UdpClient();
-        active = true;
-		/*
-		udp.Client.DontFragment = true;
-		udp.Client.Ttl = 100;
-		udp.Client.SendTimeout = 1;
-		*/
+		active = true;
+     
 		thread.Start(this);
 		
 	}
@@ -55,7 +54,7 @@ public class unityPacket
 		}
 	}
 
-	private void ServerInternal()
+	private void ServerInternal(Bind binder)
 	{
 		try
 		{
@@ -63,8 +62,10 @@ public class unityPacket
 			
 			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2550);
 			udp.ExclusiveAddressUse = false;
-            udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            udp.Client.Bind(ipEnd);
+			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            
+			udp.Client.Bind(ipEnd);
+			
 			byte[] buffer = new byte[1024];
 			while (active)
 			{	
@@ -88,6 +89,7 @@ public class unityPacket
 					Debug.Log(packet.pwmValues [i]);
 				}
 			}
+            
 		} catch (Exception ex)
 		{
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
@@ -101,7 +103,17 @@ public class unityPacket
 
 	private static void RunServerWrapper(object obj)
 	{
-		((unityPacket)obj).ServerInternal();
+	/*
+			if (!((unityPacket)obj).first){
+			((unityPacket)obj).ServerInternal(delegate(udpClient udp) {
+					
+		});
+			}else{
+			((unityPacket)obj).ServerInternal(delegate() {
+				
+            });
+			
+	*/	
 	}
 
 		
