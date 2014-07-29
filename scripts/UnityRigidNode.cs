@@ -110,7 +110,6 @@ public class UnityRigidNode : RigidNode_Base
 		center = (limit ["end"] - limit ["start"]) / 2.0f;
 		current = center - limit ["current"];
 		Debug.Log("center: " + center + " current: " + current);
-		subObject.transform.position = subCollider.transform.position = joint.axis * current;
 				
 		linear.limit = Mathf.Abs(center);
 		joint.linearLimit = linear;
