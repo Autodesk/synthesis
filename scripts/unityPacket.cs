@@ -54,7 +54,7 @@ public class unityPacket
 		}
 	}
 
-	private void ServerInternal(Bind binder)
+	private void ServerInternal()
 	{
 		try
 		{
@@ -103,17 +103,7 @@ public class unityPacket
 
 	private static void RunServerWrapper(object obj)
 	{
-	/*
-			if (!((unityPacket)obj).first){
-			((unityPacket)obj).ServerInternal(delegate(udpClient udp) {
-					
-		});
-			}else{
-			((unityPacket)obj).ServerInternal(delegate() {
-				
-            });
-			
-	*/	
+		((unityPacket)obj).ServerInternal();
 	}
 
 		
