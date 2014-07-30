@@ -55,24 +55,15 @@ public class PneumaticDriverMeta : JointDriverMeta
     protected override void WriteDataInternal(BinaryWriter writer)
     {
         writer.Write((byte)((int)type));
-
-        writer.Write(center.x);
-        writer.Write(center.y);
-        writer.Write(center.z);
-
+        
         writer.Write(widthMM);
     }
 
     //Reads the position of the wheel from the file.
     protected override void ReadDataInternal(BinaryReader reader)
     {
-        type = (PneumaticType)reader.ReadByte();
-        widthMM = reader.ReadSingle();
-
-        center.x = reader.ReadSingle();
-        center.y = reader.ReadSingle();
-        center.z = reader.ReadSingle();
-
+        type = (JointDriverType)reader.ReadByte();
+        
         widthMM = reader.ReadSingle();
     }
 
