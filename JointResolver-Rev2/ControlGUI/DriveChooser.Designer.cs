@@ -258,6 +258,10 @@ partial class DriveChooser
             // cmbPneumaticPressure
             // 
             this.cmbPneumaticPressure.FormattingEnabled = true;
+            this.cmbPneumaticPressure.Items.AddRange(new object[] {
+            "60 psi",
+            "20 psi",
+            "10 psi"});
             this.cmbPneumaticPressure.Location = new System.Drawing.Point(177, 22);
             this.cmbPneumaticPressure.Name = "cmbPneumaticPressure";
             this.cmbPneumaticPressure.Size = new System.Drawing.Size(106, 24);
@@ -267,6 +271,10 @@ partial class DriveChooser
             // cmbPneumaticDiameter
             // 
             this.cmbPneumaticDiameter.FormattingEnabled = true;
+            this.cmbPneumaticDiameter.Items.AddRange(new object[] {
+            "1 in",
+            ".5 in",
+            ".25 in"});
             this.cmbPneumaticDiameter.Location = new System.Drawing.Point(6, 22);
             this.cmbPneumaticDiameter.Name = "cmbPneumaticDiameter";
             this.cmbPneumaticDiameter.Size = new System.Drawing.Size(102, 24);
