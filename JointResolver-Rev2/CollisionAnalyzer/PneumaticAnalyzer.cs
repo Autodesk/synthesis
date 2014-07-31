@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
 
-class WheelAnalyzer
+class PneumaticAnalyzer
 {
+
     public static void StartCalculations(RigidNode node)
     {
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
@@ -34,7 +35,7 @@ class WheelAnalyzer
             }
 
             //Waits for all radii to be found before operating on the final values.
-            foreach(FindRadiusThread thread in radiusThreadList)
+            foreach (FindRadiusThread thread in radiusThreadList)
             {
                 thread.Join();
             }
@@ -58,7 +59,7 @@ class WheelAnalyzer
             Console.WriteLine("Center of " + treadPart.Name + "found to be:");
             Console.WriteLine(wheelDriver.center.x + ", " + wheelDriver.center.y + ", " + wheelDriver.center.z);
             Console.WriteLine("Whilst the node coordinates are: ");
-            Console.WriteLine(treadPart.Transformation.Translation.X + ", " + treadPart.Transformation.Translation.Y + ", "  + 
+            Console.WriteLine(treadPart.Transformation.Translation.X + ", " + treadPart.Transformation.Translation.Y + ", " +
                 treadPart.Transformation.Translation.Z);
         }
 
@@ -71,96 +72,53 @@ class WheelAnalyzer
     /// <summary>
     /// Saves all of the informations for a wheel collider, such as width, radius, and center, to a joint.
     /// </summary>
-    /// <param name="position">
+    /// <param name="diameter">
     /// The position of the wheel on the robot's frame.  Will most likely be removed later.
     /// </param>
-    /// <param name="joint">
+    /// <param name="pressure">
     /// The joint that controls the collider.
     /// </param>
-    /// <param name="friction">
-    /// The tier of friction that was selected by DriveChooser.
-    /// </param>
-    public static void SaveToJoint(WheelType type, FrictionLevel friction, RigidNode node)
+    public static void SaveToPneumaticJoint(JointDriverType driverType, PneumaticDiameter diameter, PneumaticPressure pressure, RigidNode node)
     {
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
-        WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
+        PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta(); //The info about the wheel attached to the joint.
         RigidNode.DeferredCalculation newCalculation;
 
-        wheelDriver.type = type;
+        pneumaticDriver.type = driverType;
 
         //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
-        switch (friction)
+        switch (diameter)
         {
-            case FrictionLevel.HIGH:
-                wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
-                wheelDriver.forwardExtremeValue = 10; //Force of max static friction force.
-                wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
-                wheelDriver.forwardAsympValue = 8; //Force of leveld off kinetic friction force.
-
-                if (wheelDriver.type == WheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
-                {
-                    wheelDriver.sideExtremeSlip = 1; //Same as above, but orthogonal to the movement of the wheel.
-                    wheelDriver.sideExtremeValue = .01f;
-                    wheelDriver.sideAsympSlip = 1.5f;
-                    wheelDriver.sideAsympValue = .005f;
-                }
-                else
-                {
-                    wheelDriver.sideExtremeSlip = 1;
-                    wheelDriver.sideExtremeValue = 10;
-                    wheelDriver.sideAsympSlip = 1.5f;
-                    wheelDriver.sideAsympValue = 8;
-                }
+            case PneumaticDiameter.HIGH:
+                pneumaticDriver.widthMM = 10;
                 break;
-            case FrictionLevel.MEDIUM:
-                wheelDriver.forwardExtremeSlip = 1f;
-                wheelDriver.forwardExtremeValue = 7;
-                wheelDriver.forwardAsympSlip = 1.5f;
-                wheelDriver.forwardAsympValue = 5;
-
-                if (wheelDriver.type == WheelType.OMNI)
-                {
-                    wheelDriver.sideExtremeSlip = 1;
-                    wheelDriver.sideExtremeValue = .01f;
-                    wheelDriver.sideAsympSlip = 1.5f;
-                    wheelDriver.sideAsympValue = .005f;
-                }
-                else
-                {
-                    wheelDriver.sideExtremeSlip = 1;
-                    wheelDriver.sideExtremeValue = 7;
-                    wheelDriver.sideAsympSlip = 1.5f;
-                    wheelDriver.sideAsympValue = 5;
-                }
+            case PneumaticDiameter.MEDIUM:
+                pneumaticDriver.widthMM = 5;
                 break;
-            case FrictionLevel.LOW:
-                wheelDriver.forwardExtremeSlip = 1;
-                wheelDriver.forwardExtremeValue = 5;
-                wheelDriver.forwardAsympSlip = 1.5f;
-                wheelDriver.forwardAsympValue = 3;
-
-                if (wheelDriver.type == WheelType.OMNI)
-                {
-                    wheelDriver.sideExtremeSlip = 1;
-                    wheelDriver.sideExtremeValue = .01f;
-                    wheelDriver.sideAsympSlip = 1.5f;
-                    wheelDriver.sideAsympValue = .005f;
-                }
-                else
-                {
-                    wheelDriver.sideExtremeSlip = 1;
-                    wheelDriver.sideExtremeValue = 5;
-                    wheelDriver.sideAsympSlip = 1.5f;
-                    wheelDriver.sideAsympValue = 3;
-                }
+            case PneumaticDiameter.LOW:
+                pneumaticDriver.widthMM = 1;
                 break;
         }
 
-        joint.cDriver.AddInfo(wheelDriver);
+        switch (pressure)
+        {
+            case PneumaticPressure.HIGH:
+                pneumaticDriver.pressurePSI = 10;
+                break;
+            case PneumaticPressure.MEDIUM:
+                pneumaticDriver.pressurePSI = 5;
+                break;
+            case PneumaticPressure.LOW:
+                pneumaticDriver.pressurePSI = 1;
+                break;
+        }
+
+        joint.cDriver.AddInfo(pneumaticDriver);
 
         newCalculation = StartCalculations;
         node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);
     }
+
 
     /// <summary>
     /// Calculates the width and centerpoint of a wheel.
@@ -265,4 +223,3 @@ class WheelAnalyzer
         Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
     }
 }
-
