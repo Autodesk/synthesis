@@ -39,24 +39,14 @@ public class PneumaticDriverMeta : JointDriverMeta
         set;
     }
 
-    public BXDVector3 center
-    {
-        get;
-        set;
-    }
-
-
-    public PneumaticDriverMeta()
-    {
-        center = new BXDVector3();
-    }
 
     //Writes the position of the wheel to the file.
     protected override void WriteDataInternal(BinaryWriter writer)
     {
         writer.Write((byte)((int)type));
-        
+
         writer.Write(widthMM);
+        writer.Write(pressurePSI);
     }
 
     //Reads the position of the wheel from the file.
@@ -65,6 +55,7 @@ public class PneumaticDriverMeta : JointDriverMeta
         type = (JointDriverType)reader.ReadByte();
         
         widthMM = reader.ReadSingle();
+        pressurePSI = reader.ReadSingle();
     }
 
     public string GetTypeString()
