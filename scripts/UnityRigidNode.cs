@@ -23,7 +23,7 @@ public class UnityRigidNode : RigidNode_Base
 		unityObject = new GameObject();
 		unityObject.transform.parent = root;
 		unityObject.transform.position = new Vector3(0, 0, 0);
-		unityObject.name = base.GetModelFileName(); 
+		unityObject.name = base.modelFileName(); 
 	}
 
 	//creates a uniform configurable joint which can be altered through conditionals.
