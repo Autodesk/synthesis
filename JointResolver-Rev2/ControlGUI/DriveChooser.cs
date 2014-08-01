@@ -121,7 +121,7 @@ public partial class DriveChooser : Form
 
         if (JointDriver.IsPneumatic(cType))
         {
-            //WheelAnalyzer.SaveToPneumaticJoint(driverType, diameter, pressure, node);
+            PneumaticAnalyzer.SaveToPneumaticJoint(driverType, diameter, pressure, node);
         }
 
     }
