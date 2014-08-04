@@ -60,6 +60,7 @@
     <Compile Include="ModelTree\RigidNode_Base.cs" />
     <Compile Include="IO\BXDJSkeleton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Joints\Sensors\RobotSensor.cs" />
     <Compile Include="Utilities\ArrayUtilities.cs" />
     <Compile Include="Utilities\FileUtilities.cs" />
   </ItemGroup>

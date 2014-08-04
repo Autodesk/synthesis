@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Possible types of skeletal joints.
@@ -61,22 +62,63 @@ public abstract class SkeletalJoint_Base
     public JointDriver cDriver;
 
     /// <summary>
+    /// The sensors that read information from this joint.
+    /// </summary>
+    public List<RobotSensor> attachedSensors = new List<RobotSensor>();
+
+    /// <summary>
     /// The type of this joint.
     /// </summary>
     /// <returns>The joint type</returns>
     public abstract SkeletalJointType GetJointType();
 
     /// <summary>
-    /// Writes the backing information for this joint to the output stream.
+    /// Writes the backing information and ID for this joint to the output stream.
     /// </summary>
     /// <param name="writer">Output stream</param>
-    public abstract void WriteJoint(System.IO.BinaryWriter writer);
+    public void WriteJoint(System.IO.BinaryWriter writer)
+    {
+        writer.Write((byte) ((int) GetJointType()));
+        WriteJointInternal(writer);
+
+        writer.Write(cDriver != null);
+        if (cDriver!=null){
+            cDriver.WriteData(writer);
+        }
+        writer.Write(attachedSensors.Count);
+        for (int i = 0; i < attachedSensors.Count; i++)
+        {
+            attachedSensors[i].WriteData(writer);
+        }
+    }
+    protected abstract void WriteJointInternal(System.IO.BinaryWriter writer);
 
     /// <summary>
     /// Reads the backing information for this joint from the input stream.
     /// </summary>
     /// <param name="reader">Input stream</param>
-    protected abstract void ReadJoint(System.IO.BinaryReader reader);
+    public void ReadJoint(System.IO.BinaryReader reader)
+    {
+        // ID is already read
+        ReadJointInternal(reader);
+
+        if (reader.ReadBoolean())
+        {
+            cDriver = new JointDriver(JointDriverType.MOTOR);
+            cDriver.ReadData(reader);
+        }
+        else
+        {
+            cDriver = null;
+        }
+        int sensorCount = reader.ReadInt32();
+        attachedSensors = new List<RobotSensor>(sensorCount);
+        for (int i = 0; i < sensorCount; i++)
+        {
+            attachedSensors.Add(RobotSensor.ReadData(reader));
+        }
+    }
+    protected abstract void ReadJointInternal(System.IO.BinaryReader reader);
 
     /// <summary>
     /// Identifies the type of a joint, creates an instance, and reads that joint from the given input stream.

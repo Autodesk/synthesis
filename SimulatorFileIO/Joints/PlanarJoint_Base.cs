@@ -13,7 +13,7 @@ public class PlanarJoint_Base : SkeletalJoint_Base
         return SkeletalJointType.PLANAR;
     }
 
-    public override void WriteJoint(System.IO.BinaryWriter writer)
+    protected override void WriteJointInternal(System.IO.BinaryWriter writer)
     {
         writer.Write(normal.x);
         writer.Write(normal.y);
@@ -24,7 +24,7 @@ public class PlanarJoint_Base : SkeletalJoint_Base
         writer.Write(basePoint.z);
     }
 
-    protected override void ReadJoint(System.IO.BinaryReader reader)
+    protected override void ReadJointInternal(System.IO.BinaryReader reader)
     {
         normal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         basePoint = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());

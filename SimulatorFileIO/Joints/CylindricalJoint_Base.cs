@@ -25,7 +25,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         return SkeletalJointType.CYLINDRICAL;
     }
 
-    public override void WriteJoint(System.IO.BinaryWriter writer)
+    protected override void WriteJointInternal(System.IO.BinaryWriter writer)
     {
         writer.Write(basePoint.x);
         writer.Write(basePoint.y);
@@ -54,7 +54,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         writer.Write(currentAngularPosition);
     }
 
-    protected override void ReadJoint(System.IO.BinaryReader reader)
+    protected override void ReadJointInternal(System.IO.BinaryReader reader)
     {
         basePoint = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
         axis = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());

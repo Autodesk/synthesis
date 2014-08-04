@@ -86,6 +86,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.lstJoints.View = System.Windows.Forms.View.Details;
             this.lstJoints.SelectedIndexChanged += new System.EventHandler(this.lstJoints_SelectedIndexChanged);
             this.lstJoints.DoubleClick += new System.EventHandler(this.lstJoints_DoubleClick);
+            this.lstJoints.MouseUp += new System.Windows.Forms.MouseEventHandler(this.lstJoints_MouseUp);
             // 
             // item_chType
             // 

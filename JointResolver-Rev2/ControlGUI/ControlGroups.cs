@@ -39,11 +39,11 @@ public partial class ControlGroups
                 SkeletalJoint_Base joint = node.GetSkeletalJoint();
                 if (joint != null)
                 {
-                    SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint)joint).GetWrapped() : null);
+                    SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint) joint).GetWrapped() : null);
 
                     if (joint is RotationalJoint && joint.cDriver != null)
                     {
-                        wheelData = ((RotationalJoint)joint).cDriver.GetInfo<WheelDriverMeta>();
+                        wheelData = ((RotationalJoint) joint).cDriver.GetInfo<WheelDriverMeta>();
                     }
                     else
                     {
@@ -63,7 +63,8 @@ public partial class ControlGroups
     }
     private void UpdateGroupList()
     {
-        if (groupList == null) return;
+        if (groupList == null)
+            return;
         lstGroups.Items.Clear();
         foreach (CustomRigidGroup group in groupList)
         {
@@ -104,14 +105,14 @@ public partial class ControlGroups
 
     private void btnCalculate_Click(object sender, EventArgs e)
     {
-        
+
     }
 
     private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (chkHighlightComponents.Checked && lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
         {
-            InventorSkeletalJoint joint = ((InventorSkeletalJoint)((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+            InventorSkeletalJoint joint = ((InventorSkeletalJoint) ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
             joint.GetWrapped().DoHighlight();
         }
         else
@@ -124,8 +125,8 @@ public partial class ControlGroups
     {
         if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
         {
-            SkeletalJoint_Base joint = ((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-            driveChooser.ShowDialog(joint, (RigidNode)lstJoints.SelectedItems[0].Tag);
+            SkeletalJoint_Base joint = ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
+            driveChooser.ShowDialog(joint, (RigidNode) lstJoints.SelectedItems[0].Tag);
             UpdateJointList();
         }
     }
@@ -134,7 +135,7 @@ public partial class ControlGroups
     {
         if (chkHighlightComponents.Checked && lstGroups.SelectedItems.Count == 1 && lstGroups.SelectedItems[0].Tag is CustomRigidGroup)
         {
-            CustomRigidGroup group = (CustomRigidGroup)lstGroups.SelectedItems[0].Tag;
+            CustomRigidGroup group = (CustomRigidGroup) lstGroups.SelectedItems[0].Tag;
             ComponentHighlighter.PrepareHighlight();
             ComponentHighlighter.ClearHighlight();
             foreach (Inventor.ComponentOccurrence child in group.occurrences)
@@ -163,20 +164,20 @@ public partial class ControlGroups
             }
             if (column == 2)    // Multicolor
             {
-                bool cVal = ((CustomRigidGroup)item.Tag).colorFaces;
-                ((CustomRigidGroup)item.Tag).colorFaces = !cVal;
+                bool cVal = ((CustomRigidGroup) item.Tag).colorFaces;
+                ((CustomRigidGroup) item.Tag).colorFaces = !cVal;
                 item.SubItems[2].Text = !cVal ? "Yes" : "No";
             }
             else if (column == 3)   // Highres
             {
-                bool cVal = ((CustomRigidGroup)item.Tag).highRes;
-                ((CustomRigidGroup)item.Tag).highRes = !cVal;
+                bool cVal = ((CustomRigidGroup) item.Tag).highRes;
+                ((CustomRigidGroup) item.Tag).highRes = !cVal;
                 item.SubItems[3].Text = !cVal ? "Yes" : "No";
             }
             else if (column == 4)
             {
-                bool cVal = ((CustomRigidGroup)item.Tag).convex;
-                ((CustomRigidGroup)item.Tag).convex = !cVal;
+                bool cVal = ((CustomRigidGroup) item.Tag).convex;
+                ((CustomRigidGroup) item.Tag).convex = !cVal;
                 item.SubItems[4].Text = !cVal ? "Convex" : "Concave";
             }
         }
@@ -186,7 +187,7 @@ public partial class ControlGroups
     {
         if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
         {
-            InventorSkeletalJoint joint = (InventorSkeletalJoint)((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
+            InventorSkeletalJoint joint = (InventorSkeletalJoint) ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
             joint.DetermineLimits();
         }
     }
@@ -200,6 +201,24 @@ public partial class ControlGroups
         else
         {
             btnCalculate.Visible = false;
+        }
+    }
+
+    private void lstJoints_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+    {
+        if (e.Button == System.Windows.Forms.MouseButtons.Right)
+        {
+            // Just make a sensor thing
+            if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
+            {
+                SkeletalJoint_Base joint = ((RigidNode_Base) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
+                RobotSensor sensor = new RobotSensor(RobotSensorType.POTENTIOMETER);
+                sensor.polyCoeff = new float[] { 1, 1 };
+                sensor.module = 0;
+                sensor.port = 1;
+                sensor.useSecondarySource = false;
+                joint.attachedSensors.Add(sensor);
+            }
         }
     }
 }
