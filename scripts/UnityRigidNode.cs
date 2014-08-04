@@ -229,7 +229,7 @@ public class UnityRigidNode : RigidNode_Base
 			Material[] matls = new Material[meshu.subMeshCount];
             for (int i = 0; i < matls.Length; i++)
             {
-                uint val = sub.surfaces[i].color;
+                uint val = sub.surfaces[i].hasColor ? sub.surfaces[i].color : 0xFFFFFFFF;
                 Color color = new Color32((byte) (val & 0xFF), (byte) ((val >> 8) & 0xFF), (byte) ((val >> 16) & 0xFF), (byte) ((val >> 24) & 0xFF));
                 if (sub.surfaces[i].transparency != 0)
                 {
@@ -238,6 +238,10 @@ public class UnityRigidNode : RigidNode_Base
                 else if (sub.surfaces[i].translucency != 0)
                 {
                     color.a = sub.surfaces[i].translucency;
+                }
+                if (color.a == 0)   // No perfectly transparent things plz.
+                {
+                    color.a = 1;
                 }
                 matls[i] = new Material((Shader) Shader.Instantiate(Shader.Find(color.a != 1 ? "Alpha/Diffuse" : "Diffuse")));
                 matls[i].SetColor("_Color", color);
