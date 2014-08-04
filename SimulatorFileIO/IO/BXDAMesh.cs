@@ -22,20 +22,19 @@ public class BXDAMesh
         /// Vertex normals.  Three values (X, Y, Z) composing a unit vector per vertex.
         /// </summary>
         public double[] norms;
-        /// <summary>
-        /// Texture mapping values.  Two values (U, V) per vertex.  If the mesh has no texture mapping set this to null.
-        /// </summary>
-        public double[] textureCoords;
-        /// <summary>
-        /// Color mapping values.  One value per vertex.  If the mesh has no colors set this to null.
-        /// </summary>
-        /// <remarks>
-        /// Colors are laid out with one byte per component.  Least significant to most significant byte it is red, green, blue, alpha.
-        /// </remarks>
-        public uint[] colors;
-        /// <summary>
-        /// The indicies for this mesh.  Three vertex indicies per triangle.
-        /// </summary>
+
+
+        public List<BXDASurface> surfaces = new List<BXDASurface>();
+    }
+
+    public class BXDASurface
+    {
+        public bool hasColor = false;
+        public uint color;
+        public float transparency;
+        public float translucency;
+
+        //Indecies for polygons associated with Facet.
         public int[] indicies;
     }
 
@@ -76,11 +75,11 @@ public class BXDAMesh
         foreach (BXDASubMesh mesh in meshes)
         {
             int vertCount = mesh.verts.Length / 3;
-            int facetCount = mesh.indicies.Length / 3;
+            byte meshFlags = (byte)((mesh.norms != null ? 1 : 0));
 
-            byte flags = (byte) ((mesh.colors != null ? 1 : 0) | (mesh.textureCoords != null ? 2 : 0) | (mesh.norms != null ? 4 : 0));
-            writer.Write(flags);
-            writer.Write(vertCount);
+            writer.Write(meshFlags);
+            writer.Write(vertCount);           
+
             for (int i = 0; i < vertCount; i++)
             {
                 int vecI = i * 3;
@@ -95,33 +94,40 @@ public class BXDAMesh
                     writer.Write(mesh.norms[vecI + 1]);
                     writer.Write(mesh.norms[vecI + 2]);
                 }
-                if (mesh.colors != null)
-                {
-                    writer.Write(mesh.colors[colI]);
-                }
-                if (mesh.textureCoords != null)
-                {
-                    writer.Write(mesh.textureCoords[texI]);
-                    writer.Write(mesh.textureCoords[texI + 1]);
-                }
             }
-            writer.Write(facetCount);
-            for (int i = 0; i < facetCount; i++)
-            {
-                int fI = i * 3;
-                // Integrity check
-                for (int j = 0; j < 3; j++)
+
+            writer.Write(mesh.surfaces.Count);
+            foreach (BXDASurface surface in mesh.surfaces)
+            { 
+                int facetCount = surface.indicies.Length / 3;
+
+                writer.Write(surface.hasColor);
+                if (surface.hasColor)
                 {
-                    if (mesh.indicies[fI + j] < 0 || mesh.indicies[fI + j] >= mesh.verts.Length)
+                    writer.Write(surface.color);
+                }
+                writer.Write(surface.transparency);
+                writer.Write(surface.translucency);
+
+                writer.Write(facetCount);
+                byte[] result = new byte[surface.indicies.Length * sizeof(int)];
+                for (int i = 0; i < facetCount; i++)
+                {
+                    int fI = i * 3;
+                    // Integrity check
+                    /*for (int j = 0; j < 3; j++)
                     {
-                        Console.WriteLine("Tris #" + i + " failed.  Index is " + mesh.indicies[fI + j]);
-                        Console.ReadLine();
-                    }
+                        if (surface.indicies[fI + j] < 0 || surface.indicies[fI + j] >= mesh.verts.Length)
+                        {
+                            Console.WriteLine("Tris #" + i + " failed.  Index is " + surface.indicies[fI + j]);
+                            Console.ReadLine();
+                        }
+                    } MAINLY FOR DEBUGGING */
+                    writer.Write(surface.indicies[fI]);
+                    writer.Write(surface.indicies[fI + 1]);
+                    writer.Write(surface.indicies[fI + 2]);
                 }
-                writer.Write(mesh.indicies[fI]);
-                writer.Write(mesh.indicies[fI + 1]);
-                writer.Write(mesh.indicies[fI + 2]);
-            }
+            } 
         }
     }
 
@@ -131,12 +137,10 @@ public class BXDAMesh
         for (int id = 0; id < meshCount; id++)
         {
             BXDASubMesh mesh = new BXDASubMesh();
-            byte flags = reader.ReadByte();
+            byte meshFlags = reader.ReadByte();
             int vertCount = reader.ReadInt32();
             mesh.verts = new double[vertCount * 3];
-            mesh.norms = (flags & 4) == 4 ? new double[vertCount * 3] : null;
-            mesh.colors = (flags & 1) == 1 ? new uint[vertCount] : null;
-            mesh.textureCoords = (flags & 2) == 2 ? new double[vertCount * 2] : null;
+            mesh.norms = (meshFlags & 1) == 1 ? new double[vertCount * 3] : null;
             for (int i = 0; i < vertCount; i++)
             {
                 int vecI = i * 3;
@@ -151,26 +155,38 @@ public class BXDAMesh
                     mesh.norms[vecI + 1] = reader.ReadDouble();
                     mesh.norms[vecI + 2] = reader.ReadDouble();
                 }
-                if (mesh.colors != null)
-                {
-                    mesh.colors[colI] = reader.ReadUInt32();
-                }
-                if (mesh.textureCoords != null)
-                {
-                    mesh.textureCoords[texI] = reader.ReadDouble();
-                    mesh.textureCoords[texI + 1] = reader.ReadDouble();
-                }
             }
 
-            int facetCount = reader.ReadInt32();
-            mesh.indicies = new int[facetCount * 3];
-            for (int i = 0; i < facetCount; i++)
+            int surfaceCount = reader.ReadInt32();
+
+
+
+            for (int i = 0; i < surfaceCount; i++)
             {
-                int fI = i * 3;
-                mesh.indicies[fI] = reader.ReadInt32();
-                mesh.indicies[fI + 1] = reader.ReadInt32();
-                mesh.indicies[fI + 2] = reader.ReadInt32();
+                BXDASurface nextSurface = new BXDASurface();
+
+                nextSurface.hasColor = reader.ReadBoolean();
+
+                if (nextSurface.hasColor)
+                {
+                    nextSurface.color = reader.ReadUInt32();
+                }
+                nextSurface.transparency = reader.ReadSingle();
+                nextSurface.translucency = reader.ReadSingle();
+
+                int facetCount = reader.ReadInt32();
+                nextSurface.indicies = new int[facetCount * 3];
+                for (int j = 0; j < facetCount; j++)
+                {
+                    int fJ = j * 3;
+                    nextSurface.indicies[fJ] = reader.ReadInt32();
+                    nextSurface.indicies[fJ + 1] = reader.ReadInt32();
+                    nextSurface.indicies[fJ + 2] = reader.ReadInt32();
+                }
+
+                mesh.surfaces.Add(nextSurface);
             }
+
             meshes.Add(mesh);
         }
     }

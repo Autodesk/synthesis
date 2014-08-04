@@ -36,6 +36,14 @@ public class SurfaceExporter
     private double[] tolerances = new double[10];
     private int tmpToleranceCount = 0;
 
+    private List<BXDAMesh.BXDASurface> tmpSurfaces = new List<BXDAMesh.BXDASurface>();
+    private BXDAMesh.BXDASurface nextSurface;
+
+    private static int compareColors(Color a, Color b)
+    {
+        return Math.Abs(a.Red - b.Red) + Math.Abs(a.Blue - b.Blue) + Math.Abs(a.Green - b.Green) + (int) Math.Abs(a.Opacity - b.Opacity);
+    }
+
     /// <summary>
     /// Copies mesh information for the given surface body into the mesh storage structure.
     /// </summary>
@@ -44,6 +52,8 @@ public class SurfaceExporter
     /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
     public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
+        BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
+
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
         int bestIndex = -1;
         for (int i = 0; i < tmpToleranceCount; i++)
@@ -53,17 +63,63 @@ public class SurfaceExporter
                 bestIndex = i;
             }
         }
-      //  Console.WriteLine("(" + postVertCount + "v/" + postFacetCount + "f)\tExporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
+        //  Console.WriteLine("(" + postVertCount + "v/" + postFacetCount + "f)\tExporting " + surf.Parent.Name + "." + surf.Name + " with tolerance " + tolerances[bestIndex]);
+
+        AssetProperties sharedValue = null;
+        string sharedDisp = null;
+        if (separateFaces)  // Only separate if they are actually different colors
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            separateFaces = false;
+            foreach (Face f in surf.Faces)
+            {
+                try
+                {
+                    Asset ast = f.Appearance;
+                    if (sharedValue == null)
+                    {
+                        sharedValue = new AssetProperties(ast);
+                        sharedDisp = ast.DisplayName;
+                    }
+                    else
+                    {
+                        // HACKKKKKK
+                        if (!ast.DisplayName.Equals(sharedDisp))
+                        {
+                            separateFaces = true;
+                            break;
+                            /*AssetProperties props = new AssetProperties(ast);
+                            if (compareColors(sharedValue.color, props.color) > 10 || sharedValue.translucency != props.translucency || sharedValue.transparency != props.transparency)
+                            {
+                                separateFaces = true;
+                                break;
+                            }*/
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
 
         if (separateFaces)
         {
+            Console.WriteLine("Exporting " + surf.Faces.Count + " faces for " + surf.Parent.Name + "\t(" + surf.Name + ")");
+            int i = 0;
             foreach (Face f in surf.Faces)
             {
+                Console.Write(i + "/" + surf.Faces.Count);
+                Console.CursorLeft = 0;
+                i++;
                 AddFacets(f, tolerances[bestIndex]);
             }
+            Console.WriteLine(i + "/" + surf.Faces.Count);
         }
         else
         {
+            Console.WriteLine("Exporting single block for " + surf.Parent.Name + "\t(" + surf.Name + ")");
             tmpVertCount = 0;
             surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpVertCount, out tmpFacetCount, out tmpVerts, out  tmpNorms, out  tmpIndicies, out tmpTextureCoords);
             if (tmpVertCount == 0)
@@ -71,14 +127,17 @@ public class SurfaceExporter
                 Console.WriteLine("Calculate values");
                 surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpVertCount, out tmpFacetCount, out  tmpVerts, out tmpNorms, out  tmpIndicies, out tmpTextureCoords);
             }
-            AssetProperties assetProps;
-            try
+            AssetProperties assetProps = sharedValue;
+            if (sharedValue == null)
             {
-                assetProps = new AssetProperties(surf.Appearance);
-            }
-            catch
-            {
-                assetProps = new AssetProperties(surf.Parent.Appearance);
+                try
+                {
+                    assetProps = new AssetProperties(surf.Appearance);
+                }
+                catch
+                {
+                    assetProps = new AssetProperties(surf.Parent.Appearance);
+                }
             }
             AddFacetsInternal(assetProps);
         }
@@ -91,19 +150,45 @@ public class SurfaceExporter
         BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
         subObject.verts = new double[postVertCount * 3];
         subObject.norms = new double[postVertCount * 3];
-        subObject.textureCoords = new double[postVertCount * 2];
-        subObject.colors = new uint[postVertCount];
-        subObject.indicies = new int[postFacetCount * 3];
         Array.Copy(postVerts, 0, subObject.verts, 0, postVertCount * 3);
         Array.Copy(postNorms, 0, subObject.norms, 0, postVertCount * 3);
-        Array.Copy(postTextureCoords, 0, subObject.textureCoords, 0, postVertCount * 2);
-        Array.Copy(postIndicies, 0, subObject.indicies, 0, postFacetCount * 3);
-        Array.Copy(postColors, 0, subObject.colors, 0, postVertCount);
         Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
+        subObject.surfaces = new List<BXDAMesh.BXDASurface>(tmpSurfaces);
+        outputMesh.meshes.Add(subObject);
+
         postVertCount = 0;
         postFacetCount = 0;
-        outputMesh.meshes.Add(subObject);
+        tmpSurfaces = new List<BXDAMesh.BXDASurface>();
+
+        // Wait for shenanigans
+
+        /*foreach (BXDAMesh.BXDASurface surface in subObject.surfaces)
+        {
+            int facetCount = surface.indicies.Length / 3;
+
+            for (int i = 0; i < facetCount; i++)
+            {
+                int fI = i * 3;
+                // Integrity check
+                for (int j = 0; j < 3; j++)
+                {
+                    if (surface.indicies[fI + j] < 0 || surface.indicies[fI + j] >= subObject.verts.Length)
+                    {
+                        Console.WriteLine("Tris #" + i + " failed.  Index is " + surface.indicies[fI + j]);
+                        Console.ReadLine();
+                    }
+                }
+            }
+        } Integrity mainly for debug */
+        if (waitingThreads.Count > 0)
+        {
+            Console.WriteLine("Got ahead of ourselves....");
+            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
+            waitingThreads.Clear();
+        }
     }
+
+    List<System.Threading.ManualResetEvent> waitingThreads = new List<System.Threading.ManualResetEvent>();
 
     /// <summary>
     /// Moves the mesh currently in the temporary mesh buffer into the mesh structure itself, 
@@ -125,23 +210,46 @@ public class SurfaceExporter
         Array.Copy(tmpVerts, 0, postVerts, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpNorms, 0, postNorms, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpTextureCoords, 0, postTextureCoords, postVertCount * 2, tmpVertCount * 2);
-        uint colorVal = 0xFFFFFFFF;
+
+        nextSurface = new BXDAMesh.BXDASurface();
+
+        nextSurface.color = 0xFFFFFFFF;
+
         if (assetProps.color != null)
         {
-            colorVal = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
+            nextSurface.hasColor = true;
+            nextSurface.color = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
         }
-        for (int i = postVertCount; i < postVertCount + tmpVertCount; i++)
-        {
-            postColors[i] = colorVal;
-        }
+        nextSurface.transparency = (float) assetProps.transparency;
+        nextSurface.translucency = (float) assetProps.translucency;
+
+        nextSurface.indicies = new int[tmpFacetCount * 3];
 
         // Now we must manually copy the indicies
-        int indxOffset = postFacetCount * 3;
-        for (int i = 0; i < tmpFacetCount * 3; i++)
+        Array.Copy(tmpIndicies, nextSurface.indicies, nextSurface.indicies.Length);
+        System.Threading.ManualResetEvent lockThing = new System.Threading.ManualResetEvent(false);
+        if (waitingThreads.Count > 32)
         {
-            postIndicies[i + indxOffset] = tmpIndicies[i] + postVertCount - 1;
-            // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
+            Console.WriteLine("Got ahead of ourselves....");
+            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
+            waitingThreads.Clear();
         }
+        waitingThreads.Add(lockThing);
+        BXDAMesh.BXDASurface surfThing = nextSurface;
+        int offset = postVertCount;
+
+        System.Threading.ThreadPool.QueueUserWorkItem(delegate(object obj)
+        {
+            for (int i = 0; i < tmpFacetCount * 3; i++)
+            {
+                surfThing.indicies[i] = surfThing.indicies[i] + offset - 1;
+                // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
+            }
+            lockThing.Set();
+        }, waitingThreads.Count);
+
+        tmpSurfaces.Add(nextSurface);
+
         postFacetCount += tmpFacetCount;
         postVertCount += tmpVertCount;
     }
@@ -200,11 +308,17 @@ public class SurfaceExporter
         if (!ignorePhysics)
         {
             // Compute physics
-            outputMesh.physics.centerOfMass.Multiply(outputMesh.physics.mass);
-            float myMass = (float) occ.MassProperties.Mass;
-            outputMesh.physics.mass += myMass;
-            outputMesh.physics.centerOfMass.Add(Utilities.ToBXDVector(occ.MassProperties.CenterOfMass).Multiply(myMass));
-            outputMesh.physics.centerOfMass.Multiply(1.0f / outputMesh.physics.mass);
+            try
+            {
+                outputMesh.physics.centerOfMass.Multiply(outputMesh.physics.mass);
+                float myMass = (float) occ.MassProperties.Mass;
+                outputMesh.physics.centerOfMass.Add(Utilities.ToBXDVector(occ.MassProperties.CenterOfMass).Multiply(myMass));
+                outputMesh.physics.mass += myMass;
+                outputMesh.physics.centerOfMass.Multiply(1.0f / outputMesh.physics.mass);
+            }
+            catch
+            {
+            }
         }
 
         if (!occ.Visible)
@@ -248,7 +362,7 @@ public class SurfaceExporter
             ExportAll(occ, bestResolution, separateFaces);
         }
     }
-    
+
     /// <summary>
     /// Adds the mesh for the given components, and all their subcomponents to the mesh storage structure.
     /// </summary>
@@ -262,7 +376,7 @@ public class SurfaceExporter
             ExportAll(occ, bestResolution, separateFaces);
         }
     }
-    
+
     /// <summary>
     /// Adds the mesh for all the components and their subcomponenets in the custom rigid group.  <see cref="ExportAll(ComponentOccurrence,bool,bool,bool)"/>
     /// </summary>
