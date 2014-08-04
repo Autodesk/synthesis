@@ -110,18 +110,19 @@ public class BXDAMesh
                 writer.Write(surface.translucency);
 
                 writer.Write(facetCount);
+                byte[] result = new byte[surface.indicies.Length * sizeof(int)];
                 for (int i = 0; i < facetCount; i++)
                 {
                     int fI = i * 3;
                     // Integrity check
-                    for (int j = 0; j < 3; j++)
+                    /*for (int j = 0; j < 3; j++)
                     {
                         if (surface.indicies[fI + j] < 0 || surface.indicies[fI + j] >= mesh.verts.Length)
                         {
                             Console.WriteLine("Tris #" + i + " failed.  Index is " + surface.indicies[fI + j]);
                             Console.ReadLine();
                         }
-                    }
+                    } MAINLY FOR DEBUGGING */
                     writer.Write(surface.indicies[fI]);
                     writer.Write(surface.indicies[fI + 1]);
                     writer.Write(surface.indicies[fI + 2]);
