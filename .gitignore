@@ -57,3 +57,9 @@ build/*
 *.pdb
 *.exe
 *.ilk
+
+# Stupid java stuff
+*.class
+.settings/
+pom.xml
+package.html
