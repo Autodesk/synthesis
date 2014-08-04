@@ -11,7 +11,7 @@ public class UnityRigidNode : RigidNode_Base
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
-	public Vector3 wheelData;
+	public static Vector3 wheelData;
 	
 	
 
@@ -24,7 +24,7 @@ public class UnityRigidNode : RigidNode_Base
 		unityObject = new GameObject();
 		unityObject.transform.parent = root;
 		unityObject.transform.position = new Vector3(0, 0, 0);
-		unityObject.name = base.GetModelFileName(); 
+		unityObject.name = base.modelFileName; 
 	}
 
 	//creates a uniform configurable joint which can be altered through conditionals.
@@ -282,6 +282,11 @@ public class UnityRigidNode : RigidNode_Base
 	{
 		return joint != null ? joint : null;
 	}
+	public Vector3 GetWheelCenter()
+	{
+		return wheelData;
+	}
+	
 	
 	// Returns the center of mass of the skeleton. It calculates a weighted average of all the rigiBodies in the gameObject. (Its an average of their positions, weighted by the masses of each rigidBody)
 	public static Vector3 TotalCenterOfMass(GameObject gameObj)

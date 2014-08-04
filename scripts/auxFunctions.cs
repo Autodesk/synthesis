@@ -53,11 +53,13 @@ public class auxFunctions : RigidNode_Base
 	
 	public static Quaternion FlipRobot(List<Vector3> wheels, Transform parent)
 	{
-		
+	
 		Vector3 norm = Vector3.Cross((wheels[1] - wheels[0]),(wheels[2] - wheels[0]));
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
 		
 		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
+		
+		
 		norm = norm * ((above.y < 0) ? -1 : 1);
 		//Debug.Log(above + ": "  + norm);
 		

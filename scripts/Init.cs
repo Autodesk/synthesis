@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class Init : MonoBehaviour
 {		
 	// We will need these
-	public List<List<UnityRigidNode>> PWMAssignments, wheels;
+	public List<List<UnityRigidNode>> PWMAssignments;
 	public Dictionary<List<int>, UnityRigidNode> SolenoidAssignments;
 	public float speed = 5;
 	public int[] motors = {1,2,3,4};
@@ -27,11 +27,11 @@ public class Init : MonoBehaviour
 
 	void Start()
 	{
-		Physics.gravity = new Vector3(0,-9.8f,0);
+		Physics.gravity = new Vector3(0,-980f,0);
 		string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 		//Now you can use a default directory to load all of the files
-		Directory.CreateDirectory(homePath + "/Documents/ScaledSkeleton/Skeleton/");
-		string path = homePath + "/Documents/ScaledSkeleton/Skeleton/";
+		Directory.CreateDirectory(homePath + "/Documents/Skeleton/Skeleton/");
+		string path = homePath + "/Documents/Skeleton/Skeleton/";
 				
 	
 		List<RigidNode_Base> names = new List<RigidNode_Base>();
@@ -41,16 +41,14 @@ public class Init : MonoBehaviour
 		foreach (RigidNode_Base node in names)
 		{
 			UnityRigidNode uNode = (UnityRigidNode)node;
+
 			uNode.CreateTransform(transform);		
 			uNode.CreateMesh(path + uNode.GetModelFileName());
 			uNode.FlipNorms();
+			if (uNode.GetWheelCenter() != Vector3.zero)
+				unityWheelData.Add(uNode.GetWheelCenter());
 			uNode.CreateJoint();
-			if (uNode.wheelData != Vector3.zero)
-            	unityWheelData.Add(uNode.wheelData);
-            
-			
 		}
-		
 		Quaternion rotation = auxFunctions.FlipRobot(unityWheelData, transform);
 		transform.localRotation *= rotation;
 		//byte test = (byte)2;		
