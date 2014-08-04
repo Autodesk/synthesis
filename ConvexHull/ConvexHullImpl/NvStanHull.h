@@ -103,7 +103,7 @@ public:
 		mVcount         = 0;
 		mVertices       = 0;
 		mVertexStride   = 0;
-		mNormalEpsilon  = 0.5f;
+		mNormalEpsilon  = 0.1f;
 		mMaxVertices = 4096; // maximum number of points to be considered for a convex hull.
 		mSkinWidth = 0.01f; // default is one centimeter
 	};
@@ -117,7 +117,7 @@ public:
 		mVcount         = vcount;
 		mVertices       = vertices;
 		mVertexStride   = stride;
-		mNormalEpsilon  = 0.5f;
+		mNormalEpsilon  = 0.1f;
 		mMaxVertices    = 4096;
 		mSkinWidth = 0.01f; // default is one centimeter
 	}
