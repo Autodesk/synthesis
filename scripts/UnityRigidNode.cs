@@ -214,7 +214,7 @@ public class UnityRigidNode : RigidNode_Base
 		mesh = new BXDAMesh();
 		mesh.ReadBXDA(filePath);
 		
-		auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, Mesh meshu)
+		auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
 		{
 			//new gameobject is made for the submesh
 
@@ -226,7 +226,23 @@ public class UnityRigidNode : RigidNode_Base
 			subObject.AddComponent <MeshFilter>();
 			subObject.GetComponent<MeshFilter>().mesh = meshu;
 			subObject.AddComponent <MeshRenderer>();
-			subObject.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Custom/VertexColors"));
+			Material[] matls = new Material[meshu.subMeshCount];
+            for (int i = 0; i < matls.Length; i++)
+            {
+                uint val = sub.surfaces[i].color;
+                Color color = new Color32((byte) (val & 0xFF), (byte) ((val >> 8) & 0xFF), (byte) ((val >> 16) & 0xFF), (byte) ((val >> 24) & 0xFF));
+                if (sub.surfaces[i].transparency != 0)
+                {
+                    color.a = sub.surfaces[i].transparency;
+                }
+                else if (sub.surfaces[i].translucency != 0)
+                {
+                    color.a = sub.surfaces[i].translucency;
+                }
+                matls[i] = new Material((Shader) Shader.Instantiate(Shader.Find(color.a != 1 ? "Alpha/Diffuse" : "Diffuse")));
+                matls[i].SetColor("_Color", color);
+            }
+            subObject.GetComponent<MeshRenderer>().materials = matls;
 
 			if (!unityObject.GetComponent<Rigidbody>())
 			{
@@ -234,7 +250,7 @@ public class UnityRigidNode : RigidNode_Base
 			}
 		});	
 				
-		auxFunctions.ReadMeshSet(mesh.colliders, delegate(int id, Mesh meshu)
+		auxFunctions.ReadMeshSet(mesh.colliders, delegate(int id, BXDAMesh.BXDASubMesh useless, Mesh meshu)
 		{
 			//Debug.Log (unityObject.name + " " + id + " tris: " + meshu.triangles.Length / 3 + " Vertices: " + meshu.vertexCount);
 			subCollider = new GameObject(unityObject.name + " Subcollider" + id);
