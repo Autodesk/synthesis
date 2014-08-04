@@ -123,6 +123,9 @@ static class Program
                         surfs.Reset();
                         surfs.ExportAll(group);
                         BXDAMesh output = surfs.GetOutput();
+                        Console.WriteLine("Exporting for Colliders\n");
+                        surfs.Reset();
+                        surfs.ExportAll(group, true);
                         Console.WriteLine("Computing colliders for " + node.GetModelID());
                         output.colliders.Clear();
                         output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));

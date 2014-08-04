@@ -2433,7 +2433,7 @@ NxI32 calchullgen(float3 *verts,NxI32 verts_count, NxI32 vlimit)
 	NxI32 ilimit = vlimit;
 	while(vlimit >0 && (te=extrudable(epsilon)))
 	{
-		printf("Calc hull step %d of %d\t%f%%\n", (ilimit-vlimit), 180, 100.0f * (1.0f - ((float)vlimit/180.0f)));
+		printf("Calc hull step %d\t(%d tris)\n", (ilimit-vlimit), tris.count);
 		int3 ti=*te;
 		NxI32 v=te->vmax;
 		assert(!isextreme[v]);  // wtf we've already done this vertex
@@ -3181,7 +3181,8 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 					// now let us see if it is further from the center of the point cloud than the one we already recorded.
 					// in which case we keep this one instead.
 
-					NxF32 dist1 = GetDist(px,py,pz,center);
+					// Close enough.  Art of approximation
+					/*NxF32 dist1 = GetDist(px,py,pz,center);
 					NxF32 dist2 = GetDist(v[0],v[1],v[2],center);
 
 					if ( dist1 > dist2 )
@@ -3189,7 +3190,7 @@ bool  HullLibrary::CleanupVertices(NxU32 svcount,
 						v[0] = px;
 						v[1] = py;
 						v[2] = pz;
-					}
+					}*/
 
 					break;
 				}

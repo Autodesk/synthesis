@@ -20,7 +20,7 @@ public class SurfaceExporter
     private int tmpFacetCount = 0;
 
 
-    // Temporary output
+    // Pre-submesh output
     private double[] postVerts = new double[TMP_VERTICIES * 3];
     private double[] postNorms = new double[TMP_VERTICIES * 3];
     private int[] postIndicies = new int[TMP_VERTICIES * 3];
@@ -30,6 +30,7 @@ public class SurfaceExporter
     private int postFacetCount = 0;
 
 
+    private Box totalSize;
     private BXDAMesh outputMesh = new BXDAMesh();
 
     // Tolerances
@@ -50,8 +51,23 @@ public class SurfaceExporter
     /// <param name="surf">The surface body to export</param>
     /// <param name="bestResolution">Use the best possible resolution</param>
     /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
-    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
+    /// <param name="onlyExtents">Only export parts that contribute to overall shape, not appearance</param>
+    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false, bool onlyExtents = false)
     {
+        if (onlyExtents)
+        {
+            Box me = surf.RangeBox;
+            if (totalSize != null)
+            {
+                if (totalSize.Contains(me.MinPoint) && totalSize.Contains(me.MaxPoint))
+                {
+                    // Skip
+                    return;
+                }
+                totalSize.Extend(me.MinPoint);
+                totalSize.Extend(me.MaxPoint);
+            }
+        }
         BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
 
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
@@ -161,6 +177,12 @@ public class SurfaceExporter
         tmpSurfaces = new List<BXDAMesh.BXDASurface>();
 
         // Wait for shenanigans
+        if (waitingThreads.Count > 0)
+        {
+            Console.WriteLine("Got ahead of ourselves....");
+            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
+            waitingThreads.Clear();
+        }
 
         /*foreach (BXDAMesh.BXDASurface surface in subObject.surfaces)
         {
@@ -180,12 +202,6 @@ public class SurfaceExporter
                 }
             }
         } Integrity mainly for debug */
-        if (waitingThreads.Count > 0)
-        {
-            Console.WriteLine("Got ahead of ourselves....");
-            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
-            waitingThreads.Clear();
-        }
     }
 
     List<System.Threading.ManualResetEvent> waitingThreads = new List<System.Threading.ManualResetEvent>();
@@ -303,7 +319,8 @@ public class SurfaceExporter
     /// <param name="bestResolution">Use the best possible resolution</param>
     /// <param name="separateFaces">Export each face as a separate mesh</param>
     /// <param name="ignorePhysics">Don't add the physical properties of this component to the exporter</param>
-    public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false, bool ignorePhysics = false)
+    /// <param name="onlyExtents">Only export parts that contribute to overall shape, not appearance</param>
+    public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false, bool ignorePhysics = false, bool onlyExtents = false)
     {
         if (!ignorePhysics)
         {
@@ -326,7 +343,7 @@ public class SurfaceExporter
 
         foreach (SurfaceBody surf in occ.SurfaceBodies)
         {
-            AddFacets(surf, bestResolution, separateFaces);
+            AddFacets(surf, bestResolution, separateFaces, onlyExtents);
         }
 
         double totalVolume = 0;
@@ -344,7 +361,7 @@ public class SurfaceExporter
             }
             else
             {
-                ExportAll(item, bestResolution, separateFaces, true);
+                ExportAll(item, bestResolution, separateFaces, true, onlyExtents);
             }
         }
     }
@@ -355,11 +372,12 @@ public class SurfaceExporter
     /// <param name="occs">The components to export</param>
     /// <param name="bestResolution">Use the best possible resolution</param>
     /// <param name="separateFaces">Export each face as a separate mesh</param>
-    public void ExportAll(ComponentOccurrences occs, bool bestResolution = false, bool separateFaces = false)
+    /// <param name="onlyExtents">Only export parts that contribute to overall shape, not appearance</param>
+    public void ExportAll(ComponentOccurrences occs, bool bestResolution = false, bool separateFaces = false, bool onlyExtents = false)
     {
         foreach (ComponentOccurrence occ in occs)
         {
-            ExportAll(occ, bestResolution, separateFaces);
+            ExportAll(occ, bestResolution, separateFaces, onlyExtents);
         }
     }
 
@@ -369,11 +387,12 @@ public class SurfaceExporter
     /// <param name="occs">The components to export</param>
     /// <param name="bestResolution">Use the best possible resolution</param>
     /// <param name="separateFaces">Export each face as a separate mesh</param>
-    public void ExportAll(List<ComponentOccurrence> occs, bool bestResolution = false, bool separateFaces = false)
+    /// <param name="onlyExtents">Only export parts that contribute to overall shape, not appearance</param>
+    public void ExportAll(List<ComponentOccurrence> occs, bool bestResolution = false, bool separateFaces = false, bool onlyExtents = false)
     {
         foreach (ComponentOccurrence occ in occs)
         {
-            ExportAll(occ, bestResolution, separateFaces);
+            ExportAll(occ, bestResolution, separateFaces, onlyExtents);
         }
     }
 
@@ -384,7 +403,8 @@ public class SurfaceExporter
     /// This uses the best resolution and separate faces options stored inside the provided custom rigid group.
     /// </remarks>
     /// <param name="group">The group to export from</param>
-    public void ExportAll(CustomRigidGroup group)
+    /// <param name="onlyExtents">Only export parts that contribute to overall shape, not appearance</param>
+    public void ExportAll(CustomRigidGroup group, bool onlyExtents = false)
     {
         double totalVolume = 0;
         foreach (ComponentOccurrence occ in group.occurrences)
@@ -401,7 +421,7 @@ public class SurfaceExporter
             }
             else
             {
-                ExportAll(occ, group.highRes, group.colorFaces);
+                ExportAll(occ, group.highRes && !onlyExtents, group.colorFaces && !onlyExtents, onlyExtents);
             }
         }
     }
