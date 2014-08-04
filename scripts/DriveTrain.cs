@@ -3,9 +3,27 @@ using System.Collections.Generic;
 using ExceptionHandling;
 using System;
 
+
+
+public class InputStatePacket
+{
+	public byte[] Write(byte[] packet)
+	{
+		
+		return packet;
+	}
+	
+	
+	
+}
+
+
 public class DriveJoints : MonoBehaviour
 {
 
+
+	
+	
 	// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor
 	public static void SetMotor(UnityRigidNode wheel, float signal, float brakeTorque)
 	{

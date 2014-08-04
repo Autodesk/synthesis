@@ -4,32 +4,82 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-public class StatePacket
-{
-	public float[] pwmValues = new float[8];
-	public float[] canMotorValues = new float[16];
-	public byte solenoidValues;
-	public byte relayValues;
-};
-
 public class unityPacket
 {
-	public Thread thread;
-	public volatile bool active;
-	public bool first;
-	UdpClient udp;
-	StatePacket packet = new StatePacket();
 	
-	public delegate void Bind(UdpClient udp);
+	public class OutputStatePacket
+	{
+		public DIOModule[] dio = new DIOModule[2];
+		public SolenoidModule[] solenoid = new SolenoidModule[1];
+		public class DIOModule
+		{
+			public const int LENGTH = 12 + (10 * 4);
+			public UInt32 relayForward;
+			public UInt32 relayReverse;
+			public UInt32 digitalOutput;
+			public float[] pwmValues = new float[10];
+		}
+
+		public class SolenoidModule
+		{
+			public const int LENGTH = 1;
+			public byte state;
+		} 
+		
+		public void read(byte[] pack)
+		{
+			
+			for (int i = 0; i < dio.Length; i++)
+			{
+				int offset = i * DIOModule.LENGTH;
+				dio [i] = new DIOModule();
+				dio [i].relayForward = BitConverter.ToUInt32(pack, offset);
+				dio [i].relayReverse = BitConverter.ToUInt32(pack, offset + 4);
+				dio [i].digitalOutput = BitConverter.ToUInt32(pack, offset + 8);
+				for (int j = 0; j < dio[i].pwmValues.Length; j++)
+				{
+					dio [i].pwmValues [j] = BitConverter.ToSingle(pack, offset + 12 + (4 * j));
+				}
+			}
+			for (int i = 0; i < solenoid.Length; i++)
+			{
+				int offset = (DIOModule.LENGTH * dio.Length) + (i * SolenoidModule.LENGTH);
+				solenoid [i] = new SolenoidModule();
+				solenoid [i].state = pack [offset];
+			}
+		} 
+	}
+
+	
+	
+	public volatile bool active;
+	public volatile bool stillStupid = true;
+	UdpClient udp;
+	Thread threadRecieve, threadSend;
+	OutputStatePacket packet = new OutputStatePacket();
 	
 	public void Start()
 	{
-		thread = new Thread(unityPacket.RunServerWrapper);
-		udp = new UdpClient();
+	
+	
 		active = true;
-     
-		thread.Start(this);
+		threadRecieve = threadSend = new Thread(ServerInternal);
 		
+     
+		threadRecieve.Start(delegate(UdpClient udp,byte[] buffer)
+		{
+		
+		});
+		threadSend.Start(delegate(UdpClient udp, byte[] buffer){
+		
+		});
+		
+		//this udp thread was really really stupid || this is because of how dumb Unity is
+		if (stillStupid)
+		{
+			Stop();
+			Start();	
+		}
 	}
 
 	public void Stop()
@@ -38,7 +88,9 @@ public class unityPacket
 		{
 			Debug.Log("Stop...");
 			active = false;
-			thread.Join();
+			threadSend.Join();
+			threadRecieve.Join();
+			
 			try
 			{
 				udp.Close();
@@ -54,40 +106,40 @@ public class unityPacket
 		}
 	}
 
-	private void ServerInternal()
+	private void ServerInternal(Action<UdpClient, byte[]> networkingBehaviour)
 	{
+		
 		try
-		{
+		{	
+			udp = new UdpClient();
+			
 			Debug.Log("Server...");	
 			
 			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2550);
 			udp.ExclusiveAddressUse = false;
 			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            
-			udp.Client.Bind(ipEnd);
-			
+			if (stillStupid)
+			{
+				stillStupid = false;
+			} else
+			{
+				udp.Client.Bind(ipEnd);
+			}
 			byte[] buffer = new byte[1024];
 			while (active)
 			{	
-				
 				if (udp.Available <= 0)
 				{
 					Thread.Sleep(20);
-					//Debug.Log("Hey baby...");
 					continue;
 				}
-				
-								
+                
 				buffer = udp.Receive(ref ipEnd);
-								
-								
-			
-				//Debug.Log("I hate the world");
-				for (int i = 0; i < 8; i++)
-				{
-					packet.pwmValues [i] = System.BitConverter.ToSingle(buffer, i * 4);
-					Debug.Log(packet.pwmValues [i]);
-				}
+										
+				packet.read(buffer);	
+				
+				//int portFromInvAPI = 18;
+				//packet.dio[(portFromInvAPI >> 4) & 0xF].pwmValues[portFromInvAPI & 0xF]
 			}
             
 		} catch (Exception ex)
@@ -96,20 +148,51 @@ public class unityPacket
 		}
 	}
 
-	public StatePacket GetPacket()
+	public OutputStatePacket GetPacket()
 	{
 		return packet;
 	}
 
-	private static void RunServerWrapper(object obj)
+}
+	/*
+public class UnityClient
+{	
+	private void ClientInternal()
 	{
-		((unityPacket)obj).ServerInternal();
+		try
+		{
+			Debug.Log("Client...");
+			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2551);
+			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+			
+			udp = new UdpClient();
+			udp.Client.Bind(ipEnd);
+		
+		
+			byte[] buffer = new byte[1024];
+			while (active)
+			{
+				//buffer = packet.Write(buffer);
+				
+				udp.Send(buffer, buffer.Length);
+			
+			}
+		} catch (Exception ex)
+		{
+			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
+		}
+		
+			
 	}
+		
+
+}
+	
 
 		
 
 
-}
+
 
 
 

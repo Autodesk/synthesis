@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,10 +11,10 @@ public class UnityRigidNode : RigidNode_Base
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
-			
-	public delegate void HandleJoint(ConfigurableJoint jointSub);
+	public Vector3 wheelData;
+	
+	
 
-	public delegate void HandleWheel(GameObject center);
 
 	//public delegate void Action(); //reminder of how action and function work
 		
@@ -27,7 +28,7 @@ public class UnityRigidNode : RigidNode_Base
 	}
 
 	//creates a uniform configurable joint which can be altered through conditionals.
-	private ConfigurableJoint ConfigJointInternal(Vector3 pos, Vector3 axis, HandleJoint jointType)
+	private ConfigurableJoint ConfigJointInternal(Vector3 pos, Vector3 axis, Action<ConfigurableJoint> jointType)
 	{
 		
 		GameObject rigid = ((UnityRigidNode)GetParent()).unityObject;
@@ -58,20 +59,19 @@ public class UnityRigidNode : RigidNode_Base
 		return joint;
 	}
 	//creates a wheel collider and centers it on the current transform
-	private void CreateWheel(RotationalJoint_Base center, HandleWheel wheelC)
+	private void CreateWheel(RotationalJoint_Base center)
 	{
-
+		
 		Quaternion q = new Quaternion();
-		q.SetFromToRotation(new Vector3(1,0,0), joint.axis);
+		q.SetFromToRotation(new Vector3(1, 0, 0), joint.axis);
 
 		wCollider = new GameObject(unityObject.name + " Collider");
 				
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
-		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
+		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
 		wCollider.AddComponent<WheelCollider>();
 		wCollider.GetComponent<WheelCollider>().radius = wheel.radius + (wheel.radius * 0.15f);
-		//wCollider.GetComponent<WheelCollider> ().transform.Rotate (90, 0, 0);
-		wheelC(wCollider);
+		wCollider.GetComponent<WheelCollider>().transform.Rotate(90, 0, 0);
 		wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
@@ -108,8 +108,8 @@ public class UnityRigidNode : RigidNode_Base
 	private void LinearLimit(Dictionary<string, float> limit)
 	{
 		center = (limit ["end"] - limit ["start"]) / 2.0f;
-		current = center - limit ["current"];
-		Debug.Log("center: " + center + " current: " + current);
+		//current = limit ["current"];
+		//Debug.Log("center: " + center + " current: " + current);
 				
 		linear.limit = Mathf.Abs(center);
 		joint.linearLimit = linear;
@@ -126,7 +126,7 @@ public class UnityRigidNode : RigidNode_Base
 	//creates the configurable joint then preforms the appropriate alterations based on the joint type
 	public void CreateJoint()
 	{
-		if (joint != null || base.GetSkeletalJoint() == null)
+		if (joint != null || GetSkeletalJoint() == null)
 		{
 			return;			
 		}
@@ -158,23 +158,9 @@ public class UnityRigidNode : RigidNode_Base
 			wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta>() : null;
 			if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL)
 			{
-				CreateWheel(nodeR, delegate (GameObject wCollider)
-				{
-					wCollider.GetComponent<WheelCollider>().transform.Rotate(90, 0, 0);
-					// Do rotaion stuff here
-					//Vector3 difference = auxFunctions.ConvertV3(nodeR.basePoint) - TotalCenterOfMass();
-					/*
-					 * 
-					 *				RotationalJoint_Base rj = (RotationalJoint_Base) uNode.GetSkeletalJoint();
-				Vector3 diff = auxFunctions.ConvertV3(rj.basePoint) - com;
-				double dot = Vector3.Dot(diff,auxFunctions.ConvertV3(rj.axis));
-				if (dot < 0) {
-
-					 */
-
-				});	
-								
-
+				CreateWheel(nodeR);	
+				wheelData = auxFunctions.ConvertV3(wheel.center);
+				
 			}
 					
 		} else if (nodeX.GetJointType() == SkeletalJointType.CYLINDRICAL)
@@ -190,7 +176,6 @@ public class UnityRigidNode : RigidNode_Base
 															{"start",nodeC.linearLimitStart},
 															{"current",nodeC.currentLinearPosition}
 								};
-				Debug.Log(string.Format("{0} : {1} : {2} : hasLimits : {3} {4}", nodeC.linearLimitEnd, nodeC.linearLimitStart, nodeC.currentLinearPosition, nodeC.hasLinearEndLimit, nodeC.hasLinearStartLimit));
 				LinearLimit(lLimit);
 				if (joint.angularXMotion == ConfigurableJointMotion.Limited)
 				{
@@ -262,7 +247,6 @@ public class UnityRigidNode : RigidNode_Base
 				
 		Rigidbody rigidB = unityObject.GetComponent<Rigidbody>();
 		rigidB.mass = mesh.physics.mass;
-		//Debug.Log ("COG: " + mesh.physics.centerOfMass);
 		rigidB.centerOfMass = auxFunctions.ConvertV3(mesh.physics.centerOfMass);
 				
 		
@@ -298,7 +282,7 @@ public class UnityRigidNode : RigidNode_Base
 	{
 		return joint != null ? joint : null;
 	}
-
+	
 	// Returns the center of mass of the skeleton. It calculates a weighted average of all the rigiBodies in the gameObject. (Its an average of their positions, weighted by the masses of each rigidBody)
 	public static Vector3 TotalCenterOfMass(GameObject gameObj)
 	{
@@ -307,7 +291,8 @@ public class UnityRigidNode : RigidNode_Base
 
 		Rigidbody[] rigidBodyArray = gameObj.GetComponentsInChildren<Rigidbody>();
 		
-		foreach(Rigidbody rigidBase in rigidBodyArray) {
+		foreach (Rigidbody rigidBase in rigidBodyArray)
+		{
 			centerOfMass += rigidBase.worldCenterOfMass * rigidBase.mass;
 			sumOfAllWeights += rigidBase.mass;
 		}
@@ -316,25 +301,22 @@ public class UnityRigidNode : RigidNode_Base
 		return centerOfMass;
 	}
 
-	public static void flipNormals(Dictionary<int, List<UnityRigidNode>> wheelContainer, GameObject gameObj) {
-		Vector3 centerOfMass = TotalCenterOfMass(gameObj);
-		foreach(KeyValuePair<int, List<UnityRigidNode>> wheel in wheelContainer) {
-
-			foreach(UnityRigidNode node in wheel.Value) {
-				// The vector between the origin and center of a wheel
-				Vector3 originToWheel = centerOfMass - node.GetConfigJoint().rigidbody.centerOfMass;
-
-				// Find the angle between that vector and the X-axis
-				float angle = Mathf.Cos(Vector3.Angle(originToWheel, new Vector3(1, 0, 0)));
-
-				if (1 - Mathf.Abs(angle) < .5) {
-					Debug.Log(string.Format("Vector:  {0} is in group A.", angle.ToString()));
-				} else {
-					Debug.Log(string.Format("Vector:  {0} is in group B.", angle.ToString()));
-				}
+	public void FlipNorms()
+	{
+		Vector3 com = TotalCenterOfMass(unityObject.transform.parent.gameObject);
+		
+		if (GetParent() != null && GetSkeletalJoint() != null && GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
+		{
+			RotationalJoint_Base rJoint = (RotationalJoint_Base)GetSkeletalJoint();
+			Vector3 diff = auxFunctions.ConvertV3(rJoint.basePoint) - com;
+			double dot = Vector3.Dot(diff, auxFunctions.ConvertV3(rJoint.axis));
+			if (dot < 0)
+			{
+				rJoint.axis = rJoint.axis.Multiply(-1);
 			}
 		}
 	}
+
 
 }
 //This allows the rigidnode_base to be loaded with unityrigidnode_base information
