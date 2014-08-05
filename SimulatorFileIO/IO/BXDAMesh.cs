@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Represents a 3D object composed of one or more <see cref="BXDAMesh.BXDASubMesh"/> and physical properties of the object.
@@ -30,11 +31,22 @@ public class BXDAMesh
     public class BXDASurface
     {
         public bool hasColor = false;
-        public uint color;
+        /// <summary>
+        /// The color of the material packed as an unsigned integer 
+        /// </summary>
+        public uint color = 0xFFFFFFFF;
+        /// <summary>
+        /// The transparency of the material.  [0-1]
+        /// </summary>
         public float transparency;
+        /// <summary>
+        /// The translucency of the material.  [0-1]
+        /// </summary>
         public float translucency;
 
-        //Indecies for polygons associated with Facet.
+        /// <summary>
+        /// The zero based index buffer for this specific surface of the mesh.
+        /// </summary>
         public int[] indicies;
     }
 
@@ -56,12 +68,18 @@ public class BXDAMesh
         private set;
     }
 
+    /// <summary>
+    /// This object's collision meshes.
+    /// </summary>
     public List<BXDASubMesh> colliders
     {
         get;
         private set;
     }
 
+    /// <summary>
+    /// Creates an empty BXDA Mesh.
+    /// </summary>
     public BXDAMesh()
     {
         physics = new PhysicalProperties();
@@ -69,16 +87,21 @@ public class BXDAMesh
         colliders = new List<BXDASubMesh>();
     }
 
+    /// <summary>
+    /// Writes all the sub meshes in the given list to the given stream.
+    /// </summary>
+    /// <param name="writer">Output stream</param>
+    /// <param name="meshes">Mesh list</param>
     private static void WriteMeshList(BinaryWriter writer, List<BXDASubMesh> meshes)
     {
         writer.Write(meshes.Count);
         foreach (BXDASubMesh mesh in meshes)
         {
             int vertCount = mesh.verts.Length / 3;
-            byte meshFlags = (byte)((mesh.norms != null ? 1 : 0));
+            byte meshFlags = (byte) ((mesh.norms != null ? 1 : 0));
 
             writer.Write(meshFlags);
-            writer.Write(vertCount);           
+            writer.Write(vertCount);
 
             for (int i = 0; i < vertCount; i++)
             {
@@ -98,7 +121,7 @@ public class BXDAMesh
 
             writer.Write(mesh.surfaces.Count);
             foreach (BXDASurface surface in mesh.surfaces)
-            { 
+            {
                 int facetCount = surface.indicies.Length / 3;
 
                 writer.Write(surface.hasColor);
@@ -110,7 +133,6 @@ public class BXDAMesh
                 writer.Write(surface.translucency);
 
                 writer.Write(facetCount);
-                byte[] result = new byte[surface.indicies.Length * sizeof(int)];
                 for (int i = 0; i < facetCount; i++)
                 {
                     int fI = i * 3;
@@ -127,10 +149,15 @@ public class BXDAMesh
                     writer.Write(surface.indicies[fI + 1]);
                     writer.Write(surface.indicies[fI + 2]);
                 }
-            } 
+            }
         }
     }
 
+    /// <summary>
+    /// Reads a list of meshes from the given stream, adding them to the list passed into this function.
+    /// </summary>
+    /// <param name="reader">Input stream</param>
+    /// <param name="meshes">List to output to</param>
     private static void ReadMeshList(BinaryReader reader, List<BXDASubMesh> meshes)
     {
         int meshCount = reader.ReadInt32();

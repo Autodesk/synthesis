@@ -55,7 +55,7 @@
     <Compile Include="Joints\LinearJoint_Base.cs" />
     <Compile Include="Joints\RotationalJoint_Base.cs" />
     <Compile Include="Joints\SkeletalJoint_Base.cs" />
-    <Compile Include="Math\Math3D.cs" />
+    <Compile Include="Math\BXDVector3.cs" />
     <Compile Include="Math\PhysicalProperties.cs" />
     <Compile Include="ModelTree\RigidNode_Base.cs" />
     <Compile Include="IO\BXDJSkeleton.cs" />

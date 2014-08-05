@@ -5,7 +5,7 @@ using System.IO;
 public class BXDJSkeleton
 {
     /// <summary>
-    /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generate name.
+    /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
     /// </summary>
     /// <param name="baseNode">The base node of the skeleton</param>
     public static void SetupFileNames(RigidNode_Base baseNode)
@@ -28,10 +28,11 @@ public class BXDJSkeleton
     /// <param name="baseNode">The base node of the skeleton</param>
     public static void WriteSkeleton(String path, RigidNode_Base baseNode)
     {
+        // Create a list of nodes
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
-        // Determine the parent and driver IDs for each node in the list.
+        // Determine the parent ID for each node in the list.
         int[] parentID = new int[nodes.Count];
         for (int i = 0; i < nodes.Count; i++)
         {

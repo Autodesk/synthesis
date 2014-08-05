@@ -23,6 +23,11 @@ public class BXDVector3
         return "[" + x + "," + y + "," + z + "]";
     }
 
+    /// <summary>
+    /// Multiplies this vector by the given scalar and returns this object (for method chaining)
+    /// </summary>
+    /// <param name="f">The scalar to multiply by</param>
+    /// <returns>This vector.</returns>
     public BXDVector3 Multiply(float f)
     {
         x *= f;
@@ -31,6 +36,11 @@ public class BXDVector3
         return this;
     }
 
+    /// <summary>
+    /// Adds the given vector to this vector and returns this object.  (For method chaining)
+    /// </summary>
+    /// <param name="f">The vector to add</param>
+    /// <returns>This vector.</returns>
     public BXDVector3 Add(BXDVector3 f)
     {
         x += f.x;

@@ -103,11 +103,15 @@ public class ConvexHullCalculator
     /// <summary>
     /// Simplifies the mesh provided, then places it back into the parameters.
     /// </summary>
+    /// <remarks>
+    /// Repeatedly remove the shortest edge in the mesh, reducing the triangle count by two each step.  This is repeated
+    /// until the triangle count is low enough or more than 2000 tries have been made.
+    /// </remarks>
     /// <param name="verts">The original and final verticies. (3 elements per vertex)</param>
     /// <param name="vertCount">The original and final vertex counts.</param>
     /// <param name="inds">The original and final index buffer.  (3 element per triangle, zero based)</param>
     /// <param name="trisCount">The original and final triangle counts.</param>
-    private static void Simplify(ref float[] verts, ref uint vertCount, ref uint[] inds, ref  uint trisCount)
+    private static void Simplify(ref float[] verts, ref uint vertCount, ref uint[] inds, ref uint trisCount)
     {
         // Setup edge relations, compute min edge lengths...
         List<SimplificationVertex> simplVerts = new List<SimplificationVertex>();
@@ -323,11 +327,13 @@ public class ConvexHullCalculator
     }
 
     /// <summary>
-    /// Computes a convex hull, or convex hull set for the given meshes.
+    /// Wraps the given raw mesh as a BXDA Submesh with a single surface.
     /// </summary>
-    /// <param name="mesh">Meshes to compute for</param>
-    /// <param name="decompose">If a set of convex hulls is required</param>
-    /// <returns>The resulting list of convex hulls.</returns>
+    /// <param name="verts">The verticies. (3 elements per vertex)</param>
+    /// <param name="vertCount">The vertex count.</param>
+    /// <param name="inds">The index buffer.  (3 element per triangle, zero based)</param>
+    /// <param name="trisCount">The triangle count</param>
+    /// <returns>The resulting mesh</returns>
     private static BXDAMesh.BXDASubMesh ExportMeshInternal(float[] verts, uint vertCount, uint[] inds, uint trisCount)
     {
         Simplify(ref verts, ref vertCount, ref inds, ref trisCount);
@@ -344,12 +350,9 @@ public class ConvexHullCalculator
         BXDAMesh.BXDASurface collisionSurface = new BXDAMesh.BXDASurface();
 
         collisionSurface.indicies = new int[inds.Length];
-        for (uint i2 = 0; i2 < trisCount; i2++)
+        for (uint i2 = 0; i2 < trisCount*3; i2++)
         {
-            uint off = i2 * 3;
-            collisionSurface.indicies[off + 0] = (int) inds[off + 0];
-            collisionSurface.indicies[off + 1] = (int) inds[off + 1];
-            collisionSurface.indicies[off + 2] = (int) inds[off + 2];
+            collisionSurface.indicies[i2] = (int) inds[i2];
         }
 
         sub.surfaces = new List<BXDAMesh.BXDASurface>();
@@ -359,11 +362,11 @@ public class ConvexHullCalculator
     }
 
     /// <summary>
-    /// Gets t
+    /// Computes a convex hull, or convex hull set for the given meshes.
     /// </summary>
-    /// <param name="meshes"></param>
-    /// <param name="decompose"></param>
-    /// <returns></returns>
+    /// <param name="mesh">Meshes to compute for</param>
+    /// <param name="decompose">If a set of convex hulls is required</param>
+    /// <returns>The resulting list of convex hulls.</returns>
     public static List<BXDAMesh.BXDASubMesh> GetHull(IEnumerable<BXDAMesh.BXDASubMesh> meshes, bool decompose = false)
     {
         int vertCount = 0;

@@ -3,13 +3,26 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 
-// Not thread safe.
+/// <summary>
+/// Exports Inventor objects into the BXDA format.  One instance per thread.
+/// </summary>
 public class SurfaceExporter
 {
     private const int TMP_VERTICIES = ushort.MaxValue;
+    private const int MAX_BACKGROUND_THREADS = 32;
 
+    private List<System.Threading.ManualResetEvent> waitingThreads = new List<System.Threading.ManualResetEvent>(MAX_BACKGROUND_THREADS);
+
+    /// <summary>
+    /// Should the exporter attempt to automatically ignore small parts.
+    /// </summary>
     private bool adaptiveIgnoring = true;
-    private double adaptiveDegredation = 5; // Higher = less dropping
+    /// <summary>
+    /// The minimum ratio between a sub component's bounding box volume and the average bounding box volume for an object
+    /// to be considered small.  The higher the number the less that is dropped, while if the value is one about half the objects
+    /// would be dropped.
+    /// </summary>
+    private double adaptiveDegredation = 5;
 
     // Temporary output
     private double[] tmpVerts = new double[TMP_VERTICIES * 3];
@@ -23,11 +36,11 @@ public class SurfaceExporter
     // Pre-submesh output
     private double[] postVerts = new double[TMP_VERTICIES * 3];
     private double[] postNorms = new double[TMP_VERTICIES * 3];
-    private int[] postIndicies = new int[TMP_VERTICIES * 3];
     private uint[] postColors = new uint[TMP_VERTICIES];
     private double[] postTextureCoords = new double[TMP_VERTICIES * 2];
     private int postVertCount = 0;
     private int postFacetCount = 0;
+    private List<BXDAMesh.BXDASurface> postSurfaces = new List<BXDAMesh.BXDASurface>();
 
 
     private Box totalSize;
@@ -37,8 +50,6 @@ public class SurfaceExporter
     private double[] tolerances = new double[10];
     private int tmpToleranceCount = 0;
 
-    private List<BXDAMesh.BXDASurface> tmpSurfaces = new List<BXDAMesh.BXDASurface>();
-    private BXDAMesh.BXDASurface nextSurface;
 
     private static int compareColors(Color a, Color b)
     {
@@ -161,6 +172,14 @@ public class SurfaceExporter
 
     private void DumpMeshBuffer()
     {
+        // Make sure all index copy threads have completed.
+        if (waitingThreads.Count > 0)
+        {
+            Console.WriteLine("Got ahead of ourselves....");
+            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
+            waitingThreads.Clear();
+        }
+
         if (postVertCount == 0 || postFacetCount == 0)
             return;
         BXDAMesh.BXDASubMesh subObject = new BXDAMesh.BXDASubMesh();
@@ -169,42 +188,14 @@ public class SurfaceExporter
         Array.Copy(postVerts, 0, subObject.verts, 0, postVertCount * 3);
         Array.Copy(postNorms, 0, subObject.norms, 0, postVertCount * 3);
         Console.WriteLine("Mesh segment " + outputMesh.meshes.Count + " has " + postVertCount + " verts and " + postFacetCount + " facets");
-        subObject.surfaces = new List<BXDAMesh.BXDASurface>(tmpSurfaces);
+        subObject.surfaces = new List<BXDAMesh.BXDASurface>(postSurfaces);
         outputMesh.meshes.Add(subObject);
 
         postVertCount = 0;
         postFacetCount = 0;
-        tmpSurfaces = new List<BXDAMesh.BXDASurface>();
-
-        // Wait for shenanigans
-        if (waitingThreads.Count > 0)
-        {
-            Console.WriteLine("Got ahead of ourselves....");
-            System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
-            waitingThreads.Clear();
-        }
-
-        /*foreach (BXDAMesh.BXDASurface surface in subObject.surfaces)
-        {
-            int facetCount = surface.indicies.Length / 3;
-
-            for (int i = 0; i < facetCount; i++)
-            {
-                int fI = i * 3;
-                // Integrity check
-                for (int j = 0; j < 3; j++)
-                {
-                    if (surface.indicies[fI + j] < 0 || surface.indicies[fI + j] >= subObject.verts.Length)
-                    {
-                        Console.WriteLine("Tris #" + i + " failed.  Index is " + surface.indicies[fI + j]);
-                        Console.ReadLine();
-                    }
-                }
-            }
-        } Integrity mainly for debug */
+        postSurfaces = new List<BXDAMesh.BXDASurface>();
     }
 
-    List<System.Threading.ManualResetEvent> waitingThreads = new List<System.Threading.ManualResetEvent>();
 
     /// <summary>
     /// Moves the mesh currently in the temporary mesh buffer into the mesh structure itself, 
@@ -215,9 +206,10 @@ public class SurfaceExporter
     {
         if (tmpVertCount > TMP_VERTICIES)
         {
-            // This won't actually happen since TMP_VERTEX_COUNT is max short.
+            // This is just bad.  It could be fixed by exporting it per-face instead of with a single block.
             System.Windows.Forms.MessageBox.Show("Warning: Mesh segment exceededed " + TMP_VERTICIES + " verticies.  Strange things may begin to happen.");
         }
+        // If adding this would cause the sub mesh to overflow dump what currently exists.
         if (tmpVertCount + postVertCount >= TMP_VERTICIES)
         {
             DumpMeshBuffer();
@@ -227,7 +219,7 @@ public class SurfaceExporter
         Array.Copy(tmpNorms, 0, postNorms, postVertCount * 3, tmpVertCount * 3);
         Array.Copy(tmpTextureCoords, 0, postTextureCoords, postVertCount * 2, tmpVertCount * 2);
 
-        nextSurface = new BXDAMesh.BXDASurface();
+        BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
 
         nextSurface.color = 0xFFFFFFFF;
 
@@ -241,30 +233,35 @@ public class SurfaceExporter
 
         nextSurface.indicies = new int[tmpFacetCount * 3];
 
-        // Now we must manually copy the indicies
+        // Raw copy the indicies for now, then fix the offset in a background thread.
         Array.Copy(tmpIndicies, nextSurface.indicies, nextSurface.indicies.Length);
-        System.Threading.ManualResetEvent lockThing = new System.Threading.ManualResetEvent(false);
-        if (waitingThreads.Count > 32)
+
+        #region Fix Index Buffer Offset
+        // Make sure we haven't exceeded the maximum number of background tasks.
+        if (waitingThreads.Count > MAX_BACKGROUND_THREADS)
         {
             Console.WriteLine("Got ahead of ourselves....");
             System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
             waitingThreads.Clear();
         }
-        waitingThreads.Add(lockThing);
-        BXDAMesh.BXDASurface surfThing = nextSurface;
-        int offset = postVertCount;
-
-        System.Threading.ThreadPool.QueueUserWorkItem(delegate(object obj)
         {
-            for (int i = 0; i < tmpFacetCount * 3; i++)
+            System.Threading.ManualResetEvent lockThing = new System.Threading.ManualResetEvent(false);
+            waitingThreads.Add(lockThing);
+            int offset = postVertCount;
+            int backingFacetCount = tmpFacetCount;
+            System.Threading.ThreadPool.QueueUserWorkItem(delegate(object obj)
             {
-                surfThing.indicies[i] = surfThing.indicies[i] + offset - 1;
-                // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
-            }
-            lockThing.Set();
-        }, waitingThreads.Count);
+                for (int i = 0; i < backingFacetCount * 3; i++)
+                {
+                    nextSurface.indicies[i] = nextSurface.indicies[i] + offset - 1;
+                    // Inventor has one-based indicies.  Zero-based is the way to go for everything except Inventor.
+                }
+                lockThing.Set();
+            }, waitingThreads.Count);
+        }
+        #endregion
 
-        tmpSurfaces.Add(nextSurface);
+        postSurfaces.Add(nextSurface);
 
         postFacetCount += tmpFacetCount;
         postVertCount += tmpVertCount;
