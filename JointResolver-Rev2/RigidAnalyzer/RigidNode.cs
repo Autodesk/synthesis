@@ -37,6 +37,18 @@ public class RigidNode : RigidNode_Base
         }
     }
 
+    public bool RegisterDeferredPneumaticCalculation(string id)
+    {
+        try
+        {
+            return false;
+        }
+        catch
+        {
+            return true;
+        }
+    }
+
     public bool UnregisterDeferredCalculation(string id)
     {
         return deferredCalculations.Remove(id);

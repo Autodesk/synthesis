@@ -57,10 +57,4 @@ public class PneumaticDriverMeta : JointDriverMeta
         widthMM = reader.ReadSingle();
         pressurePSI = reader.ReadSingle();
     }
-
-/*
-    public override string ToString()
-    {
-        return "WheelMeta[rad=" + radius + "]";
-    } */
 }

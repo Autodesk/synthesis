@@ -8,7 +8,7 @@ using System.Threading;
 
 class PneumaticAnalyzer
 {
-
+    /*
     public static void StartCalculations(RigidNode node)
     {
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
@@ -67,6 +67,7 @@ class PneumaticAnalyzer
         //Finally saves the bundle of info to the driver attached to the wheel.
         joint.cDriver.AddInfo(wheelDriver);
     }
+    */
 
 
     /// <summary>
@@ -111,8 +112,8 @@ class PneumaticAnalyzer
                 break;
         }
 
-        newCalculation = StartCalculations;
-        node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);
+        //newCalculation = StartCalculations;
+        node.RegisterDeferredPneumaticCalculation(node.GetModelID()/*, newCalculation*/);
     }
 
 
