@@ -297,9 +297,9 @@ partial class DriveChooser
             this.lblPneumaticDiameterTell.AutoSize = true;
             this.lblPneumaticDiameterTell.Location = new System.Drawing.Point(113, 39);
             this.lblPneumaticDiameterTell.Name = "lblPneumaticDiameterTell";
-            this.lblPneumaticDiameterTell.Size = new System.Drawing.Size(65, 17);
+            this.lblPneumaticDiameterTell.Size = new System.Drawing.Size(116, 17);
             this.lblPneumaticDiameterTell.TabIndex = 4;
-            this.lblPneumaticDiameterTell.Text = "Diameter";
+            this.lblPneumaticDiameterTell.Text = "Internal Diameter";
             this.lblPneumaticDiameterTell.Click += new System.EventHandler(this.lblPneumaticVelocityTell_Click);
             // 
             // lblPressure
