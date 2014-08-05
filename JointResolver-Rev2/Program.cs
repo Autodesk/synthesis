@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Inventor;
 using System.IO;
+using System.Threading;
 
 static class Program
 {
@@ -55,9 +56,20 @@ static class Program
 
     public static void AnalyzeRigidResults()
     {
-        string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-        string pathBase = homePath + "\\Downloads\\Skeleton";
-        Directory.CreateDirectory(pathBase);
+        string pathBase = "";
+        //Directory.CreateDirectory(pathBase);
+
+        Thread folderThread = new Thread(() => {
+            System.Windows.Forms.FolderBrowserDialog finder = new System.Windows.Forms.FolderBrowserDialog();
+            finder.Description = "Select a folder to save the model files.";
+            finder.ShowDialog();
+
+            pathBase = finder.SelectedPath;
+        });
+        folderThread.SetApartmentState(ApartmentState.STA);
+        folderThread.Start();
+  
+
 
         AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         Console.WriteLine("Get rigid info...");
@@ -83,6 +95,14 @@ static class Program
         Console.WriteLine("Built");
 
         Console.WriteLine(baseNode.ToString());
+
+        // Join with the folder selecting thread right before we need the path.
+        folderThread.Join();
+
+        if (pathBase.Equals(""))
+        {
+            throw new Exception("No save folder selected.");
+        }
 
         // Merge with existing values
         if (System.IO.File.Exists(pathBase + "\\skeleton.bxdj"))
