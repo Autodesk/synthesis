@@ -47,8 +47,8 @@ public partial class DriveChooser : Form
             cmbJointDriver_SelectedIndexChanged(null, null);
             txtPortA.Value = joint.cDriver.portA;
             txtPortB.Value = joint.cDriver.portB;
-            txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
-            txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
+            txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
+            txtHighLimit.Value = (decimal) joint.cDriver.upperLimit;
         }
         ShowDialog();
     }
@@ -61,11 +61,11 @@ public partial class DriveChooser : Form
     private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
     {
         JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
-        lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
-        txtPortB.Visible = JointDriver.HasTwoPorts(cType);
-        txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
+        lblPort.Text = cType.GetPortType() + " Port" + (cType.HasTwoPorts() ? "s" : "");
+        txtPortB.Visible = cType.HasTwoPorts();
+        txtPortA.Maximum = txtPortB.Maximum = cType.GetPortMax();
 
-        if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
+        if (!cType.IsMotor() && !cType.IsPneumatic())
         {
             this.Height = 300;
             btnSave.Location = new System.Drawing.Point(13, 220);
@@ -73,24 +73,21 @@ public partial class DriveChooser : Form
             grpGearRatio.Visible = false;
             grpPneumaticSpecs.Visible = false;
         }
-        else if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
+        else if (cType.IsMotor())
         {
-            if (JointDriver.IsMotor(cType) == true)
-            {
-                this.Height = 420;
-                btnSave.Location = new System.Drawing.Point(13, 340);
-                grpWheelOptions.Visible = true;
-                grpGearRatio.Visible = true;
-                grpPneumaticSpecs.Visible = false;
-            }
-            else if (JointDriver.IsPneumatic(cType) == true)
-            {
-                this.Height = 360;
-                btnSave.Location = new System.Drawing.Point(13, 280);
-                grpPneumaticSpecs.Visible = true;
-                grpWheelOptions.Visible = false;
-                grpGearRatio.Visible = false;
-            }
+            this.Height = 420;
+            btnSave.Location = new System.Drawing.Point(13, 340);
+            grpWheelOptions.Visible = true;
+            grpGearRatio.Visible = true;
+            grpPneumaticSpecs.Visible = false;
+        }
+        else if (cType.IsPneumatic())
+        {
+            this.Height = 360;
+            btnSave.Location = new System.Drawing.Point(13, 280);
+            grpPneumaticSpecs.Visible = true;
+            grpWheelOptions.Visible = false;
+            grpGearRatio.Visible = false;
         }
     }
 
@@ -106,20 +103,20 @@ public partial class DriveChooser : Form
 
         joint.cDriver = new JointDriver(cType);
 
-        joint.cDriver.portA = (int)txtPortA.Value;
-        joint.cDriver.portB = (int)txtPortB.Value;
-        joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
-        joint.cDriver.upperLimit = (float)txtHighLimit.Value;
+        joint.cDriver.portA = (int) txtPortA.Value;
+        joint.cDriver.portB = (int) txtPortB.Value;
+        joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
+        joint.cDriver.upperLimit = (float) txtHighLimit.Value;
 
         //Only need to store wheel driver if run by motor and is a wheel.
-        if (JointDriver.IsMotor(cType) && wheelType != WheelType.NOT_A_WHEEL)
+        if (cType.IsMotor() && wheelType != WheelType.NOT_A_WHEEL)
         {
             WheelAnalyzer.SaveToJoint(wheelType, friction, node);
         }
 
         Hide();
 
-        if (JointDriver.IsPneumatic(cType))
+        if (cType.IsPneumatic())
         {
             //WheelAnalyzer.SaveToPneumaticJoint(driverType, diameter, pressure, node);
         }
@@ -128,7 +125,7 @@ public partial class DriveChooser : Form
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
-        wheelType = (WheelType)cmbWheelType.SelectedIndex;
+        wheelType = (WheelType) cmbWheelType.SelectedIndex;
 
         if (wheelType == WheelType.NOT_A_WHEEL)
         {
@@ -142,17 +139,17 @@ public partial class DriveChooser : Form
 
     private void cmbFrictionLevel_SelectedIndexChanged(object sender, EventArgs e)
     {
-        friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
+        friction = (FrictionLevel) cmbFrictionLevel.SelectedIndex;
     }
 
     private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
     {
-        diameter = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex;
+        diameter = (PneumaticDiameter) cmbPneumaticDiameter.SelectedIndex;
     }
 
     private void cmbPneumaticForce_SelectedIndexChanged(object sender, EventArgs e)
     {
-        pressure = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex;
+        pressure = (PneumaticPressure) cmbPneumaticPressure.SelectedIndex;
     }
 
     private void lblVelocity_Click(object sender, EventArgs e)

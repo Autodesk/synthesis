@@ -12,12 +12,12 @@ using System.IO;
 public abstract class JointDriverMeta
 {
     // Constant, but can't be declared so.
-    private static Type[] JOINT_DRIVER_TYPES = new Type[] { typeof(WheelDriverMeta) };
+    private readonly static Type[] JOINT_DRIVER_TYPES = new Type[] { typeof(WheelDriverMeta) };
 
     protected abstract void WriteDataInternal(BinaryWriter writer);
     protected abstract void ReadDataInternal(BinaryReader reader);
 
-    public void WriteData(BinaryWriter writer)
+    public int GetID()
     {
         // Find my ID
         int myID = -1;
@@ -29,11 +29,13 @@ public abstract class JointDriverMeta
                 break;
             }
         }
-        if (myID < 0)
-        {
-            throw new Exception("Unknown Driver Meta.  Did you register your type?");
-        }
-        writer.Write((byte) myID);
+        System.Diagnostics.Debug.Assert(myID >= 0, "Unknown Driver Meta.  Did you register your type?");
+        return myID;
+    }
+
+    public void WriteData(BinaryWriter writer)
+    {
+        writer.Write((byte) GetID());
         WriteDataInternal(writer);
     }
 

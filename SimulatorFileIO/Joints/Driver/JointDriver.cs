@@ -1,18 +1,4 @@
 ﻿using System.Collections.Generic;
-
-/// <summary>
-/// Types of joint drivers.
-/// </summary>
-public enum JointDriverType : byte
-{
-    MOTOR = 1,
-    SERVO = 2,
-    WORM_SCREW = 3,
-    BUMPER_PNEUMATIC = 4,
-    RELAY_PNEUMATIC = 5,
-    DUAL_MOTOR = 6
-}
-
 /// <summary>
 /// Generic class able to represent all types of joint drivers.
 /// </summary>
@@ -108,91 +94,6 @@ public class JointDriver
     }
 
     /// <summary>
-    /// Checks if the given driver type requires two ports.
-    /// </summary>
-    /// <param name="type">Driver type</param>
-    /// <returns>True is the given type requires two ports</returns>
-    public static bool HasTwoPorts(JointDriverType type)
-    {
-        return type == JointDriverType.BUMPER_PNEUMATIC || type == JointDriverType.DUAL_MOTOR;
-    }
-
-    /// <summary>
-    /// Gets the string representation of the port for the given driver type.
-    /// </summary>
-    /// <param name="type">Driver type</param>
-    /// <returns>Name of port type</returns>
-    public static string GetPortType(JointDriverType type)
-    {
-        switch (type)
-        {
-            case JointDriverType.MOTOR:
-            case JointDriverType.SERVO:
-            case JointDriverType.DUAL_MOTOR:
-            case JointDriverType.WORM_SCREW:
-                return "PWM";
-            case JointDriverType.BUMPER_PNEUMATIC:
-                return "Solenoid";
-            case JointDriverType.RELAY_PNEUMATIC:
-                return "Relay";
-            default:
-                return "Unknown";
-        }
-    }
-
-    /// <summary>
-    /// Checks if the given driver type is a motor.
-    /// </summary>
-    /// <param name="type">Driver type</param>
-    /// <returns>Boolean</returns>
-    public static bool IsMotor(JointDriverType type)
-    {
-        switch (type)
-        {
-            case JointDriverType.MOTOR:
-            case JointDriverType.DUAL_MOTOR:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    public static bool IsPneumatic(JointDriverType type)
-    {
-        switch (type)
-        {
-            case JointDriverType.BUMPER_PNEUMATIC:
-            case JointDriverType.RELAY_PNEUMATIC:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /// <summary>
-    /// Gets the maximum port number for the given driver type.
-    /// </summary>
-    /// <param name="type">Driver type</param>
-    /// <returns>Max port number</returns>
-    public static int GetPortMax(JointDriverType type)
-    {
-        switch (type)
-        {
-            case JointDriverType.MOTOR:
-            case JointDriverType.DUAL_MOTOR:
-            case JointDriverType.SERVO:
-            case JointDriverType.WORM_SCREW:
-                return 8; // PWM
-            case JointDriverType.BUMPER_PNEUMATIC:
-                return 8; // Bumper
-            case JointDriverType.RELAY_PNEUMATIC:
-                return 8; // Relay
-            default:
-                return -1;
-        }
-    }
-
-    /// <summary>
     /// Sets the port(s) for this driver.
     /// </summary>
     /// <param name="portA">First port</param>
@@ -222,7 +123,7 @@ public class JointDriver
     public override string ToString()
     {
         string info = System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant();
-        info += "\nPorts: " + JointDriver.GetPortType(type) + "(" + portA + (JointDriver.HasTwoPorts(GetDriveType()) ? "," + portB : "") + ")";
+        info += "\nPorts: " + type.GetPortType() + "(" + portA + (type.HasTwoPorts() ? "," + portB : "") + ")";
         info += "\nMeta: ";
         foreach (KeyValuePair<System.Type, JointDriverMeta> meta in metaInfo)
         {
