@@ -213,7 +213,7 @@ public partial class ControlGroups
             {
                 SkeletalJoint_Base joint = ((RigidNode_Base) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
                 RobotSensor sensor = new RobotSensor(RobotSensorType.POTENTIOMETER);
-                sensor.polyCoeff = new float[] { 1, 1 };
+                sensor.equation = new Polynomial(new float[] { 1, 1 });
                 sensor.module = 0;
                 sensor.port = 1;
                 sensor.useSecondarySource = false;

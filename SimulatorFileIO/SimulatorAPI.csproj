@@ -59,6 +59,7 @@
     <Compile Include="Joints\SkeletalJoint_Base.cs" />
     <Compile Include="Math\BXDVector3.cs" />
     <Compile Include="Math\PhysicalProperties.cs" />
+    <Compile Include="Math\Polynomial.cs" />
     <Compile Include="ModelTree\RigidNode_Base.cs" />
     <Compile Include="IO\BXDJSkeleton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

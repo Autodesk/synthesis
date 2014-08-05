@@ -15,7 +15,7 @@ public class RobotSensor
 {
     public short module, port;
     public readonly RobotSensorType type;
-    public float[] polyCoeff;
+    public Polynomial equation;
     /// <summary>
     /// If this is true source the secondary angle from the joint.  (Rotational instead of linear for cylindrical)
     /// </summary>
@@ -31,10 +31,10 @@ public class RobotSensor
         writer.Write((byte) type);
         writer.Write(module);
         writer.Write(port);
-        writer.Write(polyCoeff.Length);
-        for (int i = 0; i < polyCoeff.Length; i++)
+        writer.Write(equation.coeff.Length);
+        for (int i = 0; i < equation.coeff.Length; i++)
         {
-            writer.Write(polyCoeff[i]);
+            writer.Write(equation.coeff[i]);
         }
         writer.Write(useSecondarySource);
     }
@@ -44,10 +44,10 @@ public class RobotSensor
         RobotSensor sensor = new RobotSensor((RobotSensorType) reader.ReadByte());
         sensor.module = reader.ReadInt16();
         sensor.port = reader.ReadInt16();
-        sensor.polyCoeff = new float[reader.ReadInt32()];
-        for (int i = 0; i < sensor.polyCoeff.Length; i++)
+        sensor.equation = new Polynomial(new float[reader.ReadInt32()]);
+        for (int i = 0; i < sensor.equation.coeff.Length; i++)
         {
-            sensor.polyCoeff[i] = reader.ReadSingle();
+            sensor.equation.coeff[i] = reader.ReadSingle();
         }
         sensor.useSecondarySource = reader.ReadBoolean();
         return sensor;
