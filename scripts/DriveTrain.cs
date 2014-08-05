@@ -4,13 +4,51 @@ using ExceptionHandling;
 using System;
 
 
-
+//Data struct for packets sent to WPI server through Unity client
 public class InputStatePacket
 {
-	public byte[] Write(byte[] packet)
+	public DIOModule[] dio = new DIOModule[2];
+	public Encoders[] encoder = new Encoders[4];
+	public AnalogValues[] ai = new AnalogValues[1];
+	public Counter[] counter = new Counter[8];
+	
+	public class  DIOModule
 	{
-		
-		return packet;
+		public UInt32 digitalInput;
+	}
+	public class Encoders
+	{
+		public Int32 value;
+	}
+	public class AnalogValues
+	{
+		public const int LENGTH = 4 * (8);
+		public Int32[] analogValues = new Int32[8];
+	}
+	public class Counter
+	{
+		public Int32 value;
+	}
+	
+	public int Write(byte[] packet)
+	{
+		/*
+		for (int i = 0; dio.Length; i++)
+		{
+			int offset = i * ;
+		}
+		for(int i = 0; encoder.Length; i++)
+		{
+		}
+		for(int i = 0; ai.Length; i++)
+		{
+		}
+		for(int i = 0; counter.Length; i++)
+		{
+		}
+		return 
+		*/
+		return packet.Length;
 	}
 }
 

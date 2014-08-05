@@ -17,7 +17,7 @@ public class auxFunctions : RigidNode_Base
             Vector3[] vertices = sub.verts == null ? null : ArrayUtilities.WrapArray<Vector3>(
                 delegate(double x, double y, double z)
                 {
-                    return new Vector3((float) x * .01f, (float) y * .01f, (float) z * .01f);
+                    return new Vector3((float) x, (float) y, (float) z);
                 }, sub.verts);
 
             Vector3[] normals = sub.norms == null ? null : ArrayUtilities.WrapArray<Vector3>(

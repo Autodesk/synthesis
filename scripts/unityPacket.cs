@@ -48,6 +48,9 @@ public class unityPacket
 				solenoid [i].state = pack [offset];
 			}
 		} 
+		
+		
+		
 	}
 
 	
@@ -55,23 +58,28 @@ public class unityPacket
 	public volatile bool active;
 	public volatile bool stillSend = true;
 	public volatile bool stillRecieve = true;
-	UdpClient udp;
 	Thread threadRecieve, threadSend;
-	OutputStatePacket packetRecieve = new OutputStatePacket();
-	InputStatePacket packetSend = new InputStatePacket();
+	UdpClient client, server;
+	private byte[] receiveBuffer = new byte[1024];
+	private byte[] sendBuffer = new byte[1024];
+	private int sendBufferLen = 0;
+	private Mutex clientMutex, serverMutex;
 	
 	public void Start()
 	{
 	
-	
+		clientMutex = new Mutex();
+		serverMutex = new Mutex();
+		
 		active = true;
 		
-		threadRecieve = new Thread(RunServerWrapper);
-		threadSend = new Thread(RunClientWrapper);	
-		
-		threadRecieve.Start(this);
-		
-		threadSend.Start(this);
+		threadRecieve = new Thread(ServerInternal);
+		//threadSend = new Thread(ClientInternal);
+			
+		Debug.Log("Server...");
+		threadRecieve.Start();
+		Debug.Log("Client...");
+		threadSend.Start();
 		
 		//this udp thread was really really stupid || this is because of how dumb Unity is
 		if (stillSend && stillRecieve && (threadSend.IsAlive && threadRecieve.IsAlive))
@@ -93,38 +101,38 @@ public class unityPacket
 		} catch (Exception ex)
 		{
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
+		} finally
+		{
+			serverMutex.Close();
+			clientMutex.Close();
 		}
 	}
 
 	private void ServerInternal()
 	{
+		
 		try
 		{	
-			udp = new UdpClient();
+			server = new UdpClient();
 			
 			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2550);
-			udp.ExclusiveAddressUse = false;
-			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+			server.ExclusiveAddressUse = false;
+			server.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 			if (stillRecieve)
 			{
 				stillRecieve = false;
 			} else
 			{
-				udp.Client.Bind(ipEnd);
+				server.Client.Bind(ipEnd);
 			}
-			byte[] buffer = new byte[1024];
+			//byte[] buffer = new byte[1024];
 			while (active)
 			{	
-			/*
-				if (udp.Available <= 0)
-				{
-					//Debug.Log("Server...");
-					Thread.Sleep(20);
-					continue;
-				}
-				*/
-				buffer = udp.Receive(ref ipEnd);
-				packetRecieve.Read(buffer);
+				serverMutex.WaitOne();
+				receiveBuffer = server.Receive(ref ipEnd);
+				//packetRecieve = new OutputStatePacket();
+				//packetRecieve.Read(buffer);
+				serverMutex.ReleaseMutex();
 			}
 				
 			//int portFromInvAPI = 18;
@@ -134,26 +142,33 @@ public class unityPacket
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
 		} finally
 		{
-			udp.Close();
+			try
+			{				
+				server.Close();
+			} catch (Exception ex)
+			{
+				Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
+			}
 		}
 	}
-
+/*
 	private void ClientInternal()
 	{
 		try
 		{	
-			udp = new UdpClient();
+			client = new UdpClient();
 			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2551);
 	
-			byte[] buffer = new byte[1024];
 			while (active)
 			{	
-				buffer = packetSend.Write(buffer);
-				udp.Client.SendTo(buffer, ipEnd);
+				if (sendBufferLen > sendBuffer.Length)
+				{
+				clientMutex.WaitOne();
+				client.Client.SendTo(sendBuffer, sendBufferLen, ipEnd);
+				clientMutex.ReleaseMutex();
+				}
 			}
 			
-			//int portFromInvAPI = 18;
-			//packet.dio[(portFromInvAPI >> 4) & 0xF].pwmValues[portFromInvAPI & 0xF]
 		} catch (Exception ex)
 		{
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
@@ -161,37 +176,27 @@ public class unityPacket
 		{
 			try
 			{				
-				udp.Close();
+				client.Close();
 			} catch (Exception ex)
 			{
 				Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
 			}
 		}
 	}
+	*/
+	public OutputStatePacket getLastPacket()
+	{
+		OutputStatePacket pack = new OutputStatePacket();
+		serverMutex.WaitOne();
+		pack.Read(receiveBuffer);
+		serverMutex.ReleaseMutex();
+		return pack;
+	}
+	public void sendLastPacket(InputStatePacket pack)
+	{
+		clientMutex.WaitOne();
+		sendBufferLen = pack.Write(sendBuffer);
+		clientMutex.ReleaseMutex();
+	}
 	
-	private static void RunServerWrapper(object obj)
-	{
-		Debug.Log("Server...");
-		((unityPacket)obj).ServerInternal();
-		
-	}
-
-	private static void RunClientWrapper(object obj)
-	{
-		Debug.Log("Client...");
-		((unityPacket)obj).ClientInternal();
-		
-	}
 }
-	
-
-	
-
-		
-
-
-
-
-
-
-

@@ -43,7 +43,7 @@ public class Init : MonoBehaviour
 			UnityRigidNode uNode = (UnityRigidNode)node;
 
 			uNode.CreateTransform(transform);		
-			uNode.CreateMesh(path + uNode.GetModelFileName());
+			uNode.CreateMesh(path + uNode.modelFileName);
 			uNode.FlipNorms();
 			uNode.CreateJoint();
 			
