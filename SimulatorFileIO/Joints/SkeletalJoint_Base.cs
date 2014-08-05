@@ -14,19 +14,19 @@ public enum SkeletalJointType : byte
 }
 
 /// <summary>
-/// Generic structure for creating skeletal joints from a joint type.
+/// Represents a moving joint between two nodes.
 /// </summary>
-public interface SkeletalJointFactory
+public abstract class SkeletalJoint_Base
 {
-    SkeletalJoint_Base Create(SkeletalJointType type);
-}
+    /// <summary>
+    /// Generic delegate for creating skeletal joints from a joint type.
+    /// </summary>
+    public delegate SkeletalJoint_Base SkeletalJointFactory(SkeletalJointType type);
 
-/// <summary>
-/// Basic factory for creating the API joint objects based on type.
-/// </summary>
-public class BaseSkeletalJointFactory : SkeletalJointFactory
-{
-    public SkeletalJoint_Base Create(SkeletalJointType type)
+    /// <summary>
+    /// Factory object used to create skeletal joint objects when reading skeletons from a file.
+    /// </summary>
+    public static SkeletalJointFactory JOINT_FACTORY = delegate(SkeletalJointType type)
     {
         switch (type)
         {
@@ -43,18 +43,7 @@ public class BaseSkeletalJointFactory : SkeletalJointFactory
             default:
                 return null;
         }
-    }
-}
-
-/// <summary>
-/// Represents a moving joint between two nodes.
-/// </summary>
-public abstract class SkeletalJoint_Base
-{
-    /// <summary>
-    /// Factory object used to create skeletal joint objects when reading skeletons from a file.
-    /// </summary>
-    public static SkeletalJointFactory baseFactory = new BaseSkeletalJointFactory();
+    };
 
     /// <summary>
     /// The joint driver for this joint.  This can be null.
@@ -128,7 +117,7 @@ public abstract class SkeletalJoint_Base
     public static SkeletalJoint_Base ReadJointFully(System.IO.BinaryReader reader)
     {
         SkeletalJointType type = (SkeletalJointType)((int)reader.ReadByte());
-        SkeletalJoint_Base joint = baseFactory.Create(type);
+        SkeletalJoint_Base joint = JOINT_FACTORY(type);
         joint.ReadJoint(reader);
         return joint;
     }

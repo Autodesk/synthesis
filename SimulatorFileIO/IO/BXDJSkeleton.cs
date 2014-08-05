@@ -97,7 +97,7 @@ public class BXDJSkeleton
             RigidNode_Base[] nodes = new RigidNode_Base[nodeCount];
             for (int i = 0; i < nodeCount; i++)
             {
-                nodes[i] = RigidNode_Base.NODE_FACTORY.Create();
+                nodes[i] = RigidNode_Base.NODE_FACTORY();
                 int parent = reader.ReadInt32();
                 nodes[i].modelFileName = (reader.ReadString());
                 nodes[i].modelFullID = (reader.ReadString());
