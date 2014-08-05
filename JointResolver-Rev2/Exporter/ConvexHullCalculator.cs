@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 using System.Collections;
+using System.Diagnostics;
 
 /// <summary>
 /// Computes and simplifies convex hulls for BXDA meshes.
@@ -380,6 +381,7 @@ public class ConvexHullCalculator
                 indexCount += surface.indicies.Length;
             }
         }
+        Debug.Assert(vertCount > 0);
         float[] copy = new float[vertCount];
         uint[] index = new uint[indexCount];
         vertCount = 0;

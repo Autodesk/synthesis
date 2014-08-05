@@ -11,10 +11,10 @@ public enum RobotSensorType : byte
     POTENTIOMETER
 }
 
-public class RobotSensor
+public class RobotSensor : RWObject
 {
     public short module, port;
-    public readonly RobotSensorType type;
+    public RobotSensorType type;
     public Polynomial equation;
     /// <summary>
     /// If this is true source the secondary angle from the joint.  (Rotational instead of linear for cylindrical)
@@ -39,17 +39,23 @@ public class RobotSensor
         writer.Write(useSecondarySource);
     }
 
-    public static RobotSensor ReadData(BinaryReader reader)
+    public void ReadData(BinaryReader reader)
     {
-        RobotSensor sensor = new RobotSensor((RobotSensorType) reader.ReadByte());
-        sensor.module = reader.ReadInt16();
-        sensor.port = reader.ReadInt16();
-        sensor.equation = new Polynomial(new float[reader.ReadInt32()]);
-        for (int i = 0; i < sensor.equation.coeff.Length; i++)
+        type = (RobotSensorType) reader.ReadByte();
+        module = reader.ReadInt16();
+        port = reader.ReadInt16();
+        equation = new Polynomial(new float[reader.ReadInt32()]);
+        for (int i = 0; i < equation.coeff.Length; i++)
         {
-            sensor.equation.coeff[i] = reader.ReadSingle();
+            equation.coeff[i] = reader.ReadSingle();
         }
-        sensor.useSecondarySource = reader.ReadBoolean();
+        useSecondarySource = reader.ReadBoolean();
+    }
+
+    public static RobotSensor ReadSensorFully(BinaryReader reader)
+    {
+        RobotSensor sensor = new RobotSensor(RobotSensorType.LIMIT);
+        sensor.ReadData(reader);
         return sensor;
     }
 }

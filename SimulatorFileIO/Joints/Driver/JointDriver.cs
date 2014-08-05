@@ -2,7 +2,7 @@
 /// <summary>
 /// Generic class able to represent all types of joint drivers.
 /// </summary>
-public class JointDriver
+public class JointDriver : RWObject
 {
     /// <summary>
     /// The type of this joint driver.

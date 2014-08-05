@@ -104,7 +104,7 @@ public abstract class SkeletalJoint_Base
         attachedSensors = new List<RobotSensor>(sensorCount);
         for (int i = 0; i < sensorCount; i++)
         {
-            attachedSensors.Add(RobotSensor.ReadData(reader));
+            attachedSensors.Add(RobotSensor.ReadSensorFully(reader));
         }
     }
     protected abstract void ReadJointInternal(System.IO.BinaryReader reader);

@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,8 +47,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\BinaryArrayIO.cs" />
     <Compile Include="IO\BXDAMesh.cs" />
     <Compile Include="IO\BXDIO.cs" />
+    <Compile Include="IO\RWObject.cs" />
     <Compile Include="Joints\BallJoint_Base.cs" />
     <Compile Include="Joints\CylindricalJoint_Base.cs" />
     <Compile Include="Joints\Driver\JointDriverMeta.cs" />

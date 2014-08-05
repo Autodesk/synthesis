@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class Polynomial
+public class Polynomial : RWObject
 {
     public float[] coeff;
 
@@ -22,5 +22,23 @@ public class Polynomial
             pow *= x;
         }
         return result;
+    }
+
+    public void WriteData(System.IO.BinaryWriter writer)
+    {
+        writer.Write(coeff.Length);
+        for (int i = 0; i < coeff.Length; i++)
+        {
+            writer.Write(coeff[i]);
+        }
+    }
+
+    public void ReadData(System.IO.BinaryReader reader)
+    {
+        coeff = new float[reader.ReadInt32()];
+        for (int i = 0; i < coeff.Length; i++)
+        {
+            coeff[i] = reader.ReadSingle();
+        }
     }
 }

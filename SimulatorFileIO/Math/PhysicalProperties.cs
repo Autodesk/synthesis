@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-public class PhysicalProperties
+public class PhysicalProperties : RWObject
 {
     public BXDVector3 centerOfMass = new BXDVector3();
     public float mass;

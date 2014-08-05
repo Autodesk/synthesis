@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class BXDVector3
+public class BXDVector3 : RWObject
 {
     public float x, y, z;
     public BXDVector3()
@@ -47,5 +47,19 @@ public class BXDVector3
         y += f.y;
         z += f.z;
         return this;
+    }
+
+    public void WriteData(System.IO.BinaryWriter w)
+    {
+        w.Write(x);
+        w.Write(y);
+        w.Write(z);
+    }
+
+    public void ReadData(System.IO.BinaryReader r)
+    {
+        x = r.ReadSingle();
+        y = r.ReadSingle();
+        z = r.ReadSingle();
     }
 }
