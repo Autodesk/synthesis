@@ -11,7 +11,7 @@ public class Init : MonoBehaviour
 	public float speed = 5;
 	public int[] motors = {1,2,3,4};
 	RigidNode_Base skeleton;
-	//unityPacket udp = new unityPacket();
+	unityPacket udp = new unityPacket();
 	List<Vector3> unityWheelData = new List<Vector3>();
 	
 	
@@ -45,9 +45,12 @@ public class Init : MonoBehaviour
 			uNode.CreateTransform(transform);		
 			uNode.CreateMesh(path + uNode.GetModelFileName());
 			uNode.FlipNorms();
-			if (uNode.GetWheelCenter() != Vector3.zero)
-				unityWheelData.Add(uNode.GetWheelCenter());
 			uNode.CreateJoint();
+			
+			if (uNode.IsWheel)
+			{
+				unityWheelData.Add(uNode.GetWheelCenter());
+			}
 		}
 		Quaternion rotation = auxFunctions.FlipRobot(unityWheelData, transform);
 		transform.localRotation *= rotation;
@@ -58,12 +61,12 @@ public class Init : MonoBehaviour
 	void OnEnable()
 	{
 		
-		//udp.Start();
+		udp.Start();
 	}
 
 	void OnDisable()
 	{
-		//udp.Stop();	
+		udp.Stop();	
 	}
 	
 	void FixedUpdate()

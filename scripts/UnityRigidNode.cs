@@ -11,10 +11,14 @@ public class UnityRigidNode : RigidNode_Base
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
-	public static Vector3 wheelData;
 	
-	
-
+	public bool IsWheel
+	{
+		get
+		{
+			return (wheel != null && wheel.type != WheelType.NOT_A_WHEEL);
+		}
+	}
 
 	//public delegate void Action(); //reminder of how action and function work
 		
@@ -159,9 +163,8 @@ public class UnityRigidNode : RigidNode_Base
 			if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL)
 			{
 				CreateWheel(nodeR);	
-				wheelData = auxFunctions.ConvertV3(wheel.center);
-				
 			}
+			
 					
 		} else if (nodeX.GetJointType() == SkeletalJointType.CYLINDRICAL)
 		{
@@ -304,7 +307,7 @@ public class UnityRigidNode : RigidNode_Base
 	}
 	public Vector3 GetWheelCenter()
 	{
-		return wheelData;
+		return auxFunctions.ConvertV3(wheel.center);
 	}
 	
 	

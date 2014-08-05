@@ -3,7 +3,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-/*
+
 public class unityPacket
 {
 	
@@ -26,7 +26,7 @@ public class unityPacket
 			public byte state;
 		} 
 		
-		public void read(byte[] pack)
+		public void Read(byte[] pack)
 		{
 			
 			for (int i = 0; i < dio.Length; i++)
@@ -53,29 +53,28 @@ public class unityPacket
 	
 	
 	public volatile bool active;
-	public volatile bool stillStupid = true;
+	public volatile bool stillSend = true;
+	public volatile bool stillRecieve = true;
 	UdpClient udp;
 	Thread threadRecieve, threadSend;
-	OutputStatePacket packet = new OutputStatePacket();
+	OutputStatePacket packetRecieve = new OutputStatePacket();
+	InputStatePacket packetSend = new InputStatePacket();
 	
 	public void Start()
 	{
 	
 	
 		active = true;
-		threadRecieve = threadSend = new Thread(ServerInternal);
 		
-     
-		threadRecieve.Start(delegate(UdpClient udp,byte[] buffer)
-		{
+		threadRecieve = new Thread(RunServerWrapper);
+		threadSend = new Thread(RunClientWrapper);	
 		
-		});
-		threadSend.Start(delegate(UdpClient udp, byte[] buffer){
+		threadRecieve.Start(this);
 		
-		});
+		threadSend.Start(this);
 		
 		//this udp thread was really really stupid || this is because of how dumb Unity is
-		if (stillStupid)
+		if (stillSend && stillRecieve && (threadSend.IsAlive && threadRecieve.IsAlive))
 		{
 			Stop();
 			Start();	
@@ -86,19 +85,10 @@ public class unityPacket
 	{
 		try
 		{
-			Debug.Log("Stop...");
 			active = false;
 			threadSend.Join();
 			threadRecieve.Join();
-			
-			try
-			{
-				udp.Close();
-				Debug.Log("UDP Server Shutdown Cleanly... ");    
-			} catch (Exception ex)
-			{
-				Debug.Log(ex.Source + ": " + ex.Message + ": " + ex.StackTrace.ToString());
-			}
+			Debug.Log("Stop...");
 			
 		} catch (Exception ex)
 		{
@@ -106,21 +96,18 @@ public class unityPacket
 		}
 	}
 
-	private void ServerInternal(Action<UdpClient, byte[]> networkingBehaviour)
+	private void ServerInternal()
 	{
-		
 		try
 		{	
 			udp = new UdpClient();
 			
-			Debug.Log("Server...");	
-			
 			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2550);
 			udp.ExclusiveAddressUse = false;
 			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-			if (stillStupid)
+			if (stillRecieve)
 			{
-				stillStupid = false;
+				stillRecieve = false;
 			} else
 			{
 				udp.Client.Bind(ipEnd);
@@ -128,64 +115,75 @@ public class unityPacket
 			byte[] buffer = new byte[1024];
 			while (active)
 			{	
+			/*
 				if (udp.Available <= 0)
 				{
+					//Debug.Log("Server...");
 					Thread.Sleep(20);
 					continue;
 				}
-                
+				*/
 				buffer = udp.Receive(ref ipEnd);
-										
-				packet.read(buffer);	
-				
-				//int portFromInvAPI = 18;
-				//packet.dio[(portFromInvAPI >> 4) & 0xF].pwmValues[portFromInvAPI & 0xF]
+				packetRecieve.Read(buffer);
 			}
-            
+				
+			//int portFromInvAPI = 18;
+			//packet.dio[(portFromInvAPI >> 4) & 0xF].pwmValues[portFromInvAPI & 0xF]
 		} catch (Exception ex)
 		{
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
+		} finally
+		{
+			udp.Close();
 		}
 	}
 
-	public OutputStatePacket GetPacket()
-	{
-		return packet;
-	}
-
-}
-	/*
-public class UnityClient
-{	
 	private void ClientInternal()
 	{
 		try
-		{
-			Debug.Log("Client...");
-			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2551);
-			udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-			
+		{	
 			udp = new UdpClient();
-			udp.Client.Bind(ipEnd);
-		
-		
+			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2551);
+	
 			byte[] buffer = new byte[1024];
 			while (active)
-			{
-				//buffer = packet.Write(buffer);
-				
-				udp.Send(buffer, buffer.Length);
-			
+			{	
+				buffer = packetSend.Write(buffer);
+				udp.Client.SendTo(buffer, ipEnd);
 			}
+			
+			//int portFromInvAPI = 18;
+			//packet.dio[(portFromInvAPI >> 4) & 0xF].pwmValues[portFromInvAPI & 0xF]
 		} catch (Exception ex)
 		{
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
+		} finally
+		{
+			try
+			{				
+				udp.Close();
+			} catch (Exception ex)
+			{
+				Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
+			}
 		}
-		
-			
 	}
-		*/
+	
+	private static void RunServerWrapper(object obj)
+	{
+		Debug.Log("Server...");
+		((unityPacket)obj).ServerInternal();
+		
+	}
 
+	private static void RunClientWrapper(object obj)
+	{
+		Debug.Log("Client...");
+		((unityPacket)obj).ClientInternal();
+		
+	}
+}
+	
 
 	
 
