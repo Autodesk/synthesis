@@ -12,9 +12,6 @@ public class InputStatePacket
 		
 		return packet;
 	}
-	
-	
-	
 }
 
 
@@ -60,22 +57,6 @@ public class DriveJoints : MonoBehaviour
 	{
 		configJoint.GetConfigJoint().targetVelocity = new Vector3(speed, 0, 0);
 	}
-	
-	/*// Updates a wheel at the given PWM port with a given value
-	// Note that this also returns true or false, because if a motor is set to 
-	public static void UpdateWheel(Dictionary<int, List<UnityRigidNode>> wheels, int pwmPort, float speed)
-	{
-		if (speed != 0)
-		{
-			DriveJoints.SetListOfMotors(wheels [pwmPort], speed, 0);
-			
-		} else
-		{
-			// The maximum brakeTorque of a vex motor is 343.3 oz-in
-			DriveJoints.SetListOfMotors(wheels [pwmPort], 0, 343.3f);
-		}
-	}*/
-	
 	
 	public static void UpdateAllWheels(RigidNode_Base skeleton, float[] pwm)
 	{
@@ -155,6 +136,7 @@ public class DriveJoints : MonoBehaviour
 				// Now, if both solenoid ports are open
 				if (stateA > 0)
 				{
+
 					// Port A is open, so the solenoid will be set to forward
 					DriveJoints.SetConfigJointMotorX(unityNode, 30);
 					Debug.Log("A solenoid is set to forward");
@@ -171,20 +153,4 @@ public class DriveJoints : MonoBehaviour
 		}
 		
 	}
-}
-
-
-
-
-// A class to hold all motor/pnuematic/joint initialization functions
-public class InitializeMotors : MonoBehaviour
-{	
-	//public static void flipNormalIfIncorrect(RigidNode_Base skeleton) {
-	//	List<RigidNode_Base> listOfNodes = new List<UnityRigidNode>();
-	//	skeleton.ListAllNodes(listOfNodes);
-	//	foreach(RigidNode_Base node in listOfNodes) 
-	//	{
-	//		if
-	//	}
-	//}
 }
