@@ -60,6 +60,8 @@ public class JointDriver
         }
         catch
         {
+            //Always throws SystemNullReferenceException here when you are exporting pneumatic
+            //Go to JointDrivderMeta.cs Line 15 to patch
             metaInfo[metaDriver.GetType()] = metaDriver;
         }
     }
