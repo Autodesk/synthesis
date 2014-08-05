@@ -78,13 +78,11 @@ class PneumaticAnalyzer
     /// <param name="pressure">
     /// The joint that controls the collider.
     /// </param>
-    public static void SaveToPneumaticJoint(JointDriverType driverType, PneumaticDiameter diameter, PneumaticPressure pressure, RigidNode node)
+    public static void SaveToPneumaticJoint(PneumaticDiameter diameter, PneumaticPressure pressure, RigidNode node)
     {
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
         PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta(); //The info about the wheel attached to the joint.
         RigidNode.DeferredCalculation newCalculation;
-
-        pneumaticDriver.type = driverType;
 
         //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
         switch (diameter)
@@ -112,8 +110,6 @@ class PneumaticAnalyzer
                 pneumaticDriver.pressurePSI = 1;
                 break;
         }
-
-        joint.cDriver.AddInfo(pneumaticDriver);
 
         newCalculation = StartCalculations;
         node.RegisterDeferredCalculation(node.GetModelID(), newCalculation);

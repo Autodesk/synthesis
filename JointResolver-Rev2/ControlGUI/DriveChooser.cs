@@ -22,9 +22,7 @@ public partial class DriveChooser : Form
     private SkeletalJoint_Base joint;
     private WheelType wheelType;
     private FrictionLevel friction;
-    public int pneumaticType;
-    public string pnuematicTypeName;
-    private JointDriverType driverType;
+    //private JointDriverType driverType;
     private PneumaticDiameter diameter;
     private PneumaticPressure pressure;
     RigidNode node;
@@ -121,8 +119,10 @@ public partial class DriveChooser : Form
 
         if (JointDriver.IsPneumatic(cType))
         {
-            PneumaticAnalyzer.SaveToPneumaticJoint(driverType, diameter, pressure, node);
+            PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
         }
+
+        Hide();
 
     }
 

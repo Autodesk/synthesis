@@ -23,13 +23,13 @@ public class WheelDriverMeta : JointDriverMeta
     /// Stores the variables concerning a wheel, such as its position (which may be removed later) and radius.  
     /// </summary>
 
-    public float radius
+    public WheelType type
     {
         get;
         set;
     }
 
-    public WheelType type
+    public float radius
     {
         get;
         set;

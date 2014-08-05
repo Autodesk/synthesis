@@ -1,6 +1,5 @@
 ﻿using System.IO;
 
-//find proper specs for these
 public enum PneumaticDiameter : byte
 {
     HIGH = 0,
@@ -14,6 +13,9 @@ public enum PneumaticPressure : byte
     MEDIUM = 1,
     LOW = 2
 }
+
+
+
 
 public class PneumaticDriverMeta : JointDriverMeta
 {
@@ -52,24 +54,10 @@ public class PneumaticDriverMeta : JointDriverMeta
     //Reads the position of the wheel from the file.
     protected override void ReadDataInternal(BinaryReader reader)
     {
-        type = (JointDriverType)reader.ReadByte();
-        
         widthMM = reader.ReadSingle();
         pressurePSI = reader.ReadSingle();
     }
 
-    public string GetTypeString()
-    {
-        switch (type)
-        {
-            case JointDriverType.BUMPER_PNEUMATIC:
-                return "Bumper Pneumatic";
-            case JointDriverType.RELAY_PNEUMATIC:
-                return "Relay Pneumatic";
-            default:
-                return "Unknown";
-        }
-    }
 /*
     public override string ToString()
     {
