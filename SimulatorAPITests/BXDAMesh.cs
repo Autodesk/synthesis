@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 [TestClass]
-public class BXDAMesh
+public class BXDAMeshTesting
 {
     private static BXDAMesh createRandomMesh()
     {

@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 
 [TestClass]
-public class BinaryIOExtensions
+public class BinaryIOExtensionTesting
 {
     private delegate T CreateObjectFromValue<T>(double val);
 
