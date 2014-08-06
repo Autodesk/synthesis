@@ -22,10 +22,10 @@ public static class BinaryArrayIO
         }
         else if (typeof(T).IsPrimitive)
         {
-            int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
-            byte[] res = new byte[len * size];
-            Buffer.BlockCopy(arr, off * size, res, 0, res.Length);
-            writer.Write(len);
+            int size = Buffer.ByteLength(new T[1]);
+            byte[] res = new byte[(len - off) * size];
+           Buffer.BlockCopy(arr, off * size, res, 0, res.Length);
+            writer.Write(len - off);
             writer.Write(res);
         }
         else
@@ -76,7 +76,8 @@ public static class BinaryArrayIO
         else if (typeof(T).IsPrimitive)
         {
             int len = reader.ReadInt32();
-            byte[] res = new byte[len * System.Runtime.InteropServices.Marshal.SizeOf(typeof(T))];
+            int size = Buffer.ByteLength(new T[1]);
+            byte[] res = new byte[len * size];
             int count = reader.Read(res, 0, res.Length);
             while (count != res.Length)
             {

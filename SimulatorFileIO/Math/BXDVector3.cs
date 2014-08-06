@@ -8,9 +8,9 @@ public class BXDVector3 : RWObject
     }
     public BXDVector3(double x, double y, double z)
     {
-        this.x = (float)x;
-        this.y = (float)y;
-        this.z = (float)z;
+        this.x = (float) x;
+        this.y = (float) y;
+        this.z = (float) z;
     }
     public BXDVector3(float x, float y, float z)
     {
@@ -61,5 +61,14 @@ public class BXDVector3 : RWObject
         x = r.ReadSingle();
         y = r.ReadSingle();
         z = r.ReadSingle();
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is BXDVector3) {
+            BXDVector3 v = (BXDVector3) obj;
+            return v.x == x && v.y == y && v.z == z;
+        }
+        return false;
     }
 }
