@@ -32,9 +32,9 @@
             this.moduleColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.portColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.sensorListView = new System.Windows.Forms.ListView();
+            this.polynomialHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.deleteButton = new System.Windows.Forms.Button();
             this.addSensorButton = new System.Windows.Forms.Button();
-            this.polynomialHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // typeColumnHeader
@@ -71,6 +71,11 @@
             this.sensorListView.UseCompatibleStateImageBehavior = false;
             this.sensorListView.View = System.Windows.Forms.View.Details;
             // 
+            // polynomialHeader
+            // 
+            this.polynomialHeader.Text = "Polynomial";
+            this.polynomialHeader.Width = 134;
+            // 
             // deleteButton
             // 
             this.deleteButton.Location = new System.Drawing.Point(22, 220);
@@ -90,10 +95,6 @@
             this.addSensorButton.Text = "Add Sensor";
             this.addSensorButton.UseVisualStyleBackColor = true;
             this.addSensorButton.Click += new System.EventHandler(this.addSensorButton_Click);
-            // 
-            // polynomialHeader
-            // 
-            this.polynomialHeader.Text = "Polynomial";
             // 
             // SensorListForm
             // 

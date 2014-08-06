@@ -209,9 +209,12 @@ public partial class ControlGroups
 
     private void button1_Click(object sender, EventArgs e)
     {
-        JointResolver.ControlGUI.SensorListForm listForm = new JointResolver.ControlGUI.SensorListForm(((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
-        listForm.ShowDialog();
-        this.UpdateJointList();
+        if (lstJoints.SelectedItems.Count > 0)
+        {
+            JointResolver.ControlGUI.SensorListForm listForm = new JointResolver.ControlGUI.SensorListForm(((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+            listForm.ShowDialog();
+            this.UpdateJointList();
+        }
     }
 }
 
