@@ -64,6 +64,7 @@ partial class DriveChooser
             // 
             // cmbJointDriver
             // 
+            this.cmbJointDriver.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbJointDriver.FormattingEnabled = true;
             this.cmbJointDriver.Location = new System.Drawing.Point(15, 21);
             this.cmbJointDriver.Name = "cmbJointDriver";

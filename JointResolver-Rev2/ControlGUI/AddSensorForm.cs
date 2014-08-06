@@ -14,12 +14,19 @@ namespace JointResolver.ControlGUI
     {
         ControlGroups mainWindow;
         SkeletalJoint_Base joint;
+        RobotSensorType[] sensorTypeOptions;
 
         public AddSensorForm(ControlGroups passMainWindow, SkeletalJoint_Base passJoint)
         {
             InitializeComponent();
             mainWindow = passMainWindow;
             joint = passJoint;
+            typeBox.Items.Clear();
+            sensorTypeOptions = (RobotSensorType[]) Enum.GetValues(typeof(RobotSensorType));
+            foreach (RobotSensorType sensorType in sensorTypeOptions)
+            {
+                typeBox.Items.Add(Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ').ToLowerInvariant());
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -29,7 +36,7 @@ namespace JointResolver.ControlGUI
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            RobotSensor addedSensor = new RobotSensor((RobotSensorType)typeBox.SelectedIndex);
+            RobotSensor addedSensor = new RobotSensor(sensorTypeOptions[typeBox.SelectedIndex]);
 
             addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
             addedSensor.port = Convert.ToInt16(portTextBox.Text);
