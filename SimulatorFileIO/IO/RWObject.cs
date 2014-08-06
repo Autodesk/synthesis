@@ -22,7 +22,7 @@ public interface RWObject
 public static class RWObjectExtensions
 {
 
-    public delegate RWObject DoReadRWObject(BinaryReader reader);
+    public delegate RWObject ReadObjectFully(BinaryReader reader);
 
     /// <summary>
     /// Writes this object to the given output path.
@@ -60,7 +60,7 @@ public static class RWObjectExtensions
     /// </summary>
     /// <param name="reader">Input stream</param>
     /// <param name="readInternal">Optional delegate to create the object</param>
-    public static T ReadRWObject<T>(this BinaryReader reader, RWObjectExtensions.DoReadRWObject readInternal = null)
+    public static T ReadRWObject<T>(this BinaryReader reader, RWObjectExtensions.ReadObjectFully readInternal = null)
     {
         if (readInternal == null)
         {

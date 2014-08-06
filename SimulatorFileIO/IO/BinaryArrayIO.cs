@@ -43,7 +43,7 @@ public static class BinaryArrayIO
         }
     }
 
-    public static T[] ReadArray<T>(this BinaryReader reader, RWObjectExtensions.DoReadRWObject readInternal = null)
+    public static T[] ReadArray<T>(this BinaryReader reader, RWObjectExtensions.ReadObjectFully readInternal = null)
     {
         if (typeof(RWObject).IsAssignableFrom(typeof(T)))
         {
