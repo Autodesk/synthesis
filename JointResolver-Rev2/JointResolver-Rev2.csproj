@@ -65,6 +65,12 @@
     <Compile Include="ControlGUI\DriveChooser.Designer.cs">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </Compile>
+    <Compile Include="ControlGUI\SensorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\SensorForm.Designer.cs">
+      <DependentUpon>SensorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
     <Compile Include="Program.cs" />
@@ -105,6 +111,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\SensorForm.resx">
+      <DependentUpon>SensorForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -54,7 +54,8 @@ public partial class ControlGroups
                     Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
                         wrapped!=null?wrapped.parentGroup.ToString():"from-file",
                         wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver",
-                        wheelData!=null?wheelData.GetTypeString():"No Wheel"});
+                        wheelData!=null?wheelData.GetTypeString():"No Wheel",
+                        joint.attachedSensors.Count.ToString()});
                     item.Tag = node;
                     lstJoints.Items.Add(item);
                 }
@@ -197,10 +198,12 @@ public partial class ControlGroups
         if (tabsMain.SelectedTab.Name == "tabJoints")
         {
             btnCalculate.Visible = true;
+            sensorButton.Visible = true;
         }
         else
         {
             btnCalculate.Visible = false;
+            sensorButton.Visible = false;
         }
     }
 
@@ -220,6 +223,13 @@ public partial class ControlGroups
                 joint.attachedSensors.Add(sensor);
             }
         }
+    }
+
+    private void SensorButton_Click(object sender, EventArgs e)
+    {
+        JointResolver.ControlGUI.SensorForm sensorForm = new JointResolver.ControlGUI.SensorForm(this, ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+        sensorForm.ShowDialog();
+        this.UpdateJointList();
     }
 }
 
