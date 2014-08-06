@@ -42,7 +42,7 @@ namespace JointResolver.ControlGUI
 
             foreach (string coefficient in coefficients)
             {
-                ///Stores the coefficents from left to right.  The coefficient of the highest power is at index 0.
+                ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
                 addedSensor.polyCoeff[index++] = Convert.ToSingle(coefficient);
             }
 
