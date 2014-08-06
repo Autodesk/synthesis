@@ -110,7 +110,7 @@ public class RobotSensor
             }
         }
 
-        if (this.polyCoeff.Length > 2)
+        if (this.polyCoeff.Length >= 2)
         {
             if (this.polyCoeff[1] != 0)
             {
@@ -118,7 +118,7 @@ public class RobotSensor
             }
         }
 
-        if (this.polyCoeff.Length > 1)
+        if (this.polyCoeff.Length >= 1)
         {
             if (this.polyCoeff[0] != 0)
             {
