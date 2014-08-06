@@ -12,14 +12,12 @@ namespace JointResolver.ControlGUI
 {
     public partial class AddSensorForm : Form
     {
-        ControlGroups mainWindow;
         SkeletalJoint_Base joint;
         RobotSensorType[] sensorTypeOptions;
 
-        public AddSensorForm(ControlGroups passMainWindow, SkeletalJoint_Base passJoint)
+        public AddSensorForm(SkeletalJoint_Base passJoint)
         {
             InitializeComponent();
-            mainWindow = passMainWindow;
             joint = passJoint;
             typeBox.Items.Clear();
             sensorTypeOptions = (RobotSensorType[]) Enum.GetValues(typeof(RobotSensorType));

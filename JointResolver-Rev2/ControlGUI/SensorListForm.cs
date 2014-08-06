@@ -45,5 +45,12 @@ namespace JointResolver.ControlGUI
             joint.attachedSensors.Remove((RobotSensor)sensorListView.SelectedItems[0].Tag);
             this.UpdateSensorList();
         }
+
+        private void addSensorButton_Click(object sender, EventArgs e)
+        {
+            JointResolver.ControlGUI.AddSensorForm sensorForm = new JointResolver.ControlGUI.AddSensorForm(joint);
+            sensorForm.ShowDialog();
+            this.UpdateSensorList();
+        }
     }
 }

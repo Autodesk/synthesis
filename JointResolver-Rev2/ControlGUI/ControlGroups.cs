@@ -198,22 +198,13 @@ public partial class ControlGroups
         if (tabsMain.SelectedTab.Name == "tabJoints")
         {
             btnCalculate.Visible = true;
-            addSensorButton.Visible = true;
-            deleteSensorsButton.Visible = true;
+            listSensorsButton.Visible = true;
         }
         else
         {
             btnCalculate.Visible = false;
-            addSensorButton.Visible = false;
-            deleteSensorsButton.Visible = false;
+            listSensorsButton.Visible = false;
         }
-    }
-
-    private void SensorButton_Click(object sender, EventArgs e)
-    {
-        JointResolver.ControlGUI.AddSensorForm sensorForm = new JointResolver.ControlGUI.AddSensorForm(this, ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
-        sensorForm.ShowDialog();
-        this.UpdateJointList();
     }
 
     private void button1_Click(object sender, EventArgs e)

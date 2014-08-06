@@ -40,8 +40,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.btnCalculate = new System.Windows.Forms.Button();
-            this.addSensorButton = new System.Windows.Forms.Button();
-            this.deleteSensorsButton = new System.Windows.Forms.Button();
+            this.listSensorsButton = new System.Windows.Forms.Button();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -222,35 +221,23 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.Visible = false;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
             // 
-            // addSensorButton
+            // listSensorsButton
             // 
-            this.addSensorButton.Location = new System.Drawing.Point(434, 440);
-            this.addSensorButton.Name = "addSensorButton";
-            this.addSensorButton.Size = new System.Drawing.Size(119, 41);
-            this.addSensorButton.TabIndex = 7;
-            this.addSensorButton.Text = "Add Sensor";
-            this.addSensorButton.UseVisualStyleBackColor = true;
-            this.addSensorButton.Visible = false;
-            this.addSensorButton.Click += new System.EventHandler(this.SensorButton_Click);
-            // 
-            // deleteSensorsButton
-            // 
-            this.deleteSensorsButton.Location = new System.Drawing.Point(559, 440);
-            this.deleteSensorsButton.Name = "deleteSensorsButton";
-            this.deleteSensorsButton.Size = new System.Drawing.Size(119, 41);
-            this.deleteSensorsButton.TabIndex = 8;
-            this.deleteSensorsButton.Text = "Delete Sensors";
-            this.deleteSensorsButton.UseVisualStyleBackColor = true;
-            this.deleteSensorsButton.Visible = false;
-            this.deleteSensorsButton.Click += new System.EventHandler(this.button1_Click);
+            this.listSensorsButton.Location = new System.Drawing.Point(559, 440);
+            this.listSensorsButton.Name = "listSensorsButton";
+            this.listSensorsButton.Size = new System.Drawing.Size(119, 41);
+            this.listSensorsButton.TabIndex = 8;
+            this.listSensorsButton.Text = "List Sensors";
+            this.listSensorsButton.UseVisualStyleBackColor = true;
+            this.listSensorsButton.Visible = false;
+            this.listSensorsButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 493);
-            this.Controls.Add(this.deleteSensorsButton);
-            this.Controls.Add(this.addSensorButton);
+            this.Controls.Add(this.listSensorsButton);
             this.Controls.Add(this.btnCalculate);
             this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
@@ -291,7 +278,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader item_chWheel;
     private System.Windows.Forms.Button btnCalculate;
     private System.Windows.Forms.ColumnHeader groups_chConcavity;
-    private System.Windows.Forms.Button addSensorButton;
     private System.Windows.Forms.ColumnHeader item_chSensors;
-    private System.Windows.Forms.Button deleteSensorsButton;
+    private System.Windows.Forms.Button listSensorsButton;
 }
