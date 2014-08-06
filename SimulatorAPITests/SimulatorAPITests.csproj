@@ -55,8 +55,12 @@
   <ItemGroup>
     <Compile Include="AssertExtensions.cs" />
     <Compile Include="BXDAMesh.cs" />
+    <Compile Include="Math\PhysicalPropertiesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BinaryIOExtensions.cs" />
+    <Compile Include="Math\PolynomialTests.cs" />
+    <Compile Include="TestUtils.cs" />
+    <Compile Include="Math\BXDVector3Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">

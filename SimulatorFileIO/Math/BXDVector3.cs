@@ -2,6 +2,8 @@
 
 public class BXDVector3 : RWObject
 {
+    private const float EPSILON = 1.0E-6F;
+
     public float x, y, z;
     public BXDVector3()
     {
@@ -63,12 +65,29 @@ public class BXDVector3 : RWObject
         z = r.ReadSingle();
     }
 
+    public BXDVector3 Copy()
+    {
+        return new BXDVector3(x, y, z);
+    }
+
     public override bool Equals(object obj)
     {
-        if (obj is BXDVector3) {
+        if (obj is BXDVector3)
+        {
             BXDVector3 v = (BXDVector3) obj;
-            return v.x == x && v.y == y && v.z == z;
+            return Math.Abs(v.x - x) < EPSILON && Math.Abs(v.y - y) < EPSILON && Math.Abs(v.z - z) < EPSILON;
         }
         return false;
+    }
+
+    public override int GetHashCode()
+    {
+        int x = (int) (100 * this.x);
+        int y = (int) (100 * this.y);
+        int z = (int) (100 * this.z);
+        const int p1 = 73856093;
+        const int p2 = 19349663;
+        const int p3 = 83492791;
+        return (x * p1) ^ (y * p2) ^ (z * p3);
     }
 }

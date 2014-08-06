@@ -5,19 +5,13 @@ using System.IO;
 [TestClass]
 public class BinaryIOExtensionTesting
 {
-    private delegate T CreateObjectFromValue<T>(double val);
 
-    private static void TestRWArrayHelper<T>(int len, CreateObjectFromValue<T> create)
+    private static void TestRWArrayHelper<T>(int len, TestUtils.CreateObjectFromValue<T> create)
     {
         MemoryStream stream = new MemoryStream();
         BinaryReader reader = new BinaryReader(stream);
         BinaryWriter writer = new BinaryWriter(stream);
-        T[] arr = new T[len];
-        Random rand = new Random();
-        for (int i = 0; i < arr.Length; i++)
-        {
-            arr[i] = create(rand.NextDouble() * 1000.0);
-        }
+        T[] arr = TestUtils.MakeRandomArray(len, create);
         {
             stream.Position = 0;
             writer.WriteArray(arr);

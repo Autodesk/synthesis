@@ -12,6 +12,10 @@ public class Polynomial : RWObject
         this.coeff = new float[0];
     }
 
+    /// <summary>
+    /// Coefficients are based on array indicies, so the first one is multiplied by 1, the second by x, the third by x^2...
+    /// </summary>
+    /// <param name="coeff">Coeffecients for the polynomial</param>
     public Polynomial(params float[] coeff)
     {
         this.coeff = coeff;
