@@ -324,11 +324,7 @@ public class SurfaceExporter
             // Compute physics
             try
             {
-                outputMesh.physics.centerOfMass.Multiply(outputMesh.physics.mass);
-                float myMass = (float) occ.MassProperties.Mass;
-                outputMesh.physics.centerOfMass.Add(Utilities.ToBXDVector(occ.MassProperties.CenterOfMass).Multiply(myMass));
-                outputMesh.physics.mass += myMass;
-                outputMesh.physics.centerOfMass.Multiply(1.0f / outputMesh.physics.mass);
+                outputMesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
             }
             catch
             {
