@@ -17,7 +17,7 @@ public class auxFunctions : RigidNode_Base
             Vector3[] vertices = sub.verts == null ? null : ArrayUtilities.WrapArray<Vector3>(
                 delegate(double x, double y, double z)
                 {
-                    return new Vector3((float) x, (float) y, (float) z);
+                    return new Vector3((float) x * 0.01f, (float) y * 0.01f, (float) z * 0.01f);
                 }, sub.verts);
 
             Vector3[] normals = sub.norms == null ? null : ArrayUtilities.WrapArray<Vector3>(
@@ -42,7 +42,7 @@ public class auxFunctions : RigidNode_Base
 	
 	public static Vector3 ConvertV3 (BXDVector3 vector)
 	{
-		return new Vector3 ((float)vector.x, (float)vector.y, (float)vector.z);
+        return new Vector3((float) vector.x * 0.01f, (float) vector.y * 0.01f, (float) vector.z * 0.01f);
 	}
 	
 	public static Quaternion FlipRobot(List<Vector3> wheels, Transform parent)
@@ -53,7 +53,7 @@ public class auxFunctions : RigidNode_Base
 		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
 		
 		
-		norm = norm * ((above.y < 0) ? -1 : 1);
+		norm = norm * ((above.y > 0) ? -1 : 1);
 		//Debug.Log(above + ": "  + norm);
 		
 		Quaternion q = new Quaternion();
