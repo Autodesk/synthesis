@@ -7,6 +7,11 @@ public class Polynomial : RWObject
 {
     public float[] coeff;
 
+    public Polynomial()
+    {
+        this.coeff = new float[0];
+    }
+
     public Polynomial(params float[] coeff)
     {
         this.coeff = coeff;
@@ -26,19 +31,11 @@ public class Polynomial : RWObject
 
     public void WriteData(System.IO.BinaryWriter writer)
     {
-        writer.Write(coeff.Length);
-        for (int i = 0; i < coeff.Length; i++)
-        {
-            writer.Write(coeff[i]);
-        }
+        writer.WriteArray(coeff);
     }
 
     public void ReadData(System.IO.BinaryReader reader)
     {
-        coeff = new float[reader.ReadInt32()];
-        for (int i = 0; i < coeff.Length; i++)
-        {
-            coeff[i] = reader.ReadSingle();
-        }
+        coeff = reader.ReadArray<float>();
     }
 }

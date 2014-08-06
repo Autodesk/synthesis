@@ -21,6 +21,9 @@ public interface RWObject
 
 public static class RWObjectExtensions
 {
+
+    public delegate RWObject DoReadRWObject(BinaryReader reader);
+
     /// <summary>
     /// Writes this object to the given output path.
     /// </summary>
@@ -50,5 +53,44 @@ public static class RWObjectExtensions
     public static void Write(this BinaryWriter writer, RWObject obj)
     {
         obj.WriteData(writer);
+    }
+
+    /// <summary>
+    /// Deserializes the object from this stream
+    /// </summary>
+    /// <param name="reader">Input stream</param>
+    /// <param name="readInternal">Optional delegate to create the object</param>
+    public static T ReadRWObject<T>(this BinaryReader reader, RWObjectExtensions.DoReadRWObject readInternal = null)
+    {
+        if (readInternal == null)
+        {
+            // Try to find a constructor...
+            System.Reflection.ConstructorInfo ctr = typeof(T).GetConstructor(new Type[0]);
+            if (ctr == null)
+            {
+                throw new IOException("Can't read " + typeof(T).Name + " directly!\n");
+            }
+            else
+            {
+                readInternal = (BinaryReader rdr) =>
+                {
+                    RWObject ro = (RWObject) ctr.Invoke(new object[0]);
+                    ro.ReadData(rdr);
+                    return ro;
+                };
+            }
+        }
+        return (T) readInternal(reader);
+    }
+
+    /// <summary>
+    /// Deserializes the object from this stream
+    /// </summary>
+    /// <param name="reader">Input stream</param>
+    /// <param name="t">Read into</param>
+    public static T ReadRWInto<T>(this BinaryReader reader, T t) where T : RWObject
+    {
+        t.ReadData(reader);
+        return t;
     }
 }

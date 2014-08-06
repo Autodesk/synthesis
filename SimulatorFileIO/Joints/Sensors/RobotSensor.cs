@@ -31,11 +31,7 @@ public class RobotSensor : RWObject
         writer.Write((byte) type);
         writer.Write(module);
         writer.Write(port);
-        writer.Write(equation.coeff.Length);
-        for (int i = 0; i < equation.coeff.Length; i++)
-        {
-            writer.Write(equation.coeff[i]);
-        }
+        writer.Write(equation);
         writer.Write(useSecondarySource);
     }
 
@@ -44,11 +40,7 @@ public class RobotSensor : RWObject
         type = (RobotSensorType) reader.ReadByte();
         module = reader.ReadInt16();
         port = reader.ReadInt16();
-        equation = new Polynomial(new float[reader.ReadInt32()]);
-        for (int i = 0; i < equation.coeff.Length; i++)
-        {
-            equation.coeff[i] = reader.ReadSingle();
-        }
+        equation = reader.ReadRWObject<Polynomial>();
         useSecondarySource = reader.ReadBoolean();
     }
 

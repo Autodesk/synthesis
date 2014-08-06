@@ -15,18 +15,13 @@ public class PlanarJoint_Base : SkeletalJoint_Base
 
     protected override void WriteJointInternal(System.IO.BinaryWriter writer)
     {
-        writer.Write(normal.x);
-        writer.Write(normal.y);
-        writer.Write(normal.z);
-
-        writer.Write(basePoint.x);
-        writer.Write(basePoint.y);
-        writer.Write(basePoint.z);
+        writer.Write(normal);
+        writer.Write(basePoint);
     }
 
     protected override void ReadJointInternal(System.IO.BinaryReader reader)
     {
-        normal = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        basePoint = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        normal = reader.ReadRWObject<BXDVector3>();
+        basePoint = reader.ReadRWObject<BXDVector3>();
     }
 }

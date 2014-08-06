@@ -35,8 +35,6 @@ public class BXDAMesh : RWObject
             for (int i = 0; i < vertCount; i++)
             {
                 int vecI = i * 3;
-                int texI = i * 2;
-                int colI = i;
                 writer.Write(verts[vecI]);
                 writer.Write(verts[vecI + 1]);
                 writer.Write(verts[vecI + 2]);

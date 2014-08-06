@@ -22,8 +22,9 @@ public static class BinaryArrayIO
         }
         else if (typeof(T).IsPrimitive)
         {
-            byte[] res = new byte[len * System.Runtime.InteropServices.Marshal.SizeOf(typeof(T))];
-            Buffer.BlockCopy(arr, off, res, 0, res.Length);
+            int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
+            byte[] res = new byte[len * size];
+            Buffer.BlockCopy(arr, off * size, res, 0, res.Length);
             writer.Write(len);
             writer.Write(res);
         }
@@ -42,9 +43,7 @@ public static class BinaryArrayIO
         }
     }
 
-    public delegate RWObject ReadRWObject(BinaryReader reader);
-
-    public static T[] ReadArray<T>(this BinaryReader reader, ReadRWObject readInternal = null)
+    public static T[] ReadArray<T>(this BinaryReader reader, RWObjectExtensions.DoReadRWObject readInternal = null)
     {
         if (typeof(RWObject).IsAssignableFrom(typeof(T)))
         {

@@ -46,9 +46,7 @@ public class WheelDriverMeta : JointDriverMeta
         writer.Write(radius);
         writer.Write(width);
 
-        writer.Write(center.x);
-        writer.Write(center.y);
-        writer.Write(center.z);
+        writer.Write(center);
 
         writer.Write(forwardAsympSlip);
         writer.Write(forwardAsympValue);
@@ -67,9 +65,7 @@ public class WheelDriverMeta : JointDriverMeta
         radius = reader.ReadSingle();
         width = reader.ReadSingle();
 
-        center.x = reader.ReadSingle();
-        center.y = reader.ReadSingle();
-        center.z = reader.ReadSingle();
+        center = reader.ReadRWObject<BXDVector3>();
 
         forwardAsympSlip = reader.ReadSingle();
         forwardAsympValue = reader.ReadSingle();
