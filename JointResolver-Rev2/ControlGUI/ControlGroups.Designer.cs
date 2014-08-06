@@ -46,7 +46,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(818, 439);
+            this.btnExport.Location = new System.Drawing.Point(555, 687);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(130, 42);
             this.btnExport.TabIndex = 1;
@@ -56,7 +56,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(12, 439);
+            this.btnCancel.Location = new System.Drawing.Point(12, 687);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(130, 42);
             this.btnCancel.TabIndex = 2;
@@ -80,7 +80,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.lstJoints.MultiSelect = false;
             this.lstJoints.Name = "lstJoints";
             this.lstJoints.ShowGroups = false;
-            this.lstJoints.Size = new System.Drawing.Size(915, 378);
+            this.lstJoints.Size = new System.Drawing.Size(656, 627);
             this.lstJoints.TabIndex = 3;
             this.lstJoints.UseCompatibleStateImageBehavior = false;
             this.lstJoints.View = System.Windows.Forms.View.Details;
@@ -120,7 +120,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabsMain.Location = new System.Drawing.Point(13, 13);
             this.tabsMain.Name = "tabsMain";
             this.tabsMain.SelectedIndex = 0;
-            this.tabsMain.Size = new System.Drawing.Size(935, 419);
+            this.tabsMain.Size = new System.Drawing.Size(676, 668);
             this.tabsMain.TabIndex = 4;
             this.tabsMain.SelectedIndexChanged += new System.EventHandler(this.tabsMain_SelectedIndexChanged);
             // 
@@ -130,7 +130,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabGroups.Location = new System.Drawing.Point(4, 25);
             this.tabGroups.Name = "tabGroups";
             this.tabGroups.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGroups.Size = new System.Drawing.Size(927, 390);
+            this.tabGroups.Size = new System.Drawing.Size(668, 639);
             this.tabGroups.TabIndex = 0;
             this.tabGroups.Text = "Object Groups";
             this.tabGroups.UseVisualStyleBackColor = true;
@@ -151,7 +151,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.lstGroups.MultiSelect = false;
             this.lstGroups.Name = "lstGroups";
             this.lstGroups.ShowGroups = false;
-            this.lstGroups.Size = new System.Drawing.Size(915, 378);
+            this.lstGroups.Size = new System.Drawing.Size(656, 627);
             this.lstGroups.TabIndex = 4;
             this.lstGroups.UseCompatibleStateImageBehavior = false;
             this.lstGroups.View = System.Windows.Forms.View.Details;
@@ -161,12 +161,12 @@ partial class ControlGroups : System.Windows.Forms.Form
             // groups_chName
             // 
             this.groups_chName.Text = "Name";
-            this.groups_chName.Width = 138;
+            this.groups_chName.Width = 149;
             // 
             // groups_chGrounded
             // 
             this.groups_chGrounded.Text = "Grounded";
-            this.groups_chGrounded.Width = 91;
+            this.groups_chGrounded.Width = 31;
             // 
             // groups_chFaceColor
             // 
@@ -189,7 +189,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints.Location = new System.Drawing.Point(4, 25);
             this.tabJoints.Name = "tabJoints";
             this.tabJoints.Padding = new System.Windows.Forms.Padding(3);
-            this.tabJoints.Size = new System.Drawing.Size(927, 390);
+            this.tabJoints.Size = new System.Drawing.Size(668, 639);
             this.tabJoints.TabIndex = 1;
             this.tabJoints.Text = "Joint Options";
             this.tabJoints.UseVisualStyleBackColor = true;
@@ -197,7 +197,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // chkHighlightComponents
             // 
             this.chkHighlightComponents.AutoSize = true;
-            this.chkHighlightComponents.Location = new System.Drawing.Point(401, 451);
+            this.chkHighlightComponents.Location = new System.Drawing.Point(222, 699);
             this.chkHighlightComponents.Name = "chkHighlightComponents";
             this.chkHighlightComponents.Size = new System.Drawing.Size(193, 21);
             this.chkHighlightComponents.TabIndex = 5;
@@ -206,7 +206,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnCalculate
             // 
-            this.btnCalculate.Location = new System.Drawing.Point(684, 438);
+            this.btnCalculate.Location = new System.Drawing.Point(421, 687);
             this.btnCalculate.Name = "btnCalculate";
             this.btnCalculate.Size = new System.Drawing.Size(128, 43);
             this.btnCalculate.TabIndex = 6;
@@ -219,7 +219,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(960, 493);
+            this.ClientSize = new System.Drawing.Size(700, 741);
             this.Controls.Add(this.btnCalculate);
             this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);

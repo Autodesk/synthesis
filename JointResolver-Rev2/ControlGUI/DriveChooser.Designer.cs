@@ -43,7 +43,6 @@ partial class DriveChooser
             this.grpPneumaticSpecs = new System.Windows.Forms.GroupBox();
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
             this.cmbPneumaticDiameter = new System.Windows.Forms.ComboBox();
-            this.lblPneumaticForceTell = new System.Windows.Forms.Label();
             this.lblPneumaticDiameterTell = new System.Windows.Forms.Label();
             this.lblPressure = new System.Windows.Forms.Label();
             this.lblDiameter = new System.Windows.Forms.Label();
@@ -67,7 +66,7 @@ partial class DriveChooser
             this.cmbJointDriver.FormattingEnabled = true;
             this.cmbJointDriver.Location = new System.Drawing.Point(15, 21);
             this.cmbJointDriver.Name = "cmbJointDriver";
-            this.cmbJointDriver.Size = new System.Drawing.Size(317, 24);
+            this.cmbJointDriver.Size = new System.Drawing.Size(287, 24);
             this.cmbJointDriver.TabIndex = 0;
             this.cmbJointDriver.SelectedIndexChanged += new System.EventHandler(this.cmbJointDriver_SelectedIndexChanged);
             // 
@@ -76,7 +75,7 @@ partial class DriveChooser
             this.grpChooseDriver.Controls.Add(this.cmbJointDriver);
             this.grpChooseDriver.Location = new System.Drawing.Point(12, 12);
             this.grpChooseDriver.Name = "grpChooseDriver";
-            this.grpChooseDriver.Size = new System.Drawing.Size(338, 56);
+            this.grpChooseDriver.Size = new System.Drawing.Size(319, 56);
             this.grpChooseDriver.TabIndex = 1;
             this.grpChooseDriver.TabStop = false;
             this.grpChooseDriver.Text = "Joint Driver";
@@ -91,7 +90,7 @@ partial class DriveChooser
             this.grpDriveOptions.Controls.Add(this.txtPortA);
             this.grpDriveOptions.Location = new System.Drawing.Point(13, 75);
             this.grpDriveOptions.Name = "grpDriveOptions";
-            this.grpDriveOptions.Size = new System.Drawing.Size(337, 128);
+            this.grpDriveOptions.Size = new System.Drawing.Size(318, 128);
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Joint Options";
@@ -193,7 +192,7 @@ partial class DriveChooser
             // 
             this.btnSave.Location = new System.Drawing.Point(11, 334);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(338, 28);
+            this.btnSave.Size = new System.Drawing.Size(320, 28);
             this.btnSave.TabIndex = 3;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -205,7 +204,7 @@ partial class DriveChooser
             this.grpWheelOptions.Controls.Add(this.cmbWheelType);
             this.grpWheelOptions.Location = new System.Drawing.Point(11, 209);
             this.grpWheelOptions.Name = "grpWheelOptions";
-            this.grpWheelOptions.Size = new System.Drawing.Size(339, 63);
+            this.grpWheelOptions.Size = new System.Drawing.Size(320, 63);
             this.grpWheelOptions.TabIndex = 6;
             this.grpWheelOptions.TabStop = false;
             this.grpWheelOptions.Text = "Wheel Type";
@@ -244,13 +243,12 @@ partial class DriveChooser
             // 
             this.grpPneumaticSpecs.Controls.Add(this.cmbPneumaticPressure);
             this.grpPneumaticSpecs.Controls.Add(this.cmbPneumaticDiameter);
-            this.grpPneumaticSpecs.Controls.Add(this.lblPneumaticForceTell);
             this.grpPneumaticSpecs.Controls.Add(this.lblPneumaticDiameterTell);
             this.grpPneumaticSpecs.Controls.Add(this.lblPressure);
             this.grpPneumaticSpecs.Controls.Add(this.lblDiameter);
             this.grpPneumaticSpecs.Location = new System.Drawing.Point(11, 209);
             this.grpPneumaticSpecs.Name = "grpPneumaticSpecs";
-            this.grpPneumaticSpecs.Size = new System.Drawing.Size(339, 63);
+            this.grpPneumaticSpecs.Size = new System.Drawing.Size(320, 63);
             this.grpPneumaticSpecs.TabIndex = 2;
             this.grpPneumaticSpecs.TabStop = false;
             this.grpPneumaticSpecs.Text = "Pneumatic Specifications";
@@ -266,6 +264,7 @@ partial class DriveChooser
             this.cmbPneumaticPressure.Name = "cmbPneumaticPressure";
             this.cmbPneumaticPressure.Size = new System.Drawing.Size(106, 24);
             this.cmbPneumaticPressure.TabIndex = 7;
+            this.cmbPneumaticPressure.Text = "Pressure";
             this.cmbPneumaticPressure.SelectedIndexChanged += new System.EventHandler(this.cmbPneumaticForce_SelectedIndexChanged);
             // 
             // cmbPneumaticDiameter
@@ -279,27 +278,17 @@ partial class DriveChooser
             this.cmbPneumaticDiameter.Name = "cmbPneumaticDiameter";
             this.cmbPneumaticDiameter.Size = new System.Drawing.Size(102, 24);
             this.cmbPneumaticDiameter.TabIndex = 6;
+            this.cmbPneumaticDiameter.Text = "Diameter";
             this.cmbPneumaticDiameter.SelectedIndexChanged += new System.EventHandler(this.cmbPneumaticDiameter_SelectedIndexChanged);
-            // 
-            // lblPneumaticForceTell
-            // 
-            this.lblPneumaticForceTell.AutoSize = true;
-            this.lblPneumaticForceTell.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.5F);
-            this.lblPneumaticForceTell.Location = new System.Drawing.Point(289, 38);
-            this.lblPneumaticForceTell.Name = "lblPneumaticForceTell";
-            this.lblPneumaticForceTell.Size = new System.Drawing.Size(48, 13);
-            this.lblPneumaticForceTell.TabIndex = 5;
-            this.lblPneumaticForceTell.Text = "Pressure";
-            this.lblPneumaticForceTell.Click += new System.EventHandler(this.lblPneumaticForceTell_Click);
             // 
             // lblPneumaticDiameterTell
             // 
             this.lblPneumaticDiameterTell.AutoSize = true;
             this.lblPneumaticDiameterTell.Location = new System.Drawing.Point(113, 39);
             this.lblPneumaticDiameterTell.Name = "lblPneumaticDiameterTell";
-            this.lblPneumaticDiameterTell.Size = new System.Drawing.Size(116, 17);
+            this.lblPneumaticDiameterTell.Size = new System.Drawing.Size(65, 17);
             this.lblPneumaticDiameterTell.TabIndex = 4;
-            this.lblPneumaticDiameterTell.Text = "Internal Diameter";
+            this.lblPneumaticDiameterTell.Text = "(Internal)";
             this.lblPneumaticDiameterTell.Click += new System.EventHandler(this.lblPneumaticVelocityTell_Click);
             // 
             // lblPressure
@@ -329,7 +318,7 @@ partial class DriveChooser
             this.grpGearRatio.Controls.Add(this.txtGearRationNum);
             this.grpGearRatio.Location = new System.Drawing.Point(13, 279);
             this.grpGearRatio.Name = "grpGearRatio";
-            this.grpGearRatio.Size = new System.Drawing.Size(331, 49);
+            this.grpGearRatio.Size = new System.Drawing.Size(318, 49);
             this.grpGearRatio.TabIndex = 7;
             this.grpGearRatio.TabStop = false;
             this.grpGearRatio.Text = "Gear Ratio";
@@ -362,7 +351,7 @@ partial class DriveChooser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(362, 374);
+            this.ClientSize = new System.Drawing.Size(344, 374);
             this.Controls.Add(this.grpGearRatio);
             this.Controls.Add(this.grpPneumaticSpecs);
             this.Controls.Add(this.grpWheelOptions);
@@ -405,7 +394,6 @@ partial class DriveChooser
     private System.Windows.Forms.GroupBox grpPneumaticSpecs;
     private System.Windows.Forms.Label lblPressure;
     private System.Windows.Forms.Label lblDiameter;
-    private System.Windows.Forms.Label lblPneumaticForceTell;
     private System.Windows.Forms.Label lblPneumaticDiameterTell;
     private System.Windows.Forms.GroupBox grpGearRatio;
     private System.Windows.Forms.TextBox txtGearRationNum;
