@@ -63,6 +63,13 @@ public partial class DriveChooser : Form
         txtPortB.Visible = JointDriver.HasTwoPorts(cType);
         txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
 
+        if (JointDriver.IsDrivenJoint(cType) == false)
+        {
+            this.Height = 153;
+            btnSave.Location = new System.Drawing.Point(-1, -1);
+            grpDriveOptions.Visible = false;
+        }
+
         if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
         {
             this.Height = 300;
@@ -71,6 +78,7 @@ public partial class DriveChooser : Form
             grpGearRatio.Visible = false;
             grpPneumaticSpecs.Visible = false;
         }
+
         else if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
         {
             if (JointDriver.IsMotor(cType) == true)

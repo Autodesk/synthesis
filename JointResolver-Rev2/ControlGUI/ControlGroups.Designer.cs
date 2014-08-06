@@ -101,7 +101,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // item_chChild
             // 
             this.item_chChild.Text = "Child";
-            this.item_chChild.Width = 135;
+            this.item_chChild.Width = 85;
             // 
             // item_chDrive
             // 
@@ -161,12 +161,12 @@ partial class ControlGroups : System.Windows.Forms.Form
             // groups_chName
             // 
             this.groups_chName.Text = "Name";
-            this.groups_chName.Width = 149;
+            this.groups_chName.Width = 98;
             // 
             // groups_chGrounded
             // 
             this.groups_chGrounded.Text = "Grounded";
-            this.groups_chGrounded.Width = 31;
+            this.groups_chGrounded.Width = 91;
             // 
             // groups_chFaceColor
             // 
