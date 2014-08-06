@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="2014FieldBounding.cs" />
     <Compile Include="CollisionAnalyzer\PneumaticAnalyzer.cs" />
     <Compile Include="CollisionAnalyzer\FindRadiusThread.cs" />
     <Compile Include="ControlGUI\ComponentHighlighter.cs" />
