@@ -10,7 +10,7 @@ public static class BinaryArrayIO
     public static void WriteArray<T>(this BinaryWriter writer, T[] arr, int off = 0, int len = -1)
     {
         if (len == -1)
-            len = arr.Length;
+            len = arr.Length - off;
         if (typeof(RWObject).IsAssignableFrom(typeof(T)))
         {
             writer.Write(len);
@@ -23,9 +23,9 @@ public static class BinaryArrayIO
         else if (typeof(T).IsPrimitive)
         {
             int size = Buffer.ByteLength(new T[1]);
-            byte[] res = new byte[(len - off) * size];
+            byte[] res = new byte[len * size];
            Buffer.BlockCopy(arr, off * size, res, 0, res.Length);
-            writer.Write(len - off);
+            writer.Write(len);
             writer.Write(res);
         }
         else
