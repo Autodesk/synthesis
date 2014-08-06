@@ -65,11 +65,17 @@
     <Compile Include="ControlGUI\DriveChooser.Designer.cs">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\SensorForm.cs">
+    <Compile Include="ControlGUI\AddSensorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlGUI\SensorForm.Designer.cs">
-      <DependentUpon>SensorForm.cs</DependentUpon>
+    <Compile Include="ControlGUI\AddSensorForm.Designer.cs">
+      <DependentUpon>AddSensorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\SensorListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\SensorListForm.Designer.cs">
+      <DependentUpon>SensorListForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
@@ -112,8 +118,11 @@
     <EmbeddedResource Include="ControlGUI\DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\SensorForm.resx">
-      <DependentUpon>SensorForm.cs</DependentUpon>
+    <EmbeddedResource Include="ControlGUI\AddSensorForm.resx">
+      <DependentUpon>AddSensorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\SensorListForm.resx">
+      <DependentUpon>SensorListForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

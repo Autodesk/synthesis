@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace JointResolver.ControlGUI
 {
-    public partial class SensorForm : Form
+    public partial class AddSensorForm : Form
     {
         ControlGroups mainWindow;
         SkeletalJoint_Base joint;
 
-        public SensorForm(ControlGroups passMainWindow, SkeletalJoint_Base passJoint)
+        public AddSensorForm(ControlGroups passMainWindow, SkeletalJoint_Base passJoint)
         {
             InitializeComponent();
             mainWindow = passMainWindow;

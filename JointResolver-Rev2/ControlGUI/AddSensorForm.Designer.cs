@@ -1,6 +1,6 @@
 ﻿namespace JointResolver.ControlGUI
 {
-    partial class SensorForm
+    partial class AddSensorForm
     {
         /// <summary>
         /// Required designer variable.

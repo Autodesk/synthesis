@@ -52,4 +52,24 @@ public class RobotSensor
         sensor.useSecondarySource = reader.ReadBoolean();
         return sensor;
     }
+    
+    /// <summary>
+    /// Compares two sensors, returns true if all fields are identical.
+    /// </summary>
+    /// <param name="otherSensor"></param>
+    public bool Equals(RobotSensor otherSensor)
+    {
+        if (this.module != otherSensor.module || this.port != otherSensor.port || this.useSecondarySource != otherSensor.useSecondarySource)
+            return false;
+
+        for (int i = 0; i < this.polyCoeff.Length && i < otherSensor.polyCoeff.Length; i++)
+        {
+            if (this.polyCoeff[i] != otherSensor.polyCoeff[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

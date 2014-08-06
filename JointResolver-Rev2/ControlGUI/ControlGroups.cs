@@ -198,37 +198,28 @@ public partial class ControlGroups
         if (tabsMain.SelectedTab.Name == "tabJoints")
         {
             btnCalculate.Visible = true;
-            sensorButton.Visible = true;
+            addSensorButton.Visible = true;
+            deleteSensorsButton.Visible = true;
         }
         else
         {
             btnCalculate.Visible = false;
-            sensorButton.Visible = false;
-        }
-    }
-
-    private void lstJoints_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
-    {
-        if (e.Button == System.Windows.Forms.MouseButtons.Right)
-        {
-            // Just make a sensor thing
-            if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
-            {
-                SkeletalJoint_Base joint = ((RigidNode_Base) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-                RobotSensor sensor = new RobotSensor(RobotSensorType.POTENTIOMETER);
-                sensor.polyCoeff = new float[] { 1, 1 };
-                sensor.module = 0;
-                sensor.port = 1;
-                sensor.useSecondarySource = false;
-                joint.attachedSensors.Add(sensor);
-            }
+            addSensorButton.Visible = false;
+            deleteSensorsButton.Visible = false;
         }
     }
 
     private void SensorButton_Click(object sender, EventArgs e)
     {
-        JointResolver.ControlGUI.SensorForm sensorForm = new JointResolver.ControlGUI.SensorForm(this, ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+        JointResolver.ControlGUI.AddSensorForm sensorForm = new JointResolver.ControlGUI.AddSensorForm(this, ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
         sensorForm.ShowDialog();
+        this.UpdateJointList();
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+        JointResolver.ControlGUI.SensorListForm listForm = new JointResolver.ControlGUI.SensorListForm(((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+        listForm.ShowDialog();
         this.UpdateJointList();
     }
 }
