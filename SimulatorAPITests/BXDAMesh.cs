@@ -84,14 +84,13 @@ public class BXDAMeshTesting
             AssertSubMeshValid(b[i]);
 
             Assert.IsTrue((a[i].norms == null) == (b[i].norms == null), "Normal buffer state doesn't match");
-            for (int v = 0; v < a[i].verts.Length; v++)
+
+            AssertExtensions.AreEqual(a[i].verts, b[i].verts, 0, "BXDASubMesh Verticies");
+            if (a[i].norms != null && b[i].norms != null)
             {
-                Assert.AreEqual(a[i].verts[v], b[i].verts[v], "Vertex value " + v +" doesn't match");
-                if (a[i].norms != null && b[i].norms != null)
-                {
-                    Assert.AreEqual(a[i].norms[v], b[i].norms[v], "Normal value " + v + " doesn't match");
-                }
+                AssertExtensions.AreEqual(a[i].norms, b[i].norms, 0, "BXDASubMesh Normals");
             }
+
             Assert.AreEqual(a[i].surfaces.Count, b[i].surfaces.Count, "Surface count doesn't match");
             for (int j = 0; j < a[i].surfaces.Count; j++)
             {
@@ -103,11 +102,8 @@ public class BXDAMeshTesting
                 }
                 Assert.AreEqual(sA.translucency, sB.translucency, "Translucency mismatch");
                 Assert.AreEqual(sA.transparency, sB.transparency, "Transparency mismatch");
-                Assert.AreEqual(sA.indicies.Length, sB.indicies.Length, "Index buffer length mismatch");
-                for (int k = 0; k < sA.indicies.Length; k++)
-                {
-                    Assert.AreEqual(sA.indicies[k], sB.indicies[k], "Index value mismatch");
-                }
+
+                AssertExtensions.AreEqual(sA.indicies, sB.indicies, 0, "BXDASurface IndexBuffer");
             }
         }
     }
