@@ -26,6 +26,27 @@ public class RobotSensor
         this.type = type;
     }
 
+    public static RobotSensorType[] GetAllowedSensors(SkeletalJoint_Base joint)
+    {
+        switch (joint.GetJointType())
+        {
+            case SkeletalJointType.ROTATIONAL:
+                // Pneumatic and Worm Screw map to angles
+                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+            case SkeletalJointType.LINEAR:
+                return new RobotSensorType[] {RobotSensorType.LIMIT };
+            case SkeletalJointType.CYLINDRICAL:
+                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+            case SkeletalJointType.PLANAR:
+                //Not sure of an FRC part with planar motion.  Will add later if needed.
+                return new RobotSensorType[] { };
+            case SkeletalJointType.BALL:
+                return new RobotSensorType[] { };
+            default:
+                return new RobotSensorType[0];// Not implemented
+        }
+    }
+
     public void WriteData(BinaryWriter writer)
     {
         writer.Write((byte) type);

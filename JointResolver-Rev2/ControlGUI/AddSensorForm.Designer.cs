@@ -53,10 +53,6 @@
             // 
             this.typeBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.typeBox.FormattingEnabled = true;
-            this.typeBox.Items.AddRange(new object[] {
-            "Limit Switch",
-            "Encoder",
-            "Potentiometer"});
             this.typeBox.Location = new System.Drawing.Point(116, 12);
             this.typeBox.Name = "typeBox";
             this.typeBox.Size = new System.Drawing.Size(128, 24);
@@ -131,7 +127,7 @@
             this.coefficentTextBox.Size = new System.Drawing.Size(143, 22);
             this.coefficentTextBox.TabIndex = 10;
             // 
-            // SensorForm
+            // AddSensorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -146,7 +142,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.typeBox);
             this.Controls.Add(this.label1);
-            this.Name = "SensorForm";
+            this.Name = "AddSensorForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.Text = "Sensor";
             this.ResumeLayout(false);

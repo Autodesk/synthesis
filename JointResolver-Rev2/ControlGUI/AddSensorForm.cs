@@ -20,7 +20,7 @@ namespace JointResolver.ControlGUI
             InitializeComponent();
             joint = passJoint;
             typeBox.Items.Clear();
-            sensorTypeOptions = (RobotSensorType[]) Enum.GetValues(typeof(RobotSensorType));
+            sensorTypeOptions = RobotSensor.GetAllowedSensors(joint);
             foreach (RobotSensorType sensorType in sensorTypeOptions)
             {
                 typeBox.Items.Add(Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ').ToLowerInvariant());
@@ -43,8 +43,8 @@ namespace JointResolver.ControlGUI
 
             addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
             addedSensor.port = Convert.ToInt16(portTextBox.Text);
-            ///Gets all of tentered polynomial coefficients, seperating by commas.
 
+            ///Gets all of the entered polynomial coefficients, seperating by commas.
             string[] coefficients = coefficentTextBox.Text.Split(new char[] { ',' });
 
             addedSensor.polyCoeff = new float[coefficients.Length];
