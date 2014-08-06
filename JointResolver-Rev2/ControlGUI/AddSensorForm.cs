@@ -34,6 +34,11 @@ namespace JointResolver.ControlGUI
 
         private void saveButton_Click(object sender, EventArgs e)
         {
+            if (moduleTextBox.Text == "" || portTextBox.Text == "" || typeBox.SelectedIndex == -1)
+            {
+                throw new Exception("All fields must be filled out.");
+            }
+
             RobotSensor addedSensor = new RobotSensor(sensorTypeOptions[typeBox.SelectedIndex]);
 
             addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
