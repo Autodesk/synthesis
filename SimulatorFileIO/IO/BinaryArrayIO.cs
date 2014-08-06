@@ -20,6 +20,13 @@ public static class BinaryArrayIO
             }
             return;
         }
+        else if (typeof(T).IsPrimitive)
+        {
+            byte[] res = new byte[len * System.Runtime.InteropServices.Marshal.SizeOf(typeof(T))];
+            Buffer.BlockCopy(arr, off, res, 0, res.Length);
+            writer.Write(len);
+            writer.Write(res);
+        }
         else
         {
             MethodInfo tMeth = typeof(BinaryWriter).GetMethod("Write", new Type[] { typeof(T) });
@@ -66,6 +73,24 @@ public static class BinaryArrayIO
                 arr[i] = (T) readInternal(reader);
             }
             return arr;
+        }
+        else if (typeof(T).IsPrimitive)
+        {
+            int len = reader.ReadInt32();
+            byte[] res = new byte[len * System.Runtime.InteropServices.Marshal.SizeOf(typeof(T))];
+            int count = reader.Read(res, 0, res.Length);
+            while (count != res.Length)
+            {
+                int read = reader.Read(res, count, res.Length - count);
+                count += read;
+                if (read < 0)
+                {
+                    throw new IOException("Failed to read enough bytes to fill array!\n");
+                }
+            }
+            T[] dest = new T[len];
+            Buffer.BlockCopy(res, 0, dest, 0, res.Length);
+            return dest;
         }
         else
         {
