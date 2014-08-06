@@ -81,27 +81,27 @@ public class RobotSensor
     {
         string polynomial = "y=";
 
-        for (int i = 0; i < this.polyCoeff.Length - 2; i++)
+        for (int i = this.polyCoeff.Length - 1; i > 1; i--)
         {
             if (this.polyCoeff[i] != 0)
             {
-                polynomial = polynomial + this.polyCoeff[i] + "x^" + (this.polyCoeff.Length - i - 1) + "+";
+                polynomial = polynomial + this.polyCoeff[i] + "x^" + i + "+";
             }
         }
 
         if (this.polyCoeff.Length > 2)
         {
-            if (this.polyCoeff[this.polyCoeff.Length - 2] != 0)
+            if (this.polyCoeff[1] != 0)
             {
-                polynomial = polynomial + this.polyCoeff[this.polyCoeff.Length - 2] + "x+";
+                polynomial = polynomial + this.polyCoeff[1] + "x+";
             }
         }
 
         if (this.polyCoeff.Length > 1)
         {
-            if (this.polyCoeff[this.polyCoeff.Length - 1] != 0)
+            if (this.polyCoeff[0] != 0)
             {
-                polynomial = polynomial + this.polyCoeff[this.polyCoeff.Length - 1];
+                polynomial = polynomial + this.polyCoeff[0];
             }
         }
 
