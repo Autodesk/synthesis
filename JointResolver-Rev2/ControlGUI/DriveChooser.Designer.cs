@@ -94,7 +94,6 @@ partial class DriveChooser
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Joint Options";
-            this.grpDriveOptions.Enter += new System.EventHandler(this.grpDriveOptions_Enter);
             // 
             // txtHighLimit
             // 
@@ -140,7 +139,6 @@ partial class DriveChooser
             this.txtLowLimit.Name = "txtLowLimit";
             this.txtLowLimit.Size = new System.Drawing.Size(120, 22);
             this.txtLowLimit.TabIndex = 3;
-            this.txtLowLimit.ValueChanged += new System.EventHandler(this.txtLowLimit_ValueChanged);
             // 
             // txtPortB
             // 
@@ -158,7 +156,6 @@ partial class DriveChooser
             0,
             0,
             0});
-            this.txtPortB.ValueChanged += new System.EventHandler(this.txtPortB_ValueChanged);
             // 
             // lblPort
             // 
@@ -168,7 +165,6 @@ partial class DriveChooser
             this.lblPort.Size = new System.Drawing.Size(51, 17);
             this.lblPort.TabIndex = 1;
             this.lblPort.Text = "Port ID";
-            this.lblPort.Click += new System.EventHandler(this.lblPort_Click);
             // 
             // txtPortA
             // 
@@ -186,7 +182,6 @@ partial class DriveChooser
             0,
             0,
             0});
-            this.txtPortA.ValueChanged += new System.EventHandler(this.txtPortA_ValueChanged);
             // 
             // btnSave
             // 
@@ -208,7 +203,6 @@ partial class DriveChooser
             this.grpWheelOptions.TabIndex = 6;
             this.grpWheelOptions.TabStop = false;
             this.grpWheelOptions.Text = "Wheel Type";
-            this.grpWheelOptions.Enter += new System.EventHandler(this.grpWheelOptions_Enter);
             // 
             // cmbFrictionLevel
             // 
@@ -217,9 +211,9 @@ partial class DriveChooser
             "High",
             "Medium",
             "Banana"});
-            this.cmbFrictionLevel.Location = new System.Drawing.Point(171, 21);
+            this.cmbFrictionLevel.Location = new System.Drawing.Point(142, 21);
             this.cmbFrictionLevel.Name = "cmbFrictionLevel";
-            this.cmbFrictionLevel.Size = new System.Drawing.Size(149, 24);
+            this.cmbFrictionLevel.Size = new System.Drawing.Size(120, 24);
             this.cmbFrictionLevel.TabIndex = 1;
             this.cmbFrictionLevel.Text = "Friction Level";
             this.cmbFrictionLevel.SelectedIndexChanged += new System.EventHandler(this.cmbFrictionLevel_SelectedIndexChanged);
@@ -234,7 +228,7 @@ partial class DriveChooser
             "Mecanum"});
             this.cmbWheelType.Location = new System.Drawing.Point(16, 21);
             this.cmbWheelType.Name = "cmbWheelType";
-            this.cmbWheelType.Size = new System.Drawing.Size(149, 24);
+            this.cmbWheelType.Size = new System.Drawing.Size(120, 24);
             this.cmbWheelType.TabIndex = 0;
             this.cmbWheelType.Text = "Wheel Type";
             this.cmbWheelType.SelectedIndexChanged += new System.EventHandler(this.cmbWheelType_SelectedIndexChanged);
@@ -246,7 +240,7 @@ partial class DriveChooser
             this.grpPneumaticSpecs.Controls.Add(this.lblPneumaticDiameterTell);
             this.grpPneumaticSpecs.Controls.Add(this.lblPressure);
             this.grpPneumaticSpecs.Controls.Add(this.lblDiameter);
-            this.grpPneumaticSpecs.Location = new System.Drawing.Point(11, 209);
+            this.grpPneumaticSpecs.Location = new System.Drawing.Point(11, 210);
             this.grpPneumaticSpecs.Name = "grpPneumaticSpecs";
             this.grpPneumaticSpecs.Size = new System.Drawing.Size(320, 63);
             this.grpPneumaticSpecs.TabIndex = 2;
@@ -274,7 +268,7 @@ partial class DriveChooser
             "1 in",
             ".5 in",
             ".25 in"});
-            this.cmbPneumaticDiameter.Location = new System.Drawing.Point(6, 22);
+            this.cmbPneumaticDiameter.Location = new System.Drawing.Point(16, 22);
             this.cmbPneumaticDiameter.Name = "cmbPneumaticDiameter";
             this.cmbPneumaticDiameter.Size = new System.Drawing.Size(102, 24);
             this.cmbPneumaticDiameter.TabIndex = 6;
@@ -284,12 +278,11 @@ partial class DriveChooser
             // lblPneumaticDiameterTell
             // 
             this.lblPneumaticDiameterTell.AutoSize = true;
-            this.lblPneumaticDiameterTell.Location = new System.Drawing.Point(113, 39);
+            this.lblPneumaticDiameterTell.Location = new System.Drawing.Point(106, 43);
             this.lblPneumaticDiameterTell.Name = "lblPneumaticDiameterTell";
             this.lblPneumaticDiameterTell.Size = new System.Drawing.Size(65, 17);
             this.lblPneumaticDiameterTell.TabIndex = 4;
             this.lblPneumaticDiameterTell.Text = "(Internal)";
-            this.lblPneumaticDiameterTell.Click += new System.EventHandler(this.lblPneumaticVelocityTell_Click);
             // 
             // lblPressure
             // 
@@ -299,17 +292,15 @@ partial class DriveChooser
             this.lblPressure.Size = new System.Drawing.Size(26, 17);
             this.lblPressure.TabIndex = 2;
             this.lblPressure.Text = "psi";
-            this.lblPressure.Click += new System.EventHandler(this.lblForce_Click);
             // 
             // lblDiameter
             // 
             this.lblDiameter.AutoSize = true;
-            this.lblDiameter.Location = new System.Drawing.Point(114, 22);
+            this.lblDiameter.Location = new System.Drawing.Point(122, 22);
             this.lblDiameter.Name = "lblDiameter";
             this.lblDiameter.Size = new System.Drawing.Size(30, 17);
             this.lblDiameter.TabIndex = 1;
             this.lblDiameter.Text = "mm";
-            this.lblDiameter.Click += new System.EventHandler(this.lblVelocity_Click);
             // 
             // grpGearRatio
             // 
@@ -326,23 +317,22 @@ partial class DriveChooser
             // lblOver
             // 
             this.lblOver.AutoSize = true;
-            this.lblOver.Location = new System.Drawing.Point(112, 25);
+            this.lblOver.Location = new System.Drawing.Point(120, 20);
             this.lblOver.Name = "lblOver";
             this.lblOver.Size = new System.Drawing.Size(12, 17);
             this.lblOver.TabIndex = 2;
             this.lblOver.Text = "/";
-            this.lblOver.Click += new System.EventHandler(this.lblOver_Click);
             // 
             // txtGearRationDenom
             // 
-            this.txtGearRationDenom.Location = new System.Drawing.Point(130, 20);
+            this.txtGearRationDenom.Location = new System.Drawing.Point(138, 20);
             this.txtGearRationDenom.Name = "txtGearRationDenom";
             this.txtGearRationDenom.Size = new System.Drawing.Size(100, 22);
             this.txtGearRationDenom.TabIndex = 1;
             // 
             // txtGearRationNum
             // 
-            this.txtGearRationNum.Location = new System.Drawing.Point(6, 20);
+            this.txtGearRationNum.Location = new System.Drawing.Point(14, 20);
             this.txtGearRationNum.Name = "txtGearRationNum";
             this.txtGearRationNum.Size = new System.Drawing.Size(100, 22);
             this.txtGearRationNum.TabIndex = 0;
