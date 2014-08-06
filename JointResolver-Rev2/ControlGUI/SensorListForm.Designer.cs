@@ -34,6 +34,7 @@
             this.sensorListView = new System.Windows.Forms.ListView();
             this.deleteButton = new System.Windows.Forms.Button();
             this.addSensorButton = new System.Windows.Forms.Button();
+            this.polynomialHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // typeColumnHeader
@@ -56,7 +57,8 @@
             this.sensorListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.typeColumnHeader,
             this.moduleColumnHeader,
-            this.portColumnHeader});
+            this.portColumnHeader,
+            this.polynomialHeader});
             this.sensorListView.FullRowSelect = true;
             this.sensorListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.sensorListView.HoverSelection = true;
@@ -89,6 +91,10 @@
             this.addSensorButton.UseVisualStyleBackColor = true;
             this.addSensorButton.Click += new System.EventHandler(this.addSensorButton_Click);
             // 
+            // polynomialHeader
+            // 
+            this.polynomialHeader.Text = "Polynomial";
+            // 
             // SensorListForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -111,6 +117,7 @@
         private System.Windows.Forms.ListView sensorListView;
         private System.Windows.Forms.Button deleteButton;
         private System.Windows.Forms.Button addSensorButton;
+        private System.Windows.Forms.ColumnHeader polynomialHeader;
 
     }
 }

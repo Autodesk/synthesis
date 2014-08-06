@@ -29,7 +29,7 @@ namespace JointResolver.ControlGUI
             foreach (RobotSensor sensor in joint.attachedSensors)
             {
                 System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                    sensor.type.ToString(), sensor.module.ToString(), sensor.port.ToString()});
+                    sensor.type.ToString(), sensor.module.ToString(), sensor.port.ToString(), sensor.PolynomialToString()});
                 item.Tag = sensor;
                 sensorListView.Items.Add(item);
             }
