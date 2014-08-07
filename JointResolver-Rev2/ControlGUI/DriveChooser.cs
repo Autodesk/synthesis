@@ -65,18 +65,36 @@ public partial class DriveChooser : Form
 
         if (JointDriver.IsDrivenJoint(cType) == false)
         {
-            this.Height = 153;
-            btnSave.Location = new System.Drawing.Point(-1, -1);
-            grpDriveOptions.Visible = false;
+            this.Height = 245;
+            btnSave.Location = new System.Drawing.Point(13, 165);
+
+            lblLimits.Location = new System.Drawing.Point(11, 22);
+            txtLowLimit.Location = new System.Drawing.Point(14, 42);
+            txtHighLimit.Location = new System.Drawing.Point(140, 42);
+            lblPort.Visible = false;
+            txtPortA.Visible = false;
+            txtPortB.Visible = false;
+            grpDriveOptions.Size = new System.Drawing.Size(318, 75);
+        }
+        else if (JointDriver.IsDrivenJoint(cType) == true)
+        {
+            lblLimits.Location = new System.Drawing.Point(11, 72);
+            txtLowLimit.Location = new System.Drawing.Point(14, 92);
+            txtHighLimit.Location = new System.Drawing.Point(140, 92);
+            lblPort.Visible = true;
+            txtPortA.Visible = true;
+            txtPortB.Visible = true;
+            grpDriveOptions.Size = new System.Drawing.Size(318, 128);
         }
 
-        if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
+        if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false && JointDriver.IsDrivenJoint(cType) == true)
         {
             this.Height = 300;
             btnSave.Location = new System.Drawing.Point(13, 220);
             grpWheelOptions.Visible = false;
             grpGearRatio.Visible = false;
             grpPneumaticSpecs.Visible = false;
+            grpDriveOptions.Visible = true;
         }
 
         else if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
@@ -88,6 +106,7 @@ public partial class DriveChooser : Form
                 grpWheelOptions.Visible = true;
                 grpGearRatio.Visible = true;
                 grpPneumaticSpecs.Visible = false;
+                grpDriveOptions.Visible = true;
             }
             else if (JointDriver.IsPneumatic(cType) == true)
             {
@@ -96,6 +115,7 @@ public partial class DriveChooser : Form
                 grpPneumaticSpecs.Visible = true;
                 grpWheelOptions.Visible = false;
                 grpGearRatio.Visible = false;
+                grpDriveOptions.Visible = true;
             }
         }
     }
@@ -112,8 +132,19 @@ public partial class DriveChooser : Form
 
         joint.cDriver = new JointDriver(cType);
 
-        joint.cDriver.portA = (int)txtPortA.Value;
-        joint.cDriver.portB = (int)txtPortB.Value;
+        if (JointDriver.IsDrivenJoint(cType) == false)
+        {
+            joint.cDriver.portA = 26;
+            joint.cDriver.portB = 26;
+
+        }
+        else if (JointDriver.IsDrivenJoint(cType) == true)
+        {
+            joint.cDriver.portA = (int)txtPortA.Value;
+            joint.cDriver.portB = (int)txtPortB.Value;
+
+        }
+
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
 
