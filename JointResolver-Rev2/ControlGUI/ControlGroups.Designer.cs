@@ -82,7 +82,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.lstJoints.MultiSelect = false;
             this.lstJoints.Name = "lstJoints";
             this.lstJoints.ShowGroups = false;
-            this.lstJoints.Size = new System.Drawing.Size(656, 627);
+            this.lstJoints.Size = new System.Drawing.Size(915, 627);
             this.lstJoints.TabIndex = 3;
             this.lstJoints.UseCompatibleStateImageBehavior = false;
             this.lstJoints.View = System.Windows.Forms.View.Details;
@@ -195,7 +195,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints.Location = new System.Drawing.Point(4, 25);
             this.tabJoints.Name = "tabJoints";
             this.tabJoints.Padding = new System.Windows.Forms.Padding(3);
-            this.tabJoints.Size = new System.Drawing.Size(668, 639);
+            this.tabJoints.Size = new System.Drawing.Size(927, 639);
             this.tabJoints.TabIndex = 1;
             this.tabJoints.Text = "Joint Options";
             this.tabJoints.UseVisualStyleBackColor = true;
