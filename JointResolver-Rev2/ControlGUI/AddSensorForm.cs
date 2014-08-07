@@ -69,14 +69,13 @@ namespace JointResolver.ControlGUI
             string[] coefficients = coefficentTextBox.Text.Split(new char[] { ',' });
 
             addedSensor.polyCoeff = new float[coefficients.Length];
-            int index = 0;
 
-            foreach (string coefficient in coefficients)
+            for (int i = 0; i < coefficients.Length; i++)
             {
                 ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
                 try
                 {
-                    addedSensor.polyCoeff[index++] = Convert.ToSingle(coefficient);
+                    addedSensor.polyCoeff[i] = Convert.ToSingle(coefficients[i]);
                 }
                 catch (Exception exception)
                 {
