@@ -79,8 +79,6 @@ class FindRadiusThread
         //Calculates the largest possible radius for the part using the bounding box.
         boxRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
 
-        Console.WriteLine("Finding radius of " + component.Name + ".");
-
         //Creates new threads for sub occurrences.
         foreach (ComponentOccurrence sub in component.SubOccurrences)
         {
@@ -96,8 +94,6 @@ class FindRadiusThread
         transformedVector.Cell[1, 1] = rotationAxis.x;
         transformedVector.Cell[2, 1] = rotationAxis.y;
         transformedVector.Cell[3, 1] = rotationAxis.z;
-
-        Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
         
         //Changes the rotation axis from being expressed by assembly axes to occurrence axes.
         transformedVector.TransformBy(asmToPart);
@@ -107,8 +103,6 @@ class FindRadiusThread
         myRotationAxis.Y = transformedVector.Cell[2, 1];
         myRotationAxis.Z = transformedVector.Cell[3, 1];
 
-        Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
-
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
             foreach (Vertex vertex in surface.Vertices)
@@ -116,6 +110,7 @@ class FindRadiusThread
                 //Checks if it possible for the radius to exceed the max radius.  Quits early if there's no chance of finding a larger radius.
                 if (boxRadius < currentMaxRadius)
                 {
+                    Console.WriteLine("Dropping " + component.Name + " for small radius");
                     return;
                 }
 
