@@ -24,7 +24,7 @@ public static class BinaryArrayIO
         {
             int size = Buffer.ByteLength(new T[1]);
             byte[] res = new byte[len * size];
-           Buffer.BlockCopy(arr, off * size, res, 0, res.Length);
+            Buffer.BlockCopy(arr, off * size, res, 0, res.Length);
             writer.Write(len);
             writer.Write(res);
         }

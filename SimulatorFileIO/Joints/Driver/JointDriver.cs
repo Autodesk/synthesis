@@ -26,6 +26,13 @@ public class JointDriver : RWObject
     private Dictionary<System.Type, JointDriverMeta> metaInfo = new Dictionary<System.Type, JointDriverMeta>();
 
     /// <summary>
+    /// Creates as joint driver with no type.  This is mainly for IO
+    /// </summary>
+    public JointDriver()
+    {
+    }
+
+    /// <summary>
     /// Creates a joint driver with the given type.
     /// </summary>
     /// <param name="type">Driver type</param>
@@ -62,6 +69,21 @@ public class JointDriver : RWObject
         if (metaInfo.TryGetValue(type, out val))
         {
             return (T) val;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists.
+    /// </summary>
+    /// <param name="type">The type to get info for</param>
+    /// <returns>Metadata, or null</returns>
+    public JointDriverMeta GetInfo(System.Type type)
+    {
+        JointDriverMeta val;
+        if (metaInfo.TryGetValue(type, out val))
+        {
+            return val;
         }
         return null;
     }

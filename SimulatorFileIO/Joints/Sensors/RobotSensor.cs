@@ -21,6 +21,10 @@ public class RobotSensor : RWObject
     /// </summary>
     public bool useSecondarySource = false;
 
+    public RobotSensor()
+    {
+    }
+
     public RobotSensor(RobotSensorType type)
     {
         this.type = type;
