@@ -65,23 +65,15 @@ public class auxFunctions : RigidNode_Base
 	}
 
 	// The Name is Self Explanatory
-	void placeRobotJustAboveGround (GameObject robot) {
-		Collider[] allColliders = robot.GetComponentsInChildren<Collider>();
-		float shortestDistanceToFloor = 1e18f;
-		float lowerYBound = 0;
+	void placeRobotJustAboveGround (GameObject robot, Vector3 rayCastPoint) 
+	{
+		// Uses a raycast to find the distance from a given point to the floor
 		RaycastHit hit = new RaycastHit();
-		
-		// Cycles through all of the colliders and finds the shortest distance from that collider's lower (y) bound to the terrain;
-		foreach (Collider col in allColliders) {
-			lowerYBound = col.bounds.center.y - col.bounds.size.y/2;
-			Physics.Raycast(new Vector3(0, lowerYBound, 0), Vector3.down, out hit);
-			if (hit.distance < shortestDistanceToFloor) {
-				shortestDistanceToFloor = hit.distance;
-			}
-		}
-		
+		Physics.Raycast(rayCastPoint, Vector3.down, out hit);
+		float distanceToFloor = hit.distance;
+
 		// It then translates the robot down
-		robot.transform.Translate(0, 0, -1 * (shortestDistanceToFloor - 0.01f));
+		robot.transform.Translate(0, 0, -1 * (distanceToFloor));
 	}
 }
 
