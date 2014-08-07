@@ -43,12 +43,12 @@ public partial class DriveChooser : Form
         cmbJointDriver.SelectedIndex = 0;
         if (joint.cDriver != null)
         {
-            cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType());
+            cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
             cmbJointDriver_SelectedIndexChanged(null, null);
             txtPortA.Value = joint.cDriver.portA;
             txtPortB.Value = joint.cDriver.portB;
-            txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
-            txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
+            txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
+            txtHighLimit.Value = (decimal) joint.cDriver.upperLimit;
         }
         ShowDialog();
     }
@@ -71,7 +71,6 @@ public partial class DriveChooser : Form
             txtPortA.Visible = false;
             txtPortB.Visible = false;
             grpDriveOptions.Size = new System.Drawing.Size(318, 75);
-            JointDriver type = null;
         }
         else
         {
@@ -128,34 +127,38 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     private void btnSave_Click(object sender, EventArgs e)
     {
-
-        JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
-
-        joint.cDriver = new JointDriver(cType);
-
-        joint.cDriver.portA = (int)txtPortA.Value;
-        joint.cDriver.portB = (int)txtPortB.Value;
-        joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
-        joint.cDriver.upperLimit = (float)txtHighLimit.Value;
-
-        //Only need to store wheel driver if run by motor and is a wheel.
-        if (JointDriver.IsMotor(cType) && wheelType != WheelType.NOT_A_WHEEL)
+        if (cmbJointDriver.SelectedIndex <= 0)
         {
-            WheelAnalyzer.SaveToJoint(wheelType, friction, node);
+            joint.cDriver = null;
         }
-        Hide();
-
-        if (JointDriver.IsPneumatic(cType))
+        else
         {
-            PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
-        }
-        Hide();
+            JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
 
+            joint.cDriver = new JointDriver(cType);
+
+            joint.cDriver.portA = (int) txtPortA.Value;
+            joint.cDriver.portB = (int) txtPortB.Value;
+            joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
+            joint.cDriver.upperLimit = (float) txtHighLimit.Value;
+
+            //Only need to store wheel driver if run by motor and is a wheel.
+            if (JointDriver.IsMotor(cType) && wheelType != WheelType.NOT_A_WHEEL)
+            {
+                WheelAnalyzer.SaveToJoint(wheelType, friction, node);
+            }
+
+            if (JointDriver.IsPneumatic(cType))
+            {
+                PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
+            }
+            Hide();
+        }
     }
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
-        wheelType = (WheelType)cmbWheelType.SelectedIndex;
+        wheelType = (WheelType) cmbWheelType.SelectedIndex;
 
         if (wheelType == WheelType.NOT_A_WHEEL)
         {
@@ -169,16 +172,16 @@ public partial class DriveChooser : Form
 
     private void cmbFrictionLevel_SelectedIndexChanged(object sender, EventArgs e)
     {
-        friction = (FrictionLevel)cmbFrictionLevel.SelectedIndex;
+        friction = (FrictionLevel) cmbFrictionLevel.SelectedIndex;
     }
 
     private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
     {
-        diameter = (PneumaticDiameter)cmbPneumaticDiameter.SelectedIndex;
+        diameter = (PneumaticDiameter) cmbPneumaticDiameter.SelectedIndex;
     }
 
     private void cmbPneumaticForce_SelectedIndexChanged(object sender, EventArgs e)
     {
-        pressure = (PneumaticPressure)cmbPneumaticPressure.SelectedIndex;
+        pressure = (PneumaticPressure) cmbPneumaticPressure.SelectedIndex;
     }
 }
