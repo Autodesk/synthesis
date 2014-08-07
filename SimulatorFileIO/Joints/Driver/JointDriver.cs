@@ -99,7 +99,7 @@ public class JointDriver
                 return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW, JointDriverType.NO_DRIVER };
             case SkeletalJointType.CYLINDRICAL:
                 return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,
-                JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.DUAL_MOTOR};
+                JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.DUAL_MOTOR, JointDriverType.NO_DRIVER};
             case SkeletalJointType.PLANAR:
                 //Not sure of an FRC part with planar motion.  Will add later if needed.
                 return new JointDriverType[] { };
