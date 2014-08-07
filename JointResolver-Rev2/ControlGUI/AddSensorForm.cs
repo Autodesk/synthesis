@@ -25,6 +25,12 @@ namespace JointResolver.ControlGUI
             {
                 typeBox.Items.Add(Enum.GetName(typeof(RobotSensorType), sensorType).Replace('_', ' ').ToLowerInvariant());
             }
+
+            ///Only applies to cylindrical joints.  True use secondary means to use the linear component rather than rotation.
+            if (joint is CylindricalJoint)
+            {
+                secondaryBox.Visible = true;
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)

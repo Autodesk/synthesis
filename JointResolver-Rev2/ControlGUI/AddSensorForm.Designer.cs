@@ -113,12 +113,13 @@
             // secondaryBox
             // 
             this.secondaryBox.AutoSize = true;
-            this.secondaryBox.Location = new System.Drawing.Point(83, 158);
+            this.secondaryBox.Location = new System.Drawing.Point(82, 154);
             this.secondaryBox.Name = "secondaryBox";
-            this.secondaryBox.Size = new System.Drawing.Size(127, 21);
+            this.secondaryBox.Size = new System.Drawing.Size(99, 21);
             this.secondaryBox.TabIndex = 9;
-            this.secondaryBox.Text = "Use Secondary";
+            this.secondaryBox.Text = "Use Linear";
             this.secondaryBox.UseVisualStyleBackColor = true;
+            this.secondaryBox.Visible = false;
             // 
             // coefficentTextBox
             // 
