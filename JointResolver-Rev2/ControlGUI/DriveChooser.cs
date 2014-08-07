@@ -71,7 +71,7 @@ public partial class DriveChooser : Form
             txtPortA.Visible = false;
             txtPortB.Visible = false;
             grpDriveOptions.Size = new System.Drawing.Size(318, 75);
-
+            JointDriver type = null;
         }
         else
         {
