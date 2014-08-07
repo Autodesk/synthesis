@@ -42,4 +42,20 @@ public class Polynomial : RWObject
     {
         coeff = reader.ReadArray<float>();
     }
+
+    public override string ToString()
+    {
+        StringBuilder result = new StringBuilder();
+        for (int i = coeff.Length - 1; i >= 0; i--)
+        {
+            result.Append(coeff[i]);
+            if (i > 0)
+            {
+                result.Append("*x^");
+                result.Append(i);
+                result.Append(" + ");
+            }
+        }
+        return result.ToString();
+    }
 }
