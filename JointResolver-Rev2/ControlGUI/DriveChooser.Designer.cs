@@ -329,6 +329,7 @@ partial class DriveChooser
             this.txtGearRationDenom.Name = "txtGearRationDenom";
             this.txtGearRationDenom.Size = new System.Drawing.Size(100, 22);
             this.txtGearRationDenom.TabIndex = 1;
+            this.txtGearRationDenom.Text = "Output Gear";
             // 
             // txtGearRationNum
             // 
@@ -336,6 +337,7 @@ partial class DriveChooser
             this.txtGearRationNum.Name = "txtGearRationNum";
             this.txtGearRationNum.Size = new System.Drawing.Size(100, 22);
             this.txtGearRationNum.TabIndex = 0;
+            this.txtGearRationNum.Text = "Input Gear";
             // 
             // DriveChooser
             // 
