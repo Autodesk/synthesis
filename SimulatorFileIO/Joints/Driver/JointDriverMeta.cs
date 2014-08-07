@@ -12,7 +12,7 @@ using System.IO;
 public abstract class JointDriverMeta
 {
     // Constant, but can't be declared so.
-    public readonly static Type[] JOINT_DRIVER_META_TYPES = new Type[] { typeof(WheelDriverMeta) };
+    public readonly static Type[] JOINT_DRIVER_META_TYPES = new Type[] { typeof(WheelDriverMeta), typeof(PneumaticDriverMeta) };
 
     protected abstract void WriteDataInternal(BinaryWriter writer);
     protected abstract void ReadDataInternal(BinaryReader reader);

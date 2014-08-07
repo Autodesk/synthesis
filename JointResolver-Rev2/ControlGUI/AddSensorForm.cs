@@ -110,10 +110,5 @@ namespace JointResolver.ControlGUI
             }
             lblEquationParsed.Text = new Polynomial(polyCoeff).ToString();
         }
-
-        private void AddSensorForm_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }

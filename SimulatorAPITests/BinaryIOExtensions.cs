@@ -73,6 +73,10 @@ public class BinaryIOExtensionTesting
         {
             return obj is TestRWObject && ((TestRWObject) obj).val == val;
         }
+        public override int GetHashCode()
+        {
+            return (int) (val * 1000);
+        }
     }
 
     private class TestRWObject_Constructor : TestRWObject
