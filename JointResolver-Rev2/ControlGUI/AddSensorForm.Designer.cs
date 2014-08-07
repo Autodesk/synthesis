@@ -38,6 +38,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.secondaryBox = new System.Windows.Forms.CheckBox();
             this.coefficentTextBox = new System.Windows.Forms.TextBox();
+            this.lblEquationParsed = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -113,7 +114,7 @@
             // secondaryBox
             // 
             this.secondaryBox.AutoSize = true;
-            this.secondaryBox.Location = new System.Drawing.Point(82, 154);
+            this.secondaryBox.Location = new System.Drawing.Point(77, 168);
             this.secondaryBox.Name = "secondaryBox";
             this.secondaryBox.Size = new System.Drawing.Size(99, 21);
             this.secondaryBox.TabIndex = 9;
@@ -127,12 +128,23 @@
             this.coefficentTextBox.Name = "coefficentTextBox";
             this.coefficentTextBox.Size = new System.Drawing.Size(143, 22);
             this.coefficentTextBox.TabIndex = 10;
+            this.coefficentTextBox.TextChanged += new System.EventHandler(this.coefficentTextBox_TextChanged);
+            // 
+            // lblEquationParsed
+            // 
+            this.lblEquationParsed.AutoSize = true;
+            this.lblEquationParsed.Location = new System.Drawing.Point(57, 139);
+            this.lblEquationParsed.Name = "lblEquationParsed";
+            this.lblEquationParsed.Size = new System.Drawing.Size(88, 17);
+            this.lblEquationParsed.TabIndex = 11;
+            this.lblEquationParsed.Text = "Polynomial...";
             // 
             // AddSensorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(282, 241);
+            this.Controls.Add(this.lblEquationParsed);
             this.Controls.Add(this.coefficentTextBox);
             this.Controls.Add(this.secondaryBox);
             this.Controls.Add(this.label4);
@@ -163,5 +175,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox secondaryBox;
         private System.Windows.Forms.TextBox coefficentTextBox;
+        private System.Windows.Forms.Label lblEquationParsed;
     }
 }

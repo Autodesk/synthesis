@@ -24,12 +24,12 @@ public class _2014FieldBounding
             exp.ExportAll(cc);
         }
         BXDAMesh mesh = exp.GetOutput();
-        mesh.WriteBXDA("C:/Temp/field.bxda");
+        mesh.WriteToFile("C:/Temp/field.bxda");
     }
     public static void Apply()
     {
         BXDAMesh meshThing = new BXDAMesh();
-        meshThing.ReadBXDA("C:/Temp/field.bxda");
+        meshThing.ReadFromFile("C:/Temp/field.bxda");
         meshThing.colliders.Clear();
         meshThing.colliders.Add(createBB(0, -10000 / 2, 0, 10000, 10000, 10000));   // Ground
 
@@ -57,6 +57,6 @@ public class _2014FieldBounding
 
 
 
-        meshThing.WriteBXDA("C:/Temp/field.bxda");
+        meshThing.WriteToFile("C:/Temp/field.bxda");
     }
 }

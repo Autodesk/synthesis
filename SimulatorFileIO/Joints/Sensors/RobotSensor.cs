@@ -11,15 +11,19 @@ public enum RobotSensorType : byte
     POTENTIOMETER
 }
 
-public class RobotSensor
+public class RobotSensor : RWObject
 {
     public short module, port;
-    public readonly RobotSensorType type;
-    public float[] polyCoeff;
+    public RobotSensorType type;
+    public Polynomial equation;
     /// <summary>
-    /// If this is true source the secondary angle from the joint.  (Rotational instead of linear for cylindrical)
+    /// If this is true source the secondary value from the joint.  (Rotational instead of linear for cylindrical)
     /// </summary>
     public bool useSecondarySource = false;
+
+    public RobotSensor()
+    {
+    }
 
     public RobotSensor(RobotSensorType type)
     {
@@ -31,14 +35,12 @@ public class RobotSensor
         switch (joint.GetJointType())
         {
             case SkeletalJointType.ROTATIONAL:
-                // Pneumatic and Worm Screw map to angles
                 return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
             case SkeletalJointType.LINEAR:
                 return new RobotSensorType[] {RobotSensorType.LIMIT };
             case SkeletalJointType.CYLINDRICAL:
                 return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
             case SkeletalJointType.PLANAR:
-                //Not sure of an FRC part with planar motion.  Will add later if needed.
                 return new RobotSensorType[] { };
             case SkeletalJointType.BALL:
                 return new RobotSensorType[] { };
@@ -52,25 +54,23 @@ public class RobotSensor
         writer.Write((byte) type);
         writer.Write(module);
         writer.Write(port);
-        writer.Write(polyCoeff.Length);
-        for (int i = 0; i < polyCoeff.Length; i++)
-        {
-            writer.Write(polyCoeff[i]);
-        }
+        writer.Write(equation);
         writer.Write(useSecondarySource);
     }
 
-    public static RobotSensor ReadData(BinaryReader reader)
+    public void ReadData(BinaryReader reader)
     {
-        RobotSensor sensor = new RobotSensor((RobotSensorType) reader.ReadByte());
-        sensor.module = reader.ReadInt16();
-        sensor.port = reader.ReadInt16();
-        sensor.polyCoeff = new float[reader.ReadInt32()];
-        for (int i = 0; i < sensor.polyCoeff.Length; i++)
-        {
-            sensor.polyCoeff[i] = reader.ReadSingle();
-        }
-        sensor.useSecondarySource = reader.ReadBoolean();
+        type = (RobotSensorType) reader.ReadByte();
+        module = reader.ReadInt16();
+        port = reader.ReadInt16();
+        equation = reader.ReadRWObject<Polynomial>();
+        useSecondarySource = reader.ReadBoolean();
+    }
+
+    public static RobotSensor ReadSensorFully(BinaryReader reader)
+    {
+        RobotSensor sensor = new RobotSensor(RobotSensorType.LIMIT);
+        sensor.ReadData(reader);
         return sensor;
     }
     
@@ -80,57 +80,6 @@ public class RobotSensor
     /// <param name="otherSensor"></param>
     public bool Equals(RobotSensor otherSensor)
     {
-        if (this.module != otherSensor.module || this.port != otherSensor.port || this.useSecondarySource != otherSensor.useSecondarySource)
-            return false;
-
-        for (int i = 0; i < this.polyCoeff.Length && i < otherSensor.polyCoeff.Length; i++)
-        {
-            if (this.polyCoeff[i] != otherSensor.polyCoeff[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /// <summary>
-    /// Turns the sensors coefficients into a nice equation.
-    /// </summary>
-    /// <returns></returns>
-    public string PolynomialToString()
-    {
-        string polynomial = "y=";
-
-        for (int i = this.polyCoeff.Length - 1; i > 1; i--)
-        {
-            if (this.polyCoeff[i] != 0)
-            {
-                polynomial = polynomial + this.polyCoeff[i] + "x^" + i + "+";
-            }
-        }
-
-        if (this.polyCoeff.Length >= 2)
-        {
-            if (this.polyCoeff[1] != 0)
-            {
-                polynomial = polynomial + this.polyCoeff[1] + "x+";
-            }
-        }
-
-        if (this.polyCoeff.Length >= 1)
-        {
-            if (this.polyCoeff[0] != 0)
-            {
-                polynomial = polynomial + this.polyCoeff[0];
-            }
-        }
-
-        if (polynomial[polynomial.Length - 1] == '+')
-        {
-            polynomial = polynomial.Remove(polynomial.Length - 1);
-        }
-
-        return polynomial;
+        return module == otherSensor.module && port == otherSensor.port;    // Other fields are not important for equivalancy
     }
 }

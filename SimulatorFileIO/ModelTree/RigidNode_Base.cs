@@ -1,34 +1,23 @@
 ﻿using System.Collections.Generic;
 
 /// <summary>
-/// Factory interface so custom node types can be used with the existing IO architecture.
-/// </summary>
-public interface RigidNodeFactory
-{
-    RigidNode_Base Create();    // This could all be delegates or lambdas.
-}
-
-/// <summary>
-/// Simple instance of <see cref="RigidNodeFactory"/> that creates the base type of rigid node.
-/// </summary>
-public class BaseRigidNodeFactory : RigidNodeFactory
-{
-    public RigidNode_Base Create()
-    {
-        return new RigidNode_Base();
-    }
-}
-
-/// <summary>
 /// Represents a node inside the hierarchy representing how a robot moves.
 /// </summary>
 public class RigidNode_Base
 {
     /// <summary>
+    /// Generic delegate for creating rigid node instances
+    /// </summary>
+    public delegate RigidNode_Base RigidNodeFactory();
+
+    /// <summary>
     /// By setting this to a custom value skeletons that are read using <see cref="BXDJSkeleton.ReadSkeleton(string)"/> can 
     /// be composed of a custom rigid node type.
     /// </summary>
-    public static RigidNodeFactory NODE_FACTORY = new BaseRigidNodeFactory();
+    public static RigidNodeFactory NODE_FACTORY = delegate()
+    {
+        return new RigidNode_Base();
+    };
 
     /// <summary>
     /// How far down in the hierarchy this element is.  The higher it is the farther from the root node.

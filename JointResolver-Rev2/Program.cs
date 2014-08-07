@@ -149,7 +149,7 @@ static class Program
                         Console.WriteLine("Computing colliders for " + node.GetModelID());
                         output.colliders.Clear();
                         output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));
-                        output.WriteBXDA(pathBase + "\\" + node.modelFileName);
+                        output.WriteToFile(pathBase + "\\" + node.modelFileName);
                     }
                 }
             }

@@ -75,9 +75,9 @@ public partial class DriveChooser : Form
         else
         {
             JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
-            lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
-            txtPortB.Visible = JointDriver.HasTwoPorts(cType);
-            txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
+            lblPort.Text = cType.GetPortType() + " Port" + (cType.HasTwoPorts() ? "s" : "");
+            txtPortB.Visible = cType.HasTwoPorts();
+            txtPortA.Maximum = txtPortB.Maximum = cType.GetPortMax();
 
             lblLimits.Location = new System.Drawing.Point(11, 72);
             txtLowLimit.Location = new System.Drawing.Point(14, 92);
@@ -86,7 +86,7 @@ public partial class DriveChooser : Form
             txtPortA.Visible = true;
             grpDriveOptions.Size = new System.Drawing.Size(318, 128);
 
-            if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
+            if (cType.IsMotor() == false && cType.IsPneumatic() == false)
             {
                 this.Height = 300;
                 btnSave.Location = new System.Drawing.Point(13, 220);
@@ -96,9 +96,9 @@ public partial class DriveChooser : Form
                 grpDriveOptions.Visible = true;
             }
 
-            else if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
+            else if (cType.IsMotor() == true || cType.IsPneumatic() == true)
             {
-                if (JointDriver.IsMotor(cType) == true)
+                if (cType.IsMotor() == true)
                 {
                     this.Height = 420;
                     btnSave.Location = new System.Drawing.Point(13, 340);
@@ -107,7 +107,7 @@ public partial class DriveChooser : Form
                     grpPneumaticSpecs.Visible = false;
                     grpDriveOptions.Visible = true;
                 }
-                else if (JointDriver.IsPneumatic(cType) == true)
+                else if (cType.IsPneumatic() == true)
                 {
                     this.Height = 360;
                     btnSave.Location = new System.Drawing.Point(13, 280);
@@ -143,12 +143,12 @@ public partial class DriveChooser : Form
             joint.cDriver.upperLimit = (float) txtHighLimit.Value;
 
             //Only need to store wheel driver if run by motor and is a wheel.
-            if (JointDriver.IsMotor(cType) && wheelType != WheelType.NOT_A_WHEEL)
+            if (cType.IsMotor() && wheelType != WheelType.NOT_A_WHEEL)
             {
                 WheelAnalyzer.SaveToJoint(wheelType, friction, node);
             }
 
-            if (JointDriver.IsPneumatic(cType))
+            if (cType.IsPneumatic())
             {
                 PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
             }

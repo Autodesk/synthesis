@@ -17,12 +17,8 @@ public class RotationalJoint_Base : SkeletalJoint_Base
 
     protected override void WriteJointInternal(System.IO.BinaryWriter writer)
     {
-        writer.Write(basePoint.x);
-        writer.Write(basePoint.y);
-        writer.Write(basePoint.z);
-        writer.Write(axis.x);
-        writer.Write(axis.y);
-        writer.Write(axis.z);
+        writer.Write(basePoint);
+        writer.Write(axis);
 
         writer.Write((byte)((hasAngularLimit ? 1 : 0)));
         if (hasAngularLimit)
@@ -36,8 +32,8 @@ public class RotationalJoint_Base : SkeletalJoint_Base
 
     protected override void ReadJointInternal(System.IO.BinaryReader reader)
     {
-        basePoint = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-        axis = new BXDVector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+        basePoint = reader.ReadRWObject<BXDVector3>();
+        axis = reader.ReadRWObject<BXDVector3>();
 
         hasAngularLimit = (reader.ReadByte() & 1) == 1;
         if (hasAngularLimit)

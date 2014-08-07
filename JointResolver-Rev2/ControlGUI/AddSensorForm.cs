@@ -46,7 +46,7 @@ namespace JointResolver.ControlGUI
             {
                 addedSensor = new RobotSensor(sensorTypeOptions[typeBox.SelectedIndex]);
             }
-            catch (Exception exception)
+            catch
             {
                 MessageBox.Show("Please select a sensor type.");
                 return;
@@ -58,7 +58,7 @@ namespace JointResolver.ControlGUI
                 addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
                 addedSensor.port = Convert.ToInt16(portTextBox.Text);
             }
-            catch (Exception exception)
+            catch
             {
                 MessageBox.Show("Enter an integer for the module and port numbers.");
                 return;
@@ -66,28 +66,54 @@ namespace JointResolver.ControlGUI
 
 
             ///Gets all of the entered polynomial coefficients, seperating by commas.
-            string[] coefficients = coefficentTextBox.Text.Split(new char[] { ',' });
+            string[] coefficients = coefficentTextBox.Text.Split(',');
 
-            addedSensor.polyCoeff = new float[coefficients.Length];
+            float[] polyCoeff = new float[coefficients.Length];
 
             for (int i = 0; i < coefficients.Length; i++)
             {
                 ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
                 try
                 {
-                    addedSensor.polyCoeff[i] = Convert.ToSingle(coefficients[i]);
+                    polyCoeff[i] = Convert.ToSingle(coefficients[i]);
                 }
-                catch (Exception exception)
+                catch
                 {
                     MessageBox.Show("For coefficients, enter only numbers followed by commas.");
                     return;
                 }
             }
+            addedSensor.equation = new Polynomial(polyCoeff);
 
             addedSensor.useSecondarySource = secondaryBox.Checked;
 
             joint.attachedSensors.Add(addedSensor);
             Close();
+        }
+
+        private void coefficentTextBox_TextChanged(object sender, EventArgs e)
+        {
+            string[] coefficients = coefficentTextBox.Text.Split(',');
+            float[] polyCoeff = new float[coefficients.Length];
+            for (int i = 0; i < coefficients.Length; i++)
+            {
+                ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
+                try
+                {
+                    polyCoeff[i] = Convert.ToSingle(coefficients[i]);
+                }
+                catch
+                {
+                    lblEquationParsed.Text = "Parse Error";
+                    return;
+                }
+            }
+            lblEquationParsed.Text = new Polynomial(polyCoeff).ToString();
+        }
+
+        private void AddSensorForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

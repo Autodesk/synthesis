@@ -1,5 +1,6 @@
-﻿using System.IO;
+using System.IO;
 
+﻿//find proper specs for these
 public enum PneumaticDiameter : byte
 {
     HIGH = 0,
