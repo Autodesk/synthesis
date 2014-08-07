@@ -152,8 +152,8 @@ public partial class DriveChooser : Form
             {
                 PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
             }
-            Hide();
         }
+        Hide();
     }
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
