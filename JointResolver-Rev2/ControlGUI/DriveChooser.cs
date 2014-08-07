@@ -85,7 +85,6 @@ public partial class DriveChooser : Form
             txtHighLimit.Location = new System.Drawing.Point(140, 92);
             lblPort.Visible = true;
             txtPortA.Visible = true;
-            txtPortB.Visible = true;
             grpDriveOptions.Size = new System.Drawing.Size(318, 128);
 
             if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
