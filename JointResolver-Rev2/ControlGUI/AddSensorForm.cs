@@ -40,15 +40,30 @@ namespace JointResolver.ControlGUI
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            if (moduleTextBox.Text == "" || portTextBox.Text == "" || typeBox.SelectedIndex == -1)
+            RobotSensor addedSensor;
+
+            try
             {
-                throw new Exception("All fields must be filled out.");
+                addedSensor = new RobotSensor(sensorTypeOptions[typeBox.SelectedIndex]);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Please select a sensor type.");
+                return;
             }
 
-            RobotSensor addedSensor = new RobotSensor(sensorTypeOptions[typeBox.SelectedIndex]);
+            //Doesn't save if numbers aren't entered correctly.
+            try
+            {
+                addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
+                addedSensor.port = Convert.ToInt16(portTextBox.Text);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show("Enter an integer for the module and port numbers.");
+                return;
+            }
 
-            addedSensor.module = Convert.ToInt16(moduleTextBox.Text);
-            addedSensor.port = Convert.ToInt16(portTextBox.Text);
 
             ///Gets all of the entered polynomial coefficients, seperating by commas.
             string[] coefficients = coefficentTextBox.Text.Split(new char[] { ',' });
@@ -59,7 +74,15 @@ namespace JointResolver.ControlGUI
             foreach (string coefficient in coefficients)
             {
                 ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
-                addedSensor.polyCoeff[index++] = Convert.ToSingle(coefficient);
+                try
+                {
+                    addedSensor.polyCoeff[index++] = Convert.ToSingle(coefficient);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show("For coefficients, enter only numbers followed by commas.");
+                    return;
+                }
             }
 
             addedSensor.useSecondarySource = secondaryBox.Checked;
