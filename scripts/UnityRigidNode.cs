@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class UnityRigidNode : RigidNode_Base
 {
-	protected GameObject unityObject, subObject, subCollider, wCollider;
+	public GameObject unityObject, subObject, subCollider, wCollider;
 	protected ConfigurableJoint joint;
 	protected WheelDriverMeta wheel;
 	private BXDAMesh mesh;
@@ -74,7 +74,7 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
 		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
 		wCollider.AddComponent<WheelCollider>();
-		wCollider.GetComponent<WheelCollider>().radius = wheel.radius + (wheel.radius * 0.15f);
+		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius + (wheel.radius * 0.15f)) * 0.01f;
 		wCollider.GetComponent<WheelCollider>().transform.Rotate(90, 0, 0);
 		wCollider.transform.localRotation *= q;
 		
@@ -115,7 +115,7 @@ public class UnityRigidNode : RigidNode_Base
 		//current = limit ["current"];
 		//Debug.Log("center: " + center + " current: " + current);
 				
-		linear.limit = Mathf.Abs(center);
+		linear.limit = Mathf.Abs(center) * 0.01f;
 		joint.linearLimit = linear;
 
 		JointDrive drMode = new JointDrive();
@@ -263,9 +263,18 @@ public class UnityRigidNode : RigidNode_Base
 			subCollider = new GameObject(unityObject.name + " Subcollider" + id);
 			subCollider.transform.parent = unityObject.transform;
 			subCollider.transform.position = new Vector3(0, 0, 0);
-			subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
-			subCollider.GetComponent<MeshCollider>().convex = true;
-
+            if (meshu.triangles.Length == 0 && meshu.vertices.Length == 2)
+            {
+                BoxCollider box = subCollider.AddComponent<BoxCollider>();
+                Vector3 center = (meshu.vertices[0] + meshu.vertices[1]) * 0.5f;
+                box.center = center;
+                box.size = meshu.vertices[1] - center;
+            }
+            else
+            {
+                subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
+                subCollider.GetComponent<MeshCollider>().convex = true;
+            }
 		});
 				
 		Rigidbody rigidB = unityObject.GetComponent<Rigidbody>();
