@@ -26,6 +26,27 @@ public class RobotSensor
         this.type = type;
     }
 
+    public static RobotSensorType[] GetAllowedSensors(SkeletalJoint_Base joint)
+    {
+        switch (joint.GetJointType())
+        {
+            case SkeletalJointType.ROTATIONAL:
+                // Pneumatic and Worm Screw map to angles
+                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+            case SkeletalJointType.LINEAR:
+                return new RobotSensorType[] {RobotSensorType.LIMIT };
+            case SkeletalJointType.CYLINDRICAL:
+                return new RobotSensorType[] {RobotSensorType.ENCODER, RobotSensorType.POTENTIOMETER, RobotSensorType.LIMIT};
+            case SkeletalJointType.PLANAR:
+                //Not sure of an FRC part with planar motion.  Will add later if needed.
+                return new RobotSensorType[] { };
+            case SkeletalJointType.BALL:
+                return new RobotSensorType[] { };
+            default:
+                return new RobotSensorType[0];// Not implemented
+        }
+    }
+
     public void WriteData(BinaryWriter writer)
     {
         writer.Write((byte) type);
@@ -51,5 +72,65 @@ public class RobotSensor
         }
         sensor.useSecondarySource = reader.ReadBoolean();
         return sensor;
+    }
+    
+    /// <summary>
+    /// Compares two sensors, returns true if all fields are identical.
+    /// </summary>
+    /// <param name="otherSensor"></param>
+    public bool Equals(RobotSensor otherSensor)
+    {
+        if (this.module != otherSensor.module || this.port != otherSensor.port || this.useSecondarySource != otherSensor.useSecondarySource)
+            return false;
+
+        for (int i = 0; i < this.polyCoeff.Length && i < otherSensor.polyCoeff.Length; i++)
+        {
+            if (this.polyCoeff[i] != otherSensor.polyCoeff[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Turns the sensors coefficients into a nice equation.
+    /// </summary>
+    /// <returns></returns>
+    public string PolynomialToString()
+    {
+        string polynomial = "y=";
+
+        for (int i = this.polyCoeff.Length - 1; i > 1; i--)
+        {
+            if (this.polyCoeff[i] != 0)
+            {
+                polynomial = polynomial + this.polyCoeff[i] + "x^" + i + "+";
+            }
+        }
+
+        if (this.polyCoeff.Length >= 2)
+        {
+            if (this.polyCoeff[1] != 0)
+            {
+                polynomial = polynomial + this.polyCoeff[1] + "x+";
+            }
+        }
+
+        if (this.polyCoeff.Length >= 1)
+        {
+            if (this.polyCoeff[0] != 0)
+            {
+                polynomial = polynomial + this.polyCoeff[0];
+            }
+        }
+
+        if (polynomial[polynomial.Length - 1] == '+')
+        {
+            polynomial = polynomial.Remove(polynomial.Length - 1);
+        }
+
+        return polynomial;
     }
 }

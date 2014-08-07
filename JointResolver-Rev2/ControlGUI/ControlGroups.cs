@@ -54,7 +54,8 @@ public partial class ControlGroups
                     Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
                         wrapped!=null?wrapped.parentGroup.ToString():"from-file",
                         wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver",
-                        wheelData!=null?wheelData.GetTypeString():"No Wheel"});
+                        wheelData!=null?wheelData.GetTypeString():"No Wheel",
+                        joint.attachedSensors.Count.ToString()});
                     item.Tag = node;
                     lstJoints.Items.Add(item);
                 }
@@ -197,28 +198,22 @@ public partial class ControlGroups
         if (tabsMain.SelectedTab.Name == "tabJoints")
         {
             btnCalculate.Visible = true;
+            listSensorsButton.Visible = true;
         }
         else
         {
             btnCalculate.Visible = false;
+            listSensorsButton.Visible = false;
         }
     }
 
-    private void lstJoints_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+    private void button1_Click(object sender, EventArgs e)
     {
-        if (e.Button == System.Windows.Forms.MouseButtons.Right)
+        if (lstJoints.SelectedItems.Count > 0)
         {
-            // Just make a sensor thing
-            if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
-            {
-                SkeletalJoint_Base joint = ((RigidNode_Base) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-                RobotSensor sensor = new RobotSensor(RobotSensorType.POTENTIOMETER);
-                sensor.polyCoeff = new float[] { 1, 1 };
-                sensor.module = 0;
-                sensor.port = 1;
-                sensor.useSecondarySource = false;
-                joint.attachedSensors.Add(sensor);
-            }
+            JointResolver.ControlGUI.SensorListForm listForm = new JointResolver.ControlGUI.SensorListForm(((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+            listForm.ShowDialog();
+            this.UpdateJointList();
         }
     }
 }
