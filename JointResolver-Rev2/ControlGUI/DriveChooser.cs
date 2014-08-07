@@ -33,7 +33,9 @@ public partial class DriveChooser : Form
         this.joint = joint;
         this.node = node;
         typeOptions = JointDriver.GetAllowedDrivers(joint);
+
         cmbJointDriver.Items.Clear();
+        cmbJointDriver.Items.Add("No Driver");
         foreach (JointDriverType type in typeOptions)
         {
             cmbJointDriver.Items.Add(Enum.GetName(typeof(JointDriverType), type).Replace('_', ' ').ToLowerInvariant());
@@ -58,16 +60,10 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
     {
-        JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex];
-        lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
-        txtPortB.Visible = JointDriver.HasTwoPorts(cType);
-        txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
-
-        if (JointDriver.IsDrivenJoint(cType) == false)
+        if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
         {
             this.Height = 245;
             btnSave.Location = new System.Drawing.Point(13, 165);
-
             lblLimits.Location = new System.Drawing.Point(11, 22);
             txtLowLimit.Location = new System.Drawing.Point(14, 42);
             txtHighLimit.Location = new System.Drawing.Point(140, 42);
@@ -75,9 +71,15 @@ public partial class DriveChooser : Form
             txtPortA.Visible = false;
             txtPortB.Visible = false;
             grpDriveOptions.Size = new System.Drawing.Size(318, 75);
+
         }
-        else if (JointDriver.IsDrivenJoint(cType) == true)
+        else
         {
+            JointDriverType cType = typeOptions[cmbJointDriver.SelectedIndex - 1];
+            lblPort.Text = JointDriver.GetPortType(cType) + " Port" + (JointDriver.HasTwoPorts(cType) ? "s" : "");
+            txtPortB.Visible = JointDriver.HasTwoPorts(cType);
+            txtPortA.Maximum = txtPortB.Maximum = JointDriver.GetPortMax(cType);
+
             lblLimits.Location = new System.Drawing.Point(11, 72);
             txtLowLimit.Location = new System.Drawing.Point(14, 92);
             txtHighLimit.Location = new System.Drawing.Point(140, 92);
@@ -85,37 +87,37 @@ public partial class DriveChooser : Form
             txtPortA.Visible = true;
             txtPortB.Visible = true;
             grpDriveOptions.Size = new System.Drawing.Size(318, 128);
-        }
 
-        if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false && JointDriver.IsDrivenJoint(cType) == true)
-        {
-            this.Height = 300;
-            btnSave.Location = new System.Drawing.Point(13, 220);
-            grpWheelOptions.Visible = false;
-            grpGearRatio.Visible = false;
-            grpPneumaticSpecs.Visible = false;
-            grpDriveOptions.Visible = true;
-        }
-
-        else if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
-        {
-            if (JointDriver.IsMotor(cType) == true)
+            if (JointDriver.IsMotor(cType) == false && JointDriver.IsPneumatic(cType) == false)
             {
-                this.Height = 420;
-                btnSave.Location = new System.Drawing.Point(13, 340);
-                grpWheelOptions.Visible = true;
-                grpGearRatio.Visible = true;
+                this.Height = 300;
+                btnSave.Location = new System.Drawing.Point(13, 220);
+                grpWheelOptions.Visible = false;
+                grpGearRatio.Visible = false;
                 grpPneumaticSpecs.Visible = false;
                 grpDriveOptions.Visible = true;
             }
-            else if (JointDriver.IsPneumatic(cType) == true)
+
+            else if (JointDriver.IsMotor(cType) == true || JointDriver.IsPneumatic(cType) == true)
             {
-                this.Height = 360;
-                btnSave.Location = new System.Drawing.Point(13, 280);
-                grpPneumaticSpecs.Visible = true;
-                grpWheelOptions.Visible = false;
-                grpGearRatio.Visible = false;
-                grpDriveOptions.Visible = true;
+                if (JointDriver.IsMotor(cType) == true)
+                {
+                    this.Height = 420;
+                    btnSave.Location = new System.Drawing.Point(13, 340);
+                    grpWheelOptions.Visible = true;
+                    grpGearRatio.Visible = true;
+                    grpPneumaticSpecs.Visible = false;
+                    grpDriveOptions.Visible = true;
+                }
+                else if (JointDriver.IsPneumatic(cType) == true)
+                {
+                    this.Height = 360;
+                    btnSave.Location = new System.Drawing.Point(13, 280);
+                    grpPneumaticSpecs.Visible = true;
+                    grpWheelOptions.Visible = false;
+                    grpGearRatio.Visible = false;
+                    grpDriveOptions.Visible = true;
+                }
             }
         }
     }
@@ -132,19 +134,8 @@ public partial class DriveChooser : Form
 
         joint.cDriver = new JointDriver(cType);
 
-        if (JointDriver.IsDrivenJoint(cType) == false)
-        {
-            joint.cDriver.portA = 26;
-            joint.cDriver.portB = 26;
-
-        }
-        else if (JointDriver.IsDrivenJoint(cType) == true)
-        {
-            joint.cDriver.portA = (int)txtPortA.Value;
-            joint.cDriver.portB = (int)txtPortB.Value;
-
-        }
-
+        joint.cDriver.portA = (int)txtPortA.Value;
+        joint.cDriver.portB = (int)txtPortB.Value;
         joint.cDriver.lowerLimit = (float)txtLowLimit.Value;
         joint.cDriver.upperLimit = (float)txtHighLimit.Value;
 

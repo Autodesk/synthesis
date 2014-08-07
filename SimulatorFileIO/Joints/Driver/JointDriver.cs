@@ -10,8 +10,7 @@ public enum JointDriverType : byte
     WORM_SCREW = 3,
     BUMPER_PNEUMATIC = 4,
     RELAY_PNEUMATIC = 5,
-    DUAL_MOTOR = 6,
-    NO_DRIVER = 7
+    DUAL_MOTOR = 6
 }
 
 /// <summary>
@@ -94,12 +93,12 @@ public class JointDriver
         {
             case SkeletalJointType.ROTATIONAL:
                 // Pneumatic and Worm Screw map to angles
-                return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW, JointDriverType.DUAL_MOTOR, JointDriverType.NO_DRIVER };
+                return new JointDriverType[] { JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW, JointDriverType.DUAL_MOTOR };
             case SkeletalJointType.LINEAR:
-                return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW, JointDriverType.NO_DRIVER };
+                return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW};
             case SkeletalJointType.CYLINDRICAL:
                 return new JointDriverType[] { JointDriverType.BUMPER_PNEUMATIC, JointDriverType.RELAY_PNEUMATIC, JointDriverType.WORM_SCREW,
-                JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.DUAL_MOTOR, JointDriverType.NO_DRIVER};
+                JointDriverType.MOTOR, JointDriverType.SERVO, JointDriverType.DUAL_MOTOR};
             case SkeletalJointType.PLANAR:
                 //Not sure of an FRC part with planar motion.  Will add later if needed.
                 return new JointDriverType[] { };
@@ -133,7 +132,6 @@ public class JointDriver
             case JointDriverType.SERVO:
             case JointDriverType.DUAL_MOTOR:
             case JointDriverType.WORM_SCREW:
-            case JointDriverType.NO_DRIVER:
                 return "PWM";
             case JointDriverType.BUMPER_PNEUMATIC:
                 return "Solenoid";
@@ -141,22 +139,6 @@ public class JointDriver
                 return "Relay";
             default:
                 return "Unknown";
-        }
-    }
-
-    /// <summary>
-    /// Checks if the joint is driven (has a motor, or servo, etc.).
-    /// </summary>
-    /// <param name="type">Driver type</param>
-    /// <returns>Boolean</returns>
-    public static bool IsDrivenJoint(JointDriverType type)
-    {
-        switch (type)
-        {
-            case JointDriverType.NO_DRIVER:
-                return false;
-            default:
-                return true;
         }
     }
 
@@ -207,7 +189,6 @@ public class JointDriver
             case JointDriverType.DUAL_MOTOR:
             case JointDriverType.SERVO:
             case JointDriverType.WORM_SCREW:
-            case JointDriverType.NO_DRIVER:
                 return 8; // PWM
             case JointDriverType.BUMPER_PNEUMATIC:
                 return 8; // Bumper
