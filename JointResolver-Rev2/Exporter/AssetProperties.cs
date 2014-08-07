@@ -8,6 +8,32 @@ public class AssetProperties
     public double transparency;
     public double translucency;
 
+    public static AssetProperties Create(dynamic surf)
+    {
+        try
+        {
+            return new AssetProperties(surf.Appearance);
+        }
+        catch
+        {
+            try
+            {
+                return new AssetProperties(surf.Parent.Appearance);
+            }
+            catch
+            {
+                try
+                {
+                    return new AssetProperties(surf.Parent.Parent.Appearance);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+    }
+
     public AssetProperties(Asset asset)
     {
         foreach (AssetValue val in asset)
@@ -15,7 +41,7 @@ public class AssetProperties
             //is this one supposed to be different from the others? "DisplayName vs Name"
             if (val.DisplayName.Equals("Color") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeColor)
             {
-                color = ((ColorAssetValue)val).Value;
+                color = ((ColorAssetValue) val).Value;
             }
             /*    //I am unable to find any reference to gloss in the API, and I've found the value changes from material to material
             else if (val.Name.Equals("generic_glossiness") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
@@ -26,15 +52,15 @@ public class AssetProperties
             //opacity is a double
             else if (val.DisplayName.Equals("Transparency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
             {
-                transparency = ((FloatAssetValue)val).Value;
+                transparency = ((FloatAssetValue) val).Value;
             }
             else if (val.DisplayName.Equals("Translucency") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
             {
-                translucency = ((FloatAssetValue)val).Value;
+                translucency = ((FloatAssetValue) val).Value;
             }
             else if (val.ValueType == AssetValueTypeEnum.kAssetValueTextureType)
             {
-                AssetTexture tex = ((TextureAssetValue)val).Value;
+                AssetTexture tex = ((TextureAssetValue) val).Value;
             }
         }
     }

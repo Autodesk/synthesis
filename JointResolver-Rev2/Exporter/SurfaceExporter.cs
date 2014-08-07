@@ -1,4 +1,7 @@
-﻿using Inventor;
+﻿// Should we export textures.  (Useless currently)
+// #define USE_TEXTURES
+
+using Inventor;
 using System.IO;
 using System;
 using System.Collections.Generic;
@@ -13,7 +16,9 @@ public class SurfaceExporter
         public double[] verts = new double[TMP_VERTICIES * 3];
         public double[] norms = new double[TMP_VERTICIES * 3];
         public int[] indicies = new int[TMP_VERTICIES * 3];
+#if USE_TEXTURES
         public double[] textureCoords = new double[TMP_VERTICIES * 2];
+#endif
         public int vertCount = 0;
         public int facetCount = 0;
     }
@@ -113,22 +118,23 @@ public class SurfaceExporter
         {
             Console.WriteLine("Exporting single block for " + surf.Parent.Name + "\t(" + surf.Name + ")");
             tmpSurface.vertCount = 0;
+#if USE_TEXTURES
             surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
             if (tmpSurface.vertCount == 0)
             {
                 surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
             }
+#else
+            surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
+            if (tmpSurface.vertCount == 0)
+            {
+                surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies);
+            }
+#endif
             AssetProperties assetProps = sharedValue;
             if (sharedValue == null)
             {
-                try
-                {
-                    assetProps = new AssetProperties(surf.Appearance);
-                }
-                catch
-                {
-                    assetProps = new AssetProperties(surf.Parent.Appearance);
-                }
+                assetProps = AssetProperties.Create(surf);
             }
             AddFacetsInternal(assetProps);
         }
@@ -181,7 +187,9 @@ public class SurfaceExporter
 
         Array.Copy(tmpSurface.verts, 0, postSurface.verts, postSurface.vertCount * 3, tmpSurface.vertCount * 3);
         Array.Copy(tmpSurface.norms, 0, postSurface.norms, postSurface.vertCount * 3, tmpSurface.vertCount * 3);
+#if USE_TEXTURES
         Array.Copy(tmpSurface.textureCoords, 0, postSurface.textureCoords, postSurface.vertCount * 2, tmpSurface.vertCount * 2);
+#endif
 
         BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
 
@@ -239,28 +247,20 @@ public class SurfaceExporter
     private void AddFacets(Face surf, double tolerance)
     {
         tmpSurface.vertCount = 0;
-        surf.GetExistingFacetsAndTextureMap(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+#if USE_TEXTURES
+            surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+            if (tmpSurface.vertCount == 0)
+            {
+                surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+            }
+#else
+        surf.GetExistingFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
         if (tmpSurface.vertCount == 0)
         {
-            Console.WriteLine("Calculate values");
-            surf.CalculateFacetsAndTextureMap(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+            surf.CalculateFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies);
         }
-        AssetProperties assetProps;
-        try
-        {
-            assetProps = new AssetProperties(surf.Appearance);
-        }
-        catch
-        {
-            try
-            {
-                assetProps = new AssetProperties(surf.Parent.Appearance);
-            }
-            catch
-            {
-                assetProps = new AssetProperties(surf.Parent.Parent.Appearance);
-            }
-        }
+#endif
+        AssetProperties assetProps = AssetProperties.Create(surf);
         AddFacetsInternal(assetProps);
     }
 
