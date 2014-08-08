@@ -85,6 +85,8 @@ public class UnityRigidNode : RigidNode_Base
 	//converts inventor's limit information to the modular system unity uses (180/-180)
 	private void AngularLimit(float[] limit)
 	{
+	
+		Debug.Log(GetSkeletalJoint().cDriver);
 		
 		if ((limit [2] - limit [1]) >= Mathf.Abs(360.0f))
 		{
@@ -101,11 +103,7 @@ public class UnityRigidNode : RigidNode_Base
 
 		joint.lowAngularXLimit = low;
 		joint.highAngularXLimit = high;	
-
-		JointDrive drMode = new JointDrive();
-		drMode.mode = JointDriveMode.Velocity;
-		drMode.maximumForce = 100.0f;
-		joint.angularXDrive = drMode;	
+			
 
 	}
 	
@@ -117,14 +115,32 @@ public class UnityRigidNode : RigidNode_Base
 				
 		linear.limit = Mathf.Abs(center) * 0.01f;
 		joint.linearLimit = linear;
-
-		JointDrive drMode = new JointDrive();
-		drMode.mode = JointDriveMode.Velocity;
-		drMode.maximumForce = 100.0f;
-		joint.xDrive = drMode;	
-
 		
 	}
+
+	private void setXdrives()
+	{
+		if (GetSkeletalJoint().cDriver != null)
+		{
+			if (GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
+			{
+				PneumaticDriverMeta pneum = GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>();
+				
+				JointDrive drMode = new JointDrive();
+				drMode.mode = JointDriveMode.Velocity;
+				drMode.maximumForce = 100.0f;
+				joint.xDrive = drMode;	
+				
+			} else if (GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
+			{
+				JointDrive drMode = new JointDrive();
+				drMode.mode = JointDriveMode.Velocity;
+				drMode.maximumForce = 100.0f;
+				joint.angularXDrive = drMode;
+			}	
+		}	
+	}
+
 	
 	
 	//creates the configurable joint then preforms the appropriate alterations based on the joint type
@@ -135,12 +151,12 @@ public class UnityRigidNode : RigidNode_Base
 			return;			
 		}
 				
-		SkeletalJoint_Base nodeX = GetSkeletalJoint();
+		//SkeletalJoint_Base GetSkeletalJoint() = GetSkeletalJoint();
 		//this is the conditional for Identified wheels
-		if (nodeX.GetJointType() == SkeletalJointType.ROTATIONAL)
+		if (GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
 		{
 					
-			RotationalJoint_Base nodeR = (RotationalJoint_Base)nodeX;
+			RotationalJoint_Base nodeR = (RotationalJoint_Base)GetSkeletalJoint();
 					
 			//takes the x, y, and z axis information from a custom vector class to unity's vector class
 			joint = ConfigJointInternal(auxFunctions.ConvertV3(nodeR.basePoint), auxFunctions.ConvertV3(nodeR.axis), delegate(ConfigurableJoint jointSub)
@@ -154,21 +170,24 @@ public class UnityRigidNode : RigidNode_Base
 											nodeR.angularLimitHigh * (180.0f / Mathf.PI)
 										};
 					AngularLimit(aLimit);
+					
 				}
 			});
 			//don't worry, I'm a doctor
 						
 			//if the mesh contains information which identifies it as a wheel then create a wheel collider.
-			wheel = nodeX.cDriver != null ? nodeX.cDriver.GetInfo<WheelDriverMeta>() : null;
+			wheel = GetSkeletalJoint().cDriver != null ? GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() : null;
+            
 			if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL)
 			{
 				CreateWheel(nodeR);	
+				
 			}
 			
 					
-		} else if (nodeX.GetJointType() == SkeletalJointType.CYLINDRICAL)
+		} else if (GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL)
 		{
-			CylindricalJoint_Base nodeC = (CylindricalJoint_Base)nodeX;
+			CylindricalJoint_Base nodeC = (CylindricalJoint_Base)GetSkeletalJoint();
 						
 			joint = ConfigJointInternal(auxFunctions.ConvertV3(nodeC.basePoint), auxFunctions.ConvertV3(nodeC.axis), delegate(ConfigurableJoint jointSub)
 			{
@@ -180,6 +199,13 @@ public class UnityRigidNode : RigidNode_Base
 															{"current",nodeC.currentLinearPosition}
 								};
 				LinearLimit(lLimit);
+				if (GetSkeletalJoint().cDriver != null && GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
+				{
+					JointDrive drMode = new JointDrive();
+					drMode.mode = JointDriveMode.Velocity;
+					drMode.maximumForce = 100.0f;
+					joint.xDrive = drMode;	
+				}
 				if (joint.angularXMotion == ConfigurableJointMotion.Limited)
 				{
 					float[] aLimit = {
@@ -192,9 +218,9 @@ public class UnityRigidNode : RigidNode_Base
 			});
 			
 			
-		} else if (nodeX.GetJointType() == SkeletalJointType.LINEAR)
+		} else if (GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR)
 		{
-			LinearJoint_Base nodeL = (LinearJoint_Base)nodeX;
+			LinearJoint_Base nodeL = (LinearJoint_Base)GetSkeletalJoint();
 			
 			joint = ConfigJointInternal(auxFunctions.ConvertV3(nodeL.basePoint), auxFunctions.ConvertV3(nodeL.axis), delegate(ConfigurableJoint jointSub)
 			{
@@ -209,6 +235,7 @@ public class UnityRigidNode : RigidNode_Base
 			});
 						
 		}
+		setXdrives();
 	}		
 		
 	//loads the bxda format meshes
@@ -230,26 +257,25 @@ public class UnityRigidNode : RigidNode_Base
 			subObject.GetComponent<MeshFilter>().mesh = meshu;
 			subObject.AddComponent <MeshRenderer>();
 			Material[] matls = new Material[meshu.subMeshCount];
-            for (int i = 0; i < matls.Length; i++)
-            {
-                uint val = sub.surfaces[i].hasColor ? sub.surfaces[i].color : 0xFFFFFFFF;
-                Color color = new Color32((byte) (val & 0xFF), (byte) ((val >> 8) & 0xFF), (byte) ((val >> 16) & 0xFF), (byte) ((val >> 24) & 0xFF));
-                if (sub.surfaces[i].transparency != 0)
-                {
-                    color.a = sub.surfaces[i].transparency;
-                }
-                else if (sub.surfaces[i].translucency != 0)
-                {
-                    color.a = sub.surfaces[i].translucency;
-                }
-                if (color.a == 0)   // No perfectly transparent things plz.
-                {
-                    color.a = 1;
-                }
-                matls[i] = new Material((Shader) Shader.Instantiate(Shader.Find(color.a != 1 ? "Alpha/Diffuse" : "Diffuse")));
-                matls[i].SetColor("_Color", color);
-            }
-            subObject.GetComponent<MeshRenderer>().materials = matls;
+			for (int i = 0; i < matls.Length; i++)
+			{
+				uint val = sub.surfaces [i].hasColor ? sub.surfaces [i].color : 0xFFFFFFFF;
+				Color color = new Color32((byte)(val & 0xFF), (byte)((val >> 8) & 0xFF), (byte)((val >> 16) & 0xFF), (byte)((val >> 24) & 0xFF));
+				if (sub.surfaces [i].transparency != 0)
+				{
+					color.a = sub.surfaces [i].transparency;
+				} else if (sub.surfaces [i].translucency != 0)
+				{
+					color.a = sub.surfaces [i].translucency;
+				}
+				if (color.a == 0)   // No perfectly transparent things plz.
+				{
+					color.a = 1;
+				}
+				matls [i] = new Material((Shader)Shader.Instantiate(Shader.Find(color.a != 1 ? "Alpha/Diffuse" : "Diffuse")));
+				matls [i].SetColor("_Color", color);
+			}
+			subObject.GetComponent<MeshRenderer>().materials = matls;
 
 			if (!unityObject.GetComponent<Rigidbody>())
 			{
@@ -263,18 +289,17 @@ public class UnityRigidNode : RigidNode_Base
 			subCollider = new GameObject(unityObject.name + " Subcollider" + id);
 			subCollider.transform.parent = unityObject.transform;
 			subCollider.transform.position = new Vector3(0, 0, 0);
-            if (meshu.triangles.Length == 0 && meshu.vertices.Length == 2)
-            {
-                BoxCollider box = subCollider.AddComponent<BoxCollider>();
-                Vector3 center = (meshu.vertices[0] + meshu.vertices[1]) * 0.5f;
-                box.center = center;
-                box.size = meshu.vertices[1] - center;
-            }
-            else
-            {
-                subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
-                subCollider.GetComponent<MeshCollider>().convex = true;
-            }
+			if (meshu.triangles.Length == 0 && meshu.vertices.Length == 2)
+			{
+				BoxCollider box = subCollider.AddComponent<BoxCollider>();
+				Vector3 center = (meshu.vertices [0] + meshu.vertices [1]) * 0.5f;
+				box.center = center;
+				box.size = meshu.vertices [1] - center;
+			} else
+			{
+				subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
+				subCollider.GetComponent<MeshCollider>().convex = true;
+			}
 		});
 				
 		Rigidbody rigidB = unityObject.GetComponent<Rigidbody>();
@@ -314,6 +339,7 @@ public class UnityRigidNode : RigidNode_Base
 	{
 		return joint != null ? joint : null;
 	}
+
 	public Vector3 GetWheelCenter()
 	{
 		return auxFunctions.ConvertV3(wheel.center);
@@ -334,7 +360,7 @@ public class UnityRigidNode : RigidNode_Base
 			sumOfAllWeights += rigidBase.mass;
 		}
 		centerOfMass /= sumOfAllWeights;
-		//Debug.Log(centerOfMass.ToString());
+		Debug.Log(centerOfMass.ToString());
 		return centerOfMass;
 	}
 
