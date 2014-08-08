@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+
 public class Init : MonoBehaviour
 {		
 	// We will need these
@@ -38,7 +39,9 @@ public class Init : MonoBehaviour
 				filePath = fbd.SelectedPath;
 
 				List<RigidNode_Base> names = new List<RigidNode_Base>();
-				RigidNode_Base.NODE_FACTORY = new UnityRigidNodeFactory();
+				RigidNode_Base.NODE_FACTORY = delegate(){
+					return new RigidNode_Base();
+				};
 				skeleton = BXDJSkeleton.ReadSkeleton(filePath + "/skeleton.bxdj");
 				skeleton.ListAllNodes(names);
 				foreach (RigidNode_Base node in names)

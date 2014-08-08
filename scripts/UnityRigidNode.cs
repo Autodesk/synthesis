@@ -215,7 +215,7 @@ public class UnityRigidNode : RigidNode_Base
 	public void CreateMesh(string filePath)
 	{
 		mesh = new BXDAMesh();
-		mesh.ReadBXDA(filePath);
+		mesh.ReadFromFile(filePath);
 		
 		auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
 		{
@@ -355,13 +355,5 @@ public class UnityRigidNode : RigidNode_Base
 	}
 
 
-}
-//This allows the rigidnode_base to be loaded with unityrigidnode_base information
-public class UnityRigidNodeFactory : RigidNodeFactory
-{
-	public RigidNode_Base Create()
-	{
-		return new UnityRigidNode();
-	}
 }
 
