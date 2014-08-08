@@ -48,10 +48,12 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="shader.frag" />
+    <None Include="shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Camera3rdPerson.cs" />
-    <Compile Include="Lesson34.cs" />
+    <Compile Include="OGLMain.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="OGL_RigidNode.cs" />
     <Compile Include="ShaderLoader.cs" />

@@ -1,51 +1,45 @@
-﻿using Tao.OpenGl;
+﻿using System;
+using System.IO;
+using Tao.OpenGl;
 
 public class ShaderLoader {
 	public static int loadShaderPair() {
 		int shaderProgram = Gl.glCreateProgramObjectARB();
         int vertexShader = Gl.glCreateShaderObjectARB(Gl.GL_VERTEX_SHADER);
         int fragmentShader = Gl.glCreateShaderObjectARB(Gl.GL_FRAGMENT_SHADER);
-		string vertexShaderSource = ("#version 120\n"
-						+ "varying vec4 varyingColour;\n"
-						+ "varying vec3 varyingNormal;\n"
-						+ "varying vec4 varyingVertex;\n"
-						+ "\n"
-						+ "void main() {\n"
-						+ "    varyingColour = gl_Color;\n"
-						+ "    varyingNormal = gl_Normal;\n"
-						+ "    varyingVertex = gl_Vertex;\n"
-						+ "    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;\n"
-						+ "}");
-		string fragmentShaderSource = ("#version 120\n"
-						+ "varying vec4 varyingColour;\n"
-						+ "varying vec3 varyingNormal;\n"
-						+ "varying vec4 varyingVertex;\n"
-						+ "\n"
-						+ "void main() {\n"
-						+ "    vec3 vertexPosition = (gl_ModelViewMatrix * varyingVertex).xyz;\n"
-						+ "    vec3 surfaceNormal = normalize((gl_NormalMatrix * varyingNormal).xyz);\n"
-						+ "    gl_FragColor.rgb = vec3(0,0,0);\n"
-						+ "    gl_FragColor += gl_LightModel.ambient;\n"
-						+ "    for (int i = 0; i<2; i++) {"
-						+ "    vec3 lightDirection = normalize(gl_LightSource[i].position.xyz - vertexPosition);\n"
-						+ "    float diffuseLightIntensity = max(0, dot(surfaceNormal, lightDirection));\n"
-						+ "    gl_FragColor.rgb += diffuseLightIntensity * varyingColour.rgb;\n"
-						+ "    vec3 reflectionDirection = normalize(reflect(-lightDirection, surfaceNormal));\n"
-						+ "    float specular = max(0.0, dot(surfaceNormal, reflectionDirection));\n"
-						+ "    if (diffuseLightIntensity != 0) {\n"
-						+ "        float fspecular = pow(specular, gl_FrontMaterial.shininess);\n"
-						+ "        gl_FragColor += fspecular;\n" + "    }\n"
-						+ "    }\n" + "}");
+        int fxxaShader = Gl.glCreateShaderObjectARB(Gl.GL_FRAGMENT_SHADER);
+        int compositeShader = Gl.glCreateShaderObjectARB(Gl.GL_FRAGMENT_SHADER);
+
+        System.Console.WriteLine(Directory.GetCurrentDirectory());
+		string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() +"/../../shader.vert");
+        string fragmentShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../shader.frag");
+        //string fxxaShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../fxxa.frag");
+        //string compositeShaderSource = "void lightFragShader(); void fxxaFragShader(); void main() { lightFragShader(); fxxaFragShader(); }";
+
 
         Gl.glShaderSourceARB(vertexShader, 1, ref vertexShaderSource, null);
         Gl.glCompileShaderARB(vertexShader);
+        Console.WriteLine("Compile vert shader");
 
         Gl.glShaderSourceARB(fragmentShader, 1, ref fragmentShaderSource, null);
         Gl.glCompileShaderARB(fragmentShader);
+        Console.WriteLine("Compile frag shader");
+
+       /* Gl.glShaderSourceARB(fxxaShader, 1, ref fxxaShaderSource, null);
+        Gl.glCompileShaderARB(fxxaShader);
+        Console.WriteLine("Compile fxxa shader");
+
+        Gl.glShaderSourceARB(compositeShader, 1, ref compositeShaderSource, null);
+        Gl.glCompileShaderARB(compositeShader);
+        Console.WriteLine("Compile composite shader");*/
 
         Gl.glAttachObjectARB(shaderProgram, vertexShader);
         Gl.glAttachObjectARB(shaderProgram, fragmentShader);
+        /*Gl.glAttachObjectARB(shaderProgram, fxxaShader);
+        Gl.glAttachObjectARB(shaderProgram, compositeShader);*/
+        Console.WriteLine("Attached objects");
         Gl.glLinkProgramARB(shaderProgram);
+        Console.WriteLine("Linked");
 		return shaderProgram;
 	}
 }

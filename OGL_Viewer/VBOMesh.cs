@@ -67,6 +67,21 @@ public class VBOMesh
 
         for (int i = 0; i < bufferObjects.Length - 2; i++)
         {
+            uint val = subMesh.surfaces[i].hasColor ? subMesh.surfaces[i].color : 0xFFFFFFFF;
+            float[] color = { (val & 0xFF) / 255f, ((val >> 8) & 0xFF) / 255f, ((val >> 16) & 0xFF) / 255f, ((val >> 24) & 0xFF) / 255f };
+            if (subMesh.surfaces[i].transparency != 0)
+            {
+                color[3] = subMesh.surfaces[i].transparency;
+            }
+            else if (subMesh.surfaces[i].translucency != 0)
+            {
+                color[3] = subMesh.surfaces[i].translucency;
+            }
+            if (color[3] == 0)   // No perfectly transparent things plz.
+            {
+                color[3] = 1;
+            }
+            Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK, Gl.GL_DIFFUSE, color);
             Gl.glBindBufferARB(Gl.GL_ELEMENT_ARRAY_BUFFER, bufferObjects[i + 2]);
             Gl.glDrawElements(Gl.GL_TRIANGLES, subMesh.surfaces[i].indicies.Length,
                     Gl.GL_UNSIGNED_INT, IntPtr.Zero);

@@ -17,7 +17,8 @@ public class OGL_RigidNode : RigidNode_Base
     {
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(path);
-        foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes) {
+        foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
+        {
             models.Add(new VBOMesh(sub));
         }
     }
@@ -28,11 +29,12 @@ public class OGL_RigidNode : RigidNode_Base
     {
         i += 0.01f;
         requestedTranslation = (float) Math.Sin(i) * 100;
-        requestedRotation =(float) Math.Cos(i);
+        requestedRotation = (float) Math.Cos(i);
         myTrans.identity();
         if (GetSkeletalJoint() != null)
         {
-            BXDVector3 baseV=null, axis=null;
+            BXDVector3 baseV = null, axis = null;
+            float modelTranslation = 0, modelRotation = 0;
             switch (GetSkeletalJoint().GetJointType())
             {
                 case SkeletalJointType.ROTATIONAL:
@@ -40,34 +42,38 @@ public class OGL_RigidNode : RigidNode_Base
                     baseV = rjb.basePoint;
                     axis = rjb.axis;
                     requestedTranslation = 0;
+                    modelRotation = rjb.currentAngularPosition;
                     break;
                 case SkeletalJointType.LINEAR:
                     LinearJoint_Base ljb = (LinearJoint_Base) GetSkeletalJoint();
                     baseV = ljb.basePoint;
                     axis = ljb.axis;
                     requestedRotation = 0;
+                    modelTranslation = ljb.currentLinearPosition;
                     break;
                 case SkeletalJointType.CYLINDRICAL:
                     CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
                     baseV = cjb.basePoint;
                     axis = cjb.axis;
+                    modelRotation = cjb.currentAngularPosition;
+                    modelTranslation = cjb.currentLinearPosition;
+                    if (cjb.hasLinearEndLimit)
+                        requestedTranslation = Math.Min(requestedTranslation, cjb.linearLimitEnd);
+                    if (cjb.hasLinearStartLimit)
+                        requestedTranslation = Math.Max(requestedTranslation, cjb.linearLimitStart);
                     break;
             }
             if (GetParent() != null)
             {
                 baseV = ((OGL_RigidNode) GetParent()).myTrans.multiply(baseV);
                 axis = ((OGL_RigidNode) GetParent()).myTrans.rotate(axis);
-                if (GetParent().GetParent() != null)
-                {
-                    Console.WriteLine(baseV + "\t\t" + axis);
-                }
             }
             TransMatrix mat = new TransMatrix();
-            
+
             mat.identity().setTranslation(baseV.x, baseV.y, baseV.z);
             myTrans.multiply(mat);
-            mat.identity().setRotation(axis.x, axis.y, axis.z, requestedRotation);
-            mat.setTranslation(axis.x * requestedTranslation, axis.y * requestedTranslation, axis.z * requestedTranslation);
+            mat.identity().setRotation(axis.x, axis.y, axis.z, requestedRotation - modelRotation + (float) Math.PI);
+            mat.setTranslation(axis.x * (requestedTranslation - modelTranslation), axis.y * (requestedTranslation - modelTranslation), axis.z * (requestedTranslation - modelTranslation));
             myTrans.multiply(mat);
             mat.identity().setTranslation(-baseV.x, -baseV.y, -baseV.z);
             myTrans.multiply(mat);

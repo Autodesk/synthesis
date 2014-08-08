@@ -20,7 +20,7 @@ public class OGL_Viewer
 {
     public static bool[] KEY_STATES = new bool[512];
     private static double horizontalTan = Math.Tan(25.0 * 3.14 / 180.0);
-    private const int WIDTH = 500, HEIGHT = 500;
+    private const int WIDTH = 1366, HEIGHT = 768;
     private static OGL_RigidNode baseNode;
     private static List<RigidNode_Base> nodes;
 
@@ -29,7 +29,7 @@ public class OGL_Viewer
 
     static float[] l0_position = { 1000f, -1000f, 1000f, 0f };
     static float[] l1_position = { -1000f, -1000f, -1000f, 0f };
-    static float[] l_diffuse = { .2f, .2f, .2f, .2f };
+    static float[] l_diffuse = { 1f, 1f, 1f, 1f };
     static float[] l_specular = { .1f, .1f, .1f, .1f };
     static float[] ambient = { .125f, .125f, .125f, .125f };
 
@@ -98,7 +98,7 @@ public class OGL_Viewer
         Glut.glutInit();
         Glut.glutInitWindowPosition(0, 0);
         Glut.glutInitWindowSize(WIDTH, HEIGHT);
-        Glut.glutInitDisplayMode(Glut.GLUT_SINGLE | Glut.GLUT_RGB);
+        Glut.glutInitDisplayMode(Glut.GLUT_SINGLE | Glut.GLUT_RGB | Glut.GLUT_MULTISAMPLE);
         Glut.glutCreateWindow("BXDJ Viewer");
         Gl.glClearColor(0f, 0f, 0f, 0f);
         Console.WriteLine(GlExtensionLoader.LoadExtension("GL_ARB_vertex_buffer_object"));
