@@ -186,21 +186,17 @@ public class DriveJoints : MonoBehaviour
 				int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 				// Now, if both solenoid ports are open
+				if (unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM != null && unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI != null) {
+					// If any of the fields of the PneumaticDriverMeta class don't exist, we won't do anything.
+					return;
+				}
 				if (stateA > 0)
 				{
-					
-					// Port A is open, so the solenoid will be set to forward
 					SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
-					//SetSolenoid(unityNode, true, 25f, 60f);
-					//DriveJoints.SetConfigJointMotorX(unityNode, 30);
-					//Debug.Log("A solenoid is set to forward");
 				}
 				else if (stateB > 0)
 				{
-					// Port B is open, so the solenoid will be set to reverse
-					SetSolenoid(unityNode, false, 25f, 60f);
-					//DriveJoints.SetConfigJointMotorX(unityNode, -30);
-					//Debug.Log("A solenoid is in reverse");
+					SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
 				}
 				else
 				{

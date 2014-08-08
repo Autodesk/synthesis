@@ -40,7 +40,7 @@ public class Init : MonoBehaviour
 
 				List<RigidNode_Base> names = new List<RigidNode_Base>();
 				RigidNode_Base.NODE_FACTORY = delegate(){
-					return new RigidNode_Base();
+					return new UnityRigidNode();
 				};
 				skeleton = BXDJSkeleton.ReadSkeleton(filePath + "/skeleton.bxdj");
 				skeleton.ListAllNodes(names);
@@ -88,6 +88,7 @@ public class Init : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-		
+		if (Input.GetKey(KeyCode.P)) {DriveJoints.UpdateSolenoids(skeleton, 1);}
+		if (Input.GetKey(KeyCode.O)) {DriveJoints.UpdateSolenoids(skeleton, 2);}
 	}
 }

@@ -11,7 +11,7 @@ public class UnityRigidNode : RigidNode_Base
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
-	
+
 	public bool IsWheel
 	{
 		get
@@ -21,7 +21,7 @@ public class UnityRigidNode : RigidNode_Base
 	}
 
 	//public delegate void Action(); //reminder of how action and function work
-		
+
 	//The root transform for the whole object model is determined in this constructor passively
 	public void CreateTransform(Transform root)
 	{
