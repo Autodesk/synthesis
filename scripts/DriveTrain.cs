@@ -44,21 +44,21 @@ public class DriveJoints : MonoBehaviour
 	public static void SetMotor(UnityRigidNode wheel, float signal)
 	{
 		// The conversion factor from Oz-In to NM. It has a multiplier in it at the moment to help compensate for the robot being the size of a building.
-		float OzInToNm = 10f * .00706155183333f;
+		float OzInToNm = .00706155183333f;
 
 		
 		if (signal == 0)
 		{
 			// If no motor torque is applied, the breaks are applied
 			// The maximum brakeTorque of a vex motor is 343.3 oz-in
-			wheel.GetWheelCollider().brakeTorque = OzInToNm * 343.3f;
+			wheel.GetWheelCollider().brakeTorque = OzInToNm * 100.0f * 343.3f;
 		} else
 		{
 			wheel.GetWheelCollider().brakeTorque = 0;
 		}
 	
 		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
-		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * (float)171.1);
+        wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 30f * (float) 171.1);
 		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
 	}
 		

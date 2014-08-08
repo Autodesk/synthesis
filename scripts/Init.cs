@@ -15,6 +15,7 @@ public class Init : MonoBehaviour
 	RigidNode_Base skeleton;
 	unityPacket udp = new unityPacket();
 	List<Vector3> unityWheelData = new List<Vector3>();
+    int robots = 0;
 
 	public enum WheelPositions
 	{
@@ -27,7 +28,7 @@ public class Init : MonoBehaviour
 	[STAThread]
 	void OnGUI ()
 	{
-		if (GUI.Button (new Rect (10, 10, 90, 30), "Load Model")) 
+		/*if (GUI.Button (new Rect (10, 10, 90, 30), "Load Model")) 
 		{
 			String filePath;
 			FolderBrowserDialog fbd = new FolderBrowserDialog ();
@@ -37,32 +38,15 @@ public class Init : MonoBehaviour
 			{
 				filePath = fbd.SelectedPath;
 
-				List<RigidNode_Base> names = new List<RigidNode_Base>();
-				RigidNode_Base.NODE_FACTORY = new UnityRigidNodeFactory();
-				skeleton = BXDJSkeleton.ReadSkeleton(filePath + "/skeleton.bxdj");
-				skeleton.ListAllNodes(names);
-				foreach (RigidNode_Base node in names)
-				{
-					UnityRigidNode uNode = (UnityRigidNode)node;
-					
-					uNode.CreateTransform(transform);		
-					uNode.CreateMesh(filePath +"/" + uNode.modelFileName);
-					uNode.FlipNorms();
-					uNode.CreateJoint();
-					
-					if (uNode.IsWheel)
-					{
-						unityWheelData.Add(uNode.GetWheelCenter());
-					}
-				}
+				
 				//auxFunctions.OrientRobot(unityWheelData, transform);
 				//auxFunctions.placeRobotJustAboveGround(transform);
 
-				GameObject.Find("Camera").AddComponent<Camera>();
+				// GameObject.Find("Camera").AddComponent<Camera>();
 
 
 			}
-		}
+		}*/
 	}
 
 	void Start()
@@ -70,6 +54,35 @@ public class Init : MonoBehaviour
 		Physics.gravity = new Vector3(0,-9.8f,0);
 		//byte test = (byte)2;		
 		//DriveJoints.updateSolenoids(skeleton, test);
+        UnityRigidNode nodeThing = new UnityRigidNode();
+        nodeThing.modelFileName = "field.bxda";
+        nodeThing.CreateTransform(transform);
+        nodeThing.CreateMesh("C:/Temp/field.bxda");
+        nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+
+        GameObject robot = new GameObject("Robot");
+        robot.transform.parent = transform;
+
+        string filePath = "C:/Users/t_millw/Downloads/Skeleton/";
+        List<RigidNode_Base> names = new List<RigidNode_Base>();
+        RigidNode_Base.NODE_FACTORY = new UnityRigidNodeFactory();
+        skeleton = BXDJSkeleton.ReadSkeleton(filePath + "/skeleton.bxdj");
+        skeleton.ListAllNodes(names);
+        foreach (RigidNode_Base node in names)
+        {
+            UnityRigidNode uNode = (UnityRigidNode) node;
+
+            uNode.CreateTransform(robot.transform);
+            uNode.CreateMesh(filePath + "/" + uNode.modelFileName);
+            uNode.FlipNorms();
+            uNode.CreateJoint();
+
+            if (uNode.IsWheel)
+            {
+                unityWheelData.Add(uNode.GetWheelCenter());
+            }
+        }
+        auxFunctions.OrientRobot(unityWheelData, robot.transform);
 	}
 
 	void OnEnable()
@@ -85,6 +98,10 @@ public class Init : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-		
+        if (skeleton != null)
+        {
+            float[] vals = udp.getLastPacket().dio[0].pwmValues;
+            DriveJoints.UpdateAllWheels(skeleton, vals);
+        }
 	}
 }

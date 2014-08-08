@@ -51,7 +51,7 @@ public class auxFunctions : RigidNode_Base
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
 		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
 	
-		norm = norm * ((above.y < 0) ? -1 : 1);
+		norm = norm * ((above.y < 0) ? 1 : -1);
 		Quaternion q = new Quaternion();
 		q.SetFromToRotation(norm, new Vector3(0,1,0));
 		
