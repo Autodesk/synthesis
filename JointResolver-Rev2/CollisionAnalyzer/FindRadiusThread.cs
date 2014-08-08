@@ -53,6 +53,11 @@ class FindRadiusThread
         findRadius.Join();
     }
 
+    public bool GetIsAlive()
+    {
+        return findRadius.IsAlive;
+    }
+
     /// <summary>
     /// Calculates the largest radius and its component.
     /// </summary>
@@ -66,7 +71,6 @@ class FindRadiusThread
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
         double localMaxRadius = 0.0; //The largest radius found for this occurrence.
-        double boxRadius; //The largest possible radius for this part found via a bounding box.
         Vector vertexVector;
         Inventor.Point origin;
         Vector partXAxis;
@@ -75,17 +79,6 @@ class FindRadiusThread
         Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
         Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
- 
-        //Calculates the largest possible radius for the part using the bounding box.
-        boxRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
-
-        //Creates new threads for sub occurrences.
-        foreach (ComponentOccurrence sub in component.SubOccurrences)
-        {
-            newThread = new FindRadiusThread(sub, rotationAxis);
-            radiusThreadList.Add(newThread);
-            newThread.Start();
-        }
 
         component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
 
@@ -107,13 +100,6 @@ class FindRadiusThread
         {
             foreach (Vertex vertex in surface.Vertices)
             {
-                //Checks if it possible for the radius to exceed the max radius.  Quits early if there's no chance of finding a larger radius.
-                if (boxRadius < currentMaxRadius)
-                {
-                    Console.WriteLine("Dropping " + component.Name + " for small radius");
-                    return;
-                }
-
                 //Grabs the three doubles that make up a coordinate for a single vertex.
                 vertexVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
 
@@ -145,7 +131,7 @@ class FindRadiusThread
             subThread.Join();
         }
 
-        Console.WriteLine("Found radius of " + component.Name + ".");
+        Console.WriteLine("Found radius of " + component.Name + " to be " + localMaxRadius);
     }   
 }
 

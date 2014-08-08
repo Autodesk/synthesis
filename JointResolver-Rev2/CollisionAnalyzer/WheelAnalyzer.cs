@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
 
+
+
 class WheelAnalyzer
 {
     public static void StartCalculations(RigidNode node)
     {
+        const int NUMBER_OF_THREADS = 4;
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
-        FindRadiusThread newRadiusThread;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
         ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
         double maxWidth = 0; //The width of the part of the wheel with the largest radius.
@@ -26,18 +28,50 @@ class WheelAnalyzer
         //Only need to worry about wheels if it is a rotational joint.
         if (joint is RotationalJoint)
         {
+            List<ComponentOccurrence> sortedBoxList = new List<ComponentOccurrence>();
+
             foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
             {
-                newRadiusThread = new FindRadiusThread(component, ((RotationalJoint)joint).axis);
-                radiusThreadList.Add(newRadiusThread);
-                newRadiusThread.Start();
+                sortComponentRadii(component, sortedBoxList);
             }
 
-            //Waits for all radii to be found before operating on the final values.
+            Console.WriteLine("Printing sorted list");
+
+            for(int i = 0; i < sortedBoxList.Count; i++)
+            {
+                Console.WriteLine(sortedBoxList[i].Name + " with box radius " +
+                    sortedBoxList[i].RangeBox.MinPoint.VectorTo(sortedBoxList[i].RangeBox.MaxPoint).Length / 2);
+            }
+
+            int nextComponentIndex = 0;
+
+            for (int i = 0; i < NUMBER_OF_THREADS; i++)
+            {
+                radiusThreadList.Add(null);
+            }
+
+            //Loops until it is impossible to find a larger radius in the remaining components.
+            while (FindRadiusThread.GetRadius() < 
+                sortedBoxList[nextComponentIndex].RangeBox.MinPoint.VectorTo(sortedBoxList[nextComponentIndex].RangeBox.MaxPoint).Length / 2 
+                && nextComponentIndex < sortedBoxList.Count)
+            {
+                for (int i = 0; i < NUMBER_OF_THREADS; i++)
+                {
+                    if (radiusThreadList[i] == null || !radiusThreadList[i].GetIsAlive())
+                    {
+                        radiusThreadList[i] = new FindRadiusThread(sortedBoxList[nextComponentIndex++], ((RotationalJoint)joint).axis);
+                        radiusThreadList[i].Start();
+                    }
+                }
+            }
+
+            //Waits for all remaining threads.
             foreach(FindRadiusThread thread in radiusThreadList)
             {
                 thread.Join();
             }
+
+            Console.WriteLine("Largest radius is " + FindRadiusThread.GetRadius());
 
             //Finds width.
             treadPart = FindRadiusThread.GetWidthComponent();
@@ -58,13 +92,38 @@ class WheelAnalyzer
             Console.WriteLine("Center of " + treadPart.Name + "found to be:");
             Console.WriteLine(wheelDriver.center.x + ", " + wheelDriver.center.y + ", " + wheelDriver.center.z);
             Console.WriteLine("Whilst the node coordinates are: ");
-            Console.WriteLine(treadPart.Transformation.Translation.X + ", " + treadPart.Transformation.Translation.Y + ", "  + 
+            Console.WriteLine(treadPart.Transformation.Translation.X + ", " + treadPart.Transformation.Translation.Y + ", " +
                 treadPart.Transformation.Translation.Z);
         }
 
 
         //Finally saves the bundle of info to the driver attached to the wheel.
         joint.cDriver.AddInfo(wheelDriver);
+    }
+
+    private static void sortComponentRadii(ComponentOccurrence component, List<ComponentOccurrence> sortedBoxList)
+    {
+        //Ignores assemblies and goes to parts.
+        if (component.SubOccurrences.Count > 0)
+        {
+            foreach (ComponentOccurrence subComponent in component.SubOccurrences)
+            {
+                sortComponentRadii(subComponent, sortedBoxList);
+            }
+        }
+
+        else
+        {
+            double boxDiagonal = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
+
+            //Finds the correct spot to insert the component based on the magnitude of the diagonal of the bounding box.
+            int listPosition;
+            for (listPosition = 0; listPosition < sortedBoxList.Count
+                && boxDiagonal < sortedBoxList[listPosition].RangeBox.MinPoint.VectorTo(sortedBoxList[listPosition].RangeBox.MaxPoint).Length / 2;
+                listPosition++) ;
+
+            sortedBoxList.Insert(listPosition, component);
+        }        
     }
 
 
