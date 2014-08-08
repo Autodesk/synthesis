@@ -27,10 +27,8 @@ public class Init : MonoBehaviour
 	[STAThread]
 	void OnGUI ()
 	{
-		if (GUI.Button (new Rect (10, 10, 90, 30), "Load Model")) 
-		{
+		if (GUI.Button (new Rect (10, 10, 90, 30), "Load Model")) {
 			String filePath;
-			
 			FolderBrowserDialog fbd = new FolderBrowserDialog ();
 			
 			
@@ -56,8 +54,9 @@ public class Init : MonoBehaviour
 						unityWheelData.Add(uNode.GetWheelCenter());
 					}
 				}
-				Quaternion rotation = auxFunctions.FlipRobot(unityWheelData, transform);
-				transform.localRotation *= rotation;
+				auxFunctions.OrientRobot(unityWheelData, transform);
+				auxFunctions.placeRobotJustAboveGround(transform);
+
 				GameObject.Find("Camera").AddComponent<Camera>();
 			}
 		}
@@ -83,6 +82,6 @@ public class Init : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-	
+		
 	}
 }

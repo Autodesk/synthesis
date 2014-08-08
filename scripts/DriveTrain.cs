@@ -32,22 +32,7 @@ public class InputStatePacket
 	
 	public int Write(byte[] packet)
 	{
-		/*
-		for (int i = 0; dio.Length; i++)
-		{
-			int offset = i * ;
-		}
-		for(int i = 0; encoder.Length; i++)
-		{
-		}
-		for(int i = 0; ai.Length; i++)
-		{
-		}
-		for(int i = 0; counter.Length; i++)
-		{
-		}
-		return 
-		*/
+
 		return packet.Length;
 	}
 }
@@ -69,7 +54,7 @@ public class DriveJoints : MonoBehaviour
 			wheel.GetWheelCollider().brakeTorque = OzInToNm * 343.3f;
 		} else
 		{
-			wheel.GetWheelCollider.brakeTorque = 0;
+			wheel.GetWheelCollider().brakeTorque = 0;
 		}
 	
 		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 

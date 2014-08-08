@@ -58,7 +58,7 @@ public class unityPacket
 	public volatile bool active;
 	public volatile bool stillSend = true;
 	public volatile bool stillRecieve = true;
-	Thread threadRecieve, threadSend;
+	Thread threadRecieve;//, threadSend;
 	UdpClient client, server;
 	private byte[] receiveBuffer = new byte[1024];
 	private byte[] sendBuffer = new byte[1024];
@@ -79,10 +79,10 @@ public class unityPacket
 		Debug.Log("Server...");
 		threadRecieve.Start();
 		Debug.Log("Client...");
-		threadSend.Start();
+		//threadSend.Start();
 		
 		//this udp thread was really really stupid || this is because of how dumb Unity is
-		if (stillSend && stillRecieve && (threadSend.IsAlive && threadRecieve.IsAlive))
+		if (stillSend && stillRecieve && (/*threadSend.IsAlive && */threadRecieve.IsAlive))
 		{
 			Stop();
 			Start();	
@@ -94,7 +94,7 @@ public class unityPacket
 		try
 		{
 			active = false;
-			threadSend.Join();
+			//threadSend.Join();
 			threadRecieve.Join();
 			Debug.Log("Stop...");
 			
@@ -125,14 +125,20 @@ public class unityPacket
 			{
 				server.Client.Bind(ipEnd);
 			}
-			//byte[] buffer = new byte[1024];
 			while (active)
 			{	
-				serverMutex.WaitOne();
-				receiveBuffer = server.Receive(ref ipEnd);
+				if (server.Available <= 0)
+                {
+                    Thread.Sleep(20);
+                    continue;
+                }
+				byte[] temp = server.Receive(ref ipEnd);
+                serverMutex.WaitOne();
+                receiveBuffer = temp;
 				//packetRecieve = new OutputStatePacket();
 				//packetRecieve.Read(buffer);
 				serverMutex.ReleaseMutex();
+				
 			}
 				
 			//int portFromInvAPI = 18;
