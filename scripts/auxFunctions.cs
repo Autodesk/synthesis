@@ -50,12 +50,18 @@ public class auxFunctions : RigidNode_Base
 		Vector3 norm = Vector3.Cross((wheels[0] - wheels[1]),(wheels[0] - wheels[2]));
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
 		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
-	
+		float angle = 0.0f;
+		Vector3 axis = new Vector3(1,0,0);
 		norm = norm * ((above.y < 0) ? -1 : 1);
 		Quaternion q = new Quaternion();
-		q.SetFromToRotation(norm, new Vector3(0,1,0));
-		
-		parent.localRotation *= q;		
+		q.SetFromToRotation(norm, Vector3.up);
+		angle = Quaternion.Angle(q, parent.localRotation);
+		Debug.Log(angle + " : " + axis);
+		q.ToAngleAxis(out angle,out axis);
+		Debug.Log(angle + " : " + axis);
+        
+		parent.RotateAround(parent.position, axis, angle);
+		//parent.localRotation *= q;		
 	}
 	
 	
@@ -98,7 +104,7 @@ public class auxFunctions : RigidNode_Base
 		float distanceToFloor = hit.distance;
 		
 		// It then translates the robot down
-		parent.localPosition = new Vector3(0, -(distanceToFloor), 0);
+		parent.localPosition = new Vector3(parent.localPosition.x, -(distanceToFloor), parent.localPosition.z);
 	}
 }
 

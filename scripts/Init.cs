@@ -35,7 +35,10 @@ public class Init : MonoBehaviour
 				
 	
 		List<RigidNode_Base> names = new List<RigidNode_Base>();
-		RigidNode_Base.NODE_FACTORY = new UnityRigidNodeFactory();
+		RigidNode_Base.NODE_FACTORY = delegate()
+		{
+			return new UnityRigidNode();
+		};
 		skeleton = BXDJSkeleton.ReadSkeleton(homePath + "/Documents/Skeleton/Skeleton/skeleton.bxdj");
 		skeleton.ListAllNodes(names);
 		foreach (RigidNode_Base node in names)
@@ -70,6 +73,9 @@ public class Init : MonoBehaviour
 	
 	void FixedUpdate()
 	{
+		unityPacket.OutputStatePacket packet = udp.getLastPacket();
+		
+		DriveJoints.UpdateAllWheels(skeleton ,packet.dio[0].pwmValues);
 		
 	}
 }
