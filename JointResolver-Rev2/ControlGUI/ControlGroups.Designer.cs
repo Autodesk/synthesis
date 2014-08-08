@@ -248,10 +248,12 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnExport);
+            this.MinimumSize = new System.Drawing.Size(800, 300);
             this.Name = "ControlGroups";
             this.Text = "Control Groups";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ControlGroups_FormClosed);
             this.Load += new System.EventHandler(this.ControlGroups_Load);
+            this.SizeChanged += new System.EventHandler(this.window_SizeChanged);
             this.tabsMain.ResumeLayout(false);
             this.tabGroups.ResumeLayout(false);
             this.tabJoints.ResumeLayout(false);

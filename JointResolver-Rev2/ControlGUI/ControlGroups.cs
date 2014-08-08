@@ -132,12 +132,19 @@ public partial class ControlGroups
         }
     }
 
-    private void ControlGroups_SizeChanged(object sender, EventArgs e)
+    private void window_SizeChanged(object sender, EventArgs e)
     {
-        int newTabHeight = tabsMain.Height;
-        int newTabWidth = tabsMain.Width;
-        int newGroupHeight = lstGroups.Height;
-        int newGroupWidth = lstGroups.Width;
+        int newTabHeight = this.Height - 159;
+        int newTabWidth = this.Width - 43;
+        int newListHeight = this.Height - 159;
+        int newListWidth = this.Width - 63;
+
+        tabsMain.Height = newTabHeight;
+        tabsMain.Width = newTabWidth;
+        lstGroups.Height = newListHeight;
+        lstGroups.Width = newListWidth;
+        lstJoints.Height = newListHeight;
+        lstJoints.Width = newListWidth;
     }
 
     private void lstGroups_SelectedIndexChanged(object sender, EventArgs e)
