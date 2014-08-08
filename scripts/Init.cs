@@ -27,7 +27,8 @@ public class Init : MonoBehaviour
 	[STAThread]
 	void OnGUI ()
 	{
-		if (GUI.Button (new Rect (10, 10, 90, 30), "Load Model")) {
+		if (GUI.Button (new Rect (10, 10, 90, 30), "Load Model")) 
+		{
 			String filePath;
 			FolderBrowserDialog fbd = new FolderBrowserDialog ();
 			
@@ -54,17 +55,19 @@ public class Init : MonoBehaviour
 						unityWheelData.Add(uNode.GetWheelCenter());
 					}
 				}
-				auxFunctions.OrientRobot(unityWheelData, transform);
-				auxFunctions.placeRobotJustAboveGround(transform);
+				//auxFunctions.OrientRobot(unityWheelData, transform);
+				//auxFunctions.placeRobotJustAboveGround(transform);
 
 				GameObject.Find("Camera").AddComponent<Camera>();
+
+
 			}
 		}
 	}
 
 	void Start()
 	{
-		Physics.gravity = new Vector3(0,-980f,0);
+		Physics.gravity = new Vector3(0,-9.8f,0);
 		//byte test = (byte)2;		
 		//DriveJoints.updateSolenoids(skeleton, test);
 	}
