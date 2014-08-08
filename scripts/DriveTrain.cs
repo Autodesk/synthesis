@@ -98,6 +98,7 @@ public class DriveJoints : MonoBehaviour
 					if (unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && unitySubNode.GetPortA() == i + 1)
 					{
 						SetMotor(unitySubNode, pwm [i]);
+						Debug.Log("MOTOR: " + i + ": " + pwm[i]);
 
 					}
 				} catch (NullReferenceException)
