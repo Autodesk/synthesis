@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using ExceptionHandling;
 using System;
-
+using System.Diagnostics;
 
 //Data struct for packets sent to WPI server through Unity client
 public class InputStatePacket
@@ -40,6 +40,9 @@ public class InputStatePacket
 
 public class DriveJoints : MonoBehaviour
 {
+	// An object to hold stopwatches for each individual solenoid (this is probably not the best way, so I may revisit this)
+	public static Dictionary<string, Stopwatch> timers = new Dictionary<string, Stopwatch>();
+
 	// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor
 	public static void SetMotor(UnityRigidNode wheel, float signal)
 	{
@@ -66,15 +69,25 @@ public class DriveJoints : MonoBehaviour
 	// We will have accurate velocity measures later, but for now, we need something that works.
 	public static void SetSolenoid(UnityRigidNode node, bool forward, float pistonDiameter, float psi)
 	{
-		// First, we calculate force --  DON'T GET RID OF ME YET D:
 		// Since Unity Uses metric units, we will need to convert psi to N/Mm^2 (pounds => Newtons and in^2 => mm^2)
 		float psiToNMm2 = 0.00689475728f;
 		float pistonForce = (psiToNMm2 * psi) * (Mathf.PI * Mathf.Pow((pistonDiameter / 2), 2));
 		float acceleration = pistonForce / node.GetConfigJoint().rigidbody.mass;
-		
-		// This will have an accurate time value later, but for now, this will be an arbitrary number
-		float velocity = 5;
-		
+
+		// If the solenoid does not have a timer, it will get one
+		if (timers.ContainsKey(node.GetModelID()) == false){timers[node.GetModelID()] = new Stopwatch();}
+		// If the timer is not running, we want to start it
+		if (timers [node.GetModelID()].IsRunning != true){timers[node.GetModelID()].Start();}
+		LinearJoint_Base lNode = (LinearJoint_Base)node.GetSkeletalJoint();
+		UnityEngine.Debug.Log(lNode.currentLinearPosition);
+		// Velocity will be calculated based on the amount of time each piston has been running.
+		float velocity = acceleration * timers [node.GetModelID()].ElapsedMilliseconds / 1000;
+
+		/* TODO:
+		 * 	A. Stop Timers if limits are reached.
+		 *  B. Stop Timers if direction has been changed.
+		 */
+
 		// Setting the maximum force of the piston.
 		JointDrive newDriver = new JointDrive();
 		newDriver.maximumForce = pistonForce;
@@ -91,8 +104,11 @@ public class DriveJoints : MonoBehaviour
 			node.GetConfigJoint().targetVelocity = new Vector3(-1 * (velocity), 0, 0);
 			//UnityEngine.Debug.Log(lNode.currentLinearPosition);
 		}
+
+		// In the case that this piston has been accelerating for 3 seconds, we need to stop it.
+		if (timers[node.GetModelID()].ElapsedMilliseconds > 3000) {timers[node.GetModelID()].Stop();}
 	}
-		
+
 	// Rotates a wheel 45 degress to act as a mecanum wheel
 	public static void RotateWheel45(List<UnityRigidNode> wheels)
 	{
@@ -193,10 +209,12 @@ public class DriveJoints : MonoBehaviour
 				if (stateA > 0)
 				{
 					SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					SetSolenoid(unityNode, true, 25f, 60f);
 				}
 				else if (stateB > 0)
 				{
 					SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					SetSolenoid(unityNode, false, 25f, 60f);
 				}
 				else
 				{
