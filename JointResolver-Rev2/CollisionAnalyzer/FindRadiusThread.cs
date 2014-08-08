@@ -16,6 +16,14 @@ class FindRadiusThread
     BXDVector3 rotationAxis; //The vector that is being rotated around in terms of the part's axes.
     static double currentMaxRadius; //The largest radius found among all the parts in the rigid group.
     static ComponentOccurrence treadPart; //The component with the largest radius.  This is stored so its width can be found later.
+    public double finalLocalMaxRadius = 0.0;
+
+
+    static public bool endAllThreads
+    {
+        get;
+        set;
+    }
 
     public FindRadiusThread(ComponentOccurrence passComponent, BXDVector3 passRotationAxis)
     {
@@ -31,11 +39,17 @@ class FindRadiusThread
     {
         currentMaxRadius = 0;
         treadPart = null;
+        endAllThreads = false;
     }
 
     static public double GetRadius()
     {
         return currentMaxRadius;
+    }
+
+    public double GetLocalRadius()
+    {
+        return finalLocalMaxRadius;    
     }
 
     static public ComponentOccurrence GetWidthComponent()
@@ -64,13 +78,11 @@ class FindRadiusThread
     public void FindMaxRadius()
     {
         double newRadius; //The radius for the most recent vertex
-        treadPart = null; //The part of the wheel that collides with the ground.  Most likely the tred.
         FindRadiusThread newThread;
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores all of the threads for suboccurrnces of this occurrence.
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part's axes.
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
-        double localMaxRadius = 0.0; //The largest radius found for this occurrence.
         Vector vertexVector;
         Inventor.Point origin;
         Vector partXAxis;
@@ -96,6 +108,8 @@ class FindRadiusThread
         myRotationAxis.Y = transformedVector.Cell[2, 1];
         myRotationAxis.Z = transformedVector.Cell[3, 1];
 
+        double localMaxRadius = 0.0; //The largest radius found for this occurrence.
+
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
             foreach (Vertex vertex in surface.Vertices)
@@ -107,6 +121,12 @@ class FindRadiusThread
                 //Direction doesn't matter, onlyh the magnitude.
                 newRadius = myRotationAxis.CrossProduct(vertexVector).Length;
 
+                if (endAllThreads)
+                {
+                    return;
+                }
+
+
                 if (newRadius > localMaxRadius)
                 {
                     localMaxRadius = newRadius;
@@ -114,12 +134,14 @@ class FindRadiusThread
             }
         }
 
+        finalLocalMaxRadius = localMaxRadius;
+
         //Stores the largest radius in shared memory once the largest radius for this component is calculated.
         lock (Program.INVENTOR_APPLICATION)
         {
             if (localMaxRadius > currentMaxRadius)
             {
-                currentMaxRadius = localMaxRadius;
+                currentMaxRadius = finalLocalMaxRadius;
 
                 treadPart = component;
             }

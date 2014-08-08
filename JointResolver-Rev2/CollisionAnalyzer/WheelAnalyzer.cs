@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
-
+using System.Diagnostics;
 
 
 class WheelAnalyzer
@@ -14,7 +14,7 @@ class WheelAnalyzer
     {
         const int NUMBER_OF_THREADS = 4;
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
-        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
+        Dictionary<int, FindRadiusThread> radiusThreadList = new Dictionary<int, FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
         ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
         double maxWidth = 0; //The width of the part of the wheel with the largest radius.
         Vector center; //The average center of all the vertex coordinates.
@@ -28,6 +28,8 @@ class WheelAnalyzer
         //Only need to worry about wheels if it is a rotational joint.
         if (joint is RotationalJoint)
         {
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             List<ComponentOccurrence> sortedBoxList = new List<ComponentOccurrence>();
 
             foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
@@ -39,37 +41,53 @@ class WheelAnalyzer
 
             for(int i = 0; i < sortedBoxList.Count; i++)
             {
-                Console.WriteLine(sortedBoxList[i].Name + " with box radius " +
-                    sortedBoxList[i].RangeBox.MinPoint.VectorTo(sortedBoxList[i].RangeBox.MaxPoint).Length / 2);
+                Console.WriteLine(sortedBoxList[i].Name + " with box radius " + findBoxRadius(sortedBoxList[i]));
             }
 
             int nextComponentIndex = 0;
-
-            for (int i = 0; i < NUMBER_OF_THREADS; i++)
-            {
-                radiusThreadList.Add(null);
-            }
+            int largestComponentIndex = -1; //-1 means not found yet.
 
             //Loops until it is impossible to find a larger radius in the remaining components.
-            while (FindRadiusThread.GetRadius() < 
-                sortedBoxList[nextComponentIndex].RangeBox.MinPoint.VectorTo(sortedBoxList[nextComponentIndex].RangeBox.MaxPoint).Length / 2 
-                && nextComponentIndex < sortedBoxList.Count)
+            while (nextComponentIndex < sortedBoxList.Count && largestComponentIndex == -1)
             {
-                for (int i = 0; i < NUMBER_OF_THREADS; i++)
+                List<int> indeciesToRemove = new List<int>();
+
+                foreach(KeyValuePair<int, FindRadiusThread> thread in radiusThreadList)
                 {
-                    if (radiusThreadList[i] == null || !radiusThreadList[i].GetIsAlive())
+                    if (!thread.Value.GetIsAlive())
                     {
-                        radiusThreadList[i] = new FindRadiusThread(sortedBoxList[nextComponentIndex++], ((RotationalJoint)joint).axis);
-                        radiusThreadList[i].Start();
+                        indeciesToRemove.Add(thread.Key);
                     }
+
+                    //Otherwise, will continue on before currentMaxRadius and treadPart get set.
+
+                    if (thread.Value.GetLocalRadius() > findBoxRadius(sortedBoxList[thread.Key + 1]))
+                    {
+                        largestComponentIndex = thread.Key;
+                        break;
+                    }
+                }
+
+                //This is here becuase we can't iterate and remove in the same for loop.
+                foreach (int index in indeciesToRemove)
+                {
+                    radiusThreadList.Remove(index);
+                }
+
+                //Adds new threads when others finish.
+                while (radiusThreadList.Count < NUMBER_OF_THREADS)
+                {
+                    radiusThreadList.Add(nextComponentIndex, new FindRadiusThread(sortedBoxList[nextComponentIndex], ((RotationalJoint)joint).axis));
+                    radiusThreadList[nextComponentIndex].Start();
+                    nextComponentIndex++;
                 }
             }
 
             //Waits for all remaining threads.
-            foreach(FindRadiusThread thread in radiusThreadList)
-            {
-                thread.Join();
-            }
+            FindRadiusThread.endAllThreads = true;
+
+            timer.Stop();
+            Console.WriteLine("Finding radius took " + timer.Elapsed);
 
             Console.WriteLine("Largest radius is " + FindRadiusThread.GetRadius());
 
@@ -101,6 +119,11 @@ class WheelAnalyzer
         joint.cDriver.AddInfo(wheelDriver);
     }
 
+    private static double findBoxRadius(ComponentOccurrence component)
+    {
+        return component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
+    }
+
     private static void sortComponentRadii(ComponentOccurrence component, List<ComponentOccurrence> sortedBoxList)
     {
         //Ignores assemblies and goes to parts.
@@ -114,12 +137,12 @@ class WheelAnalyzer
 
         else
         {
-            double boxDiagonal = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
+            double boxDiagonal = findBoxRadius(component);
 
             //Finds the correct spot to insert the component based on the magnitude of the diagonal of the bounding box.
             int listPosition;
             for (listPosition = 0; listPosition < sortedBoxList.Count
-                && boxDiagonal < sortedBoxList[listPosition].RangeBox.MinPoint.VectorTo(sortedBoxList[listPosition].RangeBox.MaxPoint).Length / 2;
+                && findBoxRadius(component) < findBoxRadius(sortedBoxList[listPosition]);
                 listPosition++) ;
 
             sortedBoxList.Insert(listPosition, component);
