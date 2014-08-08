@@ -40,16 +40,16 @@ public class Init : MonoBehaviour
 			{
 				filePath = fbd.SelectedPath;
 
+
 				List<RigidNode_Base> names = new List<RigidNode_Base>();
 				RigidNode_Base.NODE_FACTORY = delegate() {
 				return new UnityRigidNode();
 			};
+
 				skeleton = BXDJSkeleton.ReadSkeleton(filePath + "/skeleton.bxdj");
 				skeleton.ListAllNodes(names);
-				foreach (RigidNode_Base node in names)
-				{
-					UnityRigidNode uNode = (UnityRigidNode)node;
-					
+				foreach (UnityRigidNode uNode in names)
+				{	
 					uNode.CreateTransform(transform);		
 					uNode.CreateMesh(filePath +"/" + uNode.modelFileName);
 					uNode.FlipNorms();
