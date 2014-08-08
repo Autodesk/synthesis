@@ -125,7 +125,6 @@ public class unityPacket
 			{
 				server.Client.Bind(ipEnd);
 			}
-			//byte[] buffer = new byte[1024];
 			while (active)
 			{	
 				if (server.Available <= 0)
@@ -139,6 +138,7 @@ public class unityPacket
 				//packetRecieve = new OutputStatePacket();
 				//packetRecieve.Read(buffer);
 				serverMutex.ReleaseMutex();
+				
 			}
 				
 			//int portFromInvAPI = 18;

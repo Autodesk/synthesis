@@ -45,35 +45,60 @@ public class auxFunctions : RigidNode_Base
         return new Vector3((float) vector.x * 0.01f, (float) vector.y * 0.01f, (float) vector.z * 0.01f);
 	}
 	
-	public static Quaternion FlipRobot(List<Vector3> wheels, Transform parent)
+	public static void OrientRobot(List<Vector3> wheels, Transform parent)
 	{
-		Vector3 norm = Vector3.Cross((wheels[1] - wheels[0]),(wheels[2] - wheels[0]));
+		Vector3 norm = Vector3.Cross((wheels[0] - wheels[1]),(wheels[0] - wheels[2]));
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
-		
 		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
-		
-		
-		norm = norm * ((above.y > 0) ? -1 : 1);
-		//Debug.Log(above + ": "  + norm);
-		
+	
+		norm = norm * ((above.y < 0) ? -1 : 1);
 		Quaternion q = new Quaternion();
 		q.SetFromToRotation(norm, new Vector3(0,1,0));
 		
-		
-		return q;
-		
+		parent.localRotation *= q;		
 	}
-
-	// The Name is Self Explanatory
-	void placeRobotJustAboveGround (GameObject robot, Vector3 rayCastPoint) 
+	
+	
+	// Creates a bounding box for the entire gameobject which is then used to position the robot with a raycast
+	public static void placeRobotJustAboveGround (Transform parent) 
 	{
+		Vector3 center = Vector3.zero;
+		for(int i = 0; i < parent.childCount; i++)
+		{
+			Vector3 subCenter = Vector3.zero;
+			foreach (Transform child in parent.GetChild(i))
+			{
+				if(child.renderer != null)
+				{
+					subCenter += child.gameObject.renderer.bounds.center;
+				}
+			}
+			subCenter /= parent.GetChild(i).childCount;
+			center += subCenter;	
+		}
+		center /= parent.childCount;
+		Bounds parentBounds = new Bounds(center, Vector3.zero);
+		for(int i = 0; i < parent.childCount; i++)	
+		{
+			foreach(Transform child in parent.GetChild(i))
+			{
+				if(child.renderer != null)
+				{
+					parentBounds.Encapsulate(child.renderer.bounds);
+				}
+			}
+		}
+		
+		Vector3 above = parentBounds.min - parentBounds.center;
+		float yValue =  above.y - parentBounds.center.y;
+		parentBounds.center = new Vector3(parentBounds.center.x, parentBounds.center.y + yValue, parentBounds.center.z);
 		// Uses a raycast to find the distance from a given point to the floor
 		RaycastHit hit = new RaycastHit();
-		Physics.Raycast(rayCastPoint, Vector3.down, out hit);
+		Physics.Raycast(parentBounds.center, Vector3.down, out hit);
 		float distanceToFloor = hit.distance;
-
+		
 		// It then translates the robot down
-		robot.transform.Translate(0, 0, -1 * (distanceToFloor));
+		parent.localPosition = new Vector3(0, -(distanceToFloor), 0);
 	}
 }
 

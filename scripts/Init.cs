@@ -27,7 +27,7 @@ public class Init : MonoBehaviour
 
 	void Start()
 	{
-		Physics.gravity = new Vector3(0,-980f,0);
+		Physics.gravity = new Vector3(0,-9.8f,0);
 		string homePath = (System.Environment.OSVersion.Platform == PlatformID.Unix || System.Environment.OSVersion.Platform == PlatformID.MacOSX) ? System.Environment.GetEnvironmentVariable("HOME") : System.Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
 		//Now you can use a default directory to load all of the files
 		Directory.CreateDirectory(homePath + "/Documents/Skeleton/Skeleton/");
@@ -52,10 +52,9 @@ public class Init : MonoBehaviour
 				unityWheelData.Add(uNode.GetWheelCenter());
 			}
 		}
-		Quaternion rotation = auxFunctions.FlipRobot(unityWheelData, transform);
-		transform.localRotation *= rotation;
-		//byte test = (byte)2;		
-		//DriveJoints.updateSolenoids(skeleton, test);
+		auxFunctions.OrientRobot(unityWheelData, transform);
+		auxFunctions.placeRobotJustAboveGround(transform);
+	
 	}
 
 	void OnEnable()
@@ -71,6 +70,6 @@ public class Init : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-	
+		
 	}
 }

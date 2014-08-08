@@ -32,22 +32,7 @@ public class InputStatePacket
 	
 	public int Write(byte[] packet)
 	{
-		/*
-		for (int i = 0; dio.Length; i++)
-		{
-			int offset = i * ;
-		}
-		for(int i = 0; encoder.Length; i++)
-		{
-		}
-		for(int i = 0; ai.Length; i++)
-		{
-		}
-		for(int i = 0; counter.Length; i++)
-		{
-		}
-		return 
-		*/
+
 		return packet.Length;
 	}
 }
