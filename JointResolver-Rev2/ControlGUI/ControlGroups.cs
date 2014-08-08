@@ -132,6 +132,14 @@ public partial class ControlGroups
         }
     }
 
+    private void ControlGroups_SizeChanged(object sender, EventArgs e)
+    {
+        int newTabHeight = tabsMain.Height;
+        int newTabWidth = tabsMain.Width;
+        int newGroupHeight = lstGroups.Height;
+        int newGroupWidth = lstGroups.Width;
+    }
+
     private void lstGroups_SelectedIndexChanged(object sender, EventArgs e)
     {
         if (chkHighlightComponents.Checked && lstGroups.SelectedItems.Count == 1 && lstGroups.SelectedItems[0].Tag is CustomRigidGroup)

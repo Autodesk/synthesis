@@ -48,6 +48,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnExport
             // 
+            this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExport.Location = new System.Drawing.Point(808, 687);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(130, 42);
@@ -58,6 +59,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnCancel.Location = new System.Drawing.Point(12, 687);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(130, 42);
@@ -202,6 +204,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // chkHighlightComponents
             // 
+            this.chkHighlightComponents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.chkHighlightComponents.AutoSize = true;
             this.chkHighlightComponents.Location = new System.Drawing.Point(171, 699);
             this.chkHighlightComponents.Name = "chkHighlightComponents";
@@ -212,6 +215,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnCalculate
             // 
+            this.btnCalculate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCalculate.Location = new System.Drawing.Point(674, 687);
             this.btnCalculate.Name = "btnCalculate";
             this.btnCalculate.Size = new System.Drawing.Size(128, 43);
@@ -223,6 +227,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // listSensorsButton
             // 
+            this.listSensorsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.listSensorsButton.Location = new System.Drawing.Point(549, 687);
             this.listSensorsButton.Name = "listSensorsButton";
             this.listSensorsButton.Size = new System.Drawing.Size(119, 43);
