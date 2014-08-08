@@ -6,7 +6,7 @@ public class Camera : MonoBehaviour {
 	Vector3 rotateVect;
 	GameObject gameobj;
 	static float camMag = 400;
-	Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag = 400)
+	Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
 	{
 		vector -= origin;
 		Vector3 output = vector;
@@ -16,7 +16,7 @@ public class Camera : MonoBehaviour {
 		return output.normalized*mag + origin;
 	}
 
-	Vector3 rotateYZ(Vector3 vector, Vector3 origin, float theta, float mag = 400)
+	Vector3 rotateYZ(Vector3 vector, Vector3 origin, float theta, float mag)
 	{
 		vector -= origin;
 		Vector3 output = vector;
