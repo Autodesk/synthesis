@@ -18,7 +18,7 @@ public class AssertExtensions
         Assert.AreEqual(a.Length, b.Length + bStartInA, prefix + ": Length not equal");
         for (int i = 0; i < b.Length; i++)
         {
-            Assert.AreEqual(a[i + bStartInA], b[i], ": Value " + i + " not equal");
+            Assert.AreEqual(a[i + bStartInA], b[i], prefix + ": Value " + i + " not equal");
         }
     }
 }

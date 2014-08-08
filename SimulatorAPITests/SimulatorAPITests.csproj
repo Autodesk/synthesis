@@ -63,6 +63,7 @@
     <Compile Include="TestUtils.cs" />
     <Compile Include="Math\BXDVector3Tests.cs" />
     <Compile Include="Joints\RobotSensor.cs" />
+    <Compile Include="ArrayUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
