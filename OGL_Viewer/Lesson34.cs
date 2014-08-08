@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Tao.OpenGl;
 using Tao.FreeGlut;
+using System.Collections.Generic;
 
 /// <summary>
 /// 
@@ -20,7 +21,9 @@ public class OGL_Viewer
     public static bool[] KEY_STATES = new bool[512];
     private static double horizontalTan = Math.Tan(25.0 * 3.14 / 180.0);
     private const int WIDTH = 500, HEIGHT = 500;
-    private static VBOMesh vboMesh;
+    private static OGL_RigidNode baseNode;
+    private static List<RigidNode_Base> nodes;
+
     static int shaders = 0;
     static Camera3rdPerson cam = new Camera3rdPerson();
 
@@ -49,8 +52,11 @@ public class OGL_Viewer
             Gl.glLightfv(Gl.GL_LIGHT1, Gl.GL_SPECULAR, l_specular);
         }
 
-
-        vboMesh.draw();
+        baseNode.compute();
+        foreach (RigidNode_Base node in nodes)
+        {
+            ((OGL_RigidNode) node).render();
+        }
 
         Gl.glFlush();
         Glut.glutSwapBuffers();
@@ -78,9 +84,17 @@ public class OGL_Viewer
 
     public static void Main(string[] args)
     {
-        BXDAMesh mesh = new BXDAMesh();
-        mesh.ReadFromFile("C:/Users/t_millw/Downloads/Skeleton/node_0.bxda");
-        vboMesh = new VBOMesh(mesh.meshes[0]);
+        RigidNode_Base.NODE_FACTORY = delegate()
+        {
+            return new OGL_RigidNode();
+        };
+        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeleton/skeleton.bxdj");
+        baseNode = (OGL_RigidNode) skeleton;
+        nodes = skeleton.ListAllNodes();
+        foreach (RigidNode_Base node in nodes)
+        {
+            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeleton/" + node.modelFileName);
+        }
         Glut.glutInit();
         Glut.glutInitWindowPosition(0, 0);
         Glut.glutInitWindowSize(WIDTH, HEIGHT);
@@ -107,7 +121,6 @@ public class OGL_Viewer
         shaders = ShaderLoader.loadShaderPair();
 
         Glut.glutMainLoop();
-        vboMesh.unloadFromGPU();
         //Gl.glDeleteProgramsARB(1, new int[] { shaders });
     }
 }

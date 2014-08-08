@@ -52,8 +52,10 @@
   <ItemGroup>
     <Compile Include="Camera3rdPerson.cs" />
     <Compile Include="Lesson34.cs" />
+    <Compile Include="Matrix.cs" />
     <Compile Include="OGL_RigidNode.cs" />
     <Compile Include="ShaderLoader.cs" />
+    <Compile Include="TransMatrix.cs" />
     <Compile Include="VBOMesh.cs" />
   </ItemGroup>
   <ItemGroup>
