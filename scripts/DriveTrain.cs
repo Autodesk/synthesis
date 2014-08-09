@@ -43,15 +43,15 @@ public class DriveJoints : MonoBehaviour
 	// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor
 	public static void SetMotor(UnityRigidNode wheel, float signal)
 	{
-		// The conversion factor from Oz-In to NM. It has a multiplier in it at the moment to help compensate for the robot being the size of a building.
+		// The conversion factor from Oz-In to NM.
 		float OzInToNm = .00706155183333f;
-
 		
 		if (signal == 0)
 		{
 			// If no motor torque is applied, the breaks are applied
 			// The maximum brakeTorque of a vex motor is 343.3 oz-in
-			wheel.GetWheelCollider().brakeTorque = OzInToNm * 100.0f * 343.3f;
+			wheel.GetWheelCollider().brakeTorque = OzInToNm * 343.3f;
+			wheel.GetConfigJoint().targetAngularVelocity = new Vector3(0,0,0);
 		} else
 		{
 			wheel.GetWheelCollider().brakeTorque = 0;
@@ -98,6 +98,7 @@ public class DriveJoints : MonoBehaviour
 					if (unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && unitySubNode.GetPortA() == i + 1)
 					{
 						SetMotor(unitySubNode, pwm [i]);
+						Debug.Log("MOTOR: " + i + ": " + pwm[i]);
 
 					}
 				} catch (NullReferenceException)

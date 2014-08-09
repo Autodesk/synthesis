@@ -110,7 +110,7 @@ public class unityPacket
 
 	private void ServerInternal()
 	{
-		
+		bool f = false;
 		try
 		{	
 			server = new UdpClient();
@@ -133,6 +133,7 @@ public class unityPacket
                     continue;
                 }
 				byte[] temp = server.Receive(ref ipEnd);
+				if (!f) {Debug.Log("REC\n"); f=true;}
                 serverMutex.WaitOne();
                 receiveBuffer = temp;
 				//packetRecieve = new OutputStatePacket();
