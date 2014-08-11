@@ -153,33 +153,36 @@ public class DriveJoints : MonoBehaviour
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 
 				// Checking to see if custom PSI and diameter values exist
+				/*
 				if (unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>() == null || unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM == null || unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI == null)
 				{
 					// If any of the fields of the PneumaticDriverMeta class don't exist, we will need to use default values
-					useDefault = true;
+					useDefaault = true;
 				}
-
+				*/
 				if (stateA > 0)
 				{
-					if (useDefault)
-					{
-						SetSolenoid(unityNode, true, 12.7f, 60f);
-					} else
+					try
 					{
 						SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					} catch (Exception ex)
+					{
+						SetSolenoid(unityNode, true, 12.7f, 60f);
 					}
 				} else if (stateB > 0)
 				{
-					if (useDefault)
-					{
-						SetSolenoid(unityNode, false, 12.7f, 60f);
-					} else
+					try
 					{
 						SetSolenoid(unityNode, false, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					} catch (Exception ex)
+					{
+						SetSolenoid(unityNode, false, 12.7f, 60f);
 					}
+
 				}
 			}
 		}
-		
 	}
 }
+		
+
