@@ -18,6 +18,11 @@ class FindRadiusThread
     static ComponentOccurrence treadPart; //The component with the largest radius.  This is stored so its width can be found later.
     public double finalLocalMaxRadius = 0.0;
 
+    public bool endThread
+    {
+        get;
+        set;
+    }
 
     static public bool endAllThreads
     {
@@ -78,8 +83,6 @@ class FindRadiusThread
     public void FindMaxRadius()
     {
         double newRadius; //The radius for the most recent vertex
-        FindRadiusThread newThread;
-        List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores all of the threads for suboccurrnces of this occurrence.
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part's axes.
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
@@ -91,6 +94,7 @@ class FindRadiusThread
         Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
         Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
+        endThread = false;
 
         component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
 
@@ -121,7 +125,7 @@ class FindRadiusThread
                 //Direction doesn't matter, onlyh the magnitude.
                 newRadius = myRotationAxis.CrossProduct(vertexVector).Length;
 
-                if (endAllThreads)
+                if (endAllThreads || endThread)
                 {
                     return;
                 }
@@ -145,12 +149,6 @@ class FindRadiusThread
 
                 treadPart = component;
             }
-        }
-
-        //Makes sure all sub components have ended before the parent ends.  Done to make sure that the final radius is indeed the largest radius.
-        foreach (FindRadiusThread subThread in radiusThreadList)
-        {
-            subThread.Join();
         }
 
         Console.WriteLine("Found radius of " + component.Name + " to be " + localMaxRadius);

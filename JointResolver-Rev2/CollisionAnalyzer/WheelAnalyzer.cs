@@ -43,39 +43,49 @@ class WheelAnalyzer
             {
                 Console.WriteLine(sortedBoxList[i].Name + " with box radius " + findBoxRadius(sortedBoxList[i]));
 
-                radiusThreadList.Add(null);
+                radiusThreadList.Add(null); //Ensures there are the correct number of spaces for when we insert by index later.
             }
 
-            int nextComponentIndex = 0;
+            int nextComponentIndex = 0; //The index of the next component of which to find the radius.
             int activeThreadCount = 0;  //Counts the number of started threads that have yet to complete.
-            bool noMoreLargeRadii = false;
+            int largestRadiusIndex = -1; //-1 means it has not been found yet.  Stores the index after which it is pointless to try and find the radius.
 
             //Loops until it is impossible to find a larger radius in the remaining components.
-            while (nextComponentIndex < sortedBoxList.Count && !noMoreLargeRadii)
+            while (nextComponentIndex < sortedBoxList.Count && (activeThreadCount > 0 || largestRadiusIndex == -1))
             {
                 List<FindRadiusThread> threadsToRemove = new List<FindRadiusThread>();
 
                 for(int index = 0; index < nextComponentIndex; index++)
                 {
-                    if (!radiusThreadList[index].GetIsAlive())
+                    if (radiusThreadList[index] != null)
                     {
-                        activeThreadCount--;
-                        threadsToRemove.Add(radiusThreadList[index]);
-                    }
+                        if (!radiusThreadList[index].GetIsAlive())
+                        {
+                            activeThreadCount--;
+                            threadsToRemove.Add(radiusThreadList[index]);
+                        }
 
-                    if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[nextComponentIndex]))
-                    {
-                        noMoreLargeRadii = true;
+                        if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[nextComponentIndex]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
+                        {
+                            largestRadiusIndex = index;
+                        }
+
+                        if (radiusThreadList[index].GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
+                        {
+                            activeThreadCount--;
+                            radiusThreadList[index].endThread = true;
+                        }
                     }
                 }
 
                 foreach(FindRadiusThread threadToRemove in threadsToRemove)
                 {
                     radiusThreadList.Remove(threadToRemove);
+                    radiusThreadList.Add(null);  //Keeps the index existing.
                 }
 
                 //Adds new threads when others finish.
-                while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && !noMoreLargeRadii)
+                while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
                 {
                     radiusThreadList[nextComponentIndex] = new FindRadiusThread(sortedBoxList[nextComponentIndex], ((RotationalJoint)joint).axis);
                     radiusThreadList[nextComponentIndex].Start();
@@ -87,7 +97,10 @@ class WheelAnalyzer
             //Waits for all remaining threads.
             for (int index = 0; index < nextComponentIndex; index++)
             {
-                radiusThreadList[index].Join();
+                if (radiusThreadList[index] != null)
+                {
+                    radiusThreadList[index].Join();
+                }
             }
 
             timer.Stop();
@@ -141,8 +154,6 @@ class WheelAnalyzer
 
         else
         {
-            double boxDiagonal = findBoxRadius(component);
-
             //Finds the correct spot to insert the component based on the magnitude of the diagonal of the bounding box.
             int listPosition;
             for (listPosition = 0; listPosition < sortedBoxList.Count
