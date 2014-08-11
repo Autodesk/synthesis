@@ -49,8 +49,5 @@ class PneumaticAnalyzer
                 pneumaticDriver.pressurePSI = 1;
                 break;
         }
-
-        //newCalculation = StartCalculations;
-        node.RegisterDeferredCalculation(node.GetModelID(), null);
     }
 }
