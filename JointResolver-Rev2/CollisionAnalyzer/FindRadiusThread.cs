@@ -14,9 +14,9 @@ class FindRadiusThread
     Thread findRadius;
     ComponentOccurrence component; //The component of which to find the radius.
     BXDVector3 rotationAxis; //The vector that is being rotated around in terms of the part's axes.
-    static double currentMaxRadius; //The largest radius found among all the parts in the rigid group.
+    private static double currentMaxRadius; //The largest radius found among all the parts in the rigid group.
     static ComponentOccurrence treadPart; //The component with the largest radius.  This is stored so its width can be found later.
-    public double finalLocalMaxRadius = 0.0;
+    private double finalLocalMaxRadius = 0.0;
     public volatile bool endThread = false;
 
 
