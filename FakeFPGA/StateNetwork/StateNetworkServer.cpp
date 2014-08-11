@@ -31,22 +31,23 @@ void StateNetworkServer::Open() {
 		fprintf(stderr, "Could not create socket!\n");
 		exit(2);
 	}
-	struct sockaddr_in server;		// Setup socket address
-	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = INADDR_ANY;
-	server.sin_port = htons(PORT);
-
-	if (bind(udpSocket, (struct sockaddr *) &server, sizeof(server))
-			== SOCKET_ERROR) { // Attach socket to address
-		fprintf(stderr, "Could not bind socket!\n");
-		exit(2);
-	}
 
 	// Who cares about data!  We don't need to listen!.... but we do
 	udpRecvSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);	// Create a socket to get scolded by unity
 	if (udpRecvSocket < 0) {
 		fprintf(stderr, "Count not create receive socket.\n");
 		exit(3);
+	}
+
+	struct sockaddr_in server;		// Setup socket address
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = INADDR_ANY;
+	server.sin_port = htons(RECV_PORT);
+
+	if (bind(udpRecvSocket, (struct sockaddr *) &server, sizeof(server))
+		== SOCKET_ERROR) { // Attach socket to address
+			fprintf(stderr, "Could not bind receive socket!\n");
+			exit(2);
 	}
 }
 
@@ -61,10 +62,10 @@ void StateNetworkServer::Close() {
 void StateNetworkServer::SendStatePacket(OutputStatePacket pack) {
 	struct sockaddr_in server;	// Send to localhost
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("127.0.0.1");
+	server.sin_addr.s_addr = INADDR_LOOPBACK;
 	server.sin_port = htons(PORT);
 	sendto(udpSocket, (char*) &pack, sizeof(pack), 0, (sockaddr*) &server,
-			sizeof(server));	// Send it
+		sizeof(server));	// Send it
 }
 
 bool StateNetworkServer::ReceiveStatePacket(InputStatePacket *pack) {
