@@ -46,13 +46,13 @@ public class DriveJoints : MonoBehaviour
 	{
 		// The conversion factor from Oz-In to NM.
 		float OzInToNm = .00706155183333f;
-
 		
 		if (signal == 0)
 		{
 			// If no motor torque is applied, the breaks are applied
 			// The maximum brakeTorque of a vex motor is 343.3 oz-in
 			wheel.GetWheelCollider().brakeTorque = OzInToNm * 343.3f;
+			wheel.GetConfigJoint().targetAngularVelocity = new Vector3(0,0,0);
 		} else
 		{
 			wheel.GetWheelCollider().brakeTorque = 0;
@@ -121,6 +121,7 @@ public class DriveJoints : MonoBehaviour
 					if (unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && unitySubNode.GetPortA() == i + 1)
 					{
 						SetMotor(unitySubNode, pwm [i]);
+						Debug.Log("MOTOR: " + i + ": " + pwm[i]);
 
 					}
 				} catch (NullReferenceException)
@@ -153,19 +154,12 @@ public class DriveJoints : MonoBehaviour
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 
 				// Checking to see if custom PSI and diameter values exist
-				/*
-				if (unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>() == null || unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM == null || unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI == null)
-				{
-					// If any of the fields of the PneumaticDriverMeta class don't exist, we will need to use default values
-					useDefaault = true;
-				}
-				*/
 				if (stateA > 0)
 				{
 					try
 					{
 						SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
-					} catch (Exception ex)
+					} catch
 					{
 						SetSolenoid(unityNode, true, 12.7f, 60f);
 					}
@@ -174,7 +168,7 @@ public class DriveJoints : MonoBehaviour
 					try
 					{
 						SetSolenoid(unityNode, false, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
-					} catch (Exception ex)
+					} catch
 					{
 						SetSolenoid(unityNode, false, 12.7f, 60f);
 					}

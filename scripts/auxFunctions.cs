@@ -50,11 +50,10 @@ public class auxFunctions : RigidNode_Base
 		Vector3 norm = Vector3.Cross((wheels[0] - wheels[1]),(wheels[0] - wheels[2]));
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
 		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
-	
-		norm = norm * ((above.y < 0) ? -1 : 1);
+		norm = norm * ((above.y < 0) ? 1 : -1);
+
 		Quaternion q = new Quaternion();
-		q.SetFromToRotation(norm, new Vector3(0,1,0));
-		
+		q.SetFromToRotation(norm, Vector3.up);
 		parent.localRotation *= q;		
 	}
 	
@@ -98,7 +97,7 @@ public class auxFunctions : RigidNode_Base
 		float distanceToFloor = hit.distance;
 		
 		// It then translates the robot down
-		parent.localPosition = new Vector3(0, -(distanceToFloor), 0);
+		parent.localPosition = new Vector3(parent.localPosition.x, -(distanceToFloor), parent.localPosition.z);
 	}
 }
 
