@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
-using System.Diagnostics;
-
 
 class WheelAnalyzer
 {
@@ -28,8 +26,6 @@ class WheelAnalyzer
         //Only need to worry about wheels if it is a rotational joint.
         if (joint is RotationalJoint)
         {
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
             List<ComponentOccurrence> sortedBoxList = new List<ComponentOccurrence>();
 
             foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
@@ -107,9 +103,6 @@ class WheelAnalyzer
                     radiusThreadList[index].Join();
                 }
             }
-
-            timer.Stop();
-            Console.WriteLine("Finding radius took " + timer.Elapsed);
 
             Console.WriteLine("Largest radius is " + FindRadiusThread.GetRadius());
 
