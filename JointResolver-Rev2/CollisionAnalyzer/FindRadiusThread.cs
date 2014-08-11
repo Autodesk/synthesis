@@ -17,18 +17,8 @@ class FindRadiusThread
     static double currentMaxRadius; //The largest radius found among all the parts in the rigid group.
     static ComponentOccurrence treadPart; //The component with the largest radius.  This is stored so its width can be found later.
     public double finalLocalMaxRadius = 0.0;
+    public bool endThread = false;
 
-    public bool endThread
-    {
-        get;
-        set;
-    }
-
-    static public bool endAllThreads
-    {
-        get;
-        set;
-    }
 
     public FindRadiusThread(ComponentOccurrence passComponent, BXDVector3 passRotationAxis)
     {
@@ -44,7 +34,6 @@ class FindRadiusThread
     {
         currentMaxRadius = 0;
         treadPart = null;
-        endAllThreads = false;
     }
 
     static public double GetRadius()
@@ -94,7 +83,6 @@ class FindRadiusThread
         Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
         Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
-        endThread = false;
 
         component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
 
@@ -125,7 +113,7 @@ class FindRadiusThread
                 //Direction doesn't matter, onlyh the magnitude.
                 newRadius = myRotationAxis.CrossProduct(vertexVector).Length;
 
-                if (endAllThreads || endThread)
+                if (endThread)
                 {
                     return;
                 }
