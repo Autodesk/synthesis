@@ -57,6 +57,7 @@ class WheelAnalyzer
 
                 for(int index = 0; index < nextComponentIndex; index++)
                 {
+
                     if (radiusThreadList[index] != null)
                     {
                         if (!radiusThreadList[index].GetIsAlive())
@@ -65,7 +66,7 @@ class WheelAnalyzer
                             threadsToRemove.Add(radiusThreadList[index]);
                         }
 
-                        if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[nextComponentIndex]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
+                        if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[index+1]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
                         {
                             largestRadiusIndex = index;
                         }
