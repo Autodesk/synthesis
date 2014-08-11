@@ -351,6 +351,7 @@ partial class DriveChooser
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grpDriveOptions);
             this.Controls.Add(this.grpChooseDriver);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "DriveChooser";
             this.Text = "Configure Joint";
             this.grpChooseDriver.ResumeLayout(false);

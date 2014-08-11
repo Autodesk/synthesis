@@ -20,6 +20,7 @@
             base.Dispose(disposing);
         }
 
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -78,6 +79,7 @@
             // 
             // deleteButton
             // 
+            this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.deleteButton.Location = new System.Drawing.Point(22, 220);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(129, 36);
@@ -88,6 +90,7 @@
             // 
             // addSensorButton
             // 
+            this.addSensorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.addSensorButton.Location = new System.Drawing.Point(172, 220);
             this.addSensorButton.Name = "addSensorButton";
             this.addSensorButton.Size = new System.Drawing.Size(114, 36);
@@ -104,8 +107,11 @@
             this.Controls.Add(this.addSensorButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.sensorListView);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.MinimumSize = new System.Drawing.Size(550, 300);
             this.Name = "SensorListForm";
             this.Text = "SensorListForm";
+            this.SizeChanged += new System.EventHandler(this.window_SizeChanged);
             this.ResumeLayout(false);
 
         }

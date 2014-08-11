@@ -52,5 +52,15 @@ namespace JointResolver.ControlGUI
             sensorForm.ShowDialog();
             this.UpdateSensorList();
         }
+
+        private void window_SizeChanged(object sender, EventArgs e)
+        {
+            int newListHeight = this.Height - 115;
+            int newListWidth = this.Width - 45;
+
+            sensorListView.Height = newListHeight;
+            sensorListView.Width = newListWidth;
+        }
+
     }
 }
