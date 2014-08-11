@@ -107,6 +107,7 @@
             this.Controls.Add(this.addSensorButton);
             this.Controls.Add(this.deleteButton);
             this.Controls.Add(this.sensorListView);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MinimumSize = new System.Drawing.Size(550, 300);
             this.Name = "SensorListForm";
             this.Text = "SensorListForm";
