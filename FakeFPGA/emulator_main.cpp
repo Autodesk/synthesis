@@ -43,7 +43,7 @@ int StartEmulator() {
 		serv.SendStatePacket(pack);
 		if (serv.ReceiveStatePacket(&sensors)) {
 			for (int j = 0; j<2; j++){
-				GetFakeFPGA()->getDIO(j)->writeDigitalPort(sensors.dio[j].digitalInput, GetFakeFPGA()->getDIO(j)->readOutputEnable(&status));
+				GetFakeFPGA()->getDIO(j)->writeDigitalPort(sensors.dio[j].digitalInput, ~(GetFakeFPGA()->getDIO(j)->readOutputEnable(&status)));
 			}
 			for (int j = 0; j<1; j++) {
 				GetFakeFPGA()->getAnalog(j)->updateValues(sensors.ai[j].analogValues);
