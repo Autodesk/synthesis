@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using ExceptionHandling;
 using System;
-using System.Diagnostics;
 
 //Data struct for packets sent to WPI server through Unity client
 public class InputStatePacket
@@ -16,15 +15,18 @@ public class InputStatePacket
 	{
 		public UInt32 digitalInput;
 	}
+
 	public class Encoders
 	{
 		public Int32 value;
 	}
+
 	public class AnalogValues
 	{
 		public const int LENGTH = 4 * (8);
 		public Int32[] analogValues = new Int32[8];
 	}
+
 	public class Counter
 	{
 		public Int32 value;
@@ -37,12 +39,8 @@ public class InputStatePacket
 	}
 }
 
-
 public class DriveJoints : MonoBehaviour
 {
-	// An object to hold stopwatches for each individual solenoid (this is probably not the best way, so I may revisit this)
-	public static Dictionary<string, Stopwatch> timers = new Dictionary<string, Stopwatch>();
-
 	// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor
 	public static void SetMotor(UnityRigidNode wheel, float signal)
 	{
@@ -73,20 +71,7 @@ public class DriveJoints : MonoBehaviour
 		float psiToNMm2 = 0.00689475728f;
 		float pistonForce = (psiToNMm2 * psi) * (Mathf.PI * Mathf.Pow((pistonDiameter / 2), 2));
 		float acceleration = pistonForce / node.GetConfigJoint().rigidbody.mass;
-
-		// If the solenoid does not have a timer, it will get one
-		if (timers.ContainsKey(node.GetModelID()) == false){timers[node.GetModelID()] = new Stopwatch();}
-		// If the timer is not running, we want to start it
-		if (timers [node.GetModelID()].IsRunning != true){timers[node.GetModelID()].Start();}
-		//LinearJoint_Base lNode = (LinearJoint_Base)node.GetSkeletalJoint();
-		//UnityEngine.Debug.Log(lNode.currentLinearPosition);
-		// Velocity will be calculated based on the amount of time each piston has been running.
-		float velocity = acceleration * timers [node.GetModelID()].ElapsedMilliseconds / 10000;
-
-		/* TODO:
-		 * 	A. Stop Timers if limits are reached.
-		 *  B. Stop Timers if direction has been changed.
-		 */
+		float velocity = acceleration * (Time.deltaTime) + node.GetConfigJoint().rigidbody.velocity.x;
 
 		// Setting the maximum force of the piston.
 		JointDrive newDriver = new JointDrive();
@@ -95,18 +80,9 @@ public class DriveJoints : MonoBehaviour
 		node.GetConfigJoint().xDrive = newDriver;
 		
 		if (forward == true)
-		{
 			node.GetConfigJoint().targetVelocity = new Vector3(velocity, 0, 0);
-			//UnityEngine.Debug.Log(lNode.currentLinearPosition);
-		}
 		else if (forward == false)
-		{
 			node.GetConfigJoint().targetVelocity = new Vector3(-1 * (velocity), 0, 0);
-			//UnityEngine.Debug.Log(lNode.currentLinearPosition);
-		}
-
-		// In the case that this piston has been accelerating for 3 seconds, we need to stop it.
-		if (timers[node.GetModelID()].ElapsedMilliseconds > 1000) {timers[node.GetModelID()].Stop(); timers[node.GetModelID()].Reset();}
 	}
 
 	// Rotates a wheel 45 degress to act as a mecanum wheel
@@ -159,7 +135,7 @@ public class DriveJoints : MonoBehaviour
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
 	public static void UpdateSolenoids(RigidNode_Base skeleton, byte packet)
 	{
-		
+		bool useDefault = false;
 		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfNodes);
 		
@@ -170,55 +146,37 @@ public class DriveJoints : MonoBehaviour
 			//LinearJoint_Base lJoint = (LinearJoint_Base)unityNode.GetSkeletalJoint();
 			
 			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-			if (subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC)
+			if (subBase.GetSkeletalJoint() != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
 			{
-				// It will use bitwise operators to check if the port is open.
-				/* Full Explanation:
-                    * bool StateX is a boolean that will return True if port X is open
-                    * the packet is the byte we take as input
-                    * The "1 << subBase.GetSkeletalJoint().cDriver.portA" does the following:
-                        * It gets the port numbers for solenoid A (and subtracts 1 from it so that the solenoid port is base 0 instead of base 0)
-                        * And then it uses bitwise operators to create a byte
-                        * It does this by shifting the integer 1 over to the left by the value of port A.
-                        * Heres an example of the bitwise lefshift operators in use: "1 << 5" will result in 100000.
-                        * So in our case, if port = 3, 
-                            * "1 << subBase.GetSkeletalJoint().cDriver.portA - 1" 
-                            * = "1 << 3 - 1"
-                            * = "1 << 2"
-                            * = 100  --- which is also a bit 
-                    * Now that is has that information, it compares that byte to the packet the function recieves using the & operator
-                    * Here is how the & operator works:
-                        * "The bitwise AND operator (&) compares each bit of the first operand to the corresponding bit of the second operand. If both bits are 1, the corresponding result bit is set to 1. Otherwise, the corresponding result bit is set to 0." - msdn.microsoft.com
-                        *  So if the bit of the first operand is	"1111"
-                        *  And the bit of the second operand is		"1010"
-                        *  The resulting bit will be:				"1010"
-                        *  As you can see, it oompares the data in each bit, and if they both match (in our case, if they both are 1) at the given position,
-                        *  The resulting byte will have a 1 at the given position. If they don't match however, the result at the given will be 0.
-                    * So in our case, if the byte at solenoid port 0 (the first bit) has a value of 1 in our packet, and our code is checking to see if port 1 is open, the following operation is executed: "00000001 & 00000001".
-                    * This will result in a byte value of "00000001".
-                    * Now, since bits can evaluate to integers, a byte that results in a value greater than 0 indicates that the byte contains a bit with a value of 1 as opposed to 0.
-                    * In our case, that would indicate that the solenoid port we checked for with the bitwise & operator is open.
-                 */
+				// We use bitwise operators to check if the port is open.
 				int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
-				// Now, if both solenoid ports are open
-				//if (unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM != null && unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI != null) {
-				//	// If any of the fields of the PneumaticDriverMeta class don't exist, we won't do anything.
-				//	return;
-				//}
+
+				// Checking to see if custom PSI and diameter values exist
+				if (unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>() == null || unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM == null || unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI == null)
+				{
+					// If any of the fields of the PneumaticDriverMeta class don't exist, we will need to use default values
+					useDefault = true;
+				}
+
 				if (stateA > 0)
 				{
-					//SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
-					SetSolenoid(unityNode, true, 25f, 60f);
-				}
-				else if (stateB > 0)
+					if (useDefault)
+					{
+						SetSolenoid(unityNode, true, 12.7f, 60f);
+					} else
+					{
+						SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					}
+				} else if (stateB > 0)
 				{
-					//SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
-					SetSolenoid(unityNode, false, 25f, 60f);
-				}
-				else
-				{
-					DriveJoints.SetConfigJointMotorX(unityNode, 0);
+					if (useDefault)
+					{
+						SetSolenoid(unityNode, false, 12.7f, 60f);
+					} else
+					{
+						SetSolenoid(unityNode, false, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					}
 				}
 			}
 		}
