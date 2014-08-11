@@ -53,28 +53,28 @@ class WheelAnalyzer
             {
                 List<FindRadiusThread> threadsToRemove = new List<FindRadiusThread>();
 
-                for(int index = 0; index < nextComponentIndex; index++)
+                //for(int index = 0; index < nextComponentIndex; index++)
+                foreach(FindRadiusThread thread in radiusThreadList)
                 {
+                    int index = radiusThreadList.IndexOf(thread);
 
-                    if (radiusThreadList[index] != null)
+                    if (!thread.GetIsAlive())
                     {
-                        if (!radiusThreadList[index].GetIsAlive())
-                        {
-                            activeThreadCount--;
-                            threadsToRemove.Add(radiusThreadList[index]);
-                        }
-
-                        if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[index+1]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
-                        {
-                            largestRadiusIndex = index;
-                        }
-
-                        if (radiusThreadList[index].GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
-                        {
-                            activeThreadCount--;
-                            radiusThreadList[index].endThread = true;
-                        }
+                        activeThreadCount--;
+                        threadsToRemove.Add(thread);
                     }
+
+                    if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[index+1]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
+                    {
+                        largestRadiusIndex = index;
+                    }
+
+                    if (thread.GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
+                    {
+                        activeThreadCount--;
+                        thread.endThread = true;
+                    }
+                    
                 }
 
                 foreach(FindRadiusThread threadToRemove in threadsToRemove)
