@@ -101,7 +101,9 @@ public class SurfaceExporter
         }
         #endregion
 
-        if (separateFaces)
+        surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
+
+        if (separateFaces || tmpSurface.vertCount > TMP_VERTICIES)
         {
             Console.WriteLine("Exporting " + surf.Faces.Count + " faces for " + surf.Parent.Name + "\t(" + surf.Name + ")");
             int i = 0;
@@ -123,12 +125,6 @@ public class SurfaceExporter
             if (tmpSurface.vertCount == 0)
             {
                 surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-            }
-#else
-            surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
-            if (tmpSurface.vertCount == 0)
-            {
-                surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies);
             }
 #endif
             AssetProperties assetProps = sharedValue;
