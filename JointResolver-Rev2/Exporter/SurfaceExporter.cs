@@ -63,6 +63,7 @@ public class SurfaceExporter
         BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
 
         surf.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
+
         int bestIndex = -1;
         for (int i = 0; i < tmpToleranceCount; i++)
         {
@@ -102,6 +103,10 @@ public class SurfaceExporter
         #endregion
 
         surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
+        if (tmpSurface.vertCount == 0)
+        {
+            surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
+        }
 
         if (separateFaces || tmpSurface.vertCount > TMP_VERTICIES)
         {
