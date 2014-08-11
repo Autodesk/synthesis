@@ -71,7 +71,7 @@ public class DriveJoints : MonoBehaviour
 		float psiToNMm2 = 0.00689475728f;
 		float pistonForce = (psiToNMm2 * psi) * (Mathf.PI * Mathf.Pow((pistonDiameter / 2), 2));
 		float acceleration = pistonForce / node.GetConfigJoint().rigidbody.mass;
-		float velocity = acceleration * (Time.deltaTime) + node.GetConfigJoint().rigidbody.velocity.x;
+		float velocity = acceleration * (Time.deltaTime) + Vector3.Dot(node.GetConfigJoint().rigidbody.velocity, node.GetConfigJoint().axis);
 
 		// Setting the maximum force of the piston.
 		JointDrive newDriver = new JointDrive();
@@ -161,6 +161,7 @@ public class DriveJoints : MonoBehaviour
 						SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
 					} catch
 					{
+						Debug.Log("Errors Were Caught");
 						SetSolenoid(unityNode, true, 12.7f, 60f);
 					}
 				} else if (stateB > 0)
