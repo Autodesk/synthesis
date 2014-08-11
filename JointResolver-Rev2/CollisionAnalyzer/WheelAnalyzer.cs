@@ -23,14 +23,14 @@ class WheelAnalyzer
 
         wheelDriver = joint.cDriver.GetInfo<WheelDriverMeta>();
 
-        FindRadiusThread.Reset(); //Prepares the shared memory for the next component.
+        FindRadiusThread.Reset(); //Prepares the shared memeory for the next component.
 
         //Only need to worry about wheels if it is a rotational joint.
         if (joint is RotationalJoint)
         {
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            List<ComponentOccurrence> sortedBoxList = new List<ComponentOccurrence>(); //Components ordered from largest to smallest diagonal
+            List<ComponentOccurrence> sortedBoxList = new List<ComponentOccurrence>();
 
             foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
             {
@@ -42,6 +42,8 @@ class WheelAnalyzer
             for(int i = 0; i < sortedBoxList.Count; i++)
             {
                 Console.WriteLine(sortedBoxList[i].Name + " with box radius " + findBoxRadius(sortedBoxList[i]));
+
+                radiusThreadList.Add(null); //Ensures there are the correct number of spaces for when we insert by index later.
             }
 
             int nextComponentIndex = 0; //The index of the next component of which to find the radius.
@@ -80,12 +82,13 @@ class WheelAnalyzer
                 foreach(FindRadiusThread threadToRemove in threadsToRemove)
                 {
                     radiusThreadList.Remove(threadToRemove);
+                    radiusThreadList.Add(null);  //Keeps the index existing.
                 }
 
                 //Adds new threads when others finish.
                 while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
                 {
-                    radiusThreadList.Insert(nextComponentIndex, new FindRadiusThread(sortedBoxList[nextComponentIndex], ((RotationalJoint)joint).axis));
+                    radiusThreadList[nextComponentIndex] = new FindRadiusThread(sortedBoxList[nextComponentIndex], ((RotationalJoint)joint).axis);
                     radiusThreadList[nextComponentIndex].Start();
                     nextComponentIndex++;
                     activeThreadCount++;
