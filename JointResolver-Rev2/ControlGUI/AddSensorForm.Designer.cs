@@ -155,6 +155,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.typeBox);
             this.Controls.Add(this.label1);
+            this.MaximumSize = new System.Drawing.Size(300, 286);
+            this.MinimumSize = new System.Drawing.Size(300, 286);
             this.Name = "AddSensorForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.Text = "Sensor";

@@ -134,9 +134,9 @@ public partial class ControlGroups
 
     private void window_SizeChanged(object sender, EventArgs e)
     {
-        int newTabHeight = this.Height - 159;
+        int newTabHeight = this.Height - 120;
         int newTabWidth = this.Width - 43;
-        int newListHeight = this.Height - 159;
+        int newListHeight = this.Height - 120;
         int newListWidth = this.Width - 63;
 
         tabsMain.Height = newTabHeight;
