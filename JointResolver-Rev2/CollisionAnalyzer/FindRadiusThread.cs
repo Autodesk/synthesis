@@ -24,12 +24,6 @@ class FindRadiusThread
         set;
     }
 
-    static public bool endAllThreads
-    {
-        get;
-        set;
-    }
-
     public FindRadiusThread(ComponentOccurrence passComponent, BXDVector3 passRotationAxis)
     {
         findRadius = new Thread(() => FindMaxRadius());
@@ -44,7 +38,6 @@ class FindRadiusThread
     {
         currentMaxRadius = 0;
         treadPart = null;
-        endAllThreads = false;
     }
 
     static public double GetRadius()
@@ -125,7 +118,7 @@ class FindRadiusThread
                 //Direction doesn't matter, onlyh the magnitude.
                 newRadius = myRotationAxis.CrossProduct(vertexVector).Length;
 
-                if (endAllThreads || endThread)
+                if (endThread)
                 {
                     return;
                 }

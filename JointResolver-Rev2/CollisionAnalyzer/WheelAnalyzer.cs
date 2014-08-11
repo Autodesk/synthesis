@@ -58,31 +58,34 @@ class WheelAnalyzer
                 {
                     int index = radiusThreadList.IndexOf(thread);
 
-                    if (!thread.GetIsAlive())
-                    {
-                        activeThreadCount--;
-                        threadsToRemove.Add(thread);
-                    }
-
-                    if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[index+1]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
-                    {
-                        largestRadiusIndex = index;
-                    }
-
+                    //Ends threads that cannot have a larger radius than that already found.
                     if (thread.GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
                     {
                         activeThreadCount--;
                         thread.endThread = true;
                     }
-                    
+
+                    if (!thread.GetIsAlive())
+                    {
+                        activeThreadCount--;
+                        threadsToRemove.Add(thread); //Need to save to remove later because we can't remove form the list we're iterating through.
+                    }
+
+                    //If a thread has found a radius that would not fit in the bounding box of the next component, there's no point in continuing trying to find
+                    //  a larger radius in the next component.
+                    if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[index+1]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
+                    {
+                        largestRadiusIndex = index;
+                    }
                 }
 
+                //Now that we're out of iterating through, we remove the threads that have ended.
                 foreach(FindRadiusThread threadToRemove in threadsToRemove)
                 {
                     radiusThreadList.Remove(threadToRemove);
                 }
 
-                //Adds new threads when others finish.
+                //Adds new threads when needed.
                 while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
                 {
                     radiusThreadList.Insert(nextComponentIndex, new FindRadiusThread(sortedBoxList[nextComponentIndex], ((RotationalJoint)joint).axis));
@@ -93,12 +96,9 @@ class WheelAnalyzer
             }
 
             //Waits for all remaining threads.
-            for (int index = 0; index < nextComponentIndex; index++)
+            foreach (FindRadiusThread thread in radiusThreadList)
             {
-                if (radiusThreadList[index] != null)
-                {
-                    radiusThreadList[index].Join();
-                }
+                thread.Join();
             }
 
             timer.Stop();
