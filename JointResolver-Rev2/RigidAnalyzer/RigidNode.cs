@@ -37,18 +37,6 @@ public class RigidNode : RigidNode_Base
         }
     }
 
-    public bool RegisterDeferredPneumaticCalculation(string id)
-    {
-        try
-        {
-            return false;
-        }
-        catch
-        {
-            return true;
-        }
-    }
-
     public bool UnregisterDeferredCalculation(string id)
     {
         return deferredCalculations.Remove(id);
@@ -56,10 +44,18 @@ public class RigidNode : RigidNode_Base
 
     public void DoDeferredCalculations()
     {
-        foreach (DeferredCalculation calc in deferredCalculations.Values)
+        try
         {
-            calc(this);
+            foreach (DeferredCalculation calc in deferredCalculations.Values)
+            {
+                calc(this);
+            }
         }
+
+        catch
+        {
+        }
+
         deferredCalculations.Clear();
     }
 

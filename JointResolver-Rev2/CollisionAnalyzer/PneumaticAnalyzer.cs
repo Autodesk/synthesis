@@ -51,6 +51,6 @@ class PneumaticAnalyzer
         }
 
         //newCalculation = StartCalculations;
-        node.RegisterDeferredPneumaticCalculation(node.GetModelID()/*, newCalculation*/);
+        node.RegisterDeferredCalculation(node.GetModelID(), null);
     }
 }
