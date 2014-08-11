@@ -24,23 +24,11 @@ public class PneumaticDriverMeta : JointDriverMeta
     /// Stores the variables concerning a wheel, such as its position (which may be removed later) and radius.  
     /// </summary>
 
-    public JointDriverType type
-    {
-        get;
-        set;
-    }
+    public JointDriverType type;
 
-    public float widthMM
-    {
-        get;
-        set;
-    }
+    public float widthMM;
+    public float pressurePSI;
 
-    public float pressurePSI
-    {
-        get;
-        set;
-    }
 
 
     //Writes the position of the wheel to the file.
