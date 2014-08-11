@@ -46,8 +46,8 @@ public class DriveJoints : MonoBehaviour
 	// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor
 	public static void SetMotor(UnityRigidNode wheel, float signal)
 	{
-		// The conversion factor from Oz-In to NM. It has a multiplier in it at the moment to help compensate for the robot being the size of a building.
-		float OzInToNm = 10f * .00706155183333f;
+		// The conversion factor from Oz-In to NM.
+		float OzInToNm = .00706155183333f;
 
 		
 		if (signal == 0)
@@ -61,7 +61,7 @@ public class DriveJoints : MonoBehaviour
 		}
 	
 		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
-		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * (float)171.1);
+		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 171.1f);
 		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
 	}
 
@@ -78,10 +78,10 @@ public class DriveJoints : MonoBehaviour
 		if (timers.ContainsKey(node.GetModelID()) == false){timers[node.GetModelID()] = new Stopwatch();}
 		// If the timer is not running, we want to start it
 		if (timers [node.GetModelID()].IsRunning != true){timers[node.GetModelID()].Start();}
-		LinearJoint_Base lNode = (LinearJoint_Base)node.GetSkeletalJoint();
-		UnityEngine.Debug.Log(lNode.currentLinearPosition);
+		//LinearJoint_Base lNode = (LinearJoint_Base)node.GetSkeletalJoint();
+		//UnityEngine.Debug.Log(lNode.currentLinearPosition);
 		// Velocity will be calculated based on the amount of time each piston has been running.
-		float velocity = acceleration * timers [node.GetModelID()].ElapsedMilliseconds / 1000;
+		float velocity = acceleration * timers [node.GetModelID()].ElapsedMilliseconds / 10000;
 
 		/* TODO:
 		 * 	A. Stop Timers if limits are reached.
@@ -106,7 +106,7 @@ public class DriveJoints : MonoBehaviour
 		}
 
 		// In the case that this piston has been accelerating for 3 seconds, we need to stop it.
-		if (timers[node.GetModelID()].ElapsedMilliseconds > 3000) {timers[node.GetModelID()].Stop();}
+		if (timers[node.GetModelID()].ElapsedMilliseconds > 1000) {timers[node.GetModelID()].Stop(); timers[node.GetModelID()].Reset();}
 	}
 
 	// Rotates a wheel 45 degress to act as a mecanum wheel
@@ -202,18 +202,18 @@ public class DriveJoints : MonoBehaviour
 				int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 				// Now, if both solenoid ports are open
-				if (unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM != null && unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI != null) {
-					// If any of the fields of the PneumaticDriverMeta class don't exist, we won't do anything.
-					return;
-				}
+				//if (unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM != null && unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI != null) {
+				//	// If any of the fields of the PneumaticDriverMeta class don't exist, we won't do anything.
+				//	return;
+				//}
 				if (stateA > 0)
 				{
-					SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					//SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
 					SetSolenoid(unityNode, true, 25f, 60f);
 				}
 				else if (stateB > 0)
 				{
-					SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+					//SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
 					SetSolenoid(unityNode, false, 25f, 60f);
 				}
 				else
