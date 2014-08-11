@@ -49,5 +49,7 @@ class PneumaticAnalyzer
                 pneumaticDriver.pressurePSI = 1;
                 break;
         }
+
+        node.GetSkeletalJoint().cDriver.AddInfo(pneumaticDriver);
     }
 }
