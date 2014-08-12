@@ -13,6 +13,15 @@ public partial class ControlGroups
     private List<RigidNode_Base> groupList;
     private DriveChooser driveChooser = new DriveChooser();
 
+    public ControlGroups()
+    {
+        InitializeComponent();// Don't remove
+        jointPane.RegisterContextAction("Drive", (RigidNode_Base node) =>
+        {
+            new DriveNode().ShowDriveDialog((OGL_RigidNode) node);
+        });
+    }
+
     private void btnExport_Click(object sender, EventArgs e)
     {
         formState = FormState.SUBMIT;

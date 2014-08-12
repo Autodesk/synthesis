@@ -181,10 +181,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     }
     internal System.Windows.Forms.Button btnExport;
     internal System.Windows.Forms.Button btnCancel;
-    public ControlGroups()
-    {
-        InitializeComponent();
-    }
 
     private System.Windows.Forms.TabControl tabsMain;
     private System.Windows.Forms.TabPage tabGroups;

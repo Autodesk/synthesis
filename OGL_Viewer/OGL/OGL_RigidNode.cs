@@ -10,7 +10,7 @@ public class OGL_RigidNode : RigidNode_Base
     private TransMatrix myTrans = new TransMatrix();
     private List<VBOMesh> models = new List<VBOMesh>();
 
-    private float requestedRotation = 0;
+    public float requestedRotation = 0;
     private float requestedTranslation = 0;
 
     public void loadMeshes(string path)
@@ -23,17 +23,37 @@ public class OGL_RigidNode : RigidNode_Base
         }
     }
 
+    private void ensureRotationalLimits(float low, float high)
+    {
+        if (low > high)
+        {
+            float temp = high;
+            high = low;
+            low = temp;
+        }
+        if (animate)
+        {
+            requestedRotation *= (high - low) / 1.75f / 6.28f;
+            requestedRotation += (high + low) / 2.0f;
+            requestedRotation = Math.Min(requestedRotation, high);
+            requestedRotation = Math.Max(requestedRotation, low);
+        }
+    }
+
+    BXDVector3 baseV = null, axis = null;
     // A*B*C = C, then B, then A
     float i = 0;
     public void compute()
     {
-        i += 0.01f;
-        requestedTranslation = (float) Math.Sin(i) * 100;
-        requestedRotation = (float) Math.Cos(i) - 3.14f;
+        if (hs && animate)
+        {
+            i += 0.01f;
+            requestedTranslation = (float) Math.Sin(i) * 100.0f;
+            requestedRotation = (float) Math.Sin(i) * 6.28f;
+        }
         myTrans.identity();
         if (GetSkeletalJoint() != null)
         {
-            BXDVector3 baseV = null, axis = null;
             float modelTranslation = 0, modelRotation = 0;
             switch (GetSkeletalJoint().GetJointType())
             {
@@ -44,15 +64,7 @@ public class OGL_RigidNode : RigidNode_Base
                     requestedTranslation = 0;
                     modelRotation = rjb.currentAngularPosition;
                     if (rjb.hasAngularLimit)
-                    {
-                        if (rjb.angularLimitLow > rjb.angularLimitHigh) {
-                            float temp = rjb.angularLimitLow;
-                            rjb.angularLimitLow = rjb.angularLimitHigh;
-                            rjb.angularLimitHigh = temp;
-                        }
-                        requestedRotation = Math.Min(requestedRotation, rjb.angularLimitHigh);
-                        requestedRotation = Math.Max(requestedRotation, rjb.angularLimitLow);
-                    }
+                        ensureRotationalLimits(rjb.angularLimitLow, rjb.angularLimitHigh);
                     break;
                 case SkeletalJointType.LINEAR:
                     LinearJoint_Base ljb = (LinearJoint_Base) GetSkeletalJoint();
@@ -76,10 +88,7 @@ public class OGL_RigidNode : RigidNode_Base
                     if (cjb.hasLinearStartLimit)
                         requestedTranslation = Math.Max(requestedTranslation, cjb.linearLimitStart);
                     if (cjb.hasAngularLimit)
-                    {
-                        requestedRotation = Math.Min(requestedRotation, cjb.angularLimitHigh);
-                        requestedRotation = Math.Max(requestedRotation, cjb.angularLimitLow);
-                    }
+                        ensureRotationalLimits(cjb.angularLimitLow, cjb.angularLimitHigh);
                     break;
             }
             if (GetParent() != null)
@@ -108,6 +117,7 @@ public class OGL_RigidNode : RigidNode_Base
     }
 
     bool hs;
+    public bool animate = true;
     public void render()
     {
         if (hs)
@@ -125,6 +135,19 @@ public class OGL_RigidNode : RigidNode_Base
             mesh.draw();
         }
         Gl.glPopMatrix();
+
+        if (axis != null && hs)
+        {
+            Gl.glDisable(Gl.GL_LIGHTING);
+            Gl.glLineWidth(2f);
+            Gl.glBegin(Gl.GL_LINES);
+            Gl.glColor3f(1f, 0f, 0f);
+            float len = 100;
+            Gl.glVertex3f(baseV.x - axis.x * len, baseV.y - axis.y * len, baseV.z - axis.z * len);
+            Gl.glVertex3f(baseV.x + axis.x * len, baseV.y + axis.y * len, baseV.z + axis.z * len);
+            Gl.glEnd();
+            Gl.glEnable(Gl.GL_LIGHTING);
+        }
     }
 
     public void highlight(bool flag)

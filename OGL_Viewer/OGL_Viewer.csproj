@@ -58,6 +58,12 @@
     <Compile Include="GUI\ControlGroups.Designer.cs">
       <DependentUpon>ControlGroups.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\DriveNode.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\DriveNode.Designer.cs">
+      <DependentUpon>DriveNode.cs</DependentUpon>
+    </Compile>
     <Compile Include="OGL\Camera3rdPerson.cs" />
     <Compile Include="OGLMain.cs" />
     <Compile Include="OGL\Matrix.cs" />
@@ -75,6 +81,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="Tao.FreeGlut">
       <HintPath>..\Tao\Tao.FreeGlut.dll</HintPath>
     </Reference>
@@ -122,6 +129,9 @@
   <ItemGroup>
     <EmbeddedResource Include="GUI\ControlGroups.resx">
       <DependentUpon>ControlGroups.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\DriveNode.resx">
+      <DependentUpon>DriveNode.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

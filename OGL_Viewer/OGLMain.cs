@@ -42,7 +42,7 @@ public class OGL_Viewer
         cam.translate();
 
         {
-            Gl.glUseProgramObjectARB(shaders);
+           // Gl.glUseProgramObjectARB(shaders);
             Gl.glLightModelfv(Gl.GL_AMBIENT, ambient);
             Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_POSITION, l0_position);
             Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_DIFFUSE, l_diffuse);
@@ -90,7 +90,7 @@ public class OGL_Viewer
             return new OGL_RigidNode();
         };
         ControlGroups groups = new ControlGroups();
-        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeleton/skeleton.bxdj");
+        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/SIM Skeleton/skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
         groups.SetSkeleton(skeleton);
@@ -108,7 +108,7 @@ public class OGL_Viewer
         };
         foreach (RigidNode_Base node in nodes)
         {
-            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeleton/" + node.modelFileName);
+            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/SIM Skeleton/" + node.modelFileName);
         }
         Glut.glutInit();
         Glut.glutInitWindowPosition(0, 0);
