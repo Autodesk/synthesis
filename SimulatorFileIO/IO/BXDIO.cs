@@ -38,8 +38,16 @@ public class BXDIO
             if (version != FORMAT_VERSION)
             {
                 Console.Write("Trying to read version " + VersionToString(version) + " using API version " + VersionToString(FORMAT_VERSION) + ".  Continue? (y/N)  ");
-                String s = Console.ReadLine();
-                if (s.ToLower().Trim().Equals("y"))
+                if (Console.In != null)
+                {
+                    String s = Console.ReadLine();
+                    if (s.ToLower().Trim().Equals("y"))
+                    {
+                        Console.WriteLine("Ignoring version mismatch... beware.");
+                        return;
+                    }
+                }
+                else
                 {
                     Console.WriteLine("Ignoring version mismatch... beware.");
                     return;
