@@ -7,6 +7,7 @@ public class AssetProperties
     public Color color = null;
     public double transparency;
     public double translucency;
+    public double specular = 0;
 
     public static AssetProperties Create(dynamic surf)
     {
@@ -61,6 +62,10 @@ public class AssetProperties
             else if (val.ValueType == AssetValueTypeEnum.kAssetValueTextureType)
             {
                 AssetTexture tex = ((TextureAssetValue) val).Value;
+            }
+            else if (val.Name.Contains("reflectivity") && val.Name.Contains("0deg") && val.ValueType == AssetValueTypeEnum.kAssetValueTypeFloat)
+            {
+                specular = ((FloatAssetValue) val).Value;
             }
         }
     }

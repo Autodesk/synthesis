@@ -102,6 +102,10 @@ public class BXDAMesh : RWObject
         /// The translucency of the material.  [0-1]
         /// </summary>
         public float translucency;
+        /// <summary>
+        /// The specular intensity of the material.  [0-1]
+        /// </summary>
+        public float specular = 0;
 
         /// <summary>
         /// The zero based index buffer for this specific surface of the mesh.
@@ -119,6 +123,7 @@ public class BXDAMesh : RWObject
             }
             writer.Write(transparency);
             writer.Write(translucency);
+            writer.Write(specular);
 
             writer.Write(facetCount);
             for (int i = 0; i < facetCount * 3; i++)
@@ -136,6 +141,7 @@ public class BXDAMesh : RWObject
             }
             transparency = reader.ReadSingle();
             translucency = reader.ReadSingle();
+            specular = reader.ReadSingle();
 
             int facetCount = reader.ReadInt32();
             indicies = new int[facetCount * 3];
@@ -225,11 +231,7 @@ public class BXDAMesh : RWObject
     {
         // Sanity check
         uint version = reader.ReadUInt32();
-        if (version != BXDIO.FORMAT_VERSION)
-        {
-            reader.Close();
-            throw new FormatException("File was created with format version " + BXDIO.VersionToString(version) + ", this library was compiled to read version " + BXDIO.VersionToString(BXDIO.FORMAT_VERSION));
-        }
+        BXDIO.CheckReadVersion(version);
         meshes.Clear();
         colliders.Clear();
         ReadMeshList(reader, meshes);

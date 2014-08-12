@@ -202,6 +202,7 @@ public class SurfaceExporter
         }
         nextSurface.transparency = (float) assetProps.transparency;
         nextSurface.translucency = (float) assetProps.translucency;
+        nextSurface.specular = (float) assetProps.specular;
 
         nextSurface.indicies = new int[tmpSurface.facetCount * 3];
 
