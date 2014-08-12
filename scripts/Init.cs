@@ -17,7 +17,7 @@ public class Init : MonoBehaviour
     unityPacket udp = new unityPacket();
     List<Vector3> unityWheelData = new List<Vector3>();
     int robots = 0;
-    string filePath = null;//"C:/Users/t_millw/Downloads/Skeleton/";
+    string filePath = "C:/Users/t_crisj/Desktop/Skeleton/";
 
     public enum WheelPositions
     {
@@ -99,7 +99,16 @@ public class Init : MonoBehaviour
 	
 	void FixedUpdate()
 	{
-		if (Input.GetKey(KeyCode.P)) {DriveJoints.UpdateSolenoids(skeleton, 1);}
-		if (Input.GetKey(KeyCode.O)) {DriveJoints.UpdateSolenoids(skeleton, 2);}
-	}
+		if (skeleton != null)
+		{
+			if (Input.GetKey(KeyCode.P))
+			{
+				DriveJoints.UpdateSolenoids(skeleton, 1);
+			}
+			if (Input.GetKey(KeyCode.O))
+			{
+				DriveJoints.UpdateSolenoids(skeleton, 2);
+			}
+		}
+		}
 }
