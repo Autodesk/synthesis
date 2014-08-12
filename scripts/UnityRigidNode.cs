@@ -86,7 +86,6 @@ public class UnityRigidNode : RigidNode_Base
 	private void AngularLimit(float[] limit)
 	{
 	
-		Debug.Log(GetSkeletalJoint().cDriver);
 		
 		if ((limit [2] - limit [1]) >= Mathf.Abs(360.0f))
 		{
@@ -361,7 +360,6 @@ public class UnityRigidNode : RigidNode_Base
 			sumOfAllWeights += rigidBase.mass;
 		}
 		centerOfMass /= sumOfAllWeights;
-		Debug.Log(centerOfMass.ToString());
 		return centerOfMass;
 	}
 
