@@ -79,6 +79,14 @@ public partial class ControlGroups
         int newListHeight = this.Height - 120;
         int newListWidth = this.Width - 63;
 
+        groups_chName.Width = this.lstGroups.Width / 3;
+        groups_chGrounded.Width = this.lstGroups.Width / 8;
+        groups_chFaceColor.Width = this.lstGroups.Width / (800 / 120);
+        groups_chHighRes.Width = this.lstGroups.Width / (800 / 140);
+        groups_chConcavity.Width = this.lstGroups.Width / 10;
+
+
+
         tabsMain.Height = newTabHeight;
         tabsMain.Width = newTabWidth;
         lstGroups.Height = newListHeight;

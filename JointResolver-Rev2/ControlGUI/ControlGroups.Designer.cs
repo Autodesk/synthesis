@@ -109,27 +109,27 @@ partial class ControlGroups : System.Windows.Forms.Form
             // groups_chName
             // 
             this.groups_chName.Text = "Name";
-            this.groups_chName.Width = 98;
+            this.groups_chName.Width = 400;
             // 
             // groups_chGrounded
             // 
             this.groups_chGrounded.Text = "Grounded";
-            this.groups_chGrounded.Width = 91;
+            this.groups_chGrounded.Width = 100;
             // 
             // groups_chFaceColor
             // 
             this.groups_chFaceColor.Text = "Multicolor Parts";
-            this.groups_chFaceColor.Width = 127;
+            this.groups_chFaceColor.Width = 120;
             // 
             // groups_chHighRes
             // 
             this.groups_chHighRes.Text = "High Resolution";
-            this.groups_chHighRes.Width = 135;
+            this.groups_chHighRes.Width = 140;
             // 
             // groups_chConcavity
             // 
             this.groups_chConcavity.Text = "Concavity";
-            this.groups_chConcavity.Width = 85;
+            this.groups_chConcavity.Width = 80;
             // 
             // tabJoints
             // 
