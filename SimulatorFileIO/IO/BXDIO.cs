@@ -8,7 +8,7 @@ public class BXDIO
     private const byte MAJOR_VERSION = 0;           // Bump on stable releases
     private const byte MINOR_VERSION = 0;           // Bump on beta releases
     private const byte REVISION_VERSION = 8;        // Bump on major IO changes.
-    private const byte REVISION_PORTION = 0;        // Bump on minor additions and removals from IO.
+    private const byte REVISION_PORTION = 0;        // Bump on IO changes in a meta chunk.
 
     public const string ASSEMBLY_VERSION = "0.0.8.0";   // I'm so sorry that this isn't dynamic :'(
 
@@ -25,6 +25,32 @@ public class BXDIO
     public static string VersionToString(uint version)
     {
         return ((version >> 24) & 0xFF) + "." + ((version >> 16) & 0xFF) + "." + ((version >> 8) & 0xFF) + ((version >> 0) & 0xFF);
+    }
+
+    /// <summary>
+    /// Talks about compatibility.
+    /// </summary>
+    /// <param name="version">The version to compare with</param>
+    public static void CheckReadVersion(uint version)
+    {
+        if ((version & 0xFFFFFF00) == (FORMAT_VERSION & 0xFFFFFF00))
+        {
+            if (version != FORMAT_VERSION)
+            {
+                Console.Write("Trying to read version " + VersionToString(version) + " using API version " + VersionToString(FORMAT_VERSION) + ".  Continue? (y/N)  ");
+                String s = Console.ReadLine();
+                if (s.ToLower().Trim().Equals("y"))
+                {
+                    Console.WriteLine("Ignoring version mismatch... beware.");
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+        throw new FormatException("Trying to read version " + VersionToString(version) + " using API version " + VersionToString(FORMAT_VERSION));
     }
 
     // Prevents creation of this class
