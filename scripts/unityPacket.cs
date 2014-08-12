@@ -58,7 +58,7 @@ public class unityPacket
 	public volatile bool active;
 	public volatile bool stillSend = true;
 	public volatile bool stillRecieve = true;
-	Thread threadRecieve;//, threadSend;
+	Thread threadRecieve, threadSend;
 	UdpClient client, server;
 	private byte[] receiveBuffer = new byte[1024];
 	private byte[] sendBuffer = new byte[1024];
@@ -74,15 +74,15 @@ public class unityPacket
 		active = true;
 		
 		threadRecieve = new Thread(ServerInternal);
-		//threadSend = new Thread(ClientInternal);
+		threadSend = new Thread(ClientInternal);
 			
 		Debug.Log("Server...");
 		threadRecieve.Start();
 		Debug.Log("Client...");
-		//threadSend.Start();
+		threadSend.Start();
 		
 		//this udp thread was really really stupid || this is because of how dumb Unity is
-		if (stillSend && stillRecieve && (/*threadSend.IsAlive && */threadRecieve.IsAlive))
+		if (stillSend && stillRecieve && (threadSend.IsAlive && threadRecieve.IsAlive))
 		{
 			Stop();
 			Start();	
@@ -94,7 +94,7 @@ public class unityPacket
 		try
 		{
 			active = false;
-			//threadSend.Join();
+			threadSend.Join();
 			threadRecieve.Join();
 			Debug.Log("Stop...");
 			
@@ -110,7 +110,6 @@ public class unityPacket
 
 	private void ServerInternal()
 	{
-		bool f = false;
 		try
 		{	
 			server = new UdpClient();
@@ -128,16 +127,13 @@ public class unityPacket
 			while (active)
 			{	
 				if (server.Available <= 0)
-                {
-                    Thread.Sleep(20);
-                    continue;
-                }
+				{
+					Thread.Sleep(20);
+					continue;
+				}
 				byte[] temp = server.Receive(ref ipEnd);
-				if (!f) {Debug.Log("REC\n"); f=true;}
-                serverMutex.WaitOne();
-                receiveBuffer = temp;
-				//packetRecieve = new OutputStatePacket();
-				//packetRecieve.Read(buffer);
+				serverMutex.WaitOne();
+				receiveBuffer = temp;
 				serverMutex.ReleaseMutex();
 				
 			}
@@ -158,7 +154,7 @@ public class unityPacket
 			}
 		}
 	}
-/*
+
 	private void ClientInternal()
 	{
 		try
@@ -168,11 +164,11 @@ public class unityPacket
 	
 			while (active)
 			{	
-				if (sendBufferLen > sendBuffer.Length)
+				if (sendBufferLen > 0)
 				{
-				clientMutex.WaitOne();
-				client.Client.SendTo(sendBuffer, sendBufferLen, ipEnd);
-				clientMutex.ReleaseMutex();
+					clientMutex.WaitOne();
+					client.Client.SendTo(sendBuffer, sendBufferLen, SocketFlags.None, ipEnd);
+					clientMutex.ReleaseMutex();
 				}
 			}
 			
@@ -190,8 +186,8 @@ public class unityPacket
 			}
 		}
 	}
-	*/
-	public OutputStatePacket getLastPacket()
+	
+	public OutputStatePacket GetLastPacket()
 	{
 		OutputStatePacket pack = new OutputStatePacket();
 		serverMutex.WaitOne();
@@ -199,10 +195,12 @@ public class unityPacket
 		serverMutex.ReleaseMutex();
 		return pack;
 	}
-	public void sendLastPacket(InputStatePacket pack)
+
+	public void WritePacket()
 	{
+		InputStatePacket input = new InputStatePacket();
 		clientMutex.WaitOne();
-		sendBufferLen = pack.Write(sendBuffer);
+		sendBufferLen = input.Write(sendBuffer);
 		clientMutex.ReleaseMutex();
 	}
 	

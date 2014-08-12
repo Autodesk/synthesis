@@ -3,40 +3,89 @@ using System.Collections.Generic;
 using ExceptionHandling;
 using System;
 
-
 //Data struct for packets sent to WPI server through Unity client
 public class InputStatePacket
 {
 	public DIOModule[] dio = new DIOModule[2];
-	public Encoders[] encoder = new Encoders[4];
+	public Encoder[] encoders = new Encoder[4];
 	public AnalogValues[] ai = new AnalogValues[1];
 	public Counter[] counter = new Counter[8];
 	
+	public InputStatePacket()
+	{
+		for(int i = 0; i < dio.Length; i++)
+		{
+			dio[i] = new DIOModule();		
+		}for(int i = 0; i < encoders.Length; i++)
+		{
+			encoders[i] = new Encoder();		
+		}
+		for(int i = 0; i < ai.Length; i++)
+		{
+			ai[i] = new AnalogValues();		
+		}
+		for(int i = 0; i < counter.Length; i++)
+		{
+			counter[i] = new Counter();		
+		}
+		
+	}
+	
 	public class  DIOModule
 	{
+		public const int LENGTH = 4;
 		public UInt32 digitalInput;
 	}
-	public class Encoders
+
+	public class Encoder
 	{
+		public const int LENGTH = 4;
 		public Int32 value;
 	}
+
 	public class AnalogValues
 	{
 		public const int LENGTH = 4 * (8);
 		public Int32[] analogValues = new Int32[8];
 	}
+
 	public class Counter
 	{
+		public const int LENGTH = 4;
 		public Int32 value;
 	}
-	
 	public int Write(byte[] packet)
 	{
-
-		return packet.Length;
+		int head = 0;
+		for (int i = 0; i < dio.Length; i++)
+		{
+			
+			Buffer.BlockCopy(new UInt32[]{dio [i].digitalInput}, 0, packet, head, DIOModule.LENGTH);
+			head += DIOModule.LENGTH;
+		}
+		for (int i = 0; i < encoders.Length; i++)
+		{
+			
+			Buffer.BlockCopy(new Int32[]{encoders [i].value}, 0, packet, head, Encoder.LENGTH);
+			head += Encoder.LENGTH;
+		}
+		for (int i = 0; i < ai.Length; i++)
+		{
+			
+			
+			Buffer.BlockCopy(ai [i].analogValues, 0, packet, head, AnalogValues.LENGTH);
+			head += AnalogValues.LENGTH;
+			
+		}
+		for (int i = 0; i < counter.Length; i++)
+		{
+			
+			Buffer.BlockCopy(new Int32[]{counter [i].value}, 0, packet, head, Counter.LENGTH);
+			head += Counter.LENGTH;
+		}
+		return head;
 	}
 }
-
 
 public class DriveJoints : MonoBehaviour
 {
@@ -51,14 +100,14 @@ public class DriveJoints : MonoBehaviour
 			// If no motor torque is applied, the breaks are applied
 			// The maximum brakeTorque of a vex motor is 343.3 oz-in
 			wheel.GetWheelCollider().brakeTorque = OzInToNm * 343.3f;
-			wheel.GetConfigJoint().targetAngularVelocity = new Vector3(0,0,0);
+			wheel.GetConfigJoint().targetAngularVelocity = new Vector3(0, 0, 0);
 		} else
 		{
 			wheel.GetWheelCollider().brakeTorque = 0;
 		}
 	
 		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
-        wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 30f * (float) 171.1);
+		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 30f * (float)171.1);
 		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
 	}
 		
@@ -98,7 +147,7 @@ public class DriveJoints : MonoBehaviour
 					if (unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && unitySubNode.GetPortA() == i + 1)
 					{
 						SetMotor(unitySubNode, pwm [i]);
-						Debug.Log("MOTOR: " + i + ": " + pwm[i]);
+						//Debug.Log("MOTOR: " + i + ": " + pwm[i]);
 
 					}
 				} catch (NullReferenceException)

@@ -15,8 +15,8 @@ public class Init : MonoBehaviour
     RigidNode_Base skeleton;
     unityPacket udp = new unityPacket();
     List<Vector3> unityWheelData = new List<Vector3>();
-    int robots = 0;
-    string filePath = null;//"C:/Users/t_millw/Downloads/Skeleton/";
+   // int robots = 0;
+    string filePath = "C:/Users/t_waggn/Documents/Skeleton/Skeleton";
 
     public enum WheelPositions
     {
@@ -25,21 +25,24 @@ public class Init : MonoBehaviour
         BL = 3,
         BR = 4
     }
-
+/*
     [STAThread]
     void OnGUI()
 	{
 		if (GUI.Button (new Rect (10, 10, 90, 30), "Load Model")) 
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog ();
+			
             if (fbd.ShowDialog() == DialogResult.OK)
             {
-                filePath = fbd.SelectedPath;
-                TryLoad();
+                filePath = fbd.SelectedPath;	
+               // TryLoad();
             }
 		}
+		
 	}
-
+	
+*/
     void TryLoad()
     {
         if (filePath != null && skeleton == null)
@@ -47,7 +50,7 @@ public class Init : MonoBehaviour
             UnityRigidNode nodeThing = new UnityRigidNode();
             nodeThing.modelFileName = "field.bxda";
             nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh("C:/Temp/field.bxda");
+			nodeThing.CreateMesh("C:/Users/t_waggn/Documents/Skeleton/field.bxda");
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
@@ -82,6 +85,7 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         TryLoad();
+		
         //byte test = (byte)2;		
         //DriveJoints.updateSolenoids(skeleton, test);
     }
@@ -100,7 +104,7 @@ public class Init : MonoBehaviour
     {
         if (skeleton != null)
         {
-            unityPacket.OutputStatePacket packet = udp.getLastPacket();
+            unityPacket.OutputStatePacket packet = udp.GetLastPacket();
             DriveJoints.UpdateAllWheels(skeleton, packet.dio[0].pwmValues);
         }
     }
