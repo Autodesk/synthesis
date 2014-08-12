@@ -124,7 +124,7 @@ static class Program
         baseNode.ListAllNodes(nodes);
 
         ControlGroups controlGUI = new ControlGroups();
-        controlGUI.SetNodeList(nodes);
+        controlGUI.SetSkeleton(baseNode);
         controlGUI.SetGroupList(customRigid.groups);
         controlGUI.ShowDialog();
         controlGUI.Cleanup();

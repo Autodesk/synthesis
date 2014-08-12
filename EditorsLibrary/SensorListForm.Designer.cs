@@ -1,4 +1,4 @@
-﻿namespace JointResolver.ControlGUI
+﻿namespace EditorsLibrary
 {
     partial class SensorListForm
     {
@@ -29,11 +29,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.typeColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.moduleColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.portColumnHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.typeColumnHeader = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.moduleColumnHeader = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.portColumnHeader = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
             this.sensorListView = new System.Windows.Forms.ListView();
-            this.polynomialHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.polynomialHeader = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
             this.deleteButton = new System.Windows.Forms.Button();
             this.addSensorButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -79,7 +79,7 @@
             // 
             // deleteButton
             // 
-            this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.deleteButton.Location = new System.Drawing.Point(22, 220);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(129, 36);
@@ -90,7 +90,7 @@
             // 
             // addSensorButton
             // 
-            this.addSensorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.addSensorButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.addSensorButton.Location = new System.Drawing.Point(172, 220);
             this.addSensorButton.Name = "addSensorButton";
             this.addSensorButton.Size = new System.Drawing.Size(114, 36);
@@ -111,6 +111,7 @@
             this.MinimumSize = new System.Drawing.Size(550, 300);
             this.Name = "SensorListForm";
             this.Text = "SensorListForm";
+            this.Load += new System.EventHandler(this.SensorListForm_Load);
             this.SizeChanged += new System.EventHandler(this.window_SizeChanged);
             this.ResumeLayout(false);
 

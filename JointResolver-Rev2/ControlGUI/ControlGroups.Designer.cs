@@ -22,13 +22,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     {
             this.btnExport = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.lstJoints = new System.Windows.Forms.ListView();
-            this.item_chType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chSensors = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain = new System.Windows.Forms.TabControl();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.lstGroups = new System.Windows.Forms.ListView();
@@ -38,9 +31,9 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chHighRes = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groups_chConcavity = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabJoints = new System.Windows.Forms.TabPage();
+            this.jointPane = new EditorsLibrary.JointEditorPane();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.btnCalculate = new System.Windows.Forms.Button();
-            this.listSensorsButton = new System.Windows.Forms.Button();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -67,59 +60,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
-            // lstJoints
-            // 
-            this.lstJoints.AutoArrange = false;
-            this.lstJoints.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.item_chType,
-            this.item_chParent,
-            this.item_chChild,
-            this.item_chDrive,
-            this.item_chWheel,
-            this.item_chSensors});
-            this.lstJoints.FullRowSelect = true;
-            this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lstJoints.Location = new System.Drawing.Point(6, 6);
-            this.lstJoints.MultiSelect = false;
-            this.lstJoints.Name = "lstJoints";
-            this.lstJoints.ShowGroups = false;
-            this.lstJoints.Size = new System.Drawing.Size(915, 627);
-            this.lstJoints.TabIndex = 3;
-            this.lstJoints.UseCompatibleStateImageBehavior = false;
-            this.lstJoints.View = System.Windows.Forms.View.Details;
-            this.lstJoints.SelectedIndexChanged += new System.EventHandler(this.lstJoints_SelectedIndexChanged);
-            this.lstJoints.DoubleClick += new System.EventHandler(this.lstJoints_DoubleClick);
-            // 
-            // item_chType
-            // 
-            this.item_chType.Text = "Joint Type";
-            this.item_chType.Width = 138;
-            // 
-            // item_chParent
-            // 
-            this.item_chParent.Text = "Fixed";
-            this.item_chParent.Width = 127;
-            // 
-            // item_chChild
-            // 
-            this.item_chChild.Text = "Child";
-            this.item_chChild.Width = 85;
-            // 
-            // item_chDrive
-            // 
-            this.item_chDrive.Text = "Driver";
-            this.item_chDrive.Width = 100;
-            // 
-            // item_chWheel
-            // 
-            this.item_chWheel.Text = "Wheel Type";
-            this.item_chWheel.Width = 120;
-            // 
-            // item_chSensors
-            // 
-            this.item_chSensors.Text = "Sensor Count";
-            this.item_chSensors.Width = 101;
             // 
             // tabsMain
             // 
@@ -193,7 +133,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // tabJoints
             // 
-            this.tabJoints.Controls.Add(this.lstJoints);
+            this.tabJoints.Controls.Add(this.jointPane);
             this.tabJoints.Location = new System.Drawing.Point(4, 25);
             this.tabJoints.Name = "tabJoints";
             this.tabJoints.Padding = new System.Windows.Forms.Padding(3);
@@ -201,6 +141,13 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints.TabIndex = 1;
             this.tabJoints.Text = "Joint Options";
             this.tabJoints.UseVisualStyleBackColor = true;
+            // 
+            // jointPane
+            // 
+            this.jointPane.Location = new System.Drawing.Point(0, 0);
+            this.jointPane.Name = "jointPane";
+            this.jointPane.Size = new System.Drawing.Size(927, 639);
+            this.jointPane.TabIndex = 0;
             // 
             // chkHighlightComponents
             // 
@@ -225,24 +172,11 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.Visible = false;
             this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
             // 
-            // listSensorsButton
-            // 
-            this.listSensorsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.listSensorsButton.Location = new System.Drawing.Point(549, 687);
-            this.listSensorsButton.Name = "listSensorsButton";
-            this.listSensorsButton.Size = new System.Drawing.Size(119, 43);
-            this.listSensorsButton.TabIndex = 8;
-            this.listSensorsButton.Text = "List Sensors";
-            this.listSensorsButton.UseVisualStyleBackColor = true;
-            this.listSensorsButton.Visible = false;
-            this.listSensorsButton.Click += new System.EventHandler(this.button1_Click);
-            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 741);
-            this.Controls.Add(this.listSensorsButton);
             this.Controls.Add(this.btnCalculate);
             this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
@@ -268,11 +202,6 @@ partial class ControlGroups : System.Windows.Forms.Form
         InitializeComponent();
     }
 
-    private System.Windows.Forms.ListView lstJoints;
-    private System.Windows.Forms.ColumnHeader item_chType;
-    private System.Windows.Forms.ColumnHeader item_chParent;
-    private System.Windows.Forms.ColumnHeader item_chChild;
-    private System.Windows.Forms.ColumnHeader item_chDrive;
     private System.Windows.Forms.TabControl tabsMain;
     private System.Windows.Forms.TabPage tabGroups;
     private System.Windows.Forms.TabPage tabJoints;
@@ -285,6 +214,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader item_chWheel;
     private System.Windows.Forms.Button btnCalculate;
     private System.Windows.Forms.ColumnHeader groups_chConcavity;
-    private System.Windows.Forms.ColumnHeader item_chSensors;
-    private System.Windows.Forms.Button listSensorsButton;
+    private EditorsLibrary.JointEditorPane jointPane;
 }

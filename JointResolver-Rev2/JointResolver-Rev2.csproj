@@ -61,24 +61,6 @@
     <Compile Include="ControlGUI\ControlGroups.Designer.cs">
       <DependentUpon>ControlGroups.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\DriveChooser.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\DriveChooser.Designer.cs">
-      <DependentUpon>DriveChooser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ControlGUI\AddSensorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\AddSensorForm.Designer.cs">
-      <DependentUpon>AddSensorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ControlGUI\SensorListForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\SensorListForm.Designer.cs">
-      <DependentUpon>SensorListForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
     <Compile Include="Program.cs" />
@@ -117,15 +99,6 @@
     <EmbeddedResource Include="ControlGUI\ControlGroups.resx">
       <DependentUpon>ControlGroups.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\DriveChooser.resx">
-      <DependentUpon>DriveChooser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\AddSensorForm.resx">
-      <DependentUpon>AddSensorForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\SensorListForm.resx">
-      <DependentUpon>SensorListForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="BXDJ File Format.txt" />
@@ -134,6 +107,10 @@
     <ProjectReference Include="..\ConvexHull\ConvexHullAPI\ConvexAPI.vcxproj">
       <Project>{8ec08a21-9bd1-4871-93b3-645a91194424}</Project>
       <Name>ConvexAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EditorsLibrary\EditorsLibrary.csproj">
+      <Project>{87b8c386-74ff-4f9a-a3f6-20381599e464}</Project>
+      <Name>EditorsLibrary</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>

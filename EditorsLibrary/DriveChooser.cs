@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
-using Inventor;
 
 
 public partial class DriveChooser : Form
@@ -25,10 +24,10 @@ public partial class DriveChooser : Form
     //private JointDriverType driverType;
     private PneumaticDiameter diameter;
     private PneumaticPressure pressure;
-    RigidNode node;
+    private RigidNode_Base node;
 
 
-    public void ShowDialog(SkeletalJoint_Base joint, RigidNode node)
+    public void ShowDialog(SkeletalJoint_Base joint, RigidNode_Base node)
     {
         this.joint = joint;
         this.node = node;
@@ -145,12 +144,12 @@ public partial class DriveChooser : Form
             //Only need to store wheel driver if run by motor and is a wheel.
             if (cType.IsMotor() && wheelType != WheelType.NOT_A_WHEEL)
             {
-                WheelAnalyzer.SaveToJoint(wheelType, friction, node);
+                //WheelAnalyzer.SaveToJoint(wheelType, friction, node);
             }
 
             if (cType.IsPneumatic())
             {
-                PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
+               // PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
             }
         }
         Hide();

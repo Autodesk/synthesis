@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace JointResolver.ControlGUI
+namespace EditorsLibrary
 {
     public partial class SensorListForm : Form
     {
@@ -48,7 +48,7 @@ namespace JointResolver.ControlGUI
 
         private void addSensorButton_Click(object sender, EventArgs e)
         {
-            JointResolver.ControlGUI.AddSensorForm sensorForm = new JointResolver.ControlGUI.AddSensorForm(joint);
+            AddSensorForm sensorForm = new AddSensorForm(joint);
             sensorForm.ShowDialog();
             this.UpdateSensorList();
         }
@@ -60,6 +60,11 @@ namespace JointResolver.ControlGUI
 
             sensorListView.Height = newListHeight;
             sensorListView.Width = newListWidth;
+        }
+
+        private void SensorListForm_Load(object sender, EventArgs e)
+        {
+
         }
 
     }

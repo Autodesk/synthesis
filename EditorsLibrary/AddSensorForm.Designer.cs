@@ -1,4 +1,4 @@
-﻿namespace JointResolver.ControlGUI
+﻿namespace EditorsLibrary
 {
     partial class AddSensorForm
     {

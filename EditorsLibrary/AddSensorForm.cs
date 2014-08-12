@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace JointResolver.ControlGUI
+namespace EditorsLibrary
 {
     public partial class AddSensorForm : Form
     {
@@ -27,7 +27,7 @@ namespace JointResolver.ControlGUI
             }
 
             ///Only applies to cylindrical joints.  True use secondary means to use the linear component rather than rotation.
-            if (joint is CylindricalJoint)
+            if (joint.GetJointType() == SkeletalJointType.CYLINDRICAL)
             {
                 secondaryBox.Visible = true;
             }

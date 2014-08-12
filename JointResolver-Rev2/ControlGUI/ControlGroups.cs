@@ -9,7 +9,7 @@ public partial class ControlGroups
 {
     public FormState formState;
 
-    private List<RigidNode_Base> nodeList;
+    private RigidNode_Base skeleton;
     private List<CustomRigidGroup> groupList;
     private DriveChooser driveChooser = new DriveChooser();
 
@@ -25,43 +25,6 @@ public partial class ControlGroups
         Hide();
     }
 
-    private void UpdateJointList()
-    {
-        WheelDriverMeta wheelData = null;
-
-        if ((nodeList == null))
-            return;
-        lstJoints.Items.Clear();
-        foreach (RigidNode_Base node in nodeList)
-        {
-            if (node.GetSkeletalJoint() != null)
-            {
-                SkeletalJoint_Base joint = node.GetSkeletalJoint();
-                if (joint != null)
-                {
-                    SkeletalJoint wrapped = (joint is InventorSkeletalJoint ? ((InventorSkeletalJoint) joint).GetWrapped() : null);
-
-                    if (joint is RotationalJoint && joint.cDriver != null)
-                    {
-                        wheelData = ((RotationalJoint) joint).cDriver.GetInfo<WheelDriverMeta>();
-                    }
-                    else
-                    {
-                        wheelData = null;
-                    }
-
-                    System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
-                    Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
-                        wrapped!=null?wrapped.parentGroup.ToString():"from-file",
-                        wrapped!=null?wrapped.childGroup.ToString():"from-file", joint.cDriver!=null?joint.cDriver.ToString():"No driver",
-                        wheelData!=null?wheelData.GetTypeString():"No Wheel",
-                        joint.attachedSensors.Count.ToString()});
-                    item.Tag = node;
-                    lstJoints.Items.Add(item);
-                }
-            }
-        }
-    }
     private void UpdateGroupList()
     {
         if (groupList == null)
@@ -78,19 +41,19 @@ public partial class ControlGroups
 
     private void ControlGroups_Load(object sender, EventArgs e)
     {
-        UpdateJointList();
     }
 
-    public void SetNodeList(List<RigidNode_Base> nodeList)
-    {
-        this.nodeList = nodeList;
-        UpdateJointList();
-    }
 
     public void SetGroupList(List<CustomRigidGroup> groupList)
     {
         this.groupList = groupList;
         UpdateGroupList();
+    }
+
+    public void SetSkeleton(RigidNode_Base root)
+    {
+        this.skeleton = root;
+        this.jointPane.SetSkeleton(root);
     }
 
     public void Cleanup()
@@ -109,29 +72,6 @@ public partial class ControlGroups
 
     }
 
-    private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (chkHighlightComponents.Checked && lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
-        {
-            InventorSkeletalJoint joint = ((InventorSkeletalJoint) ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
-            joint.GetWrapped().DoHighlight();
-        }
-        else
-        {
-            ComponentHighlighter.ClearHighlight();
-        }
-    }
-
-    private void lstJoints_DoubleClick(object sender, EventArgs e)
-    {
-        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
-        {
-            SkeletalJoint_Base joint = ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-            driveChooser.ShowDialog(joint, (RigidNode) lstJoints.SelectedItems[0].Tag);
-            UpdateJointList();
-        }
-    }
-
     private void window_SizeChanged(object sender, EventArgs e)
     {
         int newTabHeight = this.Height - 120;
@@ -143,8 +83,8 @@ public partial class ControlGroups
         tabsMain.Width = newTabWidth;
         lstGroups.Height = newListHeight;
         lstGroups.Width = newListWidth;
-        lstJoints.Height = newListHeight;
-        lstJoints.Width = newListWidth;
+        jointPane.Height = newListHeight;
+        jointPane.Width = newListWidth;
     }
 
     private void lstGroups_SelectedIndexChanged(object sender, EventArgs e)
@@ -201,35 +141,15 @@ public partial class ControlGroups
 
     private void btnCalculate_Click_1(object sender, EventArgs e)
     {
-        if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
-        {
-            InventorSkeletalJoint joint = (InventorSkeletalJoint) ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-            joint.DetermineLimits();
-        }
+        //if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
+        //{
+        //    InventorSkeletalJoint joint = (InventorSkeletalJoint) ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
+        //    joint.DetermineLimits();
+        //}
     }
 
     private void tabsMain_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (tabsMain.SelectedTab.Name == "tabJoints")
-        {
-            btnCalculate.Visible = true;
-            listSensorsButton.Visible = true;
-        }
-        else
-        {
-            btnCalculate.Visible = false;
-            listSensorsButton.Visible = false;
-        }
-    }
-
-    private void button1_Click(object sender, EventArgs e)
-    {
-        if (lstJoints.SelectedItems.Count > 0)
-        {
-            JointResolver.ControlGUI.SensorListForm listForm = new JointResolver.ControlGUI.SensorListForm(((RigidNode)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
-            listForm.ShowDialog();
-            this.UpdateJointList();
-        }
     }
 }
 
