@@ -75,32 +75,32 @@ namespace EditorsLibrary
             // item_chType
             // 
             this.item_chType.Text = "Joint Type";
-            this.item_chType.Width = 138;
+            this.item_chType.Width = 100;
             // 
             // item_chParent
             // 
             this.item_chParent.Text = "Fixed";
-            this.item_chParent.Width = 127;
+            this.item_chParent.Width = 80;
             // 
             // item_chChild
             // 
             this.item_chChild.Text = "Child";
-            this.item_chChild.Width = 85;
+            this.item_chChild.Width = 80;
             // 
             // item_chDrive
             // 
             this.item_chDrive.Text = "Driver";
-            this.item_chDrive.Width = 100;
+            this.item_chDrive.Width = 160;
             // 
             // item_chWheel
             // 
             this.item_chWheel.Text = "Wheel Type";
-            this.item_chWheel.Width = 120;
+            this.item_chWheel.Width = 100;
             // 
             // item_chSensors
             // 
             this.item_chSensors.Text = "Sensor Count";
-            this.item_chSensors.Width = 101;
+            this.item_chSensors.Width = 95;
             // 
             // listSensorsButton
             // 
@@ -126,6 +126,7 @@ namespace EditorsLibrary
             this.Size = new System.Drawing.Size(800, 600);
             this.SizeChanged += new System.EventHandler(this.DoLayout);
             this.ResumeLayout(false);
+
         }
 
         public void RegisterContextAction(string caption, JointEditorEvent callback)
@@ -148,6 +149,14 @@ namespace EditorsLibrary
 
         private void DoLayout(object sender, EventArgs e)
         {
+            //Scales the columns to the width
+            item_chType.Width = this.lstJoints.Width / 8;
+            item_chParent.Width = this.lstJoints.Width / 8;
+            item_chChild.Width = this.lstJoints.Width / 8;
+            item_chDrive.Width = this.lstJoints.Width / 3;
+            item_chWheel.Width = this.lstJoints.Width / 8;
+            item_chSensors.Width = this.lstJoints.Width / 8;
+           
             this.lstJoints.Width = this.Width;
             this.lstJoints.Height = this.Height - this.listSensorsButton.Height - 6;
             this.listSensorsButton.Top = this.lstJoints.Bottom + 3;
@@ -158,7 +167,7 @@ namespace EditorsLibrary
         {
             if (lstJoints.SelectedItems.Count > 0 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
-                SensorListForm listForm = new SensorListForm(((RigidNode_Base) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+                SensorListForm listForm = new SensorListForm(((RigidNode_Base)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
                 listForm.ShowDialog();
                 this.UpdateJointList();
             }
@@ -169,7 +178,7 @@ namespace EditorsLibrary
             if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
                 if (SelectedJoint != null)
-                    SelectedJoint((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
+                    SelectedJoint((RigidNode_Base)lstJoints.SelectedItems[0].Tag);
             }
             else
             {
@@ -182,8 +191,8 @@ namespace EditorsLibrary
         {
             if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
-                SkeletalJoint_Base joint = ((RigidNode_Base) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-                driveChooserDialog.ShowDialog(joint, (RigidNode_Base) lstJoints.SelectedItems[0].Tag);
+                SkeletalJoint_Base joint = ((RigidNode_Base)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
+                driveChooserDialog.ShowDialog(joint, (RigidNode_Base)lstJoints.SelectedItems[0].Tag);
                 UpdateJointList();
             }
         }
