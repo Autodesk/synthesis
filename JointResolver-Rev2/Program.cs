@@ -87,6 +87,7 @@ static class Program
 
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);
+        //After this point, all grounded groups have been merged into one CustomRigidGroup, and their joints have been updated.
 
         Console.WriteLine("Built model...");
         RigidBodyCleaner.CleanGroundedBodies(customRigid);

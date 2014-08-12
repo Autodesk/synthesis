@@ -38,6 +38,7 @@ static class RigidBodyCleaner
     public static void CleanGroundedBodies(CustomRigidResults results)
     {
         CustomRigidGroup firstRoot = null;
+        //Bundles all the grounded components together into one CustomRigidGroup.
         foreach (CustomRigidGroup group in results.groups)
         {
             if (group.grounded)
@@ -149,7 +150,7 @@ static class RigidBodyCleaner
                 openNodes.Add(new CustomRigidGroup[] { grp, grp });
                 closedNodes.Add(grp);
                 baseNodes.Add(grp, baseRoot = new RigidNode(grp));
-                break;
+                break; //Should only contain one grounded group, as they have all been merged together.
             }
         }
         Console.WriteLine("Determining merge commands");
@@ -163,7 +164,7 @@ static class RigidBodyCleaner
                 HashSet<CustomRigidGroup> jons = joints[node[0]];
                 foreach (CustomRigidGroup jonConn in jons)
                 {
-                    if (!closedNodes.Add(jonConn))
+                    if (!closedNodes.Add(jonConn)) //Moves on to next 
                         continue;
                     RigidNode rnode = new RigidNode(jonConn);
                     baseNodes.Add(jonConn, rnode);
@@ -202,11 +203,12 @@ static class RigidBodyCleaner
         Console.WriteLine("Do " + mergePattern.Count + " merge commands");
         foreach (KeyValuePair<CustomRigidGroup, CustomRigidGroup> pair in mergePattern)
         {
-            pair.Value.occurrences.AddRange(pair.Key.occurrences);
+            pair.Value.occurrences.AddRange(pair.Key.occurrences); //Transfers key components to related value.
             pair.Key.occurrences.Clear();
             pair.Value.grounded = pair.Value.grounded || pair.Key.grounded;
         }
         Console.WriteLine("Resolve broken joints");
+        //Goes through each joint and sees if it was merged.  If it was, it attaches the group left behind to the group that was merged into.
         foreach (CustomRigidJoint joint in results.joints)
         {
             CustomRigidGroup thing = null;
