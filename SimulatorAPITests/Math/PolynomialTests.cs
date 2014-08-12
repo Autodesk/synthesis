@@ -36,6 +36,6 @@ public class PolynomialTests
     public void Polynomial_ToString()
     {
         Polynomial poly = new Polynomial(new float[] { 3.14f, 2.1f, 1.4f });
-        Assert.AreEqual("1.4*x^2 + 2.1*x^1 + 3.14", poly.ToString(), "Polynomial ToString method failed.");
+        Assert.AreEqual("1.4x^2 + 2.1x + 3.14", poly.ToString(), "Polynomial ToString method failed.");
     }
 }
