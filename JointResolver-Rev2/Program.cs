@@ -124,6 +124,10 @@ static class Program
         baseNode.ListAllNodes(nodes);
 
         ControlGroups controlGUI = new ControlGroups();
+        foreach (RigidNode_Base node in nodes)
+        {
+            node.modelFileName = ((RigidNode) node).group.ToString();
+        }
         controlGUI.SetSkeleton(baseNode);
         controlGUI.SetGroupList(customRigid.groups);
         controlGUI.ShowDialog();
@@ -133,7 +137,7 @@ static class Program
         {
             SurfaceExporter surfs = new SurfaceExporter();
             {
-                BXDJSkeleton.SetupFileNames(baseNode);
+                BXDJSkeleton.SetupFileNames(baseNode, true);
                 foreach (RigidNode_Base node in nodes)
                 {
                     if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)

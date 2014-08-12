@@ -8,13 +8,14 @@ public class BXDJSkeleton
     /// Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name.
     /// </summary>
     /// <param name="baseNode">The base node of the skeleton</param>
-    public static void SetupFileNames(RigidNode_Base baseNode)
+    /// <param name="overwrite">Overwrite existing</param>
+    public static void SetupFileNames(RigidNode_Base baseNode, bool overwrite = false)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
         for (int i = 0; i < nodes.Count; i++)
         {
-            if (nodes[i].modelFileName == null)
+            if (nodes[i].modelFileName == null || overwrite)
             {
                 nodes[i].modelFileName = ("node_" + i + ".bxda");
             }
