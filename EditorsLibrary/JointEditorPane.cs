@@ -119,25 +119,14 @@ namespace EditorsLibrary
 
         private void DoLayout(object sender, EventArgs e)
         {
-            float[] scales = new float[this.lstJoints.Columns.Count];
-
-
+            //Scales the columns to the width
             item_chType.Width = this.lstJoints.Width / 8;
             item_chParent.Width = this.lstJoints.Width / 8;
             item_chChild.Width = this.lstJoints.Width / 8;
             item_chDrive.Width = this.lstJoints.Width / 3;
             item_chWheel.Width = this.lstJoints.Width / 8;
             item_chSensors.Width = this.lstJoints.Width / 8;
-            
-            /*
-            for (int i = 0; i < scales.Length; i++)
-            {
-                scales[i] = this.lstJoints.Columns[i].Width / (float)this.lstJoints.Width;
-            }
-            for (int i = 0; i < scales.Length; i++)
-            {
-                this.lstJoints.Columns[i].Width = (int)(scales[i] * this.lstJoints.Width);
-            }*/
+           
             this.lstJoints.Width = this.Width;
             this.lstJoints.Height = this.Height - this.listSensorsButton.Height - 6;
             this.listSensorsButton.Top = this.lstJoints.Bottom + 3;
