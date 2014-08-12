@@ -10,7 +10,7 @@ public class BXDIO
     private const byte REVISION_VERSION = 8;        // Bump on major IO changes.
     private const byte REVISION_PORTION = 2;        // Bump on IO changes in a meta chunk.
 
-    public const string ASSEMBLY_VERSION = "0.0.8.1";   // I'm so sorry that this isn't dynamic :'(
+    public const string ASSEMBLY_VERSION = "0.0.8.2";   // I'm so sorry that this isn't dynamic :'(
 
     /// <summary>
     /// The version of the BXDJ file format this file can read and write.
