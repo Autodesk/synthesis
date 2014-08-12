@@ -37,7 +37,7 @@ public class SurfaceExporter
     /// to be considered small.  The higher the number the less that is dropped, while if the value is one about half the objects
     /// would be dropped.
     /// </summary>
-    private double adaptiveDegredation = 5;
+    private double adaptiveDegredation = 7;
 
     // Temporary output
     private PartialSurface tmpSurface = new PartialSurface();

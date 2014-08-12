@@ -124,4 +124,42 @@ public class BXDJSkeleton
             throw e.GetBaseException();
         }
     }
+
+    /// <summary>
+    /// Clones joint settings for matching skeletal joints from one skeleton to the other.  This does not overwrite existing joint drivers.
+    /// </summary>
+    /// <param name="from">Source skeleton</param>
+    /// <param name="to">Destination skeleton</param>
+    public static void CloneDriversFromTo(RigidNode_Base from, RigidNode_Base to)
+    {
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        from.ListAllNodes(nodes);
+        Dictionary<string, RigidNode_Base> fromNodes = new Dictionary<string, RigidNode_Base>();
+        foreach (RigidNode_Base cpy in nodes)
+        {
+            fromNodes[cpy.GetModelID()] = cpy;
+        }
+        nodes.Clear();
+        to.ListAllNodes(nodes);
+        foreach (RigidNode_Base copyTo in nodes)
+        {
+            RigidNode_Base fromNode;
+            if (fromNodes.TryGetValue(copyTo.GetModelID(), out fromNode))
+            {
+                if (copyTo.GetSkeletalJoint() != null && fromNode.GetSkeletalJoint() != null && copyTo.GetSkeletalJoint().GetJointType() == fromNode.GetSkeletalJoint().GetJointType())
+                {
+                    if (copyTo.GetSkeletalJoint().cDriver == null)
+                    {
+                        // Copy the driver
+                        copyTo.GetSkeletalJoint().cDriver = fromNode.GetSkeletalJoint().cDriver;
+                    }
+                    if (copyTo.GetSkeletalJoint().attachedSensors.Count == 0)
+                    {
+                        // Copy the sensors
+                        copyTo.GetSkeletalJoint().attachedSensors.AddRange(fromNode.GetSkeletalJoint().attachedSensors);
+                    }
+                }
+            }
+        }
+    }
 }

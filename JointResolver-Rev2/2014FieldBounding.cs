@@ -24,12 +24,11 @@ public class _2014FieldBounding
             exp.ExportAll(cc);
         }
         BXDAMesh mesh = exp.GetOutput();
+        Apply(mesh);
         mesh.WriteToFile("C:/Temp/field.bxda");
     }
-    public static void Apply()
+    public static void Apply(BXDAMesh meshThing)
     {
-        BXDAMesh meshThing = new BXDAMesh();
-        meshThing.ReadFromFile("C:/Temp/field.bxda");
         meshThing.colliders.Clear();
         meshThing.colliders.Add(createBB(0, -10000 / 2, 0, 10000, 10000, 10000));   // Ground
 
@@ -54,9 +53,5 @@ public class _2014FieldBounding
             meshThing.colliders.Add(createBB(0, 310, signX * 827, 750, 10, 10));    // Ends TOPBAR
         }
         meshThing.colliders.Add(createBB(0, 175, 0, 980, 30, 30));  // Truss
-
-
-
-        meshThing.WriteToFile("C:/Temp/field.bxda");
     }
 }

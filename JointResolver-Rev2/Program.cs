@@ -12,6 +12,7 @@ static class Program
     {
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         AnalyzeRigidResults();
+        //_2014FieldBounding.WriteModel();
         //AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         //SurfaceExporter exp = new SurfaceExporter();
         //foreach (ComponentOccurrence cc in asmDoc.ComponentDefinition.Occurrences){
@@ -111,7 +112,7 @@ static class Program
             try
             {
                 RigidNode_Base loadedBase = BXDJSkeleton.ReadSkeleton(pathBase + "\\skeleton.bxdj");
-                JointDriver.CloneDriversFromTo(loadedBase, baseNode);
+                BXDJSkeleton.CloneDriversFromTo(loadedBase, baseNode);
             }
             catch (Exception e)
             {
