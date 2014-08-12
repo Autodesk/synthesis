@@ -29,7 +29,7 @@ public class OGL_RigidNode : RigidNode_Base
     {
         i += 0.01f;
         requestedTranslation = (float) Math.Sin(i) * 100;
-        requestedRotation = (float) Math.Cos(i);
+        requestedRotation = (float) Math.Cos(i) - 3.14f;
         myTrans.identity();
         if (GetSkeletalJoint() != null)
         {
@@ -43,6 +43,16 @@ public class OGL_RigidNode : RigidNode_Base
                     axis = rjb.axis;
                     requestedTranslation = 0;
                     modelRotation = rjb.currentAngularPosition;
+                    if (rjb.hasAngularLimit)
+                    {
+                        if (rjb.angularLimitLow > rjb.angularLimitHigh) {
+                            float temp = rjb.angularLimitLow;
+                            rjb.angularLimitLow = rjb.angularLimitHigh;
+                            rjb.angularLimitHigh = temp;
+                        }
+                        requestedRotation = Math.Min(requestedRotation, rjb.angularLimitHigh);
+                        requestedRotation = Math.Max(requestedRotation, rjb.angularLimitLow);
+                    }
                     break;
                 case SkeletalJointType.LINEAR:
                     LinearJoint_Base ljb = (LinearJoint_Base) GetSkeletalJoint();
@@ -50,6 +60,10 @@ public class OGL_RigidNode : RigidNode_Base
                     axis = ljb.axis;
                     requestedRotation = 0;
                     modelTranslation = ljb.currentLinearPosition;
+                    if (ljb.hasUpperLimit)
+                        requestedTranslation = Math.Min(requestedTranslation, ljb.linearLimitHigh);
+                    if (ljb.hasLowerLimit)
+                        requestedTranslation = Math.Max(requestedTranslation, ljb.linearLimitLow);
                     break;
                 case SkeletalJointType.CYLINDRICAL:
                     CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
@@ -61,6 +75,11 @@ public class OGL_RigidNode : RigidNode_Base
                         requestedTranslation = Math.Min(requestedTranslation, cjb.linearLimitEnd);
                     if (cjb.hasLinearStartLimit)
                         requestedTranslation = Math.Max(requestedTranslation, cjb.linearLimitStart);
+                    if (cjb.hasAngularLimit)
+                    {
+                        requestedRotation = Math.Min(requestedRotation, cjb.angularLimitHigh);
+                        requestedRotation = Math.Max(requestedRotation, cjb.angularLimitLow);
+                    }
                     break;
             }
             if (GetParent() != null)
@@ -72,7 +91,7 @@ public class OGL_RigidNode : RigidNode_Base
 
             mat.identity().setTranslation(baseV.x, baseV.y, baseV.z);
             myTrans.multiply(mat);
-            mat.identity().setRotation(axis.x, axis.y, axis.z, requestedRotation - modelRotation + (float) Math.PI);
+            mat.identity().setRotation(axis.x, axis.y, axis.z, requestedRotation - modelRotation);
             mat.setTranslation(axis.x * (requestedTranslation - modelTranslation), axis.y * (requestedTranslation - modelTranslation), axis.z * (requestedTranslation - modelTranslation));
             myTrans.multiply(mat);
             mat.identity().setTranslation(-baseV.x, -baseV.y, -baseV.z);
@@ -88,8 +107,17 @@ public class OGL_RigidNode : RigidNode_Base
         }
     }
 
+    bool hs;
     public void render()
     {
+        if (hs)
+        {
+            Gl.glColorMask(true, false, false, true);
+        }
+        else
+        {
+            Gl.glColorMask(true, true, true, true);
+        }
         Gl.glPushMatrix();
         Gl.glMultMatrixf(myTrans.toBuffer());
         foreach (VBOMesh mesh in models)
@@ -97,6 +125,11 @@ public class OGL_RigidNode : RigidNode_Base
             mesh.draw();
         }
         Gl.glPopMatrix();
+    }
+
+    public void highlight(bool flag)
+    {
+        this.hs = flag;
     }
 
     public override object GetModel()

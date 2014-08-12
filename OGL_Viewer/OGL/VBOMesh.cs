@@ -82,6 +82,7 @@ public class VBOMesh
                 color[3] = 1;
             }
             Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK, Gl.GL_DIFFUSE, color);
+            Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK, Gl.GL_SPECULAR, new float[] { subMesh.surfaces[i].specular, subMesh.surfaces[i].specular, subMesh.surfaces[i].specular, subMesh.surfaces[i].specular });
             Gl.glBindBufferARB(Gl.GL_ELEMENT_ARRAY_BUFFER, bufferObjects[i + 2]);
             Gl.glDrawElements(Gl.GL_TRIANGLES, subMesh.surfaces[i].indicies.Length,
                     Gl.GL_UNSIGNED_INT, IntPtr.Zero);

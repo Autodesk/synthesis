@@ -28,13 +28,14 @@ public class OGL_Viewer
     static Camera3rdPerson cam = new Camera3rdPerson();
 
     static float[] l0_position = { 1000f, -1000f, 1000f, 0f };
-    static float[] l1_position = { -1000f, -1000f, -1000f, 0f };
+    static float[] l1_position = { -1000f, 1000f, -1000f, 0f };
     static float[] l_diffuse = { 1f, 1f, 1f, 1f };
     static float[] l_specular = { .1f, .1f, .1f, .1f };
     static float[] ambient = { .125f, .125f, .125f, .125f };
 
     public static void display()
     {
+        Gl.glColorMask(true, true, true, true);
         Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
         Gl.glMatrixMode(Gl.GL_MODELVIEW);
         Gl.glLoadIdentity();
@@ -88,9 +89,23 @@ public class OGL_Viewer
         {
             return new OGL_RigidNode();
         };
+        ControlGroups groups = new ControlGroups();
         RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeleton/skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
+        groups.SetSkeleton(skeleton);
+        groups.Show();
+        groups.jointPane.SelectedJoint += delegate(RigidNode_Base node)
+        {
+            foreach (RigidNode_Base ns in nodes)
+            {
+                ((OGL_RigidNode) ns).highlight(false);
+            }
+            if (node is OGL_RigidNode)
+            {
+                ((OGL_RigidNode) node).highlight(true);
+            }
+        };
         foreach (RigidNode_Base node in nodes)
         {
             ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeleton/" + node.modelFileName);

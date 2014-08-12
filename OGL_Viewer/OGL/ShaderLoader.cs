@@ -11,8 +11,8 @@ public class ShaderLoader {
         int compositeShader = Gl.glCreateShaderObjectARB(Gl.GL_FRAGMENT_SHADER);
 
         System.Console.WriteLine(Directory.GetCurrentDirectory());
-		string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() +"/../../shader.vert");
-        string fragmentShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../shader.frag");
+		string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() +"/../../OGL/shader.vert");
+        string fragmentShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/shader.frag");
         //string fxxaShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../fxxa.frag");
         //string compositeShaderSource = "void lightFragShader(); void fxxaFragShader(); void main() { lightFragShader(); fxxaFragShader(); }";
 

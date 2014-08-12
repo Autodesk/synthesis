@@ -11,6 +11,7 @@
     <AssemblyName>OGL_Viewer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,7 +24,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -48,17 +48,23 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="shader.frag" />
-    <None Include="shader.vert" />
+    <None Include="OGL\shader.frag" />
+    <None Include="OGL\shader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Camera3rdPerson.cs" />
+    <Compile Include="GUI\ControlGroups.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ControlGroups.Designer.cs">
+      <DependentUpon>ControlGroups.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OGL\Camera3rdPerson.cs" />
     <Compile Include="OGLMain.cs" />
-    <Compile Include="Matrix.cs" />
-    <Compile Include="OGL_RigidNode.cs" />
-    <Compile Include="ShaderLoader.cs" />
-    <Compile Include="TransMatrix.cs" />
-    <Compile Include="VBOMesh.cs" />
+    <Compile Include="OGL\Matrix.cs" />
+    <Compile Include="OGL\OGL_RigidNode.cs" />
+    <Compile Include="OGL\ShaderLoader.cs" />
+    <Compile Include="OGL\TransMatrix.cs" />
+    <Compile Include="OGL\VBOMesh.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -87,6 +93,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EditorsLibrary\EditorsLibrary.csproj">
+      <Project>{87b8c386-74ff-4f9a-a3f6-20381599e464}</Project>
+      <Name>EditorsLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
@@ -108,6 +118,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GUI\ControlGroups.resx">
+      <DependentUpon>ControlGroups.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
