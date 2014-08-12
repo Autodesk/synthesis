@@ -9,6 +9,7 @@ namespace EditorsLibrary
     public class JointEditorPane : UserControl
     {
         public delegate void JointEditorEvent(RigidNode_Base node);
+        public delegate void JointContextEvent(RigidNode_Base node, string action);
 
         private ListView lstJoints;
         private ColumnHeader item_chType;
@@ -18,8 +19,11 @@ namespace EditorsLibrary
         private ColumnHeader item_chWheel;
         private ColumnHeader item_chSensors;
         private Button listSensorsButton;
+        private ContextMenuStrip jointContextMenu;
+        private System.ComponentModel.IContainer components;
 
         public event JointEditorEvent SelectedJoint;
+        public event JointContextEvent ContextJoint;
 
         private DriveChooser driveChooserDialog = new DriveChooser();
 
@@ -31,14 +35,16 @@ namespace EditorsLibrary
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.lstJoints = new System.Windows.Forms.ListView();
-            this.item_chType = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chParent = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chChild = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chDrive = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chWheel = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chSensors = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chSensors = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listSensorsButton = new System.Windows.Forms.Button();
+            this.jointContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
             // 
             // lstJoints
@@ -51,6 +57,7 @@ namespace EditorsLibrary
             this.item_chDrive,
             this.item_chWheel,
             this.item_chSensors});
+            this.lstJoints.ContextMenuStrip = this.jointContextMenu;
             this.lstJoints.Dock = System.Windows.Forms.DockStyle.Top;
             this.lstJoints.FullRowSelect = true;
             this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
@@ -97,7 +104,7 @@ namespace EditorsLibrary
             // 
             // listSensorsButton
             // 
-            this.listSensorsButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.listSensorsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.listSensorsButton.Location = new System.Drawing.Point(678, 554);
             this.listSensorsButton.Name = "listSensorsButton";
             this.listSensorsButton.Size = new System.Drawing.Size(119, 43);
@@ -105,6 +112,11 @@ namespace EditorsLibrary
             this.listSensorsButton.Text = "List Sensors";
             this.listSensorsButton.UseVisualStyleBackColor = true;
             this.listSensorsButton.Click += new System.EventHandler(this.listSensors_Click);
+            // 
+            // jointContextMenu
+            // 
+            this.jointContextMenu.Name = "jointContextMenu";
+            this.jointContextMenu.Size = new System.Drawing.Size(61, 4);
             // 
             // JointEditorPane
             // 
@@ -114,6 +126,24 @@ namespace EditorsLibrary
             this.Size = new System.Drawing.Size(800, 600);
             this.SizeChanged += new System.EventHandler(this.DoLayout);
             this.ResumeLayout(false);
+        }
+
+        public void RegisterContextAction(string caption, JointEditorEvent callback)
+        {
+            ToolStripItem item = new ToolStripLabel();
+            item.Text = caption;
+            item.Click += (object sender, EventArgs e) =>
+            {
+                if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
+                {
+                    callback((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
+                }
+                else
+                {
+                    callback(null);
+                }
+            };
+            jointContextMenu.Items.Add(item);
         }
 
         private void DoLayout(object sender, EventArgs e)
