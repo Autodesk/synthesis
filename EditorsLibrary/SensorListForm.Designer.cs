@@ -68,7 +68,7 @@
             this.sensorListView.Name = "sensorListView";
             this.sensorListView.ShowGroups = false;
             this.sensorListView.Size = new System.Drawing.Size(516, 196);
-            this.sensorListView.TabIndex = 5;
+            this.sensorListView.TabIndex = 0;
             this.sensorListView.UseCompatibleStateImageBehavior = false;
             this.sensorListView.View = System.Windows.Forms.View.Details;
             this.sensorListView.SelectedIndexChanged += new System.EventHandler(this.sensorListView_SelectedIndexChanged);
@@ -84,7 +84,7 @@
             this.deleteButton.Location = new System.Drawing.Point(22, 220);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.Size = new System.Drawing.Size(129, 36);
-            this.deleteButton.TabIndex = 6;
+            this.deleteButton.TabIndex = 1;
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = true;
             this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
@@ -95,7 +95,7 @@
             this.addSensorButton.Location = new System.Drawing.Point(172, 220);
             this.addSensorButton.Name = "addSensorButton";
             this.addSensorButton.Size = new System.Drawing.Size(114, 36);
-            this.addSensorButton.TabIndex = 7;
+            this.addSensorButton.TabIndex = 2;
             this.addSensorButton.Text = "Add Sensor";
             this.addSensorButton.UseVisualStyleBackColor = true;
             this.addSensorButton.Click += new System.EventHandler(this.addSensorButton_Click);

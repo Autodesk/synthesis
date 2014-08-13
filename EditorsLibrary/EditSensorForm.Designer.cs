@@ -57,7 +57,7 @@
             this.typeBox.Location = new System.Drawing.Point(116, 12);
             this.typeBox.Name = "typeBox";
             this.typeBox.Size = new System.Drawing.Size(128, 24);
-            this.typeBox.TabIndex = 1;
+            this.typeBox.TabIndex = 0;
             // 
             // label2
             // 
@@ -82,21 +82,21 @@
             this.portTextBox.Location = new System.Drawing.Point(186, 57);
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(47, 22);
-            this.portTextBox.TabIndex = 4;
+            this.portTextBox.TabIndex = 2;
             // 
             // moduleTextBox
             // 
             this.moduleTextBox.Location = new System.Drawing.Point(77, 59);
             this.moduleTextBox.Name = "moduleTextBox";
             this.moduleTextBox.Size = new System.Drawing.Size(47, 22);
-            this.moduleTextBox.TabIndex = 5;
+            this.moduleTextBox.TabIndex = 1;
             // 
             // saveButton
             // 
             this.saveButton.Location = new System.Drawing.Point(77, 195);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(104, 34);
-            this.saveButton.TabIndex = 6;
+            this.saveButton.TabIndex = 5;
             this.saveButton.Text = "Save Sensor";
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
@@ -116,7 +116,7 @@
             this.secondaryBox.Location = new System.Drawing.Point(77, 168);
             this.secondaryBox.Name = "secondaryBox";
             this.secondaryBox.Size = new System.Drawing.Size(99, 21);
-            this.secondaryBox.TabIndex = 9;
+            this.secondaryBox.TabIndex = 4;
             this.secondaryBox.Text = "Use Linear";
             this.secondaryBox.UseVisualStyleBackColor = true;
             this.secondaryBox.Visible = false;
@@ -126,7 +126,7 @@
             this.coefficentTextBox.Location = new System.Drawing.Point(60, 114);
             this.coefficentTextBox.Name = "coefficentTextBox";
             this.coefficentTextBox.Size = new System.Drawing.Size(143, 22);
-            this.coefficentTextBox.TabIndex = 10;
+            this.coefficentTextBox.TabIndex = 3;
             this.coefficentTextBox.TextChanged += new System.EventHandler(this.coefficentTextBox_TextChanged);
             // 
             // lblEquationParsed
@@ -138,11 +138,11 @@
             this.lblEquationParsed.TabIndex = 11;
             this.lblEquationParsed.Text = "Polynomial...";
             // 
-            // AddSensorForm
+            // EditSensorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 241);
+            this.ClientSize = new System.Drawing.Size(294, 260);
             this.Controls.Add(this.lblEquationParsed);
             this.Controls.Add(this.coefficentTextBox);
             this.Controls.Add(this.secondaryBox);
@@ -157,7 +157,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximumSize = new System.Drawing.Size(300, 286);
             this.MinimumSize = new System.Drawing.Size(300, 286);
-            this.Name = "AddSensorForm";
+            this.Name = "EditSensorForm";
             this.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.Text = "Sensor";
             this.ResumeLayout(false);
