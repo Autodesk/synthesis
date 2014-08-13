@@ -19,11 +19,6 @@ public partial class DriveChooser : Form
 
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
-    private WheelType wheelType;
-    private FrictionLevel friction;
-    //private JointDriverType driverType;
-    private PneumaticDiameter diameter;
-    private PneumaticPressure pressure;
     private RigidNode_Base node;
 
 
@@ -48,6 +43,42 @@ public partial class DriveChooser : Form
             txtPortB.Value = joint.cDriver.portB;
             txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
             txtHighLimit.Value = (decimal) joint.cDriver.upperLimit;
+
+            #region Meta info recovery
+            {
+                PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+                if (pneumaticMeta != null)
+                {
+                    cmbPneumaticDiameter.SelectedIndex = (byte) pneumaticMeta.widthEnum;
+                    cmbPneumaticPressure.SelectedIndex = (byte) pneumaticMeta.pressureEnum;
+                }
+                else
+                {
+                    cmbPneumaticDiameter.SelectedIndex = (byte) PneumaticDiameter.MEDIUM;
+                    cmbPneumaticPressure.SelectedIndex = (byte) PneumaticPressure.HIGH;
+                }
+            }
+            {
+                WheelDriverMeta wheelMeta = joint.cDriver.GetInfo<WheelDriverMeta>();
+                if (wheelMeta != null)
+                {
+                    // TODO:  This is a really sketchy hack and I don't even know where the cat is.
+                    cmbWheelType.SelectedIndex = (byte) wheelMeta.type;
+                    if (wheelMeta.forwardExtremeValue > 8)
+                        cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.HIGH;
+                    else if (wheelMeta.forwardExtremeValue > 4)
+                        cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.MEDIUM;
+                    else
+                        cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.LOW;
+                    cmbWheelType_SelectedIndexChanged(null, null);
+                }
+                else
+                {
+                    cmbWheelType.SelectedIndex = (byte) WheelType.NOT_A_WHEEL;
+                    cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.MEDIUM;
+                }
+            }
+            #endregion
         }
         ShowDialog();
     }
@@ -61,7 +92,7 @@ public partial class DriveChooser : Form
     {
         if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
         {
-            this.Height = 245;
+            this.Height = 235;
             btnSave.Location = new System.Drawing.Point(13, 165);
             lblLimits.Location = new System.Drawing.Point(11, 22);
             txtLowLimit.Location = new System.Drawing.Point(14, 42);
@@ -85,7 +116,25 @@ public partial class DriveChooser : Form
             txtPortA.Visible = true;
             grpDriveOptions.Size = new System.Drawing.Size(318, 128);
 
-            if (cType.IsMotor() == false && cType.IsPneumatic() == false)
+            if (cType.IsMotor())
+            {
+                this.Height = 420;
+                btnSave.Location = new System.Drawing.Point(13, 340);
+                grpWheelOptions.Visible = true;
+                grpGearRatio.Visible = true;
+                grpPneumaticSpecs.Visible = false;
+                grpDriveOptions.Visible = true;
+            }
+            else if (cType.IsPneumatic())
+            {
+                this.Height = 360;
+                btnSave.Location = new System.Drawing.Point(13, 280);
+                grpPneumaticSpecs.Visible = true;
+                grpWheelOptions.Visible = false;
+                grpGearRatio.Visible = false;
+                grpDriveOptions.Visible = true;
+            }
+            else
             {
                 this.Height = 300;
                 btnSave.Location = new System.Drawing.Point(13, 220);
@@ -93,28 +142,6 @@ public partial class DriveChooser : Form
                 grpGearRatio.Visible = false;
                 grpPneumaticSpecs.Visible = false;
                 grpDriveOptions.Visible = true;
-            }
-
-            else if (cType.IsMotor() == true || cType.IsPneumatic() == true)
-            {
-                if (cType.IsMotor() == true)
-                {
-                    this.Height = 420;
-                    btnSave.Location = new System.Drawing.Point(13, 340);
-                    grpWheelOptions.Visible = true;
-                    grpGearRatio.Visible = true;
-                    grpPneumaticSpecs.Visible = false;
-                    grpDriveOptions.Visible = true;
-                }
-                else if (cType.IsPneumatic() == true)
-                {
-                    this.Height = 360;
-                    btnSave.Location = new System.Drawing.Point(13, 280);
-                    grpPneumaticSpecs.Visible = true;
-                    grpWheelOptions.Visible = false;
-                    grpGearRatio.Visible = false;
-                    grpDriveOptions.Visible = true;
-                }
             }
         }
     }
@@ -142,14 +169,14 @@ public partial class DriveChooser : Form
             joint.cDriver.upperLimit = (float) txtHighLimit.Value;
 
             //Only need to store wheel driver if run by motor and is a wheel.
-            if (cType.IsMotor() && wheelType != WheelType.NOT_A_WHEEL)
+            if (cType.IsMotor() && (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
             {
                 #region WHEEL_SAVING
                 WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
-                wheelDriver.type = wheelType;
+                wheelDriver.type = (WheelType) cmbWheelType.SelectedIndex;
 
                 //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
-                switch (friction)
+                switch ((FrictionLevel) cmbFrictionLevel.SelectedIndex)
                 {
                     case FrictionLevel.HIGH:
                         wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
@@ -228,33 +255,8 @@ public partial class DriveChooser : Form
             {
                 #region PNEUMATIC_SAVING
                 PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta(); //The info about the wheel attached to the joint.
-                switch (diameter)
-                {
-                    case PneumaticDiameter.HIGH:
-                        pneumaticDriver.widthMM = 10;
-                        break;
-                    case PneumaticDiameter.LOW:
-                        pneumaticDriver.widthMM = 1;
-                        break;
-                    case PneumaticDiameter.MEDIUM:
-                    default:
-                        pneumaticDriver.widthMM = 5;
-                        break;
-                }
-
-                switch (pressure)
-                {
-                    case PneumaticPressure.MEDIUM:
-                        pneumaticDriver.pressurePSI = 40;
-                        break;
-                    case PneumaticPressure.LOW:
-                        pneumaticDriver.pressurePSI = 20;
-                        break;
-                    default:
-                    case PneumaticPressure.HIGH:
-                        pneumaticDriver.pressurePSI = 60;
-                        break;
-                }
+                pneumaticDriver.pressureEnum = (PneumaticPressure) cmbPneumaticPressure.SelectedIndex;
+                pneumaticDriver.widthEnum = (PneumaticDiameter) cmbPneumaticDiameter.SelectedIndex;
                 joint.cDriver.AddInfo(pneumaticDriver);
                 #endregion
             }
@@ -268,30 +270,6 @@ public partial class DriveChooser : Form
 
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
-        wheelType = (WheelType) cmbWheelType.SelectedIndex;
-
-        if (wheelType == WheelType.NOT_A_WHEEL)
-        {
-            cmbFrictionLevel.Visible = false;
-        }
-        else
-        {
-            cmbFrictionLevel.Visible = true;
-        }
-    }
-
-    private void cmbFrictionLevel_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        friction = (FrictionLevel) cmbFrictionLevel.SelectedIndex;
-    }
-
-    private void cmbPneumaticDiameter_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        diameter = (PneumaticDiameter) cmbPneumaticDiameter.SelectedIndex;
-    }
-
-    private void cmbPneumaticForce_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        pressure = (PneumaticPressure) cmbPneumaticPressure.SelectedIndex;
+        cmbFrictionLevel.Visible = (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL;
     }
 }
