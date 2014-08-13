@@ -49,6 +49,7 @@ public class UnityRigidNode : RigidNode_Base
 		joint.anchor = pos;
 		joint.connectedAnchor = pos;
 				
+		axis.Normalize();
 		joint.axis = axis;
 
 		

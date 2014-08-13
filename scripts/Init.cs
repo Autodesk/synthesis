@@ -17,7 +17,7 @@ public class Init : MonoBehaviour
     unityPacket udp = new unityPacket();
     List<Vector3> unityWheelData = new List<Vector3>();
     int robots = 0;
-    string filePath = null;//"C:/Users/t_millw/Downloads/Skeleton/";
+    string filePath = "C:/Users/t_crisj/Desktop/Skeleton/";
 
     public enum WheelPositions
     {
