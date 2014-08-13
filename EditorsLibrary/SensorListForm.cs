@@ -42,13 +42,19 @@ namespace EditorsLibrary
         /// <param name="e"></param>
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            joint.attachedSensors.Remove((RobotSensor)sensorListView.SelectedItems[0].Tag);
-            this.UpdateSensorList();
+            if (sensorListView.SelectedItems.Count > 0 && sensorListView.SelectedItems[0].Tag is RobotSensor)
+            {
+                joint.attachedSensors.Remove((RobotSensor) sensorListView.SelectedItems[0].Tag);
+                this.UpdateSensorList();
+            }
         }
 
         private void addSensorButton_Click(object sender, EventArgs e)
         {
-            AddSensorForm sensorForm = new AddSensorForm(joint);
+            EditSensorForm sensorForm = new EditSensorForm(joint, joint.attachedSensors.IndexOf(
+                sensorListView.SelectedItems.Count > 0 &&
+                sensorListView.SelectedItems[0].Tag is RobotSensor ?
+                (RobotSensor) sensorListView.SelectedItems[0].Tag : null));
             sensorForm.ShowDialog();
             this.UpdateSensorList();
         }
@@ -65,6 +71,14 @@ namespace EditorsLibrary
         private void SensorListForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void sensorListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            addSensorButton.Text = joint.attachedSensors.IndexOf(
+                sensorListView.SelectedItems.Count > 0 &&
+                sensorListView.SelectedItems[0].Tag is RobotSensor ?
+                (RobotSensor) sensorListView.SelectedItems[0].Tag : null) >= 0 ? "Edit Sensor" : "Add Sensor";
         }
 
     }

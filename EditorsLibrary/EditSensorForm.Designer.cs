@@ -1,6 +1,6 @@
 ﻿namespace EditorsLibrary
 {
-    partial class AddSensorForm
+    partial class EditSensorForm
     {
         /// <summary>
         /// Required designer variable.
@@ -83,7 +83,6 @@
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(47, 22);
             this.portTextBox.TabIndex = 4;
-            this.portTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // moduleTextBox
             // 

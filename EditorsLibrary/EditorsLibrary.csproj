@@ -52,11 +52,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddSensorForm.cs">
+    <Compile Include="EditSensorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddSensorForm.Designer.cs">
-      <DependentUpon>AddSensorForm.cs</DependentUpon>
+    <Compile Include="EditSensorForm.Designer.cs">
+      <DependentUpon>EditSensorForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DriveChooser.cs">
       <SubType>Form</SubType>
@@ -75,8 +75,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AddSensorForm.resx">
-      <DependentUpon>AddSensorForm.cs</DependentUpon>
+    <EmbeddedResource Include="EditSensorForm.resx">
+      <DependentUpon>EditSensorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
