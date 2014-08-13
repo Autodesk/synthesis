@@ -101,13 +101,20 @@ public class SurfaceExporter
             }
         }
         #endregion
-
+        
+#if USE_TEXTURES
+            surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+            if (tmpSurface.vertCount == 0)
+            {
+                surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
+            }
+#else
         surf.GetExistingFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
         if (tmpSurface.vertCount == 0)
         {
             surf.CalculateFacets(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies);
         }
-
+#endif
         if (separateFaces || tmpSurface.vertCount > TMP_VERTICIES)
         {
             Console.WriteLine("Exporting " + surf.Faces.Count + " faces for " + surf.Parent.Name + "\t(" + surf.Name + ")");
@@ -124,14 +131,6 @@ public class SurfaceExporter
         else
         {
             Console.WriteLine("Exporting single block for " + surf.Parent.Name + "\t(" + surf.Name + ")");
-            tmpSurface.vertCount = 0;
-#if USE_TEXTURES
-            surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-            if (tmpSurface.vertCount == 0)
-            {
-                surf.CalculateFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
-            }
-#endif
             AssetProperties assetProps = sharedValue;
             if (sharedValue == null)
             {
