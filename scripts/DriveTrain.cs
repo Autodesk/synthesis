@@ -67,8 +67,7 @@ public class DriveJoints : MonoBehaviour
 	// We will have accurate velocity measures later, but for now, we need something that works.
 	public static void SetSolenoid(UnityRigidNode node, bool forward, float pistonDiameter, float psi)
 	{
-		// Acceleration and expected Velocity of Piston
-		float acceleration = node.GetConfigJoint().xDrive.maximumForce / node.GetConfigJoint().rigidbody.mass * (forward?1:-1);
+		float acceleration = node.GetConfigJoint().xDrive.maximumForce / node.GetConfigJoint().rigidbody.mass * (forward ? 1 : -1);
 		// Dot product is reversed, so we need to negate it
 		float velocity = acceleration * (Time.deltaTime) - Vector3.Dot(node.GetConfigJoint().rigidbody.velocity, node.unityObject.transform.TransformDirection(node.GetConfigJoint().axis));
 
@@ -109,6 +108,7 @@ public class DriveJoints : MonoBehaviour
 		return (180f / Mathf.PI) * (Mathf.Acos(Vector3.Dot(child.unityObject.transform.up, parent.unityObject.transform.up) / (child.unityObject.transform.up.magnitude * parent.unityObject.transform.up.magnitude)));
 	}
 
+	// Drive All Motors Associated with a PWM port
 	public static void UpdateAllMotors(RigidNode_Base skeleton, float[] pwm)
 	{
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
@@ -135,13 +135,16 @@ public class DriveJoints : MonoBehaviour
 					{
 						// Something Arbitrary for now. 4 radians/second
 						unitySubNode.GetConfigJoint().targetAngularVelocity = new Vector3(4 * pwm [i], 0, 0);
-						
-						float angularPosition = GetAngleBetweenChildAndParent(unitySubNode);
-						// Stopping the configurable joint if it approaches its limits
 
-						//Debug.Log(unitySubNode.unityObject.transform.up.x);
-						if ((unitySubNode.GetConfigJoint().highAngularXLimit.limit - angularPosition) < (0.5f * unitySubNode.GetConfigJoint().highAngularXLimit.limit))
+						// We will need this to tell when the joint is very near a limit
+						float angularPosition = GetAngleBetweenChildAndParent(unitySubNode);
+
+						// Stopping the configurable joint if it approaches its limits (if its within 5% of its limit)
+						if ((unitySubNode.GetConfigJoint().highAngularXLimit.limit - angularPosition) < (0.05f * unitySubNode.GetConfigJoint().highAngularXLimit.limit))
 						{
+							// This prevents the motor from rotating toward its limit again after we have gotten close enough to the limit that we need to stop it.
+							// We will need it to be able to rotate away from the limit however (hence, the if-else statements)
+							// If the local up Vector of the unityObject is negative, the joint is approaching its positive limit (I am not sure if this will work in all cases, so its testing time!)
 							if (unitySubNode.unityObject.transform.up.x < 0 && unitySubNode.GetConfigJoint().targetAngularVelocity.x > 0)
 							{
 								unitySubNode.GetConfigJoint().targetAngularVelocity = Vector3.zero;
@@ -152,6 +155,7 @@ public class DriveJoints : MonoBehaviour
 						}
 					} else if (unitySubNode.GetPortA() == i + 1)
 					{
+						// Should we throw an exception here?
 						Debug.Log("There's an issue: We have an active motor not set (even though it should be set).");
 					}
 				}
