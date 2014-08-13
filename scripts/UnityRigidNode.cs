@@ -11,7 +11,7 @@ public class UnityRigidNode : RigidNode_Base
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
-	
+
 	public bool IsWheel
 	{
 		get
@@ -21,7 +21,7 @@ public class UnityRigidNode : RigidNode_Base
 	}
 
 	//public delegate void Action(); //reminder of how action and function work
-		
+
 	//The root transform for the whole object model is determined in this constructor passively
 	public void CreateTransform(Transform root)
 	{
@@ -49,7 +49,9 @@ public class UnityRigidNode : RigidNode_Base
 		joint.anchor = pos;
 		joint.connectedAnchor = pos;
 				
+		axis.Normalize();
 		joint.axis = axis;
+
 		
 		//joint.secondaryAxis = new Vector3 (0, 0, 1);
 		
@@ -113,7 +115,11 @@ public class UnityRigidNode : RigidNode_Base
 		//Debug.Log("center: " + center + " current: " + current);
 				
 		linear.limit = Mathf.Abs(center) * 0.01f;
+		linear.bounciness = 1e-05f;
+		linear.spring = 0f;
+		linear.damper = 1e30f;
 		joint.linearLimit = linear;
+
 		
 	}
 

@@ -37,7 +37,11 @@ public class InputStatePacket
 		public UInt32 digitalInput;
 	}
 
+<<<<<<< HEAD
 	public class Encoder
+=======
+	public class Encoders
+>>>>>>> origin/Piston-Management
 	{
 		public const int LENGTH = 4;
 		public Int32 value;
@@ -107,10 +111,34 @@ public class DriveJoints : MonoBehaviour
 		}
 	
 		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
+<<<<<<< HEAD
 		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 30f * (float)171.1);
+=======
+		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 171.1f);
+>>>>>>> origin/Piston-Management
 		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
 	}
-		
+
+	// A function to handle solenoids
+	// We will have accurate velocity measures later, but for now, we need something that works.
+	public static void SetSolenoid(UnityRigidNode node, bool forward, float pistonDiameter, float psi)
+	{
+		// Since Unity Uses metric units, we will need to convert psi to N/Mm^2 (pounds => Newtons and in^2 => mm^2)
+		float psiToNMm2 = 0.00689475728f;
+		float pistonForce = (psiToNMm2 * psi) * (Mathf.PI * Mathf.Pow((pistonDiameter / 2), 2));
+		float acceleration = pistonForce / node.GetConfigJoint().rigidbody.mass * (forward?1:-1);
+		// Dot product is reversed, so we need to negate it
+		float velocity = acceleration * (Time.deltaTime) - Vector3.Dot(node.GetConfigJoint().rigidbody.velocity, node.unityObject.transform.TransformDirection(node.GetConfigJoint().axis));
+
+		// Setting the maximum force of the piston.
+		JointDrive newDriver = new JointDrive();
+		newDriver.maximumForce = pistonForce;
+		newDriver.mode = JointDriveMode.Velocity;
+		node.GetConfigJoint().xDrive = newDriver;
+
+		node.GetConfigJoint().targetVelocity = new Vector3(velocity, 0, 0);
+	}
+
 	// Rotates a wheel 45 degress to act as a mecanum wheel
 	public static void RotateWheel45(List<UnityRigidNode> wheels)
 	{
@@ -125,6 +153,22 @@ public class DriveJoints : MonoBehaviour
 	public static void SetConfigJointMotorX(UnityRigidNode configJoint, float speed)
 	{
 		configJoint.GetConfigJoint().targetVelocity = new Vector3(speed, 0, 0);
+	}
+
+	// Gets the linear position of a UnityRigidNode relative to its parent (intended to be used with pistons, but it could be used elsewhere)
+	public static float GetLinearPositionRelativeToParent(UnityRigidNode baseNode) {
+		Vector3 baseDirection = baseNode.unityObject.transform.rotation * baseNode.GetConfigJoint().axis;
+		baseDirection.Normalize();
+		UnityRigidNode parentNode = (UnityRigidNode)(baseNode.GetParent());
+
+		// Vector difference between the world positions of the node, and the parent of the node
+		Vector3 difference = baseNode.unityObject.transform.position - parentNode.unityObject.transform.position;
+
+		// Find the magnitude of 'difference' along the baseDirection
+		float linearPositionAlongAxis = Vector3.Dot(baseDirection, difference);
+
+		// The dot product we get is inverted, so we need to invert it again before we return it.
+		return -linearPositionAlongAxis;
 	}
 	
 	public static void UpdateAllWheels(RigidNode_Base skeleton, float[] pwm)
@@ -160,9 +204,8 @@ public class DriveJoints : MonoBehaviour
 
 	// I had a bit of trouble grasping how this system worked in the beginning, so I will explain.
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
-	public static void updateSolenoids(RigidNode_Base skeleton, byte packet)
+	public static void UpdateSolenoids(RigidNode_Base skeleton, byte packet)
 	{
-		
 		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfNodes);
 		
@@ -172,55 +215,58 @@ public class DriveJoints : MonoBehaviour
 			UnityRigidNode unityNode = (UnityRigidNode)subBase;
 			
 			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-			if (subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC)
+			if (subBase.GetSkeletalJoint() != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
 			{
-				// It will use bitwise operators to check if the port is open.
-				/* Full Explanation:
-				 	* bool StateX is a boolean that will return True if port X is open
-				 	* the packet is the byte we take as input
-				 	* The "1 << subBase.GetSkeletalJoint().cDriver.portA" does the following:
-				 		* It gets the port numbers for solenoid A (and subtracts 1 from it so that the solenoid port is base 0 instead of base 0)
-				 		* And then it uses bitwise operators to create a byte
-				 		* It does this by shifting the integer 1 over to the left by the value of port A.
-				 		* Heres an example of the bitwise lefshift operators in use: "1 << 5" will result in 100000.
-				 		* So in our case, if port = 3, 
-				 			* "1 << subBase.GetSkeletalJoint().cDriver.portA - 1" 
-				 			* = "1 << 3 - 1"
-				 			* = "1 << 2"
-				 			* = 100  --- which is also a bit 
-				 	* Now that is has that information, it compares that byte to the packet the function recieves using the & operator
-				 	* Here is how the & operator works:
-				 		* "The bitwise AND operator (&) compares each bit of the first operand to the corresponding bit of the second operand. If both bits are 1, the corresponding result bit is set to 1. Otherwise, the corresponding result bit is set to 0." - msdn.microsoft.com
-				 		*  So if the bit of the first operand is	"1111"
-				 		*  And the bit of the second operand is		"1010"
-				 		*  The resulting bit will be:				"1010"
-				 		*  As you can see, it oompares the data in each bit, and if they both match (in our case, if they both are 1) at the given position,
-				 		*  The resulting byte will have a 1 at the given position. If they don't match however, the result at the given will be 0.
-			 		* So in our case, if the byte at solenoid port 0 (the first bit) has a value of 1 in our packet, and our code is checking to see if port 1 is open, the following operation is executed: "00000001 & 00000001".
-			 		* This will result in a byte value of "00000001".
-			 		* Now, since bits can evaluate to integers, a byte that results in a value greater than 0 indicates that the byte contains a bit with a value of 1 as opposed to 0.
-			 		* In our case, that would indicate that the solenoid port we checked for with the bitwise & operator is open.
-				 */
+				// We use bitwise operators to check if the port is open.
 				int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
-				// Now, if both solenoid ports are open
+
+				float linearPositionAlongAxis = GetLinearPositionRelativeToParent(unityNode);
+
+				// Checking to see if custom PSI and diameter values exist
 				if (stateA > 0)
 				{
-
-					// Port A is open, so the solenoid will be set to forward
-					DriveJoints.SetConfigJointMotorX(unityNode, 30);
-					Debug.Log("A solenoid is set to forward");
+					try
+					{
+						SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+						//Debug.Log(linearPositionAlongAxis);
+					} catch
+					{
+						SetSolenoid(unityNode, true, 12.7f, 60f);
+					}
 				} else if (stateB > 0)
 				{
-					// Port B is open, so the solenoid will be set to reverse
-					DriveJoints.SetConfigJointMotorX(unityNode, -30);
-					Debug.Log("A solenoid is in reverse");
-				} else
+					try
+					{
+						SetSolenoid(unityNode, false, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
+						//Debug.Log(linearPositionAlongAxis);
+					} catch
+					{
+						SetSolenoid(unityNode, false, 12.7f, 60f);
+					}
+
+				}
+
+				Debug.Log(linearPositionAlongAxis);
+
+				// If the piston hits its upper limit, stop it from extending any farther.
+				if (Mathf.Abs(unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit)) 
 				{
-					DriveJoints.SetConfigJointMotorX(unityNode, 0);
+					// Since we still want it to retract, however, we will only stop the piston if its velocity if positive. If its not, (its going backwards), we won't need to stop it
+					if (unityNode.GetConfigJoint().targetVelocity.x > 0) {
+						unityNode.GetConfigJoint().targetVelocity = Vector3.zero;
+					}
+				// Otherwise, if the piston has reached its lower limit, we need to stop it from attempting retract farther.
+				} else if (Mathf.Abs(-1 * unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit)) 
+				{
+					if (unityNode.GetConfigJoint().targetVelocity.x < 0) 
+					{
+						unityNode.GetConfigJoint().targetVelocity = Vector3.zero;
+					}
 				}
 			}
 		}
-		
 	}
 }
+		
+
