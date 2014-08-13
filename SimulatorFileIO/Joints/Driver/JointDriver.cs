@@ -59,6 +59,24 @@ public class JointDriver : RWObject
         }
     }
 
+
+    /// <summary>
+    /// Removes the metadata of the given type stored in this joint driver and returns it, or null if no such metadata exists.
+    /// </summary>
+    /// <typeparam name="T">The type of the metadata</typeparam>
+    /// <returns>Metadata, or null</returns>
+    public T RemoveInfo<T>() where T : JointDriverMeta
+    {
+        JointDriverMeta val;
+        System.Type type = typeof(T);
+        if (metaInfo.TryGetValue(type, out val))
+        {
+            metaInfo.Remove(type);
+            return (T) val;
+        }
+        return null;
+    }
+
     /// <summary>
     /// Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists.
     /// </summary>

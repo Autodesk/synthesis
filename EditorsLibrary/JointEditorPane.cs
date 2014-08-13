@@ -24,6 +24,7 @@ namespace EditorsLibrary
 
         public event JointEditorEvent SelectedJoint;
         public event JointContextEvent ContextJoint;
+        public event JointEditorEvent ModifiedJoint;
 
         private DriveChooser driveChooserDialog = new DriveChooser();
 
@@ -167,8 +168,13 @@ namespace EditorsLibrary
         {
             if (lstJoints.SelectedItems.Count > 0 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
-                SensorListForm listForm = new SensorListForm(((RigidNode_Base)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint());
+                RigidNode_Base node = (RigidNode_Base)lstJoints.SelectedItems[0].Tag;
+                SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
                 listForm.ShowDialog();
+                if (ModifiedJoint != null)
+                {
+                    ModifiedJoint(node);
+                }
                 this.UpdateJointList();
             }
         }
@@ -191,8 +197,13 @@ namespace EditorsLibrary
         {
             if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
-                SkeletalJoint_Base joint = ((RigidNode_Base)lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-                driveChooserDialog.ShowDialog(joint, (RigidNode_Base)lstJoints.SelectedItems[0].Tag);
+                RigidNode_Base node = (RigidNode_Base) lstJoints.SelectedItems[0].Tag;
+                SkeletalJoint_Base joint = node.GetSkeletalJoint();
+                driveChooserDialog.ShowDialog(joint, node);
+                if (ModifiedJoint != null)
+                {
+                    ModifiedJoint(node);
+                }
                 UpdateJointList();
             }
         }

@@ -144,12 +144,123 @@ public partial class DriveChooser : Form
             //Only need to store wheel driver if run by motor and is a wheel.
             if (cType.IsMotor() && wheelType != WheelType.NOT_A_WHEEL)
             {
-                //WheelAnalyzer.SaveToJoint(wheelType, friction, node);
+                #region WHEEL_SAVING
+                WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
+                wheelDriver.type = wheelType;
+
+                //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
+                switch (friction)
+                {
+                    case FrictionLevel.HIGH:
+                        wheelDriver.forwardExtremeSlip = 1; //Speed of max static friction force.
+                        wheelDriver.forwardExtremeValue = 10; //Force of max static friction force.
+                        wheelDriver.forwardAsympSlip = 1.5f; //Speed of leveled off kinetic friction force.
+                        wheelDriver.forwardAsympValue = 8; //Force of leveld off kinetic friction force.
+
+                        if (wheelDriver.type == WheelType.OMNI) //Set to relatively low friction, as omni wheels can move sidways.
+                        {
+                            wheelDriver.sideExtremeSlip = 1; //Same as above, but orthogonal to the movement of the wheel.
+                            wheelDriver.sideExtremeValue = .01f;
+                            wheelDriver.sideAsympSlip = 1.5f;
+                            wheelDriver.sideAsympValue = .005f;
+                        }
+                        else
+                        {
+                            wheelDriver.sideExtremeSlip = 1;
+                            wheelDriver.sideExtremeValue = 10;
+                            wheelDriver.sideAsympSlip = 1.5f;
+                            wheelDriver.sideAsympValue = 8;
+                        }
+                        break;
+                    case FrictionLevel.MEDIUM:
+                        wheelDriver.forwardExtremeSlip = 1f;
+                        wheelDriver.forwardExtremeValue = 7;
+                        wheelDriver.forwardAsympSlip = 1.5f;
+                        wheelDriver.forwardAsympValue = 5;
+
+                        if (wheelDriver.type == WheelType.OMNI)
+                        {
+                            wheelDriver.sideExtremeSlip = 1;
+                            wheelDriver.sideExtremeValue = .01f;
+                            wheelDriver.sideAsympSlip = 1.5f;
+                            wheelDriver.sideAsympValue = .005f;
+                        }
+                        else
+                        {
+                            wheelDriver.sideExtremeSlip = 1;
+                            wheelDriver.sideExtremeValue = 7;
+                            wheelDriver.sideAsympSlip = 1.5f;
+                            wheelDriver.sideAsympValue = 5;
+                        }
+                        break;
+                    case FrictionLevel.LOW:
+                        wheelDriver.forwardExtremeSlip = 1;
+                        wheelDriver.forwardExtremeValue = 5;
+                        wheelDriver.forwardAsympSlip = 1.5f;
+                        wheelDriver.forwardAsympValue = 3;
+
+                        if (wheelDriver.type == WheelType.OMNI)
+                        {
+                            wheelDriver.sideExtremeSlip = 1;
+                            wheelDriver.sideExtremeValue = .01f;
+                            wheelDriver.sideAsympSlip = 1.5f;
+                            wheelDriver.sideAsympValue = .005f;
+                        }
+                        else
+                        {
+                            wheelDriver.sideExtremeSlip = 1;
+                            wheelDriver.sideExtremeValue = 5;
+                            wheelDriver.sideAsympSlip = 1.5f;
+                            wheelDriver.sideAsympValue = 3;
+                        }
+                        break;
+                }
+
+                joint.cDriver.AddInfo(wheelDriver);
+                #endregion
+            }
+            else
+            {
+                joint.cDriver.RemoveInfo<WheelDriverMeta>();
             }
 
             if (cType.IsPneumatic())
             {
-               // PneumaticAnalyzer.SaveToPneumaticJoint(diameter, pressure, node);
+                #region PNEUMATIC_SAVING
+                PneumaticDriverMeta pneumaticDriver = new PneumaticDriverMeta(); //The info about the wheel attached to the joint.
+                switch (diameter)
+                {
+                    case PneumaticDiameter.HIGH:
+                        pneumaticDriver.widthMM = 10;
+                        break;
+                    case PneumaticDiameter.LOW:
+                        pneumaticDriver.widthMM = 1;
+                        break;
+                    case PneumaticDiameter.MEDIUM:
+                    default:
+                        pneumaticDriver.widthMM = 5;
+                        break;
+                }
+
+                switch (pressure)
+                {
+                    case PneumaticPressure.MEDIUM:
+                        pneumaticDriver.pressurePSI = 40;
+                        break;
+                    case PneumaticPressure.LOW:
+                        pneumaticDriver.pressurePSI = 20;
+                        break;
+                    default:
+                    case PneumaticPressure.HIGH:
+                        pneumaticDriver.pressurePSI = 60;
+                        break;
+                }
+                joint.cDriver.AddInfo(pneumaticDriver);
+                #endregion
+            }
+            else
+            {
+                joint.cDriver.RemoveInfo<PneumaticDriverMeta>();
             }
         }
         Hide();

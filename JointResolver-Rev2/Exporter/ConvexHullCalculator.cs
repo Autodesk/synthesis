@@ -381,7 +381,10 @@ public class ConvexHullCalculator
                 indexCount += surface.indicies.Length;
             }
         }
-        Debug.Assert(vertCount > 0);
+        if (vertCount <= 0)
+        {
+            throw new InvalidOperationException("There isn't any mesh to operate on!");
+        }
         float[] copy = new float[vertCount];
         uint[] index = new uint[indexCount];
         vertCount = 0;

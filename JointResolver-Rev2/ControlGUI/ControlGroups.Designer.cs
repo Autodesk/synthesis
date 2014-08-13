@@ -33,7 +33,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.jointPane = new EditorsLibrary.JointEditorPane();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
-            this.btnCalculate = new System.Windows.Forms.Button();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -160,24 +159,11 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.chkHighlightComponents.Text = "Highlight Component Sets";
             this.chkHighlightComponents.UseVisualStyleBackColor = true;
             // 
-            // btnCalculate
-            // 
-            this.btnCalculate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCalculate.Location = new System.Drawing.Point(674, 687);
-            this.btnCalculate.Name = "btnCalculate";
-            this.btnCalculate.Size = new System.Drawing.Size(128, 43);
-            this.btnCalculate.TabIndex = 6;
-            this.btnCalculate.Text = "Calculate Limit";
-            this.btnCalculate.UseVisualStyleBackColor = true;
-            this.btnCalculate.Visible = false;
-            this.btnCalculate.Click += new System.EventHandler(this.btnCalculate_Click_1);
-            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 741);
-            this.Controls.Add(this.btnCalculate);
             this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
@@ -197,10 +183,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     }
     internal System.Windows.Forms.Button btnExport;
     internal System.Windows.Forms.Button btnCancel;
-    public ControlGroups()
-    {
-        InitializeComponent();
-    }
 
     private System.Windows.Forms.TabControl tabsMain;
     private System.Windows.Forms.TabPage tabGroups;
@@ -212,7 +194,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader groups_chGrounded;
     private System.Windows.Forms.CheckBox chkHighlightComponents;
     private System.Windows.Forms.ColumnHeader item_chWheel;
-    private System.Windows.Forms.Button btnCalculate;
     private System.Windows.Forms.ColumnHeader groups_chConcavity;
     private EditorsLibrary.JointEditorPane jointPane;
 }

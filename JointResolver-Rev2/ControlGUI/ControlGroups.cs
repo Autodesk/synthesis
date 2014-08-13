@@ -13,6 +13,25 @@ public partial class ControlGroups
     private List<CustomRigidGroup> groupList;
     private DriveChooser driveChooser = new DriveChooser();
 
+    public ControlGroups()
+    {
+        InitializeComponent();  // Remove for death
+        jointPane.ModifiedJoint += jointPane_ModifiedJoint;
+    }
+
+    private void jointPane_ModifiedJoint(RigidNode_Base node)
+    {
+        if (node==null || !(node is RigidNode)) return;
+        if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null && node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null)
+        {
+            ((RigidNode) node).RegisterDeferredCalculation("wheel-driver", WheelAnalyzer.StartCalculations);
+        }
+        else
+        {
+            ((RigidNode) node).UnregisterDeferredCalculation("wheel-driver");
+        }
+    }
+
     private void btnExport_Click(object sender, EventArgs e)
     {
         formState = FormState.SUBMIT;
