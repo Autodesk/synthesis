@@ -85,21 +85,9 @@ public class DriveJoints : MonoBehaviour
 		}
 	}
 
-	// Get Angle between two up vectors
-	public static float GetAngleBetweenChildAndParent(UnityRigidNode child)
-	{
-		UnityRigidNode parent = (UnityRigidNode)child.GetParent();
-		return (180f / Mathf.PI) * (Mathf.Acos(Vector3.Dot(child.unityObject.transform.up, parent.unityObject.transform.up) / (child.unityObject.transform.up.magnitude * parent.unityObject.transform.up.magnitude)));
-	}
-		
-	// Set a given configurable joint's target velocity
-	public static void SetConfigJointMotorX(UnityRigidNode configJoint, float speed)
-	{
-		configJoint.GetConfigJoint().targetVelocity = new Vector3(speed, 0, 0);
-	}
-
 	// Gets the linear position of a UnityRigidNode relative to its parent (intended to be used with pistons, but it could be used elsewhere)
-	public static float GetLinearPositionRelativeToParent(UnityRigidNode baseNode) {
+	public static float GetLinearPositionRelativeToParent(UnityRigidNode baseNode)
+	{
 		Vector3 baseDirection = baseNode.unityObject.transform.rotation * baseNode.GetConfigJoint().axis;
 		baseDirection.Normalize();
 		UnityRigidNode parentNode = (UnityRigidNode)(baseNode.GetParent());
@@ -113,25 +101,30 @@ public class DriveJoints : MonoBehaviour
 		// The dot product we get is inverted, so we need to invert it again before we return it.
 		return -linearPositionAlongAxis;
 	}
-	
+
+	// Get Angle between two up vectors
+	public static float GetAngleBetweenChildAndParent(UnityRigidNode child)
+	{
+		UnityRigidNode parent = (UnityRigidNode)child.GetParent();
+		return (180f / Mathf.PI) * (Mathf.Acos(Vector3.Dot(child.unityObject.transform.up, parent.unityObject.transform.up) / (child.unityObject.transform.up.magnitude * parent.unityObject.transform.up.magnitude)));
+	}
+
 	public static void UpdateAllMotors(RigidNode_Base skeleton, float[] pwm)
 	{
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
-		
+
 		// Cycles through the packet
 		for (int i = 0; i<pwm.Length; i++)
 		{
 			foreach (RigidNode_Base node in listOfSubNodes)
-			{
-				
+			{	
 				// Typcasting RigidNode to UnityRigidNode to use UnityRigidNode functions
 				UnityRigidNode unitySubNode = (UnityRigidNode)node;
 				
 				// Checking if there is a joint (and a joint driver) attatched to each joint
 				if (unitySubNode.GetSkeletalJoint() != null && unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 				{
-					
 					// Special Case for wheels. 
 					// If port A matches the index of the array in the packet, (A.K.A: the packet index is reffering to the wheelCollider on the subNode0), then that specific wheel Collider is set.
 					if (unitySubNode.IsWheel && unitySubNode.GetPortA() == i + 1)
@@ -145,7 +138,7 @@ public class DriveJoints : MonoBehaviour
 						
 						float angularPosition = GetAngleBetweenChildAndParent(unitySubNode);
 						// Stopping the configurable joint if it approaches its limits
-						
+
 						//Debug.Log(unitySubNode.unityObject.transform.up.x);
 						if ((unitySubNode.GetConfigJoint().highAngularXLimit.limit - angularPosition) < (0.5f * unitySubNode.GetConfigJoint().highAngularXLimit.limit))
 						{
@@ -165,9 +158,7 @@ public class DriveJoints : MonoBehaviour
 			}
 		}
 	}
-
-
-	// I had a bit of trouble grasping how this system worked in the beginning, so I will explain.
+		
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
 	public static void UpdateSolenoids(RigidNode_Base skeleton, byte packet)
 	{
@@ -176,11 +167,13 @@ public class DriveJoints : MonoBehaviour
 		
 		foreach (RigidNode_Base subBase in listOfNodes)
 		{
-			
+			///Debug.Log(subBase==null?"null":subBase.ToString());
+			//if (subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null)
+			//{
 			UnityRigidNode unityNode = (UnityRigidNode)subBase;
-			
+			// Make sure piston and skeletalJoint exist
 			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-			if (subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC)
+			if (subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
 			{
 				// It will use bitwise operators to check if the port is open.
 				/* Full Explanation:
@@ -236,16 +229,17 @@ public class DriveJoints : MonoBehaviour
 				}
 
 				// If the piston hits its upper limit, stop it from extending any farther.
-				if (Mathf.Abs(unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit)) 
+				if (Mathf.Abs(unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit))
 				{
 					// Since we still want it to retract, however, we will only stop the piston if its velocity if positive. If its not, (its going backwards), we won't need to stop it
-					if (unityNode.GetConfigJoint().targetVelocity.x > 0) {
+					if (unityNode.GetConfigJoint().targetVelocity.x > 0)
+					{
 						unityNode.GetConfigJoint().targetVelocity = Vector3.zero;
 					}
-				// Otherwise, if the piston has reached its lower limit, we need to stop it from attempting retract farther.
-				} else if (Mathf.Abs(-1 * unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit)) 
+					// Otherwise, if the piston has reached its lower limit, we need to stop it from attempting retract farther.
+				} else if (Mathf.Abs(-1 * unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit))
 				{
-					if (unityNode.GetConfigJoint().targetVelocity.x < 0) 
+					if (unityNode.GetConfigJoint().targetVelocity.x < 0)
 					{
 						unityNode.GetConfigJoint().targetVelocity = Vector3.zero;
 					}
@@ -253,6 +247,11 @@ public class DriveJoints : MonoBehaviour
 			}
 		}
 	}
+
+	//public static void UpdateAllJoints(RigidNode_Base skeleton, float[] pwmAssignments, byte solenoidAssignments) {
+	//	UpdateAllWheels(skeleton, pwmAssignments);
+	//	UpdateSolenoids(skeleton, solenoidAssignments);
+	//}
 }
 		
 

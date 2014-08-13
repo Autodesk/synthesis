@@ -124,7 +124,7 @@ public class UnityRigidNode : RigidNode_Base
 		
 	}
 
-	private void setXdrives()
+	private void SetXDrives()
 	{
 		if (GetSkeletalJoint().cDriver != null)
 		{
@@ -242,7 +242,7 @@ public class UnityRigidNode : RigidNode_Base
 			});
 						
 		}
-		setXdrives();
+		SetXDrives();
 	}		
 		
 	//loads the bxda format meshes
