@@ -92,15 +92,8 @@ public partial class DriveChooser : Form
     {
         if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
         {
-            this.Height = 235;
-            btnSave.Location = new System.Drawing.Point(13, 165);
-            lblLimits.Location = new System.Drawing.Point(11, 22);
-            txtLowLimit.Location = new System.Drawing.Point(14, 42);
-            txtHighLimit.Location = new System.Drawing.Point(140, 42);
-            lblPort.Visible = false;
-            txtPortA.Visible = false;
-            txtPortB.Visible = false;
-            grpDriveOptions.Size = new System.Drawing.Size(318, 75);
+            grpDriveOptions.Visible = false;
+            tabsMeta.TabPages.Clear();
         }
         else
         {
@@ -108,42 +101,31 @@ public partial class DriveChooser : Form
             lblPort.Text = cType.GetPortType() + " Port" + (cType.HasTwoPorts() ? "s" : "");
             txtPortB.Visible = cType.HasTwoPorts();
             txtPortA.Maximum = txtPortB.Maximum = cType.GetPortMax();
-
-            lblLimits.Location = new System.Drawing.Point(11, 72);
-            txtLowLimit.Location = new System.Drawing.Point(14, 92);
-            txtHighLimit.Location = new System.Drawing.Point(140, 92);
-            lblPort.Visible = true;
-            txtPortA.Visible = true;
-            grpDriveOptions.Size = new System.Drawing.Size(318, 128);
-
+            grpDriveOptions.Visible = true;
             if (cType.IsMotor())
             {
-                this.Height = 420;
-                btnSave.Location = new System.Drawing.Point(13, 340);
-                grpWheelOptions.Visible = true;
-                grpGearRatio.Visible = true;
-                grpPneumaticSpecs.Visible = false;
-                grpDriveOptions.Visible = true;
+                tabsMeta.Visible = true;
+                tabsMeta.TabPages.Clear();
+                tabsMeta.TabPages.Add(metaWheel);
+                tabsMeta.TabPages.Add(metaGearing);
             }
             else if (cType.IsPneumatic())
             {
-                this.Height = 360;
-                btnSave.Location = new System.Drawing.Point(13, 280);
-                grpPneumaticSpecs.Visible = true;
-                grpWheelOptions.Visible = false;
-                grpGearRatio.Visible = false;
-                grpDriveOptions.Visible = true;
+                tabsMeta.Visible = true;
+                tabsMeta.TabPages.Clear();
+                tabsMeta.TabPages.Add(metaPneumatic);
             }
             else
             {
-                this.Height = 300;
-                btnSave.Location = new System.Drawing.Point(13, 220);
-                grpWheelOptions.Visible = false;
-                grpGearRatio.Visible = false;
-                grpPneumaticSpecs.Visible = false;
-                grpDriveOptions.Visible = true;
+                tabsMeta.TabPages.Clear();
+                tabsMeta.Visible = false;
             }
+            
         }
+        // Set window size
+        tabsMeta.Visible = tabsMeta.TabPages.Count > 0;
+        btnSave.Top = tabsMeta.TabPages.Count > 0 ? tabsMeta.Bottom + 3 : (grpDriveOptions.Visible ? grpDriveOptions.Bottom + 3 : grpChooseDriver.Bottom + 3);
+        base.Height = btnSave.Bottom + 3 + (base.Height - base.ClientSize.Height);
     }
 
     /// <summary>
