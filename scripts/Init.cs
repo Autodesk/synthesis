@@ -16,13 +16,10 @@ public class Init : MonoBehaviour
     RigidNode_Base skeleton;
     unityPacket udp = new unityPacket();
     List<Vector3> unityWheelData = new List<Vector3>();
-<<<<<<< HEAD
-   // int robots = 0;
-    string filePath = "C:/Users/t_waggn/Documents/Skeleton/Skeleton";
-=======
+
     int robots = 0;
-    string filePath = "C:/Users/t_crisj/Desktop/Skeleton/";
->>>>>>> origin/Piston-Management
+    string filePath = "C:/Users/t_grahj/Documents/NewSkeleton/";
+
 
     public enum WheelPositions
     {
@@ -31,7 +28,7 @@ public class Init : MonoBehaviour
         BL = 3,
         BR = 4
     }
-/*
+
     [STAThread]
     void OnGUI()
 	{
@@ -47,12 +44,7 @@ public class Init : MonoBehaviour
 		}
 		
 	}
-<<<<<<< HEAD
-	
-*/
-=======
-				
->>>>>>> origin/Piston-Management
+
     void TryLoad()
     {
         if (filePath != null && skeleton == null)
@@ -109,17 +101,7 @@ public class Init : MonoBehaviour
     {
         udp.Stop();
     }
-<<<<<<< HEAD
 
-    void FixedUpdate()
-    {
-        if (skeleton != null)
-        {
-            unityPacket.OutputStatePacket packet = udp.GetLastPacket();
-            DriveJoints.UpdateAllWheels(skeleton, packet.dio[0].pwmValues);
-        }
-    }
-=======
 	
 	void FixedUpdate()
 	{
@@ -135,5 +117,5 @@ public class Init : MonoBehaviour
 			}
 		}
 		}
->>>>>>> origin/Piston-Management
+
 }
