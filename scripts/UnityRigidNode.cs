@@ -112,8 +112,11 @@ public class UnityRigidNode : RigidNode_Base
 		center = (limit ["end"] - limit ["start"]) / 2.0f;
 		//current = limit ["current"];
 		//Debug.Log("center: " + center + " current: " + current);
-				
+		
 		linear.limit = Mathf.Abs(center) * 0.01f;
+		linear.bounciness = 1e-05f;
+		linear.spring = 0f;
+		linear.damper = 1e30f;
 		joint.linearLimit = linear;
 		
 	}
@@ -125,11 +128,12 @@ public class UnityRigidNode : RigidNode_Base
 			if (GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
 			{
 				PneumaticDriverMeta pneum = GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>();
-				
+
+				float psiToNMm2 = 0.00689475728f;
 				JointDrive drMode = new JointDrive();
 				drMode.mode = JointDriveMode.Velocity;
-				drMode.maximumForce = 100.0f;
-				joint.xDrive = drMode;	
+				drMode.maximumForce = (psiToNMm2 * pneum.pressurePSI) * (Mathf.PI * Mathf.Pow((pneum.widthMM / 2), 2));
+				joint.xDrive = drMode;
 				
 			} else if (GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 			{

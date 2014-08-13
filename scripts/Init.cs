@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+
 public class Init : MonoBehaviour
 {
     // We will need these
@@ -49,6 +50,7 @@ public class Init : MonoBehaviour
             nodeThing.CreateTransform(transform);
             nodeThing.CreateMesh("C:/Temp/field.bxda");
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+
 
             GameObject robot = new GameObject("Robot");
             robot.transform.parent = transform;
@@ -101,7 +103,7 @@ public class Init : MonoBehaviour
         if (skeleton != null)
         {
             unityPacket.OutputStatePacket packet = udp.getLastPacket();
-            DriveJoints.UpdateAllWheels(skeleton, packet.dio[0].pwmValues);
+            DriveJoints.UpdateAllMotors(skeleton, packet.dio[0].pwmValues);
         }
     }
 }
