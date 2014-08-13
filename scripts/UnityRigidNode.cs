@@ -88,7 +88,6 @@ public class UnityRigidNode : RigidNode_Base
 	private void AngularLimit(float[] limit)
 	{
 	
-		Debug.Log(GetSkeletalJoint().cDriver);
 		
 		if ((limit [2] - limit [1]) >= Mathf.Abs(360.0f))
 		{
@@ -279,8 +278,12 @@ public class UnityRigidNode : RigidNode_Base
 				{
 					color.a = 1;
 				}
-				matls [i] = new Material((Shader)Shader.Instantiate(Shader.Find(color.a != 1 ? "Alpha/Diffuse" : "Diffuse")));
+				matls [i] = new Material((Shader)Shader.Instantiate(Shader.Find((color.a != 1 ? "Transparent/" : "") + (sub.surfaces[i].specular > 0 ? "Specular" : "Diffuse"))));
 				matls [i].SetColor("_Color", color);
+                if (sub.surfaces[i].specular > 0)
+                {
+                    matls[i].SetFloat("_Shininess", sub.surfaces[i].specular);
+                }
 			}
 			subObject.GetComponent<MeshRenderer>().materials = matls;
 
@@ -368,7 +371,6 @@ public class UnityRigidNode : RigidNode_Base
 			sumOfAllWeights += rigidBase.mass;
 		}
 		centerOfMass /= sumOfAllWeights;
-		Debug.Log(centerOfMass.ToString());
 		return centerOfMass;
 	}
 
