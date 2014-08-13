@@ -124,18 +124,18 @@ public class UnityRigidNode : RigidNode_Base
 		
 	}
 
-	private void setXdrives()
+	private void SetXDrives()
 	{
 		if (GetSkeletalJoint().cDriver != null)
 		{
 			if (GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
 			{
 				PneumaticDriverMeta pneum = GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>();
-				
+				float psiToNMm2 = 0.00689475728f;
 				JointDrive drMode = new JointDrive();
 				drMode.mode = JointDriveMode.Velocity;
-				drMode.maximumForce = 100.0f;
-				joint.xDrive = drMode;	
+				drMode.maximumForce = (psiToNMm2 * pneum.pressurePSI) * (Mathf.PI * Mathf.Pow((pneum.widthMM / 2), 2));
+				joint.xDrive = drMode;
 				
 			} else if (GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 			{
@@ -241,7 +241,7 @@ public class UnityRigidNode : RigidNode_Base
 			});
 						
 		}
-		setXdrives();
+		SetXDrives();
 	}		
 		
 	//loads the bxda format meshes

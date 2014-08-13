@@ -109,6 +109,17 @@ public class Init : MonoBehaviour
 			{
 				DriveJoints.UpdateSolenoids(skeleton, 2);
 			}
+
+			if (Input.GetKey(KeyCode.W)) {DriveJoints.UpdateAllMotors(skeleton, new float[]{0f,0f,1f,1f,1f,1f,1f,1f});}
+			if (Input.GetKey(KeyCode.S)) {DriveJoints.UpdateAllMotors(skeleton, new float[]{0f,0f,-1f,-1f,-1f,-1f,-1f,-1f});}
 		}
+
+		List<RigidNode_Base> allNodes = new List<RigidNode_Base>();
+		skeleton.ListAllNodes(allNodes);
+		//foreach(RigidNode_Base node in allNodes)
+		//{
+		//	UnityRigidNode unityNode = (UnityRigidNode)node;
+		//	Debug.Log(unityNode.unityObject.transform.up.x);
+		//}
 		}
 }
