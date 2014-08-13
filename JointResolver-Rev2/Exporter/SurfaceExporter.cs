@@ -306,13 +306,13 @@ public class SurfaceExporter
         double totalVolume = 0;
         foreach (ComponentOccurrence occ2 in occ.SubOccurrences)
         {
-            totalVolume += occ2.MassProperties.Volume;
+            totalVolume += Utilities.BoxVolume(occ2.RangeBox);
         }
         totalVolume /= occ.SubOccurrences.Count * adaptiveDegredation;
 
         foreach (ComponentOccurrence item in occ.SubOccurrences)
         {
-            if (adaptiveIgnoring && item.MassProperties.Volume < totalVolume)
+            if (adaptiveIgnoring && Utilities.BoxVolume(item.RangeBox) < totalVolume)
             {
                 Console.WriteLine("Drop: " + item.Name);
             }
@@ -349,13 +349,13 @@ public class SurfaceExporter
         double totalVolume = 0;
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            totalVolume += occ.MassProperties.Volume;
+            totalVolume += Utilities.BoxVolume(occ.RangeBox);
         }
         totalVolume /= group.occurrences.Count * adaptiveDegredation;
 
         foreach (ComponentOccurrence occ in group.occurrences)
         {
-            if (adaptiveIgnoring && occ.MassProperties.Volume < totalVolume)
+            if (adaptiveIgnoring && Utilities.BoxVolume(occ.RangeBox) < totalVolume)
             {
                 Console.WriteLine("Drop: " + occ.Name); // TODO Ignores physics
             }

@@ -31,4 +31,12 @@ public class Utilities
         }
         return "";
     }
+
+    public static double BoxVolume(Box b)
+    {
+        double dx = b.MaxPoint.X - b.MinPoint.X;
+        double dy = b.MaxPoint.Y - b.MinPoint.Y;
+        double dz = b.MaxPoint.Z - b.MinPoint.Z;
+        return dx * dy * dz;
+    }
 }
