@@ -6,9 +6,9 @@ using System.IO;
 
 public enum RobotSensorType : byte
 {
-    LIMIT,
-    ENCODER,
-    POTENTIOMETER
+    LIMIT = 0,
+    ENCODER = 1,
+    POTENTIOMETER = 2
 }
 
 public class RobotSensor : RWObject
