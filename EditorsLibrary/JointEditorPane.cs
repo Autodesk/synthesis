@@ -30,6 +30,8 @@ namespace EditorsLibrary
         {
             InitializeComponent();
             this.DoLayout(null, null);
+            RegisterContextAction("Edit Driver", editDriver_Internal);
+            RegisterContextAction("Edit Sensors", listSensors_Internal);
         }
 
         private void InitializeComponent()
@@ -162,18 +164,34 @@ namespace EditorsLibrary
             this.listSensorsButton.Left = this.lstJoints.Right - this.listSensorsButton.Width;
         }
 
+
+        private void listSensors_Internal(RigidNode_Base node)
+        {
+            SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
+            listForm.ShowDialog();
+            if (ModifiedJoint != null)
+            {
+                ModifiedJoint(node);
+            }
+            this.UpdateJointList();
+        }
+
+        private void editDriver_Internal(RigidNode_Base node)
+        {
+            SkeletalJoint_Base joint = node.GetSkeletalJoint();
+            driveChooserDialog.ShowDialog(joint, node);
+            if (ModifiedJoint != null)
+            {
+                ModifiedJoint(node);
+            }
+            UpdateJointList();
+        }
+
         private void listSensors_Click(object sender, EventArgs e)
         {
             if (lstJoints.SelectedItems.Count > 0 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
-                RigidNode_Base node = (RigidNode_Base)lstJoints.SelectedItems[0].Tag;
-                SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
-                listForm.ShowDialog();
-                if (ModifiedJoint != null)
-                {
-                    ModifiedJoint(node);
-                }
-                this.UpdateJointList();
+                listSensors_Internal((RigidNode_Base)lstJoints.SelectedItems[0].Tag);
             }
         }
 
@@ -195,14 +213,7 @@ namespace EditorsLibrary
         {
             if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
-                RigidNode_Base node = (RigidNode_Base) lstJoints.SelectedItems[0].Tag;
-                SkeletalJoint_Base joint = node.GetSkeletalJoint();
-                driveChooserDialog.ShowDialog(joint, node);
-                if (ModifiedJoint != null)
-                {
-                    ModifiedJoint(node);
-                }
-                UpdateJointList();
+                editDriver_Internal((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
             }
         }
 
