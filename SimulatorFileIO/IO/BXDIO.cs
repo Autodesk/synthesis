@@ -24,7 +24,7 @@ public class BXDIO
     /// <returns>Decimal notation of the version ID</returns>
     public static string VersionToString(uint version)
     {
-        return ((version >> 24) & 0xFF) + "." + ((version >> 16) & 0xFF) + "." + ((version >> 8) & 0xFF) + ((version >> 0) & 0xFF);
+        return ((version >> 24) & 0xFF) + "." + ((version >> 16) & 0xFF) + "." + ((version >> 8) & 0xFF) + "." + ((version >> 0) & 0xFF);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class BXDIO
             if (version != FORMAT_VERSION)
             {
                 Console.Write("Trying to read version " + VersionToString(version) + " using API version " + VersionToString(FORMAT_VERSION) + ".  Continue? (y/N)  ");
-                if (Console.In != null)
+                try
                 {
                     String s = Console.ReadLine();
                     if (s.ToLower().Trim().Equals("y"))
@@ -47,7 +47,7 @@ public class BXDIO
                         return;
                     }
                 }
-                else
+                catch   // User input isn't enabled
                 {
                     Console.WriteLine("Ignoring version mismatch... beware.");
                     return;
