@@ -57,6 +57,8 @@ static class Program
 
     public static void AnalyzeRigidResults()
     {
+        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
+
         string pathBase = "";
         //Directory.CreateDirectory(pathBase);
 
@@ -72,7 +74,6 @@ static class Program
   
 
 
-        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         Console.WriteLine("Get rigid info...");
 
         foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
@@ -144,18 +145,27 @@ static class Program
                     {
                         Console.WriteLine("Running deffered calculations for " + node.GetModelID());
                         ((RigidNode) node).DoDeferredCalculations();
-                        Console.WriteLine("Exporting " + node.GetModelID());
-                        CustomRigidGroup group = (CustomRigidGroup) node.GetModel();
-                        surfs.Reset();
-                        surfs.ExportAll(group);
-                        BXDAMesh output = surfs.GetOutput();
-                        /*Console.WriteLine("Exporting for Colliders\n");
-                        surfs.Reset();
-                        surfs.ExportAll(group, true);*/
-                        Console.WriteLine("Computing colliders for " + node.GetModelID());
-                        output.colliders.Clear();
-                        output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));
-                        output.WriteToFile(pathBase + "\\" + node.modelFileName);
+                        try
+                        {
+                            Console.WriteLine("Exporting " + node.GetModelID());
+                            CustomRigidGroup group = (CustomRigidGroup) node.GetModel();
+                            surfs.Reset();
+                            surfs.ExportAll(group);
+                            BXDAMesh output = surfs.GetOutput();
+                            Console.WriteLine("Output mesh: " + output.meshes.Count + " meshes");
+                            /*Console.WriteLine("Exporting for Colliders\n");
+                            surfs.Reset();
+                            surfs.ExportAll(group, true);*/
+                            Console.WriteLine("Computing colliders for " + node.GetModelID());
+                            output.colliders.Clear();
+                            output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));
+                            output.WriteToFile(pathBase + "\\" + node.modelFileName);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.ToString());
+                            System.Windows.Forms.MessageBox.Show("Error exporting mesh: " + node.GetModelID());
+                        }
                     }
                 }
             }
