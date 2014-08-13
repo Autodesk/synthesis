@@ -26,24 +26,26 @@ namespace EditorsLibrary
 
         private DriveChooser driveChooserDialog = new DriveChooser();
 
+        private Dictionary<Keys, JointEditorEvent> hotkeys = new Dictionary<Keys, JointEditorEvent>();
+
         public JointEditorPane()
         {
             InitializeComponent();
             this.DoLayout(null, null);
-            RegisterContextAction("Edit Driver", editDriver_Internal);
-            RegisterContextAction("Edit Sensors", listSensors_Internal);
+            RegisterContextAction("Edit Driver", editDriver_Internal, Keys.D);
+            RegisterContextAction("Edit Sensors", listSensors_Internal, Keys.S);
         }
 
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
             this.lstJoints = new System.Windows.Forms.ListView();
-            this.item_chType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chSensors = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chType = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chParent = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chChild = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chDrive = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chWheel = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chSensors = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
             this.listSensorsButton = new System.Windows.Forms.Button();
             this.jointContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
@@ -105,7 +107,7 @@ namespace EditorsLibrary
             // 
             // listSensorsButton
             // 
-            this.listSensorsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.listSensorsButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.listSensorsButton.Location = new System.Drawing.Point(678, 554);
             this.listSensorsButton.Name = "listSensorsButton";
             this.listSensorsButton.Size = new System.Drawing.Size(119, 43);
@@ -130,10 +132,29 @@ namespace EditorsLibrary
 
         }
 
-        public void RegisterContextAction(string caption, JointEditorEvent callback)
+        protected override bool ProcessCmdKey(ref Message message, Keys keyData)
+        {
+            JointEditorEvent callback;
+            if (hotkeys.TryGetValue(keyData, out callback) && callback != null)
+            {
+                if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
+                {
+                    callback((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
+                }
+                else
+                {
+                    callback(null);
+                }
+                return true;
+            }
+            return base.ProcessCmdKey(ref message, keyData);
+        }
+
+        public void RegisterContextAction(string caption, JointEditorEvent callback, Keys hotkey = Keys.None)
         {
             ToolStripItem item = new ToolStripLabel();
             item.Text = caption;
+
             item.Click += (object sender, EventArgs e) =>
             {
                 if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
@@ -145,6 +166,17 @@ namespace EditorsLibrary
                     callback(null);
                 }
             };
+            if (hotkey != Keys.None)
+            {
+                try
+                {
+                    hotkeys[hotkey] = callback;
+                }
+                catch
+                {
+                    hotkeys.Add(hotkey, callback);
+                }
+            }
             jointContextMenu.Items.Add(item);
         }
 
@@ -157,13 +189,12 @@ namespace EditorsLibrary
             item_chDrive.Width = this.lstJoints.Width / 3;
             item_chWheel.Width = this.lstJoints.Width / 8;
             item_chSensors.Width = this.lstJoints.Width / 8;
-           
+
             this.lstJoints.Width = this.Width;
             this.lstJoints.Height = this.Height - this.listSensorsButton.Height - 6;
             this.listSensorsButton.Top = this.lstJoints.Bottom + 3;
             this.listSensorsButton.Left = this.lstJoints.Right - this.listSensorsButton.Width;
         }
-
 
         private void listSensors_Internal(RigidNode_Base node)
         {
@@ -191,7 +222,7 @@ namespace EditorsLibrary
         {
             if (lstJoints.SelectedItems.Count > 0 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
-                listSensors_Internal((RigidNode_Base)lstJoints.SelectedItems[0].Tag);
+                listSensors_Internal((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
             }
         }
 
@@ -200,7 +231,7 @@ namespace EditorsLibrary
             if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
             {
                 if (SelectedJoint != null)
-                    SelectedJoint((RigidNode_Base)lstJoints.SelectedItems[0].Tag);
+                    SelectedJoint((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
             }
             else
             {
