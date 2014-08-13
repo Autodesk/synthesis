@@ -9,7 +9,6 @@ namespace EditorsLibrary
     public class JointEditorPane : UserControl
     {
         public delegate void JointEditorEvent(RigidNode_Base node);
-        public delegate void JointContextEvent(RigidNode_Base node, string action);
 
         private ListView lstJoints;
         private ColumnHeader item_chType;
@@ -23,7 +22,6 @@ namespace EditorsLibrary
         private System.ComponentModel.IContainer components;
 
         public event JointEditorEvent SelectedJoint;
-        public event JointContextEvent ContextJoint;
         public event JointEditorEvent ModifiedJoint;
 
         private DriveChooser driveChooserDialog = new DriveChooser();
