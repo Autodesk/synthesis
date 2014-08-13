@@ -50,6 +50,7 @@ public class UnityRigidNode : RigidNode_Base
 		joint.connectedAnchor = pos;
 				
 		joint.axis = axis;
+
 		
 		//joint.secondaryAxis = new Vector3 (0, 0, 1);
 		
@@ -118,6 +119,7 @@ public class UnityRigidNode : RigidNode_Base
 		linear.spring = 0f;
 		linear.damper = 1e30f;
 		joint.linearLimit = linear;
+
 		
 	}
 

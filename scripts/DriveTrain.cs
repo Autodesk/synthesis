@@ -67,20 +67,9 @@ public class DriveJoints : MonoBehaviour
 	// We will have accurate velocity measures later, but for now, we need something that works.
 	public static void SetSolenoid(UnityRigidNode node, bool forward, float pistonDiameter, float psi)
 	{
-		// First, we calculate force --  DON'T GET RID OF ME YET D:
-		// Since Unity Uses metric units, we will need to convert psi to N/Mm^2 (pounds => Newtons and in^2 => mm^2)
-		float psiToNMm2 = 0.00689475728f;
-		float pistonForce = (psiToNMm2 * psi) * (Mathf.PI * Mathf.Pow((pistonDiameter / 2), 2));
-		float acceleration = pistonForce / node.GetConfigJoint().rigidbody.mass;
-		
-		// This will have an accurate time value later, but for now, this will be an arbitrary number
-		float velocity = 5;
-		
-		// Setting the maximum force of the piston.
-		JointDrive newDriver = new JointDrive();
-		newDriver.maximumForce = pistonForce;
-		newDriver.mode = JointDriveMode.Velocity;
-		node.GetConfigJoint().xDrive = newDriver;
+		// Acceleration and expected Velocity of Piston
+		float acceleration = node.GetConfigJoint().xDrive.maximumForce / node.GetConfigJoint().rigidbody.mass;
+		float velocity = acceleration * (Time.deltaTime) + Vector3.Dot(node.GetConfigJoint().rigidbody.velocity, node.GetConfigJoint().axis);
 		
 		if (forward == true)
 		{
@@ -223,6 +212,7 @@ public class DriveJoints : MonoBehaviour
 						SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
 					} catch
 					{
+						Debug.Log("Errors Were Caught");
 						SetSolenoid(unityNode, true, 12.7f, 60f);
 					}
 				} else if (stateB > 0)
