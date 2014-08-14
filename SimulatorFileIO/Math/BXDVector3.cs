@@ -51,6 +51,38 @@ public class BXDVector3 : RWObject
         return this;
     }
 
+    /// <summary>
+    /// Subtracts the given vector from this vector and returns this object.  (For method chaining)
+    /// </summary>
+    /// <param name="f">The vector to subtract</param>
+    /// <returns>This vector.</returns>
+    public BXDVector3 Subtract(BXDVector3 f)
+    {
+        x -= f.x;
+        y -= f.y;
+        z -= f.z;
+        return this;
+    }
+
+    /// <summary>
+    /// Gets the magnitude of this vector.
+    /// </summary>
+    /// <returns>The magnitude of this vector</returns>
+    public float Magnitude()
+    {
+        return (float) Math.Sqrt(x * x + y * y + z * z);
+    }
+
+    public static BXDVector3 CrossProduct(BXDVector3 lhs, BXDVector3 rhs)
+    {
+        return new BXDVector3(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
+    }
+
+    public static float DotProduct(BXDVector3 a, BXDVector3 b)
+    {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
     public void WriteData(System.IO.BinaryWriter w)
     {
         w.Write(x);

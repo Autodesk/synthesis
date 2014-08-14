@@ -2,16 +2,39 @@
 using System.IO;
 using Tao.OpenGl;
 
-public class ShaderLoader {
-	public static int loadShaderPair() {
-		int shaderProgram = Gl.glCreateProgramObjectARB();
+public class ShaderLoader
+{
+    private static int partShaderInternal = -1;
+    public static int PartShader
+    {
+        get
+        {
+            if (partShaderInternal == -1)
+            {
+                partShaderInternal = loadPartShader();
+            }
+            return partShaderInternal;
+        }
+        set
+        {
+            if (partShaderInternal >= 0)
+            {
+                //Gl.glDeleteProgramsARB(1, new int[] { partShaderInternal });
+                partShaderInternal = -1;
+            }
+        }
+    }
+
+    private static int loadPartShader()
+    {
+        int shaderProgram = Gl.glCreateProgramObjectARB();
         int vertexShader = Gl.glCreateShaderObjectARB(Gl.GL_VERTEX_SHADER);
         int fragmentShader = Gl.glCreateShaderObjectARB(Gl.GL_FRAGMENT_SHADER);
         int fxxaShader = Gl.glCreateShaderObjectARB(Gl.GL_FRAGMENT_SHADER);
         int compositeShader = Gl.glCreateShaderObjectARB(Gl.GL_FRAGMENT_SHADER);
 
         System.Console.WriteLine(Directory.GetCurrentDirectory());
-		string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() +"/../../OGL/shader.vert");
+        string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/shader.vert");
         string fragmentShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/shader.frag");
         //string fxxaShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../fxxa.frag");
         //string compositeShaderSource = "void lightFragShader(); void fxxaFragShader(); void main() { lightFragShader(); fxxaFragShader(); }";
@@ -25,13 +48,13 @@ public class ShaderLoader {
         Gl.glCompileShaderARB(fragmentShader);
         Console.WriteLine("Compile frag shader");
 
-       /* Gl.glShaderSourceARB(fxxaShader, 1, ref fxxaShaderSource, null);
-        Gl.glCompileShaderARB(fxxaShader);
-        Console.WriteLine("Compile fxxa shader");
+        /* Gl.glShaderSourceARB(fxxaShader, 1, ref fxxaShaderSource, null);
+         Gl.glCompileShaderARB(fxxaShader);
+         Console.WriteLine("Compile fxxa shader");
 
-        Gl.glShaderSourceARB(compositeShader, 1, ref compositeShaderSource, null);
-        Gl.glCompileShaderARB(compositeShader);
-        Console.WriteLine("Compile composite shader");*/
+         Gl.glShaderSourceARB(compositeShader, 1, ref compositeShaderSource, null);
+         Gl.glCompileShaderARB(compositeShader);
+         Console.WriteLine("Compile composite shader");*/
 
         Gl.glAttachObjectARB(shaderProgram, vertexShader);
         Gl.glAttachObjectARB(shaderProgram, fragmentShader);
@@ -40,6 +63,6 @@ public class ShaderLoader {
         Console.WriteLine("Attached objects");
         Gl.glLinkProgramARB(shaderProgram);
         Console.WriteLine("Linked");
-		return shaderProgram;
-	}
+        return shaderProgram;
+    }
 }

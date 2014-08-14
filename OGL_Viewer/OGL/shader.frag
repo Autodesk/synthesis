@@ -1,10 +1,11 @@
 ﻿varying vec3 vertex_light_position;
 varying vec3 vertex_light_half_vector;
 varying vec3 vertex_normal;
+uniform vec4 tintColor = vec4(1,1,1,1);
 
 void lightFragShader() {
 	// Calculate the ambient term
-	vec4 ambient_color = gl_LightModel.ambient * gl_FrontMaterial.ambient;;
+	vec4 ambient_color = gl_LightModel.ambient * gl_FrontMaterial.ambient;
 
 	// Calculate the diffuse term
 	vec4 diffuse_color = vec4(0,0,0,0);
@@ -24,7 +25,7 @@ void lightFragShader() {
 	float diffuse_value = max(dot(vertex_normal, vertex_light_position), 0.0);
 
 	// Set the output color of our current pixel
-	gl_FragColor = ambient_color + diffuse_color * diffuse_value + specular_color;
+	gl_FragColor = (ambient_color + diffuse_color * diffuse_value) * tintColor + specular_color;
 }
 
 void main() {

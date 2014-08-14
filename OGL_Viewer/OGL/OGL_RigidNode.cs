@@ -12,11 +12,14 @@ public class OGL_RigidNode : RigidNode_Base
 
     public float requestedRotation = 0;
     private float requestedTranslation = 0;
+    private BXDVector3 centerOfMass;
 
     public void loadMeshes(string path)
     {
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(path);
+        highlight = path.EndsWith("node_4.bxda");
+        this.centerOfMass = mesh.physics.centerOfMass;
         foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
         {
             models.Add(new VBOMesh(sub));
@@ -40,12 +43,12 @@ public class OGL_RigidNode : RigidNode_Base
         }
     }
 
-    BXDVector3 baseV = null, axis = null;
+    private BXDVector3 activeBasePoint, activeAxis;
     // A*B*C = C, then B, then A
     float i = 0;
     public void compute()
     {
-        if (hs && animate)
+        if (highlight && animate)
         {
             i += 0.01f;
             requestedTranslation = (float) Math.Sin(i) * 100.0f;
@@ -55,12 +58,13 @@ public class OGL_RigidNode : RigidNode_Base
         if (GetSkeletalJoint() != null)
         {
             float modelTranslation = 0, modelRotation = 0;
+            BXDVector3 activeBasePoint = null, activeAxis = null;
             switch (GetSkeletalJoint().GetJointType())
             {
                 case SkeletalJointType.ROTATIONAL:
                     RotationalJoint_Base rjb = (RotationalJoint_Base) GetSkeletalJoint();
-                    baseV = rjb.basePoint;
-                    axis = rjb.axis;
+                    activeBasePoint = rjb.basePoint;
+                    activeAxis = rjb.axis;
                     requestedTranslation = 0;
                     modelRotation = rjb.currentAngularPosition;
                     if (rjb.hasAngularLimit)
@@ -68,8 +72,8 @@ public class OGL_RigidNode : RigidNode_Base
                     break;
                 case SkeletalJointType.LINEAR:
                     LinearJoint_Base ljb = (LinearJoint_Base) GetSkeletalJoint();
-                    baseV = ljb.basePoint;
-                    axis = ljb.axis;
+                    activeBasePoint = ljb.basePoint;
+                    activeAxis = ljb.axis;
                     requestedRotation = 0;
                     modelTranslation = ljb.currentLinearPosition;
                     if (ljb.hasUpperLimit)
@@ -79,8 +83,8 @@ public class OGL_RigidNode : RigidNode_Base
                     break;
                 case SkeletalJointType.CYLINDRICAL:
                     CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
-                    baseV = cjb.basePoint;
-                    axis = cjb.axis;
+                    activeBasePoint = cjb.basePoint;
+                    activeAxis = cjb.axis;
                     modelRotation = cjb.currentAngularPosition;
                     modelTranslation = cjb.currentLinearPosition;
                     if (cjb.hasLinearEndLimit)
@@ -91,19 +95,22 @@ public class OGL_RigidNode : RigidNode_Base
                         ensureRotationalLimits(cjb.angularLimitLow, cjb.angularLimitHigh);
                     break;
             }
+
+            this.activeAxis = activeAxis;
+            this.activeBasePoint = activeBasePoint;
             if (GetParent() != null)
             {
-                baseV = ((OGL_RigidNode) GetParent()).myTrans.multiply(baseV);
-                axis = ((OGL_RigidNode) GetParent()).myTrans.rotate(axis);
+                activeBasePoint = ((OGL_RigidNode) GetParent()).myTrans.multiply(activeBasePoint);
+                activeAxis = ((OGL_RigidNode) GetParent()).myTrans.rotate(activeAxis);
             }
             TransMatrix mat = new TransMatrix();
 
-            mat.identity().setTranslation(baseV.x, baseV.y, baseV.z);
+            mat.identity().setTranslation(activeBasePoint.x, activeBasePoint.y, activeBasePoint.z);
             myTrans.multiply(mat);
-            mat.identity().setRotation(axis.x, axis.y, axis.z, requestedRotation - modelRotation);
-            mat.setTranslation(axis.x * (requestedTranslation - modelTranslation), axis.y * (requestedTranslation - modelTranslation), axis.z * (requestedTranslation - modelTranslation));
+            mat.identity().setRotation(activeAxis.x, activeAxis.y, activeAxis.z, requestedRotation - modelRotation);
+            mat.setTranslation(activeAxis.x * (requestedTranslation - modelTranslation), activeAxis.y * (requestedTranslation - modelTranslation), activeAxis.z * (requestedTranslation - modelTranslation));
             myTrans.multiply(mat);
-            mat.identity().setTranslation(-baseV.x, -baseV.y, -baseV.z);
+            mat.identity().setTranslation(-activeBasePoint.x, -activeBasePoint.y, -activeBasePoint.z);
             myTrans.multiply(mat);
         }
         if (GetParent() != null)
@@ -116,43 +123,156 @@ public class OGL_RigidNode : RigidNode_Base
         }
     }
 
-    bool hs;
-    public bool animate = true;
+    public bool animate = false;
+    public bool highlight = false;
+
     public void render()
     {
-        if (hs)
-        {
-            Gl.glColorMask(true, false, false, true);
-        }
-        else
-        {
-            Gl.glColorMask(true, true, true, true);
-        }
         Gl.glPushMatrix();
         Gl.glMultMatrixf(myTrans.toBuffer());
+        Gl.glUseProgramObjectARB(ShaderLoader.PartShader);
+        int tintLocation = 0;
+        bool tmpHighlight = highlight;
+        if (tmpHighlight)
+        {
+            tintLocation = Gl.glGetUniformLocationARB(ShaderLoader.PartShader, "tintColor");
+            Gl.glUniform4fvARB(tintLocation, 1, new float[] { 1, 0, 0, 1 });
+        }
         foreach (VBOMesh mesh in models)
         {
             mesh.draw();
         }
+        if (tmpHighlight)
+        {
+            Gl.glUniform4fvARB(tintLocation, 1, new float[] { 1, 1, 1, 1 });
+        }
+        Gl.glUseProgramObjectARB(0);
         Gl.glPopMatrix();
 
-        if (axis != null && hs)
+        if (highlight)
         {
-            Gl.glDisable(Gl.GL_LIGHTING);
-            Gl.glLineWidth(2f);
-            Gl.glBegin(Gl.GL_LINES);
-            Gl.glColor3f(1f, 0f, 0f);
-            float len = 100;
-            Gl.glVertex3f(baseV.x - axis.x * len, baseV.y - axis.y * len, baseV.z - axis.z * len);
-            Gl.glVertex3f(baseV.x + axis.x * len, baseV.y + axis.y * len, baseV.z + axis.z * len);
-            Gl.glEnd();
-            Gl.glEnable(Gl.GL_LIGHTING);
+            renderDebug();
         }
     }
 
-    public void highlight(bool flag)
+    public void renderDebug()
     {
-        this.hs = flag;
+        // Debug Settings
+        Gl.glUseProgramObjectARB(0);
+        Gl.glDisable(Gl.GL_LIGHTING);
+        Gl.glLineWidth(2f);
+
+        if (GetSkeletalJoint() != null && activeBasePoint != null && activeAxis != null)
+        {
+
+            Gl.glPushMatrix();
+            Gl.glMultMatrixf(myTrans.toBuffer());
+
+            float len = 100;
+
+            Gl.glBegin(Gl.GL_LINES);
+            Gl.glColor3f(1f, 0f, 0f);
+            Gl.glVertex3f(activeBasePoint.x - activeAxis.x * len, activeBasePoint.y - activeAxis.y * len, activeBasePoint.z - activeAxis.z * len);
+            Gl.glVertex3f(activeBasePoint.x + activeAxis.x * len, activeBasePoint.y + activeAxis.y * len, activeBasePoint.z + activeAxis.z * len);
+            Gl.glEnd();
+
+
+            BXDVector3 dirCOM = centerOfMass.Copy().Subtract(activeBasePoint);
+            float offset = BXDVector3.DotProduct(dirCOM, activeAxis);
+            dirCOM.Multiply(1f / dirCOM.Magnitude());
+            BXDVector3 baseCOM = activeBasePoint.Copy().Add(activeAxis.Copy().Multiply(offset / activeAxis.Magnitude()));
+            #region ROTATIONAL_LIMIT_DEBUG
+            if (GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL || GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL)
+            {
+                BXDVector3 direction = BXDVector3.CrossProduct(dirCOM, activeAxis);
+                direction = BXDVector3.CrossProduct(direction, activeAxis);
+                if (BXDVector3.DotProduct(dirCOM, direction) < 0)
+                {
+                    direction.Multiply(-1f);
+                }
+
+                Gl.glPushMatrix();
+                Gl.glTranslatef(baseCOM.x, baseCOM.y, baseCOM.z);
+
+                // Current
+                Gl.glBegin(Gl.GL_LINES);
+                Gl.glColor3f(1f, 0f, 1f);
+                Gl.glVertex3f(0, 0, 0);
+                Gl.glVertex3f(direction.x * len, direction.y * len, direction.z * len);
+                Gl.glEnd();
+
+                {
+                    bool hasAngularLimits = false;
+                    float minAngle = 0, maxAngle = 0, modelRotation = 0;
+                    switch (GetSkeletalJoint().GetJointType())
+                    {
+                        case SkeletalJointType.ROTATIONAL:
+                            RotationalJoint_Base rjb = (RotationalJoint_Base) GetSkeletalJoint();
+                            hasAngularLimits = rjb.hasAngularLimit;
+                            minAngle = rjb.angularLimitLow;
+                            maxAngle = rjb.angularLimitHigh;
+                            modelRotation = rjb.currentAngularPosition;
+                            break;
+                        case SkeletalJointType.CYLINDRICAL:
+                            CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
+                            hasAngularLimits = cjb.hasAngularLimit;
+                            minAngle = cjb.angularLimitLow;
+                            maxAngle = cjb.angularLimitHigh;
+                            modelRotation = cjb.currentAngularPosition;
+                            break;
+                    }
+                    if (hasAngularLimits)
+                    {
+                        // Minpos
+                        Gl.glPushMatrix();
+                        Gl.glRotatef(180.0f / 3.14f * (minAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
+
+                        Gl.glBegin(Gl.GL_LINES);
+                        Gl.glColor3f(0f, 1f, 1f);
+                        Gl.glVertex3f(0, 0, 0);
+                        Gl.glVertex3f(direction.x * len, direction.y * len, direction.z * len);
+                        Gl.glEnd();
+                        Gl.glBegin(Gl.GL_LINE_STRIP);
+                        // Arcthing
+                        TransMatrix stepMatrix = new TransMatrix().identity().setRotation(activeAxis.x, activeAxis.y, activeAxis.z, (maxAngle - minAngle) / 100.0f);
+                        BXDVector3 tempVec = direction.Copy();
+                        for (float f = 0; f < 1.0f; f += 0.01f)
+                        {
+                            Gl.glColor3f(0, 1f, 1f - f);
+                            Gl.glVertex3f(tempVec.x * len, tempVec.y * len, tempVec.z * len);
+                            tempVec = stepMatrix.multiply(tempVec);
+                        }
+                        Gl.glEnd();
+                        Gl.glPopMatrix(); // Begin limit matrix
+
+                        // Maxpos
+                        Gl.glPushMatrix();
+                        Gl.glRotatef(180.0f / 3.14f * (maxAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
+
+                        Gl.glBegin(Gl.GL_LINES);
+                        Gl.glColor3f(0f, 1f, 0f);
+                        Gl.glVertex3f(0, 0, 0);
+                        Gl.glVertex3f(direction.x * len, direction.y * len, direction.z * len);
+                        Gl.glEnd();
+
+                        Gl.glPopMatrix(); // End limit matrix
+                    }
+                }
+                Gl.glPopMatrix();  // part -> COM-basepoint
+            }
+            #endregion
+            #region LINEAR_LIMIT_DEBUG
+            if (GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL || GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR)
+            {
+
+            }
+            #endregion
+
+            Gl.glPopMatrix();  // World -> part matrix
+        }
+
+        // Revert Debug Settings
+        Gl.glEnable(Gl.GL_LIGHTING);
     }
 
     public override object GetModel()

@@ -24,7 +24,6 @@ public class OGL_Viewer
     private static OGL_RigidNode baseNode;
     private static List<RigidNode_Base> nodes;
 
-    static int shaders = 0;
     static Camera3rdPerson cam = new Camera3rdPerson();
 
     static float[] l0_position = { 1000f, -1000f, 1000f, 0f };
@@ -42,7 +41,6 @@ public class OGL_Viewer
         cam.translate();
 
         {
-           // Gl.glUseProgramObjectARB(shaders);
             Gl.glLightModelfv(Gl.GL_AMBIENT, ambient);
             Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_POSITION, l0_position);
             Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_DIFFUSE, l_diffuse);
@@ -90,7 +88,7 @@ public class OGL_Viewer
             return new OGL_RigidNode();
         };
         ControlGroups groups = new ControlGroups();
-        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/SIM Skeleton/skeleton.bxdj");
+        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeletons/SIM Skeleton/skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
         groups.SetSkeleton(skeleton);
@@ -99,16 +97,16 @@ public class OGL_Viewer
         {
             foreach (RigidNode_Base ns in nodes)
             {
-                ((OGL_RigidNode) ns).highlight(false);
+                ((OGL_RigidNode) ns).highlight = false;
             }
             if (node is OGL_RigidNode)
             {
-                ((OGL_RigidNode) node).highlight(true);
+                ((OGL_RigidNode) node).highlight = true;
             }
         };
         foreach (RigidNode_Base node in nodes)
         {
-            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/SIM Skeleton/" + node.modelFileName);
+            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeletons/SIM Skeleton/" + node.modelFileName);
         }
         Glut.glutInit();
         Glut.glutInitWindowPosition(0, 0);
@@ -133,9 +131,9 @@ public class OGL_Viewer
         Gl.glEnable(Gl.GL_LIGHT0);
         Gl.glEnable(Gl.GL_LIGHT1);
         Gl.glEnable(Gl.GL_DEPTH_TEST);
-        shaders = ShaderLoader.loadShaderPair();
+        int j = ShaderLoader.PartShader;//Loadshader
 
         Glut.glutMainLoop();
-        //Gl.glDeleteProgramsARB(1, new int[] { shaders });
+        ShaderLoader.PartShader = 0;    // Unloadshader
     }
 }
