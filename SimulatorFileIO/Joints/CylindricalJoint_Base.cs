@@ -1,11 +1,145 @@
-﻿/*
- *Purpose: Contains the information for an Inventor cylindrical joint.
- */
+﻿using System.Collections.Generic;
 
-
-
+/// <summary>
+/// Contains DOF information for a cylindrical joint.  (1 angular and 1 linear)
+/// </summary>
 public class CylindricalJoint_Base : SkeletalJoint_Base
 {
+    #region LinearDOF_Impl
+    private class LinearDOF_Impl : LinearDOF
+    {
+        private readonly CylindricalJoint_Base cjb;
+        public LinearDOF_Impl(CylindricalJoint_Base cjb)
+        {
+            this.cjb = cjb;
+        }
+
+        public float currentLinearPosition
+        {
+            get
+            {
+                return cjb.currentLinearPosition;
+            }
+        }
+
+        public float upperLinearLimit
+        {
+            get
+            {
+                cjb.enforceOrder();
+                return cjb.hasLinearEndLimit ? cjb.linearLimitEnd : float.PositiveInfinity;
+            }
+            set
+            {
+                cjb.linearLimitEnd = value;
+            }
+        }
+
+        public float lowerLinearLimit
+        {
+            get
+            {
+                cjb.enforceOrder();
+                return cjb.hasLinearStartLimit ? cjb.linearLimitStart : float.NegativeInfinity;
+            }
+            set
+            {
+                cjb.linearLimitStart = value;
+            }
+        }
+
+        public BXDVector3 translationalAxis
+        {
+            get
+            {
+                return cjb.axis;
+            }
+            set
+            {
+                cjb.axis = value;
+            }
+        }
+
+        public BXDVector3 basePoint
+        {
+            get
+            {
+                return cjb.basePoint;
+            }
+            set
+            {
+                cjb.basePoint = value;
+            }
+        }
+    }
+    #endregion
+    #region AngularDOF_Impl
+    private class AngularDOF_Impl : AngularDOF
+    {
+        private readonly CylindricalJoint_Base cjb;
+        public AngularDOF_Impl(CylindricalJoint_Base cjb)
+        {
+            this.cjb = cjb;
+        }
+        public float currentAngularPosition
+        {
+            get
+            {
+                return cjb.currentAngularPosition;
+            }
+        }
+
+        public float upperAngularLimit
+        {
+            get
+            {
+                cjb.enforceOrder();
+                return cjb.hasAngularLimit ? cjb.angularLimitHigh : float.PositiveInfinity;
+            }
+            set
+            {
+                cjb.angularLimitHigh = value;
+            }
+        }
+
+        public float lowerAngularLimit
+        {
+            get
+            {
+                cjb.enforceOrder();
+                return cjb.hasAngularLimit ? cjb.angularLimitLow : float.NegativeInfinity;
+            }
+            set
+            {
+                cjb.angularLimitLow = value;
+            }
+        }
+
+        public BXDVector3 rotationAxis
+        {
+            get
+            {
+                return cjb.axis;
+            }
+            set
+            {
+                cjb.axis = value;
+            }
+        }
+
+        public BXDVector3 basePoint
+        {
+            get
+            {
+                return cjb.basePoint;
+            }
+            set
+            {
+                cjb.basePoint = value;
+            }
+        }
+    }
+    #endregion
 
     public BXDVector3 axis; //The axis of both rotation and movement;
     public BXDVector3 basePoint;
@@ -20,6 +154,15 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
     public float linearLimitStart;
     public float linearLimitEnd;
 
+    private readonly LinearDOF[] linearDOF;
+    private readonly AngularDOF[] angularDOF;
+
+    public CylindricalJoint_Base()
+    {
+        linearDOF = new LinearDOF[] { new LinearDOF_Impl(this) };
+        angularDOF = new AngularDOF[] { new AngularDOF_Impl(this) };
+    }
+
     public override SkeletalJointType GetJointType()
     {
         return SkeletalJointType.CYLINDRICAL;
@@ -27,6 +170,8 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
 
     protected override void WriteJointInternal(System.IO.BinaryWriter writer)
     {
+        enforceOrder();
+
         writer.Write(basePoint);
         writer.Write(axis);
 
@@ -34,24 +179,8 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         writer.Write((byte) ((hasAngularLimit ? 1 : 0) | (hasLinearStartLimit ? 2 : 0) | (hasLinearEndLimit ? 4 : 0)));
         if (hasAngularLimit)
         {
-            // Ugh
-            if (angularLimitLow > angularLimitHigh)
-            {
-                float temp = angularLimitHigh;
-                angularLimitHigh = angularLimitLow;
-                angularLimitLow = temp;
-            }
-
             writer.Write(angularLimitLow);
             writer.Write(angularLimitHigh);
-        }
-
-        // Ugh
-        if (hasLinearStartLimit && hasLinearEndLimit && linearLimitStart > linearLimitEnd)
-        {
-            float temp = linearLimitEnd;
-            linearLimitEnd = linearLimitStart;
-            linearLimitStart = temp;
         }
 
         if (hasLinearStartLimit)
@@ -77,19 +206,6 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         hasLinearStartLimit = (limits & 2) == 2;
         hasLinearEndLimit = (limits & 4) == 4;
 
-        if (hasAngularLimit)
-        {
-            angularLimitLow = reader.ReadSingle();
-            angularLimitHigh = reader.ReadSingle();
-
-            // Ugh
-            if (angularLimitLow > angularLimitHigh)
-            {
-                float temp = angularLimitHigh;
-                angularLimitHigh = angularLimitLow;
-                angularLimitLow = temp;
-            }
-        }
         if (hasLinearStartLimit)
         {
             linearLimitStart = reader.ReadSingle();
@@ -99,15 +215,35 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             linearLimitEnd = reader.ReadSingle();
         }
 
-        // Ugh
+        currentLinearPosition = reader.ReadSingle();
+        currentAngularPosition = reader.ReadSingle();
+
+        enforceOrder();
+    }
+
+    private void enforceOrder()
+    {
+        if (hasAngularLimit && angularLimitLow > angularLimitHigh)
+        {
+            float temp = angularLimitHigh;
+            angularLimitHigh = angularLimitLow;
+            angularLimitLow = temp;
+        }
         if (hasLinearStartLimit && hasLinearEndLimit && linearLimitStart > linearLimitEnd)
         {
             float temp = linearLimitEnd;
             linearLimitEnd = linearLimitStart;
             linearLimitStart = temp;
         }
+    }
 
-        currentLinearPosition = reader.ReadSingle();
-        currentAngularPosition = reader.ReadSingle();
+    public override IEnumerable<AngularDOF> GetAngularDOF()
+    {
+        return angularDOF;
+    }
+
+    public override IEnumerable<LinearDOF> GetLinearDOF()
+    {
+        return linearDOF;
     }
 }

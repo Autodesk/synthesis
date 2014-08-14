@@ -51,6 +51,16 @@ public class BXDVector3 : RWObject
         return this;
     }
 
+    public static BXDVector3 CrossProduct(BXDVector3 lhs, BXDVector3 rhs)
+    {
+        return new BXDVector3(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
+    }
+
+    public static float DotProduct(BXDVector3 a, BXDVector3 b)
+    {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
     public void WriteData(System.IO.BinaryWriter w)
     {
         w.Write(x);

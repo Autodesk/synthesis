@@ -1,6 +1,74 @@
 ﻿
+using System.Collections.Generic;
 public class RotationalJoint_Base : SkeletalJoint_Base
 {
+    #region AngularDOF_Impl
+    private class AngularDOF_Impl : AngularDOF
+    {
+        private readonly RotationalJoint_Base rjb;
+        public AngularDOF_Impl(RotationalJoint_Base rjb)
+        {
+            this.rjb = rjb;
+        }
+        public float currentAngularPosition
+        {
+            get
+            {
+                return rjb.currentAngularPosition;
+            }
+        }
+
+        public float upperAngularLimit
+        {
+            get
+            {
+                rjb.enforceOrder();
+                return rjb.hasAngularLimit ? rjb.angularLimitHigh : float.PositiveInfinity;
+            }
+            set
+            {
+                rjb.angularLimitHigh = value;
+            }
+        }
+
+        public float lowerAngularLimit
+        {
+            get
+            {
+                rjb.enforceOrder();
+                return rjb.hasAngularLimit ? rjb.angularLimitLow : float.NegativeInfinity;
+            }
+            set
+            {
+                rjb.angularLimitLow = value;
+            }
+        }
+
+        public BXDVector3 rotationAxis
+        {
+            get
+            {
+                return rjb.axis;
+            }
+            set
+            {
+                rjb.axis = value;
+            }
+        }
+
+        public BXDVector3 basePoint
+        {
+            get
+            {
+                return rjb.basePoint;
+            }
+            set
+            {
+                rjb.basePoint = value;
+            }
+        }
+    }
+    #endregion
 
     public BXDVector3 axis;
     public BXDVector3 basePoint;
@@ -10,6 +78,13 @@ public class RotationalJoint_Base : SkeletalJoint_Base
     public float angularLimitLow;
     public float angularLimitHigh;
 
+    private readonly AngularDOF[] angularDOF;
+
+    public RotationalJoint_Base()
+    {
+        angularDOF = new AngularDOF[] { new AngularDOF_Impl(this) };
+    }
+
     public override SkeletalJointType GetJointType()
     {
         return SkeletalJointType.ROTATIONAL;
@@ -17,20 +92,13 @@ public class RotationalJoint_Base : SkeletalJoint_Base
 
     protected override void WriteJointInternal(System.IO.BinaryWriter writer)
     {
+        enforceOrder();
         writer.Write(basePoint);
         writer.Write(axis);
 
         writer.Write((byte)((hasAngularLimit ? 1 : 0)));
         if (hasAngularLimit)
         {
-            // Ugh
-            if (angularLimitLow > angularLimitHigh)
-            {
-                float temp = angularLimitHigh;
-                angularLimitHigh = angularLimitLow;
-                angularLimitLow = temp;
-            }
-
             writer.Write(angularLimitLow);
             writer.Write(angularLimitHigh);
         }
@@ -48,16 +116,29 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         {
             angularLimitLow = reader.ReadSingle();
             angularLimitHigh = reader.ReadSingle();
-
-            // Ugh
-            if (angularLimitLow > angularLimitHigh)
-            {
-                float temp = angularLimitHigh;
-                angularLimitHigh = angularLimitLow;
-                angularLimitLow = temp;
-            }
         }
 
         currentAngularPosition = reader.ReadSingle();
+        enforceOrder();
+    }
+
+    private void enforceOrder()
+    {
+        if (hasAngularLimit && angularLimitLow > angularLimitHigh)
+        {
+            float temp = angularLimitHigh;
+            angularLimitHigh = angularLimitLow;
+            angularLimitLow = temp;
+        }
+    }
+
+    public override IEnumerable<AngularDOF> GetAngularDOF()
+    {
+        return angularDOF;
+    }
+
+    public override IEnumerable<LinearDOF> GetLinearDOF()
+    {
+        return new LinearDOF[0];
     }
 }

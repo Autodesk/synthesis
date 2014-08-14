@@ -61,6 +61,9 @@ public abstract class SkeletalJoint_Base
     /// <returns>The joint type</returns>
     public abstract SkeletalJointType GetJointType();
 
+    public abstract IEnumerable<AngularDOF> GetAngularDOF();
+    public abstract IEnumerable<LinearDOF> GetLinearDOF();
+
     /// <summary>
     /// Writes the backing information and ID for this joint to the output stream.
     /// </summary>

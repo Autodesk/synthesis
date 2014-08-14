@@ -1,7 +1,86 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+
 public class BallJoint_Base : SkeletalJoint_Base
 {
+
+    #region AngularDOF_Impl
+    private class AngularDOF_Impl : AngularDOF
+    {
+        private readonly BallJoint_Base bjb;
+        private readonly int axis;
+        public AngularDOF_Impl(BallJoint_Base bjb, int axis)
+        {
+            this.bjb = bjb;
+            this.axis = axis;
+        }
+
+        public float currentAngularPosition
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public float upperAngularLimit
+        {
+            get
+            {
+                return float.PositiveInfinity;
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public float lowerAngularLimit
+        {
+            get
+            {
+                return float.NegativeInfinity;
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public BXDVector3 rotationAxis
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public BXDVector3 basePoint
+        {
+            get
+            {
+                return bjb.basePoint;
+            }
+            set
+            {
+                bjb.basePoint = value;
+            }
+        }
+    }
+    #endregion
+
     public BXDVector3 basePoint;
+
+    private readonly AngularDOF[] angularDOF;
+
+    public BallJoint_Base()
+    {
+        angularDOF = new AngularDOF[] { new AngularDOF_Impl(this, 0), new AngularDOF_Impl(this, 1), new AngularDOF_Impl(this, 2) };
+    }
 
     public override SkeletalJointType GetJointType()
     {
@@ -16,5 +95,15 @@ public class BallJoint_Base : SkeletalJoint_Base
     protected override void ReadJointInternal(System.IO.BinaryReader reader)
     {
         basePoint = reader.ReadRWObject<BXDVector3>();
+    }
+
+    public override IEnumerable<AngularDOF> GetAngularDOF()
+    {
+        return angularDOF;
+    }
+
+    public override IEnumerable<LinearDOF> GetLinearDOF()
+    {
+        return new LinearDOF[0];
     }
 }
