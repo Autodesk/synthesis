@@ -18,7 +18,7 @@ public class OGL_RigidNode : RigidNode_Base
     {
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(path);
-        highlight = path.EndsWith("node_4.bxda");
+        highlight = path.EndsWith("node_8.bxda");
         this.centerOfMass = mesh.physics.centerOfMass;
         foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
         {
@@ -28,12 +28,6 @@ public class OGL_RigidNode : RigidNode_Base
 
     private void ensureRotationalLimits(float low, float high)
     {
-        if (low > high)
-        {
-            float temp = high;
-            high = low;
-            low = temp;
-        }
         if (animate)
         {
             requestedRotation *= (high - low) / 1.75f / 6.28f;
@@ -43,11 +37,34 @@ public class OGL_RigidNode : RigidNode_Base
         }
     }
 
+    private bool initialPositions = false;
     private BXDVector3 activeBasePoint, activeAxis;
     // A*B*C = C, then B, then A
     float i = 0;
     public void compute()
     {
+        if (!initialPositions && GetSkeletalJoint() != null)
+        {
+            initialPositions = true;
+            switch (GetSkeletalJoint().GetJointType())
+            {
+                case SkeletalJointType.CYLINDRICAL:
+                    CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
+                    requestedRotation = cjb.currentAngularPosition;
+                    requestedTranslation = cjb.currentLinearPosition;
+                    break;
+                case SkeletalJointType.ROTATIONAL:
+                    RotationalJoint_Base rjb = (RotationalJoint_Base) GetSkeletalJoint();
+                    requestedRotation = rjb.currentAngularPosition;
+                    requestedTranslation = 0;
+                    break;
+                case SkeletalJointType.LINEAR:
+                    LinearJoint_Base ljb = (LinearJoint_Base) GetSkeletalJoint();
+                    requestedRotation = 0;
+                    requestedTranslation = ljb.currentLinearPosition;
+                    break;
+            }
+        }
         if (highlight && animate)
         {
             i += 0.01f;
@@ -168,22 +185,22 @@ public class OGL_RigidNode : RigidNode_Base
             GL.PushMatrix();
             GL.MultMatrix(myTrans.toBuffer());
 
-            float len = 100;
-
-            GL.Begin(PrimitiveType.Lines);
-            GL.Color3(1f, 0f, 0f);
-            GL.Vertex3(activeBasePoint.x - activeAxis.x * len, activeBasePoint.y - activeAxis.y * len, activeBasePoint.z - activeAxis.z * len);
-            GL.Vertex3(activeBasePoint.x + activeAxis.x * len, activeBasePoint.y + activeAxis.y * len, activeBasePoint.z + activeAxis.z * len);
-            GL.End();
+            float crosshairLength = 100;
 
 
-            BXDVector3 dirCOM = centerOfMass.Copy().Subtract(activeBasePoint);
-            float offset = BXDVector3.DotProduct(dirCOM, activeAxis);
-            dirCOM.Multiply(1f / dirCOM.Magnitude());
-            BXDVector3 baseCOM = activeBasePoint.Copy().Add(activeAxis.Copy().Multiply(offset / activeAxis.Magnitude()));
-            #region ROTATIONAL_LIMIT_DEBUG
-            if (GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL || GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL)
+            #region LIMITS_DEBUG
             {
+                BXDVector3 dirCOM = centerOfMass.Copy().Subtract(activeBasePoint);
+                float offset = BXDVector3.DotProduct(dirCOM, activeAxis);
+                BXDVector3 baseCOM = activeBasePoint.Copy();
+
+                if (BXDVector3.CrossProduct(dirCOM, activeAxis).Magnitude() < 1E-10)    // COM is on the axis. (>.>)  Pick randomlyish.
+                {
+                    dirCOM = new BXDVector3(.123213, 123213, 0.82134); // Certain to be random.
+                }
+                dirCOM.Multiply(1f / dirCOM.Magnitude());
+                baseCOM.Add(activeAxis.Copy().Multiply(offset / activeAxis.Magnitude()));
+
                 BXDVector3 direction = BXDVector3.CrossProduct(dirCOM, activeAxis);
                 direction = BXDVector3.CrossProduct(direction, activeAxis);
                 if (BXDVector3.DotProduct(dirCOM, direction) < 0)
@@ -191,83 +208,165 @@ public class OGL_RigidNode : RigidNode_Base
                     direction.Multiply(-1f);
                 }
 
+
                 GL.PushMatrix();
                 GL.Translate(baseCOM.x, baseCOM.y, baseCOM.z);
-
-                // Current
-                GL.Begin(PrimitiveType.Lines);
-                GL.Color3(1f, 0f, 1f);
-                GL.Vertex3(0, 0, 0);
-                GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
-                GL.End();
-
+                #region ROTATIONAL_LIMIT_DEBUG
+                if (GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL || GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL)
                 {
-                    bool hasAngularLimits = false;
-                    float minAngle = 0, maxAngle = 0, modelRotation = 0;
-                    switch (GetSkeletalJoint().GetJointType())
+                    if (GetSkeletalJoint().GetJointType() != SkeletalJointType.CYLINDRICAL) // Linear limits show the axis anyways.
                     {
-                        case SkeletalJointType.ROTATIONAL:
-                            RotationalJoint_Base rjb = (RotationalJoint_Base) GetSkeletalJoint();
-                            hasAngularLimits = rjb.hasAngularLimit;
-                            minAngle = rjb.angularLimitLow;
-                            maxAngle = rjb.angularLimitHigh;
-                            modelRotation = rjb.currentAngularPosition;
-                            break;
-                        case SkeletalJointType.CYLINDRICAL:
-                            CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
-                            hasAngularLimits = cjb.hasAngularLimit;
-                            minAngle = cjb.angularLimitLow;
-                            maxAngle = cjb.angularLimitHigh;
-                            modelRotation = cjb.currentAngularPosition;
-                            break;
-                    }
-                    if (hasAngularLimits)
-                    {
-                        // Minpos
-                        GL.PushMatrix();
-                        GL.Rotate(180.0f / 3.14f * (minAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
-
+                        // Rotational Axis
                         GL.Begin(PrimitiveType.Lines);
-                        GL.Color3(0f, 1f, 1f);
-                        GL.Vertex3(0, 0, 0);
-                        GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
+                        GL.Color3(1f, 0f, 0f);
+                        GL.Vertex3(-activeAxis.x * crosshairLength, -activeAxis.y * crosshairLength, -activeAxis.z * crosshairLength);
+                        GL.Vertex3(activeAxis.x * crosshairLength, activeAxis.y * crosshairLength, activeAxis.z * crosshairLength);
                         GL.End();
-                        GL.Begin(PrimitiveType.LineStrip);
-                        // Arcthing
-                        TransMatrix stepMatrix = new TransMatrix().identity().setRotation(activeAxis.x, activeAxis.y, activeAxis.z, (maxAngle - minAngle) / 100.0f);
-                        BXDVector3 tempVec = direction.Copy();
-                        for (float f = 0; f < 1.0f; f += 0.01f)
+                    }
+
+                    // Current
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Color3(1f, 0f, 1f);
+                    GL.Vertex3(0, 0, 0);
+                    GL.Vertex3(direction.x * crosshairLength, direction.y * crosshairLength, direction.z * crosshairLength);
+                    GL.End();
+
+                    {
+                        bool hasAngularLimits = false;
+                        float minAngle = 0, maxAngle = 0, modelRotation = 0;
+                        switch (GetSkeletalJoint().GetJointType())
                         {
-                            GL.Color3(0, 1f, 1f - f);
-                            GL.Vertex3(tempVec.x * len, tempVec.y * len, tempVec.z * len);
-                            tempVec = stepMatrix.multiply(tempVec);
+                            case SkeletalJointType.ROTATIONAL:
+                                RotationalJoint_Base rjb = (RotationalJoint_Base) GetSkeletalJoint();
+                                hasAngularLimits = rjb.hasAngularLimit;
+                                minAngle = rjb.angularLimitLow;
+                                maxAngle = rjb.angularLimitHigh;
+                                modelRotation = rjb.currentAngularPosition;
+                                break;
+                            case SkeletalJointType.CYLINDRICAL:
+                                CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
+                                hasAngularLimits = cjb.hasAngularLimit;
+                                minAngle = cjb.angularLimitLow;
+                                maxAngle = cjb.angularLimitHigh;
+                                modelRotation = cjb.currentAngularPosition;
+                                break;
                         }
-                        GL.End();
-                        GL.PopMatrix(); // Begin limit matrix
+                        if (hasAngularLimits)
+                        {
+                            // Minpos
+                            GL.PushMatrix();
+                            GL.Rotate(180.0f / 3.14f * (minAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
 
-                        // Maxpos
-                        GL.PushMatrix();
-                        GL.Rotate(180.0f / 3.14f * (maxAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
+                            GL.Begin(PrimitiveType.Lines);
+                            GL.Color3(0f, 1f, 1f);
+                            GL.Vertex3(0, 0, 0);
+                            GL.Vertex3(direction.x * crosshairLength, direction.y * crosshairLength, direction.z * crosshairLength);
+                            GL.End();
+                            GL.Begin(PrimitiveType.LineStrip);
+                            // Arcthing
+                            TransMatrix stepMatrix = new TransMatrix().identity().setRotation(activeAxis.x, activeAxis.y, activeAxis.z, (maxAngle - minAngle) / 100.0f);
+                            BXDVector3 tempVec = direction.Copy();
+                            for (float f = 0; f < 1.0f; f += 0.01f)
+                            {
+                                GL.Color3(0, 1f, 1f - f);
+                                GL.Vertex3(tempVec.x * crosshairLength, tempVec.y * crosshairLength, tempVec.z * crosshairLength);
+                                tempVec = stepMatrix.multiply(tempVec);
+                            }
+                            GL.End();
+                            GL.PopMatrix(); // Begin limit matrix
 
-                        GL.Begin(BeginMode.Lines);
-                        GL.Color3(0f, 1f, 0f);
-                        GL.Vertex3(0, 0, 0);
-                        GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
-                        GL.End();
+                            // Maxpos
+                            GL.PushMatrix();
+                            GL.Rotate(180.0f / 3.14f * (maxAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
 
-                        GL.PopMatrix(); // End limit matrix
+                            GL.Begin(PrimitiveType.Lines);
+                            GL.Color3(0f, 1f, 0f);
+                            GL.Vertex3(0, 0, 0);
+                            GL.Vertex3(direction.x * crosshairLength, direction.y * crosshairLength, direction.z * crosshairLength);
+                            GL.End();
+
+                            GL.PopMatrix(); // End limit matrix
+                        }
+                        else
+                        {
+                            // Full arc!
+                            GL.Begin(PrimitiveType.LineLoop);
+                            TransMatrix stepMatrix = new TransMatrix().identity().setRotation(activeAxis.x, activeAxis.y, activeAxis.z, (2.0f * (float) Math.PI) / 100.0f);
+                            BXDVector3 tempVec = direction.Copy();
+                            for (float f = 0; f < 1.0f; f += 0.01f)
+                            {
+                                GL.Color3(0, 1f, 1f - f);
+                                GL.Vertex3(tempVec.x * crosshairLength, tempVec.y * crosshairLength, tempVec.z * crosshairLength);
+                                tempVec = stepMatrix.multiply(tempVec);
+                            }
+                            GL.End();
+                        }
                     }
                 }
+                #endregion
+                #region LINEAR_LIMIT_DEBUG
+                if (GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL || GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR)
+                {
+                    bool hasLower = false, hasUpper = false;
+                    float lower = -crosshairLength, upper = crosshairLength;
+                    switch (GetSkeletalJoint().GetJointType())
+                    {
+                        case SkeletalJointType.CYLINDRICAL:
+                            CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
+                            hasLower = cjb.hasLinearStartLimit;
+                            hasUpper = cjb.hasLinearEndLimit;
+                            if (hasLower)
+                                lower = cjb.linearLimitStart - cjb.currentLinearPosition;
+                            if (hasUpper)
+                                upper = cjb.linearLimitEnd - cjb.currentLinearPosition;
+                            break;
+                        case SkeletalJointType.LINEAR:
+                            LinearJoint_Base ljb = (LinearJoint_Base) GetSkeletalJoint();
+                            hasLower = ljb.hasLowerLimit;
+                            hasUpper = ljb.hasUpperLimit;
+                            if (hasLower)
+                                lower = ljb.linearLimitLow - ljb.currentLinearPosition;
+                            if (hasUpper)
+                                upper = ljb.linearLimitHigh - ljb.currentLinearPosition;
+                            break;
+                    }
+                    BXDVector3 otherDirection = BXDVector3.CrossProduct(activeAxis, direction);
+                    GL.Begin(PrimitiveType.Lines);
+                    GL.Color3(0f, 1f, 0f);
+                    GL.Vertex3(activeAxis.x * lower, activeAxis.y * lower, activeAxis.z * lower);
+                    GL.Vertex3(activeAxis.x * upper, activeAxis.y * upper, activeAxis.z * upper);
+                    GL.End();
+                    if (hasLower)
+                    {
+                        GL.PushMatrix();
+                        GL.Translate(activeAxis.x * lower, activeAxis.y * lower, activeAxis.z * lower);
+                        GL.Begin(PrimitiveType.Lines);
+                        foreach (BXDVector3 seg in new BXDVector3[] { direction, otherDirection })
+                        {
+                            GL.Vertex3(-seg.x * crosshairLength, -seg.y * crosshairLength, -seg.z * -crosshairLength);
+                            GL.Vertex3(seg.x * crosshairLength, seg.y * crosshairLength, seg.z * -crosshairLength);
+                        }
+                        GL.End();
+                        GL.PopMatrix();
+                    }
+                    if (hasUpper)
+                    {
+                        GL.PushMatrix();
+                        GL.Translate(activeAxis.x * upper, activeAxis.y * upper, activeAxis.z * upper);
+                        GL.Begin(PrimitiveType.Lines);
+                        foreach (BXDVector3 seg in new BXDVector3[] { direction, otherDirection })
+                        {
+                            GL.Vertex3(-seg.x * crosshairLength, -seg.y * crosshairLength, -seg.z * -crosshairLength);
+                            GL.Vertex3(seg.x * crosshairLength, seg.y * crosshairLength, seg.z * -crosshairLength);
+                        }
+                        GL.End();
+                        GL.PopMatrix();
+                    }
+                }
+                #endregion
                 GL.PopMatrix();  // part -> COM-basepoint
             }
             #endregion
-            #region LINEAR_LIMIT_DEBUG
-            if (GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL || GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR)
-            {
-
-            }
-            #endregion
-
             GL.PopMatrix();  // World -> part matrix
         }
 
