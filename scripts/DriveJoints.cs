@@ -150,14 +150,14 @@ public class DriveJoints : MonoBehaviour
 		// The dot product we get is inverted, so we need to invert it again before we return it.
 		return -linearPositionAlongAxis;
 	}
-<<<<<<< HEAD
+
 	
-	public static void UpdateAllWheels(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] modules)
+/*	public static void UpdateAllWheels(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] modules)
 	{
 		float[] pwm = modules[0].pwmValues;
 		List<RigidNode_Base> test = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(test);
-=======
+		*/
 
 	// Get Angle between two up vectors
 	public static float GetAngleBetweenChildAndParent(UnityRigidNode child)
@@ -171,7 +171,7 @@ public class DriveJoints : MonoBehaviour
 	{
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
->>>>>>> 9531905157d82d8aa0c701930e78ad27e465da88
+
 
 		// Cycles through the packet
 		for (int i = 0; i<pwm.Length; i++)
@@ -223,41 +223,11 @@ public class DriveJoints : MonoBehaviour
 	}
 		
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
-<<<<<<< HEAD
+
 	public static void UpdateSolenoids(RigidNode_Base skeleton, byte packet)
 	{
-=======
-	public static void updateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoidModules)
-	{
-		byte packet = solenoidModules[0].state;
->>>>>>> origin/stressTesting-Skunk
-		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
-		skeleton.ListAllNodes(listOfNodes);
-		
-		foreach (RigidNode_Base subBase in listOfNodes)
-		{
-<<<<<<< HEAD
-			UnityRigidNode unityNode = (UnityRigidNode)subBase;
-			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-<<<<<<< HEAD
-			if (subBase.GetSkeletalJoint() != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
-			{
-				// We use bitwise operators to check if the port is open.
-=======
-			if (subBase != null && subBase.GetSkeletalJoint() != null  && subBase.GetSkeletalJoint().cDriver != null && subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC)
-			{
-				
-				 
-				//It will shift the 1 over based on the port number, so it will take port 3 and check if it has a value of 1 or 0 at the third bit. This allows us to check if the state is "on" or "off"
->>>>>>> origin/stressTesting-Skunk
-=======
-			///Debug.Log(subBase==null?"null":subBase.ToString());
-			//if (subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null)
-			//{
-			UnityRigidNode unityNode = (UnityRigidNode)subBase;
-			// Make sure piston and skeletalJoint exist
-			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-			if (subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
+	//if 		///Debug.Log(subBase==null?"null":subBase.ToString());
+		 (subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
 			{
 				// It will use bitwise operators to check if the port is open.
 				/* Full Explanation:
@@ -285,8 +255,35 @@ public class DriveJoints : MonoBehaviour
                     * This will result in a byte value of "00000001".
                     * Now, since bits can evaluate to integers, a byte that results in a value greater than 0 indicates that the byte contains a bit with a value of 1 as opposed to 0.
                     * In our case, that would indicate that the solenoid port we checked for with the bitwise & operator is open.
-                 */
->>>>>>> 9531905157d82d8aa0c701930e78ad27e465da88
+                 */(subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null)
+			//{
+			UnityRigidNode unityNode = (UnityRigidNode)subBase;
+			// Make sure piston and skeletalJoint exist
+			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
+			if
+	public static void updateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoidModules)
+	{
+		byte packet = solenoidModules[0].state;
+
+		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
+		skeleton.ListAllNodes(listOfNodes);
+		
+		foreach (RigidNode_Base subBase in listOfNodes)
+		{
+
+			UnityRigidNode unityNode = (UnityRigidNode)subBase;
+			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
+
+//			if (subBase.GetSkeletalJoint() != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
+//			{
+//				// We use bitwise operators to check if the port is open.
+
+			if (subBase != null && subBase.GetSkeletalJoint() != null  && subBase.GetSkeletalJoint().cDriver != null && subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC)
+			{
+				
+				 
+				//It will shift the 1 over based on the port number, so it will take port 3 and check if it has a value of 1 or 0 at the third bit. This allows us to check if the state is "on" or "off"
+
 				int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 
