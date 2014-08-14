@@ -60,7 +60,7 @@ public class OGL_Viewer : GameWindow
     }
 
     public OGL_Viewer()
-        : base(WIDTH, HEIGHT, new GraphicsMode(), "Skeleton Viewer")
+        : base(WIDTH, HEIGHT, new GraphicsMode(32, 0, 0, 4), "Skeleton Viewer")
     {
     }
 

@@ -52,7 +52,6 @@
     <None Include="OGL\shader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeFile1.cs" />
     <Compile Include="GUI\ControlGroups.cs">
       <SubType>Form</SubType>
     </Compile>
