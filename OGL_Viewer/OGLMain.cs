@@ -6,25 +6,23 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Tao.OpenGl;
-using Tao.FreeGlut;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics;
+using OpenTK;
 using System.Collections.Generic;
 
 /// <summary>
 /// 
 /// </summary>
-/// <remarks>
-/// Make sure to add freeglut.dll to your PATH.  Todo dynamicify with [DllImport kernel32] LoadLibrary()
-/// </remarks>
-public class OGL_Viewer
+public class OGL_Viewer : GameWindow
 {
-    public static bool[] KEY_STATES = new bool[512];
-    private static double horizontalTan = Math.Tan(25.0 * 3.14 / 180.0);
     private const int WIDTH = 1366, HEIGHT = 768;
-    private static OGL_RigidNode baseNode;
-    private static List<RigidNode_Base> nodes;
+    private static double horizontalTan = Math.Tan(25.0 * 3.14 / 180.0);
 
-    static Camera3rdPerson cam = new Camera3rdPerson();
+    private OGL_RigidNode baseNode;
+    private List<RigidNode_Base> nodes;
+
+    Camera3rdPerson cam = new Camera3rdPerson();
 
     static float[] l0_position = { 1000f, -1000f, 1000f, 0f };
     static float[] l1_position = { -1000f, 1000f, -1000f, 0f };
@@ -32,56 +30,7 @@ public class OGL_Viewer
     static float[] l_specular = { .1f, .1f, .1f, .1f };
     static float[] ambient = { .125f, .125f, .125f, .125f };
 
-    public static void display()
-    {
-        Gl.glColorMask(true, true, true, true);
-        Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT);
-        Gl.glMatrixMode(Gl.GL_MODELVIEW);
-        Gl.glLoadIdentity();
-        cam.translate();
-
-        {
-            Gl.glLightModelfv(Gl.GL_AMBIENT, ambient);
-            Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_POSITION, l0_position);
-            Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_DIFFUSE, l_diffuse);
-            Gl.glLightfv(Gl.GL_LIGHT0, Gl.GL_SPECULAR, l_specular);
-
-            Gl.glLightfv(Gl.GL_LIGHT1, Gl.GL_POSITION, l1_position);
-            Gl.glLightfv(Gl.GL_LIGHT1, Gl.GL_DIFFUSE, l_diffuse);
-            Gl.glLightfv(Gl.GL_LIGHT1, Gl.GL_SPECULAR, l_specular);
-        }
-
-        baseNode.compute();
-        foreach (RigidNode_Base node in nodes)
-        {
-            ((OGL_RigidNode) node).render();
-        }
-
-        Gl.glFlush();
-        Glut.glutSwapBuffers();
-    }
-
-    public static void reshape(int width, int height)
-    {
-        Gl.glMatrixMode(Gl.GL_PROJECTION);
-        Gl.glLoadIdentity();
-        double aspect = (double) height / (double) width;
-        Gl.glFrustum(-horizontalTan, horizontalTan, aspect
-                * -horizontalTan, aspect * horizontalTan, 1, 100000);
-        Gl.glViewport(0, 0, width, height);
-        Gl.glMatrixMode(Gl.GL_MODELVIEW);
-    }
-
-    static void keyDown(byte c, int x, int y)
-    {
-        KEY_STATES[c] = true;
-    }
-    static void keyUp(byte c, int x, int y)
-    {
-        KEY_STATES[c] = false;
-    }
-
-    public static void Main(string[] args)
+    private void loadSkeleton()
     {
         RigidNode_Base.NODE_FACTORY = delegate()
         {
@@ -108,32 +57,85 @@ public class OGL_Viewer
         {
             ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeletons/SIM Skeleton/" + node.modelFileName);
         }
-        Glut.glutInit();
-        Glut.glutInitWindowPosition(0, 0);
-        Glut.glutInitWindowSize(WIDTH, HEIGHT);
-        Glut.glutInitDisplayMode(Glut.GLUT_SINGLE | Glut.GLUT_RGB | Glut.GLUT_MULTISAMPLE);
-        Glut.glutCreateWindow("BXDJ Viewer");
-        Gl.glClearColor(0f, 0f, 0f, 0f);
-        Console.WriteLine(GlExtensionLoader.LoadExtension("GL_ARB_vertex_buffer_object"));
-        Console.WriteLine(GlExtensionLoader.LoadExtension("GL_ARB_shader_objects"));
-        Console.WriteLine(GlExtensionLoader.LoadExtension("GL_ARB_vertex_shader"));
-        Console.WriteLine(GlExtensionLoader.LoadExtension("GL_ARB_fragment_shader"));
+    }
 
-        Glut.glutDisplayFunc(display);
-        Glut.glutReshapeFunc(reshape);
-        Glut.glutKeyboardFunc(keyDown);
-        Glut.glutKeyboardUpFunc(keyUp);
-        reshape(WIDTH, HEIGHT);
-        Glut.glutIdleFunc(Glut.glutPostRedisplay);
-        Glut.glutSetOption(Glut.GLUT_ACTION_ON_WINDOW_CLOSE, Glut.GLUT_ACTION_GLUTMAINLOOP_RETURNS);
+    public OGL_Viewer()
+        : base(WIDTH, HEIGHT, new GraphicsMode(), "Skeleton Viewer")
+    {
+    }
 
-        Gl.glEnable(Gl.GL_LIGHTING);
-        Gl.glEnable(Gl.GL_LIGHT0);
-        Gl.glEnable(Gl.GL_LIGHT1);
-        Gl.glEnable(Gl.GL_DEPTH_TEST);
+  protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+
+        loadSkeleton();
+        Console.WriteLine("Loaded");
+
+        GL.ClearColor(System.Drawing.Color.Black);
+        GL.Enable(EnableCap.Lighting);
+       GL.Enable(EnableCap.Light0);
+       GL.Enable(EnableCap.Light1);
+        GL.Enable(EnableCap.DepthTest);
         int j = ShaderLoader.PartShader;//Loadshader
+    }
 
-        Glut.glutMainLoop();
-        ShaderLoader.PartShader = 0;    // Unloadshader
+    protected override void OnRenderFrame(FrameEventArgs e)
+    {
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+        
+        GL.LoadIdentity();
+        cam.translate();
+
+        {
+            GL.LightModel(LightModelParameter.LightModelAmbient, ambient);
+            GL.Light(LightName.Light0, LightParameter.Position, l0_position);
+            GL.Light(LightName.Light0, LightParameter.Diffuse, l_diffuse);
+            GL.Light(LightName.Light0, LightParameter.Specular, l_specular);
+
+            GL.Light(LightName.Light1, LightParameter.Position, l1_position);
+            GL.Light(LightName.Light1, LightParameter.Diffuse, l_diffuse);
+            GL.Light(LightName.Light1, LightParameter.Specular, l_specular);
+        }
+
+        baseNode.compute();
+        foreach (RigidNode_Base node in nodes)
+        {
+            ((OGL_RigidNode) node).render();
+        }
+
+        SwapBuffers();
+    }
+ 
+    protected override void OnUpdateFrame(FrameEventArgs e)
+    {
+        var keyboard = OpenTK.Input.Keyboard.GetState();
+        if (keyboard[OpenTK.Input.Key.Escape])
+            Exit();
+    }
+
+    protected override void OnResize(EventArgs e)
+    {
+        base.OnResize(e);
+
+        GL.MatrixMode(MatrixMode.Projection);
+        GL.LoadIdentity();
+        double aspect = (double) Height / (double) Width;
+        GL.Frustum(-horizontalTan, horizontalTan, aspect
+                * -horizontalTan, aspect * horizontalTan, 1, 100000);
+        GL.Viewport(0, 0, Width, Height);
+        GL.MatrixMode(MatrixMode.Modelview);
+    }
+
+    protected override void OnUnload(EventArgs e)
+    {
+        ShaderLoader.PartShader = 0;
+    }
+
+    public static void Main(string[] args)
+    {
+        using (OGL_Viewer viewer = new OGL_Viewer())
+        {
+            viewer.Run(60);
+        }
     }
 }

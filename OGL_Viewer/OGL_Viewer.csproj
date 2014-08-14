@@ -52,6 +52,7 @@
     <None Include="OGL\shader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeFile1.cs" />
     <Compile Include="GUI\ControlGroups.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,27 +77,15 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="OpenTK">
+      <HintPath>..\Tao\OpenTK.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tao.FreeGlut">
-      <HintPath>..\Tao\Tao.FreeGlut.dll</HintPath>
-    </Reference>
-    <Reference Include="Tao.OpenGl">
-      <HintPath>..\Tao\Tao.OpenGl.dll</HintPath>
-    </Reference>
-    <Reference Include="Tao.OpenGl.ExtensionLoader">
-      <HintPath>..\Tao\Tao.OpenGl.ExtensionLoader.dll</HintPath>
-    </Reference>
-    <Reference Include="Tao.OpenGl.Glu">
-      <HintPath>..\Tao\Tao.OpenGl.Glu.dll</HintPath>
-    </Reference>
-    <Reference Include="Tao.Platform.Windows">
-      <HintPath>..\Tao\Tao.Platform.Windows.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>

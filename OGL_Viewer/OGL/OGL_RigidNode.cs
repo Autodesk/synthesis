@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tao.OpenGl;
+using OpenTK.Graphics.OpenGL;
 
 public class OGL_RigidNode : RigidNode_Base
 {
@@ -128,15 +128,15 @@ public class OGL_RigidNode : RigidNode_Base
 
     public void render()
     {
-        Gl.glPushMatrix();
-        Gl.glMultMatrixf(myTrans.toBuffer());
-        Gl.glUseProgramObjectARB(ShaderLoader.PartShader);
+        GL.PushMatrix();
+        GL.MultMatrix(myTrans.toBuffer());
+        GL.UseProgram(ShaderLoader.PartShader);
         int tintLocation = 0;
         bool tmpHighlight = highlight;
         if (tmpHighlight)
         {
-            tintLocation = Gl.glGetUniformLocationARB(ShaderLoader.PartShader, "tintColor");
-            Gl.glUniform4fvARB(tintLocation, 1, new float[] { 1, 0, 0, 1 });
+            tintLocation = GL.GetUniformLocation(ShaderLoader.PartShader, "tintColor");
+            GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 0, 1 });
         }
         foreach (VBOMesh mesh in models)
         {
@@ -144,10 +144,10 @@ public class OGL_RigidNode : RigidNode_Base
         }
         if (tmpHighlight)
         {
-            Gl.glUniform4fvARB(tintLocation, 1, new float[] { 1, 1, 1, 1 });
+            GL.Uniform4(tintLocation, 1, new float[] { 1, 1, 1, 1 });
         }
-        Gl.glUseProgramObjectARB(0);
-        Gl.glPopMatrix();
+        GL.UseProgram(0);
+        GL.PopMatrix();
 
         if (highlight)
         {
@@ -158,23 +158,23 @@ public class OGL_RigidNode : RigidNode_Base
     public void renderDebug()
     {
         // Debug Settings
-        Gl.glUseProgramObjectARB(0);
-        Gl.glDisable(Gl.GL_LIGHTING);
-        Gl.glLineWidth(2f);
+        GL.UseProgram(0);
+        GL.Disable(EnableCap.Lighting);
+        GL.LineWidth(2f);
 
         if (GetSkeletalJoint() != null && activeBasePoint != null && activeAxis != null)
         {
 
-            Gl.glPushMatrix();
-            Gl.glMultMatrixf(myTrans.toBuffer());
+            GL.PushMatrix();
+            GL.MultMatrix(myTrans.toBuffer());
 
             float len = 100;
 
-            Gl.glBegin(Gl.GL_LINES);
-            Gl.glColor3f(1f, 0f, 0f);
-            Gl.glVertex3f(activeBasePoint.x - activeAxis.x * len, activeBasePoint.y - activeAxis.y * len, activeBasePoint.z - activeAxis.z * len);
-            Gl.glVertex3f(activeBasePoint.x + activeAxis.x * len, activeBasePoint.y + activeAxis.y * len, activeBasePoint.z + activeAxis.z * len);
-            Gl.glEnd();
+            GL.Begin(BeginMode.Lines);
+            GL.Color3(1f, 0f, 0f);
+            GL.Vertex3(activeBasePoint.x - activeAxis.x * len, activeBasePoint.y - activeAxis.y * len, activeBasePoint.z - activeAxis.z * len);
+            GL.Vertex3(activeBasePoint.x + activeAxis.x * len, activeBasePoint.y + activeAxis.y * len, activeBasePoint.z + activeAxis.z * len);
+            GL.End();
 
 
             BXDVector3 dirCOM = centerOfMass.Copy().Subtract(activeBasePoint);
@@ -191,15 +191,15 @@ public class OGL_RigidNode : RigidNode_Base
                     direction.Multiply(-1f);
                 }
 
-                Gl.glPushMatrix();
-                Gl.glTranslatef(baseCOM.x, baseCOM.y, baseCOM.z);
+                GL.PushMatrix();
+                GL.Translate(baseCOM.x, baseCOM.y, baseCOM.z);
 
                 // Current
-                Gl.glBegin(Gl.GL_LINES);
-                Gl.glColor3f(1f, 0f, 1f);
-                Gl.glVertex3f(0, 0, 0);
-                Gl.glVertex3f(direction.x * len, direction.y * len, direction.z * len);
-                Gl.glEnd();
+                GL.Begin(BeginMode.Lines);
+                GL.Color3(1f, 0f, 1f);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
+                GL.End();
 
                 {
                     bool hasAngularLimits = false;
@@ -224,41 +224,41 @@ public class OGL_RigidNode : RigidNode_Base
                     if (hasAngularLimits)
                     {
                         // Minpos
-                        Gl.glPushMatrix();
-                        Gl.glRotatef(180.0f / 3.14f * (minAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
+                        GL.PushMatrix();
+                        GL.Rotate(180.0f / 3.14f * (minAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
 
-                        Gl.glBegin(Gl.GL_LINES);
-                        Gl.glColor3f(0f, 1f, 1f);
-                        Gl.glVertex3f(0, 0, 0);
-                        Gl.glVertex3f(direction.x * len, direction.y * len, direction.z * len);
-                        Gl.glEnd();
-                        Gl.glBegin(Gl.GL_LINE_STRIP);
+                        GL.Begin(BeginMode.Lines);
+                        GL.Color3(0f, 1f, 1f);
+                        GL.Vertex3(0, 0, 0);
+                        GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
+                        GL.End();
+                        GL.Begin(BeginMode.LineStrip);
                         // Arcthing
                         TransMatrix stepMatrix = new TransMatrix().identity().setRotation(activeAxis.x, activeAxis.y, activeAxis.z, (maxAngle - minAngle) / 100.0f);
                         BXDVector3 tempVec = direction.Copy();
                         for (float f = 0; f < 1.0f; f += 0.01f)
                         {
-                            Gl.glColor3f(0, 1f, 1f - f);
-                            Gl.glVertex3f(tempVec.x * len, tempVec.y * len, tempVec.z * len);
+                            GL.Color3(0, 1f, 1f - f);
+                            GL.Vertex3(tempVec.x * len, tempVec.y * len, tempVec.z * len);
                             tempVec = stepMatrix.multiply(tempVec);
                         }
-                        Gl.glEnd();
-                        Gl.glPopMatrix(); // Begin limit matrix
+                        GL.End();
+                        GL.PopMatrix(); // Begin limit matrix
 
                         // Maxpos
-                        Gl.glPushMatrix();
-                        Gl.glRotatef(180.0f / 3.14f * (maxAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
+                        GL.PushMatrix();
+                        GL.Rotate(180.0f / 3.14f * (maxAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
 
-                        Gl.glBegin(Gl.GL_LINES);
-                        Gl.glColor3f(0f, 1f, 0f);
-                        Gl.glVertex3f(0, 0, 0);
-                        Gl.glVertex3f(direction.x * len, direction.y * len, direction.z * len);
-                        Gl.glEnd();
+                        GL.Begin(BeginMode.Lines);
+                        GL.Color3(0f, 1f, 0f);
+                        GL.Vertex3(0, 0, 0);
+                        GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
+                        GL.End();
 
-                        Gl.glPopMatrix(); // End limit matrix
+                        GL.PopMatrix(); // End limit matrix
                     }
                 }
-                Gl.glPopMatrix();  // part -> COM-basepoint
+                GL.PopMatrix();  // part -> COM-basepoint
             }
             #endregion
             #region LINEAR_LIMIT_DEBUG
@@ -268,11 +268,11 @@ public class OGL_RigidNode : RigidNode_Base
             }
             #endregion
 
-            Gl.glPopMatrix();  // World -> part matrix
+            GL.PopMatrix();  // World -> part matrix
         }
 
         // Revert Debug Settings
-        Gl.glEnable(Gl.GL_LIGHTING);
+        GL.Enable(EnableCap.Lighting);
     }
 
     public override object GetModel()

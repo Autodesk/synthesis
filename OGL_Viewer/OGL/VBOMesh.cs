@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tao.OpenGl;
+using OpenTK.Graphics.OpenGL;
 
 public class VBOMesh
 {
@@ -20,31 +20,29 @@ public class VBOMesh
         unloadFromGPU();
 
         bufferObjects = new int[2 + subMesh.surfaces.Count];
-        Gl.glGenBuffersARB(bufferObjects.Length, bufferObjects);
+        GL.GenBuffers(bufferObjects.Length, bufferObjects);
 
-        Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER, bufferObjects[0]);
-        Gl.glBufferDataARB(Gl.GL_ARRAY_BUFFER, subMesh.verts.Length * sizeof(double), subMesh.verts,
-                Gl.GL_STATIC_DRAW);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[0]);
+        GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.verts.Length * sizeof(double)), subMesh.verts, BufferUsageHint.StaticDraw);
 
-        Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER, bufferObjects[1]);
-        Gl.glBufferDataARB(Gl.GL_ARRAY_BUFFER, subMesh.norms.Length * sizeof(double), subMesh.norms,
-                Gl.GL_STATIC_DRAW);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[1]);
+        GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.norms.Length * sizeof(double)), subMesh.norms,
+                BufferUsageHint.StaticDraw);
 
         for (int i = 0; i < subMesh.surfaces.Count; i++)
         {
-            Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER, bufferObjects[2 + i]);
-            Gl.glBufferDataARB(Gl.GL_ARRAY_BUFFER, subMesh.surfaces[i].indicies.Length * sizeof(int), subMesh.surfaces[i].indicies,
-                    Gl.GL_STATIC_DRAW);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[2 + i]);
+            GL.BufferData<int>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.surfaces[i].indicies.Length * sizeof(int)), 
+                subMesh.surfaces[i].indicies, BufferUsageHint.StaticDraw);
         }
-        Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER, 0);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
     }
 
     public void unloadFromGPU()
     {
         if (bufferObjects != null && bufferObjects.Length > 0)
         {
-            Console.WriteLine("Deleting");
-            Gl.glDeleteBuffersARB(bufferObjects.Length, bufferObjects);
+            GL.DeleteBuffers(bufferObjects.Length, bufferObjects);
             bufferObjects = null;
         }
     }
@@ -56,14 +54,14 @@ public class VBOMesh
         {
             loadToGPU();
         }
-        Gl.glEnableClientState(Gl.GL_VERTEX_ARRAY);
-        Gl.glEnableClientState(Gl.GL_NORMAL_ARRAY);
+        GL.EnableClientState(ArrayCap.VertexArray);
+        GL.EnableClientState(ArrayCap.NormalArray);
 
-        Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER, bufferObjects[0]);
-        Gl.glVertexPointer(3, Gl.GL_DOUBLE, 0, IntPtr.Zero);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[0]);
+        GL.VertexPointer(3, VertexPointerType.Double, 0, IntPtr.Zero);
 
-        Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER, bufferObjects[1]);
-        Gl.glNormalPointer(Gl.GL_DOUBLE, 0, IntPtr.Zero);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[1]);
+        GL.NormalPointer(NormalPointerType.Double, 0, IntPtr.Zero);
 
         for (int i = 0; i < bufferObjects.Length - 2; i++)
         {
@@ -81,16 +79,15 @@ public class VBOMesh
             {
                 color[3] = 1;
             }
-            Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK, Gl.GL_DIFFUSE, color);
-            Gl.glMaterialfv(Gl.GL_FRONT_AND_BACK, Gl.GL_SPECULAR, new float[] { subMesh.surfaces[i].specular, subMesh.surfaces[i].specular, subMesh.surfaces[i].specular, subMesh.surfaces[i].specular });
-            Gl.glBindBufferARB(Gl.GL_ELEMENT_ARRAY_BUFFER, bufferObjects[i + 2]);
-            Gl.glDrawElements(Gl.GL_TRIANGLES, subMesh.surfaces[i].indicies.Length,
-                    Gl.GL_UNSIGNED_INT, IntPtr.Zero);
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, color);
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 1, 1, 1, 1 });
+            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, subMesh.surfaces[i].specular);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, bufferObjects[i + 2]);
+            GL.DrawElements(BeginMode.Triangles, subMesh.surfaces[i].indicies.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
-
-        Gl.glBindBufferARB(Gl.GL_ARRAY_BUFFER, 0);
-        Gl.glBindBufferARB(Gl.GL_ELEMENT_ARRAY_BUFFER, 0);
-        Gl.glDisableClientState(Gl.GL_VERTEX_ARRAY);
-        Gl.glDisableClientState(Gl.GL_NORMAL_ARRAY);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+        GL.DisableClientState(ArrayCap.VertexArray);
+        GL.DisableClientState(ArrayCap.NormalArray);
     }
 }
