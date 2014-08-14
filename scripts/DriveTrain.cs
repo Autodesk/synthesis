@@ -159,8 +159,9 @@ public class DriveJoints : MonoBehaviour
 	}
 
 	// Drive All Motors Associated with a PWM port
-	public static void UpdateAllMotors(RigidNode_Base skeleton, float[] pwm)
+	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] dioModules)
 	{
+		float[] pwm = dioModules[0].pwmValues;
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
 
@@ -214,8 +215,9 @@ public class DriveJoints : MonoBehaviour
 	}
 		
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
-	public static void UpdateSolenoids(RigidNode_Base skeleton, byte packet)
+	public static void UpdateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoids)
 	{
+		byte packet = solenoids[0].state;
 		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfNodes);
 		

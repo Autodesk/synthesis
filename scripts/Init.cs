@@ -17,8 +17,7 @@ public class Init : MonoBehaviour
     unityPacket udp = new unityPacket();
     List<Vector3> unityWheelData = new List<Vector3>();
 
-    int robots = 0;
-    string filePath = "C:/Users/t_crisj/Desktop/Skeleton/";
+    string filePath = "C:/Users/t_waggn/Documents/Skeleton/Skeleton/";
 
 
     public enum WheelPositions
@@ -39,7 +38,7 @@ public class Init : MonoBehaviour
             if (fbd.ShowDialog() == DialogResult.OK)
             {
                 filePath = fbd.SelectedPath;	
-               // TryLoad();
+                TryLoad();
             }
 		}
 		
@@ -49,11 +48,11 @@ public class Init : MonoBehaviour
     {
         if (filePath != null && skeleton == null)
         {
-            UnityRigidNode nodeThing = new UnityRigidNode();
-            nodeThing.modelFileName = "field.bxda";
-            nodeThing.CreateTransform(transform);
-			nodeThing.CreateMesh("C:/Users/t_crisj/Desktop/Skeleton/field.bxda");
-            nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+//            UnityRigidNode nodeThing = new UnityRigidNode();
+//            nodeThing.modelFileName = "field.bxda";
+//            nodeThing.CreateTransform(transform);
+//			nodeThing.CreateMesh("C:/Users/t_waggn/Documents/Skeleton/field.bxda");
+//            nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
 
             GameObject robot = new GameObject("Robot");
@@ -64,14 +63,14 @@ public class Init : MonoBehaviour
             {
                 return new UnityRigidNode();
             };
-            skeleton = BXDJSkeleton.ReadSkeleton(filePath + "/skeleton.bxdj");
+            skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
 
                 uNode.CreateTransform(robot.transform);
-                uNode.CreateMesh(filePath + "/" + uNode.modelFileName);
+                uNode.CreateMesh(filePath + uNode.modelFileName);
                 uNode.FlipNorms();
                 uNode.CreateJoint();
 
@@ -80,9 +79,16 @@ public class Init : MonoBehaviour
                     unityWheelData.Add(uNode.GetWheelCenter());
                 }
             }
-            auxFunctions.OrientRobot(unityWheelData, robot.transform);
+            if(unityWheelData.Count > 0){
+           		//auxFunctions.OrientRobot(unityWheelData, robot.transform);
+           		
+           	}	
+           	}else
+           	{
+           		Debug.Log("unityWheelData is null...");
+           	}
         }
-    }
+    
 
     void Start()
     {
@@ -108,7 +114,9 @@ public class Init : MonoBehaviour
         if (skeleton != null)
         {
             unityPacket.OutputStatePacket packet = udp.GetLastPacket();
-            DriveJoints.UpdateAllMotors(skeleton, packet.dio[0].pwmValues);
+            DriveJoints.UpdateAllMotors(skeleton, packet.dio);
+			DriveJoints.UpdateSolenoids(skeleton, packet.solenoid);
+			
         }
     }
 }
