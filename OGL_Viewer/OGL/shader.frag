@@ -1,33 +1,33 @@
-﻿varying vec3 vertex_light_position;
-varying vec3 vertex_light_half_vector;
-varying vec3 vertex_normal;
-uniform vec4 tintColor = vec4(1,1,1,1);
+﻿varying vec3 normal,lightDir[2],halfVector[2];
+varying float dist[2];
+uniform vec4 tintColor = vec4(1,0,1,1);
 
-void lightFragShader() {
-	// Calculate the ambient term
-	vec4 ambient_color = gl_LightModel.ambient * gl_FrontMaterial.ambient;
 
-	// Calculate the diffuse term
-	vec4 diffuse_color = vec4(0,0,0,0);
+void main()
+{
+	vec3 n,halfV,viewV,ldir;
+	float NdotL,NdotHV;
+	vec4 color = gl_LightModel.ambient * gl_FrontMaterial.ambient;
+	float attenuation;
+	n = normalize(normal);
 
-	// Calculate the specular value
-	vec4 specular_color = vec4(0,0,0,0);
 	int i;
-	for (i = 0; i<2; i++) {
-		ambient_color += gl_FrontMaterial.ambient * gl_LightSource[i].ambient;
-		diffuse_color += gl_FrontMaterial.diffuse * gl_LightSource[i].diffuse;
-		specular_color += gl_LightSource[i].specular;
+	for (i = 0; i<2; i++){
+		NdotL = max(dot(n,normalize(lightDir[i])),0.0);
+
+		if (NdotL > 0.0) {
+			attenuation = 1.0 / (gl_LightSource[i].constantAttenuation +
+				gl_LightSource[i].linearAttenuation * dist[i] +
+				gl_LightSource[i].quadraticAttenuation * dist[i] * dist[i]);
+			color += attenuation * (gl_FrontMaterial.diffuse * gl_LightSource[i].diffuse * NdotL) + (gl_FrontMaterial.ambient * gl_LightSource[i].ambient);
+
+
+			halfV = normalize(halfVector[i]);
+			NdotHV = max(dot(n,halfV),0.0);
+			color += attenuation * gl_FrontMaterial.specular * gl_LightSource[i].specular * 
+				pow(NdotHV,gl_FrontMaterial.shininess);
+		}
 	}
-	specular_color *= gl_FrontMaterial.specular * pow(max(dot(vertex_normal, vertex_light_half_vector), 0.0), gl_FrontMaterial.shininess);
 
-	// Set the diffuse value (darkness). This is done with a dot product between the normal and the light
-	// and the maths behind it is explained in the maths section of the site.
-	float diffuse_value = max(dot(vertex_normal, vertex_light_position), 0.0);
-
-	// Set the output color of our current pixel
-	gl_FragColor = (ambient_color + diffuse_color * diffuse_value) * tintColor + specular_color;
-}
-
-void main() {
-	lightFragShader();
+	gl_FragColor = color * tintColor;
 }
