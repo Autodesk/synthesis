@@ -37,7 +37,7 @@ public class OGL_Viewer : GameWindow
             return new OGL_RigidNode();
         };
         ControlGroups groups = new ControlGroups();
-        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeletons/SIM Skeleton/skeleton.bxdj");
+        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeletons/TestBotMain_Skeleton/skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
         groups.SetSkeleton(skeleton);
@@ -55,7 +55,7 @@ public class OGL_Viewer : GameWindow
         };
         foreach (RigidNode_Base node in nodes)
         {
-            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeletons/SIM Skeleton/" + node.modelFileName);
+            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeletons/TestBotMain_Skeleton/" + node.modelFileName);
         }
     }
 
@@ -64,7 +64,7 @@ public class OGL_Viewer : GameWindow
     {
     }
 
-  protected override void OnLoad(EventArgs e)
+    protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
 
@@ -73,8 +73,8 @@ public class OGL_Viewer : GameWindow
 
         GL.ClearColor(System.Drawing.Color.Black);
         GL.Enable(EnableCap.Lighting);
-       GL.Enable(EnableCap.Light0);
-       GL.Enable(EnableCap.Light1);
+        GL.Enable(EnableCap.Light0);
+        GL.Enable(EnableCap.Light1);
         GL.Enable(EnableCap.DepthTest);
         int j = ShaderLoader.PartShader;//Loadshader
     }
@@ -82,7 +82,7 @@ public class OGL_Viewer : GameWindow
     protected override void OnRenderFrame(FrameEventArgs e)
     {
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        
+
         GL.LoadIdentity();
         cam.translate();
 
@@ -105,7 +105,7 @@ public class OGL_Viewer : GameWindow
 
         SwapBuffers();
     }
- 
+
     protected override void OnUpdateFrame(FrameEventArgs e)
     {
         var keyboard = OpenTK.Input.Keyboard.GetState();

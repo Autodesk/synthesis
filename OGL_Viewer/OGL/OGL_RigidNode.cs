@@ -170,7 +170,7 @@ public class OGL_RigidNode : RigidNode_Base
 
             float len = 100;
 
-            GL.Begin(BeginMode.Lines);
+            GL.Begin(PrimitiveType.Lines);
             GL.Color3(1f, 0f, 0f);
             GL.Vertex3(activeBasePoint.x - activeAxis.x * len, activeBasePoint.y - activeAxis.y * len, activeBasePoint.z - activeAxis.z * len);
             GL.Vertex3(activeBasePoint.x + activeAxis.x * len, activeBasePoint.y + activeAxis.y * len, activeBasePoint.z + activeAxis.z * len);
@@ -195,7 +195,7 @@ public class OGL_RigidNode : RigidNode_Base
                 GL.Translate(baseCOM.x, baseCOM.y, baseCOM.z);
 
                 // Current
-                GL.Begin(BeginMode.Lines);
+                GL.Begin(PrimitiveType.Lines);
                 GL.Color3(1f, 0f, 1f);
                 GL.Vertex3(0, 0, 0);
                 GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
@@ -227,12 +227,12 @@ public class OGL_RigidNode : RigidNode_Base
                         GL.PushMatrix();
                         GL.Rotate(180.0f / 3.14f * (minAngle - requestedRotation), activeAxis.x, activeAxis.y, activeAxis.z);
 
-                        GL.Begin(BeginMode.Lines);
+                        GL.Begin(PrimitiveType.Lines);
                         GL.Color3(0f, 1f, 1f);
                         GL.Vertex3(0, 0, 0);
                         GL.Vertex3(direction.x * len, direction.y * len, direction.z * len);
                         GL.End();
-                        GL.Begin(BeginMode.LineStrip);
+                        GL.Begin(PrimitiveType.LineStrip);
                         // Arcthing
                         TransMatrix stepMatrix = new TransMatrix().identity().setRotation(activeAxis.x, activeAxis.y, activeAxis.z, (maxAngle - minAngle) / 100.0f);
                         BXDVector3 tempVec = direction.Copy();
