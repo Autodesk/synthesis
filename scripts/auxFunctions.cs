@@ -47,14 +47,20 @@ public class auxFunctions : RigidNode_Base
 	
 	public static void OrientRobot(List<Vector3> wheels, Transform parent)
 	{
-		Vector3 norm = Vector3.Cross((wheels[0] - wheels[1]),(wheels[0] - wheels[2]));
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
-		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
-		norm = norm * ((above.y < 0) ? 1 : -1);
+		Vector3 a = wheels [0] - wheels [1];
+		Vector3 b = a;
+
+		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)-(a.magnitude*b.magnitude)) < .1f; i++) //should probably account for ind out of range
+			b = wheels[0] - wheels[i];
+
+		Vector3 norm = Vector3.Cross(a,b).normalized;
+		norm.y *= Mathf.Sign (norm.y * com.y);
 
 		Quaternion q = new Quaternion();
-		q.SetFromToRotation(norm, Vector3.up);
-		parent.localRotation *= q;		
+		q.SetFromToRotation (norm, Vector3.up);
+		parent.localRotation *= q;	
+		Debug.Break ();
 	}
 	
 	
