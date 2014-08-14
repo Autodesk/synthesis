@@ -61,7 +61,15 @@ public abstract class SkeletalJoint_Base
     /// <returns>The joint type</returns>
     public abstract SkeletalJointType GetJointType();
 
+    /// <summary>
+    /// Gets all the angular degrees of freedom for this joint.
+    /// </summary>
+    /// <returns>The angular degrees of freedom</returns>
     public abstract IEnumerable<AngularDOF> GetAngularDOF();
+    /// <summary>
+    /// Gets all the linear degrees of freedom for this joint.
+    /// </summary>
+    /// <returns>The linear degrees of freedom</returns>
     public abstract IEnumerable<LinearDOF> GetLinearDOF();
 
     /// <summary>
