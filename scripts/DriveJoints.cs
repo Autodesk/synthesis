@@ -182,7 +182,7 @@ public class DriveJoints : MonoBehaviour
 					{
 						SetWheel(unitySubNode, pwm [i]);
 					
-					// If its not a wheel, it checks to see if it the motor is assigned to the current pwm value, and if it is, it also checks to make sure that it has an xdrive
+						// If its not a wheel, it checks to see if it the motor is assigned to the current pwm value, and if it is, it also checks to make sure that it has an xdrive
 					} else if (unitySubNode.GetPortA() == i + 1 && !unitySubNode.IsWheel)
 					{
 						// Something Arbitrary for now. 4 radians/second
@@ -216,7 +216,6 @@ public class DriveJoints : MonoBehaviour
 	}
 		
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
-
 	public static void updateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoidModules)
 	{
 		byte packet = solenoidModules [0].state;

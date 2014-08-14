@@ -41,6 +41,7 @@ public class Init : MonoBehaviour
 		
 	}
 	*/
+
 	void TryLoad()
 	{
 		if (filePath != null && skeleton == null)
@@ -88,9 +89,6 @@ public class Init : MonoBehaviour
 		
 		Physics.gravity = new Vector3(0, -9.8f, 0);
 		TryLoad();
-		
-		//byte test = (byte)2;		
-		//DriveJoints.updateSolenoids(skeleton, test);
 	}
 
 	void OnEnable()
@@ -103,14 +101,12 @@ public class Init : MonoBehaviour
 		udp.Stop();
 	}
 
-	void FixedUpdate()
-	{
-    	
-		unityPacket.OutputStatePacket packet = udp.GetLastPacket();
-		if (skeleton != null)
-		{
-			DriveJoints.updateSolenoids(skeleton, packet.solenoid);
-			DriveJoints.UpdateAllMotors(skeleton, packet.dio);
-		}
-	}
+    void FixedUpdate()
+    {
+        if (skeleton != null)
+        {
+            unityPacket.OutputStatePacket packet = udp.GetLastPacket();
+            DriveJoints.UpdateAllMotors(skeleton, packet.dio);
+        }
+    }
 }
