@@ -15,11 +15,10 @@ public class Init : MonoBehaviour
     public int[] motors = { 1, 2, 3, 4 };
     RigidNode_Base skeleton;
     unityPacket udp = new unityPacket();
-    List<Vector3> unityWheelData = new List<Vector3>();
+    List<WheelCollider> unityWheelData = new List<WheelCollider>();
 
     int robots = 0;
-    string filePath = "C:/Users/t_crisj/Desktop/Skeleton/";
-
+	string filePath = "C:/Users/t_defap/Documents/2014 Competition Robot_Skeleton/2014 Competition Robot_Skeleton";
 
     public enum WheelPositions
     {
@@ -39,7 +38,7 @@ public class Init : MonoBehaviour
             if (fbd.ShowDialog() == DialogResult.OK)
             {
                 filePath = fbd.SelectedPath;	
-               // TryLoad();
+                TryLoad();
             }
 		}
 		
@@ -49,11 +48,11 @@ public class Init : MonoBehaviour
     {
         if (filePath != null && skeleton == null)
         {
-            UnityRigidNode nodeThing = new UnityRigidNode();
-            nodeThing.modelFileName = "field.bxda";
-            nodeThing.CreateTransform(transform);
-			nodeThing.CreateMesh("C:/Users/t_crisj/Desktop/Skeleton/field.bxda");
-            nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+           // UnityRigidNode nodeThing = new UnityRigidNode();
+           // nodeThing.modelFileName = "field.bxda";
+           // nodeThing.CreateTransform(transform);
+			//nodeThing.CreateMesh("C:/Users/t_defap/Desktop/Skeleton/field.bxda");
+            //nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
 
             GameObject robot = new GameObject("Robot");
@@ -77,11 +76,21 @@ public class Init : MonoBehaviour
 
                 if (uNode.IsWheel)
                 {
-                    unityWheelData.Add(uNode.GetWheelCenter());
+                    unityWheelData.Add(uNode.GetWheelCollider());
+
                 }
             }
-            auxFunctions.OrientRobot(unityWheelData, robot.transform);
-        }
+			if(unityWheelData.Count > 0)
+			{
+				Debug.Log (unityWheelData[1]);
+				//robot.transform.Rotate(30,30,30);
+            	auxFunctions.OrientRobot(unityWheelData, robot.transform);
+			}else
+			{
+				Debug.Log ("unityWheelData is null: Does the robot have wheel colliders?");
+			}
+
+       }
     }
 
     void Start()

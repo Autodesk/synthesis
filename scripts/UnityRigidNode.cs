@@ -74,10 +74,9 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider = new GameObject(unityObject.name + " Collider");
 				
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
-		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
+		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
 		wCollider.AddComponent<WheelCollider>();
 		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius + (wheel.radius * 0.15f)) * 0.01f;
-		wCollider.GetComponent<WheelCollider>().transform.Rotate(90, 0, 0);
 		wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
@@ -125,17 +124,20 @@ public class UnityRigidNode : RigidNode_Base
 
 	private void SetXDrives()
 	{
-		if (GetSkeletalJoint().cDriver != null)
+		if (GetSkeletalJoint() != null && GetSkeletalJoint().cDriver != null)
 		{
 			if (GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
 			{
-				PneumaticDriverMeta pneum = GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>();
 
+				PneumaticDriverMeta pneum = GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>();
+				if(pneum != null)
+				{
 				float psiToNMm2 = 0.00689475728f;
 				JointDrive drMode = new JointDrive();
 				drMode.mode = JointDriveMode.Velocity;
 				drMode.maximumForce = (psiToNMm2 * pneum.pressurePSI) * (Mathf.PI * Mathf.Pow((pneum.widthMM / 2), 2));
 				joint.xDrive = drMode;
+				}
 				
 			} else if (GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 			{
