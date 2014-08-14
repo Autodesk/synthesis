@@ -165,8 +165,9 @@ public class DriveJoints : MonoBehaviour
 		return -linearPositionAlongAxis;
 	}
 	
-	public static void UpdateAllWheels(RigidNode_Base skeleton, float[] pwm)
+	public static void UpdateAllWheels(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] modules)
 	{
+		float[] pwm = modules[0].pwmValues;
 		List<RigidNode_Base> test = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(test);
 
@@ -198,20 +199,32 @@ public class DriveJoints : MonoBehaviour
 
 	// I had a bit of trouble grasping how this system worked in the beginning, so I will explain.
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
+<<<<<<< HEAD
 	public static void UpdateSolenoids(RigidNode_Base skeleton, byte packet)
 	{
+=======
+	public static void updateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoidModules)
+	{
+		byte packet = solenoidModules[0].state;
+>>>>>>> origin/stressTesting-Skunk
 		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfNodes);
 		
 		foreach (RigidNode_Base subBase in listOfNodes)
 		{
-			
 			UnityRigidNode unityNode = (UnityRigidNode)subBase;
-			
 			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
+<<<<<<< HEAD
 			if (subBase.GetSkeletalJoint() != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
 			{
 				// We use bitwise operators to check if the port is open.
+=======
+			if (subBase != null && subBase.GetSkeletalJoint() != null  && subBase.GetSkeletalJoint().cDriver != null && subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC)
+			{
+				
+				 
+				//It will shift the 1 over based on the port number, so it will take port 3 and check if it has a value of 1 or 0 at the third bit. This allows us to check if the state is "on" or "off"
+>>>>>>> origin/stressTesting-Skunk
 				int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 
