@@ -13,20 +13,21 @@ public class InputStatePacket
 	
 	public InputStatePacket()
 	{
-		for(int i = 0; i < dio.Length; i++)
+		for (int i = 0; i < dio.Length; i++)
 		{
-			dio[i] = new DIOModule();		
-		}for(int i = 0; i < encoders.Length; i++)
-		{
-			encoders[i] = new Encoders();		
+			dio [i] = new DIOModule();		
 		}
-		for(int i = 0; i < ai.Length; i++)
+		for (int i = 0; i < encoders.Length; i++)
 		{
-			ai[i] = new AnalogValues();		
+			encoders [i] = new Encoders();		
 		}
-		for(int i = 0; i < counter.Length; i++)
+		for (int i = 0; i < ai.Length; i++)
 		{
-			counter[i] = new Counter();		
+			ai [i] = new AnalogValues();		
+		}
+		for (int i = 0; i < counter.Length; i++)
+		{
+			counter [i] = new Counter();		
 		}
 		
 	}
@@ -36,7 +37,6 @@ public class InputStatePacket
 		public const int LENGTH = 4;
 		public UInt32 digitalInput;
 	}
-
 
 	public class Encoders
 	{
@@ -150,14 +150,6 @@ public class DriveJoints : MonoBehaviour
 		// The dot product we get is inverted, so we need to invert it again before we return it.
 		return -linearPositionAlongAxis;
 	}
-<<<<<<< HEAD
-	
-	public static void UpdateAllWheels(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] modules)
-	{
-		float[] pwm = modules[0].pwmValues;
-		List<RigidNode_Base> test = new List<RigidNode_Base>();
-		skeleton.ListAllNodes(test);
-=======
 
 	// Get Angle between two up vectors
 	public static float GetAngleBetweenChildAndParent(UnityRigidNode child)
@@ -167,11 +159,11 @@ public class DriveJoints : MonoBehaviour
 	}
 
 	// Drive All Motors Associated with a PWM port
-	public static void UpdateAllMotors(RigidNode_Base skeleton, float[] pwm)
+	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] modules)
 	{
+		float[] pwm = modules [0].pwmValues;
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
->>>>>>> 9531905157d82d8aa0c701930e78ad27e465da88
 
 		// Cycles through the packet
 		for (int i = 0; i<pwm.Length; i++)
@@ -189,7 +181,8 @@ public class DriveJoints : MonoBehaviour
 					if (unitySubNode.IsWheel && unitySubNode.GetPortA() == i + 1)
 					{
 						SetWheel(unitySubNode, pwm [i]);
-						// If its not a wheel, it checks to see if it the motor is assigned to the current pwm value, and if it is, it also checks to make sure that it has an xdrive
+					
+					// If its not a wheel, it checks to see if it the motor is assigned to the current pwm value, and if it is, it also checks to make sure that it has an xdrive
 					} else if (unitySubNode.GetPortA() == i + 1 && !unitySubNode.IsWheel)
 					{
 						// Something Arbitrary for now. 4 radians/second
@@ -223,70 +216,22 @@ public class DriveJoints : MonoBehaviour
 	}
 		
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
-<<<<<<< HEAD
-	public static void UpdateSolenoids(RigidNode_Base skeleton, byte packet)
-	{
-=======
+
 	public static void updateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoidModules)
 	{
-		byte packet = solenoidModules[0].state;
->>>>>>> origin/stressTesting-Skunk
+		byte packet = solenoidModules [0].state;
 		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfNodes);
 		
 		foreach (RigidNode_Base subBase in listOfNodes)
 		{
-<<<<<<< HEAD
 			UnityRigidNode unityNode = (UnityRigidNode)subBase;
-			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-<<<<<<< HEAD
-			if (subBase.GetSkeletalJoint() != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
-			{
-				// We use bitwise operators to check if the port is open.
-=======
-			if (subBase != null && subBase.GetSkeletalJoint() != null  && subBase.GetSkeletalJoint().cDriver != null && subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC)
-			{
-				
-				 
-				//It will shift the 1 over based on the port number, so it will take port 3 and check if it has a value of 1 or 0 at the third bit. This allows us to check if the state is "on" or "off"
->>>>>>> origin/stressTesting-Skunk
-=======
-			///Debug.Log(subBase==null?"null":subBase.ToString());
-			//if (subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null)
-			//{
-			UnityRigidNode unityNode = (UnityRigidNode)subBase;
+
 			// Make sure piston and skeletalJoint exist
 			// If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
 			if (subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
 			{
-				// It will use bitwise operators to check if the port is open.
-				/* Full Explanation:
-                    * bool StateX is a boolean that will return True if port X is open
-                    * the packet is the byte we take as input
-                    * The "1 << subBase.GetSkeletalJoint().cDriver.portA" does the following:
-                        * It gets the port numbers for solenoid A (and subtracts 1 from it so that the solenoid port is base 0 instead of base 0)
-                        * And then it uses bitwise operators to create a byte
-                        * It does this by shifting the integer 1 over to the left by the value of port A.
-                        * Heres an example of the bitwise lefshift operators in use: "1 << 5" will result in 100000.
-                        * So in our case, if port = 3, 
-                            * "1 << subBase.GetSkeletalJoint().cDriver.portA - 1" 
-                            * = "1 << 3 - 1"
-                            * = "1 << 2"
-                            * = 100  --- which is also a bit 
-                    * Now that is has that information, it compares that byte to the packet the function recieves using the & operator
-                    * Here is how the & operator works:
-                        * "The bitwise AND operator (&) compares each bit of the first operand to the corresponding bit of the second operand. If both bits are 1, the corresponding result bit is set to 1. Otherwise, the corresponding result bit is set to 0." - msdn.microsoft.com
-                        *  So if the bit of the first operand is	"1111"
-                        *  And the bit of the second operand is		"1010"
-                        *  The resulting bit will be:				"1010"
-                        *  As you can see, it oompares the data in each bit, and if they both match (in our case, if they both are 1) at the given position,
-                        *  The resulting byte will have a 1 at the given position. If they don't match however, the result at the given will be 0.
-                    * So in our case, if the byte at solenoid port 0 (the first bit) has a value of 1 in our packet, and our code is checking to see if port 1 is open, the following operation is executed: "00000001 & 00000001".
-                    * This will result in a byte value of "00000001".
-                    * Now, since bits can evaluate to integers, a byte that results in a value greater than 0 indicates that the byte contains a bit with a value of 1 as opposed to 0.
-                    * In our case, that would indicate that the solenoid port we checked for with the bitwise & operator is open.
-                 */
->>>>>>> 9531905157d82d8aa0c701930e78ad27e465da88
+				// It will use bitwise operators to check if the port is open (see wiki for full explanation).
 				int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 

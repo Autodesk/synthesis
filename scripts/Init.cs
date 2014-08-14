@@ -5,43 +5,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-
 public class Init : MonoBehaviour
 {
-<<<<<<< HEAD
-=======
-    // We will need these
-    public List<List<UnityRigidNode>> PWMAssignments;
-    public Dictionary<List<int>, UnityRigidNode> SolenoidAssignments;
-    public float speed = 5;
-    public int[] motors = { 1, 2, 3, 4 };
-    RigidNode_Base skeleton;
-    unityPacket udp = new unityPacket();
-    List<Vector3> unityWheelData = new List<Vector3>();
-
-    int robots = 0;
-    string filePath = "C:/Users/t_crisj/Desktop/Skeleton/";
-
-
-    public enum WheelPositions
-    {
-        FL = 1,
-        FR = 2,
-        BL = 3,
-        BR = 4
-    }
->>>>>>> 9531905157d82d8aa0c701930e78ad27e465da88
-
 	// We will need these
 	public List<List<UnityRigidNode>> PWMAssignments;
-	public Dictionary<List<int>, UnityRigidNode> SolenoidAssignments;
 	public float speed = 5;
 	public int[] motors = { 1, 2, 3, 4 };
 	RigidNode_Base skeleton;
 	unityPacket udp = new unityPacket();
 	List<Vector3> unityWheelData = new List<Vector3>();
 	// int robots = 0;
-	string filePath = "C:/Users/t_waggn/Documents/Skeleton/Skeleton/";
+	string filePath = "C:/Users/" + Environment.UserName +  "/Documents/Skeleton/";
 
 	public enum WheelPositions
 	{
@@ -50,7 +24,7 @@ public class Init : MonoBehaviour
 		BL = 3,
 		BR = 4
 	}
-    /*
+	/*
     [STAThread]
     void OnGUI()
 	{
@@ -66,11 +40,7 @@ public class Init : MonoBehaviour
 		}
 		
 	}
-
-<<<<<<< HEAD
-*/
-	
-	
+	*/
 	void TryLoad()
 	{
 		if (filePath != null && skeleton == null)
@@ -78,27 +48,11 @@ public class Init : MonoBehaviour
 			UnityRigidNode nodeThing = new UnityRigidNode();
 			nodeThing.modelFileName = "field.bxda";
 			nodeThing.CreateTransform(transform);
-
-			nodeThing.CreateMesh("C:/Users/t_waggn/Documents/Skeleton/field.bxda");
+			nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
 			nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
 			GameObject robot = new GameObject("Robot");
 			robot.transform.parent = transform;
-=======
-    void TryLoad()
-    {
-        if (filePath != null && skeleton == null)
-        {
-            UnityRigidNode nodeThing = new UnityRigidNode();
-            nodeThing.modelFileName = "field.bxda";
-            nodeThing.CreateTransform(transform);
-			nodeThing.CreateMesh("C:/Users/t_crisj/Desktop/Skeleton/field.bxda");
-            nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-
-
-            GameObject robot = new GameObject("Robot");
-            robot.transform.parent = transform;
->>>>>>> 9531905157d82d8aa0c701930e78ad27e465da88
 
 			List<RigidNode_Base> names = new List<RigidNode_Base>();
 			RigidNode_Base.NODE_FACTORY = delegate()
@@ -149,27 +103,14 @@ public class Init : MonoBehaviour
 		udp.Stop();
 	}
 
-
-<<<<<<< HEAD
 	void FixedUpdate()
 	{
     	
-    	unityPacket.OutputStatePacket packet = udp.GetLastPacket();
+		unityPacket.OutputStatePacket packet = udp.GetLastPacket();
 		if (skeleton != null)
 		{
 			DriveJoints.updateSolenoids(skeleton, packet.solenoid);
-			DriveJoints.UpdateAllWheels(skeleton, packet.dio);
+			DriveJoints.UpdateAllMotors(skeleton, packet.dio);
 		}
 	}
-
-=======
-    void FixedUpdate()
-    {
-        if (skeleton != null)
-        {
-            unityPacket.OutputStatePacket packet = udp.GetLastPacket();
-            DriveJoints.UpdateAllMotors(skeleton, packet.dio[0].pwmValues);
-        }
-    }
->>>>>>> 9531905157d82d8aa0c701930e78ad27e465da88
 }
