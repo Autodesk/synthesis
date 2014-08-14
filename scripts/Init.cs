@@ -18,7 +18,7 @@ public class Init : MonoBehaviour
     List<Vector3> unityWheelData = new List<Vector3>();
 
     int robots = 0;
-    string filePath = "C:/Users/t_grahj/Documents/NewSkeleton/";
+    string filePath = "C:/Users/t_crisj/Desktop/Skeleton/";
 
 
     public enum WheelPositions
@@ -52,8 +52,9 @@ public class Init : MonoBehaviour
             UnityRigidNode nodeThing = new UnityRigidNode();
             nodeThing.modelFileName = "field.bxda";
             nodeThing.CreateTransform(transform);
-			nodeThing.CreateMesh("C:/Users/t_waggn/Documents/Skeleton/field.bxda");
+			nodeThing.CreateMesh("C:/Users/t_crisj/Desktop/Skeleton/field.bxda");
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+
 
             GameObject robot = new GameObject("Robot");
             robot.transform.parent = transform;
@@ -102,20 +103,12 @@ public class Init : MonoBehaviour
         udp.Stop();
     }
 
-	
-	void FixedUpdate()
-	{
-		if (skeleton != null)
-		{
-			if (Input.GetKey(KeyCode.P))
-			{
-				DriveJoints.UpdateSolenoids(skeleton, 1);
-			}
-			if (Input.GetKey(KeyCode.O))
-			{
-				DriveJoints.UpdateSolenoids(skeleton, 2);
-			}
-		}
-		}
-
+    void FixedUpdate()
+    {
+        if (skeleton != null)
+        {
+            unityPacket.OutputStatePacket packet = udp.GetLastPacket();
+            DriveJoints.UpdateAllMotors(skeleton, packet.dio[0].pwmValues);
+        }
+    }
 }
