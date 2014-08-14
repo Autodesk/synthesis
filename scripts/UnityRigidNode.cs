@@ -11,7 +11,7 @@ public class UnityRigidNode : RigidNode_Base
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
-
+	
 	public bool IsWheel
 	{
 		get
@@ -21,7 +21,7 @@ public class UnityRigidNode : RigidNode_Base
 	}
 
 	//public delegate void Action(); //reminder of how action and function work
-
+		
 	//The root transform for the whole object model is determined in this constructor passively
 	public void CreateTransform(Transform root)
 	{
@@ -113,7 +113,7 @@ public class UnityRigidNode : RigidNode_Base
 		center = (limit ["end"] - limit ["start"]) / 2.0f;
 		//current = limit ["current"];
 		//Debug.Log("center: " + center + " current: " + current);
-				
+		
 		linear.limit = Mathf.Abs(center) * 0.01f;
 		linear.bounciness = 1e-05f;
 		linear.spring = 0f;
@@ -123,18 +123,19 @@ public class UnityRigidNode : RigidNode_Base
 		
 	}
 
-	private void setXdrives()
+	private void SetXDrives()
 	{
 		if (GetSkeletalJoint().cDriver != null)
 		{
 			if (GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
 			{
 				PneumaticDriverMeta pneum = GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>();
-				
+
+				float psiToNMm2 = 0.00689475728f;
 				JointDrive drMode = new JointDrive();
 				drMode.mode = JointDriveMode.Velocity;
-				drMode.maximumForce = 100.0f;
-				joint.xDrive = drMode;	
+				drMode.maximumForce = (psiToNMm2 * pneum.pressurePSI) * (Mathf.PI * Mathf.Pow((pneum.widthMM / 2), 2));
+				joint.xDrive = drMode;
 				
 			} else if (GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 			{
@@ -240,7 +241,7 @@ public class UnityRigidNode : RigidNode_Base
 			});
 						
 		}
-		setXdrives();
+		SetXDrives();
 	}		
 		
 	//loads the bxda format meshes
