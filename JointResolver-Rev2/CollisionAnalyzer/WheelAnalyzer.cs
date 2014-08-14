@@ -198,6 +198,8 @@ class WheelAnalyzer
         Vector vertexVector;
         int totalVertexCount = 0;
 
+        int imbalance = 0;
+
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
 
         wheelTread.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
@@ -221,15 +223,31 @@ class WheelAnalyzer
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
-            totalVertexCount += surface.Vertices.Count;
+            int vertexCount;
+            int segmentCount;
+            double[] vertexCoords = new double[3000];
+            int[] vertexIndicies = new int[3000];
 
-            foreach (Vertex vertex in surface.Vertices)
+            surface.CalculateStrokes(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexIndicies);
+
+            for(int i = 0; i < vertexCoords.Length; i+=3)
             {
-                vertexVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
+                totalVertexCount++;
+
+                vertexVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(vertexCoords[i], vertexCoords[i + 1], vertexCoords[i+2]);
 
                 center.X += vertexVector.X;
                 center.Y += vertexVector.Y;
                 center.Z += vertexVector.Z;
+
+                if (vertexVector.Z > 0)
+                {
+                    imbalance++;
+                }
+                if (vertexVector.Z < 0)
+                {
+                    imbalance--;
+                }
 
                 newWidth = myRotationAxis.DotProduct(vertexVector);
 
@@ -263,6 +281,7 @@ class WheelAnalyzer
         center.Z = center.Z / totalVertexCount;
 
         Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
+        Console.WriteLine("Center is at (" + center.X + ", " + center.Y + ", " + center.Z + ").");
     }
 }
 
