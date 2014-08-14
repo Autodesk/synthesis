@@ -1,0 +1,5 @@
+In order to build the OpenGL viewer you must have references to the following libraries:
+
+OpenTK.dll		(From http://www.opentk.com/)
+SimulatorAPI.dll	(From Aardvark's Repository)
+EditorsLibrary.dll	(From Aardvark's Repository)
