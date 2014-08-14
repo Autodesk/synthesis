@@ -2,6 +2,9 @@
 
 public class BXDVector3 : RWObject
 {
+    /// <summary>
+    /// If two floating point values have an absolute difference less than this they are considered the same.
+    /// </summary>
     private const float EPSILON = 1.0E-6F;
 
     public float x, y, z;
@@ -73,11 +76,23 @@ public class BXDVector3 : RWObject
         return (float) Math.Sqrt(x * x + y * y + z * z);
     }
 
+    /// <summary>
+    /// Computes the cross product of two vectors.  (lhs x rhs)
+    /// </summary>
+    /// <param name="lhs">The left hand element</param>
+    /// <param name="rhs">The right hand element</param>
+    /// <returns>(lhs x rhs)</returns>
     public static BXDVector3 CrossProduct(BXDVector3 lhs, BXDVector3 rhs)
     {
         return new BXDVector3(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
     }
 
+    /// <summary>
+    /// Computes the dot product of two vectors.
+    /// </summary>
+    /// <param name="a">One vector</param>
+    /// <param name="b">Another vector</param>
+    /// <returns>(a · b)</returns>
     public static float DotProduct(BXDVector3 a, BXDVector3 b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
@@ -97,6 +112,10 @@ public class BXDVector3 : RWObject
         z = r.ReadSingle();
     }
 
+    /// <summary>
+    /// Creates an identical copy of this vector.
+    /// </summary>
+    /// <returns>The copy</returns>
     public BXDVector3 Copy()
     {
         return new BXDVector3(x, y, z);
