@@ -31,12 +31,29 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         writer.Write(axis);
 
         //1 indicates a linear limit.
-        writer.Write((byte)((hasAngularLimit ? 1 : 0) | (hasLinearStartLimit ? 2 : 0) | (hasLinearEndLimit ? 4 : 0)));
+        writer.Write((byte) ((hasAngularLimit ? 1 : 0) | (hasLinearStartLimit ? 2 : 0) | (hasLinearEndLimit ? 4 : 0)));
         if (hasAngularLimit)
         {
+            // Ugh
+            if (angularLimitLow > angularLimitHigh)
+            {
+                float temp = angularLimitHigh;
+                angularLimitHigh = angularLimitLow;
+                angularLimitLow = temp;
+            }
+
             writer.Write(angularLimitLow);
             writer.Write(angularLimitHigh);
         }
+
+        // Ugh
+        if (hasLinearStartLimit && hasLinearEndLimit && linearLimitStart > linearLimitEnd)
+        {
+            float temp = linearLimitEnd;
+            linearLimitEnd = linearLimitStart;
+            linearLimitStart = temp;
+        }
+
         if (hasLinearStartLimit)
         {
             writer.Write(linearLimitStart);
@@ -64,6 +81,14 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             angularLimitLow = reader.ReadSingle();
             angularLimitHigh = reader.ReadSingle();
+
+            // Ugh
+            if (angularLimitLow > angularLimitHigh)
+            {
+                float temp = angularLimitHigh;
+                angularLimitHigh = angularLimitLow;
+                angularLimitLow = temp;
+            }
         }
         if (hasLinearStartLimit)
         {
@@ -72,6 +97,14 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         if (hasLinearEndLimit)
         {
             linearLimitEnd = reader.ReadSingle();
+        }
+
+        // Ugh
+        if (hasLinearStartLimit && hasLinearEndLimit && linearLimitStart > linearLimitEnd)
+        {
+            float temp = linearLimitEnd;
+            linearLimitEnd = linearLimitStart;
+            linearLimitStart = temp;
         }
 
         currentLinearPosition = reader.ReadSingle();

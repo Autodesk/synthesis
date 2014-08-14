@@ -23,6 +23,14 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         writer.Write((byte)((hasAngularLimit ? 1 : 0)));
         if (hasAngularLimit)
         {
+            // Ugh
+            if (angularLimitLow > angularLimitHigh)
+            {
+                float temp = angularLimitHigh;
+                angularLimitHigh = angularLimitLow;
+                angularLimitLow = temp;
+            }
+
             writer.Write(angularLimitLow);
             writer.Write(angularLimitHigh);
         }
@@ -40,6 +48,14 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         {
             angularLimitLow = reader.ReadSingle();
             angularLimitHigh = reader.ReadSingle();
+
+            // Ugh
+            if (angularLimitLow > angularLimitHigh)
+            {
+                float temp = angularLimitHigh;
+                angularLimitHigh = angularLimitLow;
+                angularLimitLow = temp;
+            }
         }
 
         currentAngularPosition = reader.ReadSingle();

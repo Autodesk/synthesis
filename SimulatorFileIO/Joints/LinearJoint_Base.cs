@@ -19,6 +19,13 @@ public class LinearJoint_Base : SkeletalJoint_Base
         writer.Write(axis);
 
         writer.Write((byte)((hasLowerLimit ? 1 : 0) | (hasUpperLimit ? 2 : 0)));
+        // Ugh
+        if (hasLowerLimit && hasUpperLimit && linearLimitLow > linearLimitHigh)
+        {
+            float temp = linearLimitHigh;
+            linearLimitHigh = linearLimitLow;
+            linearLimitLow = temp;
+        }
         if (hasLowerLimit)
         {
             writer.Write(linearLimitLow);
@@ -46,6 +53,13 @@ public class LinearJoint_Base : SkeletalJoint_Base
         if (hasUpperLimit)
         {
             linearLimitHigh = reader.ReadSingle();
+        }
+        // Ugh
+        if (hasLowerLimit && hasUpperLimit && linearLimitLow > linearLimitHigh)
+        {
+            float temp = linearLimitHigh;
+            linearLimitHigh = linearLimitLow;
+            linearLimitLow = temp;
         }
 
         currentLinearPosition = reader.ReadSingle();
