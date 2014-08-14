@@ -104,7 +104,7 @@ class FindRadiusThread
 
         double localMaxRadius = 0.0; //The largest radius found for this occurrence.
         ObjectCache radiusStorage = MemoryCache.Default;
-        radiusStorage.Add(component.Name + "-local", 0.0, DateTimeOffset.Now.AddSeconds(10.0));
+        radiusStorage.Add(component.Name + "-Local", 0.0, DateTimeOffset.Now.AddSeconds(10.0));
 
         foreach (SurfaceBody surface in component.Definition.SurfaceBodies)
         {
@@ -117,12 +117,12 @@ class FindRadiusThread
                 //Direction doesn't matter, onlyh the magnitude.
                 //CacheItem radius = new CacheItem("Radius", myRotationAxis.CrossProduct(vertexVector).Length,);
 
-                if (!radiusStorage.Add(component.Name, myRotationAxis.CrossProduct(vertexVector).Length, DateTimeOffset.Now.AddSeconds(10.0)))
+                if (!radiusStorage.Add(component.Name, myRotationAxis.CrossProduct(vertexVector).Length, DateTimeOffset.Now.AddSeconds(3)))
                 {
                     throw new Exception("RYAN IS A NOOB WHO CAN'T USE CACHES (Failed to add to cache)");
                 }
 
-
+                //Adding in this check breaks things, for some reason.
                 //if (radiusStorage.Contains(component.Name))
                 //{
                 //    throw new Exception("RYAN IS A NOOB WHO CAN'T USE CACHES (Radius just added has disappeared into the nether.)");
@@ -136,15 +136,15 @@ class FindRadiusThread
 
                 if ((double)radiusStorage[component.Name] > (double)radiusStorage[component.Name + "-Local"])
                 {
-                    radiusStorage.Remove(component.Name + "-Local");
-                    radiusStorage.Add(component.Name + "-Local", radiusStorage[component.Name], DateTimeOffset.Now.AddSeconds(10.0));
+                    radiusStorage.Set(component.Name + "-Local", (double)radiusStorage[component.Name], DateTimeOffset.Now.AddSeconds(300.0));
                 }
 
                 radiusStorage.Remove(component.Name);
             }
         }
 
-        finalLocalMaxRadius = (double)radiusStorage[component.Name + "-LocalMax"];
+        finalLocalMaxRadius = (double)radiusStorage[component.Name + "-Local"];
+        radiusStorage.Remove(component.Name + "-Local");
 
         //Stores the largest radius in shared memory once the largest radius for this component is calculated.
         lock (Program.INVENTOR_APPLICATION)
@@ -159,7 +159,7 @@ class FindRadiusThread
 
         radiusStorage.Remove(component.Name + "-LocalMax");
 
-        Console.WriteLine("Found radius of " + component.Name + " to be " + localMaxRadius);
+        Console.WriteLine("Found radius of " + component.Name + " to be " + finalLocalMaxRadius);
     }   
 }
 
