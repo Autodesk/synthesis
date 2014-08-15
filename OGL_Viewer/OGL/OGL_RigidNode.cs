@@ -240,52 +240,23 @@ public class OGL_RigidNode : RigidNode_Base
                 GL.End();
                 #region ROTATIONAL_LIMITS
                 {
-                    bool hasAngularLimits = false;
-                    float minAngle = 0, maxAngle = 0, modelRotation = 0;
-                    switch (GetSkeletalJoint().GetJointType())
-                    {
-                        case SkeletalJointType.ROTATIONAL:
-                            RotationalJoint_Base rjb = (RotationalJoint_Base) GetSkeletalJoint();
-                            hasAngularLimits = rjb.hasAngularLimit;
-                            minAngle = rjb.angularLimitLow;
-                            maxAngle = rjb.angularLimitHigh;
-                            modelRotation = rjb.currentAngularPosition;
-                            break;
-                        case SkeletalJointType.CYLINDRICAL:
-                            CylindricalJoint_Base cjb = (CylindricalJoint_Base) GetSkeletalJoint();
-                            hasAngularLimits = cjb.hasAngularLimit;
-                            minAngle = cjb.angularLimitLow;
-                            maxAngle = cjb.angularLimitHigh;
-                            modelRotation = cjb.currentAngularPosition;
-                            break;
-                    }
-                    if (hasAngularLimits)
+                    if (dof.hasAngularLimits())
                     {
                         // Minpos
                         GL.PushMatrix();
-                        GL.Rotate(180.0f / 3.14f * (minAngle - requestedRotation), dof.rotationAxis.ToTK());
+                        GL.Rotate(180.0f / 3.14f * (dof.lowerAngularLimit - requestedRotation), dof.rotationAxis.ToTK());
 
                         GL.Begin(PrimitiveType.Lines);
                         GL.Color3(0f, 1f, 1f);
                         GL.Vertex3(0, 0, 0);
                         GL.Vertex3(direction.x * crosshairLength, direction.y * crosshairLength, direction.z * crosshairLength);
                         GL.End();
-                        GL.Begin(PrimitiveType.LineStrip);
-                        // Arcthing
-                        Matrix4 stepMatrix = Matrix4.CreateFromAxisAngle(dof.rotationAxis.ToTK(), -(maxAngle - minAngle) / 100.0f);
-                        BXDVector3 tempVec = direction.Copy();
-                        for (float f = 0; f < 1.0f; f += 0.01f)
-                        {
-                            GL.Color3(0, 1f, 1f - f);
-                            GL.Vertex3(tempVec.x * crosshairLength, tempVec.y * crosshairLength, tempVec.z * crosshairLength);
-                            tempVec = stepMatrix.Multiply(tempVec);
-                        }
-                        GL.End();
+                        OGLDrawing.drawArc(dof.rotationAxis, direction, dof.lowerAngularLimit, dof.upperAngularLimit, crosshairLength);
                         GL.PopMatrix(); // Begin limit matrix
 
                         // Maxpos
                         GL.PushMatrix();
-                        GL.Rotate(180.0f / 3.14f * (maxAngle - requestedRotation), dof.rotationAxis.ToTK());
+                        GL.Rotate(180.0f / 3.14f * (dof.upperAngularLimit - requestedRotation), dof.rotationAxis.ToTK());
 
                         GL.Begin(PrimitiveType.Lines);
                         GL.Color3(0f, 1f, 0f);
@@ -298,16 +269,7 @@ public class OGL_RigidNode : RigidNode_Base
                     else
                     {
                         // Full arc!
-                        GL.Begin(PrimitiveType.LineLoop);
-                        Matrix4 stepMatrix = Matrix4.CreateFromAxisAngle(dof.rotationAxis.ToTK(), (2.0f * (float) Math.PI) / 100.0f);
-                        BXDVector3 tempVec = direction.Copy();
-                        for (float f = 0; f < 1.0f; f += 0.01f)
-                        {
-                            GL.Color3(0, 1f, 1f - f);
-                            GL.Vertex3(tempVec.x * crosshairLength, tempVec.y * crosshairLength, tempVec.z * crosshairLength);
-                            tempVec = stepMatrix.Multiply(tempVec);
-                        }
-                        GL.End();
+                        OGLDrawing.drawArc(dof.rotationAxis, direction, 0, 6.28f, crosshairLength);
                     }
                 }
                 #endregion
@@ -354,26 +316,14 @@ public class OGL_RigidNode : RigidNode_Base
                 {
                     GL.PushMatrix();
                     GL.Translate(dof.translationalAxis.ToTK() * lower);
-                    GL.Begin(PrimitiveType.Lines);
-                    foreach (BXDVector3 seg in new BXDVector3[] { direction, otherDirection })
-                    {
-                        GL.Vertex3(-seg.x * crosshairLength, -seg.y * crosshairLength, -seg.z * -crosshairLength);
-                        GL.Vertex3(seg.x * crosshairLength, seg.y * crosshairLength, seg.z * -crosshairLength);
-                    }
-                    GL.End();
+                    OGLDrawing.drawCrossHair(dof.translationalAxis, direction, crosshairLength);
                     GL.PopMatrix();
                 }
                 if (dof.hasUpperLinearLimit())
                 {
                     GL.PushMatrix();
                     GL.Translate(dof.translationalAxis.ToTK() * upper);
-                    GL.Begin(PrimitiveType.Lines);
-                    foreach (BXDVector3 seg in new BXDVector3[] { direction, otherDirection })
-                    {
-                        GL.Vertex3(-seg.x * crosshairLength, -seg.y * crosshairLength, -seg.z * -crosshairLength);
-                        GL.Vertex3(seg.x * crosshairLength, seg.y * crosshairLength, seg.z * -crosshairLength);
-                    }
-                    GL.End();
+                    OGLDrawing.drawCrossHair(dof.translationalAxis, direction, crosshairLength);
                     GL.PopMatrix();
                 }
                 #endregion
