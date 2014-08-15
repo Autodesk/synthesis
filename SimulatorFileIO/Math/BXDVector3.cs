@@ -51,6 +51,21 @@ public class BXDVector3 : RWObject
         return this;
     }
 
+    /// <summary>
+    /// Different from the other operations, as this does not modify one of the given vectors.  It creates a new vector to store the difference.
+    /// </summary>
+    /// <param name="f">The vector to subtract by.</param>
+    /// <returns>A newly created vector that is the difference.</returns>
+    public BXDVector3 Subtract(BXDVector3 f)
+    {
+        return new BXDVector3(this.x - f.x, this.y - f.y, this.z - f.z);
+    }
+
+    public float GetMagnitude()
+    {
+        return (float)Math.Sqrt((double)(Math.Pow(this.x, 2) + Math.Pow(this.y, 2) + Math.Pow(this.z, 2)));
+    }
+
     public void WriteData(System.IO.BinaryWriter w)
     {
         w.Write(x);

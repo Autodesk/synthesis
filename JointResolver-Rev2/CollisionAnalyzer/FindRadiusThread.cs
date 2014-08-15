@@ -12,7 +12,6 @@ using System.Runtime.Caching;
 /// </summary>
 class FindRadiusThread
 {
-    Point test;
     Thread findRadius;
     ComponentOccurrence component; //The component of which to find the radius.
     BXDVector3 rotationAxis; //The vector that is being rotated around in terms of the part's axes.
