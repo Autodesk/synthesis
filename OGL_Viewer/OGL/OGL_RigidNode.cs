@@ -184,7 +184,7 @@ public class OGL_RigidNode : RigidNode_Base
                 tintLocation = GL.GetUniformLocation(ShaderLoader.PartShader, "tintColor");
                 if ((tmpHighlight & HighlightState.ACTIVE_HOVERING) == HighlightState.ACTIVE_HOVERING)
                 {
-                    GL.Uniform4(tintLocation, 1, new float[] { 1, 1, 0, 1 });
+                    GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 1, 1 });
                 }
                 else if ((tmpHighlight & HighlightState.ACTIVE) == HighlightState.ACTIVE)
                 {

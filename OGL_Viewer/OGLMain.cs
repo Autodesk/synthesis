@@ -31,6 +31,8 @@ public class OGL_Viewer : GameWindow
     static float[] l_specular = { .1f, .1f, .1f, .1f };
     static float[] ambient = { .125f, .125f, .125f, .125f };
 
+    private ControlGroups editorGUI;
+
     // Select info
     private int mouseX, mouseY;
     private UInt32 selectedGUID;
@@ -43,13 +45,13 @@ public class OGL_Viewer : GameWindow
         {
             return new OGL_RigidNode();
         };
-        ControlGroups groups = new ControlGroups();
+        editorGUI = new ControlGroups();
         RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeletons/TestBotMain_Skeleton/skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
-        groups.SetSkeleton(skeleton);
-        //groups.Show();
-        groups.jointPane.SelectedJoint += delegate(RigidNode_Base node)
+        editorGUI.SetSkeleton(skeleton);
+        editorGUI.Show();
+        editorGUI.jointPane.SelectedJoint += delegate(RigidNode_Base node)
         {
             foreach (RigidNode_Base ns in nodes)
             {
@@ -74,6 +76,13 @@ public class OGL_Viewer : GameWindow
         {
             mouseX = e.X;
             mouseY = e.Y;
+        };
+        MouseDown += (object o, OpenTK.Input.MouseButtonEventArgs e) =>
+        {
+            if (e.Button == OpenTK.Input.MouseButton.Left && selectedObject != null && selectedObject is RigidNode_Base)
+            {
+                editorGUI.jointPane.SelectJoint((RigidNode_Base) selectedObject);
+            }
         };
     }
 
@@ -166,6 +175,16 @@ public class OGL_Viewer : GameWindow
 
         doSelect();
         renderInternal();
+        // Overlay:
+        //GL.Disable(EnableCap.DepthTest);
+        foreach (RigidNode_Base node in nodes)
+        {
+            if ((((OGL_RigidNode) node).highlight & OGL_RigidNode.HighlightState.ACTIVE) == OGL_RigidNode.HighlightState.ACTIVE)
+            {
+                ((OGL_RigidNode) node).renderDebug();
+            }
+        }
+        //GL.Enable(EnableCap.DepthTest);
         SwapBuffers();
     }
 
