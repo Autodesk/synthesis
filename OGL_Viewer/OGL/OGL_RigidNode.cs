@@ -97,12 +97,12 @@ public class OGL_RigidNode : RigidNode_Base
                 if (animate)
                 {
                     requestedRotation = (float) (Math.Sin(i) + 0.9f) * 1.2f *
-                        (dof.hasAngularLimits() ? (dof.upperAngularLimit - dof.lowerAngularLimit) / 2.0f : 3.14f) +
-                        (dof.hasAngularLimits() ? dof.lowerAngularLimit : 0);
+                        (dof.hasAngularLimits() ? (dof.upperLimit - dof.lowerLimit) / 2.0f : 3.14f) +
+                        (dof.hasAngularLimits() ? dof.lowerLimit : 0);
                 }
-                requestedRotation = Math.Max(dof.lowerAngularLimit, Math.Min(dof.upperAngularLimit, requestedRotation));
+                requestedRotation = Math.Max(dof.lowerLimit, Math.Min(dof.upperLimit, requestedRotation));
                 myTrans *= Matrix4.CreateTranslation(-dof.basePoint.ToTK());
-                myTrans *= Matrix4.CreateFromAxisAngle(dof.rotationAxis.ToTK(), requestedRotation - dof.currentAngularPosition);
+                myTrans *= Matrix4.CreateFromAxisAngle(dof.rotationAxis.ToTK(), requestedRotation - dof.currentPosition);
                 myTrans *= Matrix4.CreateTranslation(dof.basePoint.ToTK());
             }
             foreach (LinearDOF dof in GetSkeletalJoint().GetLinearDOF())
@@ -110,11 +110,11 @@ public class OGL_RigidNode : RigidNode_Base
                 if (animate)
                 {
                     requestedTranslation = (float) (Math.Cos(i) + 0.9f) * 1.2f *
-                        (dof.hasLowerLinearLimit() && dof.hasUpperLinearLimit() ? (dof.upperLinearLimit - dof.lowerLinearLimit) / 2.0f : 3.14f) +
-                        (dof.hasLowerLinearLimit() ? dof.lowerLinearLimit : 0);
+                        (dof.hasLowerLinearLimit() && dof.hasUpperLinearLimit() ? (dof.upperLimit - dof.lowerLimit) / 2.0f : 3.14f) +
+                        (dof.hasLowerLinearLimit() ? dof.lowerLimit : 0);
                 }
-                requestedTranslation = Math.Max(dof.lowerLinearLimit, Math.Min(dof.upperLinearLimit, requestedTranslation));
-                myTrans *= Matrix4.CreateTranslation(dof.translationalAxis.ToTK() * (requestedTranslation - dof.currentLinearPosition));
+                requestedTranslation = Math.Max(dof.lowerLimit, Math.Min(dof.upperLimit, requestedTranslation));
+                myTrans *= Matrix4.CreateTranslation(dof.translationalAxis.ToTK() * (requestedTranslation - dof.currentPosition));
             }
         }
         if (GetParent() != null)
@@ -244,19 +244,19 @@ public class OGL_RigidNode : RigidNode_Base
                     {
                         // Minpos
                         GL.PushMatrix();
-                        GL.Rotate(180.0f / 3.14f * (dof.lowerAngularLimit - requestedRotation), dof.rotationAxis.ToTK());
+                        GL.Rotate(180.0f / 3.14f * (dof.lowerLimit - requestedRotation), dof.rotationAxis.ToTK());
 
                         GL.Begin(PrimitiveType.Lines);
                         GL.Color3(0f, 1f, 1f);
                         GL.Vertex3(0, 0, 0);
                         GL.Vertex3(direction.x * crosshairLength, direction.y * crosshairLength, direction.z * crosshairLength);
                         GL.End();
-                        OGLDrawing.drawArc(dof.rotationAxis, direction, dof.lowerAngularLimit, dof.upperAngularLimit, crosshairLength);
+                        OGLDrawing.drawArc(dof.rotationAxis, direction, dof.lowerLimit, dof.upperLimit, crosshairLength);
                         GL.PopMatrix(); // Begin limit matrix
 
                         // Maxpos
                         GL.PushMatrix();
-                        GL.Rotate(180.0f / 3.14f * (dof.upperAngularLimit - requestedRotation), dof.rotationAxis.ToTK());
+                        GL.Rotate(180.0f / 3.14f * (dof.upperLimit - requestedRotation), dof.rotationAxis.ToTK());
 
                         GL.Begin(PrimitiveType.Lines);
                         GL.Color3(0f, 1f, 0f);
@@ -280,8 +280,8 @@ public class OGL_RigidNode : RigidNode_Base
             #region LINEAR_SPEC
             foreach (LinearDOF dof in GetSkeletalJoint().GetLinearDOF())
             {
-                float lower = (dof.hasLowerLinearLimit() ? dof.lowerLinearLimit : -crosshairLength) - requestedTranslation;
-                float upper = (dof.hasUpperLinearLimit() ? dof.upperLinearLimit : crosshairLength) - requestedTranslation;
+                float lower = (dof.hasLowerLinearLimit() ? dof.lowerLimit : -crosshairLength) - requestedTranslation;
+                float upper = (dof.hasUpperLinearLimit() ? dof.upperLimit : crosshairLength) - requestedTranslation;
 
                 BXDVector3 dirCOM = centerOfMass.Copy().Subtract(dof.basePoint);
                 float offset = BXDVector3.DotProduct(dirCOM, dof.translationalAxis);

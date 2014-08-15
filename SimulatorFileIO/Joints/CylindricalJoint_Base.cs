@@ -14,7 +14,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             this.cjb = cjb;
         }
 
-        public float currentLinearPosition
+        public float currentPosition
         {
             get
             {
@@ -22,7 +22,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float upperLinearLimit
+        public float upperLimit
         {
             get
             {
@@ -35,7 +35,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float lowerLinearLimit
+        public float lowerLimit
         {
             get
             {
@@ -81,7 +81,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             this.cjb = cjb;
         }
-        public float currentAngularPosition
+        public float currentPosition
         {
             get
             {
@@ -89,7 +89,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float upperAngularLimit
+        public float upperLimit
         {
             get
             {
@@ -102,7 +102,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float lowerAngularLimit
+        public float lowerLimit
         {
             get
             {

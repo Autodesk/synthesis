@@ -11,7 +11,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
             this.ljb = ljb;
         }
 
-        public float currentLinearPosition
+        public float currentPosition
         {
             get
             {
@@ -19,7 +19,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float upperLinearLimit
+        public float upperLimit
         {
             get
             {
@@ -32,7 +32,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float lowerLinearLimit
+        public float lowerLimit
         {
             get
             {

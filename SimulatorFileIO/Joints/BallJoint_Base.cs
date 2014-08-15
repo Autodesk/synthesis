@@ -15,7 +15,7 @@ public class BallJoint_Base : SkeletalJoint_Base
             this.axis = axis;
         }
 
-        public float currentAngularPosition
+        public float currentPosition
         {
             get
             {
@@ -23,7 +23,7 @@ public class BallJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float upperAngularLimit
+        public float upperLimit
         {
             get
             {
@@ -35,7 +35,7 @@ public class BallJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float lowerAngularLimit
+        public float lowerLimit
         {
             get
             {
