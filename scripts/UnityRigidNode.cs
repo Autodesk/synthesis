@@ -306,8 +306,10 @@ public class UnityRigidNode : RigidNode_Base
 				box.size = meshu.vertices [1] - center;
 			} else
 			{
+			
 				subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
 				subCollider.GetComponent<MeshCollider>().convex = true;
+				
 			}
 		});
 				
