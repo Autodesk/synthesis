@@ -302,13 +302,16 @@ namespace EditorsLibrary
         {
             if (!currentlyEditing)
             {
-                for (int i = 0; i<lstJoints.Items.Count;i++)
+                for (int i = 0; i < lstJoints.Items.Count; i++)
                 {
                     ListViewItem item = lstJoints.Items[i];
                     if (item.Tag == node)
                     {
                         lstJoints.SelectedIndices.Clear();
                         lstJoints.SelectedIndices.Add(i);
+                        // Force update
+                        if (SelectedJoint != null)
+                            SelectedJoint(node);
                         return true;
                     }
                 }
