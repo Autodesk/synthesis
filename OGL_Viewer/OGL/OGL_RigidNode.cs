@@ -7,12 +7,62 @@ using OpenTK.Graphics.OpenGL;
 
 public class OGL_RigidNode : RigidNode_Base
 {
+    // For selections
+    private static readonly Stack<UInt32> FREE_NODE_IDS = new Stack<UInt32>();
+    private static UInt32 NODES_CREATED = 0;
+    private static readonly Dictionary<UInt32, OGL_RigidNode> NODE_MAPPING = new Dictionary<UInt32, OGL_RigidNode>();
+    public static OGL_RigidNode GetNodeByGUID(UInt32 guid)
+    {
+        OGL_RigidNode output;
+        if (NODE_MAPPING.TryGetValue(guid, out output))
+        {
+            return output;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private readonly UInt32 myGUID;
+
     private TransMatrix myTrans = new TransMatrix();
     private List<VBOMesh> models = new List<VBOMesh>();
 
     public float requestedRotation = 0;
     private float requestedTranslation = 0;
     private BXDVector3 centerOfMass;
+
+    public OGL_RigidNode()
+    {
+        if (FREE_NODE_IDS.Count == 0)
+        {
+            myGUID = ++NODES_CREATED;
+        }
+        else
+        {
+            myGUID = FREE_NODE_IDS.Pop();
+        }
+        NODE_MAPPING.Add(myGUID, this);
+    }
+
+    public void destroy()
+    {
+        NODE_MAPPING.Remove(myGUID);
+        if (myGUID == NODES_CREATED)
+        {
+            NODES_CREATED--;
+        }
+        else
+        {
+            FREE_NODE_IDS.Push(myGUID);
+        }
+        foreach (VBOMesh mesh in models)
+        {
+            mesh.destroy();
+        }
+    }
+
 
     public void loadMeshes(string path)
     {
@@ -143,25 +193,40 @@ public class OGL_RigidNode : RigidNode_Base
     public bool animate = false;
     public bool highlight = false;
 
-    public void render()
+    public void render(bool select = false)
     {
-        GL.PushMatrix();
-        GL.MultMatrix(myTrans.toBuffer());
-        GL.UseProgram(ShaderLoader.PartShader);
         int tintLocation = 0;
         bool tmpHighlight = highlight;
-        if (tmpHighlight)
+
+        GL.PushMatrix();
+        GL.MultMatrix(myTrans.toBuffer());
+
+        if (!select)
         {
-            tintLocation = GL.GetUniformLocation(ShaderLoader.PartShader, "tintColor");
-            GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 0, 1 });
+            GL.Enable(EnableCap.Lighting);
+            GL.UseProgram(ShaderLoader.PartShader);
+            if (tmpHighlight)
+            {
+                tintLocation = GL.GetUniformLocation(ShaderLoader.PartShader, "tintColor");
+                GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 0, 1 });
+            }
+        }
+        else
+        {
+            GL.Disable(EnableCap.Lighting);
+            GL.UseProgram(0);
+            GL.Color4(BitConverter.GetBytes(myGUID));
         }
         foreach (VBOMesh mesh in models)
         {
-            mesh.draw();
+            mesh.draw(!select);
         }
-        if (tmpHighlight)
+        if (!select)
         {
-            GL.Uniform4(tintLocation, 1, new float[] { 1, 1, 1, 1 });
+            if (tmpHighlight)
+            {
+                GL.Uniform4(tintLocation, 1, new float[] { 1, 1, 1, 1 });
+            }
         }
         GL.UseProgram(0);
         GL.PopMatrix();
