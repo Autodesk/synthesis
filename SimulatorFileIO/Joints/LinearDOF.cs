@@ -8,16 +8,16 @@ using System.Text;
 /// </summary>
 public interface LinearDOF
 {
-    float currentLinearPosition
+    float currentPosition
     {
         get;
     }
-    float upperLinearLimit
+    float upperLimit
     {
         get;
         set;
     }
-    float lowerLinearLimit
+    float lowerLimit
     {
         get;
         set;
@@ -39,11 +39,11 @@ public static class LinearDOFExtensions
 {
     public static bool hasUpperLinearLimit(this LinearDOF dof)
     {
-        return !float.IsPositiveInfinity(dof.upperLinearLimit);
+        return !float.IsPositiveInfinity(dof.upperLimit);
     }
 
     public static bool hasLowerLinearLimit(this LinearDOF dof)
     {
-        return !float.IsNegativeInfinity(dof.lowerLinearLimit);
+        return !float.IsNegativeInfinity(dof.lowerLimit);
     }
 }

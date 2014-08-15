@@ -48,7 +48,7 @@ public class VBOMesh
     }
 
 
-    public void draw()
+    public void draw(bool effects = true)
     {
         if (bufferObjects == null)
         {
@@ -65,29 +65,38 @@ public class VBOMesh
 
         for (int i = 0; i < bufferObjects.Length - 2; i++)
         {
-            uint val = subMesh.surfaces[i].hasColor ? subMesh.surfaces[i].color : 0xFFFFFFFF;
-            float[] color = { (val & 0xFF) / 255f, ((val >> 8) & 0xFF) / 255f, ((val >> 16) & 0xFF) / 255f, ((val >> 24) & 0xFF) / 255f };
-            if (subMesh.surfaces[i].transparency != 0)
+            if (effects)
             {
-                color[3] = subMesh.surfaces[i].transparency;
+                uint val = subMesh.surfaces[i].hasColor ? subMesh.surfaces[i].color : 0xFFFFFFFF;
+                float[] color = { (val & 0xFF) / 255f, ((val >> 8) & 0xFF) / 255f, ((val >> 16) & 0xFF) / 255f, ((val >> 24) & 0xFF) / 255f };
+                if (subMesh.surfaces[i].transparency != 0)
+                {
+                    color[3] = subMesh.surfaces[i].transparency;
+                }
+                else if (subMesh.surfaces[i].translucency != 0)
+                {
+                    color[3] = subMesh.surfaces[i].translucency;
+                }
+                if (color[3] == 0)   // No perfectly transparent things plz.
+                {
+                    color[3] = 1;
+                }
+                GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, color);
+                GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 1, 1, 1, 1 });
+                GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, subMesh.surfaces[i].specular);
             }
-            else if (subMesh.surfaces[i].translucency != 0)
-            {
-                color[3] = subMesh.surfaces[i].translucency;
-            }
-            if (color[3] == 0)   // No perfectly transparent things plz.
-            {
-                color[3] = 1;
-            }
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, color);
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 1, 1, 1, 1 });
-            GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, subMesh.surfaces[i].specular);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, bufferObjects[i + 2]);
-            GL.DrawElements(BeginMode.Triangles, subMesh.surfaces[i].indicies.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            GL.DrawElements(PrimitiveType.Triangles, subMesh.surfaces[i].indicies.Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
         GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         GL.DisableClientState(ArrayCap.VertexArray);
         GL.DisableClientState(ArrayCap.NormalArray);
+    }
+
+    internal void destroy()
+    {
+        GL.DeleteBuffers(bufferObjects.Length, bufferObjects);
+        bufferObjects = new int[0];
     }
 }

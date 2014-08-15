@@ -32,8 +32,8 @@ public class ShaderLoader
         int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
 
         System.Console.WriteLine(Directory.GetCurrentDirectory());
-        string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/shader.vert");
-        string fragmentShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/shader.frag");
+        string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/Shaders/shader.vert");
+        string fragmentShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/Shaders/shader.frag");
 
 
         GL.ShaderSource(vertexShader, vertexShaderSource);

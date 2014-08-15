@@ -10,7 +10,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         {
             this.rjb = rjb;
         }
-        public float currentAngularPosition
+        public float currentPosition
         {
             get
             {
@@ -18,7 +18,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float upperAngularLimit
+        public float upperLimit
         {
             get
             {
@@ -31,7 +31,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             }
         }
 
-        public float lowerAngularLimit
+        public float lowerLimit
         {
             get
             {

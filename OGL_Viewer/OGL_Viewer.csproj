@@ -48,8 +48,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="OGL\shader.frag" />
-    <None Include="OGL\shader.vert" />
+    <None Include="OGL\Shaders\shader.frag" />
+    <None Include="OGL\Shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUI\ControlGroups.cs">
@@ -64,13 +64,14 @@
     <Compile Include="GUI\DriveNode.Designer.cs">
       <DependentUpon>DriveNode.cs</DependentUpon>
     </Compile>
-    <Compile Include="OGL\Camera3rdPerson.cs" />
+    <Compile Include="OGL\Util\Camera3rdPerson.cs" />
     <Compile Include="OGLMain.cs" />
-    <Compile Include="OGL\Matrix.cs" />
     <Compile Include="OGL\OGL_RigidNode.cs" />
+    <Compile Include="OGL\Util\OGLDrawing.cs" />
+    <Compile Include="OGL\Util\OpenTK_Math_Ext.cs" />
+    <Compile Include="OGL\SelectManager.cs" />
     <Compile Include="OGL\ShaderLoader.cs" />
-    <Compile Include="OGL\TransMatrix.cs" />
-    <Compile Include="OGL\VBOMesh.cs" />
+    <Compile Include="OGL\Util\VBOMesh.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

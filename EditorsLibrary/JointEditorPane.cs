@@ -24,6 +24,7 @@ namespace EditorsLibrary
         public event JointEditorEvent SelectedJoint;
         public event JointEditorEvent ModifiedJoint;
 
+        private bool currentlyEditing = false;
         private DriveChooser driveChooserDialog = new DriveChooser();
 
         private Dictionary<Keys, JointEditorEvent> hotkeys = new Dictionary<Keys, JointEditorEvent>();
@@ -198,6 +199,7 @@ namespace EditorsLibrary
 
         private void listSensors_Internal(RigidNode_Base node)
         {
+            currentlyEditing = true;
             SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
             listForm.ShowDialog();
             if (ModifiedJoint != null)
@@ -205,10 +207,12 @@ namespace EditorsLibrary
                 ModifiedJoint(node);
             }
             this.UpdateJointList();
+            currentlyEditing = false;
         }
 
         private void editDriver_Internal(RigidNode_Base node)
         {
+            currentlyEditing = true;
             SkeletalJoint_Base joint = node.GetSkeletalJoint();
             driveChooserDialog.ShowDialog(joint, node);
             if (ModifiedJoint != null)
@@ -216,6 +220,7 @@ namespace EditorsLibrary
                 ModifiedJoint(node);
             }
             UpdateJointList();
+            currentlyEditing = false;
         }
 
         private void listSensors_Click(object sender, EventArgs e)
@@ -286,6 +291,33 @@ namespace EditorsLibrary
                     }
                 }
             }
+        }
+
+        public bool IsEditingJoint()
+        {
+            return currentlyEditing;
+        }
+
+        public bool SelectJoint(RigidNode_Base node)
+        {
+            if (!currentlyEditing)
+            {
+                for (int i = 0; i < lstJoints.Items.Count; i++)
+                {
+                    ListViewItem item = lstJoints.Items[i];
+                    if (item.Tag == node)
+                    {
+                        lstJoints.SelectedIndices.Clear();
+                        lstJoints.SelectedIndices.Add(i);
+                        // Force update
+                        if (SelectedJoint != null)
+                            SelectedJoint(node);
+                        return true;
+                    }
+                }
+            }
+            lstJoints.SelectedIndices.Clear();
+            return false;
         }
     }
 }

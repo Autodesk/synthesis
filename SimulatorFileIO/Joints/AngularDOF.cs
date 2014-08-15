@@ -8,16 +8,16 @@ using System.Text;
 /// </summary>
 public interface AngularDOF
 {
-    float currentAngularPosition
+    float currentPosition
     {
         get;
     }
-    float upperAngularLimit
+    float upperLimit
     {
         get;
         set;
     }
-    float lowerAngularLimit
+    float lowerLimit
     {
         get;
         set;
@@ -39,6 +39,6 @@ public static class AngularDOFExtensions
 {
     public static bool hasAngularLimits(this AngularDOF dof)
     {
-        return !float.IsPositiveInfinity(dof.upperAngularLimit) || !float.IsNegativeInfinity(dof.lowerAngularLimit);
+        return !float.IsPositiveInfinity(dof.upperLimit) || !float.IsNegativeInfinity(dof.lowerLimit);
     }
 }
