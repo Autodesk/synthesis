@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 public class OGL_RigidNode : RigidNode_Base
@@ -251,7 +252,7 @@ public class OGL_RigidNode : RigidNode_Base
                         GL.Vertex3(0, 0, 0);
                         GL.Vertex3(direction.x * crosshairLength, direction.y * crosshairLength, direction.z * crosshairLength);
                         GL.End();
-                        OGLDrawing.drawArc(dof.rotationAxis, direction, dof.lowerLimit, dof.upperLimit, crosshairLength);
+                        OGLDrawing.drawArc(dof.rotationAxis, direction, dof.lowerLimit, dof.upperLimit, crosshairLength, Color4.Cyan, Color4.Green);
                         GL.PopMatrix(); // Begin limit matrix
 
                         // Maxpos
@@ -269,7 +270,7 @@ public class OGL_RigidNode : RigidNode_Base
                     else
                     {
                         // Full arc!
-                        OGLDrawing.drawArc(dof.rotationAxis, direction, 0, 6.28f, crosshairLength);
+                        OGLDrawing.drawArc(dof.rotationAxis, direction, 0, 6.28f, crosshairLength, Color4.Cyan, Color4.Green);
                     }
                 }
                 #endregion

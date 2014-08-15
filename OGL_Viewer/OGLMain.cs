@@ -23,7 +23,7 @@ public class OGL_Viewer : GameWindow
     private OGL_RigidNode baseNode;
     private List<RigidNode_Base> nodes;
 
-    Camera3rdPerson cam = new Camera3rdPerson();
+    InventorCamera cam;
 
     static float[] l0_position = { 1000f, -1000f, 1000f, 0f };
     static float[] l1_position = { -1000f, 1000f, -1000f, 0f };
@@ -71,7 +71,7 @@ public class OGL_Viewer : GameWindow
     public OGL_Viewer()
         : base(1366, 768, new GraphicsMode(32, 0, 0, 4), "Skeleton Viewer")
     {
-        base.X = 1920;
+     //   base.X = 1920;
         MouseMove += (object o, OpenTK.Input.MouseMoveEventArgs e) =>
         {
             mouseX = e.X;
@@ -84,6 +84,12 @@ public class OGL_Viewer : GameWindow
                 editorGUI.jointPane.SelectJoint((RigidNode_Base) selectedObject);
             }
         };
+        cam = new InventorCamera();
+        KeyDown += cam.keyStateChange;
+        KeyUp += cam.keyStateChange;
+        MouseDown += cam.mouseDown;
+        MouseMove += cam.mouseMoved;
+        MouseWheel += cam.mouseWheel;
     }
 
     protected override void OnLoad(EventArgs e)
@@ -157,11 +163,23 @@ public class OGL_Viewer : GameWindow
 
     protected override void OnRenderFrame(FrameEventArgs e)
     {
+        GL.Enable(EnableCap.Lighting);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+        // Project
+        GL.MatrixMode(MatrixMode.Projection);
+        GL.LoadIdentity();
+        double aspect = (double) Height / (double) Width;
+        GL.Frustum(-horizontalTan, horizontalTan, aspect
+                * -horizontalTan, aspect * horizontalTan, 1, 100000);
+        GL.Viewport(0, 0, Width, Height);
+        
+        // Transform
+        GL.MatrixMode(MatrixMode.Modelview);
         GL.LoadIdentity();
         cam.translate();
 
+        #region LIGHTS
         {
             GL.LightModel(LightModelParameter.LightModelAmbient, ambient);
             GL.Light(LightName.Light0, LightParameter.Position, l0_position);
@@ -172,6 +190,7 @@ public class OGL_Viewer : GameWindow
             GL.Light(LightName.Light1, LightParameter.Diffuse, l_diffuse);
             GL.Light(LightName.Light1, LightParameter.Specular, l_specular);
         }
+        #endregion
 
         doSelect();
         renderInternal();
@@ -184,8 +203,25 @@ public class OGL_Viewer : GameWindow
                 ((OGL_RigidNode) node).renderDebug();
             }
         }
+
+        #region OVERLAY
+        GL.MatrixMode(MatrixMode.Projection);
+        GL.LoadIdentity();
+        GL.Ortho(0, Width, Height, 0, 0, 10);
+        GL.MatrixMode(MatrixMode.Modelview);
+        GL.LoadIdentity();
+        GL.UseProgram(0);
+        GL.Disable(EnableCap.Lighting);
+        renderOverlay();
+        #endregion
+
         //GL.Enable(EnableCap.DepthTest);
         SwapBuffers();
+    }
+
+    private void renderOverlay()
+    {
+        cam.renderOverlay(Width, Height);
     }
 
     private void renderInternal(bool selectState = false)
@@ -202,19 +238,6 @@ public class OGL_Viewer : GameWindow
         var keyboard = OpenTK.Input.Keyboard.GetState();
         if (keyboard[OpenTK.Input.Key.Escape])
             Exit();
-    }
-
-    protected override void OnResize(EventArgs e)
-    {
-        base.OnResize(e);
-
-        GL.MatrixMode(MatrixMode.Projection);
-        GL.LoadIdentity();
-        double aspect = (double) Height / (double) Width;
-        GL.Frustum(-horizontalTan, horizontalTan, aspect
-                * -horizontalTan, aspect * horizontalTan, 1, 100000);
-        GL.Viewport(0, 0, Width, Height);
-        GL.MatrixMode(MatrixMode.Modelview);
     }
 
     protected override void OnUnload(EventArgs e)

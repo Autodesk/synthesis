@@ -67,6 +67,7 @@
     <Compile Include="OGL\Util\Camera3rdPerson.cs" />
     <Compile Include="OGLMain.cs" />
     <Compile Include="OGL\OGL_RigidNode.cs" />
+    <Compile Include="OGL\Util\InventorCamera.cs" />
     <Compile Include="OGL\Util\OGLDrawing.cs" />
     <Compile Include="OGL\Util\OpenTK_Math_Ext.cs" />
     <Compile Include="OGL\SelectManager.cs" />
