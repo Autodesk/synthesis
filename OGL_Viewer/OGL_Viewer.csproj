@@ -68,6 +68,7 @@
     <Compile Include="OGLMain.cs" />
     <Compile Include="OGL\Matrix.cs" />
     <Compile Include="OGL\OGL_RigidNode.cs" />
+    <Compile Include="OGL\SelectManager.cs" />
     <Compile Include="OGL\ShaderLoader.cs" />
     <Compile Include="OGL\TransMatrix.cs" />
     <Compile Include="OGL\VBOMesh.cs" />

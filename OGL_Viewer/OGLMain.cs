@@ -34,7 +34,7 @@ public class OGL_Viewer : GameWindow
     // Select info
     private int mouseX, mouseY;
     private UInt32 selectedGUID;
-    private OGL_RigidNode selectedNode;
+    private object selectedObject;
     private int selectTextureHandle, selectFBOHandle;
 
     private void loadSkeleton()
@@ -53,11 +53,11 @@ public class OGL_Viewer : GameWindow
         {
             foreach (RigidNode_Base ns in nodes)
             {
-                ((OGL_RigidNode) ns).highlight = false;
+                ((OGL_RigidNode) ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
             }
             if (node is OGL_RigidNode)
             {
-                ((OGL_RigidNode) node).highlight = true;
+                ((OGL_RigidNode) node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
             }
         };
         foreach (RigidNode_Base node in nodes)
@@ -126,17 +126,17 @@ public class OGL_Viewer : GameWindow
 
         byte[] pixels = new byte[4];
         GL.ReadPixels(mouseX, Height - mouseY, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-        UInt32 nextGUID = BitConverter.ToUInt32(pixels, 0);
+        UInt32 nextGUID = SelectManager.ColorToGUID(pixels);
         if (nextGUID != selectedGUID)
         {
-            if (selectedNode != null)
+            if (selectedObject != null && selectedObject is OGL_RigidNode)
             {
-                selectedNode.highlight = false;
+                ((OGL_RigidNode) selectedObject).highlight &= ~OGL_RigidNode.HighlightState.HOVERING;
             }
-            selectedNode = OGL_RigidNode.GetNodeByGUID(nextGUID);
-            if (selectedNode != null)
+            selectedObject = SelectManager.GetByGUID(nextGUID);
+            if (selectedObject != null)
             {
-                selectedNode.highlight = true;
+                ((OGL_RigidNode) selectedObject).highlight |= OGL_RigidNode.HighlightState.HOVERING;
             }
         }
         selectedGUID = nextGUID;

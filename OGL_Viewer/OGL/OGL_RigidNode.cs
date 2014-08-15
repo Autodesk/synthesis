@@ -7,21 +7,12 @@ using OpenTK.Graphics.OpenGL;
 
 public class OGL_RigidNode : RigidNode_Base
 {
-    // For selections
-    private static readonly Stack<UInt32> FREE_NODE_IDS = new Stack<UInt32>();
-    private static UInt32 NODES_CREATED = 0;
-    private static readonly Dictionary<UInt32, OGL_RigidNode> NODE_MAPPING = new Dictionary<UInt32, OGL_RigidNode>();
-    public static OGL_RigidNode GetNodeByGUID(UInt32 guid)
+    public enum HighlightState : byte
     {
-        OGL_RigidNode output;
-        if (NODE_MAPPING.TryGetValue(guid, out output))
-        {
-            return output;
-        }
-        else
-        {
-            return null;
-        }
+        NOTHING = 0,
+        ACTIVE = 1,
+        HOVERING = 2,
+        ACTIVE_HOVERING = 3
     }
 
     private readonly UInt32 myGUID;
@@ -35,28 +26,12 @@ public class OGL_RigidNode : RigidNode_Base
 
     public OGL_RigidNode()
     {
-        if (FREE_NODE_IDS.Count == 0)
-        {
-            myGUID = ++NODES_CREATED;
-        }
-        else
-        {
-            myGUID = FREE_NODE_IDS.Pop();
-        }
-        NODE_MAPPING.Add(myGUID, this);
+        myGUID = SelectManager.AllocateGUID(this);
     }
 
     public void destroy()
     {
-        NODE_MAPPING.Remove(myGUID);
-        if (myGUID == NODES_CREATED)
-        {
-            NODES_CREATED--;
-        }
-        else
-        {
-            FREE_NODE_IDS.Push(myGUID);
-        }
+        SelectManager.FreeGUID(myGUID);
         foreach (VBOMesh mesh in models)
         {
             mesh.destroy();
@@ -68,7 +43,6 @@ public class OGL_RigidNode : RigidNode_Base
     {
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(path);
-        highlight = path.EndsWith("node_8.bxda");
         this.centerOfMass = mesh.physics.centerOfMass;
         foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
         {
@@ -115,7 +89,7 @@ public class OGL_RigidNode : RigidNode_Base
                     break;
             }
         }
-        if (highlight && animate)
+        if (animate)
         {
             i += 0.01f;
             requestedTranslation = (float) Math.Sin(i) * 100.0f;
@@ -191,12 +165,12 @@ public class OGL_RigidNode : RigidNode_Base
     }
 
     public bool animate = false;
-    public bool highlight = false;
+    public HighlightState highlight = HighlightState.NOTHING;
 
     public void render(bool select = false)
     {
         int tintLocation = 0;
-        bool tmpHighlight = highlight;
+        HighlightState tmpHighlight = highlight;
 
         GL.PushMatrix();
         GL.MultMatrix(myTrans.toBuffer());
@@ -205,17 +179,28 @@ public class OGL_RigidNode : RigidNode_Base
         {
             GL.Enable(EnableCap.Lighting);
             GL.UseProgram(ShaderLoader.PartShader);
-            if (tmpHighlight)
+            if (tmpHighlight > 0)
             {
                 tintLocation = GL.GetUniformLocation(ShaderLoader.PartShader, "tintColor");
-                GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 0, 1 });
+                if ((tmpHighlight & HighlightState.ACTIVE_HOVERING) == HighlightState.ACTIVE_HOVERING)
+                {
+                    GL.Uniform4(tintLocation, 1, new float[] { 1, 1, 0, 1 });
+                }
+                else if ((tmpHighlight & HighlightState.ACTIVE) == HighlightState.ACTIVE)
+                {
+                    GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 0, 1 });
+                }
+                else if ((tmpHighlight & HighlightState.HOVERING) == HighlightState.HOVERING)
+                {
+                    GL.Uniform4(tintLocation, 1, new float[] { 0.75f, 1, 0.75f, 1 });
+                }
             }
         }
         else
         {
             GL.Disable(EnableCap.Lighting);
             GL.UseProgram(0);
-            GL.Color4(BitConverter.GetBytes(myGUID));
+            GL.Color4(SelectManager.GUIDToColor(myGUID));
         }
         foreach (VBOMesh mesh in models)
         {
@@ -223,18 +208,13 @@ public class OGL_RigidNode : RigidNode_Base
         }
         if (!select)
         {
-            if (tmpHighlight)
+            if (tmpHighlight > 0)
             {
                 GL.Uniform4(tintLocation, 1, new float[] { 1, 1, 1, 1 });
             }
         }
         GL.UseProgram(0);
         GL.PopMatrix();
-
-        if (highlight)
-        {
-            renderDebug();
-        }
     }
 
     public void renderDebug()
