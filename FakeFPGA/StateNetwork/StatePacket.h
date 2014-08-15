@@ -5,6 +5,8 @@
 
 typedef float float32_t;
 
+/// Structure for storing packets sent from the Fake FPGA
+/// to the simulator.  Little endian layout.
 typedef struct {
 	struct {
 		uint32_t relayForward;
@@ -17,6 +19,8 @@ typedef struct {
 	} solenoid[1];
 } OutputStatePacket;
 
+// Structure for storing packets sent from the simulator
+// to the Fake FPGA.  Little endian layout.
 typedef struct {
 	struct {
 		uint32_t digitalInput;

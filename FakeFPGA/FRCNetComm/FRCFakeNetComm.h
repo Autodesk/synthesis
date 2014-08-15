@@ -3,6 +3,7 @@
 
 class FRCNetImpl;
 
+// Gets the global fake network communication instance.
 FRCNetImpl *GetFakeNetComm();
 
 #endif

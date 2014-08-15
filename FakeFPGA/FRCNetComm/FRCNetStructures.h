@@ -38,7 +38,7 @@ struct FRCRobotControl {
 	uint8_t batteryMilliVolts;
 	uint8_t digitalOutputs;
 	uint8_t unknown1[4];
-	uint16_t teamID;		// This is backwards endian-wise
+	uint16_t teamID;		// This is big endian
 	uint8_t macAddress[6];
 	union {
 		uint8_t version[8];
@@ -50,7 +50,7 @@ struct FRCRobotControl {
 		};
 	};
 	uint8_t unknown2[6];
-	uint16_t packetIndex;		// This is backwards endian-wise
+	uint16_t packetIndex;		// This is big endian
 };
 
 typedef struct

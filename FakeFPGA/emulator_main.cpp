@@ -20,27 +20,31 @@
 
 int StartEmulator() {
 	printf("Start now!\n");
-	NiFpga_Initialize();
+	NiFpga_Initialize();	// Make sure we have an FPGA instance ready
 	printf("Init FPGA\n");
-	FRC_UserProgram_StartupLibraryInit();
+	FRC_UserProgram_StartupLibraryInit();	// Start the FRC program
 	OutputStatePacket pack = OutputStatePacket();
 	InputStatePacket sensors = InputStatePacket();
 	StateNetworkServer serv = StateNetworkServer();
 	serv.Open();
 	tRioStatusCode status;
 	while (true) {
-		for (int j = 0; j<2; j++){
-			for (int i = 0; i<8; i++){
-				pack.dio[j].pwmValues[i] = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(j), i);
+		{   // Package the output packet
+			for (int j = 0; j<2; j++){
+				for (int i = 0; i<8; i++){
+					pack.dio[j].pwmValues[i] = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(j), i);
+				}
+				pack.dio[j].digitalOutput = GetFakeFPGA()->getDIO(j)->readDO(&status);
+				pack.dio[j].relayForward = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
+				pack.dio[j].relayReverse = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
 			}
-			pack.dio[j].digitalOutput = GetFakeFPGA()->getDIO(j)->readDO(&status);
-			pack.dio[j].relayForward = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
-			pack.dio[j].relayReverse = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
+			for (int j = 0; j < 1; j++){
+				pack.solenoid[j].state = GetFakeFPGA()->getSolenoid()->readDO7_0(j, &status);
+			}
+			serv.SendStatePacket(pack);
 		}
-		for (int j = 0; j < 1; j++){
-			pack.solenoid[j].state = GetFakeFPGA()->getSolenoid()->readDO7_0(j, &status);
-		}
-		serv.SendStatePacket(pack);
+		
+		// Update sensor values
 		if (serv.ReceiveStatePacket(&sensors)) {
 			for (int j = 0; j<2; j++){
 				GetFakeFPGA()->getDIO(j)->writeDigitalPort(sensors.dio[j].digitalInput, ~(GetFakeFPGA()->getDIO(j)->readOutputEnable(&status)));
@@ -53,6 +57,7 @@ int StartEmulator() {
 			}
 			// Counters?
 		}
+		// Don't eat the CPU
 		sleep_ms(50);
 	}
 }

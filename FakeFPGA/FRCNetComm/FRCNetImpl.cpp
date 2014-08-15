@@ -24,7 +24,7 @@ FRCNetImpl::FRCNetImpl(void)
 {
 	enabled = false;
 	task = NULL;
-	teamID = 1510;
+	teamID = 1510;	// TODO Super sketchy hack avoid this need to auto-resolve
 	newDataSem = NULL;
 	resyncSem = NULL;
 	memset(&ctl, 0, sizeof(ctl));
@@ -42,6 +42,7 @@ FRCNetImpl::~FRCNetImpl(void)
 	}
 }
 
+/// Starts the task backing this network implementation
 void FRCNetImpl::start() {
 	if (task!=NULL){
 		return;
@@ -51,6 +52,7 @@ void FRCNetImpl::start() {
 	task->Start(this);
 }
 
+/// Stops the task backing this network implementation
 void FRCNetImpl::stop() {
 	if (task==NULL) {
 		return;

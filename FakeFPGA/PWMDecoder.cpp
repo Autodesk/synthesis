@@ -4,6 +4,9 @@
 const float PWMDecoder::kDefaultPwmPeriod = 5.05;
 const float PWMDecoder::kDefaultPwmCenter = 1.5;
 
+/// Decodes the PWM value of the given DIO into a scalar.
+/// @param dio The digital IO module
+/// @reg_index The zero-based PWM port
 float PWMDecoder::decodePWM(nFPGA::tDIO_Impl *dio, uint8_t reg_index) {
 	tRioStatusCode status;
 	int32_t value = dio->readPWMValue(reg_index, &status);
@@ -47,6 +50,7 @@ float PWMDecoder::decodePWM(nFPGA::tDIO_Impl *dio, uint8_t reg_index) {
 		return 0;
 	}
 
+	// Also from WPILib
 	int32_t m_maxPwm = (int32_t)((max-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);
 	int32_t m_deadbandMaxPwm = (int32_t)((deadbandMax-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);
 	int32_t m_deadbandMinPwm = (int32_t)((deadbandMin-kDefaultPwmCenter)/loopTime+kDefaultPwmStepsDown-1);

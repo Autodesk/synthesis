@@ -15,6 +15,7 @@
 
 StateNetworkServer::StateNetworkServer(void) {
 	udpSocket = 0;
+	udpRecvSocket = 0;
 }
 
 StateNetworkServer::~StateNetworkServer(void) {

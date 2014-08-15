@@ -6,7 +6,7 @@
 
 namespace nUsageReporting {
 	// type, channel, module
-	// this can be used to ID what is on what port
+	// This can be used to figure out what is one each port.  That allows us to decode the PWM values
 	uint32_t EXPORT_FUNC report(tResourceType resource, uint8_t instanceNumber,
 		uint8_t context, const char *feature) {
 			switch (resource) {
