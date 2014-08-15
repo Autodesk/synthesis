@@ -34,11 +34,7 @@ class WheelAnalyzer
                 sortComponentRadii(component, sortedBoxList);
             }
 
-            sortedBoxList.Sort((firstPair, nextPair) =>
-                {
-                    return firstPair.CompareTo(nextPair);
-                }
-            );
+            sortedBoxList.Sort();
 
             Console.WriteLine("Printing sorted list");
 
@@ -285,7 +281,7 @@ public class ComponentRadiusPair : IComparable<ComponentRadiusPair>
     {
         component = passComponent;
 
-        possibleRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length;
+        possibleRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
     }
 
     public int CompareTo(ComponentRadiusPair other)
