@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics;
 using OpenTK;
 
 public class OGLDrawing
@@ -36,18 +37,24 @@ public class OGLDrawing
     /// <param name="maxAngle">The ending angle</param>
     /// <param name="radius">The radius of the arc</param>
     /// <param name="steps">The number of steps to use</param>
-    public static void drawArc(BXDVector3 axis, BXDVector3 bias, float minAngle, float maxAngle, float radius, int steps = 100)
+    public static void drawArc(BXDVector3 axis, BXDVector3 bias, float minAngle, float maxAngle, float radius, Color4 start, Color4 end, int steps = 100)
     {
         GL.Begin(PrimitiveType.LineStrip);
         // Arcthing
         Matrix4 stepMatrix = Matrix4.CreateFromAxisAngle(axis.ToTK(), -(maxAngle - minAngle) / steps);
         BXDVector3 tempVec = bias.Copy().Multiply(radius / bias.Magnitude());
-        for (float f = 0; f < 1.0f; f += 1f / (float)steps)
+        for (float f = 0; f < 1.0f; f += 1f / (float) steps)
         {
-            GL.Color3(0, 1f, 1f - f);
+            GL.Color4(Interpolate(start, end, f));
             GL.Vertex3(tempVec.x, tempVec.y, tempVec.z);
             tempVec = stepMatrix.Multiply(tempVec);
         }
         GL.End();
+    }
+
+    public static Color4 Interpolate(Color4 start, Color4 end, float val)
+    {
+        return new Color4((byte) (start.R * (1f - val) + end.R * val), (byte) (start.G * (1f - val) + end.G * val),
+            (byte) (start.B * (1f - val) + end.B * val), (byte) (start.A * (1f - val) + end.A * val));
     }
 }
