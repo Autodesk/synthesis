@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
-using System.Runtime.Caching;
 
 /// <summary>
 /// Handles a single thread to find the radius of a single component.
