@@ -39,10 +39,28 @@ public static class RWObjectExtensions
     /// Reads this object from the given input path.
     /// </summary>
     /// <param name="path">Input path</param>
-    public static void ReadFromFile(this RWObject obj, String path)
+    public static void ReadFromFile(this RWObject obj, String path, BXDIO.ProgressReporter progress = null)
     {
         BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
+        System.Threading.Thread progressThread = null;
+        if (progress != null)
+        {
+            // Not the most informative, but it is something.
+            progressThread = new System.Threading.Thread(() =>
+            {
+                while (true)
+                {
+                    progress(reader.BaseStream.Position, reader.BaseStream.Length);
+                    System.Threading.Thread.Sleep(10);
+                }
+            });
+            progressThread.Start();
+        }
         obj.ReadData(reader);
+        if (progressThread != null)
+        {
+            progressThread.Abort();
+        }
         reader.Close();
     }
 

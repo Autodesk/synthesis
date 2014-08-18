@@ -149,10 +149,15 @@ static class Program
                         ((RigidNode) node).DoDeferredCalculations();
                         try
                         {
-                            Console.WriteLine("Exporting " + node.GetModelID());
+                            Console.WriteLine("Exporting " + node.modelFileName);
                             CustomRigidGroup group = (CustomRigidGroup) node.GetModel();
                             surfs.Reset();
-                            surfs.ExportAll(group);
+                            surfs.ExportAll(group, (long progress, long total) =>
+                            {
+                                Console.Write(Math.Round((progress / (float) total) * 100.0f, 2) + "%\t" + progress + " / " + total);
+                                Console.CursorLeft = 0;
+                            });
+                            Console.WriteLine();
                             BXDAMesh output = surfs.GetOutput();
                             Console.WriteLine("Output mesh: " + output.meshes.Count + " meshes");
                             /*Console.WriteLine("Exporting for Colliders\n");
