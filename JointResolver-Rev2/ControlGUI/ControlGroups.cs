@@ -30,6 +30,7 @@ public partial class ControlGroups
         {
             foreach (Inventor.ComponentOccurrence occ in ((RigidNode) node).group.occurrences)
             {
+                ComponentHighlighter.PrepareHighlight();
                 ComponentHighlighter.CHILD_HIGHLIGHT_SET.AddItem(occ);
             }
         }
