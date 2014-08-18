@@ -100,17 +100,17 @@ public class DriveJoints : MonoBehaviour
 		if (signal == 0)
 		{
 			// If no motor torque is applied, the breaks are applied
-			wheel.GetWheelCollider().brakeTorque = OzInToNm * 343.3f;
+			wheel.wCollider.GetComponent<WheelCollider>().brakeTorque = OzInToNm * 343.3f;
 			wheel.GetConfigJoint().targetAngularVelocity = Vector3.zero;
 		} else
 		{
-			wheel.GetWheelCollider().brakeTorque = 0;
+			wheel.wCollider.GetComponent<WheelCollider>().brakeTorque = 0;
 		}
 		
 		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
 
-		wheel.GetWheelCollider().motorTorque = OzInToNm * (signal * 171.1f);
-		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.GetWheelCollider().rpm * 6 * Time.deltaTime, 0, 0);
+		wheel.wCollider.GetComponent<WheelCollider>().motorTorque = OzInToNm * (signal * 171.1f);
+		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.wCollider.GetComponent<WheelCollider>().rpm * 6 * Time.deltaTime, 0, 0);
 	}
 
 	// A function to handle solenoids
@@ -146,7 +146,7 @@ public class DriveJoints : MonoBehaviour
 		foreach (UnityRigidNode wheel in wheels)
 		{
 			//wheel.GetWheelCollider ().transform.rotation = Quaternion.Euler(45, 90, 270);
-			wheel.GetWheelCollider().transform.Rotate(0, -315, 0);
+			wheel.wCollider.GetComponent<WheelCollider>().transform.Rotate(0, -315, 0);
 		}
 	}
 
@@ -175,9 +175,11 @@ public class DriveJoints : MonoBehaviour
 	}
 
 	// Drive All Motors Associated with a PWM port
-	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] modules)
+
+	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] dioModules)
 	{
-		float[] pwm = modules [0].pwmValues;
+		float[] pwm = dioModules[0].pwmValues;
+
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
 
@@ -194,12 +196,12 @@ public class DriveJoints : MonoBehaviour
 				{
 					// Special Case for wheels. 
 					// If port A matches the index of the array in the packet, (A.K.A: the packet index is reffering to the wheelCollider on the subNode0), then that specific wheel Collider is set.
-					if (unitySubNode.IsWheel && unitySubNode.GetPortA() == i + 1)
+					if (unitySubNode.IsWheel && unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
 					{
 						SetWheel(unitySubNode, pwm [i]);
 					
 						// If its not a wheel, it checks to see if it the motor is assigned to the current pwm value, and if it is, it also checks to make sure that it has an xdrive
-					} else if (unitySubNode.GetPortA() == i + 1 && !unitySubNode.IsWheel)
+					} else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1 && !unitySubNode.IsWheel)
 					{
 						// Something Arbitrary for now. 4 radians/second
 						unitySubNode.GetConfigJoint().targetAngularVelocity = new Vector3(4 * pwm [i], 0, 0);
@@ -221,7 +223,7 @@ public class DriveJoints : MonoBehaviour
 								unitySubNode.GetConfigJoint().targetAngularVelocity = Vector3.zero;
 							}
 						}
-					} else if (unitySubNode.GetPortA() == i + 1)
+					} else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
 					{
 						// Should we throw an exception here?
 						Debug.Log("There's an issue: We have an active motor not set (even though it should be set).");
@@ -232,9 +234,11 @@ public class DriveJoints : MonoBehaviour
 	}
 		
 	// This function takes a skeleton and byte (a packet) as input, and will use both to check if each solenoid port is open.
-	public static void updateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoidModules)
+
+	public static void UpdateSolenoids(RigidNode_Base skeleton, unityPacket.OutputStatePacket.SolenoidModule[] solenoidModules)
 	{
 		byte packet = solenoidModules [0].state;
+
 		List<RigidNode_Base> listOfNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfNodes);
 		

@@ -47,6 +47,7 @@ public class auxFunctions : RigidNode_Base
 	
 	public static void OrientRobot(List<WheelCollider> wheelcolliders, Transform parent)
 	{
+
 		Quaternion q = new Quaternion();
 		List<Vector3> wheels = new List<Vector3>();
 		foreach (WheelCollider collider in wheelcolliders) 
@@ -71,6 +72,24 @@ public class auxFunctions : RigidNode_Base
 		parent.localRotation *= q;	
 
 		Debug.Break ();
+
+	
+	
+	
+//		Vector3 norm = Vector3.Cross((wheels[0] - wheels[1]),(wheels[0] - wheels[2]));
+//		Debug.Log(norm);
+//		
+//		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
+//		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
+//		//norm = norm * ((above.y < 0) ? 1 : -1);
+//	
+//		norm = norm * (Mathf.Sign(norm.y) != Mathf.Sign(above.y) ? -1:1);
+//
+//		Quaternion q = new Quaternion();
+//		q.SetFromToRotation(norm, Vector3.up);
+//		parent.rotation *= q;	
+//		Debug.Log("Orientation Complete: " + parent.name);	
+
 	}
 	
 	
