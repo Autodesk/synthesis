@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class BXDBox : IComparable<BXDBox>
+public class BXDBox : System.IComparable<BXDBox>
 {
     BXDVector3 minPoint;
     BXDVector3 maxPoint;
