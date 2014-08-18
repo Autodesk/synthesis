@@ -257,7 +257,15 @@ public class DriveJoints : MonoBehaviour
 				float linearPositionAlongAxis = GetLinearPositionRelativeToParent(unityNode);
 
 				// Error catching is done in the SetSolenoid function
-				if (stateA > 0)
+				if (stateA > 0 && stateB < 0) 
+                {
+                    // Do Nothing. Both ports should not be open
+                }
+                else if(stateA < 0 && stateB < 0) 
+                {
+                    // Again, do nothing. There will be no flow.
+                } 
+                else if (stateA > 0) 
 				{
 					SetSolenoid(unityNode, true);
 				} else if (stateB > 0)
