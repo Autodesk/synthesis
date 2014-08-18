@@ -30,20 +30,10 @@ public class BXDAMesh : RWObject
             byte meshFlags = (byte) ((norms != null ? 1 : 0));
 
             writer.Write(meshFlags);
-            writer.Write(vertCount);
-
-            for (int i = 0; i < vertCount; i++)
+            writer.WriteArray(verts, 0, vertCount * 3);
+            if (norms != null)
             {
-                int vecI = i * 3;
-                writer.Write(verts[vecI]);
-                writer.Write(verts[vecI + 1]);
-                writer.Write(verts[vecI + 2]);
-                if (norms != null)
-                {
-                    writer.Write(norms[vecI]);
-                    writer.Write(norms[vecI + 1]);
-                    writer.Write(norms[vecI + 2]);
-                }
+                writer.WriteArray(norms, 0, vertCount * 3);
             }
 
             writer.Write(surfaces.Count);
@@ -55,23 +45,11 @@ public class BXDAMesh : RWObject
         public void ReadData(BinaryReader reader)
         {
             byte meshFlags = reader.ReadByte();
-            int vertCount = reader.ReadInt32();
-            verts = new double[vertCount * 3];
-            norms = (meshFlags & 1) == 1 ? new double[vertCount * 3] : null;
-            for (int i = 0; i < vertCount; i++)
+            norms = (meshFlags & 1) == 1 ? new double[1 * 3] : null;
+            verts = reader.ReadArray<double>();
+            if (norms != null)
             {
-                int vecI = i * 3;
-                int texI = i * 2;
-                int colI = i;
-                verts[vecI] = reader.ReadDouble();
-                verts[vecI + 1] = reader.ReadDouble();
-                verts[vecI + 2] = reader.ReadDouble();
-                if (norms != null)
-                {
-                    norms[vecI] = reader.ReadDouble();
-                    norms[vecI + 1] = reader.ReadDouble();
-                    norms[vecI + 2] = reader.ReadDouble();
-                }
+                norms = reader.ReadArray<double>();
             }
 
             int surfaceCount = reader.ReadInt32();
@@ -125,11 +103,7 @@ public class BXDAMesh : RWObject
             writer.Write(translucency);
             writer.Write(specular);
 
-            writer.Write(facetCount);
-            for (int i = 0; i < facetCount * 3; i++)
-            {
-                writer.Write(indicies[i]);
-            }
+            writer.WriteArray(indicies, 0, facetCount * 3);
         }
         public void ReadData(BinaryReader reader)
         {
@@ -143,12 +117,7 @@ public class BXDAMesh : RWObject
             translucency = reader.ReadSingle();
             specular = reader.ReadSingle();
 
-            int facetCount = reader.ReadInt32();
-            indicies = new int[facetCount * 3];
-            for (int j = 0; j < facetCount * 3; j++)
-            {
-                indicies[j] = reader.ReadInt32();
-            }
+            indicies = reader.ReadArray<Int32>();
         }
     }
 
