@@ -76,11 +76,11 @@ public class unityPacket
 		threadRecieve = new Thread(ServerInternal);
 		threadSend = new Thread(ClientInternal);
 			
-		Debug.Log("Server...");
+//		Debug.Log("Server...");
 		threadRecieve.Start();
-		Debug.Log("Client...");
+//		Debug.Log("Client...");
 		threadSend.Start();
-		
+		Debug.Log("UnityPacket Initialized...");
 		//this udp thread was really really stupid || this is because of how dumb Unity is
 		if (stillSend && stillRecieve && (threadSend.IsAlive && threadRecieve.IsAlive))
 		{
@@ -96,7 +96,7 @@ public class unityPacket
 			active = false;
 			threadSend.Join();
 			threadRecieve.Join();
-			Debug.Log("Stop...");
+			Debug.Log("Stopping UnityPacket...");
 			
 		} catch (Exception ex)
 		{

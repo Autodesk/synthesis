@@ -5,29 +5,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-
 public class Init : MonoBehaviour
 {
-    // We will need these
-    public List<List<UnityRigidNode>> PWMAssignments;
-    public Dictionary<List<int>, UnityRigidNode> SolenoidAssignments;
-    public float speed = 5;
-    public int[] motors = { 1, 2, 3, 4 };
-    RigidNode_Base skeleton;
-    unityPacket udp = new unityPacket();
-    List<WheelCollider> unityWheelData = new List<WheelCollider>();
+	// We will need these
+	public List<List<UnityRigidNode>> PWMAssignments;
+	public float speed = 5;
+	public int[] motors = { 1, 2, 3, 4 };
+	RigidNode_Base skeleton;
+	unityPacket udp = new unityPacket();
+	List<WheelCollider> unityWheelData = new List<WheelCollider>();
+	// int robots = 0;
+	string filePath = "C:/Users/" + Environment.UserName +  "/Documents/2014 Competition Robot_Skeleton/2014 Competition Robot_Skeleton";
 
-    int robots = 0;
-	string filePath = "C:/Users/t_defap/Documents/2014 Competition Robot_Skeleton/2014 Competition Robot_Skeleton";
-
-    public enum WheelPositions
-    {
-        FL = 1,
-        FR = 2,
-        BL = 3,
-        BR = 4
-    }
-
+	public enum WheelPositions
+	{
+		FL = 1,
+		FR = 2,
+		BL = 3,
+		BR = 4
+	}
+	/*
     [STAThread]
     void OnGUI()
 	{
@@ -43,6 +40,7 @@ public class Init : MonoBehaviour
 		}
 		
 	}
+	*/
 
     void TryLoad()
     {
@@ -93,31 +91,28 @@ public class Init : MonoBehaviour
        }
     }
 
-    void Start()
-    {
-        Physics.gravity = new Vector3(0, -9.8f, 0);
-        TryLoad();
-		
-        //byte test = (byte)2;		
-        //DriveJoints.updateSolenoids(skeleton, test);
-    }
+	void Start()
+	{
+		Physics.gravity = new Vector3(0, -9.8f, 0);
+		TryLoad();
+	}
 
-    void OnEnable()
-    {
-        udp.Start();
-    }
+	void OnEnable()
+	{
+		udp.Start();
+	}
 
-    void OnDisable()
-    {
-        udp.Stop();
-    }
+	void OnDisable()
+	{
+		udp.Stop();
+	}
 
     void FixedUpdate()
     {
         if (skeleton != null)
         {
             unityPacket.OutputStatePacket packet = udp.GetLastPacket();
-            DriveJoints.UpdateAllMotors(skeleton, packet.dio[0].pwmValues);
+            DriveJoints.UpdateAllMotors(skeleton, packet.dio);
         }
     }
 }
