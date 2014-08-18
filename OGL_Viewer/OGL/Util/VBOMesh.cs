@@ -25,9 +25,12 @@ public class VBOMesh
         GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[0]);
         GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.verts.Length * sizeof(double)), subMesh.verts, BufferUsageHint.StaticDraw);
 
-        GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[1]);
-        GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.norms.Length * sizeof(double)), subMesh.norms,
-                BufferUsageHint.StaticDraw);
+        if (subMesh.norms != null)
+        {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, bufferObjects[1]);
+            GL.BufferData<double>(BufferTarget.ArrayBuffer, new IntPtr(subMesh.norms.Length * sizeof(double)), subMesh.norms,
+                    BufferUsageHint.StaticDraw);
+        }
 
         for (int i = 0; i < subMesh.surfaces.Count; i++)
         {
