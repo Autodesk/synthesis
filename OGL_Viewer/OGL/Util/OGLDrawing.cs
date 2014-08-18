@@ -54,7 +54,7 @@ public class OGLDrawing
 
     public static Color4 Interpolate(Color4 start, Color4 end, float val)
     {
-        return new Color4((byte) (start.R * (1f - val) + end.R * val), (byte) (start.G * (1f - val) + end.G * val),
-            (byte) (start.B * (1f - val) + end.B * val), (byte) (start.A * (1f - val) + end.A * val));
+        return new Color4(start.R * (1f - val) + end.R * val, start.G * (1f - val) + end.G * val,
+            start.B * (1f - val) + end.B * val, start.A * (1f - val) + end.A * val);
     }
 }
