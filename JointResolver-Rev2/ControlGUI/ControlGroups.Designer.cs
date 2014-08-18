@@ -193,7 +193,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader groups_chHighRes;
     private System.Windows.Forms.ColumnHeader groups_chGrounded;
     private System.Windows.Forms.CheckBox chkHighlightComponents;
-    private System.Windows.Forms.ColumnHeader item_chWheel;
     private System.Windows.Forms.ColumnHeader groups_chConcavity;
     private EditorsLibrary.JointEditorPane jointPane;
 }
