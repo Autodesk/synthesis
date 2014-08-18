@@ -68,12 +68,14 @@ class WheelAnalyzer
                             threadsToRemove.Add(radiusThreadList[index]);
                         }
 
+                       
                         //If a thread has found a radius that would not fit in the bounding box of the next component, there's no point in continuing trying to find
                         //  a larger radius in the next component.
-                        if (FindRadiusThread.GetRadius() > sortedBoxList[index+1].possibleRadius && (index < largestRadiusIndex || largestRadiusIndex == -1))
+                        if (index + 1 < sortedBoxList.Count || ((FindRadiusThread.GetRadius() > sortedBoxList[index + 1].possibleRadius)) && (index < largestRadiusIndex || largestRadiusIndex == -1))
                         {
                             largestRadiusIndex = index;
                         }
+                 
 
                         if (radiusThreadList[index].GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
                         {
