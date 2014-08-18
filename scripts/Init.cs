@@ -77,12 +77,12 @@ public class Init : MonoBehaviour
 
                 if (uNode.IsWheel)
                 {
-                    unityWheelData.Add(uNode.GetWheelCenter());
+                    unityWheelData.Add(auxFunctions.ConvertV3(uNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().center));
                 }
             }
             if (unityWheelData.Count > 0)
             {
-                //auxFunctions.OrientRobot(unityWheelData, robot.transform);
+                auxFunctions.OrientRobot(unityWheelData, robot.transform);
 
             }
         }

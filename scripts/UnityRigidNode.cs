@@ -28,7 +28,7 @@ public class UnityRigidNode : RigidNode_Base
 		unityObject = new GameObject();
 		unityObject.transform.parent = root;
 		unityObject.transform.position = new Vector3(0, 0, 0);
-		unityObject.name = base.modelFileName; 
+		unityObject.name = base.modelFileName;
 	}
 
 	//creates a uniform configurable joint which can be altered through conditionals.
@@ -65,7 +65,7 @@ public class UnityRigidNode : RigidNode_Base
 		return joint;
 	}
 	//creates a wheel collider and centers it on the current transform
-	private void CreateWheel(RotationalJoint_Base center)
+	private void CreateWheel()
 	{
 		
 		Quaternion q = new Quaternion();
@@ -74,7 +74,7 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider = new GameObject(unityObject.name + " Collider");
 		
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
-		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
+		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
 		wCollider.AddComponent<WheelCollider>();
 		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius + (wheel.radius * 0.15f)) * 0.01f;
 		wCollider.transform.localRotation *= q;
@@ -185,7 +185,7 @@ public class UnityRigidNode : RigidNode_Base
             
 			if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL)
 			{
-				CreateWheel(nodeR);	
+				CreateWheel();	
 				
 			}
 			
@@ -320,44 +320,12 @@ public class UnityRigidNode : RigidNode_Base
 		// Free mesh.
         mesh = null;
 	}
-	//These are all of the public functions which have varying uses. Mostly "get" functions, but convertV3 is especially useful.
-		
-
-	//portA used mostly for drive controls. Allows for proper motor simulation
-	public int GetPortA()
-	{
-		if (base.GetSkeletalJoint() == null || base.GetSkeletalJoint().cDriver == null)
-		{
-			return -1;			
-		}
-		return GetSkeletalJoint().cDriver.portA;
-	}
-
-	public int GetPortB()
-	{
-		if (base.GetSkeletalJoint() == null || base.GetSkeletalJoint().cDriver == null)
-		{
-			return -1;			
-		}
-		return GetSkeletalJoint().cDriver.portB;
-	}
-
-	public WheelCollider GetWheelCollider()
-	{
-		return wCollider != null ? wCollider.GetComponent<WheelCollider>() : null;
-	}
 
 	public ConfigurableJoint GetConfigJoint()
 	{
 		return joint != null ? joint : null;
 	}
 
-	public Vector3 GetWheelCenter()
-	{
-		return auxFunctions.ConvertV3(((RotationalJoint_Base)GetSkeletalJoint()).basePoint);
-	}
-	
-	
 	// Returns the center of mass of the skeleton. It calculates a weighted average of all the rigiBodies in the gameObject. (Its an average of their positions, weighted by the masses of each rigidBody)
 	public static Vector3 TotalCenterOfMass(GameObject gameObj)
 	{
