@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using Inventor;
 using System.IO;
 using System.Threading;
+using System.Windows.Forms;
 
 static class Program
 {
-    public static Application INVENTOR_APPLICATION;
+    public static Inventor.Application INVENTOR_APPLICATION;
     private const int MAX_VERTICIES = 8192;
     public static void Main(String[] args)
     {
-        INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+        INVENTOR_APPLICATION = (Inventor.Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         AnalyzeRigidResults();
+        MessageBox.Show("Finished Exporting Files!");
         //_2014FieldBounding.WriteModel();
         //AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         //SurfaceExporter exp = new SurfaceExporter();
