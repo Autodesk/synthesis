@@ -288,17 +288,6 @@ public class ComponentRadiusPair : IComparable<ComponentRadiusPair>
 
     public int CompareTo(ComponentRadiusPair other)
     {
-        if (this.possibleRadius > other.possibleRadius)
-        {
-            return -1;
-        }
-        else if (this.possibleRadius < other.possibleRadius)
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
+        return -this.possibleRadius.CompareTo(other.possibleRadius);
     }
 }
