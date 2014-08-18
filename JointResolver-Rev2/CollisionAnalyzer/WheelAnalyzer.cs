@@ -19,8 +19,8 @@ class WheelAnalyzer
         Matrix invertedTransform; //Stores the transfrom from part axes to assembly axes.
         WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
 
-        wheelDriver = joint.cDriver.GetInfo<WheelDriverMeta>();
 
+        wheelDriver = joint.cDriver.GetInfo<WheelDriverMeta>();
 
         FindRadiusThread.Reset(); //Prepares the shared memeory for the next component.
 

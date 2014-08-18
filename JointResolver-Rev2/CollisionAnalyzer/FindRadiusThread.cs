@@ -73,7 +73,6 @@ class FindRadiusThread
     /// </summary>
     public void FindMaxRadius()
     {
-        double newRadius; //The radius for the most recent vertex
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part's axes.
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
@@ -131,7 +130,7 @@ class FindRadiusThread
         //Stores the largest radius in shared memory once the largest radius for this component is calculated.
         lock (Program.INVENTOR_APPLICATION)
         {
-            if (finalLocalMaxRadius > currentMaxRadius)
+            if (localMaxRadius > currentMaxRadius)
             {
                 currentMaxRadius = localMaxRadius;
 
@@ -139,7 +138,7 @@ class FindRadiusThread
             }
         }
 
-        Console.WriteLine("Found radius of " + component.Name + " to be " + finalLocalMaxRadius);
+        Console.WriteLine("Found radius of " + component.Name + " to be " + localMaxRadius);
     }   
 }
 
