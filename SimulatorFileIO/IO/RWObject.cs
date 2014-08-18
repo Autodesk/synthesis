@@ -50,7 +50,7 @@ public static class RWObjectExtensions
             {
                 while (true)
                 {
-                    progress(reader.BaseStream.Position / (float) reader.BaseStream.Length);
+                    progress(reader.BaseStream.Position, reader.BaseStream.Length);
                     System.Threading.Thread.Sleep(10);
                 }
             });

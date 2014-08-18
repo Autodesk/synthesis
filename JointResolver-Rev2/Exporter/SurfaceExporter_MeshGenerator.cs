@@ -9,8 +9,22 @@ using System.Collections.Generic;
 /// <summary>
 /// Exports Inventor objects into the BXDA format.  One instance per thread.
 /// </summary>
-public class SurfaceExporter
+public partial class SurfaceExporter
 {
+    private struct ExportPlan
+    {
+        public SurfaceBody surf;
+        public bool bestResolution;
+        public bool separateFaces;
+
+        public ExportPlan(SurfaceBody b, bool bestResolution, bool separateFaces)
+        {
+            this.surf = b;
+            this.bestResolution = bestResolution;
+            this.separateFaces = separateFaces;
+        }
+    }
+
     private class PartialSurface
     {
         public double[] verts = new double[TMP_VERTICIES * 3];
@@ -27,17 +41,6 @@ public class SurfaceExporter
     private const int MAX_BACKGROUND_THREADS = 32;
 
     private List<System.Threading.ManualResetEvent> waitingThreads = new List<System.Threading.ManualResetEvent>(MAX_BACKGROUND_THREADS);
-
-    /// <summary>
-    /// Should the exporter attempt to automatically ignore small parts.
-    /// </summary>
-    private bool adaptiveIgnoring = true;
-    /// <summary>
-    /// The minimum ratio between a sub component's bounding box volume and the average bounding box volume for an object
-    /// to be considered small.  The higher the number the less that is dropped, while if the value is one about half the objects
-    /// would be dropped.
-    /// </summary>
-    private double adaptiveDegredation = 7;
 
     // Temporary output
     private PartialSurface tmpSurface = new PartialSurface();
@@ -58,7 +61,7 @@ public class SurfaceExporter
     /// <param name="surf">The surface body to export</param>
     /// <param name="bestResolution">Use the best possible resolution</param>
     /// <param name="separateFaces">Separate the surface body into one mesh per face</param>
-    public void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
+    private void AddFacets(SurfaceBody surf, bool bestResolution = false, bool separateFaces = false)
     {
         BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
 
@@ -101,7 +104,7 @@ public class SurfaceExporter
             }
         }
         #endregion
-        
+
 #if USE_TEXTURES
             surf.GetExistingFacetsAndTextureMap(tolerances[bestIndex], out tmpSurface.vertCount, out tmpSurface.facetCount, out tmpSurface.verts, out  tmpSurface.norms, out  tmpSurface.indicies, out tmpSurface.textureCoords);
             if (tmpSurface.vertCount == 0)
@@ -130,7 +133,7 @@ public class SurfaceExporter
         }
         else
         {
-            Console.WriteLine("Exporting single block for " + surf.Parent.Name + "\t(" + surf.Name + ")");
+            //Console.WriteLine("Exporting single block for " + surf.Parent.Name + "\t(" + surf.Name + ")");
             AssetProperties assetProps = sharedValue;
             if (sharedValue == null)
             {
@@ -145,7 +148,7 @@ public class SurfaceExporter
         // Make sure all index copy threads have completed.
         if (waitingThreads.Count > 0)
         {
-            Console.WriteLine("Got ahead of ourselves....");
+         //   Console.WriteLine("Got ahead of ourselves....");
             System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
             waitingThreads.Clear();
         }
@@ -213,7 +216,7 @@ public class SurfaceExporter
         // Make sure we haven't exceeded the maximum number of background tasks.
         if (waitingThreads.Count > MAX_BACKGROUND_THREADS)
         {
-            Console.WriteLine("Got ahead of ourselves....");
+           // Console.WriteLine("Got ahead of ourselves....");
             System.Threading.WaitHandle.WaitAll(waitingThreads.ToArray());
             waitingThreads.Clear();
         }
@@ -263,116 +266,5 @@ public class SurfaceExporter
 #endif
         AssetProperties assetProps = AssetProperties.Create(surf);
         AddFacetsInternal(assetProps);
-    }
-
-    /// <summary>
-    /// Clears the mesh structure and physical properties, 
-    /// preparing this exporter for another set of objects.
-    /// </summary>
-    public void Reset()
-    {
-        outputMesh = new BXDAMesh();
-    }
-
-    /// <summary>
-    /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
-    /// </summary>
-    /// <param name="occ">The component to export</param>
-    /// <param name="bestResolution">Use the best possible resolution</param>
-    /// <param name="separateFaces">Export each face as a separate mesh</param>
-    /// <param name="ignorePhysics">Don't add the physical properties of this component to the exporter</param>
-    public void ExportAll(ComponentOccurrence occ, bool bestResolution = false, bool separateFaces = false, bool ignorePhysics = false)
-    {
-        if (!ignorePhysics)
-        {
-            // Compute physics
-            try
-            {
-                outputMesh.physics.Add((float) occ.MassProperties.Mass, Utilities.ToBXDVector(occ.MassProperties.CenterOfMass));
-            }
-            catch
-            {
-            }
-        }
-
-        if (!occ.Visible)
-            return;
-
-        foreach (SurfaceBody surf in occ.SurfaceBodies)
-        {
-            AddFacets(surf, bestResolution, separateFaces);
-        }
-
-        double totalVolume = 0;
-        foreach (ComponentOccurrence occ2 in occ.SubOccurrences)
-        {
-            totalVolume += Utilities.BoxVolume(occ2.RangeBox);
-        }
-        totalVolume /= occ.SubOccurrences.Count * adaptiveDegredation;
-
-        foreach (ComponentOccurrence item in occ.SubOccurrences)
-        {
-            if (adaptiveIgnoring && Utilities.BoxVolume(item.RangeBox) < totalVolume)
-            {
-                Console.WriteLine("Drop: " + item.Name);
-            }
-            else
-            {
-                ExportAll(item, bestResolution, separateFaces, true);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Adds the mesh for the given components, and all their subcomponents to the mesh storage structure.
-    /// </summary>
-    /// <param name="occs">The components to export</param>
-    /// <param name="bestResolution">Use the best possible resolution</param>
-    /// <param name="separateFaces">Export each face as a separate mesh</param>
-    public void ExportAll(IEnumerable<ComponentOccurrence> occs, bool bestResolution = false, bool separateFaces = false)
-    {
-        foreach (ComponentOccurrence occ in occs)
-        {
-            ExportAll(occ, bestResolution, separateFaces);
-        }
-    }
-
-    /// <summary>
-    /// Adds the mesh for all the components and their subcomponenets in the custom rigid group.  <see cref="ExportAll(ComponentOccurrence,bool,bool,bool)"/>
-    /// </summary>
-    /// <remarks>
-    /// This uses the best resolution and separate faces options stored inside the provided custom rigid group.
-    /// </remarks>
-    /// <param name="group">The group to export from</param>
-    public void ExportAll(CustomRigidGroup group)
-    {
-        double totalVolume = 0;
-        foreach (ComponentOccurrence occ in group.occurrences)
-        {
-            totalVolume += Utilities.BoxVolume(occ.RangeBox);
-        }
-        totalVolume /= group.occurrences.Count * adaptiveDegredation;
-
-        foreach (ComponentOccurrence occ in group.occurrences)
-        {
-            if (adaptiveIgnoring && Utilities.BoxVolume(occ.RangeBox) < totalVolume)
-            {
-                Console.WriteLine("Drop: " + occ.Name); // TODO Ignores physics
-            }
-            else
-            {
-                ExportAll(occ, group.highRes, group.colorFaces);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Gets the currently generated mesh object.
-    /// </summary>
-    /// <returns>a BXDA Mesh</returns>
-    public BXDAMesh GetOutput()
-    {
-        DumpMeshBuffer();
-        return outputMesh;
     }
 }

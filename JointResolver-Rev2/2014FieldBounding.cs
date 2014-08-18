@@ -19,10 +19,12 @@ public class _2014FieldBounding
     {
         AssemblyDocument asmDoc = (AssemblyDocument) Program.INVENTOR_APPLICATION.ActiveDocument;
         SurfaceExporter exp = new SurfaceExporter();
-        foreach (ComponentOccurrence cc in asmDoc.ComponentDefinition.Occurrences)
+        exp.ExportAll(asmDoc.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().GetEnumerator(), (long progress, long total) =>
         {
-            exp.ExportAll(cc);
-        }
+            Console.Write(Math.Round((progress / (float) total) * 100.0f, 2) + "%\t" + progress + " / " + total);
+            Console.CursorLeft = 0;
+        });
+        Console.WriteLine();
         BXDAMesh mesh = exp.GetOutput();
         Apply(mesh);
         mesh.WriteToFile("C:/Temp/field.bxda");

@@ -12,7 +12,7 @@ public class BXDIO
 
     public const string ASSEMBLY_VERSION = "0.0.9.2";   // I'm so sorry that this isn't dynamic :'(
 
-    public delegate void ProgressReporter(float progress);
+    public delegate void ProgressReporter(long progress, long total);
 
     /// <summary>
     /// The version of the BXDJ file format this file can read and write.

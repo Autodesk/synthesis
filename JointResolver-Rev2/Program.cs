@@ -11,8 +11,8 @@ static class Program
     public static void Main(String[] args)
     {
         INVENTOR_APPLICATION = (Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-        AnalyzeRigidResults();
-        //_2014FieldBounding.WriteModel();
+        //AnalyzeRigidResults();
+        _2014FieldBounding.WriteModel();
         //AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         //SurfaceExporter exp = new SurfaceExporter();
         //foreach (ComponentOccurrence cc in asmDoc.ComponentDefinition.Occurrences){
@@ -147,10 +147,15 @@ static class Program
                         ((RigidNode) node).DoDeferredCalculations();
                         try
                         {
-                            Console.WriteLine("Exporting " + node.GetModelID());
+                            Console.WriteLine("Exporting " + node.modelFileName);
                             CustomRigidGroup group = (CustomRigidGroup) node.GetModel();
                             surfs.Reset();
-                            surfs.ExportAll(group);
+                            surfs.ExportAll(group, (long progress, long total) =>
+                            {
+                                Console.Write(Math.Round((progress / (float) total) * 100.0f, 2) + "%\t" + progress + " / " + total);
+                                Console.CursorLeft = 0;
+                            });
+                            Console.WriteLine();
                             BXDAMesh output = surfs.GetOutput();
                             Console.WriteLine("Output mesh: " + output.meshes.Count + " meshes");
                             /*Console.WriteLine("Exporting for Colliders\n");
