@@ -108,6 +108,7 @@ class WheelAnalyzer
 
             //Finds width.
             treadPart = FindRadiusThread.GetWidthComponent();
+
             WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
 
             invertedTransform = treadPart.Transformation;
@@ -198,8 +199,6 @@ class WheelAnalyzer
         Vector vertexVector;
         int totalVertexCount = 0;
 
-        int imbalance = 0;
-
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
 
         wheelTread.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
@@ -225,10 +224,21 @@ class WheelAnalyzer
         {
             int vertexCount;
             int segmentCount;
+            //Todo: change size of array.
             double[] vertexCoords = new double[3000];
+            double[] vertexNormals = new double[3000];
             int[] vertexIndicies = new int[3000];
 
-            surface.CalculateStrokes(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexIndicies);
+            //surface.CalculateStrokes(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexIndicies);
+
+            //surface.CalculateFacets(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+
+            surface.GetExistingFacets(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+
+            if (vertexCoords.Length == 1)
+            {
+                surface.CalculateFacets(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+            }
 
             for(int i = 0; i < vertexCoords.Length; i+=3)
             {
@@ -239,15 +249,6 @@ class WheelAnalyzer
                 center.X += vertexVector.X;
                 center.Y += vertexVector.Y;
                 center.Z += vertexVector.Z;
-
-                if (vertexVector.Z > 0)
-                {
-                    imbalance++;
-                }
-                if (vertexVector.Z < 0)
-                {
-                    imbalance--;
-                }
 
                 newWidth = myRotationAxis.DotProduct(vertexVector);
 

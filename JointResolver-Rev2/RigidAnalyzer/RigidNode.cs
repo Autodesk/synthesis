@@ -44,17 +44,12 @@ public class RigidNode : RigidNode_Base
 
     public void DoDeferredCalculations()
     {
-        try
+
+        foreach (DeferredCalculation calc in deferredCalculations.Values)
         {
-            foreach (DeferredCalculation calc in deferredCalculations.Values)
-            {
-                calc(this);
-            }
+            calc(this);
         }
 
-        catch
-        {
-        }
 
         deferredCalculations.Clear();
     }
