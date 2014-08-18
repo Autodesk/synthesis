@@ -8,9 +8,9 @@ public class BXDIO
     private const byte MAJOR_VERSION = 0;           // Bump on stable releases
     private const byte MINOR_VERSION = 0;           // Bump on beta releases
     private const byte REVISION_VERSION = 9;        // Bump on major IO changes.
-    private const byte REVISION_PORTION = 2;        // Bump on IO changes in a meta chunk.
+    private const byte REVISION_PORTION = 0;        // Bump on IO changes in a meta chunk.
 
-    public const string ASSEMBLY_VERSION = "0.0.9.2";   // I'm so sorry that this isn't dynamic :'(
+    public const string ASSEMBLY_VERSION = "0.0.9.0";   // I'm so sorry that this isn't dynamic :'(
 
     public delegate void ProgressReporter(long progress, long total);
 

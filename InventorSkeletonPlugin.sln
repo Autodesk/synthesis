@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JointResolver-Rev2", "JointResolver-Rev2\JointResolver-Rev2.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JointResolver", "JointResolver-Rev2\JointResolver.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8EC08A21-9BD1-4871-93B3-645A91194424} = {8EC08A21-9BD1-4871-93B3-645A91194424}
 	EndProjectSection

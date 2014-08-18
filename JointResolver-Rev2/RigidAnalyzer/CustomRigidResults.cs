@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Inventor;
 
 public class CustomRigidResults
@@ -26,13 +27,16 @@ public class CustomRigidResults
             {
                 Console.WriteLine("GroupID Collision: " + groupIDToCustom[CustomRigidGroup.GetGroupQualifier(group)].ToString() + " and " + tmp.ToString());
             }
-            Console.WriteLine("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
+            Console.Write("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
+            Console.CursorLeft = 0;
         }
         foreach (RigidBodyJoint joint in results.RigidBodyJoints)
         {
             joints.Add(new CustomRigidJoint(joint, groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupOne)], groupIDToCustom[CustomRigidGroup.GetGroupQualifier(joint.GroupTwo)]));
-            Console.WriteLine("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
+            Console.Write("Group " + groups.Count + "/" + results.RigidBodyGroups.Count + "\tJoint " + joints.Count + "/" + results.RigidBodyJoints.Count);
+            Console.CursorLeft = 0;
         }
+        Console.WriteLine();
         Console.WriteLine("Built custom dataset");
         RigidBodyCleaner.CleanMeaningless(this);
     }
@@ -52,7 +56,12 @@ public class CustomRigidGroup
     public string fullQualifier;
     public static string GetGroupQualifier(RigidBodyGroup group)
     {
-        return group.GroupID + "_" + group.Parent.Parent.Parent.Parent.InternalName;
+        StringBuilder builder = new StringBuilder();
+        foreach (ComponentOccurrence occ in group.Occurrences)
+        {
+            builder.Append(occ.Name);
+        }
+        return group.GroupID + "_" + group.Parent.Parent.Parent.Parent.InternalName + "_" + builder.ToString();
     }
 
     public CustomRigidGroup(RigidBodyGroup group)

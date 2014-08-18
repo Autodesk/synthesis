@@ -17,6 +17,22 @@ public partial class ControlGroups
     {
         InitializeComponent();  // Remove for death
         jointPane.ModifiedJoint += jointPane_ModifiedJoint;
+        jointPane.SelectedJoint += jointPane_SelectedJoint;
+    }
+
+    void jointPane_SelectedJoint(RigidNode_Base node)
+    {
+        if (node == null)
+        {
+            ComponentHighlighter.ClearHighlight();
+        }
+        else if (node is RigidNode)
+        {
+            foreach (Inventor.ComponentOccurrence occ in ((RigidNode) node).group.occurrences)
+            {
+                ComponentHighlighter.CHILD_HIGHLIGHT_SET.AddItem(occ);
+            }
+        }
     }
 
     private void jointPane_ModifiedJoint(RigidNode_Base node)
