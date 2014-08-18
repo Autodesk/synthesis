@@ -2,26 +2,11 @@ using System;
 
 namespace ExceptionHandling
 {
-		// I am simply creating my own exception. This seems fairly self explanatory
-		public class PWMAssignedException: Exception
+	public class PistonDataMissing: Exception
+	{
+		public PistonDataMissing(string pistonName):base(string.Format("It looks like piston {0} wants to be actuated, but no custom force value was set. Make sure to set PSI and Diameter values when you expor the robot.", pistonName))
 		{
-				public PWMAssignedException (string message):base(message)
-				{
-				}
 		}
-
-		public class SolenoidConflictException: Exception
-		{
-				public SolenoidConflictException (int x):base(string.Format("Error, you are attempting to assign Solenoid port {0}, but it has already been assigned.", x))
-				{
-				}
-		}
-
-		public class WheelDifferenceException: Exception
-		{
-				public WheelDifferenceException (string message):base(message)
-				{
-				}
-		}
+	}
 }
 

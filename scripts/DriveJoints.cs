@@ -115,9 +115,25 @@ public class DriveJoints : MonoBehaviour
 
 	// A function to handle solenoids
 	// We will have accurate velocity measures later, but for now, we need something that works.
-	public static void SetSolenoid(UnityRigidNode node, bool forward, float pistonDiameter, float psi)
+	public static void SetSolenoid(UnityRigidNode node, bool forward)
 	{
-		float acceleration = node.GetConfigJoint().xDrive.maximumForce / node.GetConfigJoint().rigidbody.mass * (forward ? 1 : -1);
+		// Acceleration of the piston, whose value will be determined by the following try/catch statement
+		float acceleration = 0;
+
+
+		// Checks to make sure solenoid data was assigned. We can't really use a try/catch statement because if pressure and diameter data is left blank when the robot is created, Unity will still use its default values.
+		if (node.GetConfigJoint().xDrive.maximumForce < 3.4e36 || node.GetConfigJoint().xDrive.maximumForce <= 0 || node.GetConfigJoint().xDrive.maximumForce != null)
+		{
+			acceleration = node.GetConfigJoint().xDrive.maximumForce / node.GetConfigJoint().rigidbody.mass * (forward ? 1 : -1);
+		} else
+		{
+			// Calculating an arbitrary maximum force. Assumes the piston diameter is .5 inches and that the PSI is 60psi. 
+			float psiToNMm2 = 0.00689475728f;
+			float maximumForce = (psiToNMm2 * 60f) * (Mathf.PI * Mathf.Pow(6.35f, 2f));
+			acceleration = (maximumForce / node.GetConfigJoint().rigidbody.mass) * (forward ? 1 : -1);
+			throw new PistonDataMissing(node.ToString());
+		}
+
 		// Dot product is reversed, so we need to negate it
 		float velocity = acceleration * (Time.deltaTime) - Vector3.Dot(node.GetConfigJoint().rigidbody.velocity, node.unityObject.transform.TransformDirection(node.GetConfigJoint().axis));
 
@@ -235,26 +251,14 @@ public class DriveJoints : MonoBehaviour
 				int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
 
 				float linearPositionAlongAxis = GetLinearPositionRelativeToParent(unityNode);
+
+				// Error catching is done in the SetSolenoid function
 				if (stateA > 0)
 				{
-					try
-					{
-						SetSolenoid(unityNode, true, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
-						//Debug.Log(linearPositionAlongAxis);
-					} catch
-					{
-						SetSolenoid(unityNode, true, 12.7f, 60f);
-					}
+					SetSolenoid(unityNode, true);
 				} else if (stateB > 0)
 				{
-					try
-					{
-						SetSolenoid(unityNode, false, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().widthMM, unityNode.GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>().pressurePSI);
-						//Debug.Log(linearPositionAlongAxis);
-					} catch
-					{
-						SetSolenoid(unityNode, false, 12.7f, 60f);
-					}
+					SetSolenoid(unityNode, false);
 				}
 
 				// If the piston hits its upper limit, stop it from extending any farther.
