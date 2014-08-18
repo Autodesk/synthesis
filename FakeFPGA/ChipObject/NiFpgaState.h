@@ -101,7 +101,6 @@ namespace nFPGA {
 		virtual uint32_t getLVHandle(tRioStatusCode *status);
 		virtual uint32_t getHandle();
 
-		// Freaking WPILib hack this is bad and stupid
 		virtual uint32_t readSignatureChunk();
 	};
 

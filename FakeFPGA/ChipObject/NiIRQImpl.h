@@ -28,7 +28,7 @@ public:
 			if (mask & (1 << i)) {	// If we want to signal this interrupt
 				for (std::vector<WaitSemaphore*>::iterator itr = waitQueue[i].begin();
 					itr != waitQueue[i].end(); itr++) {	// Notify all waiting threads
-					(*itr)->notify();
+						(*itr)->notify();
 				}
 			}
 		}
@@ -55,7 +55,6 @@ public:
 		if (timedout != NULL) {
 			*timedout = !success;
 		}
-		if (!success) return;
 		// Remove signals
 		waitQueueMutex.take();
 		if (signaled != NULL){
@@ -74,7 +73,7 @@ public:
 		}
 		waitQueueMutex.give();
 		delete sig;
-		if (timedout != NULL) {
+		if (success && timedout != NULL) {
 			*timedout = false;
 		}
 	}

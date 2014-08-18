@@ -85,8 +85,7 @@ namespace nFPGA {
 			outputChunk = 0;
 			return output.value3;
 		default:
-			outputChunk = 0;
-			printf("FREAKING WPI KILL IT NOW PLEASE DEAD THIS IS HORRIBLE HACK KILL\n");
+			outputChunk = 0; // Something died
 		}
 	}
 } /* namespace nFPGA */

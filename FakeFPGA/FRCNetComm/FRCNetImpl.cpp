@@ -181,11 +181,11 @@ int FRCNetImpl::runThread() {
 			}
 			pos += sizeof(slen) + slen;
 		}
+		writingSem.give();
 		uint32_t crc = crc32buf(sendBuffer, 0x400);
 		crc = htonl(crc);
 		memcpy(&sendBuffer[0x3fc], &crc, sizeof(DWORD));
 		sendto(dsSocket,(const char *) &sendBuffer, 0x400, 0,(const sockaddr*)&dsAddress, sizeof(dsAddress));
-		writingSem.give();
 	}
 
 	// Cleanup

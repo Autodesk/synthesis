@@ -199,7 +199,6 @@ namespace nFPGA {
 	}
 
 	uint32_t NiFpgaState::readSignatureChunk() {
-		// Stupid WPILib
 		uint32_t val = kExpectedFPGASignature[sigChunk];
 		sigChunk = (sigChunk + 1) % 4;
 		return val;
