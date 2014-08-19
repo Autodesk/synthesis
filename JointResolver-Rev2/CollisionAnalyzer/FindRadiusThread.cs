@@ -75,7 +75,7 @@ class FindRadiusThread
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part's axes.
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
-        Vector vertexVector;
+        BXDVector3 vertexVector;
         Inventor.Point origin;
         Vector partXAxis;
         Vector partYAxis;
@@ -107,12 +107,12 @@ class FindRadiusThread
             foreach (Vertex vertex in surface.Vertices)
             {
                 //Grabs the three doubles that make up a coordinate for a single vertex.
-                vertexVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
+                vertexVector = new BXDVector3(vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
 
                 //Crossproduct returns a vector with the magnitude of the distance between the two orthagonal to myRotationAxis.
                 //Direction doesn't matter, onlyh the magnitude.
 
-                double localRadius = myRotationAxis.CrossProduct(vertexVector).Length;  
+                double localRadius = vertexVector.Cross(new BXDVector3(myRotationAxis.X, myRotationAxis.Y, myRotationAxis.Z)).GetMagnitude();
 
                 if (endThread)
                 {

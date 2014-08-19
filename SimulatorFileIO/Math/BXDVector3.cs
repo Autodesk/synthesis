@@ -80,6 +80,11 @@ public class BXDVector3 : RWObject
         z = r.ReadSingle();
     }
 
+    public BXDVector3 Cross(BXDVector3 other)
+    {
+        return new BXDVector3(this.y * other.z - this.z * other.y, this.x * other.z - this.z * other.x, this.x * other.y - this.y * other.x);
+    }
+
     public BXDVector3 Copy()
     {
         return new BXDVector3(x, y, z);
