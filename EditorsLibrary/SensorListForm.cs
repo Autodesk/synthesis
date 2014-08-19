@@ -55,7 +55,7 @@ namespace EditorsLibrary
                 sensorListView.SelectedItems.Count > 0 &&
                 sensorListView.SelectedItems[0].Tag is RobotSensor ?
                 (RobotSensor) sensorListView.SelectedItems[0].Tag : null));
-            sensorForm.ShowDialog();
+            sensorForm.ShowDialog(this);
             this.UpdateSensorList();
         }
 
