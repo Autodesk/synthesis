@@ -52,6 +52,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EditLimits.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditLimits.Designer.cs">
+      <DependentUpon>EditLimits.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditSensorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,6 +81,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EditLimits.resx">
+      <DependentUpon>EditLimits.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditSensorForm.resx">
       <DependentUpon>EditSensorForm.cs</DependentUpon>
     </EmbeddedResource>

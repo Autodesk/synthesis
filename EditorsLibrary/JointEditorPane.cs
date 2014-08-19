@@ -34,6 +34,13 @@ namespace EditorsLibrary
             this.DoLayout(null, null);
             RegisterContextAction("Edit Driver", editDriver_Internal, Keys.D);
             RegisterContextAction("Edit Sensors", listSensors_Internal, Keys.S);
+            RegisterContextAction("Edit Limits", (RigidNode_Base node) =>
+            {
+                if (node != null && node.GetSkeletalJoint() != null)
+                {
+                    new EditLimits(node.GetSkeletalJoint()).ShowDialog(ParentForm);
+                }
+            }, Keys.L);
         }
 
         private void InitializeComponent()
@@ -185,7 +192,7 @@ namespace EditorsLibrary
         {
             currentlyEditing = true;
             SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
-            listForm.ShowDialog();
+            listForm.ShowDialog(ParentForm);
             if (ModifiedJoint != null)
             {
                 ModifiedJoint(node);
@@ -198,7 +205,7 @@ namespace EditorsLibrary
         {
             currentlyEditing = true;
             SkeletalJoint_Base joint = node.GetSkeletalJoint();
-            driveChooserDialog.ShowDialog(joint, node);
+            driveChooserDialog.ShowDialog(joint, node, ParentForm);
             if (ModifiedJoint != null)
             {
                 ModifiedJoint(node);

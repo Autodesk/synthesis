@@ -22,7 +22,7 @@ public partial class DriveChooser : Form
     private RigidNode_Base node;
 
 
-    public void ShowDialog(SkeletalJoint_Base joint, RigidNode_Base node)
+    public void ShowDialog(SkeletalJoint_Base joint, RigidNode_Base node, Form owner)
     {
         this.joint = joint;
         this.node = node;
@@ -80,7 +80,7 @@ public partial class DriveChooser : Form
             }
             #endregion
         }
-        ShowDialog();
+        this.ShowDialog(owner);
     }
 
     /// <summary>
