@@ -64,6 +64,7 @@
     <Compile Include="Joints\AngularDOF.cs" />
     <Compile Include="Joints\RotationalJoint_Base.cs" />
     <Compile Include="Joints\SkeletalJoint_Base.cs" />
+    <Compile Include="Math\BXDBox.cs" />
     <Compile Include="Math\BXDVector3.cs" />
     <Compile Include="Math\PhysicalProperties.cs" />
     <Compile Include="Math\Polynomial.cs" />

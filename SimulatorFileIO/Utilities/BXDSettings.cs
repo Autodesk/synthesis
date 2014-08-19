@@ -80,7 +80,7 @@ public class BXDSettings
         FileStream fStream = null;
         try
         {
-            fStream = new FileStream(path, FileMode.CreateNew);
+            fStream = new FileStream(path, FileMode.Create);
             var writer = new System.Xml.Serialization.XmlSerializer(typeof(BXDSettings));
             writer.Serialize(fStream, Instance);
         }

@@ -19,6 +19,7 @@ class WheelAnalyzer
         Matrix invertedTransform; //Stores the transfrom from part axes to assembly axes.
         WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
 
+
         wheelDriver = joint.cDriver.GetInfo<WheelDriverMeta>();
 
         FindRadiusThread.Reset(); //Prepares the shared memeory for the next component.
@@ -26,21 +27,25 @@ class WheelAnalyzer
         //Only need to worry about wheels if it is a rotational joint.
         if (joint is RotationalJoint)
         {
-            List<ComponentOccurrence> sortedBoxList = new List<ComponentOccurrence>();
+            List<ComponentRadiusPair> sortedBoxList = new List<ComponentRadiusPair>();
 
             foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
             {
                 sortComponentRadii(component, sortedBoxList);
             }
 
+            sortedBoxList.Sort();
+
             Console.WriteLine("Printing sorted list");
 
-            for(int i = 0; i < sortedBoxList.Count; i++)
+            foreach(ComponentRadiusPair pair in sortedBoxList)
             {
-                Console.WriteLine(sortedBoxList[i].Name + " with box radius " + findBoxRadius(sortedBoxList[i]));
+                Console.WriteLine(pair.component.Name + " with box radius " + pair.possibleRadius);
 
                 radiusThreadList.Add(null); //Ensures there are the correct number of spaces for when we insert by index later.
             }
+
+            
 
             int nextComponentIndex = 0; //The index of the next component of which to find the radius.
             int activeThreadCount = 0;  //Counts the number of started threads that have yet to complete.
@@ -63,12 +68,14 @@ class WheelAnalyzer
                             threadsToRemove.Add(radiusThreadList[index]);
                         }
 
+                       
                         //If a thread has found a radius that would not fit in the bounding box of the next component, there's no point in continuing trying to find
                         //  a larger radius in the next component.
-                        if (FindRadiusThread.GetRadius() > findBoxRadius(sortedBoxList[index+1]) && (index < largestRadiusIndex || largestRadiusIndex == -1))
+                        if (index + 1 < sortedBoxList.Count && (index < largestRadiusIndex || largestRadiusIndex == -1) && ((FindRadiusThread.GetRadius() > sortedBoxList[index + 1].possibleRadius)))
                         {
                             largestRadiusIndex = index;
                         }
+                 
 
                         if (radiusThreadList[index].GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
                         {
@@ -88,7 +95,7 @@ class WheelAnalyzer
                 //Adds new threads when needed.
                 while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
                 {
-                    radiusThreadList[nextComponentIndex] = new FindRadiusThread(sortedBoxList[nextComponentIndex], ((RotationalJoint)joint).axis);
+                    radiusThreadList[nextComponentIndex] = new FindRadiusThread(sortedBoxList[nextComponentIndex].component, ((RotationalJoint)joint).axis);
                     radiusThreadList[nextComponentIndex].Start();
                     nextComponentIndex++;
                     activeThreadCount++;
@@ -139,7 +146,7 @@ class WheelAnalyzer
         return component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
     }
 
-    private static void sortComponentRadii(ComponentOccurrence component, List<ComponentOccurrence> sortedBoxList)
+    private static void sortComponentRadii(ComponentOccurrence component, List<ComponentRadiusPair> sortedBoxList)
     {
         //Ignores assemblies and goes to parts.
         if (component.SubOccurrences.Count > 0)
@@ -153,12 +160,7 @@ class WheelAnalyzer
         else
         {
             //Finds the correct spot to insert the component based on the magnitude of the diagonal of the bounding box.
-            int listPosition;
-            for (listPosition = 0; listPosition < sortedBoxList.Count
-                && findBoxRadius(component) < findBoxRadius(sortedBoxList[listPosition]);
-                listPosition++) ;
-
-            sortedBoxList.Insert(listPosition, component);
+            sortedBoxList.Add(new ComponentRadiusPair(component));
         }        
     }
 
@@ -266,3 +268,26 @@ class WheelAnalyzer
     }
 }
 
+public class ComponentRadiusPair : IComparable<ComponentRadiusPair>
+{
+    public ComponentOccurrence component;
+    public double possibleRadius;
+
+    public ComponentRadiusPair(ComponentOccurrence passComponent, double passPossibleRadius)
+    {
+        component = passComponent;
+        possibleRadius = passPossibleRadius;
+    }
+
+    public ComponentRadiusPair(ComponentOccurrence passComponent)
+    {
+        component = passComponent;
+
+        possibleRadius = component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
+    }
+
+    public int CompareTo(ComponentRadiusPair other)
+    {
+        return -this.possibleRadius.CompareTo(other.possibleRadius);
+    }
+}
