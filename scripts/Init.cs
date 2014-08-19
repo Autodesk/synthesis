@@ -14,7 +14,8 @@ public class Init : MonoBehaviour
     public int[] motors = { 1, 2, 3, 4 };
     RigidNode_Base skeleton;
     unityPacket udp = new unityPacket();
-    List<Vector3> unityWheelData = new List<Vector3>();
+    List<WheelCollider> unityWheelData = new List<WheelCollider>();
+    List<MeshCollider> meshColliders = new List<MeshCollider>();
     // int robots = 0;
     string filePath = "C:/Users/" + Environment.UserName + "/Documents/Skeleton/";
 
@@ -72,22 +73,22 @@ public class Init : MonoBehaviour
 
                 uNode.CreateTransform(robot.transform);
                 uNode.CreateMesh(filePath + uNode.modelFileName);
-
                 uNode.FlipNorms();
                 uNode.CreateJoint();
-
+                
                 if (uNode.IsWheel)
                 {
-
-                    unityWheelData.Add(auxFunctions.ConvertV3(uNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().center));
-		//unityWheelData.add(uNode.GetWheelCollider());
+                    unityWheelData.Add(uNode.wCollider.GetComponent<WheelCollider>());
                 }
+                meshColliders.Add(uNode.meshCollider);
+                
             }
             if (unityWheelData.Count > 0)
             {
                 auxFunctions.OrientRobot(unityWheelData, robot.transform);
 
             }
+            auxFunctions.IgnoreCollisionDetection(meshColliders);
         }
         else
         {
