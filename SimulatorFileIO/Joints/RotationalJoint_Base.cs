@@ -28,6 +28,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             set
             {
                 rjb.angularLimitHigh = value;
+                rjb.hasAngularLimit = !float.IsInfinity(rjb.angularLimitLow) && !float.IsInfinity(rjb.angularLimitHigh);
             }
         }
 
@@ -41,6 +42,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
             set
             {
                 rjb.angularLimitLow = value;
+                rjb.hasAngularLimit = !float.IsInfinity(rjb.angularLimitLow) && !float.IsInfinity(rjb.angularLimitHigh);
             }
         }
 

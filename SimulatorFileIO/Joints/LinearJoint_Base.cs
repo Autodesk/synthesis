@@ -29,6 +29,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
             set
             {
                 ljb.linearLimitHigh = value;
+                ljb.hasUpperLimit = !float.IsInfinity(ljb.linearLimitHigh);
             }
         }
 
@@ -42,6 +43,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
             set
             {
                 ljb.linearLimitLow = value;
+                ljb.hasLowerLimit = !float.IsInfinity(ljb.linearLimitLow);
             }
         }
 

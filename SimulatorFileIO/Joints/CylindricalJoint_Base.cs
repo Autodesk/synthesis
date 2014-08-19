@@ -32,6 +32,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             set
             {
                 cjb.linearLimitEnd = value;
+                cjb.hasLinearEndLimit = !float.IsInfinity(cjb.linearLimitEnd);
             }
         }
 
@@ -45,6 +46,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             set
             {
                 cjb.linearLimitStart = value;
+                cjb.hasLinearStartLimit = !float.IsInfinity(cjb.linearLimitStart);
             }
         }
 
@@ -99,6 +101,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             set
             {
                 cjb.angularLimitHigh = value;
+                cjb.hasAngularLimit = !float.IsInfinity(cjb.angularLimitHigh) && !float.IsInfinity(cjb.angularLimitLow);
             }
         }
 
@@ -112,6 +115,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
             set
             {
                 cjb.angularLimitLow = value;
+                cjb.hasAngularLimit = !float.IsInfinity(cjb.angularLimitHigh) && !float.IsInfinity(cjb.angularLimitLow);
             }
         }
 
