@@ -107,12 +107,12 @@ class FindRadiusThread
             foreach (Vertex vertex in surface.Vertices)
             {
                 //Grabs the three doubles that make up a coordinate for a single vertex.
-                vertexVector = new BXDVector3(vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
+                vertexVector = Utilities.ToBXDVector(vertex.Point);
 
                 //Crossproduct returns a vector with the magnitude of the distance between the two orthagonal to myRotationAxis.
                 //Direction doesn't matter, onlyh the magnitude.
 
-                double localRadius = vertexVector.Cross(new BXDVector3(myRotationAxis.X, myRotationAxis.Y, myRotationAxis.Z)).GetMagnitude();
+                double localRadius = vertexVector.Cross(Utilities.ToBXDVector(myRotationAxis)).GetMagnitude();
 
                 if (endThread)
                 {
