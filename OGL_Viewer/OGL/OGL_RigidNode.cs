@@ -21,6 +21,7 @@ public class OGL_RigidNode : RigidNode_Base
 
     private Matrix4 myTrans = new Matrix4();
     private List<VBOMesh> models = new List<VBOMesh>();
+    private List<VBOMesh> colliders = new List<VBOMesh>();
 
     public float requestedRotation = 0;
     private float requestedTranslation = 0;
@@ -49,6 +50,10 @@ public class OGL_RigidNode : RigidNode_Base
         foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
         {
             models.Add(new VBOMesh(sub));
+        }
+        foreach (BXDAMesh.BXDASubMesh sub in mesh.colliders)
+        {
+            colliders.Add(new VBOMesh(sub));
         }
     }
 
@@ -188,11 +193,24 @@ public class OGL_RigidNode : RigidNode_Base
         GL.Disable(EnableCap.Lighting);
         GL.LineWidth(2f);
 
+        GL.PushMatrix();
+        GL.MultMatrix(ref myTrans);
+
+        GL.PushAttrib(AttribMask.AllAttribBits);
+        {
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            float lerp = 0;
+            foreach (VBOMesh mesh in colliders)
+            {
+                GL.Color4(0f, lerp, 1f - lerp, 1f);
+                lerp += (1f / colliders.Count);
+                mesh.draw();
+            }
+        }
+        GL.PopAttrib();
+
         if (GetSkeletalJoint() != null)
         {
-            GL.PushMatrix();
-            GL.MultMatrix(ref myTrans);
-
             float crosshairLength = 100;
 
             bool hasLinearDOF = GetSkeletalJoint().GetLinearDOF().GetEnumerator().MoveNext();
@@ -331,9 +349,9 @@ public class OGL_RigidNode : RigidNode_Base
                 GL.PopMatrix();  // part -> COM-basepoint
             }
             #endregion
-
-            GL.PopMatrix();  // World -> part matrix
         }
+
+        GL.PopMatrix();  // World -> part matrix
 
         // Revert Debug Settings
         GL.Enable(EnableCap.Lighting);

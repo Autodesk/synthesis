@@ -155,6 +155,7 @@ NxF32 computeConcavityVolume(NxU32 vcount_hull,
 	for (NxU32 i=0; i<tcount_mesh; i++)
 #endif
 	{
+	printf("\rCompute concavities %.2f\t(%d/%d)                                       ", 100.0f * i / (float) tcount_mesh, i, tcount_mesh);
 		NxU32 i1 = indices[0];
 		NxU32 i2 = indices[1];
 		NxU32 i3 = indices[2];
@@ -245,7 +246,8 @@ NxF32 computeConcavityVolume(NxU32 vcount_hull,
 
 	releaseRayCast(cast_hull);
 	releaseRayCast(cast_mesh);
-
+	
+	printf("\n");
 	return total_volume;
 }
 

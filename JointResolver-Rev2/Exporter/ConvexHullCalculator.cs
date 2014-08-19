@@ -16,32 +16,12 @@ using System.Diagnostics;
 /// </summary>
 public class ConvexHullCalculator
 {
+    private const float EPSILON = 0.5f; // Magic unicorns here.  < 0.5cm = who cares
+
     /// <summary>
     /// Maximum number of triangles a convex hull is allowed to have.
     /// </summary>
     private const int CONVEX_HULL_FACET_LIMIT = 64;
-
-    /// <summary>
-    /// Computes a convex hull, or convex hull set for the given mesh.
-    /// </summary>
-    /// <param name="mesh">Mesh to compute for</param>
-    /// <param name="decompose">If a set of convex hulls is required</param>
-    /// <returns>The resulting list of convex hulls.</returns>
-    public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh mesh, bool decompose = false)
-    {
-        return GetHull(mesh.meshes, decompose);
-    }
-
-    /// <summary>
-    /// Computes a convex hull, or convex hull set for the given meshes.
-    /// </summary>
-    /// <param name="mesh">Meshes to compute for</param>
-    /// <param name="decompose">If a set of convex hulls is required</param>
-    /// <returns>The resulting list of convex hulls.</returns>
-    public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh.BXDASubMesh mesh, bool decompose = false)
-    {
-        return GetHull(new BXDAMesh.BXDASubMesh[] { mesh }, decompose);
-    }
 
     /// <summary>
     /// Represents a vertex with a list of attached faces and an index buffer item.
@@ -139,7 +119,6 @@ public class ConvexHullCalculator
         }
 
         simplFace.Sort();
-        Console.WriteLine("Starts at " + simplFace.Count);
 
         #region FANCY_SIMPLIFY_GRAPHICS
 #if FANCY_SIMPLIFY_GRAPHICS
@@ -351,7 +330,7 @@ public class ConvexHullCalculator
         BXDAMesh.BXDASurface collisionSurface = new BXDAMesh.BXDASurface();
 
         collisionSurface.indicies = new int[inds.Length];
-        for (uint i2 = 0; i2 < trisCount*3; i2++)
+        for (uint i2 = 0; i2 < trisCount * 3; i2++)
         {
             collisionSurface.indicies[i2] = (int) inds[i2];
         }
@@ -365,14 +344,14 @@ public class ConvexHullCalculator
     /// <summary>
     /// Computes a convex hull, or convex hull set for the given meshes.
     /// </summary>
-    /// <param name="mesh">Meshes to compute for</param>
+    /// <param name="mesh">Mesh to compute for</param>
     /// <param name="decompose">If a set of convex hulls is required</param>
     /// <returns>The resulting list of convex hulls.</returns>
-    public static List<BXDAMesh.BXDASubMesh> GetHull(IEnumerable<BXDAMesh.BXDASubMesh> meshes, bool decompose = false)
+    public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh bMesh, bool decompose = false)
     {
         int vertCount = 0;
         int indexCount = 0;
-        foreach (BXDAMesh.BXDASubMesh mesh in meshes)
+        foreach (BXDAMesh.BXDASubMesh mesh in bMesh.meshes)
         {
             vertCount += mesh.verts.Length;
             foreach (BXDAMesh.BXDASurface surface in mesh.surfaces)
@@ -389,39 +368,92 @@ public class ConvexHullCalculator
         uint[] index = new uint[indexCount];
         vertCount = 0;
         indexCount = 0;
-        foreach (BXDAMesh.BXDASubMesh mesh in meshes)
+        int totalChecks = 0;
+        foreach (BXDAMesh.BXDASubMesh mesh in bMesh.meshes)
         {
-            for (int i = 0; i < mesh.verts.Length; i++)
+            int[] subIndices = new int[mesh.verts.Length / 3];
+            int addedVerts = 0;
+            for (int i = 0; i < mesh.verts.Length; i += 3)
             {
+                totalChecks++;
+                if ((i & 31) == 31)
+                {
+                    Console.Write("Cleaning " + totalChecks + "/" + (copy.Length / 3) + "  " + ((int) (totalChecks * 3 / (float) copy.Length * 10000f) / 100f) + "%");
+                    Console.CursorLeft = 0;
+                }
                 //Copy all the mesh vertices over, starting at the end of the last mesh copied.
-                copy[(vertCount * 3) + i] = (float) mesh.verts[i];
+                for (int j = 0; j < (vertCount + addedVerts) * 3; j += 3)
+                {
+                    if (Math.Abs(mesh.verts[i] - copy[j]) < EPSILON &&
+                        Math.Abs(mesh.verts[i + 1] - copy[j + 1]) < EPSILON &&
+                        Math.Abs(mesh.verts[i + 2] - copy[j + 2]) < EPSILON)
+                    {
+                        subIndices[i / 3] = (j / 3) + 1;// Add one so we can just use the pre-zeroed memory.
+                        break;
+                    }
+                }
+                if (subIndices[i / 3] == 0)
+                {
+                    subIndices[i / 3] = vertCount + addedVerts + 1;
+                    int offset = (vertCount + addedVerts) * 3;
+                    addedVerts++;
+                    copy[offset] = (float) mesh.verts[i];
+                    copy[offset + 1] = (float) mesh.verts[i + 1];
+                    copy[offset + 2] = (float) mesh.verts[i + 2];
+                }
+                else
+                {
+                    // Which one is farther from the COM
+                    int offset = (subIndices[i / 3] - 1) * 3;
+                    float dx = (float) mesh.verts[i] - bMesh.physics.centerOfMass.x;
+                    float dy = (float) mesh.verts[i + 1] - bMesh.physics.centerOfMass.y;
+                    float dz = (float) mesh.verts[i + 2] - bMesh.physics.centerOfMass.z;
+                    float dXC = copy[offset] - bMesh.physics.centerOfMass.x;
+                    float dYC = copy[offset] - bMesh.physics.centerOfMass.y;
+                    float dZC = copy[offset] - bMesh.physics.centerOfMass.z;
+                    if ((dx * dx + dy * dy + dz * dz) > (dXC * dXC + dYC * dYC + dZC * dZC))
+                    {
+                        copy[offset] = (float) mesh.verts[i];
+                        copy[offset + 1] = (float) mesh.verts[i + 1];
+                        copy[offset + 2] = (float) mesh.verts[i + 2];
+                    }
+                }
             }
 
             foreach (BXDAMesh.BXDASurface surface in mesh.surfaces)
             {
-                for (int i = 0; i < surface.indicies.Length; i++)
+                int addedInds = 0;
+                for (int i = 0; i < surface.indicies.Length; i += 3)
                 {
-                    //Store all indicies together, updated for the vertice's position in copy.
-                    index[indexCount + i] = (uint)(surface.indicies[i] + vertCount);
+                    if (subIndices[surface.indicies[i]] != subIndices[surface.indicies[i + 1]] &&
+                        subIndices[surface.indicies[i + 1]] != subIndices[surface.indicies[i + 2]] &&
+                        subIndices[surface.indicies[i + 2]] != subIndices[surface.indicies[i]])
+                    {
+                        index[indexCount + i] = (uint) subIndices[surface.indicies[i]] - 1;
+                        index[indexCount + i + 1] = (uint) subIndices[surface.indicies[i + 1]] - 1;
+                        index[indexCount + i + 2] = (uint) subIndices[surface.indicies[i + 2]] - 1;
+                        addedInds += 3;
+                    }
                 }
 
-                indexCount += surface.indicies.Length;
+                indexCount += addedInds;
             }
-            vertCount += mesh.verts.Length / 3;
+            vertCount += addedVerts;
         }
-
+        Console.WriteLine(vertCount + " vertices left of " + (copy.Length / 3));
+        Console.WriteLine(indexCount / 3 + " triangles left of " + index.Length / 3);
         if (decompose)
         {
             ConvexAPI.iConvexDecomposition ic = new ConvexAPI.iConvexDecomposition();
-            ic.setMesh((uint) copy.Length / 3, copy, (uint) index.Length / 3, index);
-
+            ic.setMesh((uint) vertCount, copy, (uint) indexCount / 3, index);
             ic.computeConvexDecomposition();
 
             while (!ic.isComputeComplete())
             {
-                Console.WriteLine("Computing the convex decomposition in a background thread.");
+                // Wait....
                 System.Threading.Thread.Sleep(1000);
             }
+            Console.WriteLine();
 
             uint hullCount = ic.getHullCount();
             Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");

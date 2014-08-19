@@ -483,6 +483,7 @@ namespace CONVEX_DECOMPOSITION
 			hl.CreateConvexHull(hd,result);
 			NxF32 meshVolume = fm_computeMeshVolume(result.mOutputVertices, result.mNumFaces, result.mIndices );
 
+			printf("Convex Decomposition Depth %d/%d\n", depth+1, decompositionDepth);
 			if ( (depth+1) < decompositionDepth )
 			{
 				// compute the volume of this mesh...
@@ -581,7 +582,6 @@ namespace CONVEX_DECOMPOSITION
 
 			NxU32 out_vcount = fm_copyUniqueVertices( vcount, vertices, out_vertices, tcount, indices, out_indices );
 			// get a copy of only the unique vertices which are actually being used.
-			printf("Using 2 %d of %d\n", tcount, this->facetCount);
 
 			HullDesc hd;
 			hd.mVcount 			= out_vcount;
@@ -693,7 +693,6 @@ namespace CONVEX_DECOMPOSITION
 				mVolumeSplitThresholdPercent,
 				mUseInitialIslandGeneration,
 				mUseIslandGeneration,0);
-
 			if ( mHulls.size() && !mCancel )
 			{
 				// While convex hulls can be merged...
