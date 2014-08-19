@@ -30,9 +30,6 @@ partial class DriveChooser
             this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
-            this.txtHighLimit = new System.Windows.Forms.NumericUpDown();
-            this.lblLimits = new System.Windows.Forms.Label();
-            this.txtLowLimit = new System.Windows.Forms.NumericUpDown();
             this.txtPortB = new System.Windows.Forms.NumericUpDown();
             this.lblPort = new System.Windows.Forms.Label();
             this.txtPortA = new System.Windows.Forms.NumericUpDown();
@@ -41,26 +38,31 @@ partial class DriveChooser
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
             this.tabsMeta = new System.Windows.Forms.TabControl();
             this.metaWheel = new System.Windows.Forms.TabPage();
-            this.metaPneumatic = new System.Windows.Forms.TabPage();
             this.cmbFrictionLevel = new System.Windows.Forms.ComboBox();
+            this.metaPneumatic = new System.Windows.Forms.TabPage();
+            this.lblPressure = new System.Windows.Forms.Label();
             this.cmbPneumaticDiameter = new System.Windows.Forms.ComboBox();
             this.lblDiameter = new System.Windows.Forms.Label();
             this.metaGearing = new System.Windows.Forms.TabPage();
+            this.lblOutputGear = new System.Windows.Forms.Label();
             this.lblInputGear = new System.Windows.Forms.Label();
             this.txtGearRationNum = new System.Windows.Forms.TextBox();
             this.txtGearRationDenom = new System.Windows.Forms.TextBox();
-            this.lblPressure = new System.Windows.Forms.Label();
-            this.lblOutputGear = new System.Windows.Forms.Label();
+            this.txtHighLimit = new System.Windows.Forms.NumericUpDown();
+            this.lblLimits = new System.Windows.Forms.Label();
+            this.txtLowLimit = new System.Windows.Forms.NumericUpDown();
+            this.lblType = new System.Windows.Forms.Label();
+            this.lblFriction = new System.Windows.Forms.Label();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
             this.tabsMeta.SuspendLayout();
             this.metaWheel.SuspendLayout();
             this.metaPneumatic.SuspendLayout();
             this.metaGearing.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
             this.SuspendLayout();
             // 
             // cmbJointDriver
@@ -93,55 +95,10 @@ partial class DriveChooser
             this.grpDriveOptions.Controls.Add(this.txtPortA);
             this.grpDriveOptions.Location = new System.Drawing.Point(13, 75);
             this.grpDriveOptions.Name = "grpDriveOptions";
-            this.grpDriveOptions.Size = new System.Drawing.Size(318, 128);
+            this.grpDriveOptions.Size = new System.Drawing.Size(318, 72);
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Joint Options";
-            // 
-            // txtHighLimit
-            // 
-            this.txtHighLimit.DecimalPlaces = 4;
-            this.txtHighLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.txtHighLimit.Location = new System.Drawing.Point(140, 92);
-            this.txtHighLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
-            this.txtHighLimit.Name = "txtHighLimit";
-            this.txtHighLimit.Size = new System.Drawing.Size(120, 22);
-            this.txtHighLimit.TabIndex = 4;
-            // 
-            // lblLimits
-            // 
-            this.lblLimits.AutoSize = true;
-            this.lblLimits.Location = new System.Drawing.Point(11, 72);
-            this.lblLimits.Name = "lblLimits";
-            this.lblLimits.Size = new System.Drawing.Size(78, 17);
-            this.lblLimits.TabIndex = 4;
-            this.lblLimits.Text = "Joint Limits";
-            // 
-            // txtLowLimit
-            // 
-            this.txtLowLimit.DecimalPlaces = 4;
-            this.txtLowLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.txtLowLimit.Location = new System.Drawing.Point(14, 92);
-            this.txtLowLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
-            this.txtLowLimit.Name = "txtLowLimit";
-            this.txtLowLimit.Size = new System.Drawing.Size(120, 22);
-            this.txtLowLimit.TabIndex = 3;
             // 
             // txtPortB
             // 
@@ -188,7 +145,7 @@ partial class DriveChooser
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(13, 303);
+            this.btnSave.Location = new System.Drawing.Point(13, 247);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(320, 28);
             this.btnSave.TabIndex = 11;
@@ -230,7 +187,7 @@ partial class DriveChooser
             this.tabsMeta.Controls.Add(this.metaWheel);
             this.tabsMeta.Controls.Add(this.metaPneumatic);
             this.tabsMeta.Controls.Add(this.metaGearing);
-            this.tabsMeta.Location = new System.Drawing.Point(13, 209);
+            this.tabsMeta.Location = new System.Drawing.Point(13, 153);
             this.tabsMeta.Name = "tabsMeta";
             this.tabsMeta.SelectedIndex = 0;
             this.tabsMeta.Size = new System.Drawing.Size(318, 88);
@@ -238,6 +195,8 @@ partial class DriveChooser
             // 
             // metaWheel
             // 
+            this.metaWheel.Controls.Add(this.lblFriction);
+            this.metaWheel.Controls.Add(this.lblType);
             this.metaWheel.Controls.Add(this.cmbFrictionLevel);
             this.metaWheel.Controls.Add(this.cmbWheelType);
             this.metaWheel.Location = new System.Drawing.Point(4, 25);
@@ -246,6 +205,19 @@ partial class DriveChooser
             this.metaWheel.TabIndex = 0;
             this.metaWheel.Text = "Wheel";
             this.metaWheel.UseVisualStyleBackColor = true;
+            // 
+            // cmbFrictionLevel
+            // 
+            this.cmbFrictionLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFrictionLevel.FormattingEnabled = true;
+            this.cmbFrictionLevel.Items.AddRange(new object[] {
+            "High",
+            "Medium",
+            "Low"});
+            this.cmbFrictionLevel.Location = new System.Drawing.Point(136, 23);
+            this.cmbFrictionLevel.Name = "cmbFrictionLevel";
+            this.cmbFrictionLevel.Size = new System.Drawing.Size(120, 24);
+            this.cmbFrictionLevel.TabIndex = 13;
             // 
             // metaPneumatic
             // 
@@ -260,18 +232,14 @@ partial class DriveChooser
             this.metaPneumatic.Text = "Pneumatic";
             this.metaPneumatic.UseVisualStyleBackColor = true;
             // 
-            // cmbFrictionLevel
+            // lblPressure
             // 
-            this.cmbFrictionLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFrictionLevel.FormattingEnabled = true;
-            this.cmbFrictionLevel.Items.AddRange(new object[] {
-            "High",
-            "Medium",
-            "Banana"});
-            this.cmbFrictionLevel.Location = new System.Drawing.Point(136, 23);
-            this.cmbFrictionLevel.Name = "cmbFrictionLevel";
-            this.cmbFrictionLevel.Size = new System.Drawing.Size(120, 24);
-            this.cmbFrictionLevel.TabIndex = 13;
+            this.lblPressure.AutoSize = true;
+            this.lblPressure.Location = new System.Drawing.Point(133, 7);
+            this.lblPressure.Name = "lblPressure";
+            this.lblPressure.Size = new System.Drawing.Size(65, 17);
+            this.lblPressure.TabIndex = 13;
+            this.lblPressure.Text = "Pressure";
             // 
             // cmbPneumaticDiameter
             // 
@@ -308,6 +276,16 @@ partial class DriveChooser
             this.metaGearing.Text = "Gear Ratio";
             this.metaGearing.UseVisualStyleBackColor = true;
             // 
+            // lblOutputGear
+            // 
+            this.lblOutputGear.AutoSize = true;
+            this.lblOutputGear.Location = new System.Drawing.Point(133, 9);
+            this.lblOutputGear.Name = "lblOutputGear";
+            this.lblOutputGear.Size = new System.Drawing.Size(78, 20);
+            this.lblOutputGear.TabIndex = 14;
+            this.lblOutputGear.Text = "Output Gear";
+            this.lblOutputGear.UseCompatibleTextRendering = true;
+            // 
             // lblInputGear
             // 
             this.lblInputGear.AutoSize = true;
@@ -333,30 +311,77 @@ partial class DriveChooser
             this.txtGearRationDenom.TabIndex = 13;
             this.txtGearRationDenom.Text = "1";
             // 
-            // lblPressure
+            // txtHighLimit
             // 
-            this.lblPressure.AutoSize = true;
-            this.lblPressure.Location = new System.Drawing.Point(133, 7);
-            this.lblPressure.Name = "lblPressure";
-            this.lblPressure.Size = new System.Drawing.Size(65, 17);
-            this.lblPressure.TabIndex = 13;
-            this.lblPressure.Text = "Pressure";
+            this.txtHighLimit.DecimalPlaces = 4;
+            this.txtHighLimit.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.txtHighLimit.Location = new System.Drawing.Point(140, 92);
+            this.txtHighLimit.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.txtHighLimit.Name = "txtHighLimit";
+            this.txtHighLimit.Size = new System.Drawing.Size(120, 22);
+            this.txtHighLimit.TabIndex = 4;
+            this.txtHighLimit.Visible = false;
             // 
-            // lblOutputGear
+            // lblLimits
             // 
-            this.lblOutputGear.AutoSize = true;
-            this.lblOutputGear.Location = new System.Drawing.Point(133, 9);
-            this.lblOutputGear.Name = "lblOutputGear";
-            this.lblOutputGear.Size = new System.Drawing.Size(78, 20);
-            this.lblOutputGear.TabIndex = 14;
-            this.lblOutputGear.Text = "Output Gear";
-            this.lblOutputGear.UseCompatibleTextRendering = true;
+            this.lblLimits.AutoSize = true;
+            this.lblLimits.Location = new System.Drawing.Point(11, 72);
+            this.lblLimits.Name = "lblLimits";
+            this.lblLimits.Size = new System.Drawing.Size(78, 17);
+            this.lblLimits.TabIndex = 4;
+            this.lblLimits.Text = "Joint Limits";
+            this.lblLimits.Visible = false;
+            // 
+            // txtLowLimit
+            // 
+            this.txtLowLimit.DecimalPlaces = 4;
+            this.txtLowLimit.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.txtLowLimit.Location = new System.Drawing.Point(14, 92);
+            this.txtLowLimit.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
+            this.txtLowLimit.Name = "txtLowLimit";
+            this.txtLowLimit.Size = new System.Drawing.Size(120, 22);
+            this.txtLowLimit.TabIndex = 3;
+            this.txtLowLimit.Visible = false;
+            // 
+            // lblType
+            // 
+            this.lblType.AutoSize = true;
+            this.lblType.Location = new System.Drawing.Point(7, 0);
+            this.lblType.Name = "lblType";
+            this.lblType.Size = new System.Drawing.Size(84, 17);
+            this.lblType.TabIndex = 14;
+            this.lblType.Text = "Wheel Type";
+            // 
+            // lblFriction
+            // 
+            this.lblFriction.AutoSize = true;
+            this.lblFriction.Location = new System.Drawing.Point(133, 0);
+            this.lblFriction.Name = "lblFriction";
+            this.lblFriction.Size = new System.Drawing.Size(92, 17);
+            this.lblFriction.TabIndex = 15;
+            this.lblFriction.Text = "Friction Level";
             // 
             // DriveChooser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(340, 347);
+            this.ClientSize = new System.Drawing.Size(340, 282);
             this.Controls.Add(this.tabsMeta);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.grpDriveOptions);
@@ -367,16 +392,17 @@ partial class DriveChooser
             this.grpChooseDriver.ResumeLayout(false);
             this.grpDriveOptions.ResumeLayout(false);
             this.grpDriveOptions.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).EndInit();
             this.tabsMeta.ResumeLayout(false);
             this.metaWheel.ResumeLayout(false);
+            this.metaWheel.PerformLayout();
             this.metaPneumatic.ResumeLayout(false);
             this.metaPneumatic.PerformLayout();
             this.metaGearing.ResumeLayout(false);
             this.metaGearing.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
             this.ResumeLayout(false);
 
     }
@@ -386,9 +412,6 @@ partial class DriveChooser
     private System.Windows.Forms.ComboBox cmbJointDriver;
     private System.Windows.Forms.GroupBox grpChooseDriver;
     private System.Windows.Forms.GroupBox grpDriveOptions;
-    private System.Windows.Forms.NumericUpDown txtHighLimit;
-    private System.Windows.Forms.Label lblLimits;
-    private System.Windows.Forms.NumericUpDown txtLowLimit;
     private System.Windows.Forms.NumericUpDown txtPortB;
     private System.Windows.Forms.Label lblPort;
     private System.Windows.Forms.NumericUpDown txtPortA;
@@ -407,4 +430,9 @@ partial class DriveChooser
     private System.Windows.Forms.TextBox txtGearRationDenom;
     private System.Windows.Forms.Label lblPressure;
     private System.Windows.Forms.Label lblOutputGear;
+    private System.Windows.Forms.NumericUpDown txtHighLimit;
+    private System.Windows.Forms.Label lblLimits;
+    private System.Windows.Forms.NumericUpDown txtLowLimit;
+    private System.Windows.Forms.Label lblFriction;
+    private System.Windows.Forms.Label lblType;
 }
