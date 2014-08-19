@@ -233,18 +233,18 @@ class WheelAnalyzer
 
             surface.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
 
-            int bestIndex = -1;
+            int worstIndex = -1;
             for (int i = 0; i < tmpToleranceCount; i++)
             {
-                //Add ! to not get best resolution.
-                if (bestIndex < 0 || ((tolerances[i] < tolerances[bestIndex])))
+                //Finds worst resolution.
+                if (worstIndex < 0 || tolerances[i] > tolerances[worstIndex])
                 {
-                    bestIndex = i;
+                    worstIndex = i;
                 }
             }
 
             //Stores the tolerance, defaults to .01 if no better.
-            double bestTolerance = (tolerances[bestIndex] < .01) ? tolerances[bestIndex] : .01; 
+            double worstTolerance = (tolerances[worstIndex] < .01) ? tolerances[worstIndex] : .01; 
 
             int vertexCount;
             int segmentCount;
@@ -253,11 +253,11 @@ class WheelAnalyzer
             double[] vertexNormals = new double[3000];
             int[] vertexIndicies = new int[3000];
 
-            surface.GetExistingFacets(bestTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+            surface.GetExistingFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
 
             if (vertexCoords.Length == 1)
             {
-                surface.CalculateFacets(bestTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+                surface.CalculateFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
             }
 
             for(int i = 0; i < vertexCoords.Length; i+=3)
