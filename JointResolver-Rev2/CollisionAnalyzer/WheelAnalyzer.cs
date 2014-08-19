@@ -222,6 +222,30 @@ class WheelAnalyzer
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
+            
+
+            //surface.CalculateStrokes(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexIndicies);
+
+            //surface.CalculateFacets(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+
+            int tmpToleranceCount;
+            double[] tolerances = new double[10];
+
+            surface.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
+
+            int bestIndex = -1;
+            for (int i = 0; i < tmpToleranceCount; i++)
+            {
+                //Add ! to not get best resolution.
+                if (bestIndex < 0 || ((tolerances[i] < tolerances[bestIndex])))
+                {
+                    bestIndex = i;
+                }
+            }
+
+            //Stores the tolerance, defaults to .01 if no better.
+            double bestTolerance = (tolerances[bestIndex] < .01) ? tolerances[bestIndex] : .01; 
+
             int vertexCount;
             int segmentCount;
             //Todo: change size of array.
@@ -229,15 +253,11 @@ class WheelAnalyzer
             double[] vertexNormals = new double[3000];
             int[] vertexIndicies = new int[3000];
 
-            //surface.CalculateStrokes(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexIndicies);
-
-            //surface.CalculateFacets(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
-
-            surface.GetExistingFacets(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+            surface.GetExistingFacets(bestTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
 
             if (vertexCoords.Length == 1)
             {
-                surface.CalculateFacets(.01, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+                surface.CalculateFacets(bestTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
             }
 
             for(int i = 0; i < vertexCoords.Length; i+=3)
