@@ -14,7 +14,6 @@ static class Program
         INVENTOR_APPLICATION = (Inventor.Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
         //_2014FieldBounding.WriteModel();
         AnalyzeRigidResults();
-        MessageBox.Show("Finished Exporting Files!");
         //AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
         //SurfaceExporter exp = new SurfaceExporter();
         //foreach (ComponentOccurrence cc in asmDoc.ComponentDefinition.Occurrences){
@@ -59,21 +58,7 @@ static class Program
 
     public static void AnalyzeRigidResults()
     {
-        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
-
-        string pathBase = "";
-        //Directory.CreateDirectory(pathBase);
-
-        Thread folderThread = new Thread(() => {
-            System.Windows.Forms.FolderBrowserDialog finder = new System.Windows.Forms.FolderBrowserDialog();
-            finder.Description = "Select a folder to save the model files.";
-            finder.ShowDialog();
-
-            pathBase = finder.SelectedPath;
-        });
-        folderThread.SetApartmentState(ApartmentState.STA);
-        folderThread.Start();
-  
+        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;  
 
 
         Console.WriteLine("Get rigid info...");
@@ -101,28 +86,6 @@ static class Program
 
         Console.WriteLine(baseNode.ToString());
 
-        // Join with the folder selecting thread right before we need the path.
-        folderThread.Join();
-
-        if (pathBase.Equals(""))
-        {
-            throw new Exception("No save folder selected.");
-        }
-
-        // Merge with existing values
-        if (System.IO.File.Exists(pathBase + "\\skeleton.bxdj"))
-        {
-            try
-            {
-                RigidNode_Base loadedBase = BXDJSkeleton.ReadSkeleton(pathBase + "\\skeleton.bxdj");
-                BXDJSkeleton.CloneDriversFromTo(loadedBase, baseNode);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Error loading existing skeleton: " + e.ToString());
-            }
-        }
-
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
@@ -138,6 +101,8 @@ static class Program
         Console.WriteLine("Form exit with code " + Enum.GetName(typeof(FormState), controlGUI.formState));
         if (controlGUI.formState == FormState.SUBMIT)
         {
+            string pathBase = controlGUI.ExportPath;
+
             SurfaceExporter surfs = new SurfaceExporter();
             {
                 BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -175,9 +140,14 @@ static class Program
                         }
                     }
                 }
+
+                Console.WriteLine("Writing skeleton");
+                BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode);
+
+                BXDSettings.Instance.LastSkeletonDirectory = pathBase;
+                BXDSettings.Save();
+                MessageBox.Show("Finished Exporting Files!");
             }
-            Console.WriteLine("Writing skeleton");
-            BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode);
         }
     }
 }

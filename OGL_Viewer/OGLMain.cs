@@ -39,32 +39,40 @@ public class OGL_Viewer : GameWindow
     private object selectedObject;
     private int selectTextureHandle, selectFBOHandle;
 
-    private void loadSkeleton()
+    private void loadSkeleton(string pathBase = null)
     {
+        if (pathBase == null)
+        {
+            pathBase = BXDSettings.Instance.LastSkeletonDirectory;
+        }
+
         RigidNode_Base.NODE_FACTORY = delegate()
         {
             return new OGL_RigidNode();
         };
-        editorGUI = new ControlGroups();
-        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton("C:/Users/t_millw/Downloads/Skeletons/TestBotMain_Skeleton/skeleton.bxdj");
+        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton(pathBase + "skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
-        editorGUI.SetSkeleton(skeleton);
-        editorGUI.Show();
-        editorGUI.jointPane.SelectedJoint += delegate(RigidNode_Base node)
+        new System.Threading.Thread(() =>
         {
-            foreach (RigidNode_Base ns in nodes)
+            editorGUI = new ControlGroups();
+            editorGUI.SetSkeleton(skeleton);
+            editorGUI.jointPane.SelectedJoint += delegate(RigidNode_Base node)
             {
-                ((OGL_RigidNode) ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
-            }
-            if (node is OGL_RigidNode)
-            {
-                ((OGL_RigidNode) node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
-            }
-        };
+                foreach (RigidNode_Base ns in nodes)
+                {
+                    ((OGL_RigidNode) ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
+                }
+                if (node is OGL_RigidNode)
+                {
+                    ((OGL_RigidNode) node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
+                }
+            };
+            editorGUI.ShowDialog();
+        }).Start();
         foreach (RigidNode_Base node in nodes)
         {
-            ((OGL_RigidNode) node).loadMeshes("C:/Users/t_millw/Downloads/Skeletons/TestBotMain_Skeleton/" + node.modelFileName);
+            ((OGL_RigidNode) node).loadMeshes(pathBase + node.modelFileName);
         }
     }
 
@@ -243,6 +251,13 @@ public class OGL_Viewer : GameWindow
     protected override void OnUnload(EventArgs e)
     {
         ShaderLoader.PartShader = 0;
+        foreach (RigidNode_Base node in nodes)
+        {
+            if (node is OGL_RigidNode)
+            {
+                ((OGL_RigidNode) node).destroy();
+            }
+        }
     }
 
     public static void Main(string[] args)
