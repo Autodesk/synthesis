@@ -71,7 +71,7 @@ class WheelAnalyzer
                        
                         //If a thread has found a radius that would not fit in the bounding box of the next component, there's no point in continuing trying to find
                         //  a larger radius in the next component.
-                        if (index + 1 < sortedBoxList.Count || ((FindRadiusThread.GetRadius() > sortedBoxList[index + 1].possibleRadius)) && (index < largestRadiusIndex || largestRadiusIndex == -1))
+                        if (index + 1 < sortedBoxList.Count && (index < largestRadiusIndex || largestRadiusIndex == -1) && ((FindRadiusThread.GetRadius() > sortedBoxList[index + 1].possibleRadius)))
                         {
                             largestRadiusIndex = index;
                         }
