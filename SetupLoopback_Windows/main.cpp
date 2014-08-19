@@ -18,6 +18,8 @@
 #define EXIT_FAIL    (2)
 #define EXIT_USAGE   (3)
 
+#pragma comment(lib, "IPHLPAPI.lib")
+
 #define UPDATEDRIVERFORPLUGANDPLAYDEVICES "UpdateDriverForPlugAndPlayDevicesA"
 #define SETUPUNINSTALLOEMINF "SetupUninstallOEMInfA"
 
