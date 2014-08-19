@@ -17,7 +17,6 @@ namespace EditorsLibrary
         private ColumnHeader item_chDrive;
         private ColumnHeader item_chWheel;
         private ColumnHeader item_chSensors;
-        private Button listSensorsButton;
         private ContextMenuStrip jointContextMenu;
         private System.ComponentModel.IContainer components;
 
@@ -41,13 +40,12 @@ namespace EditorsLibrary
         {
             this.components = new System.ComponentModel.Container();
             this.lstJoints = new System.Windows.Forms.ListView();
-            this.item_chType = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chParent = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chChild = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chDrive = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chWheel = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.item_chSensors = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
-            this.listSensorsButton = new System.Windows.Forms.Button();
+            this.item_chType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chSensors = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.jointContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
             // 
@@ -106,17 +104,6 @@ namespace EditorsLibrary
             this.item_chSensors.Text = "Sensor Count";
             this.item_chSensors.Width = 95;
             // 
-            // listSensorsButton
-            // 
-            this.listSensorsButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.listSensorsButton.Location = new System.Drawing.Point(678, 554);
-            this.listSensorsButton.Name = "listSensorsButton";
-            this.listSensorsButton.Size = new System.Drawing.Size(119, 43);
-            this.listSensorsButton.TabIndex = 8;
-            this.listSensorsButton.Text = "List Sensors";
-            this.listSensorsButton.UseVisualStyleBackColor = true;
-            this.listSensorsButton.Click += new System.EventHandler(this.listSensors_Click);
-            // 
             // jointContextMenu
             // 
             this.jointContextMenu.Name = "jointContextMenu";
@@ -125,9 +112,8 @@ namespace EditorsLibrary
             // JointEditorPane
             // 
             this.Controls.Add(this.lstJoints);
-            this.Controls.Add(this.listSensorsButton);
             this.Name = "JointEditorPane";
-            this.Size = new System.Drawing.Size(800, 600);
+            this.Size = new System.Drawing.Size(800, 551);
             this.SizeChanged += new System.EventHandler(this.DoLayout);
             this.ResumeLayout(false);
 
@@ -192,9 +178,7 @@ namespace EditorsLibrary
             item_chSensors.Width = this.lstJoints.Width / 8;
 
             this.lstJoints.Width = this.Width;
-            this.lstJoints.Height = this.Height - this.listSensorsButton.Height - 6;
-            this.listSensorsButton.Top = this.lstJoints.Bottom + 3;
-            this.listSensorsButton.Left = this.lstJoints.Right - this.listSensorsButton.Width;
+            this.lstJoints.Height = this.Height - 6;
         }
 
         private void listSensors_Internal(RigidNode_Base node)
