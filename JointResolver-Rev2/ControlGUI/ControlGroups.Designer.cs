@@ -33,6 +33,8 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.jointPane = new EditorsLibrary.JointEditorPane();
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
+            this.txtFilePath = new System.Windows.Forms.TextBox();
+            this.btnBrowse = new System.Windows.Forms.Button();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -159,11 +161,32 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.chkHighlightComponents.Text = "Highlight Component Sets";
             this.chkHighlightComponents.UseVisualStyleBackColor = true;
             // 
+            // txtFilePath
+            // 
+            this.txtFilePath.Enabled = false;
+            this.txtFilePath.Location = new System.Drawing.Point(484, 699);
+            this.txtFilePath.Name = "txtFilePath";
+            this.txtFilePath.Size = new System.Drawing.Size(201, 22);
+            this.txtFilePath.TabIndex = 6;
+            this.txtFilePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // btnBrowse
+            // 
+            this.btnBrowse.Location = new System.Drawing.Point(691, 698);
+            this.btnBrowse.Name = "btnBrowse";
+            this.btnBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btnBrowse.TabIndex = 7;
+            this.btnBrowse.Text = "Browse...";
+            this.btnBrowse.UseVisualStyleBackColor = true;
+            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 741);
+            this.Controls.Add(this.btnBrowse);
+            this.Controls.Add(this.txtFilePath);
             this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
@@ -195,4 +218,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.CheckBox chkHighlightComponents;
     private System.Windows.Forms.ColumnHeader groups_chConcavity;
     private EditorsLibrary.JointEditorPane jointPane;
+    private System.Windows.Forms.TextBox txtFilePath;
+    private System.Windows.Forms.Button btnBrowse;
 }

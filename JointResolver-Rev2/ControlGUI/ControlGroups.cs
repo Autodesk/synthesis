@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Threading;
+using System.Windows.Forms;
 
 public partial class ControlGroups
 {
@@ -13,11 +14,20 @@ public partial class ControlGroups
     private List<CustomRigidGroup> groupList;
     private DriveChooser driveChooser = new DriveChooser();
 
+    public string ExportPath
+    {
+        get
+        {
+            return txtFilePath.Text;
+        }
+    }
+
     public ControlGroups()
     {
         InitializeComponent();  // Remove for death
         jointPane.ModifiedJoint += jointPane_ModifiedJoint;
         jointPane.SelectedJoint += jointPane_SelectedJoint;
+        txtFilePath.Text = BXDSettings.Instance.LastSkeletonDirectory != null ? BXDSettings.Instance.LastSkeletonDirectory : "";
     }
 
     void jointPane_SelectedJoint(RigidNode_Base node)
@@ -38,7 +48,8 @@ public partial class ControlGroups
 
     private void jointPane_ModifiedJoint(RigidNode_Base node)
     {
-        if (node==null || !(node is RigidNode)) return;
+        if (node == null || !(node is RigidNode))
+            return;
         if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null && node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null)
         {
             ((RigidNode) node).RegisterDeferredCalculation("wheel-driver", WheelAnalyzer.StartCalculations);
@@ -51,6 +62,17 @@ public partial class ControlGroups
 
     private void btnExport_Click(object sender, EventArgs e)
     {
+        if (txtFilePath.Text.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
+        {
+            System.Windows.Forms.MessageBox.Show("\"" + txtFilePath.Text + "\" is not a valid path!");
+            return;
+        }
+        if (System.IO.File.Exists(txtFilePath.Text) && !System.IO.Directory.Exists(txtFilePath.Text))
+        {
+            System.Windows.Forms.MessageBox.Show("\"" + txtFilePath.Text + "\" exists as a file!");
+            return;
+        }
+
         formState = FormState.SUBMIT;
         Hide();
     }
@@ -183,17 +205,54 @@ public partial class ControlGroups
         }
     }
 
-    private void btnCalculate_Click_1(object sender, EventArgs e)
-    {
-        //if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode)
-        //{
-        //    InventorSkeletalJoint joint = (InventorSkeletalJoint) ((RigidNode) lstJoints.SelectedItems[0].Tag).GetSkeletalJoint();
-        //    joint.DetermineLimits();
-        //}
-    }
-
     private void tabsMain_SelectedIndexChanged(object sender, EventArgs e)
     {
+    }
+
+    private void btnBrowse_Click(object sender, EventArgs e)
+    {
+        string selectedPath = "";
+        var t = new Thread((ThreadStart) (() =>
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.RootFolder = Environment.SpecialFolder.UserProfile;
+            if (BXDSettings.Instance.LastSkeletonDirectory != null)
+            {
+                fbd.SelectedPath = BXDSettings.Instance.LastSkeletonDirectory;
+            }
+            fbd.ShowNewFolderButton = true;
+            if (fbd.ShowDialog() == DialogResult.Cancel)
+                return;
+
+            selectedPath = fbd.SelectedPath;
+        }));
+
+        t.SetApartmentState(ApartmentState.STA);
+        t.Start();
+        t.Join();
+        if (selectedPath.Length > 0 && (System.IO.Directory.Exists(selectedPath) || !System.IO.File.Exists(selectedPath)))
+        {
+            txtFilePath.Text = selectedPath;
+            loadFromExisting();
+            jointPane.SetSkeleton(skeleton);
+        }
+    }
+
+    private void loadFromExisting()
+    {
+        try
+        {
+            // Merge with existing values
+            if (System.IO.File.Exists(txtFilePath.Text + "\\skeleton.bxdj"))
+            {
+                RigidNode_Base loadedBase = BXDJSkeleton.ReadSkeleton(txtFilePath.Text + "\\skeleton.bxdj");
+                BXDJSkeleton.CloneDriversFromTo(loadedBase, skeleton);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error loading existing skeleton: " + e.ToString());
+        }
     }
 }
 
