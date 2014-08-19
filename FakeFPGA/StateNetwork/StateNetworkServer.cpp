@@ -63,7 +63,7 @@ void StateNetworkServer::Close() {
 void StateNetworkServer::SendStatePacket(OutputStatePacket pack) {
 	struct sockaddr_in server;	// Send to localhost
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = INADDR_LOOPBACK;
+	server.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 	server.sin_port = htons(PORT);
 	sendto(udpSocket, (char*) &pack, sizeof(pack), 0, (sockaddr*) &server,
 		sizeof(server));	// Send it
