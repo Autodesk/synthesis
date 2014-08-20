@@ -35,15 +35,17 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnExport
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(808, 687);
+            this.btnExport.Location = new System.Drawing.Point(339, 6);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(130, 42);
             this.btnExport.TabIndex = 1;
@@ -164,7 +166,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // txtFilePath
             // 
             this.txtFilePath.Enabled = false;
-            this.txtFilePath.Location = new System.Drawing.Point(484, 699);
+            this.txtFilePath.Location = new System.Drawing.Point(3, 16);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(201, 22);
             this.txtFilePath.TabIndex = 6;
@@ -172,7 +174,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(691, 698);
+            this.btnBrowse.Location = new System.Drawing.Point(210, 15);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnBrowse.TabIndex = 7;
@@ -180,17 +182,26 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
             // 
+            // panel1
+            // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.txtFilePath);
+            this.panel1.Controls.Add(this.btnBrowse);
+            this.panel1.Controls.Add(this.btnExport);
+            this.panel1.Location = new System.Drawing.Point(475, 687);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(473, 53);
+            this.panel1.TabIndex = 8;
+            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 741);
-            this.Controls.Add(this.btnBrowse);
-            this.Controls.Add(this.txtFilePath);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnExport);
             this.MinimumSize = new System.Drawing.Size(800, 300);
             this.Name = "ControlGroups";
             this.Text = "Control Groups";
@@ -200,6 +211,8 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabsMain.ResumeLayout(false);
             this.tabGroups.ResumeLayout(false);
             this.tabJoints.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -220,4 +233,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private EditorsLibrary.JointEditorPane jointPane;
     private System.Windows.Forms.TextBox txtFilePath;
     private System.Windows.Forms.Button btnBrowse;
+    private System.Windows.Forms.Panel panel1;
 }

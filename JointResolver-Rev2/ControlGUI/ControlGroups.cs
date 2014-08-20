@@ -144,7 +144,6 @@ public partial class ControlGroups
         groups_chConcavity.Width = this.lstGroups.Width / 10;
 
 
-
         tabsMain.Height = newTabHeight;
         tabsMain.Width = newTabWidth;
         lstGroups.Height = newListHeight;
