@@ -67,7 +67,7 @@ public class UnityRigidNode : RigidNode_Base
 		return joint;
 	}
 	//creates a wheel collider and centers it on the current transform
-	private void CreateWheel()
+	private void CreateWheel(RotationalJoint_Base center)
 	{
 		
 		Quaternion q = new Quaternion();
@@ -76,7 +76,7 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider = new GameObject(unityObject.name + " Collider");
 		
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
-		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
+		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
 		wCollider.AddComponent<WheelCollider>();
 		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius + (wheel.radius * 0.15f)) * 0.01f;
 		wCollider.transform.localRotation *= q;
@@ -190,7 +190,7 @@ public class UnityRigidNode : RigidNode_Base
             
 			if (IsWheel)
 			{
-				CreateWheel();	
+				CreateWheel(nodeR);	
 				
 			}
 			

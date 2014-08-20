@@ -17,8 +17,7 @@ public class Init : MonoBehaviour
     List<WheelCollider> unityWheelData = new List<WheelCollider>();
     List<MeshCollider> meshColliders = new List<MeshCollider>();
     // int robots = 0;
-    string filePath = "C:/Users/" + Environment.UserName + "/Documents/Skeleton/";
-
+    string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
     public enum WheelPositions
     {
         FL = 1,
@@ -26,7 +25,6 @@ public class Init : MonoBehaviour
         BL = 3,
         BR = 4
     }
-
     [STAThread]
     void OnGUI()
     {
@@ -102,6 +100,7 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
+
         TryLoad();
     }
 
