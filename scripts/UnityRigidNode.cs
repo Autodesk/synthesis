@@ -65,7 +65,7 @@ public class UnityRigidNode : RigidNode_Base
 		return joint;
 	}
 	//creates a wheel collider and centers it on the current transform
-	private void CreateWheel()
+	private void CreateWheel(RotationalJoint_Base center)
 	{
 		
 		Quaternion q = new Quaternion();
@@ -188,7 +188,7 @@ public class UnityRigidNode : RigidNode_Base
             
 			if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL)
 			{
-				CreateWheel();	
+				CreateWheel(nodeR);	
 				
 			}
 			

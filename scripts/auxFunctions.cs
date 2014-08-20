@@ -50,10 +50,9 @@ public class auxFunctions : RigidNode_Base
 
 		Quaternion q = new Quaternion();
 		List<Vector3> wheels = new List<Vector3>();
+
 		foreach (WheelCollider collider in wheelcolliders) 
 		{
-			q.eulerAngles =  new Vector3(0,0,0);
-			collider.transform.rotation = q;
 			wheels.Add(collider.transform.position);
 
 		}
@@ -61,17 +60,18 @@ public class auxFunctions : RigidNode_Base
 		Vector3 a = wheels [0] - wheels [1];
 		Vector3 b = a;
 
-		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)-(a.magnitude*b.magnitude)) < .1f; i++) //should probably account for ind out of range
+		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)-(a.magnitude*b.magnitude)) < .1f; i++) 
 			b = wheels[0] - wheels[i];
 
 		Vector3 norm = Vector3.Cross(a,b).normalized;
-		norm.y *= Mathf.Sign (norm.y * com.y);
+		//norm.y *= Mathf.Sign (norm.y * com.y);
+		//TODO make sure robot never spawns upside down
 
 
 		q.SetFromToRotation (norm, Vector3.up);
-		parent.localRotation *= q;	
+		parent.localRotation *= q;
 
-		Debug.Break ();
+      
 
 	
 	
