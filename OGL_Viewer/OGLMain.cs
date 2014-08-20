@@ -43,7 +43,7 @@ public class OGL_Viewer : GameWindow
     {
         if (pathBase == null)
         {
-            pathBase = BXDSettings.Instance.LastSkeletonDirectory;
+            pathBase = BXDSettings.Instance.LastSkeletonDirectory + "/";
         }
 
         RigidNode_Base.NODE_FACTORY = delegate()
