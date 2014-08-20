@@ -35,9 +35,9 @@ namespace EditorsLibrary
                         linearDOF.Current, "Linear" + ((hasAnother = linearDOF.MoveNext()) ? " #" + (++i) : "")));
                 }
             }
+            base.Text = joint.GetType().Name.Replace("_Base", "").Replace("Joint", " Joint");
         }
 
-        bool savedValues = false;
         private void btnOkay_Click(object sender, EventArgs e)
         {
             // Force set values
@@ -48,27 +48,32 @@ namespace EditorsLibrary
                 else if (page is LimitPane<AngularDOF> && !((LimitPane<AngularDOF>) page).changedProps(true))
                     return;
             }
-            savedValues = true;
             Close();
+        }
+
+        private void restoreValues()
+        {
+            foreach (TabPage page in tabDOF.TabPages)
+            {
+                if (page is LimitPane<LinearDOF>)
+                {
+                    ((LimitPane<LinearDOF>) page).resetProps();
+                }
+                else if (page is LimitPane<AngularDOF>)
+                {
+                    ((LimitPane<AngularDOF>) page).resetProps();
+                }
+            }
+        }
+
+        void EditLimits_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            restoreValues();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            // Restore values
-            if (!savedValues)
-            {
-                foreach (TabPage page in tabDOF.TabPages)
-                {
-                    if (page is LimitPane<LinearDOF>)
-                    {
-                        ((LimitPane<LinearDOF>) page).resetProps();
-                    }
-                    else if (page is LimitPane<AngularDOF>)
-                    {
-                        ((LimitPane<AngularDOF>) page).resetProps();
-                    }
-                }
-            }
+            restoreValues();
             Close();
         }
     }

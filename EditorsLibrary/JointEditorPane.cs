@@ -38,7 +38,10 @@ namespace EditorsLibrary
             {
                 if (node != null && node.GetSkeletalJoint() != null)
                 {
-                    new EditLimits(node.GetSkeletalJoint()).ShowDialog(ParentForm);
+                    EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());
+                    limitEditor.StartPosition = FormStartPosition.Manual;
+                    limitEditor.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10);
+                    limitEditor.ShowDialog(ParentForm);
                 }
             }, Keys.L);
         }
@@ -47,12 +50,12 @@ namespace EditorsLibrary
         {
             this.components = new System.ComponentModel.Container();
             this.lstJoints = new System.Windows.Forms.ListView();
-            this.item_chType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chSensors = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chType = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chParent = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chChild = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chDrive = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chWheel = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chSensors = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
             this.jointContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
             // 
@@ -114,7 +117,9 @@ namespace EditorsLibrary
             // jointContextMenu
             // 
             this.jointContextMenu.Name = "jointContextMenu";
-            this.jointContextMenu.Size = new System.Drawing.Size(61, 4);
+            this.jointContextMenu.RenderMode = ToolStripRenderMode.Professional;
+            this.jointContextMenu.ShowImageMargin = false;
+            this.jointContextMenu.Size = new System.Drawing.Size(36, 4);
             // 
             // JointEditorPane
             // 
@@ -146,7 +151,7 @@ namespace EditorsLibrary
 
         public void RegisterContextAction(string caption, JointEditorEvent callback, Keys hotkey = Keys.None)
         {
-            ToolStripItem item = new ToolStripLabel();
+            ToolStripButton item = new ToolStripButton();
             item.Text = caption;
 
             item.Click += (object sender, EventArgs e) =>
@@ -192,6 +197,8 @@ namespace EditorsLibrary
         {
             currentlyEditing = true;
             SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
+            listForm.StartPosition = FormStartPosition.Manual;
+            listForm.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10);
             listForm.ShowDialog(ParentForm);
             if (ModifiedJoint != null)
             {
@@ -205,6 +212,8 @@ namespace EditorsLibrary
         {
             currentlyEditing = true;
             SkeletalJoint_Base joint = node.GetSkeletalJoint();
+            driveChooserDialog.StartPosition = FormStartPosition.Manual;
+            driveChooserDialog.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10);
             driveChooserDialog.ShowDialog(joint, node, ParentForm);
             if (ModifiedJoint != null)
             {

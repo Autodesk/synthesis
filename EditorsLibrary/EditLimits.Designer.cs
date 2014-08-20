@@ -32,7 +32,6 @@ namespace EditorsLibrary
             this.tabDOF = new System.Windows.Forms.TabControl();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOkay = new System.Windows.Forms.Button();
-            this.tabDOF.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabDOF
@@ -67,19 +66,16 @@ namespace EditorsLibrary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.FormClosing += btnCancel_Click;
-            this.ClientSize = new System.Drawing.Size(292, 268);
+            this.ClientSize = new System.Drawing.Size(292, 156);
             this.Controls.Add(this.btnOkay);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.tabDOF);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "EditLimits";
             this.Text = "EditLimits";
-
-            this.tabDOF.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
-
         #endregion
 
         private System.Windows.Forms.TabControl tabDOF;
@@ -110,7 +106,6 @@ namespace EditorsLibrary
                 this.chkHasLimits = new System.Windows.Forms.CheckBox();
                 this.txtUpper = new System.Windows.Forms.TextBox();
                 this.txtLower = new System.Windows.Forms.TextBox();
-                loadProps();
 
                 this.SuspendLayout();
                 this.Controls.Add(lblUpper);
@@ -161,6 +156,8 @@ namespace EditorsLibrary
                 this.txtLower.TextChanged += changedProps;
                 this.ResumeLayout(false);
                 this.PerformLayout();
+
+                loadProps();
             }
 
             void loadProps()
@@ -169,6 +166,8 @@ namespace EditorsLibrary
                 {
                     AngularDOF dof = (AngularDOF) this.dof;
                     chkHasLimits.Checked = dof.hasAngularLimits();
+                    lblUpper.Visible = lblLower.Visible = txtUpper.Visible = txtLower.Visible = chkHasLimits.Checked;
+
                     txtLower.Text = Convert.ToString(cacheLower = dof.lowerLimit);
                     txtUpper.Text = Convert.ToString(cacheUpper = dof.upperLimit);
                     lblLower.Text = "Lower (rad)";
@@ -178,12 +177,15 @@ namespace EditorsLibrary
                 {
                     LinearDOF dof = (LinearDOF) this.dof;
                     chkHasLimits.Checked = dof.hasUpperLinearLimit() || dof.hasLowerLinearLimit();
+                    lblUpper.Visible = lblLower.Visible = txtUpper.Visible = txtLower.Visible = chkHasLimits.Checked; 
+
                     txtLower.Text = Convert.ToString(cacheLower = dof.lowerLimit);
                     txtUpper.Text = Convert.ToString(cacheUpper = dof.upperLimit);
                     lblLower.Text = "Lower (cm)";
                     lblUpper.Text = "Upper (cm)";
                 }
             }
+
             public void resetProps()
             {
                 if (this.dof is AngularDOF)
@@ -206,8 +208,8 @@ namespace EditorsLibrary
 
             public bool changedProps(bool report)
             {
-                txtLower.Visible = chkHasLimits.Checked;
-                txtUpper.Visible = chkHasLimits.Checked;
+                lblLower.Visible = txtLower.Visible = chkHasLimits.Checked;
+                lblUpper.Visible = txtUpper.Visible = chkHasLimits.Checked;
 
                 try
                 {
