@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
-using System.Diagnostics;
 
 class WheelAnalyzer
 {
@@ -120,14 +119,7 @@ class WheelAnalyzer
             //Finds width.
             treadPart = FindRadiusThread.GetWidthComponent();
 
-            Stopwatch timer = new Stopwatch();
-            timer.Start();
-
-
             WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint) joint).axis, out maxWidth, out center);
-
-            timer.Stop();
-            Console.WriteLine("Width took " + timer.Elapsed);
 
             //Beings saving calculated values to the driver.
             wheelDriver.radius = (float) FindRadiusThread.GetRadius();
