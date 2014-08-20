@@ -1,9 +1,9 @@
 #ifndef __EMULATOR_H
 #define __EMULATOR_H
 #include <stdint.h>
-#include <RobotBase.h>	 // Ensure we have the START_ROBOT_CLASS Macro
+#include <RobotBase.h>	 // Ensure we have the START_ROBOT_CLASS Macro once so we can override it.
 
-// Make them set a team ID
+// Used to specify your team ID
 extern const int TEAM_ID;
 
 int StartEmulator();
