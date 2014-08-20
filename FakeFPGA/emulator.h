@@ -1,7 +1,7 @@
 #ifndef __EMULATOR_H
 #define __EMULATOR_H
 #include <stdint.h>
-#include <RobotBase.h>	 // Ensure we have the START_ROBOT_CLASS Macro once so we can override it.
+#include <WPILib.h>	 // Ensure we have the START_ROBOT_CLASS Macro once so we can override it.
 
 // Used to specify your team ID
 extern const int TEAM_ID;

@@ -14,6 +14,9 @@
 #define strdup _strdup
 #define fdopen _fdopen
 
+// Needed for sockets on windows
+#pragma comment(lib, "Ws2_32.lib")
+
 #else
 
 #define USE_POSIX 1
