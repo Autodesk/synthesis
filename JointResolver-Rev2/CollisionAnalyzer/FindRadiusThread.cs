@@ -116,10 +116,7 @@ class FindRadiusThread
                     return;
                 }
 
-                if (localRadius > localMaxRadius)
-                {
-                    localMaxRadius = localRadius;
-                }
+                localMaxRadius = Math.Max(localMaxRadius, localRadius);
             }
         }
 
