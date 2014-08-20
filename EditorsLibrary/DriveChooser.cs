@@ -15,6 +15,7 @@ public partial class DriveChooser : Form
     public DriveChooser()
     {
         InitializeComponent();
+        base.Layout += DriveChooser_Layout;
     }
 
     private JointDriverType[] typeOptions;
@@ -34,11 +35,9 @@ public partial class DriveChooser : Form
         {
             cmbJointDriver.Items.Add(Enum.GetName(typeof(JointDriverType), type).Replace('_', ' ').ToLowerInvariant());
         }
-        cmbJointDriver.SelectedIndex = 0;
         if (joint.cDriver != null)
         {
             cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
-            cmbJointDriver_SelectedIndexChanged(null, null);
             txtPortA.Value = joint.cDriver.portA;
             txtPortB.Value = joint.cDriver.portB;
             txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
@@ -80,6 +79,7 @@ public partial class DriveChooser : Form
             }
             #endregion
         }
+        PerformLayout();
         this.ShowDialog(owner);
     }
 
@@ -88,7 +88,7 @@ public partial class DriveChooser : Form
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
+    void DriveChooser_Layout(object sender, LayoutEventArgs e)
     {
         if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
         {
@@ -120,12 +120,16 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Clear();
                 tabsMeta.Visible = false;
             }
-            
         }
         // Set window size
         tabsMeta.Visible = tabsMeta.TabPages.Count > 0;
         btnSave.Top = tabsMeta.TabPages.Count > 0 ? tabsMeta.Bottom + 3 : (grpDriveOptions.Visible ? grpDriveOptions.Bottom + 3 : grpChooseDriver.Bottom + 3);
         base.Height = btnSave.Bottom + 3 + (base.Height - base.ClientSize.Height);
+    }
+
+    private void cmbJointDriver_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        PerformLayout();
     }
 
     /// <summary>
