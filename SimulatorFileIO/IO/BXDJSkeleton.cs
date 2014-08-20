@@ -113,16 +113,13 @@ public class BXDJSkeleton
 
             if (root == null)
             {
-                reader.Close();
                 throw new Exception("This skeleton has no known base.  \"" + path + "\" is probably corrupted.");
             }
-            reader.Close();
             return root;
         }
-        catch (Exception e)
+        finally
         {
             reader.Close();
-            throw e.GetBaseException();
         }
     }
 

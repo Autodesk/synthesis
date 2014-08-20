@@ -28,6 +28,7 @@ public partial class ControlGroups
         jointPane.ModifiedJoint += jointPane_ModifiedJoint;
         jointPane.SelectedJoint += jointPane_SelectedJoint;
         txtFilePath.Text = BXDSettings.Instance.LastSkeletonDirectory != null ? BXDSettings.Instance.LastSkeletonDirectory : "";
+        loadFromExisting();
     }
 
     void jointPane_SelectedJoint(RigidNode_Base node)
@@ -112,6 +113,7 @@ public partial class ControlGroups
     {
         this.skeleton = root;
         this.jointPane.SetSkeleton(root);
+        loadFromExisting();
     }
 
     public void Cleanup()
@@ -233,12 +235,13 @@ public partial class ControlGroups
         {
             txtFilePath.Text = selectedPath;
             loadFromExisting();
-            jointPane.SetSkeleton(skeleton);
         }
     }
 
     private void loadFromExisting()
     {
+        if (skeleton == null)
+            return;
         try
         {
             // Merge with existing values
@@ -247,6 +250,7 @@ public partial class ControlGroups
                 RigidNode_Base loadedBase = BXDJSkeleton.ReadSkeleton(txtFilePath.Text + "\\skeleton.bxdj");
                 BXDJSkeleton.CloneDriversFromTo(loadedBase, skeleton);
             }
+            jointPane.SetSkeleton(skeleton);
         }
         catch (Exception e)
         {
