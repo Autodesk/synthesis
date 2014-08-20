@@ -210,6 +210,12 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         hasLinearStartLimit = (limits & 2) == 2;
         hasLinearEndLimit = (limits & 4) == 4;
 
+        if (hasAngularLimit)
+        {
+            angularLimitLow = reader.ReadSingle();
+            angularLimitHigh = reader.ReadSingle();
+        }
+
         if (hasLinearStartLimit)
         {
             linearLimitStart = reader.ReadSingle();
