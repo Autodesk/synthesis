@@ -78,7 +78,7 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
 		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
 		wCollider.AddComponent<WheelCollider>();
-		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius + (wheel.radius * 0.15f)) * 0.01f;
+		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * (1.00f)) * 0.01f;
 		wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
@@ -294,6 +294,7 @@ public class UnityRigidNode : RigidNode_Base
 			if (!unityObject.GetComponent<Rigidbody>())
 			{
 				unityObject.AddComponent<Rigidbody>();
+                unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
 			}
 		});	
 				
