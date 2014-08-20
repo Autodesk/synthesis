@@ -16,7 +16,7 @@ class WheelAnalyzer
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
         ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
         double maxWidth = 0; //The width of the part of the wheel with the largest radius.
-        Vector center; //The average center of all the vertex coordinates.
+        BXDVector3 center; //The average center of all the vertex coordinates.
         Matrix invertedTransform; //Stores the transfrom from part axes to assembly axes.
         WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
 
@@ -119,17 +119,12 @@ class WheelAnalyzer
             timer.Stop();
             Console.WriteLine("Width took " + timer.Elapsed);
 
-            invertedTransform = treadPart.Transformation;
-            invertedTransform.Invert();
-
-            center.TransformBy(invertedTransform);
-
             //Beings saving calculated values to the driver.
             wheelDriver.radius = (float)FindRadiusThread.GetRadius();
             wheelDriver.width = (float)maxWidth;
-            wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
-            wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
-            wheelDriver.center.z = (float)(center.Z + treadPart.Transformation.Translation.Z);
+            wheelDriver.center.x = (float)(center.x + treadPart.Transformation.Translation.X);
+            wheelDriver.center.y = (float)(center.y + treadPart.Transformation.Translation.Y);
+            wheelDriver.center.z = (float)(center.z + treadPart.Transformation.Translation.Z);
 
             Console.WriteLine("Center of " + treadPart.Name + "found to be:");
             Console.WriteLine(wheelDriver.center.x + ", " + wheelDriver.center.y + ", " + wheelDriver.center.z);
@@ -186,14 +181,14 @@ class WheelAnalyzer
     /// <param name="center">
     /// The output object to store the coordinates of the center with respect to the component.
     /// </param>
-    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out Vector center)
+    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out BXDVector3 center)
     {
+
         double newWidth; //The distance from the origin to the latest vertex.
-        double minWidth = 0.0; //The lowest newWidth ever recorded.
-        double maxWidth = 0.0; //The highest newWidth ever recorded.
+        double minWidth = float.PositiveInfinity; //The lowest newWidth ever recorded.
+        double maxWidth = float.NegativeInfinity; //The highest newWidth ever recorded.
         fullWidth = 0.0; //The difference between min and max widths. The actual width of the part.
-        center = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0); //The average coordinates of all the vertices.  Roughly the center.
+        center = new BXDVector3(0, 0, 0); //The average coordinates of all the vertices.  Roughly the center.
         Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part axes.
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the rotation axis as it is transformed.
@@ -245,7 +240,7 @@ class WheelAnalyzer
             for (int i = 0; i < tmpToleranceCount; i++)
             {
                 //Finds worst resolution.
-                if ((worstIndex < 0 || tolerances[i] > tolerances[worstIndex]) && tolerances[i] < .1 && tolerances[i] > .08)
+                if ((worstIndex < 0 || tolerances[i] > tolerances[worstIndex]) && tolerances[i] < .1 && tolerances[i] > .01)
                 {
                     worstIndex = i;
                 }
@@ -253,6 +248,8 @@ class WheelAnalyzer
 
             //Stores the tolerance, defaults to .01 if no better.
             double worstTolerance = (worstIndex == -1) ? .1 : tolerances[worstIndex]; 
+
+            //worstTolerance = .01;
 
             int vertexCount;
             int segmentCount;
@@ -268,49 +265,46 @@ class WheelAnalyzer
                 surface.CalculateFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
             }
 
-            for(int i = 0; i < vertexCoords.Length; i+=3)
+            for(int i = 0; i < vertexCount*3; i+=3)
             {
                 totalVertexCount++;
 
                 vertexVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(vertexCoords[i], vertexCoords[i + 1], vertexCoords[i+2]);
 
-                center.X += vertexVector.X;
-                center.Y += vertexVector.Y;
-                center.Z += vertexVector.Z;
+                center.x += (float)vertexVector.X;
+                center.y += (float)vertexVector.Y;
+                center.z += (float)vertexVector.Z;
 
                 newWidth = myRotationAxis.DotProduct(vertexVector);
 
-                //Stores the distance to the point. 
-                if (newWidth > maxWidth)
-                {
-                    maxWidth = newWidth;
-
-                    if (minWidth == 0.0)
-                    {
-                        minWidth = newWidth;
-                    }
-                }
-                //Changes the starting point when detecting distance for later vertices.
-                if (newWidth < minWidth)
-                {
-                    minWidth = newWidth;
-
-                    if (maxWidth == 0.0)
-                    {
-                        maxWidth = newWidth;
-                    }
-                }
+                maxWidth = Math.Max(maxWidth, newWidth);
+                minWidth = Math.Min(minWidth, newWidth);
             }
 
         }
 
         fullWidth = maxWidth - minWidth;
-        center.X = center.X / totalVertexCount; //Finds the average for all the vertex coordinates.
-        center.Y = center.Y / totalVertexCount;
-        center.Z = center.Z / totalVertexCount;
+        center.x = center.x / totalVertexCount; //Finds the average for all the vertex coordinates.
+        center.y = center.y / totalVertexCount;
+        center.z = center.z / totalVertexCount;
+
+        Console.WriteLine("Center delta is now (" + center.x + ", " + center.y + ", " + center.z + ").");
+
+        //Transform center back to assembly.
+        asmToPart.Invert();
+
+        transformedVector.Cell[1, 1] = center.x;
+        transformedVector.Cell[2, 1] = center.y;
+        transformedVector.Cell[3, 1] = center.z;
+
+        transformedVector.TransformBy(asmToPart);
+
+        center.x = (float)transformedVector.Cell[1, 1];
+        center.y = (float)transformedVector.Cell[2, 1];
+        center.z = (float)transformedVector.Cell[3, 1];
 
         Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
-        Console.WriteLine("Center is at (" + center.X + ", " + center.Y + ", " + center.Z + ").");
+        Console.WriteLine("Center delta after change of axis is now (" + center.x + ", " + center.y + ", " + center.z + ").");
     }
 }
 
