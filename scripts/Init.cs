@@ -53,7 +53,7 @@ public class Init : MonoBehaviour
             UnityRigidNode nodeThing = new UnityRigidNode();
             nodeThing.modelFileName = "field.bxda";
             nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh("C:/Users/t_waggn/Documents/Skeleton/field.bxda");
+            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
