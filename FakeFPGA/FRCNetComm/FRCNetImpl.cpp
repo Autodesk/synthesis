@@ -7,6 +7,7 @@
 #include "DriverStationEnhancedIO.h"
 #include <string.h> // For memset, memcpy
 #include <stdlib.h>
+#include <emulator.h>
 
 extern "C" {
 	FRCNetImpl *frcNetInstance = NULL;
@@ -14,17 +15,17 @@ extern "C" {
 
 FRCNetImpl *GetFakeNetComm() {
 	if (frcNetInstance == NULL) {
-		frcNetInstance = new FRCNetImpl();
+		frcNetInstance = new FRCNetImpl(TEAM_ID);
 		frcNetInstance->start();
 	}
 	return frcNetInstance;
 }
 
-FRCNetImpl::FRCNetImpl(void)
+FRCNetImpl::FRCNetImpl(int teamID)
 {
 	enabled = false;
 	task = NULL;
-	teamID = 1510;	// TODO Super sketchy hack avoid this need to auto-resolve
+	this->teamID = teamID;	// TODO Super sketchy hack avoid this need to auto-resolve
 	newDataSem = NULL;
 	resyncSem = NULL;
 	memset(&ctl, 0, sizeof(ctl));

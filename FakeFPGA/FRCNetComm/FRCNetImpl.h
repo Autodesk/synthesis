@@ -55,7 +55,7 @@ public:
 	WaitSemaphore *newDataSem;
 	ReentrantSemaphore *resyncSem;
 
-	FRCNetImpl();
+	FRCNetImpl(int teamID);
 	~FRCNetImpl();
 	/**
 	* THIS HANDLES ENDIANS!

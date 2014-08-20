@@ -194,7 +194,7 @@ DWORD setupLoopbackDevice(int team) {
 int main(int argc, char **argv) {
 	LPCTSTR hwid = "*msloop";
 	LPCTSTR inf = "C:\\WINDOWS\\inf\\netloop.inf";
-	int team = 1510;
+	int team = 0;
 	if (argc > 1) {
 		team = atoi(argv[1]);
 		char tempBuffer[10];
@@ -203,6 +203,11 @@ int main(int argc, char **argv) {
 			printf("%s doesn't appear to equal %u; team number invalid\n", argv[0], team);
 			scanf_s(" ");
 			return ERROR_INVALID_PARAMETER;
+		}
+	} else {
+		while (team<=0){
+			printf("What team number do you want configured? ");
+			scanf_s("%d", &team);
 		}
 	}
 	if (setupLoopbackDevice(team)  == ERROR_NOT_FOUND) {

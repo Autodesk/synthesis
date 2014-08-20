@@ -2,6 +2,7 @@
 #include <AnalogPotentiometer.h>
 #include <emulator.h>
 
+const int TEAM_ID = 1510;
 
 #ifndef __ROBOTDEMO
 #define __ROBOTDEMO

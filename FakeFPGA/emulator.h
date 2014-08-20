@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <RobotBase.h>	 // Ensure we have the START_ROBOT_CLASS Macro
 
+// Make them set a team ID
+extern const int TEAM_ID;
+
 int StartEmulator();
 extern "C" {
 	int32_t FRC_UserProgram_StartupLibraryInit();
