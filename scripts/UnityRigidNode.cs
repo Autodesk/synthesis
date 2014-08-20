@@ -11,6 +11,8 @@ public class UnityRigidNode : RigidNode_Base
 	private BXDAMesh mesh;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
+    public MeshCollider meshCollider = new MeshCollider();
+
 	
 	public bool IsWheel
 	{
@@ -29,7 +31,7 @@ public class UnityRigidNode : RigidNode_Base
 		unityObject.transform.parent = root;
 		unityObject.transform.position = new Vector3(0, 0, 0);
 		unityObject.name = base.modelFileName;
-	}
+    }
 
 	//creates a uniform configurable joint which can be altered through conditionals.
 	private ConfigurableJoint ConfigJointInternal(Vector3 pos, Vector3 axis, Action<ConfigurableJoint> jointType)
@@ -76,7 +78,7 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
 		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
 		wCollider.AddComponent<WheelCollider>();
-		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius + (wheel.radius * 0.15f)) * 0.01f;
+		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * (1.00f)) * 0.01f;
 		wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
@@ -186,7 +188,7 @@ public class UnityRigidNode : RigidNode_Base
 			//if the mesh contains information which identifies it as a wheel then create a wheel collider.
 			wheel = GetSkeletalJoint().cDriver != null ? GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() : null;
             
-			if (wheel != null && wheel.type != WheelType.NOT_A_WHEEL)
+			if (IsWheel)
 			{
 				CreateWheel(nodeR);	
 				
@@ -292,6 +294,7 @@ public class UnityRigidNode : RigidNode_Base
 			if (!unityObject.GetComponent<Rigidbody>())
 			{
 				unityObject.AddComponent<Rigidbody>();
+                unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
 			}
 		});	
 				
@@ -312,10 +315,13 @@ public class UnityRigidNode : RigidNode_Base
 			
 				subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
 				subCollider.GetComponent<MeshCollider>().convex = true;
+                meshCollider = subCollider.GetComponent<MeshCollider>();
+
 				
 			}
+         
 		});
-				
+	
 		Rigidbody rigidB = unityObject.GetComponent<Rigidbody>();
 		rigidB.mass = mesh.physics.mass;
 		rigidB.centerOfMass = auxFunctions.ConvertV3(mesh.physics.centerOfMass);

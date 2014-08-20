@@ -14,10 +14,10 @@ public class Init : MonoBehaviour
     public int[] motors = { 1, 2, 3, 4 };
     RigidNode_Base skeleton;
     unityPacket udp = new unityPacket();
-    List<Vector3> unityWheelData = new List<Vector3>();
+    List<WheelCollider> unityWheelData = new List<WheelCollider>();
+    List<MeshCollider> meshColliders = new List<MeshCollider>();
     // int robots = 0;
-    string filePath = "C:/Users/" + Environment.UserName + "/Documents/Skeleton/";
-
+    string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
     public enum WheelPositions
     {
         FL = 1,
@@ -25,7 +25,6 @@ public class Init : MonoBehaviour
         BL = 3,
         BR = 4
     }
-
     [STAThread]
     void OnGUI()
     {
@@ -52,7 +51,7 @@ public class Init : MonoBehaviour
             UnityRigidNode nodeThing = new UnityRigidNode();
             nodeThing.modelFileName = "field.bxda";
             nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh("C:/Users/t_waggn/Documents/Skeleton/field.bxda");
+            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
@@ -72,22 +71,22 @@ public class Init : MonoBehaviour
 
                 uNode.CreateTransform(robot.transform);
                 uNode.CreateMesh(filePath + uNode.modelFileName);
-
                 uNode.FlipNorms();
                 uNode.CreateJoint();
-
+                
                 if (uNode.IsWheel)
                 {
-
-                    unityWheelData.Add(auxFunctions.ConvertV3(uNode.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().center));
-		//unityWheelData.add(uNode.GetWheelCollider());
+                    unityWheelData.Add(uNode.wCollider.GetComponent<WheelCollider>());
                 }
+                meshColliders.Add(uNode.meshCollider);
+                
             }
             if (unityWheelData.Count > 0)
             {
                 auxFunctions.OrientRobot(unityWheelData, robot.transform);
 
             }
+            auxFunctions.IgnoreCollisionDetection(meshColliders);
         }
         else
         {
@@ -101,6 +100,7 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
+
         TryLoad();
     }
 

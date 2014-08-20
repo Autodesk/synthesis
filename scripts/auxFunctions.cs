@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -70,70 +71,22 @@ public class auxFunctions : RigidNode_Base
 
 		q.SetFromToRotation (norm, Vector3.up);
 		parent.localRotation *= q;
-
-      
-
-	
-	
-	
-//		Vector3 norm = Vector3.Cross((wheels[0] - wheels[1]),(wheels[0] - wheels[2]));
-//		Debug.Log(norm);
-//		
-//		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
-//		Vector3 above = Vector3.Cross((wheels[0] - com),norm);
-//		//norm = norm * ((above.y < 0) ? 1 : -1);
-//	
-//		norm = norm * (Mathf.Sign(norm.y) != Mathf.Sign(above.y) ? -1:1);
-//
-//		Quaternion q = new Quaternion();
-//		q.SetFromToRotation(norm, Vector3.up);
-//		parent.rotation *= q;	
-//		Debug.Log("Orientation Complete: " + parent.name);	
-
 	}
-	
-	
-	// Creates a bounding box for the entire gameobject which is then used to position the robot with a raycast
-	public static void placeRobotJustAboveGround (Transform parent) 
-	{
-		Vector3 center = Vector3.zero;
-		for(int i = 0; i < parent.childCount; i++)
-		{
-			Vector3 subCenter = Vector3.zero;
-			foreach (Transform child in parent.GetChild(i))
-			{
-				if(child.renderer != null)
-				{
-					subCenter += child.gameObject.renderer.bounds.center;
-				}
-			}
-			subCenter /= parent.GetChild(i).childCount;
-			center += subCenter;	
-		}
-		center /= parent.childCount;
-		Bounds parentBounds = new Bounds(center, Vector3.zero);
-		for(int i = 0; i < parent.childCount; i++)	
-		{
-			foreach(Transform child in parent.GetChild(i))
-			{
-				if(child.renderer != null)
-				{
-					parentBounds.Encapsulate(child.renderer.bounds);
-				}
-			}
-		}
-		
-		Vector3 above = parentBounds.min - parentBounds.center;
-		float yValue =  above.y - parentBounds.center.y;
-		parentBounds.center = new Vector3(parentBounds.center.x, parentBounds.center.y + yValue, parentBounds.center.z);
-		// Uses a raycast to find the distance from a given point to the floor
-		RaycastHit hit = new RaycastHit();
-		Physics.Raycast(parentBounds.center, Vector3.down, out hit);
-		float distanceToFloor = hit.distance;
-		
-		// It then translates the robot down
-		parent.localPosition = new Vector3(parent.localPosition.x, -(distanceToFloor), parent.localPosition.z);
-	}
+    public static void IgnoreCollisionDetection(List<MeshCollider> meshColliders)
+    {
+        for(int i = 0; i < meshColliders.Count; i++)
+        {
+            for (int j = 0; j < meshColliders.Count; j++)
+            {
+                if (meshColliders[i] == meshColliders[j])
+                    continue;
+                Physics.IgnoreCollision(meshColliders[i], meshColliders[j], true);
+            }
+               
+            }
+                 
+
+    }
 }
 
 
