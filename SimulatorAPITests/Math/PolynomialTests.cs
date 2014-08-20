@@ -8,19 +8,13 @@ public class PolynomialTests
     [TestMethod]
     public void Polynomial_ReadWrite()
     {
-        MemoryStream stream = new MemoryStream();
-        BinaryReader reader = new BinaryReader(stream);
-        BinaryWriter writer = new BinaryWriter(stream);
-        Polynomial poly = new Polynomial(TestUtils.MakeRandomArray<float>(10, (double d) =>
+        float[] array = TestUtils.MakeRandomArray<float>(10, (double d) =>
         {
             return (float) d;
-        }));
-        poly.WriteData(writer);
-        stream.Position = 0;
-        Polynomial result = new Polynomial();
-        result.ReadData(reader);
+        });
+        Polynomial poly = new Polynomial((float[]) array.Clone());
+        Polynomial result = TestUtils.WriteReadObject(poly);
         AssertExtensions.AreEqual(poly.coeff, result.coeff, 0, "Polynomial coefficients");
-        stream.Close();
     }
 
     [TestMethod]

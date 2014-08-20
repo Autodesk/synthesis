@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 class TestUtils
 {
@@ -12,5 +14,17 @@ class TestUtils
             arr[i] = create(rand.NextDouble() * 1000.0);
         }
         return arr;
+    }
+
+    public static T WriteReadObject<T>(T obj, RWObjectExtensions.ReadObjectFully ext = null) where T : RWObject
+    {
+        MemoryStream stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        BinaryReader reader = new BinaryReader(stream);
+        obj.WriteData(writer);
+        stream.Position = 0;
+        T result = reader.ReadRWObject<T>(ext);
+        stream.Close();
+        return result;
     }
 }

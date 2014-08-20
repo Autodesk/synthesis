@@ -8,16 +8,9 @@ public class BXDVector3Tests
     [TestMethod]
     public void BXDVector3_RW()
     {
-        MemoryStream stream = new MemoryStream();
-        BinaryReader reader = new BinaryReader(stream);
-        BinaryWriter writer = new BinaryWriter(stream);
         BXDVector3 vec = new BXDVector3(1, 2, 3);
-        vec.WriteData(writer);
-        stream.Position = 0;
-        BXDVector3 result = new BXDVector3();
-        result.ReadData(reader);
+        BXDVector3 result = TestUtils.WriteReadObject(vec.Copy());
         Assert.AreEqual(vec, result, "Vectors are not equal");
-        stream.Close();
     }
 
     [TestMethod]

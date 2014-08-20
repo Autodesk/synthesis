@@ -16,7 +16,7 @@ public enum SkeletalJointType : byte
 /// <summary>
 /// Represents a moving joint between two nodes.
 /// </summary>
-public abstract class SkeletalJoint_Base
+public abstract class SkeletalJoint_Base : RWObject
 {
     /// <summary>
     /// Generic delegate for creating skeletal joints from a joint type.
@@ -146,5 +146,15 @@ public abstract class SkeletalJoint_Base
             info += "\n Driver: " + cDriver.ToString().Replace("\n", "\n ");
         }
         return info;
+    }
+
+    public void WriteData(System.IO.BinaryWriter writer)
+    {
+        WriteJoint(writer);
+    }
+
+    public void ReadData(System.IO.BinaryReader reader)
+    {
+        throw new NotImplementedException("Don't read a joint directly!");
     }
 }

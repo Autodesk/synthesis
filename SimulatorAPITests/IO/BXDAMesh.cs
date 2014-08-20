@@ -22,12 +22,13 @@ public class BXDAMeshTesting
             surfs[i].indicies = new int[rand.Next(1, 100) * 3];
             for (int j = 0; j < surfs[i].indicies.Length; j++)
             {
-                surfs[i].indicies[j] = rand.Next(0, 100);
+                surfs[i].indicies[j] = rand.Next(0,1);
             }
         }
         BXDAMesh.BXDASubMesh[] subMesh = new BXDAMesh.BXDASubMesh[rand.Next(1, 3)];
         for (int i = 0; i < subMesh.Length; i++)
         {
+            subMesh[i] = new BXDAMesh.BXDASubMesh();
             subMesh[i].verts = new double[rand.Next(1, 100) * 3];
             if (i == 0)
             {
@@ -120,19 +121,8 @@ public class BXDAMeshTesting
     [TestMethod]
     public void BXDAMesh_ReadWriteTest()
     {
-        BXDAMesh mesh = new BXDAMesh();
-        MemoryStream stream = new MemoryStream();
-        {   // Write Test
-            BinaryWriter writer = new BinaryWriter(stream);
-            mesh.WriteData(writer);
-        }
-        stream.Position = 0;
-        {
-            BinaryReader reader = new BinaryReader(stream);
-            BXDAMesh readInto = new BXDAMesh();
-            readInto.ReadData(reader);
-            AssertMeshEqual(readInto, mesh);
-        }
-        stream.Close();
+        BXDAMesh mesh = createRandomMesh();
+        BXDAMesh readInto = TestUtils.WriteReadObject(mesh);
+        AssertMeshEqual(readInto, mesh);
     }
 }

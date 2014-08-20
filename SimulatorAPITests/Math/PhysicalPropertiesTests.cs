@@ -8,22 +8,15 @@ public class PhysicalPropertiesTests
     [TestMethod]
     public void PhysicalProperties_RW()
     {
-        MemoryStream stream = new MemoryStream();
-        BinaryReader reader = new BinaryReader(stream);
-        BinaryWriter writer = new BinaryWriter(stream);
         PhysicalProperties props = new PhysicalProperties();
         {
             Random rand = new Random();
             props.mass = (float) rand.NextDouble();
             props.centerOfMass = new BXDVector3(rand.NextDouble(), rand.NextDouble(), rand.NextDouble());
         }
-        props.WriteData(writer);
-        stream.Position = 0;
-        PhysicalProperties result = new PhysicalProperties();
-        result.ReadData(reader);
+        PhysicalProperties result = TestUtils.WriteReadObject(props);
         Assert.AreEqual(props.centerOfMass, result.centerOfMass, "Physical properties center of mass inequal");
         Assert.AreEqual(props.mass, result.mass, "Physical properties mass is inequal");
-        stream.Close();
     }
     [TestMethod]
     public void PhysicalProperties_Add()

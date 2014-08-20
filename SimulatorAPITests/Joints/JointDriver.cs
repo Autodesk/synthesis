@@ -8,28 +8,18 @@ public class JointDriverTesting
     [TestMethod]
     public void JointDriver_ReadWrite()
     {
-        MemoryStream stream = new MemoryStream();
-        BinaryWriter writer = new BinaryWriter(stream);
-        BinaryReader reader = new BinaryReader(stream);
-
         JointDriver driver = new JointDriver(JointDriverType.MOTOR);
         driver.portA = 1;
         driver.portB = 2;
         driver.upperLimit = 1.234f;
         driver.lowerLimit = 1.01f;
 
-        driver.WriteData(writer);
-        stream.Position = 0;
-
-        JointDriver result = new JointDriver();
-        result.ReadData(reader);
+        JointDriver result = TestUtils.WriteReadObject(driver);
 
         Assert.AreEqual(1, result.portA, "Joint driver portA not equal");
         Assert.AreEqual(2, result.portB, "Joint driver portB not equal");
         Assert.AreEqual(1.234f, result.upperLimit, "Joint driver upperLimit not equal");
         Assert.AreEqual(1.01f, result.lowerLimit, "Joint driver lowerLimit not equal");
-
-        stream.Close();
     }
 
     [TestMethod]
