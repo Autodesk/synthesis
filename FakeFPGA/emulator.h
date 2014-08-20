@@ -1,6 +1,8 @@
 #ifndef __EMULATOR_H
 #define __EMULATOR_H
 #include <stdint.h>
+#include <RobotBase.h>	 // Ensure we have the START_ROBOT_CLASS Macro
+
 int StartEmulator();
 extern "C" {
 	int32_t FRC_UserProgram_StartupLibraryInit();
@@ -9,6 +11,8 @@ extern "C" {
 #ifndef START_ROBOT_CLASS
 #error "emulator.h needs to be included AFTER WPILib"
 #endif
+
+#undef START_ROBOT_CLASS // Squash warnings
 
 // Override the default FRC robot class start macro.
 #define START_ROBOT_CLASS(_ClassName_) \

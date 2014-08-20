@@ -18,12 +18,12 @@
     <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
     <ClCompile Include="ChipObject\tSystem.cpp" />
     <ClCompile Include="ChipObject\tWatchcatImpl.cpp" />
-    <ClCompile Include="emulator_main.cpp" />
     <ClCompile Include="FRCNetComm\FRCNetImpl.cpp" />
-    <ClCompile Include="nUsageReporting.cpp" />
-    <ClCompile Include="PWMDecoder.cpp" />
     <ClCompile Include="StateNetwork\StateNetworkServer.cpp" />
     <ClCompile Include="FRCNetComm\FRCNetComm.cpp" />
+    <ClCompile Include="Emulator.cpp" />
+    <ClCompile Include="ChipObject\PWMDecoder.cpp" />
+    <ClCompile Include="ChipObject\nUsageReporting.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChipObject\NiFakeFpga.h" />
@@ -44,9 +44,9 @@
     <ClInclude Include="FRCNetComm\FRCNetImpl.h" />
     <ClInclude Include="FRCNetComm\FRCNetStructures.h" />
     <ClInclude Include="FRCNetComm\FRCFakeNetComm.h" />
-    <ClInclude Include="PWMDecoder.h" />
     <ClInclude Include="StateNetwork\StateNetworkServer.h" />
     <ClInclude Include="StateNetwork\StatePacket.h" />
     <ClInclude Include="emulator.h" />
+    <ClInclude Include="ChipObject\PWMDecoder.h" />
   </ItemGroup>
 </Project>

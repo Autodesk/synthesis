@@ -12,11 +12,11 @@
 #include "ChipObject/tEncoderImpl.h"
 #include "ChipObject/tCounterImpl.h"
 #include "OSAL/System.h"
-#include "PWMDecoder.h"
+#include "ChipObject/PWMDecoder.h"
 #include "StateNetwork/StatePacket.h"
 #include "StateNetwork/StateNetworkServer.h"
 #include "FRCNetComm/FRCNetImpl.h"
-#include "emulator.h"
+#include "Emulator.h"
 
 int StartEmulator() {
 	printf("Start now!\n");
