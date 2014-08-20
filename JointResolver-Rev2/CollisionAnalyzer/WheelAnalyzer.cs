@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
+using System.Diagnostics;
 
 class WheelAnalyzer
 {
@@ -109,7 +110,14 @@ class WheelAnalyzer
             //Finds width.
             treadPart = FindRadiusThread.GetWidthComponent();
 
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+
+
             WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
+
+            timer.Stop();
+            Console.WriteLine("Width took " + timer.Elapsed);
 
             invertedTransform = treadPart.Transformation;
             invertedTransform.Invert();
@@ -237,14 +245,14 @@ class WheelAnalyzer
             for (int i = 0; i < tmpToleranceCount; i++)
             {
                 //Finds worst resolution.
-                if (worstIndex < 0 || tolerances[i] > tolerances[worstIndex])
+                if ((worstIndex < 0 || tolerances[i] > tolerances[worstIndex]) && tolerances[i] < .1 && tolerances[i] > .08)
                 {
                     worstIndex = i;
                 }
             }
 
             //Stores the tolerance, defaults to .01 if no better.
-            double worstTolerance = (tolerances[worstIndex] < .01) ? tolerances[worstIndex] : .01; 
+            double worstTolerance = (worstIndex == -1) ? .1 : tolerances[worstIndex]; 
 
             int vertexCount;
             int segmentCount;
@@ -255,7 +263,7 @@ class WheelAnalyzer
 
             surface.GetExistingFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
 
-            if (vertexCoords.Length == 1)
+            if (vertexCount == 0)
             {
                 surface.CalculateFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
             }
