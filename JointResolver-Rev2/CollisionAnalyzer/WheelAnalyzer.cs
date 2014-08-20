@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Inventor;
 using System.Threading;
+using System.Diagnostics;
 
 class WheelAnalyzer
 {
@@ -15,8 +16,7 @@ class WheelAnalyzer
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
         ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
         double maxWidth = 0; //The width of the part of the wheel with the largest radius.
-        Vector center; //The average center of all the vertex coordinates.
-        Matrix invertedTransform; //Stores the transfrom from part axes to assembly axes.
+        BXDVector3 center; //The average center of all the vertex coordinates.
         WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
 
 
@@ -25,11 +25,11 @@ class WheelAnalyzer
         FindRadiusThread.Reset(); //Prepares the shared memeory for the next component.
 
         //Only need to worry about wheels if it is a rotational joint.
-        if (joint is RotationalJoint)
+        if (wheelDriver != null && wheelDriver.type != WheelType.NOT_A_WHEEL && joint is RotationalJoint)
         {
             List<ComponentRadiusPair> sortedBoxList = new List<ComponentRadiusPair>();
 
-            foreach (ComponentOccurrence component in ((RotationalJoint)joint).GetWrapped().childGroup.occurrences)
+            foreach (ComponentOccurrence component in ((RotationalJoint) joint).GetWrapped().childGroup.occurrences)
             {
                 sortComponentRadii(component, sortedBoxList);
             }
@@ -38,96 +38,103 @@ class WheelAnalyzer
 
             Console.WriteLine("Printing sorted list");
 
-            foreach(ComponentRadiusPair pair in sortedBoxList)
+            foreach (ComponentRadiusPair pair in sortedBoxList)
             {
                 Console.WriteLine(pair.component.Name + " with box radius " + pair.possibleRadius);
 
                 radiusThreadList.Add(null); //Ensures there are the correct number of spaces for when we insert by index later.
             }
 
-            
 
-            int nextComponentIndex = 0; //The index of the next component of which to find the radius.
-            int activeThreadCount = 0;  //Counts the number of started threads that have yet to complete.
-            int largestRadiusIndex = -1; //-1 means it has not been found yet.  Stores the index after which it is pointless to try and find the radius.
 
-            //Loops until it is impossible to find a larger radius in the remaining components.
-            while (nextComponentIndex < sortedBoxList.Count && (activeThreadCount > 0 || largestRadiusIndex == -1))
+            #region COMPUTE RADIUS
             {
-                List<FindRadiusThread> threadsToRemove = new List<FindRadiusThread>();
+                int nextComponentIndex = 0; //The index of the next component of which to find the radius.
+                int activeThreadCount = 0;  //Counts the number of started threads that have yet to complete.
+                int largestRadiusIndex = -1; //-1 means it has not been found yet.  Stores the index after which it is pointless to try and find the radius.
 
-                for(int index = 0; index < nextComponentIndex; index++)
+                //Loops until it is impossible to find a larger radius in the remaining components.
+                while (nextComponentIndex < sortedBoxList.Count && (activeThreadCount > 0 || largestRadiusIndex == -1))
                 {
+                    List<FindRadiusThread> threadsToRemove = new List<FindRadiusThread>();
 
-                    if (radiusThreadList[index] != null)
+                    for (int index = 0; index < nextComponentIndex; index++)
                     {
-                        //Ends threads that cannot have a larger radius than that already found.
-                        if (!radiusThreadList[index].GetIsAlive())
-                        {
-                            activeThreadCount--;
-                            threadsToRemove.Add(radiusThreadList[index]);
-                        }
 
-                       
-                        //If a thread has found a radius that would not fit in the bounding box of the next component, there's no point in continuing trying to find
-                        //  a larger radius in the next component.
-                        if (index + 1 < sortedBoxList.Count && (index < largestRadiusIndex || largestRadiusIndex == -1) && ((FindRadiusThread.GetRadius() > sortedBoxList[index + 1].possibleRadius)))
+                        if (radiusThreadList[index] != null)
                         {
-                            largestRadiusIndex = index;
-                        }
-                 
+                            //Ends threads that cannot have a larger radius than that already found.
+                            if (!radiusThreadList[index].GetIsAlive())
+                            {
+                                activeThreadCount--;
+                                threadsToRemove.Add(radiusThreadList[index]);
+                            }
 
-                        if (radiusThreadList[index].GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
-                        {
-                            activeThreadCount--;
-                            radiusThreadList[index].endThread = true;
+
+                            //If a thread has found a radius that would not fit in the bounding box of the next component, there's no point in continuing trying to find
+                            //  a larger radius in the next component.
+                            if (index + 1 < sortedBoxList.Count && (index < largestRadiusIndex || largestRadiusIndex == -1) && ((FindRadiusThread.GetRadius() > sortedBoxList[index + 1].possibleRadius)))
+                            {
+                                largestRadiusIndex = index;
+                            }
+
+
+                            if (radiusThreadList[index].GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
+                            {
+                                activeThreadCount--;
+                                radiusThreadList[index].endThread = true;
+                            }
                         }
+                    }
+
+                    //Now that we're out of iterating through, we remove the threads that have ended.
+                    foreach (FindRadiusThread threadToRemove in threadsToRemove)
+                    {
+                        radiusThreadList.Remove(threadToRemove);
+                        radiusThreadList.Add(null);  //Keeps the index existing.
+                    }
+
+                    //Adds new threads when needed.
+                    while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
+                    {
+                        radiusThreadList[nextComponentIndex] = new FindRadiusThread(sortedBoxList[nextComponentIndex].component, ((RotationalJoint) joint).axis);
+                        radiusThreadList[nextComponentIndex].Start();
+                        nextComponentIndex++;
+                        activeThreadCount++;
                     }
                 }
 
-                //Now that we're out of iterating through, we remove the threads that have ended.
-                foreach(FindRadiusThread threadToRemove in threadsToRemove)
+                //Waits for all remaining threads.
+                for (int index = 0; index < nextComponentIndex; index++)
                 {
-                    radiusThreadList.Remove(threadToRemove);
-                    radiusThreadList.Add(null);  //Keeps the index existing.
+                    if (radiusThreadList[index] != null)
+                    {
+                        radiusThreadList[index].Join();
+                    }
                 }
 
-                //Adds new threads when needed.
-                while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
-                {
-                    radiusThreadList[nextComponentIndex] = new FindRadiusThread(sortedBoxList[nextComponentIndex].component, ((RotationalJoint)joint).axis);
-                    radiusThreadList[nextComponentIndex].Start();
-                    nextComponentIndex++;
-                    activeThreadCount++;
-                }
+                Console.WriteLine("Largest radius is " + FindRadiusThread.GetRadius());
             }
-
-            //Waits for all remaining threads.
-            for (int index = 0; index < nextComponentIndex; index++)
-            {
-                if (radiusThreadList[index] != null)
-                {
-                    radiusThreadList[index].Join();
-                }
-            }
-
-            Console.WriteLine("Largest radius is " + FindRadiusThread.GetRadius());
+            #endregion
 
             //Finds width.
             treadPart = FindRadiusThread.GetWidthComponent();
-            WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint)joint).axis, out maxWidth, out center);
 
-            invertedTransform = treadPart.Transformation;
-            invertedTransform.Invert();
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
 
-            center.TransformBy(invertedTransform);
+
+            WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint) joint).axis, out maxWidth, out center);
+
+            timer.Stop();
+            Console.WriteLine("Width took " + timer.Elapsed);
 
             //Beings saving calculated values to the driver.
-            wheelDriver.radius = (float)FindRadiusThread.GetRadius();
-            wheelDriver.width = (float)maxWidth;
-            wheelDriver.center.x = (float)(center.X + treadPart.Transformation.Translation.X);
-            wheelDriver.center.y = (float)(center.Y + treadPart.Transformation.Translation.Y);
-            wheelDriver.center.z = (float)(center.Z + treadPart.Transformation.Translation.Z);
+            wheelDriver.radius = (float) FindRadiusThread.GetRadius();
+            wheelDriver.width = (float) maxWidth;
+            wheelDriver.center.x = (float) (center.x + treadPart.Transformation.Translation.X);
+            wheelDriver.center.y = (float) (center.y + treadPart.Transformation.Translation.Y);
+            wheelDriver.center.z = (float) (center.z + treadPart.Transformation.Translation.Z);
 
             Console.WriteLine("Center of " + treadPart.Name + "found to be:");
             Console.WriteLine(wheelDriver.center.x + ", " + wheelDriver.center.y + ", " + wheelDriver.center.z);
@@ -161,7 +168,7 @@ class WheelAnalyzer
         {
             //Finds the correct spot to insert the component based on the magnitude of the diagonal of the bounding box.
             sortedBoxList.Add(new ComponentRadiusPair(component));
-        }        
+        }
     }
 
     /// <summary>
@@ -179,15 +186,12 @@ class WheelAnalyzer
     /// <param name="center">
     /// The output object to store the coordinates of the center with respect to the component.
     /// </param>
-    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out Vector center)
+    public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out BXDVector3 center)
     {
-        double newWidth; //The distance from the origin to the latest vertex.
-        double minWidth = 0.0; //The lowest newWidth ever recorded.
-        double maxWidth = 0.0; //The highest newWidth ever recorded.
+        double minWidth = float.PositiveInfinity; //The lowest newWidth ever recorded.
+        double maxWidth = float.NegativeInfinity; //The highest newWidth ever recorded.
         fullWidth = 0.0; //The difference between min and max widths. The actual width of the part.
-        center = ((Inventor.Application)System.Runtime.InteropServices.Marshal.
-            GetActiveObject("Inventor.Application")).TransientGeometry.CreateVector(0, 0, 0); //The average coordinates of all the vertices.  Roughly the center.
-        Vector myRotationAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(); //The axis of rotation relative to the part axes.
+        center = new BXDVector3(0, 0, 0); //The average coordinates of all the vertices.  Roughly the center.
         Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the rotation axis as it is transformed.
         Inventor.Point origin;
@@ -197,7 +201,6 @@ class WheelAnalyzer
         Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
         Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
-        Vector vertexVector;
         int totalVertexCount = 0;
 
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
@@ -211,60 +214,92 @@ class WheelAnalyzer
         transformedVector.Cell[2, 1] = rotationAxis.y;
         transformedVector.Cell[3, 1] = rotationAxis.z;
 
-        Console.Write("Changing vector from " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1]);
+        Console.Write("Changing vector from " + rotationAxis);
 
         transformedVector.TransformBy(asmToPart);
 
-        myRotationAxis.X = transformedVector.Cell[1, 1];
-        myRotationAxis.Y = transformedVector.Cell[2, 1];
-        myRotationAxis.Z = transformedVector.Cell[3, 1];
+        BXDVector3 partSpaceAxis = new BXDVector3(
+            transformedVector.Cell[1, 1], transformedVector.Cell[2, 1], transformedVector.Cell[3, 1]);
 
-        Console.Write(" to " + transformedVector.Cell[1, 1] + ", " + transformedVector.Cell[2, 1] + ", " + transformedVector.Cell[3, 1] + ".\n");
+        Console.Write(" to " + partSpaceAxis + ".\n");
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
-            totalVertexCount += surface.Vertices.Count;
-
-            foreach (Vertex vertex in surface.Vertices)
+            double worstTolerance = 0.1;
+            #region EXISTING_TOLERANCES
             {
-                vertexVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(vertex.Point.X, vertex.Point.Y, vertex.Point.Z);
+                int tmpToleranceCount;
+                double[] tolerances = new double[10];
 
-                center.X += vertexVector.X;
-                center.Y += vertexVector.Y;
-                center.Z += vertexVector.Z;
+                surface.GetExistingFacetTolerances(out tmpToleranceCount, out tolerances);
 
-                newWidth = myRotationAxis.DotProduct(vertexVector);
-
-                //Stores the distance to the point. 
-                if (newWidth > maxWidth)
+                int worstIndex = -1;
+                for (int i = 0; i < tmpToleranceCount; i++)
                 {
-                    maxWidth = newWidth;
-
-                    if (minWidth == 0.0)
+                    //Finds worst resolution.
+                    if ((worstIndex < 0 || tolerances[i] > tolerances[worstIndex]) && tolerances[i] < .1 && tolerances[i] > .01)
                     {
-                        minWidth = newWidth;
+                        worstIndex = i;
                     }
                 }
-                //Changes the starting point when detecting distance for later vertices.
-                if (newWidth < minWidth)
-                {
-                    minWidth = newWidth;
 
-                    if (maxWidth == 0.0)
-                    {
-                        maxWidth = newWidth;
-                    }
-                }
+                //Stores the tolerance, defaults to .01 if no better.
+                worstTolerance = (worstIndex == -1) ? .1 : tolerances[worstIndex];
+            }
+            #endregion
+
+            int vertexCount;
+            int segmentCount;
+            //Todo: change size of array.
+            double[] vertexCoords = new double[3000];
+            double[] vertexNormals = new double[3000];
+            int[] vertexIndicies = new int[3000];
+
+            surface.GetExistingFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+
+            if (vertexCount == 0)
+            {
+                surface.CalculateFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
+            }
+
+            for (int i = 0; i < vertexCount * 3; i += 3)
+            {
+                totalVertexCount++;
+
+                BXDVector3 vertexVector = new BXDVector3((float) vertexCoords[i], (float) vertexCoords[i + 1], (float) vertexCoords[i + 2]);
+
+                center.x += (float) vertexVector.x;
+                center.y += (float) vertexVector.y;
+                center.z += (float) vertexVector.z;
+
+                double newWidth = BXDVector3.DotProduct(partSpaceAxis, vertexVector);
+
+                maxWidth = Math.Max(maxWidth, newWidth);
+                minWidth = Math.Min(minWidth, newWidth);
             }
 
         }
 
         fullWidth = maxWidth - minWidth;
-        center.X = center.X / totalVertexCount; //Finds the average for all the vertex coordinates.
-        center.Y = center.Y / totalVertexCount;
-        center.Z = center.Z / totalVertexCount;
+        center.Multiply(1f / totalVertexCount); //Finds the average for all the vertex coordinates.
+
+        Console.WriteLine("Center delta is now (" + center + ").");
+
+        //Transform center back to assembly.
+        asmToPart.Invert();
+
+        transformedVector.Cell[1, 1] = center.x;
+        transformedVector.Cell[2, 1] = center.y;
+        transformedVector.Cell[3, 1] = center.z;
+
+        transformedVector.TransformBy(asmToPart);
+
+        center.x = (float) transformedVector.Cell[1, 1];
+        center.y = (float) transformedVector.Cell[2, 1];
+        center.z = (float) transformedVector.Cell[3, 1];
 
         Console.WriteLine("Found width and center of " + wheelTread.Name + ".");
+        Console.WriteLine("Center delta after change of axis is now (" + center + ").");
     }
 }
 
