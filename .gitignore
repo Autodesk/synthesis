@@ -35,3 +35,5 @@ Icon
 .Spotlight-V100
 .Trashes
 *.meta
+*.mat
+Plugins/SimulatorAPI.dll
