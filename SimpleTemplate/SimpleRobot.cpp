@@ -32,7 +32,11 @@ public:
 
 	void Test(void) 
 	{
-
+		LiveWindow::GetInstance()->SetEnabled(true);
+		while(IsTest() && !IsDisabled()) {
+			Wait(1);
+		}
+		LiveWindow::GetInstance()->SetEnabled(false);
 	}
 };
 

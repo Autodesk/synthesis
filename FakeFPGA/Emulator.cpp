@@ -16,6 +16,7 @@
 #include "StateNetwork/StatePacket.h"
 #include "StateNetwork/StateNetworkServer.h"
 #include "FRCNetComm/FRCNetImpl.h"
+#include "NetworkCommunication/AICalibration.h"
 #include "Emulator.h"
 
 int StartEmulator() {
@@ -43,7 +44,7 @@ int StartEmulator() {
 			}
 			serv.SendStatePacket(pack);
 		}
-		
+
 		// Update sensor values
 		if (serv.ReceiveStatePacket(&sensors)) {
 			for (int j = 0; j<2; j++){
@@ -56,6 +57,17 @@ int StartEmulator() {
 				GetFakeFPGA()->getEncoder(j)->doUpdate(sensors.encoder[j].value);
 			}
 			// Counters?
+		}
+		{ // Fake Battery
+			//  Volts = ((LSB_Weight * 1e-9) * raw) - (Offset * 1e-9)
+			//  ((Volts * 1E9) + Offset) / LSB_Weight = raw
+			int32_t status = 0;
+			uint32_t lsbWeight = FRC_NetworkCommunication_nAICalibration_getLSBWeight(DriverStation::kBatteryModuleNumber-1, DriverStation::kBatteryChannel - 1, &status);
+			uint32_t offset =  FRC_NetworkCommunication_nAICalibration_getOffset(DriverStation::kBatteryModuleNumber-1, DriverStation::kBatteryChannel - 1, &status);
+			signed int value = (signed int) ((float) TEAM_ID * 1E7 / lsbWeight / (1680.0 / 1000.0));
+			value += offset * lsbWeight;
+			GetFakeFPGA()->getAnalog(DriverStation::kBatteryModuleNumber - 1)->values[DriverStation::kBatteryChannel -1] = value;
+			//values[DriverStation::kBatteryChannel - 1] /=  (1680.0 / 1000.0);
 		}
 		// Don't eat the CPU
 		sleep_ms(50);

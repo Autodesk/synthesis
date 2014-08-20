@@ -1,6 +1,7 @@
 #include <NetworkCommunication/FRCComm.h>
 #include <NetworkCommunication/AICalibration.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "FRCNetImpl.h"
 #include "FRCFakeNetComm.h"
@@ -72,7 +73,12 @@ extern "C" {
 		const char *userDataLow, int userDataLowLength, int wait_ms) {
 			int bInt = (int) battery;
 			uint8_t chunkA = ((bInt/10) << 4) | (bInt % 10);
-			int bFrac = (float)((battery - (float) bInt) * 100.0f);
+			int bFrac = (int) ((battery - (float) bInt) * 1000.0f);
+			if ((bFrac % 10) >= 5) {
+				bFrac = (bFrac/10) + 1;
+			} else {
+				bFrac /= 10;
+			}
 			uint8_t chunkB = ((bFrac/10) << 4) | (bFrac % 10);
 			return setStatusDataFloatAsInt((chunkA << 8) | chunkB, dsDigitalOut, updateNumber, userDataHigh, userDataHighLength, userDataLow, userDataLowLength, wait_ms);
 	}
@@ -205,7 +211,7 @@ extern "C" {
 
 uint32_t FRC_NetworkCommunication_nAICalibration_getLSBWeight(
 	const uint32_t aiSystemIndex, const uint32_t channel, int32_t *status) {
-		return 0;
+		return (uint32_t) ((float)(21.06 * 1.0E9) / (float)(1 << 12));
 }
 int32_t FRC_NetworkCommunication_nAICalibration_getOffset(
 	const uint32_t aiSystemIndex, const uint32_t channel, int32_t *status) {
