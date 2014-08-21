@@ -216,7 +216,7 @@ class WheelAnalyzer
         Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0); //The vector for the assembly's coordinate axes.
         Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
-        int totalVertexCount = 0;
+        int vertexCount = 0;
 
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");
 
@@ -263,24 +263,24 @@ class WheelAnalyzer
             }
             #endregion
 
-            int vertexCount;
             int segmentCount;
             //Todo: change size of array.
             double[] vertexCoords = new double[3000];
             double[] vertexNormals = new double[3000];
             int[] vertexIndicies = new int[3000];
 
+            //Uses existing mesh if possible...
             surface.GetExistingFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
 
+            //...otherwise makes its own.
             if (vertexCount == 0)
             {
                 surface.CalculateFacets(worstTolerance, out vertexCount, out segmentCount, out vertexCoords, out vertexNormals, out vertexIndicies);
             }
 
+            //Iterates through three at a time, as the coordinates are ordered in groups of three.
             for (int i = 0; i < vertexCount * 3; i += 3)
             {
-                totalVertexCount++;
-
                 BXDVector3 vertexVector = new BXDVector3((float) vertexCoords[i], (float) vertexCoords[i + 1], (float) vertexCoords[i + 2]);
 
                 center.x += (float) vertexVector.x;
@@ -296,7 +296,7 @@ class WheelAnalyzer
         }
 
         fullWidth = maxWidth - minWidth;
-        center.Multiply(1f / totalVertexCount); //Finds the average for all the vertex coordinates.
+        center.Multiply(1f / vertexCount); //Finds the average for all the vertex coordinates.
 
         Console.WriteLine("Center delta is now (" + center + ").");
 
