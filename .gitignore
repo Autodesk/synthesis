@@ -37,6 +37,7 @@
 *.la
 *.a
 *.lib
+*.jar
 
 # Ignore the builddir
 build/*
@@ -74,3 +75,6 @@ Win32/*
 .settings/
 pom.xml
 package.html
+
+# Annoying WPI Stuff
+FRC_Lib_Version.ini
