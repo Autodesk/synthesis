@@ -70,16 +70,16 @@ public class UnityRigidNode : RigidNode_Base
 	private void CreateWheel(RotationalJoint_Base center)
 	{
 		
-		Quaternion q = new Quaternion();
-		q.SetFromToRotation(joint.axis, new Vector3(1,0,0));
+		//Quaternion q = new Quaternion();
+		//q.SetFromToRotation(joint.axis, new Vector3(1,0,0));
 		
 		wCollider = new GameObject(unityObject.name + " Collider");
 		
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
-		wCollider.transform.position = auxFunctions.ConvertV3(center.basePoint);
+		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
 		wCollider.AddComponent<WheelCollider>();
 		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * (1.00f)) * 0.01f;
-		wCollider.transform.localRotation *= q;
+		//wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
 				

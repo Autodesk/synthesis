@@ -48,11 +48,11 @@ public class Init : MonoBehaviour
         if (filePath != null && skeleton == null)
         {
 
-            UnityRigidNode nodeThing = new UnityRigidNode();
-            nodeThing.modelFileName = "field.bxda";
-            nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
-            nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+          //  UnityRigidNode nodeThing = new UnityRigidNode();
+            //nodeThing.modelFileName = "field.bxda";
+           // nodeThing.CreateTransform(transform);
+           // nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
+            //nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
             robot.transform.parent = transform;
@@ -71,12 +71,18 @@ public class Init : MonoBehaviour
 
                 uNode.CreateTransform(robot.transform);
                 uNode.CreateMesh(filePath + uNode.modelFileName);
-                uNode.FlipNorms();
+
                 uNode.CreateJoint();
-                
+                if (uNode.modelFileName == "node_0.bxda")
+                {
+                    uNode.unityObject.transform.rigidbody.mass = 110;
+                }
                 if (uNode.IsWheel)
                 {
                     unityWheelData.Add(uNode.wCollider.GetComponent<WheelCollider>());
+                    Quaternion q = new Quaternion();
+                    q.eulerAngles = new Vector3(0, 0, 0);
+                    uNode.wCollider.transform.rotation = q;
                 }
                 meshColliders.Add(uNode.meshCollider);
                 
@@ -87,11 +93,13 @@ public class Init : MonoBehaviour
 
             }
             auxFunctions.IgnoreCollisionDetection(meshColliders);
+
         }
         else
         {
             Debug.Log("unityWheelData is null...");
         }
+
     }
 
 
@@ -122,7 +130,6 @@ public class Init : MonoBehaviour
             unityPacket.OutputStatePacket packet = udp.GetLastPacket();
             DriveJoints.UpdateAllMotors(skeleton, packet.dio);
             DriveJoints.UpdateSolenoids(skeleton, packet.solenoid);
-
 
         }
     }
