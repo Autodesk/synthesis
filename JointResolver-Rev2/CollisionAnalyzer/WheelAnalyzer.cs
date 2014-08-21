@@ -8,9 +8,16 @@ using System.Threading;
 
 class WheelAnalyzer
 {
+
+    /// <summary>
+    /// Does all the calculations for the position/dimensions of a wheel.
+    /// </summary>
+    /// <param name="node">
+    /// The node that has the wheel's joint.
+    /// </param>
     public static void StartCalculations(RigidNode node)
     {
-        const int NUMBER_OF_THREADS = 4; //The maximum number of threads finding radii at the same time.
+        const int MAX_THREAD_COUNT = 4; //The maximum number of threads finding radii at the same time.
         SkeletalJoint_Base joint = node.GetSkeletalJoint();
         List<FindRadiusThread> radiusThreadList = new List<FindRadiusThread>(); //Stores references to all the threads finding the radius of the rigid group.
         ComponentOccurrence treadPart = null; //The part of the wheel with the largest radius.
@@ -30,9 +37,10 @@ class WheelAnalyzer
 
             foreach (ComponentOccurrence component in ((RotationalJoint) joint).GetWrapped().childGroup.occurrences)
             {
-                sortComponentRadii(component, sortedBoxList);
+                MakeMaxRadiusList(component, sortedBoxList);
             }
 
+            //Sorts from large bounding box to small.
             sortedBoxList.Sort();
 
             Console.WriteLine("Printing sorted list");
@@ -62,7 +70,7 @@ class WheelAnalyzer
 
                         if (radiusThreadList[index] != null)
                         {
-                            //Ends threads that cannot have a larger radius than that already found.
+                            //Ends threads that cannot have a larger radius than that already found.  Can't remove here since we're in a for loop working on the list.
                             if (!radiusThreadList[index].GetIsAlive())
                             {
                                 activeThreadCount--;
@@ -78,6 +86,7 @@ class WheelAnalyzer
                             }
 
 
+                            //Closes active threads that are working on components that can't contain the largest radius.
                             if (radiusThreadList[index].GetIsAlive() && index > largestRadiusIndex && largestRadiusIndex != -1)
                             {
                                 activeThreadCount--;
@@ -86,7 +95,7 @@ class WheelAnalyzer
                         }
                     }
 
-                    //Now that we're out of iterating through, we remove the threads that have ended.
+                    //Now that we're out of iterating through, we can remove the threads that have ended.
                     foreach (FindRadiusThread threadToRemove in threadsToRemove)
                     {
                         radiusThreadList.Remove(threadToRemove);
@@ -94,7 +103,7 @@ class WheelAnalyzer
                     }
 
                     //Adds new threads when needed.
-                    while (activeThreadCount < NUMBER_OF_THREADS && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
+                    while (activeThreadCount < MAX_THREAD_COUNT && nextComponentIndex < sortedBoxList.Count && largestRadiusIndex == -1)
                     {
                         radiusThreadList[nextComponentIndex] = new FindRadiusThread(sortedBoxList[nextComponentIndex].component, ((RotationalJoint) joint).axis);
                         radiusThreadList[nextComponentIndex].Start();
@@ -116,12 +125,11 @@ class WheelAnalyzer
             }
             #endregion
 
-            //Finds width.
+            //Finds the width of the component with the largest radius.  This is usually the wheel's tread.
             treadPart = FindRadiusThread.GetWidthComponent();
-
             WheelAnalyzer.FindWheelWidthCenter(treadPart, ((RotationalJoint) joint).axis, out maxWidth, out center);
 
-            //Beings saving calculated values to the driver.
+            //Saves calculated values to the driver.
             wheelDriver.radius = (float) FindRadiusThread.GetRadius();
             wheelDriver.width = (float) maxWidth;
             wheelDriver.center.x = (float) (center.x + treadPart.Transformation.Translation.X);
@@ -136,23 +144,38 @@ class WheelAnalyzer
         }
 
 
-        //Finally saves the bundle of info to the driver attached to the wheel.
+        //Finally attaches the driver to the wheel's joint.
         joint.cDriver.AddInfo(wheelDriver);
     }
 
-    private static double findBoxRadius(ComponentOccurrence component)
+    /// <summary>
+    /// Finds the distance between two opposite coners of a part's bounding box.
+    /// </summary>
+    /// <param name="component">
+    /// </param>
+    /// <returns></returns>
+    private static double FindBoxRadius(ComponentOccurrence component)
     {
         return component.RangeBox.MinPoint.VectorTo(component.RangeBox.MaxPoint).Length / 2;
     }
 
-    private static void sortComponentRadii(ComponentOccurrence component, List<ComponentRadiusPair> sortedBoxList)
+    /// <summary>
+    /// Maes a list containg every part and its maximum radius.
+    /// </summary>
+    /// <param name="component">
+    /// The part to add/assembly to explode and add its parts.
+    /// </param>
+    /// <param name="sortedBoxList">
+    /// The list to add to.
+    /// </param>
+    private static void MakeMaxRadiusList(ComponentOccurrence component, List<ComponentRadiusPair> sortedBoxList)
     {
-        //Ignores assemblies and goes to parts.
+        //Goes down to sub components if the component is an assembly.
         if (component.SubOccurrences.Count > 0)
         {
             foreach (ComponentOccurrence subComponent in component.SubOccurrences)
             {
-                sortComponentRadii(subComponent, sortedBoxList);
+                MakeMaxRadiusList(subComponent, sortedBoxList);
             }
         }
 
@@ -180,17 +203,17 @@ class WheelAnalyzer
     /// </param>
     public static void FindWheelWidthCenter(ComponentOccurrence wheelTread, BXDVector3 rotationAxis, out double fullWidth, out BXDVector3 center)
     {
-        double minWidth = float.PositiveInfinity; //The lowest newWidth ever recorded.
-        double maxWidth = float.NegativeInfinity; //The highest newWidth ever recorded.
+        double minWidth = float.PositiveInfinity; //The most negative width ever recorded.
+        double maxWidth = float.NegativeInfinity; //The most positive width ever recorded.
         fullWidth = 0.0; //The difference between min and max widths. The actual width of the part.
         center = new BXDVector3(0, 0, 0); //The average coordinates of all the vertices.  Roughly the center.
-        Matrix asmToPart = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
+        Matrix partAssemblyConversion = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation between part and assembly axes.
         Matrix transformedVector = Program.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the rotation axis as it is transformed.
         Inventor.Point origin;
-        Vector partXAxis;
+        Vector partXAxis; //The vectors for the part's coordinate axes.
         Vector partYAxis;
         Vector partZAxis;
-        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
+        Vector asmXAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0); //The vector for the assembly's coordinate axes.
         Vector asmYAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
         Vector asmZAxis = Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
         int totalVertexCount = 0;
@@ -199,25 +222,25 @@ class WheelAnalyzer
 
         wheelTread.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
 
-        asmToPart.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
+        partAssemblyConversion.SetToAlignCoordinateSystems(origin, partXAxis, partYAxis, partZAxis, origin, asmXAxis, asmYAxis, asmZAxis);
 
-        //The joint normal is changed from being relative to assembly to relative to the part axes.
+        //Need to store the axis in a matrix for the transformation.
         transformedVector.Cell[1, 1] = rotationAxis.x;
         transformedVector.Cell[2, 1] = rotationAxis.y;
         transformedVector.Cell[3, 1] = rotationAxis.z;
 
         Console.Write("Changing vector from " + rotationAxis);
 
-        transformedVector.TransformBy(asmToPart);
+        transformedVector.TransformBy(partAssemblyConversion);
 
-        BXDVector3 partSpaceAxis = new BXDVector3(
-            transformedVector.Cell[1, 1], transformedVector.Cell[2, 1], transformedVector.Cell[3, 1]);
+        //Transormed so now we can compare the part's mesh's vertecie to it.
+        BXDVector3 partSpaceAxis = new BXDVector3(transformedVector.Cell[1, 1], transformedVector.Cell[2, 1], transformedVector.Cell[3, 1]);
 
         Console.Write(" to " + partSpaceAxis + ".\n");
 
         foreach (SurfaceBody surface in wheelTread.Definition.SurfaceBodies)
         {
-            double worstTolerance = 0.1;
+            double worstTolerance; //Stores the maximum distance between the part and its mesh.  Lower means it looks nicer/more polygons.
             #region EXISTING_TOLERANCES
             {
                 int tmpToleranceCount;
@@ -228,7 +251,7 @@ class WheelAnalyzer
                 int worstIndex = -1;
                 for (int i = 0; i < tmpToleranceCount; i++)
                 {
-                    //Finds worst resolution.
+                    //Finds the index of the worst resolution within acceptable bounds.
                     if ((worstIndex < 0 || tolerances[i] > tolerances[worstIndex]) && tolerances[i] < .1 && tolerances[i] > .01)
                     {
                         worstIndex = i;
@@ -278,13 +301,13 @@ class WheelAnalyzer
         Console.WriteLine("Center delta is now (" + center + ").");
 
         //Transform center back to assembly.
-        asmToPart.Invert();
+        partAssemblyConversion.Invert();
 
         transformedVector.Cell[1, 1] = center.x;
         transformedVector.Cell[2, 1] = center.y;
         transformedVector.Cell[3, 1] = center.z;
 
-        transformedVector.TransformBy(asmToPart);
+        transformedVector.TransformBy(partAssemblyConversion);
 
         center.x = (float) transformedVector.Cell[1, 1];
         center.y = (float) transformedVector.Cell[2, 1];
