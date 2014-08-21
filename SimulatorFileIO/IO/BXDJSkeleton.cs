@@ -80,9 +80,10 @@ public class BXDJSkeleton
     /// <returns>The root node of the skeleton</returns>
     public static RigidNode_Base ReadSkeleton(string path)
     {
-        BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
+        BinaryReader reader = null;
         try
         {
+            reader = new BinaryReader(new FileStream(path, FileMode.Open));
             // Sanity check
             uint version = reader.ReadUInt32();
             BXDIO.CheckReadVersion(version);
@@ -117,9 +118,15 @@ public class BXDJSkeleton
             }
             return root;
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return null;
+        }
         finally
         {
-            reader.Close();
+            if (reader != null)
+                reader.Close();
         }
     }
 
