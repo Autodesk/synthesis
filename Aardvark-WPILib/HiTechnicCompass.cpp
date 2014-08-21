@@ -5,6 +5,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "HiTechnicCompass.h"
+#if HAS_I2C
 #include "DigitalModule.h"
 #include "I2C.h"
 #include "NetworkCommunication/UsageReporting.h"
@@ -106,3 +107,4 @@ ITable * HiTechnicCompass::GetTable() {
 	return m_table;
 }
 
+#endif

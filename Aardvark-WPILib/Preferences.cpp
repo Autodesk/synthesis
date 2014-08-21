@@ -13,15 +13,12 @@
 #include <stdio.h>
 #include <algorithm>
 
-/** Private NI function needed to write to the VxWorks target */
-extern "C" int Priv_SetWriteFileAllowed(uint32_t enable); 
-
 /** The Preferences table name */
 static const char *kTableName = "Preferences";
 /** The value of the save field */
 static const char *kSaveField = "~S A V E~";
 /** The file to save to */
-static const char *kFileName = "/c/wpilib-preferences.ini";
+static const char *kFileName = "./wpilib-preferences.ini";
 /** The characters to put between a field and value */
 static const char *kValuePrefix = "=\"";
 /** The characters to put after the value */
@@ -537,7 +534,6 @@ void Preferences::WriteTaskRun()
 	m_fileOpStarted.give();
 
 	FILE *file = NULL;
-	Priv_SetWriteFileAllowed(1);
 	file = fopen(kFileName, "w");
 
 	fputs("[Preferences]\n", file);

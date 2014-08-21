@@ -5,6 +5,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "SPI.h"
+#if HAS_SPI
 
 #include "ChipObject/tSPI.h"
 #include "DigitalModule.h"
@@ -524,3 +525,4 @@ void SPI::ClearReceivedData()
 	m_spi->strobeClearReceivedData(&localStatus);
 	wpi_setError(localStatus);
 }
+#endif

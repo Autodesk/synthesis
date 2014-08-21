@@ -3,6 +3,8 @@
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
+#define HAS_I2C 0
+#if HAS_I2C
 
 #ifndef I2C_H
 #define I2C_H
@@ -44,4 +46,4 @@ private:
 };
 
 #endif
-
+#endif

@@ -535,6 +535,7 @@ uint16_t DigitalModule::GetLoopTiming()
 	return timing;
 }
 
+#if HAS_I2C
 /**
  * Return a pointer to an I2C object for this digital module
  * The caller is responsible for deleting the pointer.
@@ -546,5 +547,4 @@ I2C* DigitalModule::GetI2C(uint32_t address)
 {
 	return new I2C(this, address);
 }
-
-
+#endif

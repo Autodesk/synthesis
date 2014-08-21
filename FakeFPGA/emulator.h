@@ -14,10 +14,9 @@ extern "C" {
 #ifdef JAVA_BUILD
 	__declspec(dllexport) void SetEmulatedTeam(int team);
 #endif
-
 	__declspec(dllexport) int StartEmulator();
 #ifndef JAVA_BUILD
-	int32_t FRC_UserProgram_StartupLibraryInit();
+	extern int32_t FRC_UserProgram_StartupLibraryInit();
 #endif
 }
 

@@ -5,6 +5,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "HiTechnicColorSensor.h"
+#if HAS_I2C
 #include "DigitalModule.h"
 #include "I2C.h"
 #include "NetworkCommunication/UsageReporting.h"
@@ -386,3 +387,4 @@ void HiTechnicColorSensor::StopLiveWindowMode()
 {
 	
 }
+#endif

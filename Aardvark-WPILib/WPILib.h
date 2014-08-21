@@ -85,7 +85,6 @@
 #include "Ultrasonic.h"
 #include "Utility.h"
 #include "Victor.h"
-#include "Vision/AxisCamera.h"
 #include "Watchdog.h"
 #include "WPIErrors.h"
 

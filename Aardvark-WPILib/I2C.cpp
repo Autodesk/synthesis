@@ -5,6 +5,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "I2C.h"
+#if HAS_I2C
 #include "DigitalModule.h"
 #include "NetworkCommunication/UsageReporting.h"
 #include "OSAL/Synchronized.h"
@@ -234,3 +235,4 @@ bool I2C::VerifySensor(uint8_t registerAddress, uint8_t count, const uint8_t *ex
 	return true;
 }
 
+#endif

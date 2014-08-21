@@ -5,6 +5,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "ADXL345_I2C.h"
+#if HAS_I2C
 #include "DigitalModule.h"
 #include "NetworkCommunication/UsageReporting.h"
 #include "I2C.h"
@@ -93,3 +94,4 @@ ADXL345_I2C::AllAxes ADXL345_I2C::GetAccelerations()
 	return data;
 }
 
+#endif

@@ -10,8 +10,7 @@
 #include "OSAL/Synchronized.h"
 #include "Module.h"
 #include "ChipObject.h"
-
-class I2C;
+#include "I2C.h"
 
 const uint32_t kExpectedLoopTiming = 260;
 
@@ -50,8 +49,9 @@ public:
 	void SetDO_PWMDutyCycle(uint32_t pwmGenerator, float dutyCycle);
 	void SetDO_PWMOutputChannel(uint32_t pwmGenerator, uint32_t channel);
 	uint16_t GetLoopTiming();
-
+#if HAS_I2C
 	I2C* GetI2C(uint32_t address);
+#endif
 
 	static DigitalModule* GetInstance(uint8_t moduleNumber);
 	static uint8_t RemapDigitalChannel(uint32_t channel) { return 15 - channel; }; // TODO: Need channel validation

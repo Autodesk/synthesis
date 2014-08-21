@@ -3,7 +3,8 @@
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
-
+#define HAS_SPI 0
+#if HAS_SPI
 #ifndef __SPI_H__
 #define __SPI_H__
 
@@ -80,4 +81,5 @@ private:
 	DISALLOW_COPY_AND_ASSIGN(SPI);
 };
 
+#endif
 #endif

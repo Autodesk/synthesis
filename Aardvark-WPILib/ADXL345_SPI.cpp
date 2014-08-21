@@ -5,6 +5,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "ADXL345_SPI.h"
+
+#if HAS_SPI
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
 #include "NetworkCommunication/UsageReporting.h"
@@ -211,3 +213,4 @@ ADXL345_SPI::AllAxes ADXL345_SPI::GetAccelerations()
 	return data;
 }
 
+#endif
