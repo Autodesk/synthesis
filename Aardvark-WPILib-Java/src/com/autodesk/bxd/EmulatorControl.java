@@ -16,9 +16,7 @@ public class EmulatorControl {
 		setTeam.invokeVoid(new Object[] { teamID });
 		new Thread(new Runnable() {
 			public void run() {
-				System.out.println("StartEmulator");
 				func.invokeInt(new Object[0]);
-				System.out.println("StartEmulatorEnd");
 			}
 		}).start();
 		try {

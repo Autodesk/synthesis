@@ -1,6 +1,5 @@
 package com.autodesk.bxd;
 
-import edu.wpi.first.wpilibj.DigitalModule;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SimpleRobot;
