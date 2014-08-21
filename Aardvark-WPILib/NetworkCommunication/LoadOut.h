@@ -31,8 +31,8 @@ namespace nLoadOut
 extern "C" {
 #endif
 
-    uint32_t FRC_NetworkCommunication_nLoadOut_getModulePresence(uint32_t moduleType, uint8_t moduleNumber);
-    uint32_t FRC_NetworkCommunication_nLoadOut_getTargetClass();
+   __declspec(dllexport)  uint32_t FRC_NetworkCommunication_nLoadOut_getModulePresence(uint32_t moduleType, uint8_t moduleNumber);
+   __declspec(dllexport)  uint32_t FRC_NetworkCommunication_nLoadOut_getTargetClass();
 
 #ifdef __cplusplus
 }

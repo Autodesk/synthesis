@@ -19,11 +19,23 @@
 #include "NetworkCommunication/AICalibration.h"
 #include "Emulator.h"
 
+#ifdef JAVA_BUILD
+	extern int TEAM_ID = -1;
+
+	void SetEmulatedTeam(int team) {
+		if (TEAM_ID <= 0) {
+			TEAM_ID = team;
+		}
+	}
+#endif
+
 int StartEmulator() {
 	printf("Start now!\n");
 	NiFpga_Initialize();	// Make sure we have an FPGA instance ready
 	printf("Init FPGA\n");
+#ifndef JAVA_BUILD
 	FRC_UserProgram_StartupLibraryInit();	// Start the FRC program
+#endif
 	OutputStatePacket pack = OutputStatePacket();
 	InputStatePacket sensors = InputStatePacket();
 	StateNetworkServer serv = StateNetworkServer();

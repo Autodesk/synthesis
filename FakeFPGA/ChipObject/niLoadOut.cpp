@@ -15,3 +15,6 @@ namespace nLoadOut {
 		}
 	}
 }
+uint32_t FRC_NetworkCommunication_nLoadOut_getModulePresence(uint32_t moduleType, uint8_t moduleNumber) {
+	return nLoadOut::getModulePresence((nLoadOut::tModuleType) moduleType, moduleNumber);
+}

@@ -44,6 +44,9 @@ build/*
 *.*project
 *.wr*
 */Debug/*
+*/Release/*
+*/x64/*
+*/Win32/*
 # Some other misc files that might pop up
 *.*swp
 *.*~

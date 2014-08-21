@@ -7,7 +7,7 @@
 #include "DriverStationEnhancedIO.h"
 #include <string.h> // For memset, memcpy
 #include <stdlib.h>
-#include <emulator.h>
+#include <emulator.h> // For TEAM_ID
 
 extern "C" {
 	FRCNetImpl *frcNetInstance = NULL;
