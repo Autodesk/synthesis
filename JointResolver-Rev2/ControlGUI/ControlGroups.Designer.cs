@@ -97,7 +97,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chConcavity});
             this.lstGroups.FullRowSelect = true;
             this.lstGroups.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lstGroups.HoverSelection = true;
             this.lstGroups.Location = new System.Drawing.Point(6, 6);
             this.lstGroups.MultiSelect = false;
             this.lstGroups.Name = "lstGroups";
