@@ -1,0 +1,58 @@
+<root name='FRC_FPGA_2012_1.6.4.lvbitx' signature='nA14C11BDE4BB64AEF6A86FC52A294CD9' version='nFRC_2012_1_6_4' target='cRIO-9074'>
+  <system name='Global'>
+    <constructorInit>tRioStatusCode *status</constructorInit>
+    <constructorCall>status</constructorCall>
+  </system>
+  <system name='Watchdog'>
+    <constructorInit>tRioStatusCode *status</constructorInit>
+    <constructorCall>status</constructorCall>
+  </system>
+  <system name='SysWatchdog'>
+    <constructorInit>tRioStatusCode *status</constructorInit>
+    <constructorCall>status</constructorCall>
+  </system>
+  <system name='Solenoid'>
+    <constructorInit>tRioStatusCode *status</constructorInit>
+    <constructorCall>status</constructorCall>
+  </system>
+  <system name='AI'>
+    <constructorInit>unsigned char sys_index, tRioStatusCode *status</constructorInit>
+    <constructorCall>sys_index, status</constructorCall>
+  </system>
+  <system name='AnalogTrigger'>
+    <constructorInit>unsigned char sys_index, tRioStatusCode *status</constructorInit>
+    <constructorCall>sys_index, status</constructorCall>
+  </system>
+  <system name='DIO'>
+    <constructorInit>unsigned char sys_index, tRioStatusCode *status</constructorInit>
+    <constructorCall>sys_index, status</constructorCall>
+  </system>
+  <system name='DMA'>
+    <constructorInit>tRioStatusCode *status</constructorInit>
+    <constructorCall>status</constructorCall>
+  </system>
+  <system name='SPI'>
+    <constructorInit>tRioStatusCode *status</constructorInit>
+    <constructorCall>status</constructorCall>
+  </system>
+  <system name='Alarm'>
+    <constructorInit>tRioStatusCode *status</constructorInit>
+    <constructorCall>status</constructorCall>
+  </system>
+  <system name='Interrupt'>
+    <constructorInit>unsigned char sys_index, tRioStatusCode *status</constructorInit>
+    <constructorCall>sys_index, status</constructorCall>
+  </system>
+  <system name='Accumulator'>
+    <constructorInit>unsigned char sys_index, tRioStatusCode *status</constructorInit>
+    <constructorCall>sys_index, status</constructorCall>
+  </system>
+  <system name='Encoder'>
+    <constructorInit>unsigned char sys_index, tRioStatusCode *status</constructorInit>
+    <constructorCall>sys_index, status</constructorCall>
+  </system>
+  <system name='Counter'>
+    <constructorInit>unsigned char sys_index, tRioStatusCode *status</constructorInit>
+    <constructorCall>sys_index, status</constructorCall>
+  </system>
+</root>
