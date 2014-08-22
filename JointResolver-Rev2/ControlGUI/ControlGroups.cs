@@ -37,7 +37,7 @@ public partial class ControlGroups
         {
             ComponentHighlighter.ClearHighlight();
         }
-        else if (node is RigidNode)
+        else if (node is RigidNode && chkHighlightComponents.Checked)
         {
             foreach (Inventor.ComponentOccurrence occ in ((RigidNode) node).group.occurrences)
             {
