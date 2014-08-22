@@ -48,11 +48,11 @@ public class Init : MonoBehaviour
         if (filePath != null && skeleton == null)
         {
 
-          //  UnityRigidNode nodeThing = new UnityRigidNode();
-            //nodeThing.modelFileName = "field.bxda";
-           // nodeThing.CreateTransform(transform);
-           // nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
-            //nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        	UnityRigidNode nodeThing = new UnityRigidNode();
+        	nodeThing.modelFileName = "field.bxda";
+        	nodeThing.CreateTransform(transform);
+            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
+            nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
             robot.transform.parent = transform;
@@ -108,6 +108,7 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
+		Physics.minPenetrationForPenalty = 0.001f;
 
         TryLoad();
     }

@@ -71,14 +71,14 @@ public class UnityRigidNode : RigidNode_Base
 	{
 		
 		//Quaternion q = new Quaternion();
-		//q.SetFromToRotation(joint.axis, new Vector3(1,0,0));
+		//q.SetFromToRotation(joint.axis, new Vector3(1, 0, 0));
 		
 		wCollider = new GameObject(unityObject.name + " Collider");
 		
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
 		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
 		wCollider.AddComponent<WheelCollider>();
-		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * (1.00f)) * 0.01f;
+		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
 		//wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
@@ -191,7 +191,8 @@ public class UnityRigidNode : RigidNode_Base
 			if (IsWheel)
 			{
 				CreateWheel(nodeR);	
-				
+				subCollider.GetComponent<MeshCollider>().convex = false;
+
 			}
 			
 					
@@ -294,12 +295,14 @@ public class UnityRigidNode : RigidNode_Base
 			if (!unityObject.GetComponent<Rigidbody>())
 			{
 				unityObject.AddComponent<Rigidbody>();
-                unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
+                unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 			}
 		});	
 				
 		auxFunctions.ReadMeshSet(mesh.colliders, delegate(int id, BXDAMesh.BXDASubMesh useless, Mesh meshu)
 		{
+
+
 			//Debug.Log (unityObject.name + " " + id + " tris: " + meshu.triangles.Length / 3 + " Vertices: " + meshu.vertexCount);
 			subCollider = new GameObject(unityObject.name + " Subcollider" + id);
 			subCollider.transform.parent = unityObject.transform;
@@ -314,6 +317,7 @@ public class UnityRigidNode : RigidNode_Base
 			{
 			
 				subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
+				//Debug.Log(IsWheel);
 				subCollider.GetComponent<MeshCollider>().convex = true;
                 meshCollider = subCollider.GetComponent<MeshCollider>();
 
