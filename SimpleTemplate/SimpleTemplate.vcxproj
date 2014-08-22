@@ -42,7 +42,7 @@
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\FakeFPGA\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\..\Aardvark-WPILib\include;$(ProjectDir)\..\FakeFPGA\include;$(IncludePath)</IncludePath>
     <Link>
       <AdditionalDependencies>$(ProjectDir)\..\$(Platform)\$(Configuration)\FakeFPGA.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

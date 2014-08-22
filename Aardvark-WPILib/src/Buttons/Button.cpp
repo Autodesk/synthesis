@@ -4,7 +4,7 @@
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
 
-#include "Button.h"
+#include "Buttons/Button.h"
 
 /**
  * Specifies the command to run when a button is first pressed

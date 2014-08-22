@@ -1,7 +1,7 @@
 #ifndef __TENCODER_IMPL
 #define __TENCODER_IMPL
 
-#include <tEncoder.h>
+#include <ChipObject/tEncoder.h>
 
 namespace nFPGA {
 	class NiFpgaState;

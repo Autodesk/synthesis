@@ -8,8 +8,8 @@
 #ifndef NIFPGASTATE_H_
 #define NIFPGASTATE_H_
 
-#include <NiRio.h>
-#include <tSystemInterface.h>
+#include <ChipObject/NiRio.h>
+#include <ChipObject/tSystemInterface.h>
 
 class NiIRQ_Impl;
 

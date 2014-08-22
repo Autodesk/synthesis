@@ -1,4 +1,21 @@
-#include "NiFpga.h"
+#include <stdlib.h>
+#include <string.h>	//memcpy and memset
+
+// Definitions
+#include <ChipObject/NiFpga.h>
+#include <ChipObject/tAlarm.h>
+#include <ChipObject/tDIO.h>
+#include <ChipObject/tGlobal.h>
+#include <ChipObject/tSolenoid.h>
+#include <ChipObject/tAI.h>
+#include <ChipObject/tAccumulator.h>
+#include <ChipObject/tWatchdog.h>
+#include <ChipObject/tEncoder.h>
+#include <ChipObject/tInterrupt.h>
+#include <ChipObject/tCounter.h>
+#include <ChipObject/tAnalogTrigger.h>
+
+// Implementations
 #include "ChipObject/NiFakeFpga.h"
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/NiIRQImpl.h"
@@ -11,20 +28,6 @@
 #include "ChipObject/tCounterImpl.h"
 #include "ChipObject/tAnalogTriggerImpl.h"
 #include "ChipObject/tAccumulatorImpl.h"
-#include <stdlib.h>
-
-#include <tAlarm.h>
-#include <tDIO.h>
-#include <tGlobal.h>
-#include <tSolenoid.h>
-#include <tAI.h>
-#include <tAccumulator.h>
-#include <tWatchdog.h>
-#include <tEncoder.h>
-#include <tInterrupt.h>
-#include <tCounter.h>
-#include <tAnalogTrigger.h>
-#include <string.h>	//memcpy and memset
 
 extern "C" {
 	nFPGA::NiFpgaState *frcFPGAInstance = NULL;

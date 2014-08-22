@@ -8,7 +8,7 @@
 #ifndef TACCUMULATORIMPL_H_
 #define TACCUMULATORIMPL_H_
 
-#include <tAccumulator.h>
+#include <ChipObject/tAccumulator.h>
 
 namespace nFPGA {
 	class NiFpgaState;

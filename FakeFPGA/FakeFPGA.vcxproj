@@ -148,7 +148,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -161,7 +161,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
@@ -182,7 +182,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -196,7 +196,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -216,7 +216,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -230,7 +230,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
@@ -251,7 +251,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
@@ -266,7 +266,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\Aardvark-WPILib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <DebugInformationFormat>None</DebugInformationFormat>

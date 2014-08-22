@@ -2,6 +2,7 @@
 #define __PWM_DECODER_H
 
 #include <stdint.h>
+
 #include "ChipObject/tDIOImpl.h"
 
 class PWMDecoder {

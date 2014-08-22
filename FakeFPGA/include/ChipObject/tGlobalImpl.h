@@ -8,7 +8,7 @@
 #ifndef TGLOBALIMPL_H_
 #define TGLOBALIMPL_H_
 
-#include <tGlobal.h>
+#include <ChipObject/tGlobal.h>
 
 namespace nFPGA {
 

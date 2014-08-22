@@ -1,7 +1,7 @@
 #ifndef __T_ANALOG_TRIGGER_H
 #define __T_ANALOG_TRIGGER_H
 
-#include <tAnalogTrigger.h>
+#include <ChipObject/tAnalogTrigger.h>
 
 namespace nFPGA {
 	class NiFpgaState;

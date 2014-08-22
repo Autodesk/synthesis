@@ -5,10 +5,11 @@
 *      Author: localadmin
 */
 
+#include <stdio.h>
+#include <ChipObject/tSystemInterface.h>
+
 #include "ChipObject/tDIOImpl.h"
 #include "ChipObject/NiFpgaState.h"
-#include <tSystemInterface.h>
-#include <stdio.h>
 #include "ChipObject/tInterruptImpl.h"
 #include "ChipObject/NiIRQImpl.h"
 #include "ChipObject/tGlobalImpl.h"

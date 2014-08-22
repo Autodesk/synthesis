@@ -9,7 +9,7 @@
 #define TDIOIMPL_H_
 
 #include <stdint.h>
-#include <tDIO.h>
+#include <ChipObject/tDIO.h>
 
 namespace nFPGA {
 	class NiFpgaState;

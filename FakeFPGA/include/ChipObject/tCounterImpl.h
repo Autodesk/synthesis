@@ -1,7 +1,7 @@
 #ifndef __T_COUNTER_IMPL_H
 #define __T_COUNTER_IMPL_H
 
-#include <tCounter.h>
+#include <ChipObject/tCounter.h>
 
 namespace nFPGA {
 	class NiFpgaState;

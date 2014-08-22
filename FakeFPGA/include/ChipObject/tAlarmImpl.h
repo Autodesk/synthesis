@@ -3,11 +3,6 @@
 #include <ChipObject/tAlarm.h>
 #include <OSAL/OSAL.h>
 #include <OSAL/WaitSemaphore.h>
-
-#if USE_WINAPI
-#include <Windows.h>
-#endif
-
 class NTTask;
 
 namespace nFPGA

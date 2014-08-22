@@ -1,22 +1,25 @@
-#include "ChipObject/NiFakeFpga.h"
-#include "ChipObject/NiFpga.h"
-#include "ChipObject/NiFpgaState.h"
 #include <string.h>
-#include <stdio.h>
-#include <WPILib.h>
 #include <math.h>
-#include <tDIO.h>
+#include <stdio.h>
+#include <OSAL/System.h>
+
+// Definitions
+#include <ChipObject/NiFpga.h>
+#include <ChipObject/tDIO.h>
+#include <NetworkCommunication/AICalibration.h>
+
+// Implementations
+#include "ChipObject/NiFakeFpga.h"
+#include "ChipObject/NiFpgaState.h"
 #include "ChipObject/tDIOImpl.h"
 #include "ChipObject/tSolenoidImpl.h"
 #include "ChipObject/tAIImpl.h"
 #include "ChipObject/tEncoderImpl.h"
 #include "ChipObject/tCounterImpl.h"
-#include "OSAL/System.h"
 #include "ChipObject/PWMDecoder.h"
 #include "StateNetwork/StatePacket.h"
 #include "StateNetwork/StateNetworkServer.h"
 #include "FRCNetComm/FRCNetImpl.h"
-#include "NetworkCommunication/AICalibration.h"
 #include "Emulator.h"
 
 #ifdef JAVA_BUILD

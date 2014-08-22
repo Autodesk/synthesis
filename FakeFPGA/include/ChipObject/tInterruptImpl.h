@@ -1,7 +1,7 @@
 #ifndef __T_INTERRUPT_H
 #define __T_INTERRUPT_H
 
-#include <tInterrupt.h>
+#include <ChipObject/tInterrupt.h>
 
 namespace nFPGA {
 	class NiFpgaState;

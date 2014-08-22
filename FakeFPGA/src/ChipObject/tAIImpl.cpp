@@ -5,12 +5,13 @@
 *      Author: localadmin
 */
 
+#include <ChipObject/tAI.h>
+#include <ChipObject/tInterrupt.h>
+
 #include "ChipObject/tAIImpl.h"
-#include "tAI.h"
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/tAnalogTriggerImpl.h"
 #include "ChipObject/NiIRQImpl.h"
-#include <tInterrupt.h>
 
 #define TAI_DECL_ADDRESSES(x) const int tAI_Impl::k ## x ## _Addresses [] = {kAI0_ ## x ## _Address, kAI1_ ## x ## _Address }
 

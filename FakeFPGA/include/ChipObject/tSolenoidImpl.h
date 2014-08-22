@@ -8,7 +8,7 @@
 #ifndef TSOLENOIDIMPL_H_
 #define TSOLENOIDIMPL_H_
 
-#include <tSolenoid.h>
+#include <ChipObject/tSolenoid.h>
 
 namespace nFPGA {
 	class NiFpgaState;

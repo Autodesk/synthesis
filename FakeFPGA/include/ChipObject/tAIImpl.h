@@ -8,7 +8,7 @@
 #ifndef TAIIMPL_H_
 #define TAIIMPL_H_
 
-#include <tAI.h>
+#include <ChipObject/tAI.h>
 
 namespace nFPGA {
 	class NiFpgaState;
