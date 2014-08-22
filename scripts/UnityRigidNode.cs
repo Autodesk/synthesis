@@ -70,16 +70,12 @@ public class UnityRigidNode : RigidNode_Base
 	private void CreateWheel(RotationalJoint_Base center)
 	{
 		
-		//Quaternion q = new Quaternion();
-		//q.SetFromToRotation(joint.axis, new Vector3(1, 0, 0));
-		
 		wCollider = new GameObject(unityObject.name + " Collider");
 		
 		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
 		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
 		wCollider.AddComponent<WheelCollider>();
 		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
-		//wCollider.transform.localRotation *= q;
 		
 		//I want the grandfather to have a rigidbody
 				
@@ -108,13 +104,12 @@ public class UnityRigidNode : RigidNode_Base
 			
 
 	}
-	
+	//finds the difference between the current position, which is always one of the two end points, then finds the difference between the two. 
+    //this is then divided by 2 to find the limit for unity
 	private void LinearLimit(Dictionary<string, float> limit)
 	{
 		center = (limit ["end"] - limit ["start"]) / 2.0f;
-		//current = limit ["current"];
-		//Debug.Log("center: " + center + " current: " + current);
-		
+		//also sets limit properties to eliminate any shaking and twitching from the joint when it hit sthe limit
 		linear.limit = Mathf.Abs(center) * 0.01f;
 		linear.bounciness = 1e-05f;
 		linear.spring = 0f;
@@ -123,9 +118,11 @@ public class UnityRigidNode : RigidNode_Base
 
 		
 	}
-
+    //assigns motors to the appropriate joint
 	private void SetXDrives()
 	{
+
+        //if the node has a joint and driver
 		if (GetSkeletalJoint() != null && GetSkeletalJoint().cDriver != null)
 		{
 			if (GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
@@ -156,6 +153,8 @@ public class UnityRigidNode : RigidNode_Base
 	//creates the configurable joint then preforms the appropriate alterations based on the joint type
 	public void CreateJoint()
 	{
+
+        
 		if (joint != null || GetSkeletalJoint() == null)
 		{
 			return;			
