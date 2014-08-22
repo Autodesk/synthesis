@@ -9,8 +9,8 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/jna-4.1.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/jna-platform-4.1.0.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/networktables-desktop.jar"/>
-        	<zipfileset dir="../x64/Java_Release/" includes="FakeFPGA.dll" prefix="win32-x86-64"/>
-        	<zipfileset dir="../Win32/Java_Release/" includes="FakeFPGA.dll" prefix="win32-x86"/>
+        	<zipfileset dir="../x64/Java/" includes="FakeFPGA.dll" prefix="win32-x86-64"/>
+        	<zipfileset dir="../Win32/Java/" includes="FakeFPGA.dll" prefix="win32-x86"/>
         </jar>
     </target>
 </project>
