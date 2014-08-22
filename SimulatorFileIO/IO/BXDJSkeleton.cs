@@ -153,16 +153,11 @@ public class BXDJSkeleton
             {
                 if (copyTo.GetSkeletalJoint() != null && fromNode.GetSkeletalJoint() != null && copyTo.GetSkeletalJoint().GetJointType() == fromNode.GetSkeletalJoint().GetJointType())
                 {
-                    if (copyTo.GetSkeletalJoint().cDriver == null)
-                    {
-                        // Copy the driver
-                        copyTo.GetSkeletalJoint().cDriver = fromNode.GetSkeletalJoint().cDriver;
-                    }
-                    if (copyTo.GetSkeletalJoint().attachedSensors.Count == 0)
-                    {
-                        // Copy the sensors
-                        copyTo.GetSkeletalJoint().attachedSensors.AddRange(fromNode.GetSkeletalJoint().attachedSensors);
-                    }
+                    // Swap driver.
+                    copyTo.GetSkeletalJoint().cDriver = fromNode.GetSkeletalJoint().cDriver;
+                    
+                    // Swap sensors.
+                    copyTo.GetSkeletalJoint().attachedSensors = fromNode.GetSkeletalJoint().attachedSensors;
                 }
             }
         }
