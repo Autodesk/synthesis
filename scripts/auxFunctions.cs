@@ -90,9 +90,14 @@ public class auxFunctions : RigidNode_Base
         parent.localRotation *= q;
 
         foreach (WheelCollider collider in wheelcolliders)
-            if(Mathf.Abs(Mathf.Acos(q.w)-Mathf.PI/2) > .1f)
-                collider.transform.localRotation *= Quaternion.Inverse(q);
-
+		{
+			if (Mathf.Abs(Mathf.Acos(q.w) - Mathf.PI / 2) > .1f)
+				collider.transform.localRotation *= Quaternion.Inverse(q);
+			if (Vector3.Dot(collider.transform.localToWorldMatrix * Vector3.up, Vector3.up) < 0)
+			{
+				collider.transform.Rotate(collider.transform.localToWorldMatrix * new Vector3(1,0,0),180);
+			}
+		}
         norm.y *= Mathf.Sign(norm.y * com.y);
 
         parent.position = new Vector3(parent.position.x, parent.position.y + 1, parent.position.z);

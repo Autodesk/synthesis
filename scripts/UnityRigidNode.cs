@@ -8,7 +8,7 @@ public class UnityRigidNode : RigidNode_Base
 	public GameObject unityObject, subObject, subCollider, wCollider;
 	protected ConfigurableJoint joint;
 	protected WheelDriverMeta wheel;
-	private BXDAMesh mesh;
+	private PhysicalProperties bxdPhysics;
 	private SoftJointLimit low, high, linear;
 	private float center, current;
     public MeshCollider meshCollider = new MeshCollider();
@@ -76,7 +76,8 @@ public class UnityRigidNode : RigidNode_Base
 		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
 		wCollider.AddComponent<WheelCollider>();
 		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
-		
+		wCollider.transform.localRotation *= Quaternion.FromToRotation(new Vector3(1, 0, 0), new Vector3(joint.axis.x, joint.axis.y, joint.axis.z));
+
 		//I want the grandfather to have a rigidbody
 				
 	}
@@ -164,7 +165,11 @@ public class UnityRigidNode : RigidNode_Base
 		//this is the conditional for Identified wheels
 		if (GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
 		{
-					
+			//if the mesh contains information which identifies it as a wheel then create a wheel collider.
+			wheel = GetSkeletalJoint().cDriver != null ? GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() : null;
+			if (IsWheel) 
+				FlipNorms();
+
 			RotationalJoint_Base nodeR = (RotationalJoint_Base)GetSkeletalJoint();
 					
 			//takes the x, y, and z axis information from a custom vector class to unity's vector class
@@ -183,15 +188,11 @@ public class UnityRigidNode : RigidNode_Base
 				}
 			});
 			//don't worry, I'm a doctor
-						
-			//if the mesh contains information which identifies it as a wheel then create a wheel collider.
-			wheel = GetSkeletalJoint().cDriver != null ? GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() : null;
             
 			if (IsWheel)
 			{
-				CreateWheel(nodeR);	
+				CreateWheel(nodeR);
 				subCollider.GetComponent<MeshCollider>().convex = false;
-
 			}
 			
 					
@@ -251,7 +252,7 @@ public class UnityRigidNode : RigidNode_Base
 	//loads the bxda format meshes
 	public void CreateMesh(string filePath)
 	{
-		mesh = new BXDAMesh();
+		BXDAMesh mesh = new BXDAMesh();
 		mesh.ReadFromFile(filePath);
 		
 		auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
@@ -294,7 +295,7 @@ public class UnityRigidNode : RigidNode_Base
 			if (!unityObject.GetComponent<Rigidbody>())
 			{
 				unityObject.AddComponent<Rigidbody>();
-                unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+                unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
 			}
 		});	
 				
@@ -329,6 +330,7 @@ public class UnityRigidNode : RigidNode_Base
 		rigidB.mass = mesh.physics.mass;
 		rigidB.centerOfMass = auxFunctions.ConvertV3(mesh.physics.centerOfMass);
 				
+		bxdPhysics = mesh.physics;
 		// Free mesh.
         mesh = null;
 	}
@@ -355,17 +357,32 @@ public class UnityRigidNode : RigidNode_Base
 		return centerOfMass;
 	}
 
+	public static BXDVector3 comLOL(RigidNode_Base kk) {
+		if (kk is UnityRigidNode && ((UnityRigidNode)kk).bxdPhysics != null)
+		{
+			return ((UnityRigidNode)kk).bxdPhysics.centerOfMass;
+		}
+		return null;//breakit
+	}
+
 	public void FlipNorms()
 	{
-		Vector3 com = TotalCenterOfMass(unityObject.transform.parent.gameObject);
-		
+		//TotalCenterOfMass(unityObject.transform.parent.gameObject);
+		//Debug.Log(unityObject.transform.parent.gameObject);
 		if (GetParent() != null && GetSkeletalJoint() != null && GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
 		{
+			Vector3 com = auxFunctions.ConvertV3(comLOL(GetParent()));
 			RotationalJoint_Base rJoint = (RotationalJoint_Base)GetSkeletalJoint();
 			Vector3 diff = auxFunctions.ConvertV3(rJoint.basePoint) - com;
+			Debug.DrawLine(unityObject.transform.parent.localToWorldMatrix * auxFunctions.ConvertV3(rJoint.basePoint), unityObject.transform.parent.localToWorldMatrix * com, Color.red);
 			double dot = Vector3.Dot(diff, auxFunctions.ConvertV3(rJoint.axis));
 			if (dot < 0)
 			{
+				Debug.Log("Invert " + unityObject.name);
+				//unityObject.GetComponent<WheelCollider>().transform.Rotate(new Vector3(0,90,0));
+				//wCollider.transform.Rotate(new Vector3(0,90,0));
+				//wCollider.transform.localRotation *= Quaternion.FromToRotation(
+				//	new Vector3(rJoint.axis.x,rJoint.axis.y,rJoint.axis.z), new Vector3(-rJoint.axis.x,-rJoint.axis.y,-rJoint.axis.z));
 				rJoint.axis = rJoint.axis.Multiply(-1);
 			}
 		}

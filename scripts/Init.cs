@@ -80,9 +80,6 @@ public class Init : MonoBehaviour
                 if (uNode.IsWheel)
                 {
                     unityWheelData.Add(uNode.wCollider.GetComponent<WheelCollider>());
-                    Quaternion q = new Quaternion();
-                    q.eulerAngles = new Vector3(0, 0, 0);
-                    uNode.wCollider.transform.rotation = q;
                 }
                 meshColliders.Add(uNode.meshCollider);
                 
