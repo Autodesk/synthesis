@@ -32,6 +32,6 @@ public class RobotTemplate extends SimpleRobot {
 	}
 
 	public static void main(String[] args) {
-		EmulatorControl.start(1510, RobotTemplate.class);
+		EmulatorControl.start(9999, RobotTemplate.class);
 	}
 }
