@@ -148,7 +148,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -161,7 +161,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
@@ -182,7 +182,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -196,7 +196,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -216,7 +216,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -230,7 +230,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
@@ -251,7 +251,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
@@ -266,7 +266,7 @@
       <Optimization>Full</Optimization>
       <SDLCheck>true</SDLCheck>
       <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\..\Aardvark-WPILib;$(ProjectDir)\..\Aardvark-WPILib\ChipObject;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);JAVA_BUILD</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -281,53 +281,55 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ChipObject\NiFakeFpga.h" />
-    <ClInclude Include="ChipObject\NiFpgaState.h" />
-    <ClInclude Include="ChipObject\NiIRQImpl.h" />
-    <ClInclude Include="ChipObject\tAccumulatorImpl.h" />
-    <ClInclude Include="ChipObject\tAIImpl.h" />
-    <ClInclude Include="ChipObject\tAlarmImpl.h" />
-    <ClInclude Include="ChipObject\tAnalogTriggerImpl.h" />
-    <ClInclude Include="ChipObject\tCounterImpl.h" />
-    <ClInclude Include="ChipObject\tDIOImpl.h" />
-    <ClInclude Include="ChipObject\tEncoderImpl.h" />
-    <ClInclude Include="ChipObject\tGlobalImpl.h" />
-    <ClInclude Include="ChipObject\tInterruptImpl.h" />
-    <ClInclude Include="ChipObject\tSolenoidImpl.h" />
-    <ClInclude Include="ChipObject\tWatchcatImpl.h" />
-    <ClInclude Include="emulator.h" />
-    <ClInclude Include="FRCNetComm\crc32.h" />
-    <ClInclude Include="FRCNetComm\FRCNetImpl.h" />
-    <ClInclude Include="FRCNetComm\FRCNetStructures.h" />
-    <ClInclude Include="FRCNetComm\FRCFakeNetComm.h" />
-    <ClInclude Include="ChipObject\PWMDecoder.h" />
-    <ClInclude Include="StateNetwork\StateNetworkServer.h" />
-    <ClInclude Include="StateNetwork\StatePacket.h" />
+    <ClInclude Include="include\FRCNetComm\crc32.h" />
+    <ClInclude Include="include\ChipObject\NiFakeFpga.h" />
+    <ClInclude Include="include\ChipObject\NiFpgaState.h" />
+    <ClInclude Include="include\ChipObject\NiIRQImpl.h" />
+    <ClInclude Include="include\ChipObject\tAccumulatorImpl.h" />
+    <ClInclude Include="include\ChipObject\tAIImpl.h" />
+    <ClInclude Include="include\ChipObject\tAlarmImpl.h" />
+    <ClInclude Include="include\ChipObject\tAnalogTriggerImpl.h" />
+    <ClInclude Include="include\ChipObject\tCounterImpl.h" />
+    <ClInclude Include="include\ChipObject\tDIOImpl.h" />
+    <ClInclude Include="include\ChipObject\tEncoderImpl.h" />
+    <ClInclude Include="include\ChipObject\tGlobalImpl.h" />
+    <ClInclude Include="include\ChipObject\tInterruptImpl.h" />
+    <ClInclude Include="include\ChipObject\tSolenoidImpl.h" />
+    <ClInclude Include="include\ChipObject\tWatchcatImpl.h" />
+    <ClInclude Include="include\emulator.h" />
+    <ClInclude Include="include\FRCNetComm\FRCNetImpl.h" />
+    <ClInclude Include="include\FRCNetComm\FRCNetStructures.h" />
+    <ClInclude Include="include\FRCNetComm\FRCFakeNetComm.h" />
+    <ClInclude Include="include\ChipObject\PWMDecoder.h" />
+    <ClInclude Include="include\StateNetwork\StateNetworkServer.h" />
+    <ClInclude Include="include\StateNetwork\StatePacket.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChipObject\NiFpga.cpp" />
-    <ClCompile Include="ChipObject\NiFpgaState.cpp" />
-    <ClCompile Include="ChipObject\niLoadOut.cpp" />
-    <ClCompile Include="ChipObject\NiRio.cpp" />
-    <ClCompile Include="ChipObject\tAccumulatorImpl.cpp" />
-    <ClCompile Include="ChipObject\tAIImpl.cpp" />
-    <ClCompile Include="ChipObject\tAlarmImpl.cpp" />
-    <ClCompile Include="ChipObject\tAnalogTriggerImpl.cpp" />
-    <ClCompile Include="ChipObject\tCounterImpl.cpp" />
-    <ClCompile Include="ChipObject\tDIOImpl.cpp" />
-    <ClCompile Include="ChipObject\tEncoderImpl.cpp" />
-    <ClCompile Include="ChipObject\tGlobalImpl.cpp" />
-    <ClCompile Include="ChipObject\tInterruptImpl.cpp" />
-    <ClCompile Include="ChipObject\tInterruptManager.cpp" />
-    <ClCompile Include="ChipObject\tSolenoidImpl.cpp" />
-    <ClCompile Include="ChipObject\tSystem.cpp" />
-    <ClCompile Include="ChipObject\tWatchcatImpl.cpp" />
-    <ClCompile Include="Emulator.cpp" />
-    <ClCompile Include="FRCNetComm\FRCNetImpl.cpp" />
-    <ClCompile Include="ChipObject\nUsageReporting.cpp" />
-    <ClCompile Include="ChipObject\PWMDecoder.cpp" />
-    <ClCompile Include="StateNetwork\StateNetworkServer.cpp" />
-    <ClCompile Include="FRCNetComm\FRCNetComm.cpp" />
+    <ClCompile Include="src\ChipObject\NiFpga.cpp" />
+    <ClCompile Include="src\ChipObject\NiFpgaState.cpp" />
+    <ClCompile Include="src\ChipObject\NiIRQImpl.cpp" />
+    <ClCompile Include="src\ChipObject\niLoadOut.cpp" />
+    <ClCompile Include="src\ChipObject\NiRio.cpp" />
+    <ClCompile Include="src\ChipObject\tAccumulatorImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tAIImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tAlarmImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tAnalogTriggerImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tCounterImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tDIOImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tEncoderImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tGlobalImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tInterruptImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tInterruptManager.cpp" />
+    <ClCompile Include="src\ChipObject\tSolenoidImpl.cpp" />
+    <ClCompile Include="src\ChipObject\tSystem.cpp" />
+    <ClCompile Include="src\ChipObject\tWatchcatImpl.cpp" />
+    <ClCompile Include="src\Emulator.cpp" />
+    <ClCompile Include="src\FRCNetComm\crc32.cpp" />
+    <ClCompile Include="src\FRCNetComm\FRCNetImpl.cpp" />
+    <ClCompile Include="src\ChipObject\nUsageReporting.cpp" />
+    <ClCompile Include="src\ChipObject\PWMDecoder.cpp" />
+    <ClCompile Include="src\StateNetwork\StateNetworkServer.cpp" />
+    <ClCompile Include="src\FRCNetComm\FRCNetComm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aardvark-WPILib\Aardvark-WPILib.vcxproj">

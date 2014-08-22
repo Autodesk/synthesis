@@ -5,13 +5,13 @@
 *      Author: localadmin
 */
 
-#include "tDIOImpl.h"
+#include "ChipObject/tDIOImpl.h"
 #include "ChipObject/NiFpgaState.h"
 #include <tSystemInterface.h>
 #include <stdio.h>
-#include "tInterruptImpl.h"
-#include "NiIRQImpl.h"
-#include "tGlobalImpl.h"
+#include "ChipObject/tInterruptImpl.h"
+#include "ChipObject/NiIRQImpl.h"
+#include "ChipObject/tGlobalImpl.h"
 
 #define TDIO_DECL_ADDRESSES(x) const int tDIO_Impl::k ## x ## _Addresses [] = {kDIO0_ ## x ## _Address, kDIO1_ ## x ## _Address }
 

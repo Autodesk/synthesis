@@ -1,4 +1,4 @@
-#include "PWMDecoder.h"
+#include "ChipObject/PWMDecoder.h"
 #include <NetworkCommunication/UsageReporting.h>	// For object types
 
 const float PWMDecoder::kDefaultPwmPeriod = 5.05;

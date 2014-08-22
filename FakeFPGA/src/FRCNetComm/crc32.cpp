@@ -1,7 +1,5 @@
 /* Crc - 32 BIT ANSI X3.66 CRC checksum files */
-
-#ifndef __CRC32_H
-#define __CRC32_H
+#include "FRCNetComm/crc32.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -140,5 +138,3 @@ DWORD crc32buf(char *buf, size_t len)
       return ~oldcrc32;
       
 }
-
-#endif

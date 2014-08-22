@@ -1,5 +1,5 @@
 #include <ChipObject/tAccumulatorImpl.h>
-#include "NiFpgaState.h"
+#include "ChipObject/NiFpgaState.h"
 #include <stdio.h>
 
 #define TACCUMULATOR_DECL_ADDRESS(x) const int tAccumulator_Impl::k ## x ## _Addresses [] = {kAccumulator0_ ## x ## _Address, kAccumulator1_ ## x ## _Address }

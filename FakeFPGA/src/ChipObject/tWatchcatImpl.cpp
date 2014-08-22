@@ -1,7 +1,7 @@
-#include "tWatchcatImpl.h"
+#include "ChipObject/tWatchcatImpl.h"
 
-#include "NiFpgaState.h"
-#include "tGlobalImpl.h"
+#include "ChipObject/NiFpgaState.h"
+#include "ChipObject/tGlobalImpl.h"
 
 namespace nFPGA {
 	tWatchcat_Impl::tWatchcat_Impl(NiFpgaState *state)

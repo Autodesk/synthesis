@@ -1,5 +1,5 @@
-#include "tEncoderImpl.h"
-#include "NiFpgaState.h"
+#include "ChipObject/tEncoderImpl.h"
+#include "ChipObject/NiFpgaState.h"
 #include "ChipObject/tGlobalImpl.h"
 
 #define TENCODER_DECL_ADDRESS(x) const int tEncoder_Impl::k ## x ## _Addresses [] = {kEncoder0_ ## x ## _Address, kEncoder1_ ## x ## _Address, kEncoder2_ ## x ## _Address, kEncoder3_ ## x ## _Address }

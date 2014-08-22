@@ -1,6 +1,6 @@
-#include "tInterruptImpl.h"
-#include "NiFpgaState.h"
-#include "tGlobalImpl.h"
+#include "ChipObject/tInterruptImpl.h"
+#include "ChipObject/NiFpgaState.h"
+#include "ChipObject/tGlobalImpl.h"
 
 #define TINTERRUPT_DECL_ADDRESSES(x) const int tInterrupt_Impl::k ## x ## _Addresses [] = {kInterrupt0_ ## x ## _Address, kInterrupt1_ ## x ## _Address, kInterrupt2_ ## x ## _Address, kInterrupt3_ ## x ## _Address, kInterrupt4_ ## x ## _Address, kInterrupt5_ ## x ## _Address, kInterrupt6_ ## x ## _Address, kInterrupt7_ ## x ## _Address }
 

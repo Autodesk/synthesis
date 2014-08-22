@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "FRCNetImpl.h"
-#include "FRCFakeNetComm.h"
+#include "FRCNetComm/FRCNetImpl.h"
+#include "FRCNetComm/FRCFakeNetComm.h"
 #include <CAN/can_proto.h>
 
 extern "C" {

@@ -1,5 +1,5 @@
 #include "NiFpga.h"
-#include "NiFakeFpga.h"
+#include "ChipObject/NiFakeFpga.h"
 #include "ChipObject/NiFpgaState.h"
 #include "ChipObject/NiIRQImpl.h"
 #include "ChipObject/tAIImpl.h"

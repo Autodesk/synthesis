@@ -1,5 +1,5 @@
-#include "tAnalogTriggerImpl.h"
-#include "NiFpgaState.h"
+#include "ChipObject/tAnalogTriggerImpl.h"
+#include "ChipObject/NiFpgaState.h"
 
 #define TANALOG_TRIGGER_DECL_ADDRESSES(x) const int tAnalogTrigger_Impl::k ## x ## _Addresses [] = {kAnalogTrigger0_ ## x ## _Address, kAnalogTrigger1_ ## x ## _Address, kAnalogTrigger2_ ## x ## _Address, kAnalogTrigger3_ ## x ## _Address, kAnalogTrigger4_ ## x ## _Address, kAnalogTrigger5_ ## x ## _Address, kAnalogTrigger6_ ## x ## _Address, kAnalogTrigger7_ ## x ## _Address }
 

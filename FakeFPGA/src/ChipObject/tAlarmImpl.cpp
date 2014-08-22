@@ -1,8 +1,8 @@
-#include "tAlarmImpl.h"
+#include "ChipObject/tAlarmImpl.h"
 
-#include "NiFpgaState.h"
-#include "NiIRQImpl.h"
-#include "tGlobalImpl.h"
+#include "ChipObject/NiFpgaState.h"
+#include "ChipObject/NiIRQImpl.h"
+#include "ChipObject/tGlobalImpl.h"
 #include <OSAL/Task.h>
 #include <OSAL/System.h>
 

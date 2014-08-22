@@ -1,5 +1,5 @@
-#include "tCounterImpl.h"
-#include "NiFpgaState.h"
+#include "ChipObject/tCounterImpl.h"
+#include "ChipObject/NiFpgaState.h"
 
 #define TCOUNTER_DECL_ADDRESSES(x) const int tCounter_Impl::k ## x ## _Addresses [] = {kCounter0_ ## x ## _Address, kCounter1_ ## x ## _Address, kCounter2_ ## x ## _Address, kCounter3_ ## x ## _Address, kCounter4_ ## x ## _Address, kCounter5_ ## x ## _Address, kCounter6_ ## x ## _Address, kCounter7_ ## x ## _Address }
 

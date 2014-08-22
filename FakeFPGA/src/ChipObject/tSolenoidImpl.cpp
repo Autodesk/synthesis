@@ -5,8 +5,8 @@
 *      Author: localadmin
 */
 
-#include "tSolenoidImpl.h"
-#include "NiFpgaState.h"
+#include "ChipObject/tSolenoidImpl.h"
+#include "ChipObject/NiFpgaState.h"
 
 namespace nFPGA {
 	tSolenoid_Impl::tSolenoid_Impl(NiFpgaState *state) {

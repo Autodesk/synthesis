@@ -1,9 +1,9 @@
-#include "FRCNetImpl.h"
+#include "FRCNetComm/FRCNetImpl.h"
 #include <OSAL/OSAL.h>
 #include <OSAL/Task.h>
 #include <stdint.h>
-#include "crc32.h"
-#include "FRCFakeNetComm.h"
+#include "FRCNetComm/crc32.h"
+#include "FRCNetComm/FRCFakeNetComm.h"
 #include "DriverStationEnhancedIO.h"
 #include <string.h> // For memset, memcpy
 #include <stdlib.h>
