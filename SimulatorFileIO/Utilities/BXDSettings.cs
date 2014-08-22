@@ -37,12 +37,12 @@ public class BXDSettings
 
     private static string GetPath()
     {
-        string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/BXD_Aardvark/";
+        string path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BXD_Aardvark\\";
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
         }
-        return path + "/settings.xml";
+        return path + "settings.xml";
     }
 
     public static void Load()
