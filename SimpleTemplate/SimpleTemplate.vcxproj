@@ -66,20 +66,11 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(SolutionDir)\$(Platform)\Debug\Aardvark-WPILib.lib;$(SolutionDir)\$(Platform)\C++\FakeFPGA.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="SimpleRobot.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Aardvark-WPILib\Aardvark-WPILib.vcxproj">
-      <Project>{35d57ff3-6647-4b8c-afb9-e680d60de40e}</Project>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
-    <ProjectReference Include="..\FakeFPGA\FakeFPGA.vcxproj">
-      <Project>{64b9921c-8b16-48da-aecb-efbcb1252ca8}</Project>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

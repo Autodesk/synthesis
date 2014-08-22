@@ -4,8 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Aardvark-WPILib", "Aardvark-WPILib\Aardvark-WPILib.vcxproj", "{35D57FF3-6647-4B8C-AFB9-E680D60DE40E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FakeFPGA", "FakeFPGA\FakeFPGA.vcxproj", "{64B9921C-8B16-48DA-AECB-EFBCB1252CA8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35D57FF3-6647-4B8C-AFB9-E680D60DE40E} = {35D57FF3-6647-4B8C-AFB9-E680D60DE40E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SimpleTemplate", "SimpleTemplate\SimpleTemplate.vcxproj", "{777BF122-057B-4C8E-A629-D1FF46AB7B7E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{64B9921C-8B16-48DA-AECB-EFBCB1252CA8} = {64B9921C-8B16-48DA-AECB-EFBCB1252CA8}
+		{35D57FF3-6647-4B8C-AFB9-E680D60DE40E} = {35D57FF3-6647-4B8C-AFB9-E680D60DE40E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SetupLoopback_Windows", "SetupLoopback_Windows\LoopbackParty.vcxproj", "{463AD728-DFAC-4C43-98CC-E9C872014A57}"
 EndProject
