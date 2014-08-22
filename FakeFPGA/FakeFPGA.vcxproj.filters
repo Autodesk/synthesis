@@ -26,6 +26,7 @@
     <ClCompile Include="src\Emulator.cpp" />
     <ClCompile Include="src\FRCNetComm\crc32.cpp" />
     <ClCompile Include="src\ChipObject\NiIRQImpl.cpp" />
+    <ClCompile Include="src\FRCNetComm\FRCCAN.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\emulator.h" />

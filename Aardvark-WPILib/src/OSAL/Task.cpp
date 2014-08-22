@@ -200,7 +200,6 @@ bool NTTask::HandleError(char *lpszFunction, int code)
 	if (code == 0) return true;
 #if USE_WINAPI
 	LPVOID lpMsgBuf;
-	LPVOID lpDisplayBuf;
 	DWORD dw = GetLastError();
 	if (dw == 0) return true;
 
@@ -215,19 +214,12 @@ bool NTTask::HandleError(char *lpszFunction, int code)
 		0, NULL );
 
 	// Display the error message.
-
-	lpDisplayBuf = (LPVOID)LocalAlloc(LMEM_ZEROINIT, 
-		(lstrlen((LPCTSTR) lpMsgBuf) + lstrlen((LPCTSTR) lpszFunction) + 40) * sizeof(TCHAR)); 
-	sprintf_s((LPTSTR)lpDisplayBuf, 
-		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-		TEXT("%s failed with error %d: %s"), 
-		lpszFunction, dw, lpMsgBuf); 
-	MessageBox(NULL, (LPCTSTR) lpDisplayBuf, TEXT("Error"), MB_OK); 
+	printf_s(TEXT("%s failed with error %d: %s"), 
+		lpszFunction, dw, lpMsgBuf);
 
 	// Free error-handling buffer allocations.
 
 	LocalFree(lpMsgBuf);
-	LocalFree(lpDisplayBuf);
 #elif USE_POSIX
 	printf("PThread Error: %s\n", lpszFunction);
 #endif
