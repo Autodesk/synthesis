@@ -52,8 +52,29 @@ public class auxFunctions : RigidNode_Base
 		Quaternion q = new Quaternion();
 		List<Vector3> wheels = new List<Vector3>();
 
-		foreach (WheelCollider collider in wheelcolliders) 
-			wheels.Add(collider.transform.position);
+        Vector3 center = new Vector3(0, 0, 0);
+        foreach (WheelCollider collider in wheelcolliders)
+        {
+            wheels.Add(collider.transform.position);
+            center += collider.transform.position;
+        }
+        center /= wheels.Count;
+
+        for (int i = 0; i < wheels.Count; i++)
+        {
+            int min = i;
+            for (int j = i + 1; j < wheels.Count; j++)
+                if ((wheelcolliders[min].transform.position - center).magnitude > (wheelcolliders[j].transform.position - center).magnitude)
+                    min = j;
+            WheelCollider tmp = wheelcolliders[i];
+            wheelcolliders[i] = wheelcolliders[min];
+            wheelcolliders[min] = tmp;
+        }
+
+        for(int i = 0; i < wheels.Count - 4; i++)
+        {
+            wheelcolliders[i].radius += .005f;
+        }
 		
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
 		Vector3 a = wheels [0] - wheels [1];
@@ -87,7 +108,7 @@ public class auxFunctions : RigidNode_Base
                 Physics.IgnoreCollision(meshColliders[i], meshColliders[j], true);
             }
                
-            }
+         }
                  
 
     }
