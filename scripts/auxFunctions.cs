@@ -53,24 +53,28 @@ public class auxFunctions : RigidNode_Base
 		List<Vector3> wheels = new List<Vector3>();
 
 		foreach (WheelCollider collider in wheelcolliders) 
-		{
 			wheels.Add(collider.transform.position);
-
-		}
+		
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
 		Vector3 a = wheels [0] - wheels [1];
 		Vector3 b = a;
 
-		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)-(a.magnitude*b.magnitude)) < .1f; i++) 
+		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)-(a.magnitude*b.magnitude)) < .1f && i < wheels.Count; i++) 
 			b = wheels[0] - wheels[i];
 
 		Vector3 norm = Vector3.Cross(a,b).normalized;
-		//norm.y *= Mathf.Sign (norm.y * com.y);
-		//TODO make sure robot never spawns upside down
-
 
 		q.SetFromToRotation (norm, Vector3.up);
-		parent.localRotation *= q;
+
+        parent.localRotation *= q;
+
+        foreach (WheelCollider collider in wheelcolliders)
+            if(Mathf.Abs(Mathf.Acos(q.w)-Mathf.PI/2) > .1f)
+                collider.transform.localRotation *= Quaternion.Inverse(q);
+
+        norm.y *= Mathf.Sign(norm.y * com.y);
+
+        parent.position = new Vector3(parent.position.x, parent.position.y + 1, parent.position.z);
 	}
     public static void IgnoreCollisionDetection(List<MeshCollider> meshColliders)
     {
