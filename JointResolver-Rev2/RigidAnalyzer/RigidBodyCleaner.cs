@@ -23,7 +23,9 @@ static class RigidBodyCleaner
         {
             group.occurrences.RemoveAll(item => item.Suppressed);
         }
+        //Removes groups with no components.
         results.groups.RemoveAll(item => item.occurrences.Count <= 0);
+        //Removes joints that attach a group to itself or an empty group.
         results.joints.RemoveAll(item => item.groupOne.Equals(item.groupTwo) || item.groupOne.occurrences.Count <= 0 || item.groupTwo.occurrences.Count <= 0);
     }
 
@@ -58,6 +60,7 @@ static class RigidBodyCleaner
         {
             foreach (CustomRigidJoint joint in results.joints)
             {
+                //If a group has no occurrences, its because they were transferred to the firstRoot group.  Updates joints to attach to that joint.
                 if (joint.groupOne.occurrences.Count == 0)
                 {
                     joint.groupOne = firstRoot;
@@ -83,11 +86,13 @@ static class RigidBodyCleaner
     /// <param name="constraints">A mapping between each rigid group and a set of rigid groups connected by constraints.</param>
     private static void GenerateJointMaps(CustomRigidResults results, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> joints, Dictionary<CustomRigidGroup, HashSet<CustomRigidGroup>> constraints)
     {
+        //Creates a spot in the dictionary for each component.
         foreach (CustomRigidGroup group in results.groups)
         {
             joints.Add(group, new HashSet<CustomRigidGroup>());
             constraints.Add(group, new HashSet<CustomRigidGroup>());
         }
+        //Adds connections between components going both directions.
         foreach (CustomRigidJoint j in results.joints)
         {
             if (j.jointBased && j.joints.Count > 0 && j.joints[0].Definition.JointType != AssemblyJointTypeEnum.kRigidJointType)
@@ -164,61 +169,58 @@ static class RigidBodyCleaner
                 HashSet<CustomRigidGroup> jons = joints[node[0]];
                 foreach (CustomRigidGroup jonConn in jons)
                 {
-                    if (!closedNodes.Add(jonConn)) //Moves on to next 
+                    if (!closedNodes.Add(jonConn)) //Moves on to next if the connected component is already in closedNodes.
                         continue;
-                    RigidNode rnode = new RigidNode(jonConn);
+                    RigidNode rnode = new RigidNode(jonConn); //Makes a new rigid node for the connected component.
                     baseNodes.Add(jonConn, rnode);
-                    // Get joint name
-                    CustomRigidJoint joint = null;
+
+                    //Find the actual joint between the two components.
                     foreach (CustomRigidJoint jnt in results.joints)
                     {
                         if (jnt.joints.Count > 0 && ((jnt.groupOne.Equals(jonConn) && jnt.groupTwo.Equals(node[0]))
                             || (jnt.groupOne.Equals(node[0]) && jnt.groupTwo.Equals(jonConn))))
                         {
-                            joint = jnt;
+                            PlannedJoint pJoint = new PlannedJoint();
+                            pJoint.joint = jnt;
+                            pJoint.parentNode = baseNodes[node[1]];
+                            pJoint.node = rnode;
+                            plannedJoints.Add(pJoint);
+                            newOpen.Add(new CustomRigidGroup[] { jonConn, jonConn });
                             break;
                         }
-                    }
-                    if (joint != null)
-                    {
-                        PlannedJoint pJoint = new PlannedJoint();
-                        pJoint.joint = joint;
-                        pJoint.parentNode = baseNodes[node[1]];
-                        pJoint.node = rnode;
-                        plannedJoints.Add(pJoint);
-                        newOpen.Add(new CustomRigidGroup[] { jonConn, jonConn });
                     }
                 }
                 foreach (CustomRigidGroup consConn in cons)
                 {
                     if (!closedNodes.Add(consConn))
                         continue;
-                    mergePattern.Add(consConn, node[1]);
-                    newOpen.Add(new CustomRigidGroup[] { consConn, node[1] });
+                    mergePattern.Add(consConn, node[1]); 
+                    newOpen.Add(new CustomRigidGroup[] { consConn, node[1] }); //Uses node[1] to ensure all constrained groups are merged into the same group.
                 }
             }
             openNodes = newOpen;
         }
 
         Console.WriteLine("Do " + mergePattern.Count + " merge commands");
+        //Transfers components between constrained groups.
         foreach (KeyValuePair<CustomRigidGroup, CustomRigidGroup> pair in mergePattern)
         {
             pair.Value.occurrences.AddRange(pair.Key.occurrences); //Transfers key components to related value.
             pair.Key.occurrences.Clear();
-            pair.Value.grounded = pair.Value.grounded || pair.Key.grounded;
+            pair.Value.grounded = pair.Value.grounded || pair.Key.grounded; //Is it possible for the key to be grounded?  Would there have to be a loop of groups?
         }
         Console.WriteLine("Resolve broken joints");
         //Goes through each joint and sees if it was merged.  If it was, it attaches the group left behind to the group that was merged into.
         foreach (CustomRigidJoint joint in results.joints)
         {
-            CustomRigidGroup thing = null;
-            if (mergePattern.TryGetValue(joint.groupOne, out thing))
+            CustomRigidGroup updatedGroup = null; //Stores the group that the previous groupOne/Two was merged into.
+            if (mergePattern.TryGetValue(joint.groupOne, out updatedGroup))
             {
-                joint.groupOne = thing;
+                joint.groupOne = updatedGroup;
             }
-            if (mergePattern.TryGetValue(joint.groupTwo, out thing))
+            if (mergePattern.TryGetValue(joint.groupTwo, out updatedGroup))
             {
-                joint.groupTwo = thing;
+                joint.groupTwo = updatedGroup;
             }
         }
         Console.WriteLine("Creating planned skeletal joints");

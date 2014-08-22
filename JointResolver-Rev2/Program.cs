@@ -29,6 +29,7 @@ static class Program
     {
         foreach (AssemblyJoint joint in component.Joints)
         {
+            //Takes the average of the linear or rotational limits and sets the joints position to it.
             if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kRotationalJointType)
             {
                 if (joint.Definition.HasAngularPositionLimits)
@@ -45,11 +46,13 @@ static class Program
                 }
                 else
                 {
+                    //No robot would have a piece that would just keep going.
                     throw new Exception("Joints with linear motion require limits.");
                 }
             }
         }
 
+        //Contiues down to subassemblies.
         foreach(ComponentOccurrence subComponent in component.SubOccurrences)
         {
             CenterAllJoints(subComponent);
@@ -63,12 +66,14 @@ static class Program
 
         Console.WriteLine("Get rigid info...");
 
+        //Centers all the joints for each component.  Done to match the assemblie's joint position with the subassembly's position.
         foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
         {
-            CenterAllJoints(component);            
+            CenterAllJoints(component);    
         }
         Console.WriteLine("All joints centered");
 
+        //Group components into rigid bodies.
         NameValueMap options = INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap();
         //options.Add("SuperfluousDOF", true);
         options.Add("DoubleBearing", false);
@@ -76,10 +81,10 @@ static class Program
 
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);
-        //After this point, all grounded groups have been merged into one CustomRigidGroup, and their joints have been updated.
 
         Console.WriteLine("Built model...");
         RigidBodyCleaner.CleanGroundedBodies(customRigid);
+        //After this point, all grounded groups have been merged into one CustomRigidGroup, and their joints have been updated.
 
         RigidNode baseNode = RigidBodyCleaner.BuildAndCleanDijkstra(customRigid);
         Console.WriteLine("Built");

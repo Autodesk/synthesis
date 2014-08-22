@@ -10,6 +10,10 @@ public class CustomRigidResults
 
     public Dictionary<string, CustomRigidGroup> groupIDToCustom = new Dictionary<string, CustomRigidGroup>();
 
+    /// <summary>
+    /// Grabs the joints and groups from the Inventor results, 
+    /// </summary>
+    /// <param name="results"></param>
     public CustomRigidResults(RigidBodyResults results)
     {
         Console.WriteLine("Building custom dataset");
