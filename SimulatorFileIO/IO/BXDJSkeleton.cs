@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 
 public class BXDJSkeleton
 {
@@ -146,6 +147,10 @@ public class BXDJSkeleton
         }
         nodes.Clear();
         to.ListAllNodes(nodes);
+
+        DialogResult overwrite = DialogResult.None;
+
+        //Initial run-through to see if items will be overwritten.
         foreach (RigidNode_Base copyTo in nodes)
         {
             RigidNode_Base fromNode;
@@ -153,11 +158,32 @@ public class BXDJSkeleton
             {
                 if (copyTo.GetSkeletalJoint() != null && fromNode.GetSkeletalJoint() != null && copyTo.GetSkeletalJoint().GetJointType() == fromNode.GetSkeletalJoint().GetJointType())
                 {
-                    // Swap driver.
-                    copyTo.GetSkeletalJoint().cDriver = fromNode.GetSkeletalJoint().cDriver;
-                    
-                    // Swap sensors.
-                    copyTo.GetSkeletalJoint().attachedSensors = fromNode.GetSkeletalJoint().attachedSensors;
+                    if (copyTo.GetSkeletalJoint().cDriver != null || copyTo.GetSkeletalJoint().attachedSensors.Count != 0)
+                    {
+                        overwrite = MessageBox.Show(
+                            "Importing these files will overwrite the current sensors and drivers.\nDo you want to continue?", 
+                            "Overwrite Warning", MessageBoxButtons.YesNo);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (overwrite == DialogResult.None || overwrite == DialogResult.Yes)
+        {
+            foreach (RigidNode_Base copyTo in nodes)
+            {
+                RigidNode_Base fromNode;
+                if (fromNodes.TryGetValue(copyTo.GetModelID(), out fromNode))
+                {
+                    if (copyTo.GetSkeletalJoint() != null && fromNode.GetSkeletalJoint() != null && copyTo.GetSkeletalJoint().GetJointType() == fromNode.GetSkeletalJoint().GetJointType())
+                    {
+                        // Swap driver.
+                        copyTo.GetSkeletalJoint().cDriver = fromNode.GetSkeletalJoint().cDriver;
+
+                        // Swap sensors.
+                        copyTo.GetSkeletalJoint().attachedSensors = fromNode.GetSkeletalJoint().attachedSensors;
+                    }
                 }
             }
         }
