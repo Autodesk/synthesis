@@ -28,7 +28,7 @@ public partial class ControlGroups
         jointPane.ModifiedJoint += jointPane_ModifiedJoint;
         jointPane.SelectedJoint += jointPane_SelectedJoint;
         txtFilePath.Text = BXDSettings.Instance.LastSkeletonDirectory != null ? BXDSettings.Instance.LastSkeletonDirectory : "";
-        loadFromExisting();
+        //loadFromExisting();
     }
 
     void jointPane_SelectedJoint(RigidNode_Base node)
@@ -113,7 +113,7 @@ public partial class ControlGroups
     {
         this.skeleton = root;
         this.jointPane.SetSkeleton(root);
-        loadFromExisting();
+        //loadFromExisting();
     }
 
     public void Cleanup()
@@ -234,7 +234,7 @@ public partial class ControlGroups
         if (selectedPath.Length > 0 && (System.IO.Directory.Exists(selectedPath) || !System.IO.File.Exists(selectedPath)))
         {
             txtFilePath.Text = selectedPath;
-            loadFromExisting();
+            //loadFromExisting();
         }
     }
 
@@ -256,6 +256,11 @@ public partial class ControlGroups
         {
             Console.WriteLine("Error loading existing skeleton: " + e.ToString());
         }
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+        loadFromExisting();
     }
 }
 

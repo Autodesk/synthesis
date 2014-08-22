@@ -36,6 +36,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -45,7 +46,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // btnExport
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(339, 6);
+            this.btnExport.Location = new System.Drawing.Point(434, 6);
             this.btnExport.Name = "btnExport";
             this.btnExport.Size = new System.Drawing.Size(130, 42);
             this.btnExport.TabIndex = 1;
@@ -165,7 +166,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // txtFilePath
             // 
             this.txtFilePath.Enabled = false;
-            this.txtFilePath.Location = new System.Drawing.Point(3, 16);
+            this.txtFilePath.Location = new System.Drawing.Point(130, 16);
             this.txtFilePath.Name = "txtFilePath";
             this.txtFilePath.Size = new System.Drawing.Size(201, 22);
             this.txtFilePath.TabIndex = 6;
@@ -173,7 +174,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(210, 15);
+            this.btnBrowse.Location = new System.Drawing.Point(337, 16);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(75, 23);
             this.btnBrowse.TabIndex = 7;
@@ -184,13 +185,24 @@ partial class ControlGroups : System.Windows.Forms.Form
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.txtFilePath);
             this.panel1.Controls.Add(this.btnBrowse);
             this.panel1.Controls.Add(this.btnExport);
-            this.panel1.Location = new System.Drawing.Point(475, 687);
+            this.panel1.Location = new System.Drawing.Point(380, 687);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(473, 53);
+            this.panel1.Size = new System.Drawing.Size(568, 53);
             this.panel1.TabIndex = 8;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(19, 12);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(105, 31);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "Import Drivers";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // ControlGroups
             // 
@@ -233,4 +245,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.TextBox txtFilePath;
     private System.Windows.Forms.Button btnBrowse;
     private System.Windows.Forms.Panel panel1;
+    private System.Windows.Forms.Button button1;
 }
