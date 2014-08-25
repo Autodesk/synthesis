@@ -84,6 +84,15 @@ public class VBOMesh
                 {
                     color[3] = 1;
                 }
+                if (color[3] != 1 && effects)
+                {
+                    GL.Enable(EnableCap.Blend);
+                    GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                }
+                else
+                {
+                    GL.Disable(EnableCap.Blend);
+                }
                 GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Diffuse, color);
                 GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Specular, new float[] { 1, 1, 1, 1 });
                 GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Shininess, subMesh.surfaces[i].specular);
