@@ -80,7 +80,7 @@ public class auxFunctions : RigidNode_Base
 		Vector3 a = wheels [0] - wheels [1];
 		Vector3 b = a;
 
-		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)-(a.magnitude*b.magnitude)) < .1f && i < wheels.Count; i++) 
+		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)/(a.magnitude*b.magnitude)) > .9f && i < wheels.Count; i++) 
 			b = wheels[0] - wheels[i];
 
 		Vector3 norm = Vector3.Cross(a,b).normalized;
@@ -97,6 +97,7 @@ public class auxFunctions : RigidNode_Base
 			{
 				collider.transform.Rotate(collider.transform.localToWorldMatrix * new Vector3(1,0,0),180);
 			}
+            //collider.transform.rotation = Quaternion.FromToRotation(new Vector3(1, 0, 0), new Vector3(joint.axis.x, joint.axis.y, joint.axis.z));
 		}
         norm.y *= Mathf.Sign(norm.y * com.y);
 
