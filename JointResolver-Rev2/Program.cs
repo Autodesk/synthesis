@@ -27,6 +27,8 @@ static class Program
 
     public static void CenterAllJoints(ComponentOccurrence component)
     {
+        Console.WriteLine("Centering" + component.Name);
+
         foreach (AssemblyJoint joint in component.Joints)
         {
             //Takes the average of the linear or rotational limits and sets the joints position to it.

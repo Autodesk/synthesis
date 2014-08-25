@@ -248,7 +248,10 @@ public partial class ControlGroups
             if (System.IO.File.Exists(txtFilePath.Text + "\\skeleton.bxdj"))
             {
                 RigidNode_Base loadedBase = BXDJSkeleton.ReadSkeleton(txtFilePath.Text + "\\skeleton.bxdj");
-                BXDJSkeleton.CloneDriversFromTo(loadedBase, skeleton);
+
+                BXDJSkeleton.CloneDriversFromTo(loadedBase, skeleton, DialogResult.Yes == MessageBox.Show(
+                    "Do you want to overwrite existing drivers/sensors?",
+                    "Overwrite Warning", MessageBoxButtons.YesNo));
             }
             jointPane.SetSkeleton(skeleton);
         }
@@ -260,7 +263,7 @@ public partial class ControlGroups
 
     private void button1_Click(object sender, EventArgs e)
     {
-        loadFromExisting();
+         loadFromExisting();
     }
 }
 

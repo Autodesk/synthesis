@@ -135,7 +135,7 @@ public class BXDJSkeleton
     /// </summary>
     /// <param name="from">Source skeleton</param>
     /// <param name="to">Destination skeleton</param>
-    public static void CloneDriversFromTo(RigidNode_Base from, RigidNode_Base to)
+    public static void CloneDriversFromTo(RigidNode_Base from, RigidNode_Base to, bool overwrite = false)
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         from.ListAllNodes(nodes);
@@ -153,11 +153,17 @@ public class BXDJSkeleton
             {
                 if (copyTo.GetSkeletalJoint() != null && fromNode.GetSkeletalJoint() != null && copyTo.GetSkeletalJoint().GetJointType() == fromNode.GetSkeletalJoint().GetJointType())
                 {
-                    // Swap driver.
-                    copyTo.GetSkeletalJoint().cDriver = fromNode.GetSkeletalJoint().cDriver;
-                    
-                    // Swap sensors.
-                    copyTo.GetSkeletalJoint().attachedSensors = fromNode.GetSkeletalJoint().attachedSensors;
+                    if(copyTo.GetSkeletalJoint().cDriver == null || overwrite)
+                    {
+                        // Swap driver.
+                        copyTo.GetSkeletalJoint().cDriver = fromNode.GetSkeletalJoint().cDriver;
+                    }
+
+                    if (copyTo.GetSkeletalJoint().attachedSensors.Count == 0 || overwrite)
+                    {
+                        // Swap sensors.
+                        copyTo.GetSkeletalJoint().attachedSensors = fromNode.GetSkeletalJoint().attachedSensors;
+                    }
                 }
             }
         }
