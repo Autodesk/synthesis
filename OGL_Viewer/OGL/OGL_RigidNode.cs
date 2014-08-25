@@ -27,6 +27,37 @@ public class OGL_RigidNode : RigidNode_Base
     private float requestedTranslation = 0;
     private BXDVector3 centerOfMass;
 
+    public int colliderCount
+    {
+        get
+        {
+            return colliders.Count;
+        }
+        private set
+        {
+        }
+    }
+    public int meshCount
+    {
+        get
+        {
+            return models.Count;
+        }
+        private set
+        {
+        }
+    }
+    public int meshTriangleCount
+    {
+        get;
+        private set;
+    }
+    public int colliderTriangleCount
+    {
+        get;
+        private set;
+    }
+
     public OGL_RigidNode()
     {
         myGUID = SelectManager.AllocateGUID(this);
@@ -47,13 +78,22 @@ public class OGL_RigidNode : RigidNode_Base
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(path);
         this.centerOfMass = mesh.physics.centerOfMass;
+        meshTriangleCount = 0;
         foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
         {
             models.Add(new VBOMesh(sub));
+            foreach (BXDAMesh.BXDASurface surf in sub.surfaces) {
+                meshTriangleCount += surf.indicies.Length / 3;
+            }
         }
+        colliderTriangleCount = 0;
         foreach (BXDAMesh.BXDASubMesh sub in mesh.colliders)
         {
             colliders.Add(new VBOMesh(sub));
+            foreach (BXDAMesh.BXDASurface surf in sub.surfaces)
+            {
+                colliderTriangleCount += surf.indicies.Length / 3;
+            }
         }
     }
 

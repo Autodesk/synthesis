@@ -58,12 +58,6 @@
     <Compile Include="GUI\ControlGroups.Designer.cs">
       <DependentUpon>ControlGroups.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\DriveNode.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\DriveNode.Designer.cs">
-      <DependentUpon>DriveNode.cs</DependentUpon>
-    </Compile>
     <Compile Include="OGL\Util\Camera3rdPerson.cs" />
     <Compile Include="OGLMain.cs" />
     <Compile Include="OGL\OGL_RigidNode.cs" />
@@ -73,6 +67,11 @@
     <Compile Include="OGL\SelectManager.cs" />
     <Compile Include="OGL\ShaderLoader.cs" />
     <Compile Include="OGL\Util\VBOMesh.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -120,8 +119,9 @@
     <EmbeddedResource Include="GUI\ControlGroups.resx">
       <DependentUpon>ControlGroups.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\DriveNode.resx">
-      <DependentUpon>DriveNode.cs</DependentUpon>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

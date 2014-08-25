@@ -16,10 +16,6 @@ public partial class ControlGroups
     public ControlGroups()
     {
         InitializeComponent();// Don't remove
-        jointPane.RegisterContextAction("Drive", (RigidNode_Base node) =>
-        {
-            new DriveNode().ShowDriveDialog((OGL_RigidNode) node);
-        });
     }
 
     private void btnExport_Click(object sender, EventArgs e)
@@ -39,13 +35,14 @@ public partial class ControlGroups
         if (groupList == null)
             return;
         lstGroups.Items.Clear();
-        //foreach (BXDAMesh mesh in groupList)
-        //{
-        //    System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {mesh.,
-        //        group.grounded?"Yes":"No",group.colorFaces?"Yes":"No", group.highRes?"Yes":"No", group.convex?"Convex":"Concave"});
-        //    item.Tag = group;
-        //    lstGroups.Items.Add(item);
-        //}
+        foreach (RigidNode_Base mesh in groupList)
+        {
+            OGL_RigidNode node = (OGL_RigidNode) mesh;
+            System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] {mesh.modelFileName,
+            Convert.ToString(node.meshCount), Convert.ToString(node.meshTriangleCount), Convert.ToString(node.colliderCount), Convert.ToString(node.colliderTriangleCount) });
+            item.Tag = mesh;
+            lstGroups.Items.Add(item);
+        }
     }
 
     private void ControlGroups_Load(object sender, EventArgs e)
@@ -93,16 +90,18 @@ public partial class ControlGroups
 
     private void lstGroups_SelectedIndexChanged(object sender, EventArgs e)
     {
-        //if (chkHighlightComponents.Checked && lstGroups.SelectedItems.Count == 1 && lstGroups.SelectedItems[0].Tag is CustomRigidGroup)
-        //{
-        //    CustomRigidGroup group = (CustomRigidGroup) lstGroups.SelectedItems[0].Tag;
-        //    ComponentHighlighter.PrepareHighlight();
-        //    ComponentHighlighter.ClearHighlight();
-        //    foreach (Inventor.ComponentOccurrence child in group.occurrences)
-        //    {
-        //        ComponentHighlighter.CHILD_HIGHLIGHT_SET.AddItem(child);
-        //    }
-        //}
+        if (lstGroups.SelectedItems.Count == 1 && lstGroups.SelectedItems[0].Tag is OGL_RigidNode)
+        {
+            OGL_RigidNode node = (OGL_RigidNode) lstGroups.SelectedItems[0].Tag;
+            foreach (RigidNode_Base ns in groupList)
+            {
+                ((OGL_RigidNode) ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
+            }
+            if (node is OGL_RigidNode)
+            {
+                ((OGL_RigidNode) node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
+            }
+        }
     }
 
     private void tabsMain_SelectedIndexChanged(object sender, EventArgs e)

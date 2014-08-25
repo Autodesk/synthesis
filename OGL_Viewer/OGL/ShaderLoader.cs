@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using OpenTK.Graphics.OpenGL;
 
 public class ShaderLoader
@@ -32,8 +33,8 @@ public class ShaderLoader
         int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
 
         System.Console.WriteLine(Directory.GetCurrentDirectory());
-        string vertexShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/Shaders/shader.vert");
-        string fragmentShaderSource = File.ReadAllText(Directory.GetCurrentDirectory() + "/../../OGL/Shaders/shader.frag");
+        string vertexShaderSource = Encoding.UTF8.GetString(OGL_Viewer.Properties.Resources.vertex_shader);
+        string fragmentShaderSource = Encoding.UTF8.GetString(OGL_Viewer.Properties.Resources.fragment_shader);
 
 
         GL.ShaderSource(vertexShader, vertexShaderSource);

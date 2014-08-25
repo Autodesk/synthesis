@@ -14,7 +14,7 @@ using System.Collections.Generic;
 /// <summary>
 /// 
 /// </summary>
-public class OGL_Viewer : GameWindow
+public class OGLMain : GameWindow
 {
     private const int SELECT_BUFFER_WIDTH = 1920, SELECT_BUFFER_HEIGHT = 1080;
 
@@ -32,6 +32,7 @@ public class OGL_Viewer : GameWindow
     static float[] ambient = { .125f, .125f, .125f, .125f };
 
     private ControlGroups editorGUI;
+    private string modelFileName;
 
     // Select info
     private int mouseX, mouseY;
@@ -57,6 +58,7 @@ public class OGL_Viewer : GameWindow
         {
             editorGUI = new ControlGroups();
             editorGUI.SetSkeleton(skeleton);
+            editorGUI.SetGroupList(nodes);
             editorGUI.jointPane.SelectedJoint += delegate(RigidNode_Base node)
             {
                 foreach (RigidNode_Base ns in nodes)
@@ -76,9 +78,14 @@ public class OGL_Viewer : GameWindow
         }
     }
 
-    public OGL_Viewer()
+    public OGLMain(string[] args)
         : base(1366, 768, new GraphicsMode(32, 0, 0, 4), "Skeleton Viewer")
     {
+        if (args.Length > 2)
+            this.modelFileName = args[1];
+        else
+            this.modelFileName = null;
+
      //   base.X = 1920;
         MouseMove += (object o, OpenTK.Input.MouseMoveEventArgs e) =>
         {
@@ -104,7 +111,7 @@ public class OGL_Viewer : GameWindow
     {
         base.OnLoad(e);
 
-        loadSkeleton();
+        loadSkeleton(modelFileName);
         Console.WriteLine("Loaded");
 
         GL.ClearColor(System.Drawing.Color.Black);
@@ -262,7 +269,7 @@ public class OGL_Viewer : GameWindow
 
     public static void Main(string[] args)
     {
-        using (OGL_Viewer viewer = new OGL_Viewer())
+        using (OGLMain viewer = new OGLMain(args))
         {
             viewer.Run(60);
         }

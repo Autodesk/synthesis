@@ -30,8 +30,9 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chCollider = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.jointPane = new EditorsLibrary.JointEditorPane();
-            this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.btnCalculate = new System.Windows.Forms.Button();
+            this.groups_chSubTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groups_chCollTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -87,15 +88,16 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.lstGroups.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.groups_chName,
             this.groups_chSubmesh,
-            this.groups_chCollider});
+            this.groups_chSubTris,
+            this.groups_chCollider,
+            this.groups_chCollTris});
             this.lstGroups.FullRowSelect = true;
             this.lstGroups.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lstGroups.HoverSelection = true;
-            this.lstGroups.Location = new System.Drawing.Point(6, 6);
+            this.lstGroups.Location = new System.Drawing.Point(0, 0);
             this.lstGroups.MultiSelect = false;
             this.lstGroups.Name = "lstGroups";
             this.lstGroups.ShowGroups = false;
-            this.lstGroups.Size = new System.Drawing.Size(915, 627);
+            this.lstGroups.Size = new System.Drawing.Size(924, 633);
             this.lstGroups.TabIndex = 4;
             this.lstGroups.UseCompatibleStateImageBehavior = false;
             this.lstGroups.View = System.Windows.Forms.View.Details;
@@ -106,15 +108,15 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chName.Text = "Name";
             this.groups_chName.Width = 98;
             // 
-            // groups_chGrounded
+            // groups_chSubmesh
             // 
             this.groups_chSubmesh.Text = "Submesh Count";
-            this.groups_chSubmesh.Width = 91;
+            this.groups_chSubmesh.Width = 115;
             // 
-            // groups_chFaceColor
+            // groups_chCollider
             // 
             this.groups_chCollider.Text = "Collider Count";
-            this.groups_chCollider.Width = 127;
+            this.groups_chCollider.Width = 103;
             // 
             // tabJoints
             // 
@@ -134,17 +136,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.jointPane.Size = new System.Drawing.Size(927, 639);
             this.jointPane.TabIndex = 0;
             // 
-            // chkHighlightComponents
-            // 
-            this.chkHighlightComponents.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.chkHighlightComponents.AutoSize = true;
-            this.chkHighlightComponents.Location = new System.Drawing.Point(171, 699);
-            this.chkHighlightComponents.Name = "chkHighlightComponents";
-            this.chkHighlightComponents.Size = new System.Drawing.Size(193, 21);
-            this.chkHighlightComponents.TabIndex = 5;
-            this.chkHighlightComponents.Text = "Highlight Component Sets";
-            this.chkHighlightComponents.UseVisualStyleBackColor = true;
-            // 
             // btnCalculate
             // 
             this.btnCalculate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -156,13 +147,22 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnCalculate.UseVisualStyleBackColor = true;
             this.btnCalculate.Visible = false;
             // 
+            // groups_chSubTris
+            // 
+            this.groups_chSubTris.Text = "Submesh Triangles";
+            this.groups_chSubTris.Width = 136;
+            // 
+            // groups_chCollTris
+            // 
+            this.groups_chCollTris.Text = "Collider Triangles";
+            this.groups_chCollTris.Width = 124;
+            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 741);
             this.Controls.Add(this.btnCalculate);
-            this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnExport);
@@ -176,7 +176,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabGroups.ResumeLayout(false);
             this.tabJoints.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
     }
     internal System.Windows.Forms.Button btnExport;
@@ -189,8 +188,9 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader groups_chName;
     private System.Windows.Forms.ColumnHeader groups_chCollider;
     private System.Windows.Forms.ColumnHeader groups_chSubmesh;
-    private System.Windows.Forms.CheckBox chkHighlightComponents;
     private System.Windows.Forms.ColumnHeader item_chWheel;
     private System.Windows.Forms.Button btnCalculate;
     public EditorsLibrary.JointEditorPane jointPane;
+    private System.Windows.Forms.ColumnHeader groups_chSubTris;
+    private System.Windows.Forms.ColumnHeader groups_chCollTris;
 }
