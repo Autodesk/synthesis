@@ -1602,7 +1602,7 @@ namespace CONVEX_DECOMPOSITION
 		NxU32 *mIndices;
 	};
 
-	bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 maxverts,NxF32 inflate, bool progress = false);
+	bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 maxverts,NxF32 inflate);
 	void ReleaseHull(PHullResult &result);
 
 	//*****************************************************
@@ -2765,7 +2765,7 @@ namespace CONVEX_DECOMPOSITION
 	//*****************************************************
 
 
-	bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 vlimit,NxF32 inflate, bool progress)
+	bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 vlimit,NxF32 inflate)
 	{
 
 		NxI32 index_count;
@@ -2834,7 +2834,7 @@ namespace CONVEX_DECOMPOSITION
 
 
 	HullError HullLibrary::CreateConvexHull(const HullDesc       &desc,           // describes the input request
-		HullResult           &result, bool progress)         // contains the resulst
+		HullResult           &result)         // contains the resulst
 	{
 		HullError ret = QE_FAIL;
 
@@ -2851,14 +2851,8 @@ namespace CONVEX_DECOMPOSITION
 
 		NxU32 ovcount;
 
-		if (progress){
-			printf("Preparing point cloud...\n");
-		}
 		bool ok = CleanupVertices(desc.mVcount,desc.mVertices, desc.mVertexStride, ovcount, vsource, desc.mNormalEpsilon, scale ); // normalize point cloud, remove duplicates!
-		if (progress){
-			printf("Cleaned and normalized point cloud\n");
-		}
-
+		
 		if ( ok )
 		{
 
@@ -2876,7 +2870,7 @@ namespace CONVEX_DECOMPOSITION
 			if ( desc.HasHullFlag(QF_SKIN_WIDTH) ) 
 				skinwidth = desc.mSkinWidth;
 
-			ok = ComputeHull(ovcount,vsource,hr,desc.mMaxVertices,skinwidth, progress);
+			ok = ComputeHull(ovcount,vsource,hr,desc.mMaxVertices,skinwidth);
 
 			if ( ok )
 			{

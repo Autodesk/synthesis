@@ -440,8 +440,6 @@ public class ConvexHullCalculator
             }
             vertCount += addedVerts;
         }
-        Console.WriteLine(vertCount + " vertices left of " + (copy.Length / 3));
-        Console.WriteLine(indexCount / 3 + " triangles left of " + index.Length / 3);
         if (decompose)
         {
             ConvexAPI.iConvexDecomposition ic = new ConvexAPI.iConvexDecomposition();

@@ -176,7 +176,7 @@ class HullLibrary
 public:
 
 	HullError CreateConvexHull(const HullDesc       &desc,           // describes the input request
-															HullResult           &result, bool progress = false);        // contains the resulst
+															HullResult           &result);        // contains the resulst
 
 	HullError ReleaseResult(HullResult &result); // release memory allocated for this result, we are done with it.
 

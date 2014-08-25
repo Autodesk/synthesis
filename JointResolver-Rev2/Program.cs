@@ -27,7 +27,9 @@ static class Program
 
     public static void CenterAllJoints(ComponentOccurrence component)
     {
-        Console.WriteLine("Centering" + component.Name);
+        Console.CursorLeft = 0;
+        string part = "Centering: " + component.Name;
+        Console.Write(part + new string(' ', Console.BufferWidth - part.Length - 1));
 
         foreach (AssemblyJoint joint in component.Joints)
         {
@@ -55,7 +57,7 @@ static class Program
         }
 
         //Contiues down to subassemblies.
-        foreach(ComponentOccurrence subComponent in component.SubOccurrences)
+        foreach (ComponentOccurrence subComponent in component.SubOccurrences)
         {
             CenterAllJoints(subComponent);
         }
@@ -63,18 +65,16 @@ static class Program
 
     public static void AnalyzeRigidResults()
     {
-        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;  
-
-
-        Console.WriteLine("Get rigid info...");
+        AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
 
         //Centers all the joints for each component.  Done to match the assemblie's joint position with the subassembly's position.
         foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
         {
-            CenterAllJoints(component);    
+            CenterAllJoints(component);
         }
-        Console.WriteLine("All joints centered");
+        Console.WriteLine();
 
+        Console.WriteLine("Get rigid info...");
         //Group components into rigid bodies.
         NameValueMap options = INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap();
         //options.Add("SuperfluousDOF", true);
@@ -117,11 +117,10 @@ static class Program
                 {
                     if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)
                     {
-                        Console.WriteLine("Running deffered calculations for " + node.GetModelID());
+                        Console.WriteLine("Exporting " + node.modelFileName);
                         ((RigidNode) node).DoDeferredCalculations();
                         try
                         {
-                            Console.WriteLine("Exporting " + node.modelFileName);
                             CustomRigidGroup group = (CustomRigidGroup) node.GetModel();
                             surfs.Reset();
                             surfs.ExportAll(group, (long progress, long total) =>
@@ -131,11 +130,11 @@ static class Program
                             });
                             Console.WriteLine();
                             BXDAMesh output = surfs.GetOutput();
-                            Console.WriteLine("Output mesh: " + output.meshes.Count + " meshes");
+                            Console.WriteLine("Output: " + output.meshes.Count + " meshes");
                             /*Console.WriteLine("Exporting for Colliders\n");
                             surfs.Reset();
                             surfs.ExportAll(group, true);*/
-                            Console.WriteLine("Computing colliders for " + node.GetModelID());
+                            Console.WriteLine("Computing colliders...");
                             output.colliders.Clear();
                             output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));
                             output.WriteToFile(pathBase + "\\" + node.modelFileName);

@@ -37,7 +37,7 @@ namespace ConvexAPI {
 		pin_ptr<NxF32> vertsP = &verts[0];
 		//NxF32 *vertCopy = (NxF32*) malloc(sizeof(NxF32) * vertCount);
 		CONVEX_DECOMPOSITION::HullDesc desc(CONVEX_DECOMPOSITION::HullFlag::QF_TRIANGLES,vertCount, vertsP,sizeof(NxF32)*3);
-		CONVEX_DECOMPOSITION::HullError error = library->CreateConvexHull(desc, *backing, true);
+		CONVEX_DECOMPOSITION::HullError error = library->CreateConvexHull(desc, *backing);
 	}
 	cli::array<NxF32> ^StandaloneConvexHull::getVertices(){
 		cli::array<NxF32> ^verts = gcnew cli::array<NxF32>(backing->mNumOutputVertices * 3);
