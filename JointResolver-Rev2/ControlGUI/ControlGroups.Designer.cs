@@ -35,12 +35,12 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.chkHighlightComponents = new System.Windows.Forms.CheckBox();
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.pnlOutput = new System.Windows.Forms.Panel();
+            this.btnImportDrivers = new System.Windows.Forms.Button();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.pnlOutput.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnExport
@@ -184,32 +184,32 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.button1);
-            this.panel1.Controls.Add(this.txtFilePath);
-            this.panel1.Controls.Add(this.btnBrowse);
-            this.panel1.Controls.Add(this.btnExport);
-            this.panel1.Location = new System.Drawing.Point(380, 687);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(568, 53);
-            this.panel1.TabIndex = 8;
+            this.pnlOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlOutput.Controls.Add(this.btnImportDrivers);
+            this.pnlOutput.Controls.Add(this.txtFilePath);
+            this.pnlOutput.Controls.Add(this.btnBrowse);
+            this.pnlOutput.Controls.Add(this.btnExport);
+            this.pnlOutput.Location = new System.Drawing.Point(380, 687);
+            this.pnlOutput.Name = "panel1";
+            this.pnlOutput.Size = new System.Drawing.Size(568, 53);
+            this.pnlOutput.TabIndex = 8;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(19, 12);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(105, 31);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "Import Drivers";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnImportDrivers.Location = new System.Drawing.Point(19, 12);
+            this.btnImportDrivers.Name = "button1";
+            this.btnImportDrivers.Size = new System.Drawing.Size(105, 31);
+            this.btnImportDrivers.TabIndex = 9;
+            this.btnImportDrivers.Text = "Import Drivers";
+            this.btnImportDrivers.UseVisualStyleBackColor = true;
+            this.btnImportDrivers.Click += new System.EventHandler(this.button1_Click);
             // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 741);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlOutput);
             this.Controls.Add(this.chkHighlightComponents);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
@@ -222,8 +222,8 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabsMain.ResumeLayout(false);
             this.tabGroups.ResumeLayout(false);
             this.tabJoints.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.pnlOutput.ResumeLayout(false);
+            this.pnlOutput.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -244,6 +244,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     private EditorsLibrary.JointEditorPane jointPane;
     private System.Windows.Forms.TextBox txtFilePath;
     private System.Windows.Forms.Button btnBrowse;
-    private System.Windows.Forms.Panel panel1;
-    private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.Panel pnlOutput;
+    private System.Windows.Forms.Button btnImportDrivers;
 }

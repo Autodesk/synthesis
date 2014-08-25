@@ -71,6 +71,16 @@ public class OGLMain : GameWindow
                 }
             };
             editorGUI.ShowDialog();
+            if (editorGUI.formState == FormState.SUBMIT)
+            {
+                pathBase = editorGUI.ExportPath;
+                Console.WriteLine("Writing skeleton");
+                BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode);
+
+                BXDSettings.Instance.LastSkeletonDirectory = pathBase;
+                BXDSettings.Save();
+                MessageBox.Show("Finished Exporting Files!");
+            }
         }).Start();
         foreach (RigidNode_Base node in nodes)
         {

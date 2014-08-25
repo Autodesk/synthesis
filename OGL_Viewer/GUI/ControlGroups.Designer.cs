@@ -32,7 +32,12 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.jointPane = new EditorsLibrary.JointEditorPane();
             this.btnCalculate = new System.Windows.Forms.Button();
             this.groups_chSubTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.groups_chCollTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groups_chCollTris = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.txtFilePath = new System.Windows.Forms.TextBox();
+            this.btnBrowse = new System.Windows.Forms.Button();
+            this.pnlOutput = new System.Windows.Forms.Panel();
+            this.btnExportDrivers = new System.Windows.Forms.Button();
+
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
@@ -155,7 +160,47 @@ partial class ControlGroups : System.Windows.Forms.Form
             // groups_chCollTris
             // 
             this.groups_chCollTris.Text = "Collider Triangles";
-            this.groups_chCollTris.Width = 124;
+            this.groups_chCollTris.Width = 124; // 
+            // txtFilePath
+            // 
+            this.txtFilePath.Enabled = false;
+            this.txtFilePath.Location = new System.Drawing.Point(130, 16);
+            this.txtFilePath.Name = "txtFilePath";
+            this.txtFilePath.Size = new System.Drawing.Size(201, 22);
+            this.txtFilePath.TabIndex = 6;
+            this.txtFilePath.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // btnBrowse
+            // 
+            this.btnBrowse.Location = new System.Drawing.Point(337, 16);
+            this.btnBrowse.Name = "btnBrowse";
+            this.btnBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btnBrowse.TabIndex = 7;
+            this.btnBrowse.Text = "Browse...";
+            this.btnBrowse.UseVisualStyleBackColor = true;
+            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
+            // 
+            // panel1
+            // 
+            this.pnlOutput.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlOutput.Controls.Add(this.btnExportDrivers);
+            this.pnlOutput.Controls.Add(this.txtFilePath);
+            this.pnlOutput.Controls.Add(this.btnBrowse);
+            this.pnlOutput.Controls.Add(this.btnExport);
+            this.pnlOutput.Location = new System.Drawing.Point(380, 687);
+            this.pnlOutput.Name = "panel1";
+            this.pnlOutput.Size = new System.Drawing.Size(568, 53);
+            this.pnlOutput.TabIndex = 8;
+            // 
+            // button1
+            // 
+            this.btnExportDrivers.Location = new System.Drawing.Point(19, 12);
+            this.btnExportDrivers.Name = "button1";
+            this.btnExportDrivers.Size = new System.Drawing.Size(105, 31);
+            this.btnExportDrivers.TabIndex = 9;
+            this.btnExportDrivers.Text = "Import Drivers";
+            this.btnExportDrivers.UseVisualStyleBackColor = true;
+            this.btnExportDrivers.Click += new System.EventHandler(this.button1_Click);
             // 
             // ControlGroups
             // 
@@ -193,4 +238,8 @@ partial class ControlGroups : System.Windows.Forms.Form
     public EditorsLibrary.JointEditorPane jointPane;
     private System.Windows.Forms.ColumnHeader groups_chSubTris;
     private System.Windows.Forms.ColumnHeader groups_chCollTris;
+    private System.Windows.Forms.TextBox txtFilePath;
+    private System.Windows.Forms.Button btnBrowse;
+    private System.Windows.Forms.Panel pnlOutput;
+    private System.Windows.Forms.Button btnExportDrivers;
 }
