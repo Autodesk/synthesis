@@ -51,7 +51,7 @@ public class Init : MonoBehaviour
         	UnityRigidNode nodeThing = new UnityRigidNode();
         	nodeThing.modelFileName = "field.bxda";
         	nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda");
+            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda", true);
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
@@ -70,12 +70,12 @@ public class Init : MonoBehaviour
                 UnityRigidNode uNode = (UnityRigidNode)node;
 
                 uNode.CreateTransform(robot.transform);
-                uNode.CreateMesh(filePath + uNode.modelFileName);
+                uNode.CreateMesh(filePath + uNode.modelFileName, true);
 
                 uNode.CreateJoint();
                 if (uNode.modelFileName == "node_0.bxda")
                 {
-                    uNode.unityObject.transform.rigidbody.mass = 10;
+                    uNode.unityObject.transform.rigidbody.mass += (20f / 120f); // Battery
                 }
                 if (uNode.IsWheel)
                 {
