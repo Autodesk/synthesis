@@ -34,9 +34,9 @@ public class BetterWheelCollider : MonoBehaviour
         }
         point /= collisionInfo.contacts.Length;
         norm.Normalize();
-        Vector3 axis = transform.localToWorldMatrix * gameObject.GetComponent<ConfigurableJoint>().axis;
+        Vector3 axis = transform.localToWorldMatrix * gameObject.GetComponent<HingeJoint>().axis;
         axis.Normalize();
-        Vector3 basePoint = transform.localToWorldMatrix * gameObject.GetComponent<ConfigurableJoint>().connectedAnchor;
+        Vector3 basePoint = transform.localToWorldMatrix * gameObject.GetComponent<HingeJoint>().connectedAnchor;
         Vector3 crossed = Vector3.Cross(norm, axis).normalized;
         float appliedRadius = Vector3.Distance(point, basePoint);
         Vector3 force = Vector3.zero;

@@ -15,7 +15,7 @@ public class Init : MonoBehaviour
     RigidNode_Base skeleton;
     unityPacket udp = new unityPacket();
     List<GameObject> unityWheelData = new List<GameObject>();
-    List<MeshCollider> meshColliders = new List<MeshCollider>();
+    List<Collider> meshColliders = new List<Collider>();
     // int robots = 0;
     string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
     public enum WheelPositions
@@ -51,7 +51,7 @@ public class Init : MonoBehaviour
         	UnityRigidNode nodeThing = new UnityRigidNode();
         	nodeThing.modelFileName = "field.bxda";
         	nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda", true);
+            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda", false);
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
@@ -82,8 +82,8 @@ public class Init : MonoBehaviour
                     unityWheelData.Add(uNode.wCollider);
                     
                 }
-                meshColliders.Add(uNode.meshCollider);
-                
+                //meshColliders.Add(uNode.meshCollider);                
+                meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
             if (unityWheelData.Count > 0)
             {

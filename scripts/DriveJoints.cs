@@ -99,23 +99,23 @@ public class DriveJoints : MonoBehaviour
 
 
         // Checks to make sure solenoid data was assigned. We can't really use a try/catch statement because if pressure and diameter data is left blank when the robot is created, Unity will still use its default values.
-        if (node.GetConfigJoint().xDrive.maximumForce < 3.4e36 || node.GetConfigJoint().xDrive.maximumForce <= 0 || node.GetConfigJoint().xDrive.maximumForce != null)
+        if (node.GetJoint<ConfigurableJoint>().xDrive.maximumForce < 3.4e36 || node.GetJoint<ConfigurableJoint>().xDrive.maximumForce <= 0 || node.GetJoint<ConfigurableJoint>().xDrive.maximumForce != null)
         {
-            acceleration = node.GetConfigJoint().xDrive.maximumForce / node.GetConfigJoint().rigidbody.mass * (forward ? 1 : -1);
+            acceleration = node.GetJoint<ConfigurableJoint>().xDrive.maximumForce / node.GetJoint<ConfigurableJoint>().rigidbody.mass * (forward ? 1 : -1);
         }
         else
         {
             // Calculating an arbitrary maximum force. Assumes the piston diameter is .5 inches and that the PSI is 60psi. 
             float psiToNMm2 = 0.00689475728f;
             float maximumForce = (psiToNMm2 * 60f) * (Mathf.PI * Mathf.Pow(6.35f, 2f));
-            acceleration = (maximumForce / node.GetConfigJoint().rigidbody.mass) * (forward ? 1 : -1);
+            acceleration = (maximumForce / node.GetJoint<ConfigurableJoint>().rigidbody.mass) * (forward ? 1 : -1);
             throw new PistonDataMissing(node.ToString());
         }
 
         // Dot product is reversed, so we need to negate it
-        float velocity = acceleration * (Time.deltaTime) - Vector3.Dot(node.GetConfigJoint().rigidbody.velocity, node.unityObject.transform.TransformDirection(node.GetConfigJoint().axis));
+        float velocity = acceleration * (Time.deltaTime) - Vector3.Dot(node.GetJoint<ConfigurableJoint>().rigidbody.velocity, node.unityObject.transform.TransformDirection(node.GetJoint<ConfigurableJoint>().axis));
 
-        node.GetConfigJoint().targetVelocity = new Vector3(velocity, 0, 0);
+        node.GetJoint<ConfigurableJoint>().targetVelocity = new Vector3(velocity, 0, 0);
     }
 
     // Rotates a wheel 45 degress to act as a mecanum wheel
@@ -131,7 +131,7 @@ public class DriveJoints : MonoBehaviour
     // Gets the linear position of a UnityRigidNode relative to its parent (intended to be used with pistons, but it could be used elsewhere)
     public static float GetLinearPositionRelativeToParent(UnityRigidNode baseNode)
     {
-        Vector3 baseDirection = baseNode.unityObject.transform.rotation * baseNode.GetConfigJoint().axis;
+        Vector3 baseDirection = baseNode.unityObject.transform.rotation * baseNode.GetJoint<Joint>().axis;
         baseDirection.Normalize();
         UnityRigidNode parentNode = (UnityRigidNode) (baseNode.GetParent());
 
@@ -182,38 +182,76 @@ public class DriveJoints : MonoBehaviour
                     }
                     else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
                     {
+                        ConfigurableJoint cj = unitySubNode.GetJoint<ConfigurableJoint>();
+                        HingeJoint hj = unitySubNode.GetJoint<HingeJoint>();
+
                         // Something Arbitrary for now. 4 radians/second
                         float OzInToNm = .00706155183333f;
-                        JointDrive jD = unitySubNode.GetConfigJoint().angularXDrive;
-                        jD.maximumForce = OzInToNm * (Math.Abs(pwm[i]) < 0.05f ? 343f : (pwm[i] * pwm[i] * 171.1f));
-                        unitySubNode.GetConfigJoint().angularXDrive = jD;
-                        unitySubNode.GetConfigJoint().targetAngularVelocity = new Vector3(25 * Math.Sign(pwm[i]), 0, 0);
-
-                        // We will need this to tell when the joint is very near a limit
-                        float angularPosition = GetAngleBetweenChildAndParent(unitySubNode);
-
-                        // Stopping the configurable joint if it approaches its limits (if its within 5% of its limit)
-                        if (unitySubNode.GetConfigJoint().angularXMotion == ConfigurableJointMotion.Limited
-                            && (unitySubNode.GetConfigJoint().highAngularXLimit.limit - angularPosition) <
-                            (0.05f * unitySubNode.GetConfigJoint().highAngularXLimit.limit))
+                        float motorForce = OzInToNm * (Math.Abs(pwm[i]) < 0.05f ? 343f : (pwm[i] * pwm[i] * 171.1f));
+                        float targetVelocity = 25 * Math.Sign(pwm[i]);
+                        #region Config_Joint
+                        if (cj != null)
                         {
-                            // This prevents the motor from rotating toward its limit again after we have gotten close enough to the limit that we need to stop it.
-                            // We will need it to be able to rotate away from the limit however (hence, the if-else statements)
-                            // If the local up Vector of the unityObject is negative, the joint is approaching its positive limit (I am not sure if this will work in all cases, so its testing time!)
-                            if (unitySubNode.unityObject.transform.up.x < 0 && unitySubNode.GetConfigJoint().targetAngularVelocity.x > 0)
+                            JointDrive jD = cj.angularXDrive;
+                            jD.maximumForce = motorForce;
+                            cj.angularXDrive = jD;
+                            cj.targetAngularVelocity = new Vector3(targetVelocity, 0, 0);
+
+                            // We will need this to tell when the joint is very near a limit
+                            float angularPosition = GetAngleBetweenChildAndParent(unitySubNode);
+
+                            // Stopping the configurable joint if it approaches its limits (if its within 5% of its limit)
+                            if (cj.angularXMotion == ConfigurableJointMotion.Limited
+                                && (cj.highAngularXLimit.limit - angularPosition) <
+                                (0.05f * cj.highAngularXLimit.limit))
                             {
-                                unitySubNode.GetConfigJoint().targetAngularVelocity = Vector3.zero;
-                            }
-                            else if (unitySubNode.unityObject.transform.up.x > 0 && unitySubNode.GetConfigJoint().targetAngularVelocity.x < 0)
-                            {
-                                unitySubNode.GetConfigJoint().targetAngularVelocity = Vector3.zero;
+                                // This prevents the motor from rotating toward its limit again after we have gotten close enough to the limit that we need to stop it.
+                                // We will need it to be able to rotate away from the limit however (hence, the if-else statements)
+                                // If the local up Vector of the unityObject is negative, the joint is approaching its positive limit (I am not sure if this will work in all cases, so its testing time!)
+                                if (unitySubNode.unityObject.transform.up.x < 0 && cj.targetAngularVelocity.x > 0)
+                                {
+                                    cj.targetAngularVelocity = Vector3.zero;
+                                }
+                                else if (unitySubNode.unityObject.transform.up.x > 0 && cj.targetAngularVelocity.x < 0)
+                                {
+                                    cj.targetAngularVelocity = Vector3.zero;
+                                }
                             }
                         }
-                    }
-                    else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
-                    {
-                        // Should we throw an exception here?
-                        Debug.Log("There's an issue: We have an active motor not set (even though it should be set).");
+                        #endregion
+                        #region hinge joint
+                        if (hj != null)
+                        {
+                            JointMotor motor = hj.motor;
+                            motor.force = motorForce;
+                            motor.freeSpin = false;
+                            motor.targetVelocity = targetVelocity;
+                            hj.motor = motor;
+                            if (hj.useLimits)
+                            {
+                                float limitRange = hj.limits.max - hj.limits.min;
+                                if (Math.Min(Math.Abs(hj.angle - hj.limits.min), Math.Abs(hj.angle - hj.limits.max)) < 0.05 * limitRange)
+                                {
+                                    // This prevents the motor from rotating toward its limit again after we have gotten close enough to the limit that we need to stop it.
+                                    // We will need it to be able to rotate away from the limit however (hence, the if-else statements)
+                                    // If the local up Vector of the unityObject is negative, the joint is approaching its positive limit (I am not sure if this will work in all cases, so its testing time!)
+                                    if (unitySubNode.unityObject.transform.up.x < 0 && cj.targetAngularVelocity.x > 0)
+                                    {
+                                        cj.targetAngularVelocity = Vector3.zero;
+                                    }
+                                    else if (unitySubNode.unityObject.transform.up.x > 0 && cj.targetAngularVelocity.x < 0)
+                                    {
+                                        cj.targetAngularVelocity = Vector3.zero;
+                                    }
+                                }
+                            }
+                        #endregion
+                        }
+                        else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                        {
+                            // Should we throw an exception here?
+                            Debug.Log("There's an issue: We have an active motor not set (even though it should be set).");
+                        }
                     }
                 }
             }
@@ -232,10 +270,10 @@ public class DriveJoints : MonoBehaviour
         foreach (RigidNode_Base subBase in listOfNodes)
         {
             UnityRigidNode unityNode = (UnityRigidNode) subBase;
-
+            ConfigurableJoint cj = unityNode.GetJoint<ConfigurableJoint>();
             // Make sure piston and skeletalJoint exist
             // If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-            if (subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
+            if (cj != null && subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
             {
                 // It will use bitwise operators to check if the port is open (see wiki for full explanation).
                 int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
@@ -262,20 +300,20 @@ public class DriveJoints : MonoBehaviour
                 }
 
                 // If the piston hits its upper limit, stop it from extending any farther.
-                if (Mathf.Abs(unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit))
+                if (Mathf.Abs(cj.linearLimit.limit - linearPositionAlongAxis) < (.03f * cj.linearLimit.limit))
                 {
                     // Since we still want it to retract, however, we will only stop the piston if its velocity if positive. If its not, (its going backwards), we won't need to stop it
-                    if (unityNode.GetConfigJoint().targetVelocity.x > 0)
+                    if (cj.targetVelocity.x > 0)
                     {
-                        unityNode.GetConfigJoint().targetVelocity = Vector3.zero;
+                        cj.targetVelocity = Vector3.zero;
                     }
                     // Otherwise, if the piston has reached its lower limit, we need to stop it from attempting retract farther.
                 }
-                else if (Mathf.Abs(-1 * unityNode.GetConfigJoint().linearLimit.limit - linearPositionAlongAxis) < (.03f * unityNode.GetConfigJoint().linearLimit.limit))
+                else if (Mathf.Abs(-1 * cj.linearLimit.limit - linearPositionAlongAxis) < (.03f * cj.linearLimit.limit))
                 {
-                    if (unityNode.GetConfigJoint().targetVelocity.x < 0)
+                    if (cj.targetVelocity.x < 0)
                     {
-                        unityNode.GetConfigJoint().targetVelocity = Vector3.zero;
+                        cj.targetVelocity = Vector3.zero;
                     }
                 }
             }
