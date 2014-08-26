@@ -48,10 +48,10 @@ public class Init : MonoBehaviour
         if (filePath != null && skeleton == null)
         {
 
-        	UnityRigidNode nodeThing = new UnityRigidNode();
-        	nodeThing.modelFileName = "field.bxda";
-        	nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda", false);
+            UnityRigidNode nodeThing = new UnityRigidNode();
+            nodeThing.modelFileName = "field.bxda";
+            nodeThing.CreateTransform(transform);
+            nodeThing.CreateMesh("C:/Users/" + Environment.UserName + "/Documents/Skeleton/field.bxda", true);
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
@@ -67,7 +67,7 @@ public class Init : MonoBehaviour
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
-                UnityRigidNode uNode = (UnityRigidNode)node;
+                UnityRigidNode uNode = (UnityRigidNode) node;
 
                 uNode.CreateTransform(robot.transform);
                 uNode.CreateMesh(filePath + uNode.modelFileName, true);
@@ -80,7 +80,7 @@ public class Init : MonoBehaviour
                 if (uNode.IsWheel)
                 {
                     unityWheelData.Add(uNode.wCollider);
-                    
+
                 }
                 //meshColliders.Add(uNode.meshCollider);                
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
@@ -106,7 +106,7 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
-		Physics.minPenetrationForPenalty = 0.001f;
+        Physics.minPenetrationForPenalty = 0.001f;
 
         TryLoad();
     }
@@ -129,7 +129,23 @@ public class Init : MonoBehaviour
             unityPacket.OutputStatePacket packet = udp.GetLastPacket();
             DriveJoints.UpdateAllMotors(skeleton, packet.dio);
             DriveJoints.UpdateSolenoids(skeleton, packet.solenoid);
-
+            List<RigidNode_Base> nodes = skeleton.ListAllNodes();
+            InputStatePacket sensorPacket = new InputStatePacket();
+            foreach (RigidNode_Base node in nodes)
+            {
+                if (node.GetSkeletalJoint() == null)
+                    continue;
+                foreach (RobotSensor sensor in node.GetSkeletalJoint().attachedSensors)
+                {
+                    if (sensor.type == RobotSensorType.POTENTIOMETER && node.GetSkeletalJoint() is RotationalJoint_Base)
+                    {
+                        UnityRigidNode uNode = (UnityRigidNode) node;
+                        float angle = DriveJoints.GetAngleBetweenChildAndParent(uNode) + ((RotationalJoint_Base) uNode.GetSkeletalJoint()).currentAngularPosition;
+                        sensorPacket.ai[sensor.module - 1].analogValues[sensor.port - 1] = (int) sensor.equation.Evaluate(angle);
+                    }
+                }
+            }
+            udp.WritePacket(sensorPacket);
         }
     }
 }
