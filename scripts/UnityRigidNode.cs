@@ -72,14 +72,19 @@ public class UnityRigidNode : RigidNode_Base
 		
 		wCollider = new GameObject(unityObject.name + " Collider");
 		
-		wCollider.transform.parent = GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
+		wCollider.transform.parent = unityObject.transform;//GetParent() != null ? ((UnityRigidNode)GetParent()).unityObject.transform : unityObject.transform;
 		wCollider.transform.position = auxFunctions.ConvertV3(wheel.center);
-		wCollider.AddComponent<WheelCollider>();
-		wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
+		//wCollider.AddComponent<WheelCollider>();
+        wCollider.AddComponent<CapsuleCollider>();
+        wCollider.GetComponent<CapsuleCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
+		//wCollider.GetComponent<WheelCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
 		wCollider.transform.rotation = Quaternion.FromToRotation(new Vector3(1, 0, 0), new Vector3(joint.axis.x, joint.axis.y, joint.axis.z));
-
+        wCollider.GetComponent<CapsuleCollider>().height = wCollider.GetComponent<CapsuleCollider>().radius * 2 + 0.04f;
+        wCollider.GetComponent<CapsuleCollider>().center = new Vector3(0, 0, 0);
+        wCollider.GetComponent<CapsuleCollider>().direction = 0;
 		//I want the grandfather to have a rigidbody
-				
+
+        unityObject.GetComponent<Rigidbody>().useConeFriction = true;
 	}
 
 	//converts inventor's limit information to the modular system unity uses (180/-180)
@@ -253,7 +258,10 @@ public class UnityRigidNode : RigidNode_Base
 	public void CreateMesh(string filePath)
 	{
 		BXDAMesh mesh = new BXDAMesh();
-		mesh.ReadFromFile(filePath);
+        mesh.ReadFromFile(filePath, (long part, long total) =>
+        {
+            Debug.Log(part + "/" + total);
+        });
 		
 		auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
 		{
@@ -295,7 +303,7 @@ public class UnityRigidNode : RigidNode_Base
 			if (!unityObject.GetComponent<Rigidbody>())
 			{
 				unityObject.AddComponent<Rigidbody>();
-                unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.Continuous;
+                //unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 			}
 		});	
 				
@@ -366,7 +374,7 @@ public class UnityRigidNode : RigidNode_Base
 	}
 
 	public void FlipNorms()
-	{
+	{       
 		//TotalCenterOfMass(unityObject.transform.parent.gameObject);
 		//Debug.Log(unityObject.transform.parent.gameObject);
 		if (GetParent() != null && GetSkeletalJoint() != null && GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)

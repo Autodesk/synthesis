@@ -14,7 +14,7 @@ public class Init : MonoBehaviour
     public int[] motors = { 1, 2, 3, 4 };
     RigidNode_Base skeleton;
     unityPacket udp = new unityPacket();
-    List<WheelCollider> unityWheelData = new List<WheelCollider>();
+    List<GameObject> unityWheelData = new List<GameObject>();
     List<MeshCollider> meshColliders = new List<MeshCollider>();
     // int robots = 0;
     string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
@@ -75,11 +75,12 @@ public class Init : MonoBehaviour
                 uNode.CreateJoint();
                 if (uNode.modelFileName == "node_0.bxda")
                 {
-                    uNode.unityObject.transform.rigidbody.mass = 110;
+                    uNode.unityObject.transform.rigidbody.mass = 10;
                 }
                 if (uNode.IsWheel)
                 {
-                    unityWheelData.Add(uNode.wCollider.GetComponent<WheelCollider>());
+                    unityWheelData.Add(uNode.wCollider);
+                    
                 }
                 meshColliders.Add(uNode.meshCollider);
                 

@@ -90,29 +90,6 @@ public class InputStatePacket
 
 public class DriveJoints : MonoBehaviour
 {
-	// Set all of the wheelColliders in a given list to a motorTorque value corresponding to the signal and maximum Torque Output of a Vex Motor.
-	// We have to multiply the conversion factor by 100, however, because it seems that the values have to be "fudged until they "feel right", even if they appear to be correct (NewtonMeters are the units that PhysX uses).
-	public static void SetWheel(UnityRigidNode wheel, float signal)
-	{
-		// The conversion factor from Oz-In to NM, with our multiplier
-		float OzInToNm = 100 * .00706155183333f;
-		
-		if (signal == 0)
-		{
-			// If no motor torque is applied, the breaks are applied
-			wheel.wCollider.GetComponent<WheelCollider>().brakeTorque = OzInToNm * 343.3f;
-			wheel.GetConfigJoint().targetAngularVelocity = Vector3.zero;
-		} else
-		{
-			wheel.wCollider.GetComponent<WheelCollider>().brakeTorque = 0;
-		}
-		
-		// Maximum Torque of a Vex CIM Motor is 171.7 Oz-In, so we can multuply it by the signal to get the output torque. Note that we multiply it by a constant to convert it from an Oz-In to a unity NM 
-
-		wheel.wCollider.GetComponent<WheelCollider>().motorTorque = OzInToNm * (signal * 171.1f);
-		wheel.GetConfigJoint().targetAngularVelocity = new Vector3(wheel.wCollider.GetComponent<WheelCollider>().rpm * 6 * Time.deltaTime, 0, 0);
-	}
-
 	// A function to handle solenoids
 	// We will have accurate velocity measures later, but for now, we need something that works.
 	public static void SetSolenoid(UnityRigidNode node, bool forward)
@@ -194,23 +171,24 @@ public class DriveJoints : MonoBehaviour
 				// Checking if there is a joint (and a joint driver) attatched to each joint
 				if (unitySubNode.GetSkeletalJoint() != null && unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 				{
-					// Special Case for wheels. 
 					// If port A matches the index of the array in the packet, (A.K.A: the packet index is reffering to the wheelCollider on the subNode0), then that specific wheel Collider is set.
-					if (unitySubNode.IsWheel && unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
+					if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
 					{
-						SetWheel(unitySubNode, pwm [i]);
-					
-						// If its not a wheel, it checks to see if it the motor is assigned to the current pwm value, and if it is, it also checks to make sure that it has an xdrive
-					} else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1 && !unitySubNode.IsWheel)
-					{
-						// Something Arbitrary for now. 4 radians/second
-						unitySubNode.GetConfigJoint().targetAngularVelocity = new Vector3(4 * pwm [i], 0, 0);
+                        // Something Arbitrary for now. 4 radians/second
+                        float OzInToNm = .00706155183333f;
+                        JointDrive jD = unitySubNode.GetConfigJoint().angularXDrive;
+                        jD.maximumForce = OzInToNm * (Math.Abs(pwm[i]) < 0.05f ? 343f : (pwm[i] * pwm[i] * 171.1f));
+                        jD.mode = JointDriveMode.Velocity;
+                        unitySubNode.GetConfigJoint().angularXDrive = jD;
+						unitySubNode.GetConfigJoint().targetAngularVelocity = new Vector3(25 * Math.Sign(pwm[i]), 0, 0);
 
 						// We will need this to tell when the joint is very near a limit
 						float angularPosition = GetAngleBetweenChildAndParent(unitySubNode);
 
 						// Stopping the configurable joint if it approaches its limits (if its within 5% of its limit)
-						if ((unitySubNode.GetConfigJoint().highAngularXLimit.limit - angularPosition) < (0.05f * unitySubNode.GetConfigJoint().highAngularXLimit.limit))
+                        if (unitySubNode.GetConfigJoint().angularXMotion == ConfigurableJointMotion.Limited 
+                            && (unitySubNode.GetConfigJoint().highAngularXLimit.limit - angularPosition) < 
+                            (0.05f * unitySubNode.GetConfigJoint().highAngularXLimit.limit))
 						{
 							// This prevents the motor from rotating toward its limit again after we have gotten close enough to the limit that we need to stop it.
 							// We will need it to be able to rotate away from the limit however (hence, the if-else statements)
