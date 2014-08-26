@@ -95,7 +95,7 @@ namespace EditorsLibrary
                 ///Stores the coefficents from left to right.  The coefficient of the lowest power is at index 0.
                 try
                 {
-                    polyCoeff[i] = Convert.ToSingle(coefficients[i]);
+                    polyCoeff[coefficients.Length - 1 - i] = Convert.ToSingle(coefficients[i]);
                 }
                 catch
                 {
