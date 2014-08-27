@@ -20,7 +20,6 @@ public class auxFunctions : RigidNode_Base
                 {
                     return new Vector3((float) x * 0.01f, (float) y * 0.01f, (float) z * 0.01f);
                 }, sub.verts);
-
             Vector3[] normals = sub.norms == null ? null : ArrayUtilities.WrapArray<Vector3>(
                 delegate(double x, double y, double z)
                 {
@@ -30,13 +29,18 @@ public class auxFunctions : RigidNode_Base
             Mesh unityMesh = new Mesh();
             unityMesh.vertices = vertices;
             unityMesh.normals = normals;
-            unityMesh.uv = new Vector2[vertices.Length];
+            unityMesh.uv = null;
             unityMesh.subMeshCount = sub.surfaces.Count;
             for (int i = 0; i < sub.surfaces.Count; i++)
             {
-                unityMesh.SetTriangles(sub.surfaces[i].indicies, i);
+                int[] cpy = new int[sub.surfaces[i].indicies.Length];
+                Array.Copy(sub.surfaces[i].indicies, cpy, cpy.Length);
+                unityMesh.SetTriangles(cpy, i);
             }
-            unityMesh.RecalculateNormals();
+            if (normals != null)
+            {
+                unityMesh.RecalculateNormals();
+            }
             handleMesh(j, sub, unityMesh);
         }
     }

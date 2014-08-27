@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class UnityRigidNode : RigidNode_Base
 {
-    public GameObject unityObject, subObject, subCollider, wCollider;
+    public GameObject unityObject, wCollider;
     protected Joint joint;
     protected WheelDriverMeta wheel;
     private PhysicalProperties bxdPhysics;
@@ -295,10 +295,7 @@ public class UnityRigidNode : RigidNode_Base
     public void CreateMesh(string filePath, bool noMesh)
     {
         BXDAMesh mesh = new BXDAMesh();
-        mesh.ReadFromFile(filePath, (long part, long total) =>
-        {
-            Debug.Log(part + "/" + total);
-        });
+        mesh.ReadFromFile(filePath);
 
         if (noMesh)
         {
@@ -306,7 +303,7 @@ public class UnityRigidNode : RigidNode_Base
             {
                 //new gameobject is made for the submesh
 
-                subObject = new GameObject(unityObject.name + " Subpart" + id);
+                GameObject subObject = new GameObject(unityObject.name + " Subpart" + id);
                 //it is passively assigned as a child to the root transform 
                 subObject.transform.parent = unityObject.transform;
                 subObject.transform.position = new Vector3(0, 0, 0);
@@ -331,7 +328,7 @@ public class UnityRigidNode : RigidNode_Base
                     {
                         color.a = 1;
                     }
-                    matls[i] = new Material((Shader) Shader.Instantiate(Shader.Find((color.a != 1 ? "Transparent/" : "") + (sub.surfaces[i].specular > 0 ? "Specular" : "Diffuse"))));
+                    matls[i] = new Material((Shader) Shader.Find((color.a != 1 ? "Transparent/" : "") + (sub.surfaces[i].specular > 0 ? "Specular" : "Diffuse")));
                     matls[i].SetColor("_Color", color);
                     if (sub.surfaces[i].specular > 0)
                     {
@@ -351,7 +348,7 @@ public class UnityRigidNode : RigidNode_Base
         auxFunctions.ReadMeshSet(mesh.colliders, delegate(int id, BXDAMesh.BXDASubMesh useless, Mesh meshu)
         {
             //Debug.Log (unityObject.name + " " + id + " tris: " + meshu.triangles.Length / 3 + " Vertices: " + meshu.vertexCount);
-            subCollider = new GameObject(unityObject.name + " Subcollider" + id);
+            GameObject subCollider = new GameObject(unityObject.name + " Subcollider" + id);
             subCollider.transform.parent = unityObject.transform;
             subCollider.transform.position = new Vector3(0, 0, 0);
             if (meshu.triangles.Length == 0 && meshu.vertices.Length == 2)
@@ -376,8 +373,27 @@ public class UnityRigidNode : RigidNode_Base
         rigidB.centerOfMass = auxFunctions.ConvertV3(mesh.physics.centerOfMass);
 
         bxdPhysics = mesh.physics;
-        // Free mesh.
+
+        #region Free mesh
+        foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
+        {
+            foreach (BXDAMesh.BXDASubMesh sub in list)
+            {
+                sub.verts = null;
+                sub.norms = null;
+                foreach (BXDAMesh.BXDASurface surf in sub.surfaces)
+                {
+                    surf.indicies = null;
+                }
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                list[i] = null;
+            }
+        }
         mesh = null;
+        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+        #endregion
     }
 
     public T GetJoint<T>() where T : Joint
