@@ -4,11 +4,12 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
+using UnityEditor;
 public class Init : MonoBehaviour
 {
 
     // We will need these
+	public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
     public List<List<UnityRigidNode>> PWMAssignments;
     public float speed = 5;
     public int[] motors = { 1, 2, 3, 4 };
@@ -75,7 +76,10 @@ public class Init : MonoBehaviour
                 uNode.CreateJoint();
                 if (uNode.modelFileName == "node_0.bxda")
                 {
-                    uNode.unityObject.transform.rigidbody.mass += (20f / 120f); // Battery
+                    uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
+					Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
+					vec.y *= 0.9f;
+					uNode.unityObject.rigidbody.centerOfMass = vec;
                 }
                 if (uNode.IsWheel)
                 {

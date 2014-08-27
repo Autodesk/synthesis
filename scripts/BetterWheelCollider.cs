@@ -9,9 +9,10 @@ public class BetterWheelCollider : MonoBehaviour
     private UnityRigidNode node;
     public float currentTorque;
     public float brakeTorque;
-    public float sidewaysGrip = 0.5f;  // 0=slides, 1=doesn't
+    public float sidewaysGrip = 0.75f;  // 0=slides, 1=doesn't
     public float forwardsGrip = 1;  // 0=no grip, 1=full grip
-    public float forceMultiplier = 0.035f; // idkwhy
+    public float forceMultiplier = 4.2f; // idkwhy
+	//public float dragMultiplier = 0.035f;
 
     public BetterWheelCollider() {
     }
@@ -53,7 +54,7 @@ public class BetterWheelCollider : MonoBehaviour
         float normalVelocity = Vector3.Dot(relativeVelocity, axis);
 		if (Math.Abs(normalVelocity) > 1)
 			normalVelocity = Math.Sign(normalVelocity);
-		Vector3 normalDrag = -sidewaysGrip * Math.Abs(normalVelocity) * normalVelocity * axis;
+		Vector3 normalDrag = -sidewaysGrip * Math.Abs(normalVelocity) * normalVelocity * axis * Init.PHYSICS_MASS_MULTIPLIER;
 		if (lastNormalDrag != Vector3.zero)
 		{
 			Vector3 tmpDrag = normalDrag * 0.5f;
@@ -68,7 +69,7 @@ public class BetterWheelCollider : MonoBehaviour
         else
         {
             // braking
-            float rotationalVelocity = Vector3.Dot(forceDirection, relativeVelocity) / 10f;
+			float rotationalVelocity = Vector3.Dot(forceDirection, relativeVelocity) * Init.PHYSICS_MASS_MULTIPLIER;
             if (Math.Abs(rotationalVelocity) > 0.01)
                 force = forwardsGrip * -(Math.Abs(rotationalVelocity) > brakeTorque ? brakeTorque * Math.Sign(rotationalVelocity) : rotationalVelocity) * forceDirection;
         }
@@ -78,8 +79,8 @@ public class BetterWheelCollider : MonoBehaviour
         float weight = color - (int)color;
 		Color showF = Color.Lerp(forceColor[colorMain], forceColor[colorSecond], weight);
 		Color showN = Color.Lerp(dragColor[colorMain], dragColor[colorSecond], weight);
-        Debug.DrawRay(point, -force * 10, showF, 0.5f);
-        Debug.DrawRay(point, -normalDrag * 10, showN, 0.5f);
+        Debug.DrawRay(point, -force / Init.PHYSICS_MASS_MULTIPLIER, showF, 0.5f);
+		Debug.DrawRay(point, -normalDrag / Init.PHYSICS_MASS_MULTIPLIER, showN, 0.5f);
         color = color + 0.1f;
 		#endregion
 

@@ -369,7 +369,7 @@ public class UnityRigidNode : RigidNode_Base
         });
 
         Rigidbody rigidB = unityObject.GetComponent<Rigidbody>();
-        rigidB.mass = mesh.physics.mass / 120f; // Unity has magic mass units
+        rigidB.mass = mesh.physics.mass * Init.PHYSICS_MASS_MULTIPLIER; // Unity has magic mass units
         rigidB.centerOfMass = auxFunctions.ConvertV3(mesh.physics.centerOfMass);
 
         bxdPhysics = mesh.physics;
