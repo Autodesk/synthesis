@@ -187,16 +187,16 @@ public class DriveJoints : MonoBehaviour
                     }
                     else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
                     {
-                        ConfigurableJoint cj = unitySubNode.GetJoint<ConfigurableJoint>();
-                        HingeJoint hj = unitySubNode.GetJoint<HingeJoint>();
+                        Joint joint = unitySubNode.GetJoint<Joint>();
 
                         // Something Arbitrary for now. 4 radians/second
                         float OzInToNm = .00706155183333f / 360.0f;
                         float motorForce = OzInToNm * (Math.Abs(pwm[i]) < 0.05f ? 343f : (pwm[i] * pwm[i] * 171.1f));
                         float targetVelocity = 10000f * Math.Sign(pwm[i]);
                         #region Config_Joint
-                        if (cj != null)
+                        if (joint != null && joint is ConfigurableJoint)
                         {
+                            ConfigurableJoint cj = (ConfigurableJoint) joint;
                             JointDrive jD = cj.angularXDrive;
                             jD.maximumForce = motorForce;
                             cj.angularXDrive = jD;
@@ -225,13 +225,13 @@ public class DriveJoints : MonoBehaviour
                         }
                         #endregion
                         #region hinge joint
-                        if (hj != null)
+                        if (joint != null && joint is HingeJoint)
                         {
+                            HingeJoint hj = (HingeJoint) joint;
                             JointMotor motor = hj.motor;
                             motor.force = motorForce;
                             motor.freeSpin = false;
                             motor.targetVelocity = targetVelocity;
-                            hj.motor = motor;
                             if (hj.useLimits)
                             {
                                 float limitRange = hj.limits.max - hj.limits.min;
@@ -240,16 +240,17 @@ public class DriveJoints : MonoBehaviour
                                     // This prevents the motor from rotating toward its limit again after we have gotten close enough to the limit that we need to stop it.
                                     // We will need it to be able to rotate away from the limit however (hence, the if-else statements)
                                     // If the local up Vector of the unityObject is negative, the joint is approaching its positive limit (I am not sure if this will work in all cases, so its testing time!)
-                                    if (unitySubNode.unityObject.transform.up.x < 0 && cj.targetAngularVelocity.x > 0)
+                                    if (unitySubNode.unityObject.transform.up.x < 0 && motor.targetVelocity > 0)
                                     {
-                                        cj.targetAngularVelocity = Vector3.zero;
+                                        motor.targetVelocity = 0;
                                     }
-                                    else if (unitySubNode.unityObject.transform.up.x > 0 && cj.targetAngularVelocity.x < 0)
+                                    else if (unitySubNode.unityObject.transform.up.x > 0 && motor.targetVelocity < 0)
                                     {
-                                        cj.targetAngularVelocity = Vector3.zero;
+                                        motor.targetVelocity = 0;
                                     }
                                 }
                             }
+                            hj.motor = motor;
                         #endregion
                         }
                         else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
@@ -275,11 +276,12 @@ public class DriveJoints : MonoBehaviour
         foreach (RigidNode_Base subBase in listOfNodes)
         {
             UnityRigidNode unityNode = (UnityRigidNode) subBase;
-            ConfigurableJoint cj = unityNode.GetJoint<ConfigurableJoint>();
+            Joint joint = unityNode.GetJoint<Joint>();
             // Make sure piston and skeletalJoint exist
             // If the rigidNodeBase contains a bumper_pneumatic joint driver (meaning that its a solenoid)
-            if (cj != null && subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
+            if (joint != null && joint is ConfigurableJoint && subBase != null && subBase.GetSkeletalJoint() != null && subBase.GetSkeletalJoint().cDriver != null && (subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.BUMPER_PNEUMATIC || subBase.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.RELAY_PNEUMATIC))
             {
+                ConfigurableJoint cj = (ConfigurableJoint) joint;
                 // It will use bitwise operators to check if the port is open (see wiki for full explanation).
                 int stateA = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portA - 1));
                 int stateB = packet & (1 << (subBase.GetSkeletalJoint().cDriver.portB - 1));
