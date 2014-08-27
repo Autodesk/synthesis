@@ -20,39 +20,27 @@ partial class ControlGroups : System.Windows.Forms.Form
     [System.Diagnostics.DebuggerStepThrough()]
     private void InitializeComponent()
     {
-            this.btnExport = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.tabsMain = new System.Windows.Forms.TabControl();
             this.tabGroups = new System.Windows.Forms.TabPage();
             this.lstGroups = new System.Windows.Forms.ListView();
             this.groups_chName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groups_chSubmesh = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groups_chSubTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groups_chCollider = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groups_chCollTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.jointPane = new EditorsLibrary.JointEditorPane();
-            this.btnCalculate = new System.Windows.Forms.Button();
-            this.groups_chSubTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.groups_chCollTris = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.pnlOutput = new System.Windows.Forms.Panel();
             this.btnExportDrivers = new System.Windows.Forms.Button();
-
+            this.btnSave = new System.Windows.Forms.Button();
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
+            this.pnlOutput.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // btnExport
-            // 
-            this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExport.Location = new System.Drawing.Point(808, 687);
-            this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(130, 42);
-            this.btnExport.TabIndex = 1;
-            this.btnExport.Text = "Export";
-            this.btnExport.UseVisualStyleBackColor = true;
-            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
             // btnCancel
             // 
@@ -118,10 +106,20 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chSubmesh.Text = "Submesh Count";
             this.groups_chSubmesh.Width = 115;
             // 
+            // groups_chSubTris
+            // 
+            this.groups_chSubTris.Text = "Submesh Triangles";
+            this.groups_chSubTris.Width = 136;
+            // 
             // groups_chCollider
             // 
             this.groups_chCollider.Text = "Collider Count";
             this.groups_chCollider.Width = 103;
+            // 
+            // groups_chCollTris
+            // 
+            this.groups_chCollTris.Text = "Collider Triangles";
+            this.groups_chCollTris.Width = 124;
             // 
             // tabJoints
             // 
@@ -141,26 +139,6 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.jointPane.Size = new System.Drawing.Size(927, 639);
             this.jointPane.TabIndex = 0;
             // 
-            // btnCalculate
-            // 
-            this.btnCalculate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCalculate.Location = new System.Drawing.Point(674, 687);
-            this.btnCalculate.Name = "btnCalculate";
-            this.btnCalculate.Size = new System.Drawing.Size(128, 43);
-            this.btnCalculate.TabIndex = 6;
-            this.btnCalculate.Text = "Calculate Limit";
-            this.btnCalculate.UseVisualStyleBackColor = true;
-            this.btnCalculate.Visible = false;
-            // 
-            // groups_chSubTris
-            // 
-            this.groups_chSubTris.Text = "Submesh Triangles";
-            this.groups_chSubTris.Width = 136;
-            // 
-            // groups_chCollTris
-            // 
-            this.groups_chCollTris.Text = "Collider Triangles";
-            this.groups_chCollTris.Width = 124; // 
             // txtFilePath
             // 
             this.txtFilePath.Enabled = false;
@@ -180,37 +158,46 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnBrowse.UseVisualStyleBackColor = true;
             this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
             // 
-            // panel1
+            // pnlOutput
             // 
-            this.pnlOutput.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlOutput.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlOutput.Controls.Add(this.btnExportDrivers);
             this.pnlOutput.Controls.Add(this.txtFilePath);
             this.pnlOutput.Controls.Add(this.btnBrowse);
-            this.pnlOutput.Controls.Add(this.btnExport);
             this.pnlOutput.Location = new System.Drawing.Point(380, 687);
-            this.pnlOutput.Name = "panel1";
+            this.pnlOutput.Name = "pnlOutput";
             this.pnlOutput.Size = new System.Drawing.Size(568, 53);
             this.pnlOutput.TabIndex = 8;
             // 
-            // button1
+            // btnExportDrivers
             // 
             this.btnExportDrivers.Location = new System.Drawing.Point(19, 12);
-            this.btnExportDrivers.Name = "button1";
+            this.btnExportDrivers.Name = "btnExportDrivers";
             this.btnExportDrivers.Size = new System.Drawing.Size(105, 31);
             this.btnExportDrivers.TabIndex = 9;
             this.btnExportDrivers.Text = "Import Drivers";
             this.btnExportDrivers.UseVisualStyleBackColor = true;
             this.btnExportDrivers.Click += new System.EventHandler(this.button1_Click);
             // 
+            // Save
+            // 
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Location = new System.Drawing.Point(816, 687);
+            this.btnSave.Name = "Save";
+            this.btnSave.Size = new System.Drawing.Size(132, 42);
+            this.btnSave.TabIndex = 5;
+            this.btnSave.Text = "Save";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.Save_Click);
+            // 
             // ControlGroups
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(960, 741);
-            this.Controls.Add(this.btnCalculate);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnExport);
             this.MinimumSize = new System.Drawing.Size(800, 300);
             this.Name = "ControlGroups";
             this.Text = "Control Groups";
@@ -220,10 +207,11 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabsMain.ResumeLayout(false);
             this.tabGroups.ResumeLayout(false);
             this.tabJoints.ResumeLayout(false);
+            this.pnlOutput.ResumeLayout(false);
+            this.pnlOutput.PerformLayout();
             this.ResumeLayout(false);
 
     }
-    internal System.Windows.Forms.Button btnExport;
     internal System.Windows.Forms.Button btnCancel;
 
     private System.Windows.Forms.TabControl tabsMain;
@@ -233,8 +221,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.ColumnHeader groups_chName;
     private System.Windows.Forms.ColumnHeader groups_chCollider;
     private System.Windows.Forms.ColumnHeader groups_chSubmesh;
-    private System.Windows.Forms.ColumnHeader item_chWheel;
-    private System.Windows.Forms.Button btnCalculate;
     public EditorsLibrary.JointEditorPane jointPane;
     private System.Windows.Forms.ColumnHeader groups_chSubTris;
     private System.Windows.Forms.ColumnHeader groups_chCollTris;
@@ -242,4 +228,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.Button btnBrowse;
     private System.Windows.Forms.Panel pnlOutput;
     private System.Windows.Forms.Button btnExportDrivers;
+    private System.Windows.Forms.Button btnSave;
 }

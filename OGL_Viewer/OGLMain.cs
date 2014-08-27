@@ -51,7 +51,7 @@ public class OGLMain : GameWindow
         {
             return new OGL_RigidNode();
         };
-        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton(pathBase + "skeleton.bxdj");
+        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton(Directory.Exists(pathBase) ? (pathBase + "skeleton.bxdj") : pathBase);
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
         new System.Threading.Thread(() =>
@@ -275,6 +275,7 @@ public class OGLMain : GameWindow
                 ((OGL_RigidNode) node).destroy();
             }
         }
+        Close();
     }
 
     public static void Main(string[] args)

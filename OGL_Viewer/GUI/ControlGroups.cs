@@ -28,23 +28,6 @@ public partial class ControlGroups
         txtFilePath.Text = BXDSettings.Instance.LastSkeletonDirectory != null ? BXDSettings.Instance.LastSkeletonDirectory : "";
     }
 
-    private void btnExport_Click(object sender, EventArgs e)
-    {
-        if (txtFilePath.Text.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
-        {
-            System.Windows.Forms.MessageBox.Show("\"" + txtFilePath.Text + "\" is not a valid path!");
-            return;
-        }
-        if (System.IO.File.Exists(txtFilePath.Text) && !System.IO.Directory.Exists(txtFilePath.Text))
-        {
-            System.Windows.Forms.MessageBox.Show("\"" + txtFilePath.Text + "\" exists as a file!");
-            return;
-        }
-
-        formState = FormState.SUBMIT;
-        Hide();
-    }
-
     private void btnCancel_Click(object sender, EventArgs e)
     {
         formState = FormState.CANCEL;
@@ -87,11 +70,6 @@ public partial class ControlGroups
     {
         formState = FormState.CLOSE;
         Hide();
-    }
-
-    private void btnCalculate_Click(object sender, EventArgs e)
-    {
-
     }
 
     private void window_SizeChanged(object sender, EventArgs e)
@@ -185,6 +163,23 @@ public partial class ControlGroups
     private void button1_Click(object sender, EventArgs e)
     {
         loadFromExisting();
+    }
+
+    private void Save_Click(object sender, EventArgs e)
+    {
+        if (txtFilePath.Text.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
+        {
+            System.Windows.Forms.MessageBox.Show("\"" + txtFilePath.Text + "\" is not a valid path!");
+            return;
+        }
+        if (System.IO.File.Exists(txtFilePath.Text) && !System.IO.Directory.Exists(txtFilePath.Text))
+        {
+            System.Windows.Forms.MessageBox.Show("\"" + txtFilePath.Text + "\" exists as a file!");
+            return;
+        }
+
+        formState = FormState.SUBMIT;
+        Hide();
     }
 }
 
