@@ -75,7 +75,7 @@ public class auxFunctions : RigidNode_Base
             wheelcolliders[min] = tmp;
         }
 
-		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
+        Vector3 com = auxFunctions.TotalCenterOfMass(parent.gameObject);
 		Vector3 a = wheels [0] - wheels [1];
 		Vector3 b = a;
 
@@ -100,6 +100,27 @@ public class auxFunctions : RigidNode_Base
             }
                
          }
+    }
+
+    /// <summary>
+    /// Computes the total center of mass for all children of this game object.
+    /// </summary>
+    /// <param name="gameObj">The game object</param>
+    /// <returns>The worldwide center of mass</returns>
+    public static Vector3 TotalCenterOfMass(GameObject gameObj)
+    {
+        Vector3 centerOfMass = Vector3.zero;
+        float sumOfAllWeights = 0f;
+
+        Rigidbody[] rigidBodyArray = gameObj.GetComponentsInChildren<Rigidbody>();
+
+        foreach (Rigidbody rigidBase in rigidBodyArray)
+        {
+            centerOfMass += rigidBase.worldCenterOfMass * rigidBase.mass;
+            sumOfAllWeights += rigidBase.mass;
+        }
+        centerOfMass /= sumOfAllWeights;
+        return centerOfMass;
     }
 }
 

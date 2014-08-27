@@ -21,8 +21,6 @@ public class UnityRigidNode : RigidNode_Base
         }
     }
 
-    //public delegate void Action(); //reminder of how action and function work
-
     //The root transform for the whole object model is determined in this constructor passively
     public void CreateTransform(Transform root)
     {
@@ -32,10 +30,16 @@ public class UnityRigidNode : RigidNode_Base
         unityObject.name = base.modelFileName;
     }
 
-    //creates a uniform configurable joint which can be altered through conditionals.
+    /// <summary>
+    /// Creates a joint at the given position, aligned to the given axis, with the given type.
+    /// </summary>
+    /// <typeparam name="T">The joint type</typeparam>
+    /// <param name="pos">The base position</param>
+    /// <param name="axis">The axis</param>
+    /// <param name="jointType">The joint callback for additional configuration</param>
+    /// <returns>The joint that was created</returns>
     private T ConfigJointInternal<T>(Vector3 pos, Vector3 axis, Action<T> jointType) where T : Joint
     {
-
         GameObject rigid = ((UnityRigidNode) GetParent()).unityObject;
         if (!rigid.gameObject.GetComponent<Rigidbody>())
         {
@@ -68,7 +72,11 @@ public class UnityRigidNode : RigidNode_Base
         jointType((T) joint);
         return (T) joint;
     }
-    //creates a wheel collider and centers it on the current transform
+    
+    /// <summary>
+    /// Creates the capsule collider and better wheel collider for this object.
+    /// </summary>
+    /// <param name="center">The joint to center on</param>
     private void CreateWheel(RotationalJoint_Base center)
     {
         wCollider = new GameObject(unityObject.name + " Collider");
@@ -141,7 +149,10 @@ public class UnityRigidNode : RigidNode_Base
         if (joint is ConfigurableJoint)
             ((ConfigurableJoint) joint).linearLimit = linear;
     }
-    //assigns motors to the appropriate joint
+
+    /// <summary>
+    /// Configures the drivers/motors for this joint.
+    /// </summary>
     private void SetXDrives()
     {
         //if the node has a joint and driver
@@ -192,26 +203,22 @@ public class UnityRigidNode : RigidNode_Base
         }
     }
 
-
-
-    //creates the configurable joint then preforms the appropriate alterations based on the joint type
+    /// <summary>
+    /// Crenates the proper joint type for this node.
+    /// </summary>
     public void CreateJoint()
     {
-
-
         if (joint != null || GetSkeletalJoint() == null)
         {
             return;
         }
-
-        //SkeletalJoint_Base GetSkeletalJoint() = GetSkeletalJoint();
         //this is the conditional for Identified wheels
         if (GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
         {
             //if the mesh contains information which identifies it as a wheel then create a wheel collider.
             wheel = GetSkeletalJoint().cDriver != null ? GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() : null;
             if (IsWheel)
-                FlipNorms();
+                OrientWheelNormals();
 
             RotationalJoint_Base nodeR = (RotationalJoint_Base) GetSkeletalJoint();
 
@@ -268,8 +275,6 @@ public class UnityRigidNode : RigidNode_Base
                     AngularLimit(aLimit);
                 }
             });
-
-
         }
         else if (GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR)
         {
@@ -291,66 +296,53 @@ public class UnityRigidNode : RigidNode_Base
         SetXDrives();
     }
 
-    //loads the bxda format meshes
-    public void CreateMesh(string filePath, bool noMesh)
+    /// <summary>
+    /// Loads the mesh from the given path into this node's object.
+    /// </summary>
+    /// <param name="filePath">The file to open as a BXDA mesh</param>
+    public void CreateMesh(string filePath)
     {
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(filePath);
 
-        if (noMesh)
+        // Create all submesh objects
+        auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
-            auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+            GameObject subObject = new GameObject(unityObject.name + " Subpart" + id);
+            subObject.transform.parent = unityObject.transform;
+            subObject.transform.position = new Vector3(0, 0, 0);
+
+            subObject.AddComponent<MeshFilter>().mesh = meshu;
+            subObject.AddComponent<MeshRenderer>();
+            Material[] matls = new Material[meshu.subMeshCount];
+            for (int i = 0; i < matls.Length; i++)
             {
-                //new gameobject is made for the submesh
-
-                GameObject subObject = new GameObject(unityObject.name + " Subpart" + id);
-                //it is passively assigned as a child to the root transform 
-                subObject.transform.parent = unityObject.transform;
-                subObject.transform.position = new Vector3(0, 0, 0);
-
-                subObject.AddComponent<MeshFilter>();
-                subObject.GetComponent<MeshFilter>().mesh = meshu;
-                subObject.AddComponent<MeshRenderer>();
-                Material[] matls = new Material[meshu.subMeshCount];
-                for (int i = 0; i < matls.Length; i++)
-                {
-                    uint val = sub.surfaces[i].hasColor ? sub.surfaces[i].color : 0xFFFFFFFF;
-                    Color color = new Color32((byte) (val & 0xFF), (byte) ((val >> 8) & 0xFF), (byte) ((val >> 16) & 0xFF), (byte) ((val >> 24) & 0xFF));
-                    if (sub.surfaces[i].transparency != 0)
-                    {
-                        color.a = sub.surfaces[i].transparency;
-                    }
-                    else if (sub.surfaces[i].translucency != 0)
-                    {
-                        color.a = sub.surfaces[i].translucency;
-                    }
-                    if (color.a == 0)   // No perfectly transparent things plz.
-                    {
-                        color.a = 1;
-                    }
-                    matls[i] = new Material((Shader) Shader.Find((color.a != 1 ? "Transparent/" : "") + (sub.surfaces[i].specular > 0 ? "Specular" : "Diffuse")));
-                    matls[i].SetColor("_Color", color);
-                    if (sub.surfaces[i].specular > 0)
-                    {
-                        matls[i].SetFloat("_Shininess", sub.surfaces[i].specular);
-                    }
-                }
-                subObject.GetComponent<MeshRenderer>().materials = matls;
-            });
-        }
+                uint val = sub.surfaces[i].hasColor ? sub.surfaces[i].color : 0xFFFFFFFF;
+                Color color = new Color32((byte) (val & 0xFF), (byte) ((val >> 8) & 0xFF), (byte) ((val >> 16) & 0xFF), (byte) ((val >> 24) & 0xFF));
+                if (sub.surfaces[i].transparency != 0)
+                    color.a = sub.surfaces[i].transparency;
+                else if (sub.surfaces[i].translucency != 0)
+                    color.a = sub.surfaces[i].translucency;
+                if (color.a == 0)   // No perfectly transparent things plz.
+                    color.a = 1;
+                matls[i] = new Material((Shader) Shader.Find((color.a != 1 ? "Transparent/" : "") + (sub.surfaces[i].specular > 0 ? "Specular" : "Diffuse")));
+                matls[i].SetColor("_Color", color);
+                if (sub.surfaces[i].specular > 0)
+                    matls[i].SetFloat("_Shininess", sub.surfaces[i].specular);
+            }
+            subObject.GetComponent<MeshRenderer>().materials = matls;
+        });
 
         if (!unityObject.GetComponent<Rigidbody>())
-        {
             unityObject.AddComponent<Rigidbody>();
-            //unityObject.GetComponent<Rigidbody>().collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        }
 
+        // Read colliders
         auxFunctions.ReadMeshSet(mesh.colliders, delegate(int id, BXDAMesh.BXDASubMesh useless, Mesh meshu)
         {
-            //Debug.Log (unityObject.name + " " + id + " tris: " + meshu.triangles.Length / 3 + " Vertices: " + meshu.vertexCount);
             GameObject subCollider = new GameObject(unityObject.name + " Subcollider" + id);
             subCollider.transform.parent = unityObject.transform;
             subCollider.transform.position = new Vector3(0, 0, 0);
+            // Special case where it is a box
             if (meshu.triangles.Length == 0 && meshu.vertices.Length == 2)
             {
                 BoxCollider box = subCollider.AddComponent<BoxCollider>();
@@ -361,7 +353,6 @@ public class UnityRigidNode : RigidNode_Base
             else
             {
                 subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
-                //Debug.Log(IsWheel);
                 subCollider.GetComponent<MeshCollider>().convex = true;
                 meshCollider = subCollider.GetComponent<MeshCollider>();
             }
@@ -396,42 +387,29 @@ public class UnityRigidNode : RigidNode_Base
         #endregion
     }
 
+    /// <summary>
+    /// Gets the joint for this node as the given joint type, or null if it doesn't exist.
+    /// </summary>
+    /// <typeparam name="T">The joint type</typeparam>
+    /// <returns>The joint, or null if no such joint exists</returns>
     public T GetJoint<T>() where T : Joint
     {
         return joint != null && joint is T ? (T) joint : null;
     }
 
-    // Returns the center of mass of the skeleton. It calculates a weighted average of all the rigiBodies in the gameObject. (Its an average of their positions, weighted by the masses of each rigidBody)
-    public static Vector3 TotalCenterOfMass(GameObject gameObj)
+    /// <summary>
+    /// Orients drive wheel normals so they face away from the center of mass.
+    /// </summary>
+    /// <remarks>
+    /// Implemented so that the joint's axis is negated when the angle between the joint's axis and the vector from
+    /// the wheel to the center of mass is greater than 90 degrees.
+    /// </remarks>
+    private void OrientWheelNormals()
     {
-        Vector3 centerOfMass = Vector3.zero;
-        float sumOfAllWeights = 0f;
-
-        Rigidbody[] rigidBodyArray = gameObj.GetComponentsInChildren<Rigidbody>();
-
-        foreach (Rigidbody rigidBase in rigidBodyArray)
+        if (GetParent() != null && GetSkeletalJoint() != null &&
+            GetSkeletalJoint() is RotationalJoint_Base && IsWheel)
         {
-            centerOfMass += rigidBase.worldCenterOfMass * rigidBase.mass;
-            sumOfAllWeights += rigidBase.mass;
-        }
-        centerOfMass /= sumOfAllWeights;
-        return centerOfMass;
-    }
-
-    public static BXDVector3 comLOL(RigidNode_Base kk)
-    {
-        if (kk is UnityRigidNode && ((UnityRigidNode) kk).bxdPhysics != null)
-        {
-            return ((UnityRigidNode) kk).bxdPhysics.centerOfMass;
-        }
-        return null;//breakit
-    }
-
-    public void FlipNorms()
-    {
-        if (GetParent() != null && GetSkeletalJoint() != null && GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
-        {
-            Vector3 com = auxFunctions.ConvertV3(comLOL(GetParent()));
+            Vector3 com = auxFunctions.ConvertV3(((UnityRigidNode) GetParent()).bxdPhysics.centerOfMass);
             RotationalJoint_Base rJoint = (RotationalJoint_Base) GetSkeletalJoint();
             Vector3 diff = auxFunctions.ConvertV3(rJoint.basePoint) - com;
             double dot = Vector3.Dot(diff, auxFunctions.ConvertV3(rJoint.axis));
@@ -441,6 +419,4 @@ public class UnityRigidNode : RigidNode_Base
             }
         }
     }
-
-
 }

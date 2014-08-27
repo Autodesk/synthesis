@@ -9,7 +9,7 @@ public class Init : MonoBehaviour
 {
 
     // We will need these
-	public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
+    public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
     public List<List<UnityRigidNode>> PWMAssignments;
     public float speed = 5;
     public int[] motors = { 1, 2, 3, 4 };
@@ -52,7 +52,7 @@ public class Init : MonoBehaviour
             UnityRigidNode nodeThing = new UnityRigidNode();
             nodeThing.modelFileName = "field.bxda";
             nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\field.bxda", true);
+            nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\field.bxda");
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
@@ -71,15 +71,15 @@ public class Init : MonoBehaviour
                 UnityRigidNode uNode = (UnityRigidNode) node;
 
                 uNode.CreateTransform(robot.transform);
-                uNode.CreateMesh(filePath + uNode.modelFileName, true);
+                uNode.CreateMesh(filePath + uNode.modelFileName);
 
                 uNode.CreateJoint();
                 if (uNode.modelFileName == "node_0.bxda")
                 {
                     uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
-					Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
-					vec.y *= 0.9f;
-					uNode.unityObject.rigidbody.centerOfMass = vec;
+                    Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
+                    vec.y *= 0.9f;
+                    uNode.unityObject.rigidbody.centerOfMass = vec;
                 }
                 if (uNode.IsWheel)
                 {

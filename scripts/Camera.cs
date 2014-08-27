@@ -40,7 +40,7 @@ public class Camera : MonoBehaviour {
 			rotateVect = rotateYZ (rotateVect, COM, Input.GetAxis("Mouse Y")/5f, camMag);
 			transform.position = rotateVect;
 
-			COM = UnityRigidNode.TotalCenterOfMass (gameobj);
+			COM = auxFunctions.TotalCenterOfMass (gameobj);
 			Debug.Log(COM);
 			transform.LookAt (COM);
 		}
