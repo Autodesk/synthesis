@@ -45,15 +45,15 @@ public class auxFunctions : RigidNode_Base
 	{
         return new Vector3((float) vector.x * 0.01f, (float) vector.y * 0.01f, (float) vector.z * 0.01f);
 	}
-	
-	public static void OrientRobot(List<WheelCollider> wheelcolliders, Transform parent)
+
+    public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)
 	{
 
 		Quaternion q = new Quaternion();
 		List<Vector3> wheels = new List<Vector3>();
 
         Vector3 center = new Vector3(0, 0, 0);
-        foreach (WheelCollider collider in wheelcolliders)
+        foreach (GameObject collider in wheelcolliders)
         {
             wheels.Add(collider.transform.position);
             center += collider.transform.position;
@@ -66,44 +66,27 @@ public class auxFunctions : RigidNode_Base
             for (int j = i + 1; j < wheels.Count; j++)
                 if ((wheelcolliders[min].transform.position - center).magnitude > (wheelcolliders[j].transform.position - center).magnitude)
                     min = j;
-            WheelCollider tmp = wheelcolliders[i];
+            GameObject tmp = wheelcolliders[i];
             wheelcolliders[i] = wheelcolliders[min];
             wheelcolliders[min] = tmp;
         }
 
-        for(int i = 0; i < wheels.Count - 4; i++)
-        {
-            wheelcolliders[i].radius += .005f;
-        }
-		
 		Vector3 com = UnityRigidNode.TotalCenterOfMass(parent.gameObject);
 		Vector3 a = wheels [0] - wheels [1];
 		Vector3 b = a;
 
 		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)/(a.magnitude*b.magnitude)) > .9f && i < wheels.Count; i++) 
 			b = wheels[0] - wheels[i];
-
 		Vector3 norm = Vector3.Cross(a,b).normalized;
 
 		q.SetFromToRotation (norm, Vector3.up);
-
         parent.localRotation *= q;
 
-        foreach (WheelCollider collider in wheelcolliders)
-		{
-			if (Mathf.Abs(Mathf.Acos(q.w) - Mathf.PI / 2) > .1f)
-				collider.transform.localRotation *= Quaternion.Inverse(q);
-			if (Vector3.Dot(collider.transform.localToWorldMatrix * Vector3.up, Vector3.up) < 0)
-			{
-				collider.transform.Rotate(collider.transform.localToWorldMatrix * new Vector3(1,0,0),180);
-			}
-            //collider.transform.rotation = Quaternion.FromToRotation(new Vector3(1, 0, 0), new Vector3(joint.axis.x, joint.axis.y, joint.axis.z));
-		}
         norm.y *= Mathf.Sign(norm.y * com.y);
 
-        parent.position = new Vector3(parent.position.x, parent.position.y + 1, parent.position.z);
+        parent.position = new Vector3(parent.position.x, parent.position.y + .1f, parent.position.z);
 	}
-    public static void IgnoreCollisionDetection(List<MeshCollider> meshColliders)
+    public static void IgnoreCollisionDetection(List<Collider> meshColliders)
     {
         for(int i = 0; i < meshColliders.Count; i++)
         {
@@ -113,8 +96,6 @@ public class auxFunctions : RigidNode_Base
             }
                
          }
-                 
-
     }
 }
 

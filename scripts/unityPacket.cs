@@ -198,9 +198,8 @@ public class unityPacket
 		return pack;
 	}
 
-	public void WritePacket()
+	public void WritePacket(InputStatePacket input)
 	{
-		InputStatePacket input = new InputStatePacket();
 		clientMutex.WaitOne();
 		sendBufferLen = input.Write(sendBuffer);
 		clientMutex.ReleaseMutex();
