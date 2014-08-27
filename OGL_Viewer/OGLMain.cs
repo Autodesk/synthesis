@@ -46,12 +46,16 @@ public class OGLMain : GameWindow
         {
             pathBase = BXDSettings.Instance.LastSkeletonDirectory + "/";
         }
+        if (!Directory.Exists(pathBase))
+        {
+            pathBase = Directory.GetParent(pathBase).FullName;
+        }
 
         RigidNode_Base.NODE_FACTORY = delegate()
         {
             return new OGL_RigidNode();
         };
-        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton(Directory.Exists(pathBase) ? (pathBase + "skeleton.bxdj") : pathBase);
+        RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton(pathBase + "\\skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
         new System.Threading.Thread(() =>
@@ -84,15 +88,15 @@ public class OGLMain : GameWindow
         }).Start();
         foreach (RigidNode_Base node in nodes)
         {
-            ((OGL_RigidNode) node).loadMeshes(pathBase + node.modelFileName);
+            ((OGL_RigidNode) node).loadMeshes(pathBase + "\\" + node.modelFileName);
         }
     }
 
     public OGLMain(string[] args)
         : base(1366, 768, new GraphicsMode(32, 0, 0, 4), "Skeleton Viewer")
     {
-        if (args.Length > 2)
-            this.modelFileName = args[1];
+        if (args.Length >= 1)
+            this.modelFileName = args[0];
         else
             this.modelFileName = null;
 
