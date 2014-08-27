@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JointResolver", "JointResolver-Rev2\JointResolver.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventor_Exporter", "JointResolver-Rev2\Inventor_Exporter.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8EC08A21-9BD1-4871-93B3-645A91194424} = {8EC08A21-9BD1-4871-93B3-645A91194424}
 	EndProjectSection
@@ -16,7 +16,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPITests", "Simula
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorsLibrary", "EditorsLibrary\EditorsLibrary.csproj", "{87B8C386-74FF-4F9A-A3F6-20381599E464}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OGL_Viewer", "OGL_Viewer\OGL_Viewer.csproj", "{9663C8E2-5FDC-4AE7-9D85-B85D69E7FE93}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BXD_Viewer", "OGL_Viewer\BXD_Viewer.csproj", "{9663C8E2-5FDC-4AE7-9D85-B85D69E7FE93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
