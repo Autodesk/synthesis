@@ -96,7 +96,13 @@ public class auxFunctions : RigidNode_Base
         {
             for (int j = i + 1; j < meshColliders.Count; j++)
             {
-                Physics.IgnoreCollision(meshColliders[i], meshColliders[j], true);
+                try
+                {
+                    Physics.IgnoreCollision(meshColliders[i], meshColliders[j], true);
+                }
+                catch
+                {
+                }
             }
                
          }

@@ -3,8 +3,8 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using UnityEditor;
+//using System.Windows.Forms;
+
 public class Init : MonoBehaviour
 {
 
@@ -29,7 +29,7 @@ public class Init : MonoBehaviour
     [STAThread]
     void OnGUI()
     {
-        if (GUI.Button(new Rect(10, 10, 90, 30), "Load Model"))
+        /*if (GUI.Button(new Rect(10, 10, 90, 30), "Load Model"))
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog();
 
@@ -39,7 +39,7 @@ public class Init : MonoBehaviour
                 filePath = fbd.SelectedPath;
                 TryLoad();
             }
-        }
+        }*/
 
     }
 
@@ -48,11 +48,10 @@ public class Init : MonoBehaviour
     {
         if (filePath != null && skeleton == null)
         {
-
             UnityRigidNode nodeThing = new UnityRigidNode();
             nodeThing.modelFileName = "field.bxda";
             nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\field.bxda");
+            nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
             nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
             GameObject robot = new GameObject("Robot");
