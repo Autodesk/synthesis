@@ -23,8 +23,11 @@ public class BetterWheelCollider : MonoBehaviour
         rigidbody.angularDrag = 1f;
     }
 
+	private Vector3 lastNormalDrag = Vector3.zero;
+
     float color = 0;
-    Color[] colors = { Color.blue, Color.cyan, Color.green, Color.magenta, Color.red, Color.yellow };
+    Color[] forceColor = { Color.blue, Color.cyan, Color.green };
+	Color[] dragColor = { Color.magenta, Color.red, Color.yellow };
     public void OnCollisionStay(Collision collisionInfo)
     {
         Vector3 normal = Vector3.zero;
@@ -48,7 +51,16 @@ public class BetterWheelCollider : MonoBehaviour
         float appliedRadius = Vector3.Distance(point, basePoint);
         Vector3 force = Vector3.zero;
         float normalVelocity = Vector3.Dot(relativeVelocity, axis);
-        Vector3 normalDrag = -sidewaysGrip * normalVelocity * axis * forceMultiplier;
+		if (Math.Abs(normalVelocity) > 1)
+			normalVelocity = Math.Sign(normalVelocity);
+		Vector3 normalDrag = -sidewaysGrip * Math.Abs(normalVelocity) * normalVelocity * axis;
+		if (lastNormalDrag != Vector3.zero)
+		{
+			Vector3 tmpDrag = normalDrag * 0.5f;
+			normalDrag = tmpDrag + lastNormalDrag;
+			lastNormalDrag = tmpDrag;
+		}
+
         if (currentTorque != 0)
         {
             force = forwardsGrip * currentTorque / appliedRadius * forceDirection;
@@ -60,15 +72,17 @@ public class BetterWheelCollider : MonoBehaviour
             if (Math.Abs(rotationalVelocity) > 0.01)
                 force = forwardsGrip * -(Math.Abs(rotationalVelocity) > brakeTorque ? brakeTorque * Math.Sign(rotationalVelocity) : rotationalVelocity) * forceDirection;
         }
-        int colorMain = ((int) color) % colors.Length;
-        int colorSecond = ((int) (color + 1)) % colors.Length;
+		#region DEBUG
+        int colorMain = ((int) color) % forceColor.Length;
+		int colorSecond = ((int) (color + 1)) % forceColor.Length;
         float weight = color - (int)color;
-        Color show = Color.Lerp(colors[colorMain], colors[colorSecond], weight);
-        Debug.DrawRay(point, -force * 10, show, 0.5f);
-        Debug.DrawRay(point, -normalDrag * 10, show, 0.5f);
+		Color showF = Color.Lerp(forceColor[colorMain], forceColor[colorSecond], weight);
+		Color showN = Color.Lerp(dragColor[colorMain], dragColor[colorSecond], weight);
+        Debug.DrawRay(point, -force * 10, showF, 0.5f);
+        Debug.DrawRay(point, -normalDrag * 10, showN, 0.5f);
         color = color + 0.1f;
-        rigidbody.AddForce(force * forceMultiplier, ForceMode.Impulse);
-        // Sideways friction bro
-        rigidbody.AddForce(normalDrag, ForceMode.Impulse);
+		#endregion
+
+		rigidbody.AddForce((force + normalDrag) * forceMultiplier, ForceMode.Impulse);
     }
 }
