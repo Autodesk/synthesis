@@ -191,9 +191,9 @@ public class DriveJoints : MonoBehaviour
                         HingeJoint hj = unitySubNode.GetJoint<HingeJoint>();
 
                         // Something Arbitrary for now. 4 radians/second
-                        float OzInToNm = .00706155183333f;
+                        float OzInToNm = .00706155183333f / 360.0f;
                         float motorForce = OzInToNm * (Math.Abs(pwm[i]) < 0.05f ? 343f : (pwm[i] * pwm[i] * 171.1f));
-                        float targetVelocity = 25 * Math.Sign(pwm[i]);
+                        float targetVelocity = 10000f * Math.Sign(pwm[i]);
                         #region Config_Joint
                         if (cj != null)
                         {
