@@ -81,5 +81,10 @@ namespace EditorsLibrary
                 (RobotSensor) sensorListView.SelectedItems[0].Tag : null) >= 0 ? "Edit Sensor" : "Add Sensor";
         }
 
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            Hide();
+        }
+
     }
 }
