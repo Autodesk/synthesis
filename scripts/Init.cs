@@ -9,6 +9,7 @@ public class Init : MonoBehaviour
 {
 
     // We will need these
+	public bool exitWindow = false;
     public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
     public List<List<UnityRigidNode>> PWMAssignments;
     public float speed = 5;
@@ -41,8 +42,25 @@ public class Init : MonoBehaviour
             }
         }*/
 
+		if (exitWindow) 
+		{
+			Rect window = new Rect(Screen.width / 2 - 300, Screen.height / 2 - 100, 600, 200);
+			window = GUI.Window(0, window, InitExitWindow, "Exit?");
+		}
+
     }
 
+	void InitExitWindow(int windowID) 
+	{
+		if (GUI.Button(new Rect(50, 50, 175, 100), "No")) 
+		{
+			exitWindow = false;
+		}
+		else if (GUI.Button(new Rect(350, 50, 175, 100), "Yes")) 
+		{
+			Application.Quit();
+		}
+	}
 
     void TryLoad()
     {
@@ -127,6 +145,16 @@ public class Init : MonoBehaviour
 
     void FixedUpdate()
     {
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			if (exitWindow) 
+			{
+				exitWindow = false;
+			} else {
+				exitWindow = true;
+			}
+		}
+
         if (skeleton != null)
         {
             unityPacket.OutputStatePacket packet = udp.GetLastPacket();
