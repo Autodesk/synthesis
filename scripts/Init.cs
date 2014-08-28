@@ -9,7 +9,7 @@ public class Init : MonoBehaviour
     // We will need these
     public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
 
-    private GUIController gui = new GUIController();
+    private GUIController gui;
 
     private RigidNode_Base skeleton;
     private GameObject activeRobot;
@@ -20,29 +20,62 @@ public class Init : MonoBehaviour
 
     public Init()
     {
-        gui.OpenedRobot += (string path) =>
-        {
-            if (File.Exists(path + "\\skeleton.bxdj"))
-            {
-                this.filePath = path;
-                reloadInFrames = 2;
-            }
-        };
-        if (!File.Exists(filePath + "\\skeleton.bxdj"))
-        {
-            gui.ShowBrowser();
-        }
     }
 
     [STAThread]
     void OnGUI()
     {
+        if (gui == null)
+        {
+            gui = new GUIController();
+            gui.AddAction("Orient Robot", () =>
+            {
+                OrientRobot();
+            });
+            gui.OpenedRobot += (string path) =>
+            {
+                if (File.Exists(path + "\\skeleton.bxdj"))
+                {
+                    this.filePath = path;
+                    reloadInFrames = 2;
+                }
+            };
+            if (!File.Exists(filePath + "\\skeleton.bxdj"))
+            {
+                gui.ShowBrowser();
+            }
+        }
         gui.Render();
 
         if (reloadInFrames >= 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
+        }
+    }
+
+    private void OrientRobot()
+    {
+        if (activeRobot != null && skeleton != null)
+        {
+            var unityWheelData = new List<GameObject>();
+            // Invert the position of the root object
+            Vector3 basePos = ((UnityRigidNode) skeleton).unityObject.transform.position;
+            activeRobot.transform.position -= basePos;
+            var nodes = skeleton.ListAllNodes();
+            foreach (RigidNode_Base node in nodes)
+            {
+                UnityRigidNode uNode = (UnityRigidNode) node;
+
+                if (uNode.IsWheel && uNode.wCollider != null)
+                {
+                    unityWheelData.Add(uNode.wCollider);
+                }
+            }
+            if (unityWheelData.Count > 0)
+            {
+               auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
+            }
         }
     }
 
@@ -55,7 +88,6 @@ public class Init : MonoBehaviour
         }
         if (filePath != null && skeleton == null)
         {
-            List<GameObject> unityWheelData = new List<GameObject>();
             List<Collider> meshColliders = new List<Collider>();
             activeRobot = new GameObject("Robot");
             activeRobot.transform.parent = transform;
@@ -76,15 +108,7 @@ public class Init : MonoBehaviour
                 uNode.CreateMesh(filePath + uNode.modelFileName);
                 uNode.CreateJoint();
 
-                if (uNode.IsWheel)
-                {
-                    unityWheelData.Add(uNode.wCollider);
-                }
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
-            }
-            if (unityWheelData.Count > 0)
-            {
-                auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
             }
 
             {   // Add some mass to the base object

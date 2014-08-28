@@ -6,7 +6,7 @@ using System.Collections.Generic;
 class GUIController
 {
     private const float GUI_SHOW_TIME = 0.5f;
-    private const float GUI_SIDEBAR_WIDTH = 100f;
+    private float GUI_SIDEBAR_WIDTH = 100f;
     private static readonly Vector2 GUI_SIDEBAR_PADDING = new Vector2(10, 25);
     private const float GUI_SIDEBAR_ENTRY_HEIGHT = 45f;
     private const float GUI_SIDEBAR_ENTRY_PADDING_Y = 5;
@@ -34,6 +34,7 @@ class GUIController
     #endregion
 
     private bool keyDebounce = false;
+    private volatile bool recalcWidth = false;
     private KeyValuePair<string, Action>[] entries;
 
     #region make it black
@@ -72,6 +73,17 @@ class GUIController
         fileBrowser.Active = true;
     }), new KeyValuePair<string, Action>("Exit", () => {
         exitWindowVisible = true; })};
+        recalcWidth = true;
+    }
+
+    public void AddAction(string caption, Action act)
+    {
+        var res = new KeyValuePair<string, Action>[entries.Length + 1];
+        Array.Copy(entries, res, entries.Length - 1);
+        res[res.Length - 2] = new KeyValuePair<string, Action>(caption, act);
+        res[res.Length - 1] = entries[entries.Length - 1];
+        entries = res;
+        recalcWidth = true;
     }
 
     public void ShowExit()
@@ -93,7 +105,18 @@ class GUIController
 
     public void Render()
     {
-
+        GUIStyle btnStyle = new GUIStyle(GUI.skin.GetStyle("Button"));
+        btnStyle.fontSize *= 3;
+        if (recalcWidth)
+        {
+            recalcWidth = false;
+            float width = -1;
+            foreach (var btn in entries)
+            {
+                width = Math.Max(btnStyle.CalcSize(new GUIContent(btn.Key)).x, width);
+            }
+            GUI_SIDEBAR_WIDTH = width + 2 * GUI_SIDEBAR_PADDING.x;
+        }
         #region hotkeys
         {
             bool escPressed = Input.GetKeyDown(KeyCode.Escape);
@@ -143,8 +166,6 @@ class GUIController
             GUI.Box(new Rect(-1, -10, GUI_SIDEBAR_WIDTH + 2, Screen.height + 20), "", BlackBoxStyle);
 
             float y = GUI_SIDEBAR_PADDING.y;
-            GUIStyle btnStyle = new GUIStyle(GUI.skin.GetStyle("Button"));
-            btnStyle.fontSize *= 3;
             foreach (var btn in entries)
             {
                 if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, GUI_SIDEBAR_WIDTH - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle) && overlayActive)
