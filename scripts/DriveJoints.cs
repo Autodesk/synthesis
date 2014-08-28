@@ -99,7 +99,7 @@ public class DriveJoints : MonoBehaviour
 
 
 		// Checks to make sure solenoid data was assigned. We can't really use a try/catch statement because if pressure and diameter data is left blank when the robot is created, Unity will still use its default values.
-		if (node.GetJoint<ConfigurableJoint>().xDrive.maximumForce < 3.4e36 || node.GetJoint<ConfigurableJoint>().xDrive.maximumForce <= 0 || node.GetJoint<ConfigurableJoint>().xDrive.maximumForce != null)
+		if (node.GetJoint<ConfigurableJoint>().xDrive.maximumForce > 0)
 		{
 			acceleration = node.GetJoint<ConfigurableJoint>().xDrive.maximumForce / node.GetJoint<ConfigurableJoint>().rigidbody.mass * (forward ? 1 : -1);
 		} else
