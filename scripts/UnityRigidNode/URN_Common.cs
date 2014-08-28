@@ -88,7 +88,7 @@ public partial class UnityRigidNode : RigidNode_Base
         wheelCollider.GetComponent<CapsuleCollider>().height = wheelCollider.GetComponent<CapsuleCollider>().radius / 4f + wheel.width * 0.01f;
         wheelCollider.GetComponent<CapsuleCollider>().center = new Vector3(0, 0, 0);
         wheelCollider.GetComponent<CapsuleCollider>().direction = 0;
-        unityObject.AddComponent<BetterWheelCollider>().attach(this);
+        unityObject.AddComponent<BetterWheelCollider>();
         //I want the grandfather to have a rigidbody
 
         unityObject.GetComponent<Rigidbody>().useConeFriction = true;

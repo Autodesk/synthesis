@@ -6,20 +6,17 @@ using UnityEngine;
 
 public class BetterWheelCollider : MonoBehaviour
 {
-    private UnityRigidNode node;
     public float currentTorque;
     public float brakeTorque;
     public float sidewaysGrip = 0.75f;  // 0=slides, 1=doesn't
     public float forwardsGrip = 1;  // 0=no grip, 1=full grip
     public float forceMultiplier = 4.2f; // idkwhy
-	//public float dragMultiplier = 0.035f;
 
     public BetterWheelCollider() {
     }
 
-    public void attach(UnityRigidNode node)
+    public void Start()
     {
-        this.node = node;
         rigidbody.drag = 1f;
         rigidbody.angularDrag = 1f;
     }
