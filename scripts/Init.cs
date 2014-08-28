@@ -11,13 +11,11 @@ public class Init : MonoBehaviour
 
     private GUIController gui = new GUIController();
 
-    RigidNode_Base skeleton;
-    GameObject activeRobot;
+    private RigidNode_Base skeleton;
+    private GameObject activeRobot;
 
-    unityPacket udp = new unityPacket();
-    List<GameObject> unityWheelData = new List<GameObject>();
-    List<Collider> meshColliders = new List<Collider>();
-    string filePath = null;//BXDSettings.Instance.LastSkeletonDirectory + "\\";
+    private unityPacket udp = new unityPacket();
+    private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
     private volatile int reloadInFrames = -1;
 
     public Init()
@@ -54,6 +52,8 @@ public class Init : MonoBehaviour
         }
         if (filePath != null && skeleton == null)
         {
+            List<GameObject> unityWheelData = new List<GameObject>();
+            List<Collider> meshColliders = new List<Collider>();
             activeRobot = new GameObject("Robot");
             activeRobot.transform.parent = transform;
 
