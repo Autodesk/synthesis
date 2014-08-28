@@ -123,7 +123,7 @@ public class DriveJoints : MonoBehaviour
 		foreach (UnityRigidNode wheel in wheels)
 		{
 			//wheel.GetWheelCollider ().transform.rotation = Quaternion.Euler(45, 90, 270);
-			wheel.wCollider.GetComponent<WheelCollider>().transform.Rotate(0, -315, 0);
+			wheel.wheelCollider.GetComponent<WheelCollider>().transform.Rotate(0, -315, 0);
 		}
 	}
 
@@ -177,7 +177,7 @@ public class DriveJoints : MonoBehaviour
 				if (unitySubNode.GetSkeletalJoint() != null && unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 				{
 					// If port A matches the index of the array in the packet, (A.K.A: the packet index is reffering to the wheelCollider on the subNode0), then that specific wheel Collider is set.
-					if (unitySubNode.IsWheel && unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
+					if (unitySubNode.HasDriverMeta<WheelDriverMeta>() && unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
 					{
 						float OzInToNm = .00706155183333f * Init.PHYSICS_MASS_MULTIPLIER;
 						BetterWheelCollider bwc = unitySubNode.unityObject.GetComponent<BetterWheelCollider>();

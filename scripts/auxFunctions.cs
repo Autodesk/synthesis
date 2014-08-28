@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 
 
-public class auxFunctions : RigidNode_Base
+public class auxFunctions
 {
     public delegate void HandleMesh(int id, BXDAMesh.BXDASubMesh subMesh, Mesh mesh);
 
@@ -45,11 +45,6 @@ public class auxFunctions : RigidNode_Base
         }
     }
 	
-	public static Vector3 ConvertV3 (BXDVector3 vector)
-	{
-        return new Vector3((float) vector.x * 0.01f, (float) vector.y * 0.01f, (float) vector.z * 0.01f);
-	}
-
     public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)
 	{
 
@@ -103,8 +98,7 @@ public class auxFunctions : RigidNode_Base
                 catch
                 {
                 }
-            }
-               
+            }     
          }
     }
 

@@ -60,16 +60,22 @@ public class Init : MonoBehaviour
         {
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
-            Vector3 basePos = ((UnityRigidNode) skeleton).unityObject.transform.position;
-            activeRobot.transform.position -= basePos;
+            activeRobot.transform.localPosition = Vector3.zero;
+            activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
-
-                if (uNode.IsWheel && uNode.wCollider != null)
+                uNode.unityObject.transform.localPosition = Vector3.zero;
+                uNode.unityObject.transform.localRotation = Quaternion.identity;
+                if (uNode.unityObject.rigidbody != null)
                 {
-                    unityWheelData.Add(uNode.wCollider);
+                    uNode.unityObject.rigidbody.velocity = Vector3.zero;
+                    uNode.unityObject.rigidbody.angularVelocity = Vector3.zero;
+                }
+                if (uNode.HasDriverMeta<WheelDriverMeta>() && uNode.wheelCollider != null)
+                {
+                    unityWheelData.Add(uNode.wheelCollider);
                 }
             }
             if (unityWheelData.Count > 0)
