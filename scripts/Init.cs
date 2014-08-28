@@ -3,22 +3,22 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Windows.Forms;
 
 public class Init : MonoBehaviour
 {
+    private FileBrowser fileBrowser = new FileBrowser();
 
     // We will need these
     public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
-    public List<List<UnityRigidNode>> PWMAssignments;
-    public float speed = 5;
-    public int[] motors = { 1, 2, 3, 4 };
+
     RigidNode_Base skeleton;
+    GameObject activeRobot;
+
     unityPacket udp = new unityPacket();
     List<GameObject> unityWheelData = new List<GameObject>();
     List<Collider> meshColliders = new List<Collider>();
-    // int robots = 0;
-    string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+    string filePath = null;//BXDSettings.Instance.LastSkeletonDirectory + "\\";
+
     public enum WheelPositions
     {
         FL = 1,
@@ -29,33 +29,53 @@ public class Init : MonoBehaviour
     [STAThread]
     void OnGUI()
     {
-        /*if (GUI.Button(new Rect(10, 10, 90, 30), "Load Model"))
+        UserMessageManager.Render();
+
+        if (!fileBrowser.Active)
         {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-
-            if (fbd.ShowDialog() == DialogResult.OK)
+            if (GUI.Button(new Rect(10, 10, 90, 30), "Load Model"))
             {
-
-                filePath = fbd.SelectedPath;
+                fileBrowser.Active = true;
+            }
+        }
+        if (fileBrowser.Active)
+        {
+            fileBrowser.Show();
+        }
+        if (fileBrowser.Submit)
+        {
+            fileBrowser.Active = false;
+            fileBrowser.Submit = false;
+            string fileLocation = fileBrowser.fileLocation;
+            // If dir was selected...
+            if (File.Exists(fileLocation + "\\skeleton.bxdj"))
+                fileLocation += "\\skeleton.bxdj";
+            DirectoryInfo parent =Directory.GetParent(fileLocation);
+            if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
+            {
+                filePath = parent.FullName + "\\";
                 TryLoad();
             }
-        }*/
-
+            else
+            {
+                UserMessageManager.Dispatch("Invalid selection!");
+            }
+        }
     }
 
 
     void TryLoad()
     {
+        if (activeRobot != null)
+        {
+            skeleton = null;
+            UnityEngine.Object.Destroy(activeRobot);
+        }
+
         if (filePath != null && skeleton == null)
         {
-            UnityRigidNode nodeThing = new UnityRigidNode();
-            nodeThing.modelFileName = "field.bxda";
-            nodeThing.CreateTransform(transform);
-            nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
-            nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-
-            GameObject robot = new GameObject("Robot");
-            robot.transform.parent = transform;
+            activeRobot = new GameObject("Robot");
+            activeRobot.transform.parent = transform;
 
             List<RigidNode_Base> names = new List<RigidNode_Base>();
             RigidNode_Base.NODE_FACTORY = delegate()
@@ -69,7 +89,7 @@ public class Init : MonoBehaviour
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
 
-                uNode.CreateTransform(robot.transform);
+                uNode.CreateTransform(activeRobot.transform);
                 uNode.CreateMesh(filePath + uNode.modelFileName);
 
                 uNode.CreateJoint();
@@ -90,11 +110,10 @@ public class Init : MonoBehaviour
             }
             if (unityWheelData.Count > 0)
             {
-                auxFunctions.OrientRobot(unityWheelData, robot.transform);
+                auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
 
             }
             auxFunctions.IgnoreCollisionDetection(meshColliders);
-
         }
         else
         {
@@ -110,6 +129,14 @@ public class Init : MonoBehaviour
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
         Physics.minPenetrationForPenalty = 0.001f;
+
+        // Load Field
+
+        UnityRigidNode nodeThing = new UnityRigidNode();
+        nodeThing.modelFileName = "field.bxda";
+        nodeThing.CreateTransform(transform);
+        nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
+        nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
         TryLoad();
     }
