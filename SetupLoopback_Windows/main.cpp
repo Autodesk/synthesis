@@ -57,7 +57,6 @@ int cmdInstall(LPCTSTR hwid, LPCTSTR inf)
 	GUID ClassGUID;
 	TCHAR ClassName[MAX_CLASS_NAME_LEN];
 	TCHAR hwIdList[LINE_LEN+4];
-	TCHAR InfPath[MAX_PATH];
 	int failcode = EXIT_FAIL;
 
 	ZeroMemory(hwIdList,sizeof(hwIdList));
@@ -66,7 +65,7 @@ int cmdInstall(LPCTSTR hwid, LPCTSTR inf)
 		goto final;
 	}
 
-	if (!SetupDiGetINFClass(InfPath,&ClassGUID,ClassName,sizeof(ClassName)/sizeof(ClassName[0]),0))
+	if (!SetupDiGetINFClass(inf,&ClassGUID,ClassName,sizeof(ClassName)/sizeof(ClassName[0]),0))
 	{
 		printError();
 		goto final;
@@ -193,7 +192,11 @@ DWORD setupLoopbackDevice(int team) {
 
 int main(int argc, char **argv) {
 	LPCTSTR hwid = "*msloop";
-	LPCTSTR inf = "C:\\WINDOWS\\inf\\netloop.inf";
+	LPTSTR inf = "C:\\Windows\\inf\\netloop.inf";//new TCHAR[512];
+	/*GetWindowsDirectory(inf, 512);
+	_tcscat_s(inf, 512, "\\inf\\netloop.inf");*/
+	printf("Device to install: %s\n", inf);
+
 	int team = 0;
 	if (argc > 1) {
 		team = atoi(argv[1]);
@@ -201,7 +204,7 @@ int main(int argc, char **argv) {
 		sprintf_s(tempBuffer, "%u", team);
 		if (strcmp(argv[1], tempBuffer) != 0) {
 			printf("%s doesn't appear to equal %u; team number invalid\n", argv[0], team);
-			scanf_s(" ");
+			getc(stdin);
 			return ERROR_INVALID_PARAMETER;
 		}
 	} else {
