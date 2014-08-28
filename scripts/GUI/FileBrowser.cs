@@ -5,13 +5,14 @@ using System.IO;
 
 class FileBrowser
 {
-    public string fileLocation
+    private const float DOUBLE_CLICK_TIME = 0.2f;
+
+    public string directoryLocation
     {
         get;
         private set;
     }
 
-    private Vector2 directoryScroll, fileScroll;
     private bool _active;
     public bool Submit
     {
@@ -34,29 +35,39 @@ class FileBrowser
         }
     }
 
+    private Vector2 directoryScroll;
+    private float lastClick = 0;
+
     public FileBrowser()
     {
         if (BXDSettings.Instance.LastSkeletonDirectory != null && Directory.Exists(BXDSettings.Instance.LastSkeletonDirectory))
         {
-            fileLocation = BXDSettings.Instance.LastSkeletonDirectory;
+            directoryLocation = BXDSettings.Instance.LastSkeletonDirectory;
         }
         else
         {
-            fileLocation = Directory.GetParent(Application.dataPath).FullName;
+            directoryLocation = Directory.GetParent(Application.dataPath).FullName;
         }
     }
 
     private delegate string Stringify<T>(T o);
 
-    private static object SelectList<T>(T[] items, Stringify<T> stringify = null)
+    private static object SelectList<T>(T[] items, Stringify<T> stringify = null, string highlight = null)
     {
         object selected = null;
+        Color bg = GUI.backgroundColor;
         foreach (T o in items)
         {
-            if (GUILayout.Button(stringify != null ? stringify(o) : o.ToString()))
+            string entry = stringify != null ? stringify(o) : o.ToString();
+            if (highlight != null && highlight.Equals(entry))
+            {
+                GUI.backgroundColor = new Color(1f, 0.25f, 0.25f, bg.a);
+            }
+            if (GUILayout.Button(entry))
             {
                 selected = o;
             }
+            GUI.backgroundColor = bg;
         }
         return selected;
     }
@@ -65,18 +76,23 @@ class FileBrowser
     {
         DirectoryInfo directoryInfo;
         DirectoryInfo directorySelection;
-        FileInfo fileSelection;
         int contentWidth;
 
         // Get the directory info of the current location
-        fileSelection = new FileInfo(fileLocation);
-        if ((fileSelection.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
         {
-            directoryInfo = new DirectoryInfo(fileLocation);
-        }
-        else
-        {
-            directoryInfo = fileSelection.Directory;
+            FileInfo fileSelection = new FileInfo(directoryLocation);
+            if ((fileSelection.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+            {
+                directoryInfo = new DirectoryInfo(directoryLocation);
+                if (directoryInfo.GetDirectories().Length == 0)
+                {
+                    directoryInfo = directoryInfo.Parent;
+                }
+            }
+            else
+            {
+                directoryInfo = fileSelection.Directory;
+            }
         }
 
         if (GUI.Button(new Rect(335, 5, 80, 20), "Exit"))
@@ -88,58 +104,45 @@ class FileBrowser
         if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 20, 200, 20), "Up one level"))
         {
             directoryInfo = directoryInfo.Parent;
-            fileLocation = directoryInfo.FullName;
+            directoryLocation = directoryInfo.FullName;
         }
 
 
         // Handle the directories list
-        GUILayout.BeginArea(new Rect(10, 40, 200, 300));
+        GUILayout.BeginArea(new Rect(10, 40, 410, 300));
         GUILayout.Label("Directories:");
         directoryScroll = GUILayout.BeginScrollView(directoryScroll);
         directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
         {
             return o.Name;
-        }) as DirectoryInfo;
+        }, new DirectoryInfo(directoryLocation).Name) as DirectoryInfo;
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
         if (directorySelection != null)
-        // If a directory was selected, jump there
         {
-            fileLocation = directorySelection.FullName;
+            // If a directory was selected, jump there
+            directoryLocation = directorySelection.FullName;
         }
-
-
-        // Handle the files list
-        GUILayout.BeginArea(new Rect(220, 40, 200, 300));
-        GUILayout.Label("Files:");
-        fileScroll = GUILayout.BeginScrollView(fileScroll);
-        fileSelection = SelectList(directoryInfo.GetFiles("*.bxdj"), (FileInfo f) =>
-        {
-            return f.Name;
-        }) as FileInfo;
-        GUILayout.EndScrollView();
-        GUILayout.EndArea();
-
-        if (fileSelection != null)
-        {
-            fileLocation = fileSelection.FullName;
-        }
-
 
         // The manual location box and the select button
         GUILayout.BeginArea(new Rect(10, 350, 410, 20));
         GUILayout.BeginHorizontal();
         const int labelLen = 50;
-        GUILayout.Label(fileLocation.Length > labelLen ? 
-            fileLocation.Substring(0, 5) + "..." +
-            fileLocation.Substring(fileLocation.Length - labelLen + 8) : fileLocation);
+        GUILayout.Label(directoryLocation.Length > labelLen ?
+            directoryLocation.Substring(0, 5) + "..." +
+            directoryLocation.Substring(directoryLocation.Length - labelLen + 8) : directoryLocation);
 
         contentWidth = (int) GUI.skin.GetStyle("Button").CalcSize(new GUIContent("Select")).x;
-        if (GUILayout.Button("Select", GUILayout.Width(contentWidth)))
+        bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
+        if (doubleClick || GUILayout.Button("Select", GUILayout.Width(contentWidth)))
         {
             Submit = true;
             _active = false;
+        }
+        if (directorySelection != null)
+        {
+            lastClick = Time.time;
         }
         GUILayout.EndHorizontal();
         GUILayout.EndArea();

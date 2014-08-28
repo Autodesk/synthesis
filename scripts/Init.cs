@@ -6,11 +6,10 @@ using System.Collections.Generic;
 
 public class Init : MonoBehaviour
 {
-    private FileBrowser fileBrowser = new FileBrowser();
-
     // We will need these
-	public bool exitWindow = false;
     public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
+
+    private GUIController gui = new GUIController();
 
     RigidNode_Base skeleton;
     GameObject activeRobot;
@@ -19,77 +18,40 @@ public class Init : MonoBehaviour
     List<GameObject> unityWheelData = new List<GameObject>();
     List<Collider> meshColliders = new List<Collider>();
     string filePath = null;//BXDSettings.Instance.LastSkeletonDirectory + "\\";
+    private volatile int reloadInFrames = -1;
 
-    public enum WheelPositions
+    public Init()
     {
-        FL = 1,
-        FR = 2,
-        BL = 3,
-        BR = 4
+
+        gui.OpenedRobot += (string path) =>
+        {
+            if (File.Exists(path + "\\skeleton.bxdj"))
+            {
+                this.filePath = path;
+                reloadInFrames = 2;
+            }
+        };
     }
+
     [STAThread]
     void OnGUI()
     {
-        UserMessageManager.Render();
+        gui.Render();
 
-        if (!fileBrowser.Active)
+        if (reloadInFrames >= 0)
         {
-            if (GUI.Button(new Rect(10, 10, 90, 30), "Load Model"))
-            {
-                fileBrowser.Active = true;
-            }
+            GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
+            GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
         }
-        if (fileBrowser.Active)
-        {
-            fileBrowser.Show();
-        }
-        if (fileBrowser.Submit)
-        {
-            fileBrowser.Active = false;
-            fileBrowser.Submit = false;
-            string fileLocation = fileBrowser.fileLocation;
-            // If dir was selected...
-            if (File.Exists(fileLocation + "\\skeleton.bxdj"))
-                fileLocation += "\\skeleton.bxdj";
-            DirectoryInfo parent =Directory.GetParent(fileLocation);
-            if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
-            {
-                filePath = parent.FullName + "\\";
-                TryLoad();
-			}
-			else
-			{
-				UserMessageManager.Dispatch("Invalid selection!");
-			}
-        }
-
-		if (exitWindow) 
-		{
-			Rect window = new Rect(Screen.width / 2 - 300, Screen.height / 2 - 100, 600, 200);
-			window = GUI.Window(0, window, InitExitWindow, "Exit?");
-		}
     }
 
-	void InitExitWindow(int windowID) 
-	{
-		if (GUI.Button(new Rect(50, 50, 175, 100), "No")) 
-		{
-			exitWindow = false;
-		}
-		else if (GUI.Button(new Rect(350, 50, 175, 100), "Yes")) 
-		{
-			Application.Quit();
-		}
-	}
-
-    void TryLoad()
+    private void TryLoad()
     {
         if (activeRobot != null)
         {
             skeleton = null;
             UnityEngine.Object.Destroy(activeRobot);
         }
-
         if (filePath != null && skeleton == null)
         {
             activeRobot = new GameObject("Robot");
@@ -109,38 +71,35 @@ public class Init : MonoBehaviour
 
                 uNode.CreateTransform(activeRobot.transform);
                 uNode.CreateMesh(filePath + uNode.modelFileName);
-
                 uNode.CreateJoint();
-                if (uNode.modelFileName == "node_0.bxda")
-                {
-                    uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
-                    Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
-                    vec.y *= 0.9f;
-                    uNode.unityObject.rigidbody.centerOfMass = vec;
-                }
+
                 if (uNode.IsWheel)
                 {
                     unityWheelData.Add(uNode.wCollider);
-
                 }
-                //meshColliders.Add(uNode.meshCollider);                
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
             if (unityWheelData.Count > 0)
             {
                 auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
-
             }
+
+            {   // Add some mass to the base object
+                UnityRigidNode uNode = (UnityRigidNode) skeleton;
+                uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
+                Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
+                vec.y *= 0.9f;
+                uNode.unityObject.rigidbody.centerOfMass = vec;
+            }
+
             auxFunctions.IgnoreCollisionDetection(meshColliders);
         }
         else
         {
             Debug.Log("unityWheelData is null...");
         }
-
+        gui.guiVisible = false;
     }
-
-
 
     void Start()
     {
@@ -156,7 +115,7 @@ public class Init : MonoBehaviour
         nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
         nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 
-        TryLoad();
+        reloadInFrames = 2;
     }
 
     void OnEnable()
@@ -169,19 +128,17 @@ public class Init : MonoBehaviour
         udp.Stop();
     }
 
+    void Update()
+    {
+        if (reloadInFrames >= 0 && reloadInFrames-- == 0)
+        {
+            reloadInFrames = -1;
+            TryLoad();
+        }
+    }
 
     void FixedUpdate()
     {
-		if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			if (exitWindow) 
-			{
-				exitWindow = false;
-			} else {
-				exitWindow = true;
-			}
-		}
-
         if (skeleton != null)
         {
             unityPacket.OutputStatePacket packet = udp.GetLastPacket();

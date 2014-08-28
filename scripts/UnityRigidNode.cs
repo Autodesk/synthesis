@@ -84,7 +84,6 @@ public class UnityRigidNode : RigidNode_Base
         wCollider.transform.parent = unityObject.transform;
         Vector3 anchorBase = joint.connectedAnchor;
         float centerMod = Vector3.Dot(auxFunctions.ConvertV3(wheel.center) - anchorBase, joint.axis);
-        Debug.Log(unityObject.name + " mod by " + centerMod);
         wCollider.transform.localPosition = centerMod * joint.axis + anchorBase;
         wCollider.AddComponent<CapsuleCollider>();
         wCollider.GetComponent<CapsuleCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
