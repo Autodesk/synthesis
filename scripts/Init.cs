@@ -20,7 +20,6 @@ public class Init : MonoBehaviour
 
     public Init()
     {
-
         gui.OpenedRobot += (string path) =>
         {
             if (File.Exists(path + "\\skeleton.bxdj"))
@@ -29,6 +28,10 @@ public class Init : MonoBehaviour
                 reloadInFrames = 2;
             }
         };
+        if (!File.Exists(filePath + "\\skeleton.bxdj"))
+        {
+            gui.ShowBrowser();
+        }
     }
 
     [STAThread]

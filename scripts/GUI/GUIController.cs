@@ -74,6 +74,23 @@ class GUIController
         exitWindowVisible = true; })};
     }
 
+    public void ShowExit()
+    {
+        guiFadeIntensity = 1;
+        guiVisible = true;
+        fileBrowser.Active = false;
+        exitWindowVisible = true;
+    }
+
+    public void ShowBrowser()
+    {
+        guiFadeIntensity = 1;
+        guiVisible = true;
+        fileBrowser.Active = true;
+        exitWindowVisible = false;
+    }
+
+
     public void Render()
     {
 

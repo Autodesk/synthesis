@@ -40,9 +40,14 @@ class FileBrowser
 
     public FileBrowser()
     {
+        string exampleDir = Application.dataPath + "\\..\\examples\\default-robot-chassis\\synthesis-output";
         if (BXDSettings.Instance.LastSkeletonDirectory != null && Directory.Exists(BXDSettings.Instance.LastSkeletonDirectory))
         {
             directoryLocation = BXDSettings.Instance.LastSkeletonDirectory;
+        }
+        else if (Directory.Exists(exampleDir))
+        {
+            directoryLocation = (new DirectoryInfo(exampleDir)).FullName;
         }
         else
         {
