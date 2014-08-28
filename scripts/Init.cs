@@ -120,6 +120,7 @@ public class Init : MonoBehaviour
             }
 
             auxFunctions.IgnoreCollisionDetection(meshColliders);
+            OrientRobot();
         }
         else
         {
