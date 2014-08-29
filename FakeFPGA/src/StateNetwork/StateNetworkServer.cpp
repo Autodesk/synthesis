@@ -76,9 +76,10 @@ bool StateNetworkServer::ReceiveStatePacket(InputStatePacket *pack) {
 	FD_SET(udpRecvSocket, &set);
 	struct timeval timeout;
 	timeout.tv_sec = timeout.tv_usec = 0;
-	if (select(1, &set, NULL, NULL, &timeout)) {	// Only read if there is data available
+	bool flag = false;
+	while (select(1, &set, NULL, NULL, &timeout)) {	// Only read if there is data available
 		recv(udpRecvSocket, (char*) pack, sizeof(InputStatePacket), 0);
-		return true;
+		flag = true;
 	}
-	return false;
+	return flag;
 }
