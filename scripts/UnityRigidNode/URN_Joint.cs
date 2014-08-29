@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public partial class UnityRigidNode : RigidNode_Base
 {
     //converts inventor's limit information to the modular system unity uses (180/-180)
-    private void AngularLimit(float currentAngle, float lowLimit, float highLimit)
+    private static void AngularLimit(Joint joint, float currentAngle, float lowLimit, float highLimit)
     {
         // This assumes it is precentered.  Sad but acceptable.
         lowLimit = (highLimit - lowLimit) / 2f;
@@ -46,7 +46,7 @@ public partial class UnityRigidNode : RigidNode_Base
     /// <param name="currentPosition">The current linear position</param>
     /// <param name="minPosition">The minimum linear position</param>
     /// <param name="maxPosition">The maximum linear position</param>
-    private void LinearLimit(float currentPosition, float minPosition, float maxPosition)
+    private static void LinearLimit(Joint joint, float currentPosition, float minPosition, float maxPosition)
     {
         float center = (maxPosition - minPosition) / 2.0f;
         //also sets limit properties to eliminate any shaking and twitching from the joint when it hit sthe limit
@@ -136,7 +136,8 @@ public partial class UnityRigidNode : RigidNode_Base
                 jointSub.useLimits = nodeR.hasAngularLimit;
                 if (nodeR.hasAngularLimit)
                 {
-                    AngularLimit(MathfExt.ToDegrees(nodeR.currentAngularPosition),
+                    AngularLimit(jointSub,
+                                 MathfExt.ToDegrees(nodeR.currentAngularPosition),
                                  MathfExt.ToDegrees(nodeR.angularLimitLow),
                                  MathfExt.ToDegrees(nodeR.angularLimitHigh));
                 }
@@ -156,7 +157,10 @@ public partial class UnityRigidNode : RigidNode_Base
             {
                 jointSub.xMotion = ConfigurableJointMotion.Limited;
                 jointSub.angularXMotion = !nodeC.hasAngularLimit ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Limited;
-                LinearLimit(nodeC.currentLinearPosition, nodeC.linearLimitStart, nodeC.linearLimitEnd);
+                LinearLimit(jointSub,
+                            nodeC.currentLinearPosition,
+                            nodeC.linearLimitStart,
+                            nodeC.linearLimitEnd);
                 if (GetSkeletalJoint().cDriver != null && GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
                 {
                     JointDrive drMode = new JointDrive();
@@ -166,7 +170,8 @@ public partial class UnityRigidNode : RigidNode_Base
                 }
                 if (jointSub.angularXMotion == ConfigurableJointMotion.Limited)
                 {
-                    AngularLimit(MathfExt.ToDegrees(nodeC.currentAngularPosition),
+                    AngularLimit(jointSub,
+                                 MathfExt.ToDegrees(nodeC.currentAngularPosition),
                                  MathfExt.ToDegrees(nodeC.angularLimitLow),
                                  MathfExt.ToDegrees(nodeC.angularLimitHigh));
                 }
@@ -179,7 +184,10 @@ public partial class UnityRigidNode : RigidNode_Base
             joint = ConfigJointInternal<ConfigurableJoint>(nodeL.basePoint.AsV3(), nodeL.axis.AsV3(), delegate(ConfigurableJoint jointSub)
             {
                 jointSub.xMotion = ConfigurableJointMotion.Limited;
-                LinearLimit(nodeL.currentLinearPosition, nodeL.linearLimitLow, nodeL.linearLimitHigh);
+                LinearLimit(jointSub,
+                            nodeL.currentLinearPosition,
+                            nodeL.linearLimitLow,
+                            nodeL.linearLimitHigh);
             });
 
         }

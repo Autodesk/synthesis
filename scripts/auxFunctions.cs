@@ -29,7 +29,7 @@ public class auxFunctions
             Mesh unityMesh = new Mesh();
             unityMesh.vertices = vertices;
             unityMesh.normals = normals;
-            unityMesh.uv = null;
+            unityMesh.uv = new Vector2[vertices.Length];
             unityMesh.subMeshCount = sub.surfaces.Count;
             for (int i = 0; i < sub.surfaces.Count; i++)
             {
@@ -47,7 +47,6 @@ public class auxFunctions
 	
     public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)
 	{
-
 		Quaternion q = new Quaternion();
 		List<Vector3> wheels = new List<Vector3>();
 
