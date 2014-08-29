@@ -30,6 +30,7 @@ public class BetterWheelCollider : MonoBehaviour
     {
         Vector3 normal = Vector3.zero;
         Vector3 point = Vector3.zero;
+        #region compute normal and point
         foreach (ContactPoint contact in collisionInfo.contacts)
         {
             normal += contact.normal;
@@ -37,13 +38,16 @@ public class BetterWheelCollider : MonoBehaviour
         }
         point /= collisionInfo.contacts.Length;
         normal.Normalize();
+        #endregion
 
         // Get the world rotation specs
         Vector3 axis = transform.localToWorldMatrix * gameObject.GetComponent<HingeJoint>().axis;
         Vector3 basePoint = transform.localToWorldMatrix * gameObject.GetComponent<HingeJoint>().connectedAnchor;
         axis.Normalize();
 
-        Vector3 relativeVelocity = rigidbody.velocity - collisionInfo.rigidbody.velocity;
+        Vector3 relativeVelocity = rigidbody.velocity;
+        if (collisionInfo.rigidbody != null)
+            relativeVelocity -= collisionInfo.rigidbody.velocity;
 
         Vector3 forceDirection = Vector3.Cross(normal, axis).normalized;
         float appliedRadius = Vector3.Distance(point, basePoint);
