@@ -16,6 +16,13 @@ public class Init : MonoBehaviour
 
     private unityPacket udp = new unityPacket();
     private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+
+    /// <summary>
+    /// Frames before the robot gets reloaded, or -1 if no reload is queued.
+    /// </summary>
+    /// <remarks>
+    /// This allows reloading the robot to be delayed until a "Loading" dialog can be drawn.
+    /// </remarks>
     private volatile int reloadInFrames = -1;
 
     public Init()
@@ -63,6 +70,10 @@ public class Init : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Repositions the robot so it is aligned at the center of the field, and resets all the
+    /// joints, velocities, etc..
+    /// </summary>
     private void OrientRobot()
     {
         if (activeRobot != null && skeleton != null)
