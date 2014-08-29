@@ -145,7 +145,7 @@ public partial class UnityRigidNode : RigidNode_Base
 
             if (this.HasDriverMeta<WheelDriverMeta>())
             {
-                CreateWheel(nodeR);
+                CreateWheel();
             }
         }
         else if (GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL)
@@ -202,7 +202,7 @@ public partial class UnityRigidNode : RigidNode_Base
             parentObject.gameObject.AddComponent<Rigidbody>();
         }
 
-        joint = unityObject.gameObject.AddComponent<T>();
+        T joint = unityObject.gameObject.AddComponent<T>();
 
         joint.connectedBody = parentObject.GetComponent<Rigidbody>();
 
@@ -214,7 +214,7 @@ public partial class UnityRigidNode : RigidNode_Base
 
         if (joint is ConfigurableJoint)
         {
-            ConfigurableJoint cj = (ConfigurableJoint) joint;
+            ConfigurableJoint cj = joint as ConfigurableJoint;
             cj.angularXMotion = ConfigurableJointMotion.Locked;
             cj.angularYMotion = ConfigurableJointMotion.Locked;
             cj.angularZMotion = ConfigurableJointMotion.Locked;
@@ -222,7 +222,7 @@ public partial class UnityRigidNode : RigidNode_Base
             cj.yMotion = ConfigurableJointMotion.Locked;
             cj.zMotion = ConfigurableJointMotion.Locked;
         }
-        jointType((T) joint);
-        return (T) joint;
+        jointType(joint);
+        return joint;
     }
 }

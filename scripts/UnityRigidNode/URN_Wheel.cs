@@ -5,6 +5,32 @@ using System.Collections.Generic;
 
 public partial class UnityRigidNode : RigidNode_Base
 {
+    /// <summary>
+    /// Creates the capsule collider and better wheel collider for this object.
+    /// </summary>
+    private void CreateWheel()
+    {
+        WheelDriverMeta wheel = this.GetDriverMeta<WheelDriverMeta>();
+        if (wheel == null)
+            return;
+
+        wheelCollider = new GameObject(unityObject.name + " Collider");
+
+        wheelCollider.transform.parent = unityObject.transform;
+        Vector3 anchorBase = joint.connectedAnchor;
+        float centerMod = Vector3.Dot(wheel.center.AsV3() - anchorBase, joint.axis);
+        wheelCollider.transform.localPosition = centerMod * joint.axis + anchorBase;
+        wheelCollider.transform.rotation = Quaternion.FromToRotation(new Vector3(1, 0, 0), new Vector3(joint.axis.x, joint.axis.y, joint.axis.z));
+
+        wheelCollider.AddComponent<CapsuleCollider>().radius = (wheel.radius * 1.10f) * 0.01f;
+        wheelCollider.GetComponent<CapsuleCollider>().height = wheelCollider.GetComponent<CapsuleCollider>().radius / 4f + wheel.width * 0.01f;
+        wheelCollider.GetComponent<CapsuleCollider>().center = new Vector3(0, 0, 0);
+        wheelCollider.GetComponent<CapsuleCollider>().direction = 0;
+        unityObject.AddComponent<BetterWheelCollider>();
+        //I want the grandfather to have a rigidbody
+
+        unityObject.GetComponent<Rigidbody>().useConeFriction = true;
+    }
 
     /// <summary>
     /// Orients drive wheel normals so they face away from the center of mass.
