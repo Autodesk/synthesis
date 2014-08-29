@@ -39,12 +39,15 @@ public partial class UnityRigidNode : RigidNode_Base
         }
     }
 
-    //finds the difference between the current position, which is always one of the two end points, then finds the difference between the two. 
-    //this is then divided by 2 to find the limit for unity
+    /// <summary>
+    /// Configures the linear limit for this node's joint according to the given values.
+    /// </summary>
+    /// <remarks>For this to work the current position MUST BE in the middle.  </remarks>
+    /// <param name="currentPosition">The current linear position</param>
+    /// <param name="minPosition">The minimum linear position</param>
+    /// <param name="maxPosition">The maximum linear position</param>
     private void LinearLimit(float currentPosition, float minPosition, float maxPosition)
     {
-        // This assumes that it is pre centered.  Kind of sad but is there a choice?
-
         float center = (maxPosition - minPosition) / 2.0f;
         //also sets limit properties to eliminate any shaking and twitching from the joint when it hit sthe limit
         SoftJointLimit linear = new SoftJointLimit();
@@ -181,5 +184,45 @@ public partial class UnityRigidNode : RigidNode_Base
 
         }
         SetXDrives();
+    }
+    
+    /// <summary>
+    /// Creates a joint at the given position, aligned to the given axis, with the given type.
+    /// </summary>
+    /// <typeparam name="T">The joint type</typeparam>
+    /// <param name="pos">The base position</param>
+    /// <param name="axis">The axis</param>
+    /// <param name="jointType">The joint callback for additional configuration</param>
+    /// <returns>The joint that was created</returns>
+    private T ConfigJointInternal<T>(Vector3 pos, Vector3 axis, Action<T> jointType) where T : Joint
+    {
+        GameObject parentObject = ((UnityRigidNode) GetParent()).unityObject;
+        if (!parentObject.gameObject.GetComponent<Rigidbody>())
+        {
+            parentObject.gameObject.AddComponent<Rigidbody>();
+        }
+
+        joint = unityObject.gameObject.AddComponent<T>();
+
+        joint.connectedBody = parentObject.GetComponent<Rigidbody>();
+
+        joint.anchor = pos;
+        joint.connectedAnchor = pos;
+
+        axis.Normalize();
+        joint.axis = axis;
+
+        if (joint is ConfigurableJoint)
+        {
+            ConfigurableJoint cj = (ConfigurableJoint) joint;
+            cj.angularXMotion = ConfigurableJointMotion.Locked;
+            cj.angularYMotion = ConfigurableJointMotion.Locked;
+            cj.angularZMotion = ConfigurableJointMotion.Locked;
+            cj.xMotion = ConfigurableJointMotion.Locked;
+            cj.yMotion = ConfigurableJointMotion.Locked;
+            cj.zMotion = ConfigurableJointMotion.Locked;
+        }
+        jointType((T) joint);
+        return (T) joint;
     }
 }

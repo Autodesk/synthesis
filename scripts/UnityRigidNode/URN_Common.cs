@@ -24,49 +24,6 @@ public partial class UnityRigidNode : RigidNode_Base
     }
 
     /// <summary>
-    /// Creates a joint at the given position, aligned to the given axis, with the given type.
-    /// </summary>
-    /// <typeparam name="T">The joint type</typeparam>
-    /// <param name="pos">The base position</param>
-    /// <param name="axis">The axis</param>
-    /// <param name="jointType">The joint callback for additional configuration</param>
-    /// <returns>The joint that was created</returns>
-    private T ConfigJointInternal<T>(Vector3 pos, Vector3 axis, Action<T> jointType) where T : Joint
-    {
-        GameObject rigid = ((UnityRigidNode) GetParent()).unityObject;
-        if (!rigid.gameObject.GetComponent<Rigidbody>())
-        {
-            rigid.gameObject.AddComponent<Rigidbody>();
-        }
-        Rigidbody rigidB = rigid.gameObject.GetComponent<Rigidbody>();
-        joint = unityObject.gameObject.AddComponent<T>();
-
-        joint.connectedBody = rigidB;
-
-        //configures the joint
-        joint.anchor = pos;
-        joint.connectedAnchor = pos;
-
-        axis.Normalize();
-        joint.axis = axis;
-
-
-        //joint.secondaryAxis = new Vector3 (0, 0, 1);
-        if (joint is ConfigurableJoint)
-        {
-            ConfigurableJoint cj = (ConfigurableJoint) joint;
-            cj.angularXMotion = ConfigurableJointMotion.Locked;
-            cj.angularYMotion = ConfigurableJointMotion.Locked;
-            cj.angularZMotion = ConfigurableJointMotion.Locked;
-            cj.xMotion = ConfigurableJointMotion.Locked;
-            cj.yMotion = ConfigurableJointMotion.Locked;
-            cj.zMotion = ConfigurableJointMotion.Locked;
-        }
-        jointType((T) joint);
-        return (T) joint;
-    }
-
-    /// <summary>
     /// Creates the capsule collider and better wheel collider for this object.
     /// </summary>
     /// <param name="center">The joint to center on</param>
