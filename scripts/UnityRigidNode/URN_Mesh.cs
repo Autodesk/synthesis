@@ -26,18 +26,7 @@ public partial class UnityRigidNode : RigidNode_Base
             Material[] matls = new Material[meshu.subMeshCount];
             for (int i = 0; i < matls.Length; i++)
             {
-                uint val = sub.surfaces[i].hasColor ? sub.surfaces[i].color : 0xFFFFFFFF;
-                Color color = new Color32((byte) (val & 0xFF), (byte) ((val >> 8) & 0xFF), (byte) ((val >> 16) & 0xFF), (byte) ((val >> 24) & 0xFF));
-                if (sub.surfaces[i].transparency != 0)
-                    color.a = sub.surfaces[i].transparency;
-                else if (sub.surfaces[i].translucency != 0)
-                    color.a = sub.surfaces[i].translucency;
-                if (color.a == 0)   // No perfectly transparent things plz.
-                    color.a = 1;
-                matls[i] = new Material((Shader) Shader.Find((color.a != 1 ? "Transparent/" : "") + (sub.surfaces[i].specular > 0 ? "Specular" : "Diffuse")));
-                matls[i].SetColor("_Color", color);
-                if (sub.surfaces[i].specular > 0)
-                    matls[i].SetFloat("_Shininess", sub.surfaces[i].specular);
+                matls[i] = sub.surfaces[i].AsMaterial();
             }
             subObject.GetComponent<MeshRenderer>().materials = matls;
         });

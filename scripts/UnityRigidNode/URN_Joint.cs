@@ -225,4 +225,14 @@ public partial class UnityRigidNode : RigidNode_Base
         jointType(joint);
         return joint;
     }
+
+    /// <summary>
+    /// Gets the joint for this node as the given joint type, or null if it doesn't exist.
+    /// </summary>
+    /// <typeparam name="T">The joint type</typeparam>
+    /// <returns>The joint, or null if no such joint exists</returns>
+    public T GetJoint<T>() where T : Joint
+    {
+        return joint as T;
+    }
 }

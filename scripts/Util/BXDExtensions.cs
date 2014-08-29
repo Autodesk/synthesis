@@ -20,4 +20,23 @@ public static class BXDExtensions
     {
         return new BXDVector3(v.x / 0.01f, v.y / 0.01f, v.z / 0.01f);
     }
+
+    public static Material AsMaterial(this BXDAMesh.BXDASurface surf)
+    {
+        uint val = surf.hasColor ? surf.color : 0xFFFFFFFF;
+        Color color = new Color32((byte) (val & 0xFF), (byte) ((val >> 8) & 0xFF), (byte) ((val >> 16) & 0xFF), (byte) ((val >> 24) & 0xFF));
+        if (surf.transparency != 0)
+            color.a = surf.transparency;
+        else if (surf.translucency != 0)
+            color.a = surf.translucency;
+        if (color.a == 0)   // No perfectly transparent things plz.
+            color.a = 1;
+        Material result = new Material((Shader) Shader.Find((color.a != 1 ? "Transparent/" : "") + (surf.specular > 0 ? "Specular" : "Diffuse")));
+        result.SetColor("_Color", color);
+        if (surf.specular > 0)
+        {
+            result.SetFloat("_Shininess", surf.specular);
+            result.SetColor("_SpecColor", color);
+        }
+    }
 }
