@@ -38,5 +38,6 @@ public static class BXDExtensions
             result.SetFloat("_Shininess", surf.specular);
             result.SetColor("_SpecColor", color);
         }
+        return result;
     }
 }

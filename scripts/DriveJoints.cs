@@ -153,7 +153,7 @@ public class DriveJoints : MonoBehaviour
 			return hinge.angle;
 		}
 		UnityRigidNode parent = (UnityRigidNode)child.GetParent();
-		return (180f / Mathf.PI) * (Mathf.Acos(Vector3.Dot(child.unityObject.transform.up, parent.unityObject.transform.up) / (child.unityObject.transform.up.magnitude * parent.unityObject.transform.up.magnitude)));
+		return MathfExt.ToDegrees(Mathf.Acos(Vector3.Dot(child.unityObject.transform.up, parent.unityObject.transform.up) / (child.unityObject.transform.up.magnitude * parent.unityObject.transform.up.magnitude)));
 	}
 
 	// Drive All Motors Associated with a PWM port

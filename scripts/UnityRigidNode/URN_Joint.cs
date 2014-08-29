@@ -82,7 +82,7 @@ public partial class UnityRigidNode : RigidNode_Base
                     }
                 }
             }
-            
+
             if (GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
             {
                 if (joint is ConfigurableJoint)
@@ -136,9 +136,9 @@ public partial class UnityRigidNode : RigidNode_Base
                 jointSub.useLimits = nodeR.hasAngularLimit;
                 if (nodeR.hasAngularLimit)
                 {
-                    AngularLimit(nodeR.currentAngularPosition * (180.0f / Mathf.PI),
-                                 nodeR.angularLimitLow * (180.0f / Mathf.PI),
-                                 nodeR.angularLimitHigh * (180.0f / Mathf.PI));
+                    AngularLimit(MathfExt.ToDegrees(nodeR.currentAngularPosition),
+                                 MathfExt.ToDegrees(nodeR.angularLimitLow),
+                                 MathfExt.ToDegrees(nodeR.angularLimitHigh));
                 }
             });
             //don't worry, I'm a doctor
@@ -166,9 +166,9 @@ public partial class UnityRigidNode : RigidNode_Base
                 }
                 if (jointSub.angularXMotion == ConfigurableJointMotion.Limited)
                 {
-                    AngularLimit(nodeC.currentAngularPosition * (180.0f / Mathf.PI),
-                                 nodeC.angularLimitLow * (180.0f / Mathf.PI),
-                                 nodeC.angularLimitHigh * (180.0f / Mathf.PI));
+                    AngularLimit(MathfExt.ToDegrees(nodeC.currentAngularPosition),
+                                 MathfExt.ToDegrees(nodeC.angularLimitLow),
+                                 MathfExt.ToDegrees(nodeC.angularLimitHigh));
                 }
             });
         }
@@ -185,7 +185,7 @@ public partial class UnityRigidNode : RigidNode_Base
         }
         SetXDrives();
     }
-    
+
     /// <summary>
     /// Creates a joint at the given position, aligned to the given axis, with the given type.
     /// </summary>
