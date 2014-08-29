@@ -74,6 +74,7 @@ public class OGLMain : GameWindow
                     ((OGL_RigidNode) node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
                 }
             };
+            editorGUI.ExportPath = pathBase;
             editorGUI.ShowDialog();
             if (editorGUI.formState == FormState.SUBMIT)
             {

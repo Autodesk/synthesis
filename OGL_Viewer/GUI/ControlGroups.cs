@@ -20,6 +20,10 @@ public partial class ControlGroups
         {
             return txtFilePath.Text;
         }
+        set
+        {
+            txtFilePath.Text = value;
+        }
     }
 
     public ControlGroups()
@@ -119,6 +123,10 @@ public partial class ControlGroups
             if (BXDSettings.Instance.LastSkeletonDirectory != null)
             {
                 fbd.SelectedPath = BXDSettings.Instance.LastSkeletonDirectory;
+            }
+            if (System.IO.Directory.Exists(txtFilePath.Text))
+            {
+                fbd.SelectedPath = txtFilePath.Text;
             }
             fbd.ShowNewFolderButton = true;
             if (fbd.ShowDialog() == DialogResult.Cancel)

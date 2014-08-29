@@ -198,6 +198,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.tabsMain);
             this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.pnlOutput);
             this.MinimumSize = new System.Drawing.Size(800, 300);
             this.Name = "ControlGroups";
             this.Text = "Control Groups";
