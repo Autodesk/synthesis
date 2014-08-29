@@ -3,40 +3,31 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 
+/// <summary>
+/// The GUI sidebar access to overlay windows, etc.
+/// Useful functions are AddAction and AddWindow.
+/// </summary>
 class GUIController
 {
+    #region Style
+    /// <summary>
+    /// The sidebar fade time, seconds.
+    /// </summary>
     private const float GUI_SHOW_TIME = 0.5f;
-    private float GUI_SIDEBAR_WIDTH = 100f;
+    /// <summary>
+    /// The padding for the sidebar content, pixels.
+    /// </summary>
     private static readonly Vector2 GUI_SIDEBAR_PADDING = new Vector2(10, 25);
+    /// <summary>
+    /// The height of a sidebar entry.
+    /// </summary>
     private const float GUI_SIDEBAR_ENTRY_HEIGHT = 45f;
+    /// <summary>
+    /// The space between sidebar entries.
+    /// </summary>
     private const float GUI_SIDEBAR_ENTRY_PADDING_Y = 5;
-
-    private FileBrowser fileBrowser = new FileBrowser();
-    private bool exitWindowVisible = false;
-
-    private float guiFadeIntensity = 0;
-    public bool guiVisible = false;
-
-    public event System.Action<string> OpenedRobot = null;
-
-    #region windows
-    private void InitExitWindow(int windowID)
-    {
-        if (GUI.Button(new Rect(50, 50, 175, 100), "No"))
-        {
-            exitWindowVisible = false;
-        }
-        else if (GUI.Button(new Rect(350, 50, 175, 100), "Yes"))
-        {
-            Application.Quit();
-        }
-    }
-    #endregion
-
-    private bool keyDebounce = false;
-    private volatile bool recalcWidth = false;
-    private KeyValuePair<string, Action>[] entries;
-
+    
+    // Objects to allow rendering of GUI boxes with black backgrounds.
     #region make it black
     private Texture2D _black;
     private GUIStyle _blackBox;
@@ -66,45 +57,132 @@ class GUIController
         }
     }
     #endregion
+    #endregion
 
+    /// <summary>
+    /// All the entries on this sidebar.
+    /// </summary>
+    private KeyValuePair<string, Action>[] entries;
+    /// <summary>
+    /// All the overlay windows that are linked to this sidebar.
+    /// </summary>
+    private List<OverlayWindow> windows = new List<OverlayWindow>();
+
+    /// <summary>
+    /// Current intensity of the sidebar, [0-1].
+    /// </summary>
+    private float guiFadeIntensity = 0;
+    /// <summary>
+    /// Is the sidebar visible.
+    /// </summary>
+    public bool guiVisible = false;
+
+    /// <summary>
+    /// Escape key state last time OnGUI was called.
+    /// </summary>
+    private bool keyDebounce = false;
+    /// <summary>
+    /// Does the sidebar width need recalculating.
+    /// </summary>
+    private volatile bool recalcWidth = false;
+    /// <summary>
+    /// The current sidebar width, pixels.  This is dynamically calculated.
+    /// </summary>
+    private float sidebarWidth = 100f;
+
+    /// <summary>
+    /// Creates a GUI sidebar with an exit button.
+    /// </summary>
     public GUIController()
     {
-        entries = new KeyValuePair<string, Action>[] { new KeyValuePair<string, Action>("Load Model", () => {
-        fileBrowser.Active = true;
-    }), new KeyValuePair<string, Action>("Exit", () => {
-        exitWindowVisible = true; })};
+        AddWindow("Exit", new YesNoWindow("Exit?"), (object o) =>
+        {
+            if ((bool) o)
+            {
+                Application.Quit();
+            }
+        });
+
         recalcWidth = true;
     }
 
+    /// <summary>
+    /// Adds an overlay window to the sidebar.
+    /// </summary>
+    /// <param name="caption">The title of the sidebar entry</param>
+    /// <param name="window">The window to control</param>
+    /// <param name="onReturn">Optional callback on window close</param>
+    public void AddWindow(string caption, OverlayWindow window, Action<object> onReturn = null)
+    {
+        windows.Add(window);
+        AddAction(caption, () =>
+        {
+            bool state = window.Active;
+            foreach (OverlayWindow win in windows)
+            {
+                win.Active = false;
+            }
+            window.Active = !state;
+        });
+        if (onReturn != null)
+            window.OnComplete += onReturn;
+    }
+
+    /// <summary>
+    /// Adds an entry to the sidebar.
+    /// </summary>
+    /// <param name="caption">The title of the entry</param>
+    /// <param name="act">The action to execute when the entry is pressed</param>
     public void AddAction(string caption, Action act)
     {
+        if (entries == null || entries.Length == 0)
+        {
+            entries = new KeyValuePair<string, Action>[1] { new KeyValuePair<string, Action>(caption, act) };
+            return;
+        }
         var res = new KeyValuePair<string, Action>[entries.Length + 1];
-        Array.Copy(entries, res, entries.Length - 1);
+        if (entries.Length > 1)
+            Array.Copy(entries, res, entries.Length - 1);
         res[res.Length - 2] = new KeyValuePair<string, Action>(caption, act);
         res[res.Length - 1] = entries[entries.Length - 1];
         entries = res;
         recalcWidth = true;
     }
 
-    public void ShowExit()
+    /// <summary>
+    /// Executes the action with the given title in the sidebar
+    /// </summary>
+    /// <param name="caption">The sidebar title</param>
+    public void DoAction(string caption)
     {
-        guiFadeIntensity = 1;
-        guiVisible = true;
-        fileBrowser.Active = false;
-        exitWindowVisible = true;
+        foreach (var v in entries)
+        {
+            if (v.Key.Equals(caption))
+            {
+                v.Value();
+                break;
+            }
+        }
     }
 
-    public void ShowBrowser()
-    {
-        guiFadeIntensity = 1;
-        guiVisible = true;
-        fileBrowser.Active = true;
-        exitWindowVisible = false;
-    }
-
-
+    /// <summary>
+    /// Renders the overlay.
+    /// </summary>
     public void Render()
     {
+        bool windowVisible = false;
+        #region windowVisible
+        foreach (OverlayWindow window in windows)
+        {
+            if (window.Active)
+            {
+                windowVisible = true;
+                break;
+            }
+        }
+        #endregion
+
+        #region calculate width
         GUIStyle btnStyle = new GUIStyle(GUI.skin.GetStyle("Button"));
         btnStyle.fontSize *= 3;
         if (recalcWidth)
@@ -115,20 +193,21 @@ class GUIController
             {
                 width = Math.Max(btnStyle.CalcSize(new GUIContent(btn.Key)).x, width);
             }
-            GUI_SIDEBAR_WIDTH = width + 2 * GUI_SIDEBAR_PADDING.x;
+            sidebarWidth = width + 2 * GUI_SIDEBAR_PADDING.x;
         }
+        #endregion
+
         #region hotkeys
         {
             bool escPressed = Input.GetKeyDown(KeyCode.Escape);
             if (escPressed && !keyDebounce)
             {
-                if (guiVisible && exitWindowVisible)
+                if (guiVisible && windowVisible)
                 {
-                    exitWindowVisible = false;
-                }
-                else if (guiVisible && fileBrowser.Active)
-                {
-                    fileBrowser.Active = false;
+                    foreach (OverlayWindow window in windows)
+                    {
+                        window.Active = false;
+                    }
                 }
                 else
                 {
@@ -136,19 +215,20 @@ class GUIController
                 }
                 if (!guiVisible)
                 {
-                    fileBrowser.Active = false;
-                    exitWindowVisible = false;
+                    foreach (OverlayWindow window in windows)
+                    {
+                        window.Active = true;
+                    }
                 }
             }
             keyDebounce = escPressed;
         }
         #endregion
 
-
-        bool overlayActive = !exitWindowVisible && !fileBrowser.Active;
-
         guiFadeIntensity += (guiVisible ? 1f : -1f) * Time.deltaTime / GUI_SHOW_TIME;
         guiFadeIntensity = Mathf.Clamp01(guiFadeIntensity);
+
+        // Dims the background
         if (guiFadeIntensity > 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.45f * guiFadeIntensity);
@@ -159,53 +239,30 @@ class GUIController
 
         if (guiFadeIntensity > 0)
         {
-            GUI.BeginGroup(new Rect((1f - guiFadeIntensity) * -GUI_SIDEBAR_WIDTH, 0, GUI_SIDEBAR_WIDTH, Screen.height));
+            GUI.BeginGroup(new Rect((1f - guiFadeIntensity) * -sidebarWidth, 0, sidebarWidth, Screen.height));
 
-            // Only render if no overlay
-            GUI.backgroundColor = new Color(1, 1, 1, 0.9f);
-            GUI.Box(new Rect(-1, -10, GUI_SIDEBAR_WIDTH + 2, Screen.height + 20), "", BlackBoxStyle);
+            // Render sidebar
+            {
+                GUI.backgroundColor = new Color(1, 1, 1, 0.9f);
+                GUI.Box(new Rect(-1, -10, sidebarWidth + 2, Screen.height + 20), "", BlackBoxStyle);
+            }
 
+            #region Render entries
             float y = GUI_SIDEBAR_PADDING.y;
             foreach (var btn in entries)
             {
-                if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, GUI_SIDEBAR_WIDTH - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle) && overlayActive)
+                if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, sidebarWidth - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle) && !windowVisible)
                 {
                     btn.Value();
                 }
                 y += GUI_SIDEBAR_ENTRY_HEIGHT + GUI_SIDEBAR_ENTRY_PADDING_Y;
             }
             GUI.EndGroup();
+            #endregion
 
-            if (fileBrowser.Active)
+            foreach (OverlayWindow window in windows)
             {
-                fileBrowser.Show();
-            }
-            if (fileBrowser.Submit)
-            {
-                fileBrowser.Active = false;
-                fileBrowser.Submit = false;
-                string fileLocation = fileBrowser.directoryLocation;
-                // If dir was selected...
-                if (File.Exists(fileLocation + "\\skeleton.bxdj"))
-                    fileLocation += "\\skeleton.bxdj";
-                DirectoryInfo parent = Directory.GetParent(fileLocation);
-                if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
-                {
-                    if (OpenedRobot != null)
-                    {
-                        OpenedRobot(parent.FullName + "\\");
-                    }
-                }
-                else
-                {
-                    UserMessageManager.Dispatch("Invalid selection!");
-                }
-            }
-
-            if (exitWindowVisible)
-            {
-                Rect window = new Rect(Screen.width / 2 - 300, Screen.height / 2 - 100, 600, 200);
-                window = GUI.Window(0, window, InitExitWindow, "Exit?");
+                window.Render();
             }
         }
     }

@@ -4,11 +4,18 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+/// <summary>
+/// Renders timed messages at the bottom of the screen.
+/// </summary>
 public class UserMessageManager
 {
+    // Dimensions of the overlay at the bottom.
     private const int WIDTH = 400;
     private const int HEIGHT = 400;
 
+    /// <summary>
+    /// Object representing a timed message.
+    /// </summary>
     private class UserMessage
     {
         public readonly String message;
@@ -26,8 +33,18 @@ public class UserMessageManager
         }
     };
 
+    /// <summary>
+    /// All currently registered messages.
+    /// </summary>
     private static List<UserMessage> messages = new List<UserMessage>();
 
+    /// <summary>
+    /// Adds the given message to the renderer.
+    /// </summary>
+    /// <param name="msg">Message</param>
+    /// <param name="ttl">Time to live in seconds</param>
+    /// <param name="foreground">Foreground color</param>
+    /// <param name="background">Background color</param>
     public static void Dispatch(String msg, float ttl, Color foreground, Color background)
     {
         lock (messages)
@@ -36,15 +53,26 @@ public class UserMessageManager
         }
     }
 
+    /// <summary>
+    /// Adds the given message to the renderer.
+    /// </summary>
+    /// <param name="msg">Message</param>
+    /// <param name="ttl">Time to live in seconds</param>
     public static void Dispatch(String msg, float ttl = 10)
     {
         Dispatch(msg, ttl, Color.white, new Color(0f, 0f, 0f, 0.9f));
     }
 
+    /// <summary>
+    /// Renders the messages
+    /// </summary>
     public static void Render()
     {
         lock (messages)
         {
+            Color initFG = GUI.color;
+            Color initBG = GUI.backgroundColor;
+
             GUILayout.BeginArea(new Rect((Screen.width / 2) - (WIDTH / 2), Screen.height - HEIGHT - 10, WIDTH, HEIGHT));
             float deltaTime = Time.deltaTime;
             float y = 0;
@@ -70,6 +98,9 @@ public class UserMessageManager
                 return msg.ttl <= 0;
             });
             GUILayout.EndArea();
+
+            GUI.color = initFG;
+            GUI.backgroundColor = initBG;
         }
     }
 }

@@ -1,24 +1,31 @@
-﻿// http://wiki.unity3d.com/index.php?title=FileBrowser
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
+using System;
+using System.Collections.Generic;
 
-class FileBrowser
+/// <summary>
+/// Modified version of http://wiki.unity3d.com/index.php?title=FileBrowser.
+/// Directory only based file browser.
+/// </summary>
+class FileBrowser : OverlayWindow
 {
+    /// <summary>
+    /// The maximum time in seconds between clicks to be considered a double click.
+    /// </summary>
     private const float DOUBLE_CLICK_TIME = 0.2f;
 
-    public string directoryLocation
-    {
-        get;
-        private set;
-    }
+    /// <summary>
+    /// The selected directory location.
+    /// </summary>
+    private string directoryLocation;
 
     private bool _active;
-    public bool Submit
-    {
-        get;
-        set;
-    }
+
+    public event Action<object> OnComplete;
+
+    /// <summary>
+    /// If this file browser is currently visible.
+    /// </summary>
     public bool Active
     {
         get
@@ -27,37 +34,47 @@ class FileBrowser
         }
         set
         {
-            if (value && !_active)
-            {
-                Submit = false;
-            }
             _active = value;
         }
     }
 
+    /// <summary>
+    /// Internal reference to scroll position.
+    /// </summary>
     private Vector2 directoryScroll;
+    /// <summary>
+    /// Internal reference to the last click time.
+    /// </summary>
     private float lastClick = 0;
 
     public FileBrowser()
     {
         string exampleDir = Application.dataPath + "\\..\\examples\\default-robot-chassis\\synthesis-output";
+        // If we have a last-used directory.
         if (BXDSettings.Instance.LastSkeletonDirectory != null && Directory.Exists(BXDSettings.Instance.LastSkeletonDirectory))
         {
             directoryLocation = BXDSettings.Instance.LastSkeletonDirectory;
         }
-        else if (Directory.Exists(exampleDir))
+        else if (Directory.Exists(exampleDir))  // Otherwise try the example directory
         {
             directoryLocation = (new DirectoryInfo(exampleDir)).FullName;
         }
-        else
+        else // Otherwise the application data directory
         {
             directoryLocation = Directory.GetParent(Application.dataPath).FullName;
         }
     }
 
-    private delegate string Stringify<T>(T o);
-
-    private static object SelectList<T>(T[] items, Stringify<T> stringify = null, string highlight = null)
+    
+    /// <summary>
+    /// Draws the given list as buttons, and returns whichever one was selected.
+    /// </summary>
+    /// <typeparam name="T">The object type</typeparam>
+    /// <param name="items">The items</param>
+    /// <param name="stringify">Optional function to convert object to string</param>
+    /// <param name="highlight">Optional currently-selected item's string representation</param>
+    /// <returns>The selected object</returns>
+    private static object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify = null, string highlight = null)
     {
         object selected = null;
         Color bg = GUI.backgroundColor;
@@ -77,6 +94,10 @@ class FileBrowser
         return selected;
     }
 
+    /// <summary>
+    /// Renders the browser window.
+    /// </summary>
+    /// <param name="idx">Window index</param>
     private void FileBrowserWindow(int idx)
     {
         DirectoryInfo directoryInfo;
@@ -103,7 +124,6 @@ class FileBrowser
         if (GUI.Button(new Rect(335, 5, 80, 20), "Exit"))
         {
             Active = false;
-            Submit = false;
         }
 
         if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 20, 200, 20), "Up one level"))
@@ -142,8 +162,9 @@ class FileBrowser
         bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
         if (doubleClick || GUILayout.Button("Select", GUILayout.Width(contentWidth)))
         {
-            Submit = true;
             _active = false;
+            if (OnComplete != null)
+                OnComplete(directoryLocation);
         }
         if (directorySelection != null)
         {
@@ -153,7 +174,10 @@ class FileBrowser
         GUILayout.EndArea();
     }
 
-    public void Show()
+    /// <summary>
+    /// Renders the window if it is active.
+    /// </summary>
+    public void Render()
     {
         if (_active)
         {

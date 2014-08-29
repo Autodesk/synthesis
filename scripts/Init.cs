@@ -28,21 +28,30 @@ public class Init : MonoBehaviour
         if (gui == null)
         {
             gui = new GUIController();
+            gui.AddWindow("Load Model", new FileBrowser(), (object o) =>
+            {
+                string fileLocation = (string) o;
+                // If dir was selected...
+                if (File.Exists(fileLocation + "\\skeleton.bxdj"))
+                    fileLocation += "\\skeleton.bxdj";
+                DirectoryInfo parent = Directory.GetParent(fileLocation);
+                if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
+                {
+                    this.filePath = parent.FullName + "\\";
+                    reloadInFrames = 2;
+                }
+                else
+                {
+                    UserMessageManager.Dispatch("Invalid selection!");
+                }
+            });
             gui.AddAction("Orient Robot", () =>
             {
                 OrientRobot();
             });
-            gui.OpenedRobot += (string path) =>
-            {
-                if (File.Exists(path + "\\skeleton.bxdj"))
-                {
-                    this.filePath = path;
-                    reloadInFrames = 2;
-                }
-            };
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
-                gui.ShowBrowser();
+                gui.DoAction("Load Model");
             }
         }
         gui.Render();
