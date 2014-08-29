@@ -172,6 +172,7 @@ public class unityPacket
 					client.Client.SendTo(sendBuffer, sendBufferLen, SocketFlags.None, ipEnd);
 					clientMutex.ReleaseMutex();
 				}
+                Thread.Sleep(20);
 			}
 			
 		} catch (Exception ex)
