@@ -78,3 +78,9 @@ package.html
 
 # Annoying WPI Stuff
 FRC_Lib_Version.ini
+
+# Eclipse project files
+.project
+.cproject
+.settings
+.csettings
