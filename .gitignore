@@ -60,6 +60,12 @@ ipch/
 *.vsp
 *.vspx
 
+# Eclipse project files
+.project
+.cproject
+.settings
+.csettings
+
 # Guidance Automation Toolkit
 *.gpState
 
