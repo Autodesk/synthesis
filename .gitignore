@@ -26,7 +26,7 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must ends with two \r.
-Icon
+Icon
 
 # Thumbnails
 ._*
@@ -41,3 +41,9 @@ Plugins/SimulatorAPI.dll
 Plugins/SimulatorAPI.dll
 Plugins/SimulatorAPI.dll
 Plugins/SimulatorAPI.dll
+
+# Eclipse project files
+.project
+.cproject
+.settings
+.csettings
