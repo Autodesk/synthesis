@@ -90,10 +90,6 @@ public:
 	}
 };
 
-void MainFunction() {
-
-}
-
 #include "emulator.h"
 const int TEAM_ID = 9999;
-START_ROBOT_CLASS_WINMAIN(RobotDemo, MainFunction)
+START_ROBOT_CLASS(RobotDemo)
