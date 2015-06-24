@@ -69,6 +69,8 @@
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RigidAnalyzer\CustomRigidGroup.cs" />
+    <Compile Include="RigidAnalyzer\CustomRigidJoint.cs" />
     <Compile Include="SkeletalStructure\BallJoint.cs" />
     <Compile Include="SkeletalStructure\MotionLimits.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
