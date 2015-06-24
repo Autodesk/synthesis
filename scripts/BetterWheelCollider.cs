@@ -17,8 +17,8 @@ public class BetterWheelCollider : MonoBehaviour
 
     public void Start()
     {
-        rigidbody.drag = 1f;
-        rigidbody.angularDrag = 1f;
+        GetComponent<Rigidbody>().drag = 1f;
+        GetComponent<Rigidbody>().angularDrag = 1f;
     }
 
 	private Vector3 lastNormalDrag = Vector3.zero;
@@ -45,7 +45,7 @@ public class BetterWheelCollider : MonoBehaviour
         Vector3 basePoint = transform.localToWorldMatrix * gameObject.GetComponent<HingeJoint>().connectedAnchor;
         axis.Normalize();
 
-        Vector3 relativeVelocity = rigidbody.velocity;
+        Vector3 relativeVelocity = GetComponent<Rigidbody>().velocity;
         if (collisionInfo.rigidbody != null)
             relativeVelocity -= collisionInfo.rigidbody.velocity;
 
@@ -85,6 +85,6 @@ public class BetterWheelCollider : MonoBehaviour
         color = color + 0.1f;
 		#endregion
 
-		rigidbody.AddForce((force + normalDrag) * forceMultiplier, ForceMode.Impulse);
+		GetComponent<Rigidbody>().AddForce((force + normalDrag) * forceMultiplier, ForceMode.Impulse);
     }
 }

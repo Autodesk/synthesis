@@ -101,18 +101,18 @@ public class DriveJoints : MonoBehaviour
 		// Checks to make sure solenoid data was assigned. We can't really use a try/catch statement because if pressure and diameter data is left blank when the robot is created, Unity will still use its default values.
 		if (node.GetJoint<ConfigurableJoint>().xDrive.maximumForce > 0)
 		{
-			acceleration = node.GetJoint<ConfigurableJoint>().xDrive.maximumForce / node.GetJoint<ConfigurableJoint>().rigidbody.mass * (forward ? 1 : -1);
+			acceleration = node.GetJoint<ConfigurableJoint>().xDrive.maximumForce / node.GetJoint<ConfigurableJoint>().GetComponent<Rigidbody>().mass * (forward ? 1 : -1);
 		} else
 		{
 			// Calculating an arbitrary maximum force. Assumes the piston diameter is .5 inches and that the PSI is 60psi. 
 			float psiToNMm2 = 0.00689475728f;
 			float maximumForce = (psiToNMm2 * 60f) * (Mathf.PI * Mathf.Pow(6.35f, 2f));
-			acceleration = (maximumForce / node.GetJoint<ConfigurableJoint>().rigidbody.mass) * (forward ? 1 : -1);
+			acceleration = (maximumForce / node.GetJoint<ConfigurableJoint>().GetComponent<Rigidbody>().mass) * (forward ? 1 : -1);
 			throw new PistonDataMissing(node.ToString());
 		}
 
 		// Dot product is reversed, so we need to negate it
-		float velocity = acceleration * (Time.deltaTime) - Vector3.Dot(node.GetJoint<ConfigurableJoint>().rigidbody.velocity, node.unityObject.transform.TransformDirection(node.GetJoint<ConfigurableJoint>().axis));
+		float velocity = acceleration * (Time.deltaTime) - Vector3.Dot(node.GetJoint<ConfigurableJoint>().GetComponent<Rigidbody>().velocity, node.unityObject.transform.TransformDirection(node.GetJoint<ConfigurableJoint>().axis));
 
 		node.GetJoint<ConfigurableJoint>().targetVelocity = new Vector3(velocity, 0, 0);
 	}

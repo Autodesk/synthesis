@@ -53,10 +53,14 @@ public partial class UnityRigidNode : RigidNode_Base
         SoftJointLimit linear = new SoftJointLimit();
         linear.limit = Mathf.Abs(center) * 0.01f;
         linear.bounciness = 1e-05f;
-        linear.spring = 0f;
-        linear.damper = 1e30f;
-        if (joint is ConfigurableJoint)
-            ((ConfigurableJoint) joint).linearLimit = linear;
+		SoftJointLimitSpring linearSpring = new SoftJointLimitSpring ();
+        linearSpring.spring = 0f;
+        linearSpring.damper = 1e30f;
+        if (joint is ConfigurableJoint) 
+		{
+			((ConfigurableJoint)joint).linearLimit = linear;
+			((ConfigurableJoint)joint).linearLimitSpring = linearSpring;
+		}
     }
 
     /// <summary>
