@@ -90,6 +90,8 @@ public class InputStatePacket
 
 public class DriveJoints : MonoBehaviour
 {
+	private static float speedArrowPWM = 0.25f;
+
 	// A function to handle solenoids
 	// We will have accurate velocity measures later, but for now, we need something that works.
 	public static void SetSolenoid(UnityRigidNode node, bool forward)
@@ -161,6 +163,19 @@ public class DriveJoints : MonoBehaviour
 	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] dioModules)
 	{
 		float[] pwm = dioModules [0].pwmValues;
+
+		if (Input.anyKey) {
+			pwm [0] +=
+				(Input.GetKey (KeyCode.UpArrow) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.DownArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.LeftArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.RightArrow) ? speedArrowPWM : 0.0f);
+			pwm [1] +=
+				(Input.GetKey (KeyCode.UpArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.DownArrow) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.LeftArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.RightArrow) ? speedArrowPWM : 0.0f);
+		}
 
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
