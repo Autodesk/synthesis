@@ -88,10 +88,10 @@ public class Init : MonoBehaviour
                 UnityRigidNode uNode = (UnityRigidNode) node;
                 uNode.unityObject.transform.localPosition = Vector3.zero;
                 uNode.unityObject.transform.localRotation = Quaternion.identity;
-                if (uNode.unityObject.GetComponent<Rigidbody>() != null)
+                if (uNode.unityObject.rigidbody != null)
                 {
-                    uNode.unityObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
-                    uNode.unityObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+                    uNode.unityObject.rigidbody.velocity = Vector3.zero;
+                    uNode.unityObject.rigidbody.angularVelocity = Vector3.zero;
                 }
                 if (uNode.HasDriverMeta<WheelDriverMeta>() && uNode.wheelCollider != null)
                 {
@@ -139,10 +139,10 @@ public class Init : MonoBehaviour
 
             {   // Add some mass to the base object
                 UnityRigidNode uNode = (UnityRigidNode) skeleton;
-                uNode.unityObject.transform.GetComponent<Rigidbody>().mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
-                Vector3 vec = uNode.unityObject.GetComponent<Rigidbody>().centerOfMass;
+                uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
+                Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
                 vec.y *= 0.9f;
-                uNode.unityObject.GetComponent<Rigidbody>().centerOfMass = vec;
+                uNode.unityObject.rigidbody.centerOfMass = vec;
             }
 
             auxFunctions.IgnoreCollisionDetection(meshColliders);
@@ -159,7 +159,7 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
-        Physics.defaultContactOffset = 0.001f;
+        Physics.minPenetrationForPenalty = 0.001f;
 
         // Load Field
 
