@@ -6,8 +6,8 @@ using System.Collections.Generic;
 
 public class Init : MonoBehaviour
 {
-    // We will need these
-    public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
+    //Multiples mass to correct physics
+    public const float PHYSICS_MASS_MULTIPLIER = 6.5f;
 
     private GUIController gui;
 
@@ -139,7 +139,7 @@ public class Init : MonoBehaviour
 
             {   // Add some mass to the base object
                 UnityRigidNode uNode = (UnityRigidNode) skeleton;
-                uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
+                uNode.unityObject.transform.rigidbody.mass *= PHYSICS_MASS_MULTIPLIER; // Battery'
                 Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
                 vec.y *= 0.9f;
                 uNode.unityObject.rigidbody.centerOfMass = vec;
@@ -157,7 +157,7 @@ public class Init : MonoBehaviour
 
     void Start()
     {
-        Physics.gravity = new Vector3(0, -9.8f, 0);
+        Physics.gravity = new Vector3(0, -9.81f, 0);
         Physics.solverIterationCount = 15;
         Physics.minPenetrationForPenalty = 0.001f;
 
