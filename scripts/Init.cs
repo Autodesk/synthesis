@@ -13,9 +13,10 @@ public class Init : MonoBehaviour
 
     private RigidNode_Base skeleton;
     private GameObject activeRobot;
+	private Field field;
 
     private unityPacket udp = new unityPacket();
-    private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+	private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -35,12 +36,22 @@ public class Init : MonoBehaviour
         if (gui == null)
         {
             gui = new GUIController();
+
+			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+				{
+					if ((int) o == 1) {
+						Application.Quit();
+					}
+				});
+
             gui.AddWindow("Load Model", new FileBrowser(), (object o) =>
             {
                 string fileLocation = (string) o;
                 // If dir was selected...
                 if (File.Exists(fileLocation + "\\skeleton.bxdj"))
+				{
                     fileLocation += "\\skeleton.bxdj";
+				}
                 DirectoryInfo parent = Directory.GetParent(fileLocation);
                 if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
                 {
@@ -52,14 +63,37 @@ public class Init : MonoBehaviour
                     UserMessageManager.Dispatch("Invalid selection!");
                 }
             });
+
             gui.AddAction("Orient Robot", () =>
             {
                 OrientRobot();
             });
+
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
                 gui.DoAction("Load Model");
             }
+
+			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
+			    "Driver Station [D]", "Orbit Robot [R]", "First Person [F]"), (object o) =>
+			    {
+					GameObject cameraObject = GameObject.Find("Camera");
+					Camera camera = cameraObject.GetComponent<Camera>();
+					switch ((int) o) {
+					case 0:
+						camera.SwitchCameraState(new Camera.DriverStationState(camera));
+						break;
+					case 1:
+						camera.SwitchCameraState(new Camera.OrbitState(camera));
+						break;
+					case 2:
+						camera.SwitchCameraState(new Camera.FPVState(camera));
+						break;
+					default:
+						Debug.Log("Camera state not found: " + (string) o);
+						break;
+					}
+				});
         }
         gui.Render();
 
@@ -80,7 +114,7 @@ public class Init : MonoBehaviour
         {
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
-            activeRobot.transform.localPosition = Vector3.zero;
+            activeRobot.transform.localPosition = new Vector3(2.5f, 0.0f, -2.25f);
             activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -123,8 +157,9 @@ public class Init : MonoBehaviour
             {
                 return new UnityRigidNode();
             };
-
+			filePath = "C:\\Users\\t_buckm\\Documents\\Unity 4\\Synthesis\\Assets\\resources\\";
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
+			Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
@@ -161,13 +196,17 @@ public class Init : MonoBehaviour
         Physics.solverIterationCount = 15;
         Physics.minPenetrationForPenalty = 0.001f;
 
-        // Load Field
-
-        UnityRigidNode nodeThing = new UnityRigidNode();
-        nodeThing.modelFileName = "field.bxda";
-        nodeThing.CreateTransform(transform);
-        nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
-        nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+		field = new Field ("field2015", new Vector3(0f, 0.58861f, 0f), new Vector3(0.2558918f, 0.2558918f, 0.2558918f));
+		field.EnableCollisionObjects (
+			"FE-00038-0", "FE-00038-1", "FE-00038-2", "FE-00038-3",
+			"GE-15014_0", "GE-15014_1", "GE-15014_2", "GE-15014_3", "GE-15014_4", "GE-15014_5", "GE-15014_A",
+			"GE-15025_0", "GE-15025_1", "GE-15025_2", "GE-15025_A",
+			"FE-0000248", "FE-0000183", "FE-0000133",
+			"FE-00004-0", "FE-0000443", "FE-0000486",
+			"FE-00008_1", "FE-00009_1", "FE-00011_1", "FE-00009_0", "FE-00010_1", "FE-00010_0", "FE-00009_2", "FE-00011_0", "FE-00009_3", "FE-00008_0",
+			"FE-00008_3", "FE-00009_7", "FE-00011_3", "FE-00009_6", "FE-00010_3", "FE-00010_2", "FE-00009_5", "FE-00011_2", "FE-00009_4", "FE-00008_2",
+			"GE-15000_A", "GE-15001_A", "GE-15000_0", "GE-15001_0"
+		);
 
         reloadInFrames = 2;
     }
