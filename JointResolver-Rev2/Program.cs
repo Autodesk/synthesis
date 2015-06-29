@@ -67,7 +67,7 @@ static class Program
     {
         AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
 
-        //Centers all the joints for each component.  Done to match the assemblie's joint position with the subassembly's position.
+        //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
         foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
         {
             CenterAllJoints(component);
