@@ -1,0 +1,15 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\BetterWheelCollider.cs">
+    <Files>
+      <File FileName="Assets\scripts\GUI\GUIController.cs" Line="98" Column="1" />
+      <File FileName="Assets\scripts\Camera.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Init.cs" Line="150" Column="1" />
+      <File FileName="Assets\scripts\BetterWheelCollider.cs" Line="53" Column="34" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

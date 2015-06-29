@@ -50,7 +50,7 @@ public class BetterWheelCollider : MonoBehaviour
             relativeVelocity -= collisionInfo.rigidbody.velocity;
 
         Vector3 forceDirection = Vector3.Cross(normal, axis).normalized;
-        float appliedRadius = Vector3.Distance(point, basePoint);
+		float appliedRadius = Vector3.Distance(point, basePoint);
         Vector3 force = Vector3.zero;
         float normalVelocity = Vector3.Dot(relativeVelocity, axis);
 		if (Math.Abs(normalVelocity) > 1)

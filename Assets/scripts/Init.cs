@@ -147,7 +147,6 @@ public class Init : MonoBehaviour
             {
                 return new UnityRigidNode();
             };
-			filePath = "C:\\Users\\t_buckm\\Documents\\Unity 4\\Synthesis\\Assets\\resources\\";
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
 			Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
