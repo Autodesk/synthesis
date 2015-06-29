@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Inventor;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -11,7 +12,15 @@ static class Program
     private const int MAX_VERTICIES = 8192;
     public static void Main(String[] args)
     {
-        INVENTOR_APPLICATION = (Inventor.Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+        try
+        {
+            INVENTOR_APPLICATION = (Inventor.Application)Marshal.GetActiveObject("Inventor.Application");
+        }
+        catch (COMException e)
+        {
+            MessageBox.Show("Could not get running instance of Inventor Application");
+            return;
+        }
         //_2014FieldBounding.WriteModel();
         AnalyzeRigidResults();
         //AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
