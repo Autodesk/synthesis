@@ -1,0 +1,50 @@
+﻿Build started 6/29/2015 8:21:22 AM.
+     1>Project "C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\HALAthena.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\FRC_FPGA_ChipObject /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\include /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"HALAthena.dir\Debug\\" /Fd"HALAthena.dir\Debug\vc110.pdb" /Gd /TP /errorReport:prompt  -fPIC C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Resource.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Synchronized.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Task.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '-fPIC'
+         Analog.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Compressor.cpp
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Resource.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Synchronized.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         CanTalonSRX.cpp
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         CtreCanNode.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp(1): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         PCM.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp(1): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Digital.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         HAL.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Semaphore.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Solenoid.cpp
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(7): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(8): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(9): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(43): warning C4068: unknown pragma
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Task.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Task.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+         Utilities.cpp
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(9): error C2079: 'test' uses undefined struct 'delayTicks::timespec'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(9): error C2079: 'remaining' uses undefined struct 'delayTicks::timespec'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(10): error C2228: left of '.tv_sec' must have class/struct/union
+                 type is 'int'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(11): error C2228: left of '.tv_nsec' must have class/struct/union
+                 type is 'int'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(15): error C3861: 'nanosleep': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(15): fatal error C1903: unable to recover from previous error(s); stopping compilation
+         Generating Code...
+     1>Done Building Project "C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\HALAthena.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:01.45

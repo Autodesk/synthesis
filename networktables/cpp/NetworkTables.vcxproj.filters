@@ -1,0 +1,163 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableConnectionListenerAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableKeyListenerAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableListenerAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableSubListenerAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\AbstractNetworkTableEntryStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientNetworkTableEntryStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\NetworkTableClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\BadMessageException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\ConnectionMonitorThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\DataIOStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\NetworkTableConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\OutgoingEntryReciever.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\NetworkTableServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerIncomingStreamMonitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerNetworkTableEntryStore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TableKeyExistsWithDifferentTypeException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TransactionDirtier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayEntryType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\BooleanArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ComplexData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ComplexEntryType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\DefaultEntryTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryTypeManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NumberArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\StringArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\EOFException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\IllegalStateException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\IOException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\StringCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\WriteManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\tables\TableKeyNotDefinedException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\FDIOStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketServerStreamProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketStreamFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketStreams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\thread\DefaultThreadManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\System.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D021F4C1-05C6-4A2D-A98A-73681A6B2C93}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\AnalogLoopTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\AnalogPotentiometerTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\BuiltInAccelerometerTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\CANJaguarTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\CANTalonTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\command\CommandTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\command\MockCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\CounterTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\DIOLoopTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\FakeEncoderTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\MotorEncoderTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\NotifierTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\PCMTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\PowerDistributionPanelTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\PreferencesTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\RelayTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\TestEnvironment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\TiltPanCameraTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\TimerTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\gtest\src\gtest-all.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\src\gtest\src\gtest_main.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++IntegrationTests\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D021F4C1-05C6-4A2D-A98A-73681A6B2C93}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
