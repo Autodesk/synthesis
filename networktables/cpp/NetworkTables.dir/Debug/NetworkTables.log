@@ -1,76 +1,675 @@
-﻿Build started 6/29/2015 8:39:33 AM.
+﻿Build started 6/29/2015 11:10:15 AM.
      1>Project "C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\networktables\cpp\NetworkTables.vcxproj" on node 3 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"NetworkTables.dir\Debug\\" /Fd"NetworkTables.dir\Debug\vc110.pdb" /Gd /TP /errorReport:prompt  -fPIC C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTable.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableKeyListenerAdapter.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableListenerAdapter.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableMode.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableProvider.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableSubListenerAdapter.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\AbstractNetworkTableEntryStore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionAdapter.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionState.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientNetworkTableEntryStore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\NetworkTableClient.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\ConnectionMonitorThread.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\NetworkTableConnection.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableEntry.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableNode.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\OutgoingEntryReciever.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\NetworkTableServer.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionAdapter.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionList.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerIncomingStreamMonitor.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerNetworkTableEntryStore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TableKeyExistsWithDifferentTypeException.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TransactionDirtier.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayData.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayEntryType.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\BooleanArray.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ComplexEntryType.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\DefaultEntryTypes.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryType.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryTypeManager.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NumberArray.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\StringArray.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\WriteManager.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\FDIOStream.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketServerStreamProvider.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketStreamFactory.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\thread\DefaultThreadManager.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\System.cpp
      1>cl : Command line warning D9002: ignoring unknown option '-fPIC'
          NetworkTable.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\NTErrorBase.h(11): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
          NetworkTableKeyListenerAdapter.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\NTErrorBase.h(11): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
          NetworkTableListenerAdapter.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\NTErrorBase.h(11): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
          NetworkTableMode.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableProvider.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\NTErrorBase.h(11): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
          NetworkTableSubListenerAdapter.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\NTErrorBase.h(11): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
          AbstractNetworkTableEntryStore.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ClientConnectionAdapter.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ClientConnectionState.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ClientNetworkTableEntryStore.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableClient.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ConnectionMonitorThread.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableConnection.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableEntry.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableNode.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          OutgoingEntryReciever.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableServer.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ServerConnectionAdapter.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ServerConnectionList.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ServerIncomingStreamMonitor.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          Generating Code...
          Compiling...
          ServerNetworkTableEntryStore.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          TableKeyExistsWithDifferentTypeException.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          TransactionDirtier.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ArrayData.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ArrayEntryType.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          BooleanArray.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          ComplexEntryType.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          DefaultEntryTypes.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableEntryType.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NetworkTableEntryTypeManager.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          NumberArray.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          StringArray.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          WriteManager.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
          FDIOStream.cpp
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\FDIOStream.cpp(17): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
          SocketServerStreamProvider.cpp
@@ -80,7 +679,34 @@
          DefaultThreadManager.cpp
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\NTErrorBase.h(11): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
          Synchronized.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(18): fatal error C1083: Cannot open include file: 'semLib.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(36): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_Q_PRIORITY' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_INVERSION_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C2065: 'SEM_DELETE_SAFE' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(24): error C3861: 'semMCreate': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(27): error C3861: 'semDelete': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C2065: 'WAIT_FOREVER' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(30): error C3861: 'semTake': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(33): error C3861: 'semGive': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2460: 'NTSynchronized::SEM_ID' : uses 'NTSynchronized', which is being defined
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(78) : see declaration of 'NTSynchronized'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(83): error C2071: 'NTSynchronized::SEM_ID' : illegal storage class
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C2146: syntax error : missing ';' before identifier 'm_semaphore'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include\OSAL/Synchronized.h(90): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp(5): error C2146: syntax error : missing ';' before identifier 'mta'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp(5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp(10): error C2614: 'NTSynchronized' : illegal member initialization: 'm_semaphore' is not a base or member
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp(11): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp(11): error C2228: left of '.take' must have class/struct/union
+                 type is ''unknown-type''
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp(16): error C2065: 'm_semaphore' : undeclared identifier
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp(16): error C2228: left of '.give' must have class/struct/union
+                 type is ''unknown-type''
          System.cpp
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\System.cpp(9): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory
          Generating Code...
@@ -88,4 +714,4 @@
 
 Build FAILED.
 
-Time Elapsed 00:00:25.93
+Time Elapsed 00:00:30.52

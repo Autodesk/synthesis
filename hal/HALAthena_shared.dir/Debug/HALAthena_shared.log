@@ -1,38 +1,102 @@
-﻿Build started 6/29/2015 8:39:33 AM.
+﻿Build started 6/29/2015 11:10:16 AM.
      1>Project "C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\hal\HALAthena_shared.vcxproj" on node 4 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\FRC_FPGA_ChipObject /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\include /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D HALAthena_shared_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"HALAthena_shared.dir\Debug\\" /Fd"HALAthena_shared.dir\Debug\vc110.pdb" /Gd /TP /errorReport:prompt  -fPIC C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Resource.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Synchronized.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Task.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\FRC_FPGA_ChipObject /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\include /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D HALAthena_shared_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"HALAthena_shared.dir\Debug\\" /Fd"HALAthena_shared.dir\Debug\vc110.pdb" /Gd /TP /errorReport:prompt  -fPIC C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp
      1>cl : Command line warning D9002: ignoring unknown option '-fPIC'
          Analog.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171): error C2146: syntax error : missing ';' before identifier 'size_t'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C2146: syntax error : missing ';' before identifier 'size_t'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C2086: 'int constexpr' : redefinition
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171) : see declaration of 'constexpr'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(176): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(176): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(181): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(181): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(194): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(194): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(195): error C2229: struct 'HALJoystickDescriptor' has an illegal zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(206): error C3861: 'round': identifier not found
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(7): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(8): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(9): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(43): warning C4068: unknown pragma
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp(320): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp(339): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
          Compressor.cpp
-     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
-         Resource.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
-         Synchronized.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(8): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory
          CanTalonSRX.cpp
-     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(8): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory
          CtreCanNode.cpp
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp(1): warning C4068: unknown pragma
-     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(8): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory
          PCM.cpp
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp(1): warning C4068: unknown pragma
-     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(5): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(8): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory
          Digital.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171): error C2146: syntax error : missing ';' before identifier 'size_t'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C2146: syntax error : missing ';' before identifier 'size_t'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C2086: 'int constexpr' : redefinition
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171) : see declaration of 'constexpr'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(176): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(176): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(181): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(181): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(194): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(194): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(195): error C2229: struct 'HALJoystickDescriptor' has an illegal zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(206): error C3861: 'round': identifier not found
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(7): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(8): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(9): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(43): warning C4068: unknown pragma
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp(39): warning C4305: 'initializing' : truncation from 'double' to 'const float'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp(292): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp(296): warning C4244: 'initializing' : conversion from 'unsigned short' to 'uint8_t', possible loss of data
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp(299): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp(388): error C3861: 'snprintf': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp(428): error C3861: 'snprintf': identifier not found
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp(435): error C3861: 'snprintf': identifier not found
          HAL.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171): error C2146: syntax error : missing ';' before identifier 'size_t'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C2146: syntax error : missing ';' before identifier 'size_t'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(172): error C2086: 'int constexpr' : redefinition
+                 C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(171) : see declaration of 'constexpr'
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(176): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(176): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(181): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(181): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(194): error C2057: expected constant expression
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(194): warning C4200: nonstandard extension used : zero-sized array in struct/union
+                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(195): error C2229: struct 'HALJoystickDescriptor' has an illegal zero-sized array
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/HAL.hpp(206): error C3861: 'round': identifier not found
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(7): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(8): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(9): warning C4068: unknown pragma
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(43): warning C4068: unknown pragma
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp(14): fatal error C1083: Cannot open include file: 'unistd.h': No such file or directory
          Semaphore.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\Log.hpp(7): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory
          Solenoid.cpp
      1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(7): warning C4068: unknown pragma
      1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(8): warning C4068: unknown pragma
      1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(9): warning C4068: unknown pragma
      1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ChipObject.h(43): warning C4068: unknown pragma
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Semaphore.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
-         Task.cpp
-     1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include\HAL/Task.hpp(7): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+     1>c:\users\t_hics\documents\github\allwpilib\hal\lib\athena\ctre\CtreCanNode.h(8): fatal error C1083: Cannot open include file: 'sys/time.h': No such file or directory
          Utilities.cpp
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(9): error C2079: 'test' uses undefined struct 'delayTicks::timespec'
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(9): error C2079: 'remaining' uses undefined struct 'delayTicks::timespec'
@@ -47,4 +111,4 @@
 
 Build FAILED.
 
-Time Elapsed 00:00:01.54
+Time Elapsed 00:00:05.31

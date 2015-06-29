@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -56,25 +56,29 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-    <PropertyGroup>
-      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\Debug\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">HALAthena.dir\Debug\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">HALAthena</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\Release\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">HALAthena.dir\Release\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">HALAthena</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\MinSizeRel\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">HALAthena.dir\MinSizeRel\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">HALAthena</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\RelWithDebInfo\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">HALAthena.dir\RelWithDebInfo\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">HALAthena</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">HALAthena.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">HALAthena</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">HALAthena.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">HALAthena</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">HALAthena.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">HALAthena</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">HALAthena.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">HALAthena</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\pthreads;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\pthreads;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions> -fPIC %(AdditionalOptions)</AdditionalOptions>
@@ -121,7 +125,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -151,7 +156,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -253,30 +259,30 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Accelerometer.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Resource.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Synchronized.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PDP.cpp" >
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Accelerometer.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Resource.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Synchronized.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PDP.cpp">
       <ObjectFileName>$(IntDir)/lib/Athena/ctre/PDP.cpp.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Interrupts.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Notifier.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\PDP.cpp" >
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Interrupts.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Notifier.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\PDP.cpp">
       <ObjectFileName>$(IntDir)/lib/Athena/PDP.cpp.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Power.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\SerialPort.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Task.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Power.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\SerialPort.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Task.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/T_hics/Documents/GitHub/allwpilib/build/ZERO_CHECK.vcxproj">
