@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -56,25 +56,29 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-    <PropertyGroup>
-      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\Debug\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NetworkTables.dir\Debug\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NetworkTables</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\Release\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NetworkTables.dir\Release\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NetworkTables</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\MinSizeRel\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">NetworkTables.dir\MinSizeRel\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">NetworkTables</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
-      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\RelWithDebInfo\</OutDir>
-      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">NetworkTables.dir\RelWithDebInfo\</IntDir>
-      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">NetworkTables</TargetName>
-      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
-    </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NetworkTables.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NetworkTables</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NetworkTables.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NetworkTables</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">NetworkTables.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">NetworkTables</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\networktables\cpp\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">NetworkTables.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">NetworkTables</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\pthreads;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\pthreads;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalOptions> -fPIC %(AdditionalOptions)</AdditionalOptions>
@@ -121,7 +125,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -151,7 +156,8 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <DebugInformationFormat></DebugInformationFormat>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -253,56 +259,56 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTable.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableConnectionListenerAdapter.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableKeyListenerAdapter.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableListenerAdapter.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableMode.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableProvider.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableSubListenerAdapter.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\AbstractNetworkTableEntryStore.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionAdapter.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionState.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientNetworkTableEntryStore.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\NetworkTableClient.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\BadMessageException.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\ConnectionMonitorThread.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\DataIOStream.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\NetworkTableConnection.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableEntry.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableNode.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\OutgoingEntryReciever.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\NetworkTableServer.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionAdapter.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionList.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionState.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerIncomingStreamMonitor.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerNetworkTableEntryStore.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TableKeyExistsWithDifferentTypeException.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TransactionDirtier.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayData.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayEntryType.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\BooleanArray.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ComplexData.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ComplexEntryType.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\DefaultEntryTypes.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryType.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryTypeManager.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NumberArray.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\StringArray.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\EOFException.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\IllegalStateException.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\IOException.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\StringCache.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\WriteManager.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\tables\TableKeyNotDefinedException.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\FDIOStream.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketServerStreamProvider.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketStreamFactory.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketStreams.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\thread\DefaultThreadManager.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp"  />
-    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\System.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTable.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableConnectionListenerAdapter.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableKeyListenerAdapter.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableListenerAdapter.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableMode.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableProvider.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables\NetworkTableSubListenerAdapter.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\AbstractNetworkTableEntryStore.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionAdapter.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientConnectionState.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\ClientNetworkTableEntryStore.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\client\NetworkTableClient.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\BadMessageException.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\ConnectionMonitorThread.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\DataIOStream.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\connection\NetworkTableConnection.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableEntry.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\NetworkTableNode.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\OutgoingEntryReciever.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\NetworkTableServer.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionAdapter.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionList.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerConnectionState.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerIncomingStreamMonitor.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\server\ServerNetworkTableEntryStore.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TableKeyExistsWithDifferentTypeException.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\TransactionDirtier.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayData.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ArrayEntryType.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\BooleanArray.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ComplexData.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\ComplexEntryType.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\DefaultEntryTypes.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryType.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NetworkTableEntryTypeManager.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\NumberArray.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\type\StringArray.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\EOFException.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\IllegalStateException.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\IOException.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\util\StringCache.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\networktables2\WriteManager.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\share\tables\TableKeyNotDefinedException.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\FDIOStream.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketServerStreamProvider.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketStreamFactory.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\stream\SocketStreams.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\networktables2\thread\DefaultThreadManager.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\Synchronized.cpp" />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\lib\Athena\OSAL\System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:/Users/T_hics/Documents/GitHub/allwpilib/build/ZERO_CHECK.vcxproj">
