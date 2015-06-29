@@ -15,7 +15,7 @@ public class Init : MonoBehaviour
     private GameObject activeRobot;
 
     private unityPacket udp = new unityPacket();
-    private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+	private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -40,7 +40,9 @@ public class Init : MonoBehaviour
                 string fileLocation = (string) o;
                 // If dir was selected...
                 if (File.Exists(fileLocation + "\\skeleton.bxdj"))
+				{
                     fileLocation += "\\skeleton.bxdj";
+				}
                 DirectoryInfo parent = Directory.GetParent(fileLocation);
                 if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
                 {
@@ -60,6 +62,28 @@ public class Init : MonoBehaviour
             {
                 gui.DoAction("Load Model");
             }
+
+			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
+			    new string[] {"Driver Station [D]", "Orbit Robot [R]", "First Person [F]"}),
+				(object o) =>
+			    {
+					GameObject cameraObject = GameObject.Find("Camera");
+					Camera camera = cameraObject.GetComponent<Camera>();
+					switch ((int) o) {
+					case 0:
+						camera.SwitchCameraState(new Camera.DriverStationState(camera));
+						break;
+					case 1:
+						camera.SwitchCameraState(new Camera.OrbitState(camera));
+						break;
+					case 2:
+						camera.SwitchCameraState(new Camera.FPVState(camera));
+						break;
+					default:
+						Debug.Log("Camera state not found: " + (string) o);
+						break;
+					}
+				});
         }
         gui.Render();
 
@@ -123,8 +147,9 @@ public class Init : MonoBehaviour
             {
                 return new UnityRigidNode();
             };
-
+			filePath = "C:\\Users\\t_buckm\\Documents\\Unity 4\\Synthesis\\Assets\\resources\\";
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
+			Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
@@ -167,7 +192,7 @@ public class Init : MonoBehaviour
         nodeThing.modelFileName = "field.bxda";
         nodeThing.CreateTransform(transform);
         nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
-        nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+        nodeThing.unityObject.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
 
         reloadInFrames = 2;
     }
