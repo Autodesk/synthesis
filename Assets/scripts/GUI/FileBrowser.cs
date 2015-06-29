@@ -65,7 +65,6 @@ class FileBrowser : OverlayWindow
         }
     }
 
-    
     /// <summary>
     /// Draws the given list as buttons, and returns whichever one was selected.
     /// </summary>
