@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+/// <summary>
+/// Utility functions for file I/O
+/// </summary>
 public class BXDIO
 {
-    private const byte MAJOR_VERSION = 0;           // Bump on stable releases
-    private const byte MINOR_VERSION = 0;           // Bump on beta releases
-    private const byte REVISION_VERSION = 9;        // Bump on major IO changes.
-    private const byte REVISION_PORTION = 0;        // Bump on IO changes in a meta chunk.
+    public const byte MAJOR_VERSION = 0;           // Bump on stable releases
+    public const byte MINOR_VERSION = 0;           // Bump on beta releases
+    public const byte REVISION_VERSION = 9;        // Bump on major IO changes.
+    public const byte REVISION_PORTION = 0;        // Bump on IO changes in a meta chunk.
 
     public const string ASSEMBLY_VERSION = "0.0.9.0";   // I'm so sorry that this isn't dynamic :'(
 
@@ -63,7 +66,7 @@ public class BXDIO
         throw new FormatException("Trying to read version " + VersionToString(version) + " using API version " + VersionToString(FORMAT_VERSION));
     }
 
-    // Prevents creation of this class
+    // Prevents creation of an instance of this class
     private BXDIO()
     {
     }

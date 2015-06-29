@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+/// <summary>
+/// Interface for objects that can read/write binary data to files
+/// </summary>
 public interface RWObject
 {
     /// <summary>
@@ -19,9 +22,17 @@ public interface RWObject
     void ReadData(BinaryReader reader);
 }
 
+/// <summary>
+/// Extension functions for objects implementing the RWObject interface
+/// </summary>
 public static class RWObjectExtensions
 {
 
+    /// <summary>
+    /// Delegate function to read a RWObject from a binary stream
+    /// </summary>
+    /// <param name="reader">Binary stream to read object from</param>
+    /// <returns>The created object</returns>
     public delegate RWObject ReadObjectFully(BinaryReader reader);
 
     /// <summary>
