@@ -1,5 +1,5 @@
-﻿Build started 6/29/2015 8:21:22 AM.
-     1>Project "C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\HALAthena_shared.vcxproj" on node 3 (Build target(s)).
+﻿Build started 6/29/2015 8:31:08 AM.
+     1>Project "C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\hal\HALAthena_shared.vcxproj" on node 4 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\FRC_FPGA_ChipObject /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\include /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D HALAthena_shared_EXPORTS /D _WINDLL /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"HALAthena_shared.dir\Debug\\" /Fd"HALAthena_shared.dir\Debug\vc110.pdb" /Gd /TP /errorReport:prompt  -fPIC C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Resource.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Synchronized.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Task.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp
      1>cl : Command line warning D9002: ignoring unknown option '-fPIC'
@@ -43,8 +43,8 @@
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(15): error C3861: 'nanosleep': identifier not found
      1>C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp(15): fatal error C1903: unable to recover from previous error(s); stopping compilation
          Generating Code...
-     1>Done Building Project "C:\Users\T_hics\Documents\GitHub\allwpilib\build\hal\HALAthena_shared.vcxproj" (Build target(s)) -- FAILED.
+     1>Done Building Project "C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\hal\HALAthena_shared.vcxproj" (Build target(s)) -- FAILED.
 
 Build FAILED.
 
-Time Elapsed 00:00:01.43
+Time Elapsed 00:00:01.19
