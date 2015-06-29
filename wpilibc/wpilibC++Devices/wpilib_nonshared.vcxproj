@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{966ED4DB-6283-4ADE-BFD4-400196088BC4}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>wpilib_nonshared</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\Debug\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">wpilib_nonshared.dir\Debug\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">wpilib_nonshared</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\Release\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">wpilib_nonshared.dir\Release\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">wpilib_nonshared</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\MinSizeRel\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">wpilib_nonshared.dir\MinSizeRel\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">wpilib_nonshared</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+      <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\RelWithDebInfo\</OutDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">wpilib_nonshared.dir\RelWithDebInfo\</IntDir>
+      <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">wpilib_nonshared</TargetName>
+      <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fPIC %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fPIC %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fPIC %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalOptions> -fPIC %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\include;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\include;C:\Users\T_hics\Documents\GitHub\allwpilib\hal\include;C:\Users\T_hics\Documents\GitHub\allwpilib\networktables\cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/T_hics/Documents/GitHub/allwpilib -BC:/Users/T_hics/Documents/GitHub/allwpilib/build --check-stamp-file C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/T_hics/Documents/GitHub/allwpilib -BC:/Users/T_hics/Documents/GitHub/allwpilib/build --check-stamp-file C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/T_hics/Documents/GitHub/allwpilib -BC:/Users/T_hics/Documents/GitHub/allwpilib/build --check-stamp-file C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -HC:/Users/T_hics/Documents/GitHub/allwpilib -BC:/Users/T_hics/Documents/GitHub/allwpilib/build --check-stamp-file C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++Devices/CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\T_hics\Documents\GitHub\allwpilib\build\wpilibc\wpilibC++Devices\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\ADXL345_I2C.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\ADXL345_SPI.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogAccelerometer.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogInput.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogOutput.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogPotentiometer.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogTrigger.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogTriggerOutput.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\BuiltInAccelerometer.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\CameraServer.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\CANJaguar.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\CANTalon.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Compressor.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\ControllerPower.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Counter.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DigitalInput.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DigitalOutput.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DigitalSource.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DoubleSolenoid.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DriverStation.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Encoder.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\GearTooth.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Gyro.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\I2C.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Internal\HardwareHLReporting.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\InterruptableSensorBase.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\IterativeRobot.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Jaguar.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Joystick.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\MotorSafetyHelper.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Notifier.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\PIDController.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\PowerDistributionPanel.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Preferences.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\PWM.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Relay.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\RobotBase.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\RobotDrive.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SafePWM.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SampleRobot.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SensorBase.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SerialPort.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Servo.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Solenoid.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SolenoidBase.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SPI.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Talon.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\TalonSRX.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Task.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Timer.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Ultrasonic.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\USBCamera.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Utility.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Victor.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\VictorSP.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\AxisCamera.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\BaeUtilities.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\BinaryImage.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\ColorImage.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\FrcError.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\HSLImage.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\ImageBase.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\MonoImage.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\RGBImage.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\Threshold.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\VisionAPI.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\Button.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\ButtonScheduler.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\CancelButtonScheduler.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\HeldButtonScheduler.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\InternalButton.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\JoystickButton.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\NetworkButton.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\PressedButtonScheduler.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\ReleasedButtonScheduler.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\ToggleButtonScheduler.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\Trigger.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\Command.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroup.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroupEntry.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\PIDCommand.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\PIDSubsystem.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\PrintCommand.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\Scheduler.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\StartCommand.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\Subsystem.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\WaitCommand.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\WaitForChildren.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\WaitUntilCommand.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Error.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\ErrorBase.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\HLUsageReporting.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindow.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindowStatusListener.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Resource.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\RobotState.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SendableChooser.cpp"  />
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SmartDashboard.cpp"  />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:/Users/T_hics/Documents/GitHub/allwpilib/build/hal/HALAthena.vcxproj">
+      <Project>2775BA0A-E99D-4DCF-8620-9C17C2316888</Project>
+    </ProjectReference>
+    <ProjectReference Include="C:/Users/T_hics/Documents/GitHub/allwpilib/build/networktables/cpp/NetworkTables.vcxproj">
+      <Project>3BAAFBB5-E634-4999-865B-08361F75EC5D</Project>
+    </ProjectReference>
+    <ProjectReference Include="C:/Users/T_hics/Documents/GitHub/allwpilib/build/ZERO_CHECK.vcxproj">
+      <Project>5B2D76A2-2F99-4D9F-BFC8-8A1DD0FD5199</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

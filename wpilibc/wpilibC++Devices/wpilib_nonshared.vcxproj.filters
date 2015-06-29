@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\ADXL345_I2C.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\ADXL345_SPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogAccelerometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogOutput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogPotentiometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogTrigger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\AnalogTriggerOutput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\BuiltInAccelerometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\CameraServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\CANJaguar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\CANTalon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Compressor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\ControllerPower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Counter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DigitalInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DigitalOutput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DigitalSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DoubleSolenoid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\DriverStation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Encoder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\GearTooth.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Gyro.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\I2C.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Internal\HardwareHLReporting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\InterruptableSensorBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\IterativeRobot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Jaguar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Joystick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\MotorSafetyHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Notifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\PIDController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\PowerDistributionPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Preferences.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\PWM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Relay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\RobotBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\RobotDrive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SafePWM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SampleRobot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SensorBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SerialPort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Servo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Solenoid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SolenoidBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\SPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Talon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\TalonSRX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Ultrasonic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\USBCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Victor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\VictorSP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\AxisCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\BaeUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\BinaryImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\ColorImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\FrcError.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\HSLImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\ImageBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\MonoImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\RGBImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\Threshold.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\src\Vision\VisionAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\ButtonScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\CancelButtonScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\HeldButtonScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\InternalButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\JoystickButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\NetworkButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\PressedButtonScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\ReleasedButtonScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\ToggleButtonScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Buttons\Trigger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\Command.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroupEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\PIDCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\PIDSubsystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\PrintCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\Scheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\StartCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\Subsystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\WaitCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\WaitForChildren.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Commands\WaitUntilCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Error.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\ErrorBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\HLUsageReporting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindowStatusListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\RobotState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SendableChooser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SmartDashboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\T_hics\Documents\GitHub\allwpilib\wpilibc\wpilibC++Devices\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D021F4C1-05C6-4A2D-A98A-73681A6B2C93}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

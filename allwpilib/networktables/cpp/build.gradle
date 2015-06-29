@@ -1,0 +1,21 @@
+apply plugin: 'cpp'
+
+model {
+    components {
+        NetworkTables(NativeLibrarySpec) {
+            targetPlatform 'arm'
+            sources {
+                cpp {
+                    source {
+                        srcDirs = ["lib/share", "lib/Athena"]
+                        includes = ["**/*.cpp"]
+                    }
+                    exportedHeaders {
+                        srcDirs = ["include"]
+                    }
+                }
+            }
+        }
+    }
+}
+
