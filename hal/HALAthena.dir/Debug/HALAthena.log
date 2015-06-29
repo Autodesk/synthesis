@@ -1,4 +1,4 @@
-﻿Build started 6/29/2015 8:31:08 AM.
+﻿Build started 6/29/2015 8:39:33 AM.
      1>Project "C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\hal\HALAthena.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\FRC_FPGA_ChipObject /IC:\Users\T_hics\Documents\GitHub\allwpilib\hal\include /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"HALAthena.dir\Debug\\" /Fd"HALAthena.dir\Debug\vc110.pdb" /Gd /TP /errorReport:prompt  -fPIC C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Resource.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Synchronized.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Task.cpp C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp
@@ -47,4 +47,4 @@
 
 Build FAILED.
 
-Time Elapsed 00:00:01.46
+Time Elapsed 00:00:01.58
