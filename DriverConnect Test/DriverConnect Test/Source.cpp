@@ -92,21 +92,30 @@ int main() {
 	BYTE lpacket[0x400];
 	memset(&lpacket[0], 0x0, sizeof(lpacket));
 
-	lpacket[0] = 0x1;
-	lpacket[3] = 0xFF;
-	lpacket[4] = 0x30;
-
-	BYTE packet[6] = {
-		0x01, 0x00, // ping
-		0x01,       // no one knows
-		0x00,       // robot is disabled
-		0x10,       // idle message
-		0x00        // no one knows
-	};
+	lpacket[0] = 0x00;  // packet number lesser byte
+	lpacket[1] = 0x00;  // packet number greater byte
+	lpacket[2] = 0x00;  // not a clue
+	lpacket[3] = 0x20; // various states of the robot (teleop enabled/disabled, voltage burnout, etc)
+	lpacket[4] = 0x20; // 0x20 shows robot code green, all else appears to do nothing
+	lpacket[5] =   12; // left of decimal voltage, = x
+	lpacket[6] = 0x25; // right of decimal voltage, = x/255
+	*((uint32_t*)&lpacket[7]) = network | 2; // to lpacket[11]
+	lpacket[12] = 15;
+	lpacket[13] = 40;
 
 	while (true) {
-		sendto(dsSocket, (const char*)lpacket, sizeof(lpacket), 0, (const sockaddr*)&dsAddress, sizeof(dsAddress));
-		Sleep(50);
+		(*((unsigned short*)&lpacket[0]))++; // make communications light show up, first two bytes increment
+
+		const int num = 2;
+
+		//memset(&lpacket[7], lpacket[12]+1, 12);
+		//if (((*((unsigned short*)&lpacket[0])) % 6) == 5) lpacket[num]++;
+		
+		//std::cout << "\r" << "                 "; // clear line
+		//std::cout << "\r" << (*((unsigned short*)&lpacket[3]));
+		//std::cout.flush();
+		sendto(dsSocket, (const char*)lpacket, 0x400, 0, (const sockaddr*)&dsAddress, sizeof(dsAddress));
+		Sleep(500);
 	}
 
 	closesocket(dsSocket);
