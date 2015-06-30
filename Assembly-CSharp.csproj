@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{7C9008CD-20A4-C7D7-5062-BD404AB2BFCB}</ProjectGuid>
+	<ProjectGuid>{CB4E0C6C-6903-9201-9A05-522FDB265B26}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -69,7 +69,7 @@
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.6/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="SimulatorAPI">
- <HintPath>C:/Users/t_johnp/Documents/Aardvark-Unity-2-stable/Assets/SimulatorAPI.dll</HintPath>
+ <HintPath>C:/Users/t_johnp/Documents/GitHub/Aardvark-Unity/Assets/SimulatorAPI.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
