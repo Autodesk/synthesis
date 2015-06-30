@@ -9,7 +9,15 @@ public class Field
 	/// </summary>
 	GameObject field;
 
-	List<Transform> childList;
+	/// <summary>
+	/// A dictionary of every child transform.
+	/// </summary>
+	Dictionary<string, Transform> allTransforms;
+
+	/// <summary>
+	/// Contains the objects that have been enabled for collision (used to improve performance).
+	/// </summary>
+	Dictionary<string, Transform> collisionTransforms;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Field"/> class.
@@ -21,39 +29,88 @@ public class Field
 		field.AddComponent ("Rigidbody");
 		field.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
 
-		childList = GetAllChildren (field.transform);
-		Debug.Log (childList.Count);
+		allTransforms = GetAllChildren (field.transform);
+		collisionTransforms = new Dictionary<string, Transform>();
 	}
 
 	/// <summary>
-	/// Enables collision for the desired objects.
+	/// Adds and enables collision functionality for the supplied objects.
 	/// </summary>
 	/// <param name="collisionObjects">Collision objects.</param>
-	public void EnableCollisionObjects(params string[] collisionObjects)
+	public void AddCollisionObjects(params string[] collisionObjects)
 	{
-		foreach (Transform child in childList)
+		foreach (string s in collisionObjects)
 		{
-			foreach (string s in collisionObjects)
+			if (allTransforms[s] != null && !collisionTransforms.ContainsKey(s))
 			{
-				if (child.name.Equals(s))
-				{
-					if (child.GetComponent<MeshFilter>() == null)
-					{
-						MeshFilter[] filters = child.GetComponentsInChildren<MeshFilter>();
+				collisionTransforms.Add(allTransforms[s].name, allTransforms[s]);
 
-						foreach (MeshFilter f in filters)
-						{
-							f.gameObject.AddComponent<MeshCollider>();
-						}
-					}
-					else
+				if (collisionTransforms[s].GetComponent<MeshFilter> () == null)
+				{
+					MeshFilter[] filters = collisionTransforms[s].GetComponentsInChildren<MeshFilter> ();
+					
+					foreach (MeshFilter f in filters)
 					{
-						child.gameObject.AddComponent<MeshCollider>();
+						f.gameObject.AddComponent<MeshCollider> ();
 					}
+				}
+				else
+				{
+					collisionTransforms[s].gameObject.AddComponent<MeshCollider> ();
 				}
 			}
 		}
+	}
 
+	/// <summary>
+	/// Sets the enabled state of each registered collision object.
+	/// </summary>
+	/// <param name="enabled">If set to <c>true</c> enabled.</param>
+	public void SetCollisionObjectsEnabled(bool enabled)
+	{
+		foreach (Transform t in collisionTransforms.Values)
+		{
+			if (t.GetComponent<MeshCollider> () == null)
+			{
+				MeshCollider[] colliders = t.GetComponentsInChildren<MeshCollider>();
+
+				foreach (MeshCollider c in colliders)
+				{
+					c.gameObject.GetComponent<MeshCollider>().enabled = enabled;
+				}
+			}
+			else
+			{
+				t.gameObject.GetComponent<MeshCollider>().enabled = enabled;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Sets the enabled state of the supplied registered collision object.
+	/// </summary>
+	/// <param name="collisionObjects">Collision objects.</param>
+	public void SetCollisionObjectsEnabled(bool enabled, params string[] collisionObjects)
+	{
+		foreach (string s in collisionObjects)
+		{
+			if (collisionTransforms.ContainsKey (s))
+			{
+				if (collisionTransforms[s].GetComponent<MeshCollider> () == null)
+				{
+					MeshCollider[] colliders = collisionTransforms[s].GetComponentsInChildren<MeshCollider>();
+					
+					foreach (MeshCollider c in colliders)
+					{
+						c.gameObject.GetComponent<MeshCollider>().enabled = enabled;
+					}
+				}
+				else
+				{
+					collisionTransforms[s].gameObject.GetComponent<MeshCollider>().enabled = enabled;
+				}
+			}
+		}
 	}
 
 	/// <summary>
@@ -61,15 +118,17 @@ public class Field
 	/// </summary>
 	/// <returns>The all children.</returns>
 	/// <param name="transform">Transform.</param>
-	private List<Transform> GetAllChildren(Transform transform)
+	private Dictionary<string, Transform> GetAllChildren(Transform transform)
 	{
-		List<Transform> children = new List<Transform> ();
+		Dictionary<string, Transform> children = new Dictionary<string, Transform> ();
 
 		foreach (Transform t in transform)
 		{
-			children.Add(t);
+			children.Add(t.name, t);
 			if (t.childCount > 0)
-				children.AddRange(GetAllChildren(t));
+			{
+				children.AddAll(GetAllChildren(t));
+			}
 		}
 
 		return children;

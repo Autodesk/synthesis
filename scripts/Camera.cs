@@ -138,16 +138,25 @@ public class Camera : MonoBehaviour
 		
 		public override void Update()
 		{
-			// Left and right mouse buttons -> pan left and right; mouse wheel -> look up and down.
-			if (Input.GetMouseButton (1)) {
-				mono.transform.Rotate (0, 1, 0);
-			} else if (Input.GetMouseButton (0)) {
-				mono.transform.Rotate (0, -1, 0);
+			/*
+			 * The below code is temporary for FPV demonstration purposes. Production code
+			 * might allow the user to define a "camera" component on their robot, which will
+			 * be used to determine the position of the FPV camera. For now, 'W' and 'S' pan
+			 * the camera up and down.
+			 */
+
+			if (Input.GetKey (KeyCode.W))
+			{
+				mono.transform.Rotate (1, 0, 0);
 			}
-			mono.transform.Rotate(Input.GetAxis("Mouse ScrollWheel") * 20f, 0, 0);
+			else if (Input.GetKey (KeyCode.S))
+			{
+				mono.transform.Rotate(-1, 0, 0);
+			}
 		}
 
-		public override void End() {
+		public override void End()
+		{
 			mono.transform.parent = null;
 		}
 

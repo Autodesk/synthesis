@@ -13,6 +13,8 @@ public class Init : MonoBehaviour
 
     private RigidNode_Base skeleton;
     private GameObject activeRobot;
+	private GameObject cameraObject;
+	private Camera camera;
 	private Field field;
 
     private unityPacket udp = new unityPacket();
@@ -77,8 +79,6 @@ public class Init : MonoBehaviour
 			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
 			    "Driver Station [D]", "Orbit Robot [R]", "First Person [F]"), (object o) =>
 			    {
-					GameObject cameraObject = GameObject.Find("Camera");
-					Camera camera = cameraObject.GetComponent<Camera>();
 					switch ((int) o) {
 					case 0:
 						camera.SwitchCameraState(new Camera.DriverStationState(camera));
@@ -137,6 +137,7 @@ public class Init : MonoBehaviour
                auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
             }
         }
+		camera.SwitchCameraState (new Camera.DriverStationState(camera));
     }
 
     private void TryLoad()
@@ -196,8 +197,19 @@ public class Init : MonoBehaviour
         Physics.solverIterationCount = 15;
         Physics.minPenetrationForPenalty = 0.001f;
 
+		cameraObject = GameObject.Find ("Camera");
+		camera = cameraObject.GetComponent<Camera> ();
+
+		/*
+		UnityRigidNode nodeThing = new UnityRigidNode();
+		nodeThing.modelFileName = "field.bxda";
+		nodeThing.CreateTransform(transform);
+		nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
+		nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+		*/
+
 		field = new Field ("field2015", new Vector3(0f, 0.58861f, 0f), new Vector3(0.2558918f, 0.2558918f, 0.2558918f));
-		field.EnableCollisionObjects (
+		field.AddCollisionObjects (
 			"FE-00038-0", "FE-00038-1", "FE-00038-2", "FE-00038-3",
 			"GE-15014_0", "GE-15014_1", "GE-15014_2", "GE-15014_3", "GE-15014_4", "GE-15014_5", "GE-15014_A",
 			"GE-15025_0", "GE-15025_1", "GE-15025_2", "GE-15025_A",
