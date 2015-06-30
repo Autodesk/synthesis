@@ -134,6 +134,8 @@ public class OGLMain : GameWindow
         GL.Enable(EnableCap.Light0);
         GL.Enable(EnableCap.Light1);
         GL.Enable(EnableCap.DepthTest);
+        GL.Enable(EnableCap.CullFace);
+        GL.CullFace(CullFaceMode.Front);
         int j = ShaderLoader.PartShader;//Loadshader
 
         setupSelectBuffer();
@@ -166,7 +168,7 @@ public class OGLMain : GameWindow
         GL.Viewport(0, 0, Width, Height);
         GL.Scissor(mouseX, mouseY, 1, 1);
         GL.ClearColor(System.Drawing.Color.White);
-        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         renderInternal(true);
 
         byte[] pixels = new byte[4];
