@@ -5,99 +5,48 @@ using OpenTK.Graphics.OpenGL;
 
 public class ShaderLoader
 {
-    private static int _partShader = -1;
-
+    private static int partShaderInternal = -1;
     public static int PartShader
     {
         get
         {
-            if (_partShader == -1)
+            if (partShaderInternal == -1)
             {
-                _partShader = loadPartShader();
-
-                if (_partShader == -1) throw new IOException("Couldn't load shader program. See logs for more details");
+                partShaderInternal = loadPartShader();
             }
-            return _partShader;
+            return partShaderInternal;
         }
         set
         {
-            if (GL.IsProgram(value))
+            if (partShaderInternal >= 0)
             {
-                GL.DeleteProgram(_partShader);
-                _partShader = value;
+                GL.DeleteProgram(partShaderInternal);
+                partShaderInternal = -1;
             }
-            else throw new ArgumentException("Provided program ID isn't valid");
         }
     }
 
     private static int loadPartShader()
     {
-#if DEBUG
-        Console.WriteLine("Compiling shader program");
-#endif
-
         int shaderProgram = GL.CreateProgram();
         int vertexShader = GL.CreateShader(ShaderType.VertexShader);
         int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
 
-        string vertexShaderSource, fragmentShaderSource;
+        System.Console.WriteLine(Directory.GetCurrentDirectory());
+        string vertexShaderSource = Encoding.UTF8.GetString(OGL_Viewer.Properties.Resources.vertex_shader);
+        string fragmentShaderSource = Encoding.UTF8.GetString(OGL_Viewer.Properties.Resources.fragment_shader);
 
-        try
-        {
-            StreamReader vertexSourceReader = new StreamReader("Shaders\\shader.vert");
-            StreamReader fragmentSourceReader = new StreamReader("Shaders\\shader.frag");
-
-            vertexShaderSource = vertexSourceReader.ReadToEnd();
-            fragmentShaderSource = fragmentSourceReader.ReadToEnd();
-
-            vertexSourceReader.Close();
-            fragmentSourceReader.Close();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return -1;
-        }
-
-#if DEBUG
-        Console.WriteLine("Vertex shader:\n" + vertexShaderSource);
-        Console.WriteLine("Fragment shader:\n" + fragmentShaderSource);
-#endif
-
-        int status;
 
         GL.ShaderSource(vertexShader, vertexShaderSource);
         GL.CompileShader(vertexShader);
-        GL.GetShader(vertexShader, ShaderParameter.CompileStatus, out status);
-        if (status == 0)
-        {
-            Console.WriteLine("Vertex shader log:\n" + GL.GetShaderInfoLog(vertexShader));
-            return -1;
-        }
 
         GL.ShaderSource(fragmentShader, fragmentShaderSource);
         GL.CompileShader(fragmentShader);
-        GL.GetShader(fragmentShader, ShaderParameter.CompileStatus, out status);
-        if (status == 0)
-        {
-            Console.WriteLine("Fragment shader log:\n" + GL.GetShaderInfoLog(fragmentShader));
-            return -1;
-        }
 
         GL.AttachShader(shaderProgram, vertexShader);
         GL.AttachShader(shaderProgram, fragmentShader);
         GL.LinkProgram(shaderProgram);
-        GL.GetProgram(shaderProgram, ProgramParameter.LinkStatus, out status);
-        if (status == 0)
-        {
-            Console.WriteLine("Shader program log:\n" + GL.GetProgramInfoLog(shaderProgram));
-            return -1;
-        }
-
-#if DEBUG
-        Console.WriteLine("Shaders compiled and linked successfully");
-#endif
-
+        Console.WriteLine("Part Shader Link Results: \n" + GL.GetProgramInfoLog(shaderProgram));
         return shaderProgram;
     }
 }

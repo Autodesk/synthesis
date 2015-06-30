@@ -1,5 +1,4 @@
-﻿
-varying vec3 normal,lightDir[2],halfVector[2];
+﻿varying vec3 normal,lightDir[2],halfVector[2];
 varying float dist[2];
 uniform vec4 tintColor = vec4(1,1,1,1);
 
