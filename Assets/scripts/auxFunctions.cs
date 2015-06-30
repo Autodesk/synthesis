@@ -3,8 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-
-
 public class auxFunctions
 {
     public delegate void HandleMesh(int id, BXDAMesh.BXDASubMesh subMesh, Mesh mesh);
@@ -70,6 +68,7 @@ public class auxFunctions
         }
 
         Vector3 com = auxFunctions.TotalCenterOfMass(parent.gameObject);
+		//com = wheels [0] - com;
 		Vector3 a = wheels [0] - wheels [1];
 		Vector3 b = a;
 
@@ -77,11 +76,10 @@ public class auxFunctions
 			b = wheels[0] - wheels[i];
 		Vector3 norm = Vector3.Cross(a,b).normalized;
 
-		q.SetFromToRotation (norm, Vector3.up);
+		norm.y *= Mathf.Sign(norm.y * com.y);
+		q.SetFromToRotation (norm, new Vector3(0,Math.Sign ((norm - wheels[0]).y),0));
         parent.localRotation *= q;
-
-        norm.y *= Mathf.Sign(norm.y * com.y);
-
+		
         parent.position = new Vector3(parent.position.x, parent.position.y + .1f, parent.position.z);
 	}
     public static void IgnoreCollisionDetection(List<Collider> meshColliders)

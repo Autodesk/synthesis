@@ -95,15 +95,15 @@ class GUIController
     /// </summary>
     public GUIController()
     {
-        AddWindow("Exit", new YesNoWindow("Exit?"), (object o) =>
-        {
-            if ((bool) o)
-            {
-                Application.Quit();
-            }
-        });
+		AddWindow ("Exit", new DialogWindow ("Exit?", new string[] {"Yes", "No"}),
+			(object o) =>
+		{
+			if ((int) o == 1) {
+				Application.Quit();
+			}
+		});
 
-        recalcWidth = true;
+		recalcWidth = true;
     }
 
     /// <summary>
