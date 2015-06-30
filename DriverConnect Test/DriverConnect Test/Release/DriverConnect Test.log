@@ -1,4 +1,4 @@
-﻿Build started 6/30/2015 11:00:47 AM.
+﻿Build started 6/30/2015 2:34:52 PM.
      1>Project "C:\Users\t_sprij\Documents\Visual Studio 2012\Projects\DriverConnect Test\DriverConnect Test\DriverConnect Test.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
@@ -12,4 +12,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.03
+Time Elapsed 00:00:01.35
