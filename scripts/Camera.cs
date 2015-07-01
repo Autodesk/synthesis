@@ -70,19 +70,22 @@ public class Camera : MonoBehaviour
 
 		public override void Init()
 		{
-			robot = GameObject.Find("Robot");
+			robot = GameObject.Find ("Robot");
 		}
 
 		public override void Update()
 		{
-			magnification = (int)Mathf.Max(Mathf.Min(magnification - Input.GetAxis ("Mouse ScrollWheel")*10, 8f), 1f);
+			if (robot.transform.childCount > 0)
+			{
+				magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
 
-			rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton(2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
-			rotateVector = rotateYZ (rotateVector, targetvector, Input.GetMouseButton(2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
-			mono.transform.position = rotateVector;
-			
-			targetvector = auxFunctions.TotalCenterOfMass (robot);
-			mono.transform.LookAt (targetvector);
+				rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
+				rotateVector = rotateYZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
+				mono.transform.position = rotateVector;
+		
+				targetvector = auxFunctions.TotalCenterOfMass (robot);
+				mono.transform.LookAt (targetvector);
+			}
 		}
 
 		public override void End () {
@@ -145,13 +148,13 @@ public class Camera : MonoBehaviour
 			 * the camera up and down.
 			 */
 
-			if (Input.GetKey (KeyCode.W))
+			if (robot.transform.childCount > 0)
 			{
-				mono.transform.Rotate (1, 0, 0);
-			}
-			else if (Input.GetKey (KeyCode.S))
-			{
-				mono.transform.Rotate(-1, 0, 0);
+				if (Input.GetKey (KeyCode.W)) {
+					mono.transform.Rotate (1, 0, 0);
+				} else if (Input.GetKey (KeyCode.S)) {
+					mono.transform.Rotate (-1, 0, 0);
+				}
 			}
 		}
 
