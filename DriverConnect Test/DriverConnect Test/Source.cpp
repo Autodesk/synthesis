@@ -94,14 +94,25 @@ int main() {
 
 	lpacket[0] = 0x00;  // packet number lesser byte
 	lpacket[1] = 0x00;  // packet number greater byte
-	lpacket[2] = 0x00;  // not a clue
-	lpacket[3] = 0x20; // various states of the robot (teleop enabled/disabled, voltage burnout, etc)
-	lpacket[4] = 0x20; // 0x20 shows robot code green, all else appears to do nothing
-	lpacket[5] =   12; // left of decimal voltage, = x
-	lpacket[6] = 0x25; // right of decimal voltage, = x/255
-	*((uint32_t*)&lpacket[7]) = network | 2; // to lpacket[11]
-	lpacket[12] = 15;
-	lpacket[13] = 40;
+	lpacket[2] = 0x01;  // not a clue
+	lpacket[3] = 0x00; // various states of the robot (teleop enabled/disabled, voltage burnout, etc)
+	lpacket[4] = 0x30; // 0x20 shows robot code green, all else appears to do nothing
+	lpacket[5] = 0x0c; // left of decimal voltage, = x
+	lpacket[6] = 0x6d; // right of decimal voltage, = x/255
+	lpacket[7] = 0x00; // to lpacket[11]
+	lpacket[8] = 0x09;
+	lpacket[9] = 0x04;
+	lpacket[10] = 0x00;
+	lpacket[11] = 0x00;
+	lpacket[12] = 0x00;
+	lpacket[13] = 0x00;
+	lpacket[14] = 0x10;
+	lpacket[15] = 0x15;
+	lpacket[16] = 0x30;
+	lpacket[17] = 0x00;
+
+	BYTE input[0x400];
+	memset(&input[0], 0x0, sizeof(input));
 
 	while (true) {
 		(*((unsigned short*)&lpacket[0]))++; // make communications light show up, first two bytes increment
@@ -114,8 +125,17 @@ int main() {
 		//std::cout << "\r" << "                 "; // clear line
 		//std::cout << "\r" << (*((unsigned short*)&lpacket[3]));
 		//std::cout.flush();
+
 		sendto(dsSocket, (const char*)lpacket, 0x400, 0, (const sockaddr*)&dsAddress, sizeof(dsAddress));
-		Sleep(500);
+		int len = recv(robotSocket, (char*) &input, sizeof(input), 0);
+		len = 32;
+
+		for (int i=0; i<len; i++) {
+			std::cout << std::hex << (int)input[i] << std::dec << " "; // convert to hex using pointers (shh)
+		}
+		std::cout << std::endl;
+
+		//Sleep(50);
 	}
 
 	closesocket(dsSocket);
