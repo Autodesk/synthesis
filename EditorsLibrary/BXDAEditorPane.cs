@@ -24,49 +24,57 @@ namespace EditorsLibrary
         private TreeView meshTree;
 
         /// <summary>
-        /// The node containing file version information
+        /// The root node in the tree
         /// </summary>
-        private BXDAEditorNode versionNode;
+        private BXDAEditorNode rootNode;
 
         /// <summary>
-        /// The node holding the tree representing the mesh
+        /// Create a new control and load a <see cref="System.Windows.Forms.TreeView"/> from a directory with .bxda files
         /// </summary>
-        private BXDAEditorNode meshNode;
-
-        /// <summary>
-        /// Create a new control and load a <see cref="System.Windows.Forms.TreeView"/> from a .bxda file
-        /// </summary>
-        /// <param name="meshPath">The path to the .bxda file</param>
-        public BXDAEditorPane(string meshPath = null)
+        /// <param name="meshPath">The directory path</param>
+        public BXDAEditorPane(string modelPath = null)
         {
             InitializeComponent();
-            GenerateTree((meshPath != null) ? meshPath : BXDSettings.Instance.LastSkeletonDirectory + "node_0.bxda");
+
+            List<String> fileNames = new List<String>(Directory.GetFiles((modelPath != null) ? modelPath : 
+                                                                                               BXDSettings.Instance.LastSkeletonDirectory));
+            var bxdaFiles = from file in fileNames
+                            where file.Substring(file.Length - 4).Equals("bxda")
+                            select file;
+
+            if (bxdaFiles == null) throw new FileNotFoundException("Could not find .bxda files in specified directory");
+
+            rootNode = new BXDAEditorNode("Model", BXDAEditorNode.NodeType.SECTION_HEADER);
+            rootNode.Nodes.Add(new BXDAEditorNode("Version", BXDAEditorNode.NodeType.STRING, BXDIO.ASSEMBLY_VERSION));
+            foreach (string fileName in bxdaFiles)
+            {
+                rootNode.Nodes.Add(GenerateTree(fileName));
+            }
         }
 
         /// <summary>
-        /// Generate the <see cref="System.Windows.Forms.TreeView"/>
+        /// Generates a tree from a bxda file
         /// </summary>
         /// <param name="meshPath">The path to the .bxda file</param>
-        private void GenerateTree(string meshPath)
+        /// <returns>The root node of the mesh tree</returns>
+        private BXDAEditorNode GenerateTree(string meshPath)
         {
             BinaryReader reader = new BinaryReader(new FileStream(meshPath, FileMode.Open, FileAccess.Read));
-
-            versionNode = new BXDAEditorNode(String.Format("Synthesis version {0}", BXDIO.VersionToString(reader.ReadUInt32())),
-                                             BXDAEditorNode.NodeType.SECTION_HEADER);
-            reader.BaseStream.Seek(0, SeekOrigin.Begin);
 
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadData(reader);
 
             reader.Close();
 
-            meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, mesh);
+            BXDAEditorNode meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, mesh);
 
-            BXDAEditorNode visualSubMeshSectionHeader = generateSubMeshTree(mesh.meshes);
-            visualSubMeshSectionHeader.Name = "Visual Sub-meshes";
+            BXDAEditorNode visualSectionHeader = new BXDAEditorNode("Visual Sub-meshes", BXDAEditorNode.NodeType.SECTION_HEADER);
+            meshNode.Nodes.Add(visualSectionHeader);
+            generateSubMeshTree(visualSectionHeader, mesh.meshes);
 
-            BXDAEditorNode collisionSubMeshSectionHeader = generateSubMeshTree(mesh.colliders);
-            collisionSubMeshSectionHeader.Name = "Collision Sub-meshes";
+            BXDAEditorNode collisionSectionHeader = new BXDAEditorNode("Collision Sub-meshes", BXDAEditorNode.NodeType.SECTION_HEADER);
+            meshNode.Nodes.Add(collisionSectionHeader);
+            generateSubMeshTree(collisionSectionHeader, mesh.colliders);
 
             BXDAEditorNode physicsSectionHeader = new BXDAEditorNode("Physical Properties", BXDAEditorNode.NodeType.SECTION_HEADER);
             meshNode.Nodes.Add(physicsSectionHeader);
@@ -75,11 +83,7 @@ namespace EditorsLibrary
             physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Center of Mass", BXDAEditorNode.NodeType.VECTOR3,
                                                        mesh.physics.centerOfMass.x, mesh.physics.centerOfMass.y, mesh.physics.centerOfMass.z));
 
-            meshTree = new TreeView();
-            meshTree.Nodes.Add(versionNode);
-            meshTree.Nodes.Add(meshNode);
-
-            Controls.Add(meshTree);
+            return meshNode;
         }
 
         /// <summary>
@@ -87,10 +91,10 @@ namespace EditorsLibrary
         /// </summary>
         /// <param name="subMeshes">A list of submeshes (Either visual or collision)</param>
         /// <returns>A blank node with the generated tree of Sub-meshes under it</returns>
-        private BXDAEditorNode generateSubMeshTree(List<BXDAMesh.BXDASubMesh> subMeshes)
+        private void generateSubMeshTree(BXDAEditorNode root, List<BXDAMesh.BXDASubMesh> subMeshes)
         {
             BXDAEditorNode subMeshSectionHeader = new BXDAEditorNode(BXDAEditorNode.NodeType.SECTION_HEADER);
-            meshNode.Nodes.Add(subMeshSectionHeader);
+            root.Nodes.Add(subMeshSectionHeader);
 
             //Sub-meshes
             foreach (BXDAMesh.BXDASubMesh subMesh in subMeshes)
@@ -151,8 +155,6 @@ namespace EditorsLibrary
                     }
                 }
             }
-
-            return subMeshSectionHeader;
         }
 
         /// <summary>
@@ -202,6 +204,8 @@ namespace EditorsLibrary
                         return String.Format("<{0}, {1}, {2}>", data);
                     case NodeType.NUMBER:
                         return String.Format("{0}", data);
+                    case NodeType.STRING:
+                        return (string) data[0];
                     default:
                         return "";
                 }
@@ -217,7 +221,8 @@ namespace EditorsLibrary
                 SUBMESH, // {BXDAMesh.BXDASubMesh}
                 SURFACE, // {BXDAMesh.BXDASurface}
                 VECTOR3, // {float, float ,float}
-                NUMBER // {byte or float}
+                NUMBER, // {byte or float}
+                STRING // {string}
             }
 
             /// <summary>
