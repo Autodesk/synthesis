@@ -19,11 +19,6 @@ namespace EditorsLibrary
     {
 
         /// <summary>
-        /// The tree representation of the mesh node
-        /// </summary>
-        private TreeView meshTree;
-
-        /// <summary>
         /// The root node in the tree
         /// </summary>
         private BXDAEditorNode rootNode;
@@ -31,13 +26,19 @@ namespace EditorsLibrary
         /// <summary>
         /// Create a new control and load a <see cref="System.Windows.Forms.TreeView"/> from a directory with .bxda files
         /// </summary>
-        /// <param name="meshPath">The directory path</param>
-        public BXDAEditorPane(string modelPath = null)
+        public BXDAEditorPane()
         {
             InitializeComponent();
 
-            List<String> fileNames = new List<String>(Directory.GetFiles((modelPath != null) ? modelPath : 
-                                                                                               BXDSettings.Instance.LastSkeletonDirectory));
+            loadModel(BXDSettings.Instance.LastSkeletonDirectory);
+
+            //BXDAEditorNode testNode = new BXDAEditorNode("TEST", BXDAEditorNode.NodeType.SECTION_HEADER);
+            //treeView1.Nodes.Add(testNode);
+        }
+
+        public void loadModel(string modelPath)
+        {
+            List<String> fileNames = new List<String>(Directory.GetFiles(modelPath));
             var bxdaFiles = from file in fileNames
                             where file.Substring(file.Length - 4).Equals("bxda")
                             select file;
@@ -50,6 +51,9 @@ namespace EditorsLibrary
             {
                 rootNode.Nodes.Add(GenerateTree(fileName));
             }
+
+            treeView1.Nodes.Clear();
+            treeView1.Nodes.Add(rootNode);
         }
 
         /// <summary>
@@ -66,13 +70,13 @@ namespace EditorsLibrary
 
             reader.Close();
 
-            BXDAEditorNode meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, mesh);
+            BXDAEditorNode meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, mesh, meshPath);
 
-            BXDAEditorNode visualSectionHeader = new BXDAEditorNode("Visual Sub-meshes", BXDAEditorNode.NodeType.SECTION_HEADER);
+            BXDAEditorNode visualSectionHeader = new BXDAEditorNode("Visual Sub-meshes", BXDAEditorNode.NodeType.NUMBER, mesh.meshes.Count);
             meshNode.Nodes.Add(visualSectionHeader);
             generateSubMeshTree(visualSectionHeader, mesh.meshes);
 
-            BXDAEditorNode collisionSectionHeader = new BXDAEditorNode("Collision Sub-meshes", BXDAEditorNode.NodeType.SECTION_HEADER);
+            BXDAEditorNode collisionSectionHeader = new BXDAEditorNode("Collision Sub-meshes", BXDAEditorNode.NodeType.NUMBER, mesh.colliders.Count);
             meshNode.Nodes.Add(collisionSectionHeader);
             generateSubMeshTree(collisionSectionHeader, mesh.colliders);
 
@@ -93,40 +97,25 @@ namespace EditorsLibrary
         /// <returns>A blank node with the generated tree of Sub-meshes under it</returns>
         private void generateSubMeshTree(BXDAEditorNode root, List<BXDAMesh.BXDASubMesh> subMeshes)
         {
-            BXDAEditorNode subMeshSectionHeader = new BXDAEditorNode(BXDAEditorNode.NodeType.SECTION_HEADER);
-            root.Nodes.Add(subMeshSectionHeader);
-
             //Sub-meshes
             foreach (BXDAMesh.BXDASubMesh subMesh in subMeshes)
             {
                 BXDAEditorNode subMeshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.SUBMESH, subMesh);
-                subMeshSectionHeader.Nodes.Add(subMeshNode);
+                root.Nodes.Add(subMeshNode);
 
                 //Vertices
-                BXDAEditorNode verticesSectionHeader = new BXDAEditorNode("Vertices", BXDAEditorNode.NodeType.SECTION_HEADER);
+                BXDAEditorNode verticesSectionHeader = new BXDAEditorNode("Vertices", BXDAEditorNode.NodeType.NUMBER, subMesh.verts.Length);
                 subMeshNode.Nodes.Add(verticesSectionHeader);
-
-                for (int vertIndex = 0; vertIndex < subMesh.verts.Length; vertIndex += 3)
-                {
-                    verticesSectionHeader.Nodes.Add(new BXDAEditorNode(BXDAEditorNode.NodeType.VECTOR3,
-                                                    subMesh.verts[vertIndex], subMesh.verts[vertIndex + 1], subMesh.verts[vertIndex + 2]));
-                }
 
                 //Vertex Normals
                 if (subMesh.norms != null)
                 {
-                    BXDAEditorNode normalsSectionHeader = new BXDAEditorNode("Surface Normals", BXDAEditorNode.NodeType.SECTION_HEADER);
+                    BXDAEditorNode normalsSectionHeader = new BXDAEditorNode("Surface Normals", BXDAEditorNode.NodeType.NUMBER, subMesh.norms.Length);
                     subMeshNode.Nodes.Add(normalsSectionHeader);
-
-                    for (int normIndex = 0; normIndex < subMesh.norms.Length; normIndex += 3)
-                    {
-                        normalsSectionHeader.Nodes.Add(new BXDAEditorNode(BXDAEditorNode.NodeType.VECTOR3,
-                                                        subMesh.norms[normIndex], subMesh.norms[normIndex + 1], subMesh.norms[normIndex + 2]));
-                    }
                 }
 
                 //Surfaces
-                BXDAEditorNode surfacesSectionHeader = new BXDAEditorNode("Surfaces", BXDAEditorNode.NodeType.SECTION_HEADER);
+                BXDAEditorNode surfacesSectionHeader = new BXDAEditorNode("Surfaces", BXDAEditorNode.NodeType.NUMBER, subMesh.surfaces.Count);
                 subMeshNode.Nodes.Add(surfacesSectionHeader);
 
                 foreach (BXDAMesh.BXDASurface surface in subMesh.surfaces)
@@ -145,14 +134,8 @@ namespace EditorsLibrary
                     materialSectionHeader.Nodes.Add(new BXDAEditorNode("Specular Intensity", BXDAEditorNode.NodeType.NUMBER, surface.specular));
 
                     //Indices
-                    BXDAEditorNode indicesSectionHeader = new BXDAEditorNode("Indices", BXDAEditorNode.NodeType.SECTION_HEADER);
+                    BXDAEditorNode indicesSectionHeader = new BXDAEditorNode("Indices", BXDAEditorNode.NodeType.NUMBER, surface.indicies.Length);
                     surfaceNode.Nodes.Add(indicesSectionHeader);
-
-                    for (int indexIndex = 0; indexIndex < surface.indicies.Length; indexIndex += 3)
-                    {
-                        indicesSectionHeader.Nodes.Add(new BXDAEditorNode(BXDAEditorNode.NodeType.VECTOR3,
-                                            surface.indicies[indexIndex], surface.indicies[indexIndex + 1], surface.indicies[indexIndex + 2]));
-                    }
                 }
             }
         }
@@ -177,6 +160,8 @@ namespace EditorsLibrary
             {
                 type = t;
                 data = new NodeData(dat);
+                SetText(t.ToString());
+                Name = t.ToString();
             }
 
             /// <summary>
@@ -190,6 +175,13 @@ namespace EditorsLibrary
             {
                 type = t;
                 data = new NodeData(dat);
+                SetText(header);
+                Name = header;
+            }
+
+            private void SetText(string textRoot)
+            {
+                Text = String.Format("{0}: {1}", textRoot, ToString());
             }
 
             /// <summary>
@@ -201,11 +193,13 @@ namespace EditorsLibrary
                 switch (type)
                 {
                     case NodeType.VECTOR3:
-                        return String.Format("<{0}, {1}, {2}>", data);
+                        return String.Format("<{0}, {1}, {2}>", data[0], data[1], data[2]);
                     case NodeType.NUMBER:
-                        return String.Format("{0}", data);
+                        return String.Format("{0}", data[0]);
                     case NodeType.STRING:
-                        return (string) data[0];
+                        return String.Format("{0}", data[0]);
+                    case NodeType.MESH:
+                        return String.Format("{0}", data[1]);
                     default:
                         return "";
                 }
@@ -217,7 +211,7 @@ namespace EditorsLibrary
             public enum NodeType
             {
                 SECTION_HEADER, // No data (Blank node that can be used to group other nodes)
-                MESH, // {BXDAMesh}
+                MESH, // {BXDAMesh, string}
                 SUBMESH, // {BXDAMesh.BXDASubMesh}
                 SURFACE, // {BXDAMesh.BXDASurface}
                 VECTOR3, // {float, float ,float}
@@ -264,6 +258,11 @@ namespace EditorsLibrary
                 }
 
             }
+
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
 
         }
 

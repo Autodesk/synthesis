@@ -87,6 +87,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BXDAEditorPane.resx">
+      <DependentUpon>BXDAEditorPane.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EditLimits.resx">
       <DependentUpon>EditLimits.cs</DependentUpon>
     </EmbeddedResource>

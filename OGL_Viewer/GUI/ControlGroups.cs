@@ -166,6 +166,18 @@ public partial class ControlGroups
         {
             Console.WriteLine("Error loading existing skeleton: " + e.ToString());
         }
+
+        try
+        {
+            if (System.IO.File.Exists(txtFilePath.Text + "\\node_0.bxda"))
+            {
+
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error loading mesh: " + e.ToString());
+        }
     }
 
     private void button1_Click(object sender, EventArgs e)
@@ -188,6 +200,11 @@ public partial class ControlGroups
 
         formState = FormState.SUBMIT;
         Hide();
+    }
+
+    private void bxdaEditorPane1_Load(object sender, EventArgs e)
+    {
+
     }
 }
 
