@@ -114,7 +114,7 @@ public class Init : MonoBehaviour
         {
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
-            activeRobot.transform.localPosition = new Vector3(2.5f, 0.0f, -2.25f);
+            activeRobot.transform.localPosition = new Vector3(2.5f, 0f, -2.25f);
             activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -158,7 +158,7 @@ public class Init : MonoBehaviour
             {
                 return new UnityRigidNode();
             };
-			filePath = "C:\\Users\\t_buckm\\Documents\\Unity 4\\Synthesis\\Assets\\resources\\";
+			//filePath = "C:\\Users\\t_buckm\\Documents\\Unity 4\\Synthesis\\Assets\\resources\\";
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
 			Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
@@ -200,25 +200,46 @@ public class Init : MonoBehaviour
 		cameraObject = GameObject.Find ("Camera");
 		camera = cameraObject.GetComponent<Camera> ();
 
-		/*
+		/** /
 		UnityRigidNode nodeThing = new UnityRigidNode();
 		nodeThing.modelFileName = "field.bxda";
 		nodeThing.CreateTransform(transform);
 		nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
 		nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-		*/
+		/**/
 
+		/**/
 		field = new Field ("field2015", new Vector3(0f, 0.58861f, 0f), new Vector3(0.2558918f, 0.2558918f, 0.2558918f));
+
 		field.AddCollisionObjects (
-			"FE-00038-0", "FE-00038-1", "FE-00038-2", "FE-00038-3",
-			"GE-15014_0", "GE-15014_1", "GE-15014_2", "GE-15014_3", "GE-15014_4", "GE-15014_5", "GE-15014_A",
 			"GE-15025_0", "GE-15025_1", "GE-15025_2", "GE-15025_A",
-			"FE-0000248", "FE-0000183", "FE-0000133",
-			"FE-00004-0", "FE-0000443", "FE-0000486",
-			"FE-00008_1", "FE-00009_1", "FE-00011_1", "FE-00009_0", "FE-00010_1", "FE-00010_0", "FE-00009_2", "FE-00011_0", "FE-00009_3", "FE-00008_0",
-			"FE-00008_3", "FE-00009_7", "FE-00011_3", "FE-00009_6", "FE-00010_3", "FE-00010_2", "FE-00009_5", "FE-00011_2", "FE-00009_4", "FE-00008_2",
 			"GE-15000_A", "GE-15001_A", "GE-15000_0", "GE-15001_0"
 		);
+
+		BoxCollider floor = field.AddComponent<BoxCollider> ("floor");
+		floor.center = new Vector3 (0f, -6.5f, 0f);
+		floor.size = new Vector3 (36.00475f, 8.343518f, 86.43035f);
+
+		BoxCollider blueDS = field.AddComponent<BoxCollider> ("blueDS");
+		blueDS.center = new Vector3 (0f, 1.529588f, 33.50338f);
+		blueDS.size = new Vector3 (21.74336f, 7.846722f, 2.357369f);
+
+		BoxCollider redDS = field.AddComponent<BoxCollider> ("redDS");
+		redDS.center = new Vector3 (0f, 1.529588f, -33.50338f);
+		redDS.size = new Vector3 (21.74336f, 7.846722f, 2.357369f);
+
+		BoxCollider step = field.AddComponent<BoxCollider> ("step");
+		step.center = new Vector3 (0f, -2.022223f, 0f);
+		step.size = new Vector3 (32.41857f, 0.7251982f, 2.498229f);
+
+		BoxCollider leftSidePanels = field.AddComponent<BoxCollider> ("leftSidePanels");
+		leftSidePanels.center = new Vector3 (-17.08714f, -1.359237f, 0f);
+		leftSidePanels.size = new Vector3 (1.80665f, 2.039491f, 50.91413f);
+
+		BoxCollider rightSidePanels = field.AddComponent<BoxCollider> ("rightSidePanels");
+		rightSidePanels.center = new Vector3 (17.08714f, -1.359237f, 0f);
+		rightSidePanels.size = new Vector3 (1.80665f, 2.039491f, 50.91413f);
+		/**/
 
         reloadInFrames = 2;
     }

@@ -10,7 +10,12 @@ public class Field
 	GameObject field;
 
 	/// <summary>
-	/// A dictionary of every child transform.
+	/// Contains any additional components added manually.
+	/// </summary>
+	Dictionary<string, Component> extraComponents;
+
+	/// <summary>
+	/// Contains every child transform.
 	/// </summary>
 	Dictionary<string, Transform> allTransforms;
 
@@ -28,9 +33,35 @@ public class Field
 		field.transform.localScale = scale;
 		field.AddComponent ("Rigidbody");
 		field.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
+		field.rigidbody.SetDensity (10f);
 
+		extraComponents = new Dictionary<string, Component> ();
 		allTransforms = GetAllChildren (field.transform);
 		collisionTransforms = new Dictionary<string, Transform>();
+	}
+
+	/// <summary>
+	/// Adds the specified type of component to the field and returns the added component.
+	/// </summary>
+	/// <returns>The component.</returns>
+	/// <param name="id">Identifier.</param>
+	/// <typeparam name="T">The 1st type parameter.</typeparam>
+	public T AddComponent<T>(string id) where T : Component
+	{
+		T component = field.AddComponent<T> ();
+		extraComponents.Add (id, component);
+		return component;
+	}
+
+	/// <summary>
+	/// Returns the component containing the specified ID.
+	/// </summary>
+	/// <returns>The component.</returns>
+	/// <param name="id">Identifier.</param>
+	/// <typeparam name="T">The 1st type parameter.</typeparam>
+	public T GetComponent<T>(string id) where T : Component
+	{
+		return (T) extraComponents [id];
 	}
 
 	/// <summary>
@@ -105,7 +136,7 @@ public class Field
 						c.gameObject.GetComponent<MeshCollider>().enabled = enabled;
 					}
 				}
-				else
+				else 
 				{
 					collisionTransforms[s].gameObject.GetComponent<MeshCollider>().enabled = enabled;
 				}
