@@ -52,6 +52,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BXDAEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BXDAEditorForm.Designer.cs">
+      <DependentUpon>BXDAEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="BXDAEditorPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -87,6 +93,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BXDAEditorForm.resx">
+      <DependentUpon>BXDAEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BXDAEditorPane.resx">
       <DependentUpon>BXDAEditorPane.cs</DependentUpon>
     </EmbeddedResource>

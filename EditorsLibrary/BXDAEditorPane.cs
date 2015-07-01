@@ -31,9 +31,6 @@ namespace EditorsLibrary
             InitializeComponent();
 
             loadModel(BXDSettings.Instance.LastSkeletonDirectory);
-
-            //BXDAEditorNode testNode = new BXDAEditorNode("TEST", BXDAEditorNode.NodeType.SECTION_HEADER);
-            //treeView1.Nodes.Add(testNode);
         }
 
         public void loadModel(string modelPath)
@@ -45,8 +42,8 @@ namespace EditorsLibrary
 
             if (bxdaFiles == null) throw new FileNotFoundException("Could not find .bxda files in specified directory");
 
-            rootNode = new BXDAEditorNode("Model", BXDAEditorNode.NodeType.SECTION_HEADER);
-            rootNode.Nodes.Add(new BXDAEditorNode("Version", BXDAEditorNode.NodeType.STRING, BXDIO.ASSEMBLY_VERSION));
+            rootNode = new BXDAEditorNode("Model", BXDAEditorNode.NodeType.SECTION_HEADER, false);
+            rootNode.Nodes.Add(new BXDAEditorNode("Version", BXDAEditorNode.NodeType.STRING, false, BXDIO.ASSEMBLY_VERSION));
             foreach (string fileName in bxdaFiles)
             {
                 rootNode.Nodes.Add(GenerateTree(fileName));
@@ -70,21 +67,23 @@ namespace EditorsLibrary
 
             reader.Close();
 
-            BXDAEditorNode meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, mesh, meshPath);
+            BXDAEditorNode meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, false, mesh, meshPath);
 
-            BXDAEditorNode visualSectionHeader = new BXDAEditorNode("Visual Sub-meshes", BXDAEditorNode.NodeType.NUMBER, mesh.meshes.Count);
+            BXDAEditorNode visualSectionHeader = new BXDAEditorNode("Visual Sub-meshes", BXDAEditorNode.NodeType.INTEGER, false,
+                                                                    mesh.meshes.Count);
             meshNode.Nodes.Add(visualSectionHeader);
             generateSubMeshTree(visualSectionHeader, mesh.meshes);
 
-            BXDAEditorNode collisionSectionHeader = new BXDAEditorNode("Collision Sub-meshes", BXDAEditorNode.NodeType.NUMBER, mesh.colliders.Count);
+            BXDAEditorNode collisionSectionHeader = new BXDAEditorNode("Collision Sub-meshes", BXDAEditorNode.NodeType.INTEGER, false, 
+                                                                       mesh.colliders.Count);
             meshNode.Nodes.Add(collisionSectionHeader);
             generateSubMeshTree(collisionSectionHeader, mesh.colliders);
 
-            BXDAEditorNode physicsSectionHeader = new BXDAEditorNode("Physical Properties", BXDAEditorNode.NodeType.SECTION_HEADER);
+            BXDAEditorNode physicsSectionHeader = new BXDAEditorNode("Physical Properties", BXDAEditorNode.NodeType.SECTION_HEADER, false);
             meshNode.Nodes.Add(physicsSectionHeader);
 
-            physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Total Mass", BXDAEditorNode.NodeType.NUMBER, mesh.physics.mass));
-            physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Center of Mass", BXDAEditorNode.NodeType.VECTOR3,
+            physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Total Mass", BXDAEditorNode.NodeType.DOUBLE, true, mesh.physics.mass));
+            physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Center of Mass", BXDAEditorNode.NodeType.VECTOR3, true,
                                                        mesh.physics.centerOfMass.x, mesh.physics.centerOfMass.y, mesh.physics.centerOfMass.z));
 
             return meshNode;
@@ -100,53 +99,79 @@ namespace EditorsLibrary
             //Sub-meshes
             foreach (BXDAMesh.BXDASubMesh subMesh in subMeshes)
             {
-                BXDAEditorNode subMeshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.SUBMESH, subMesh);
+                BXDAEditorNode subMeshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.SUBMESH, false, subMesh);
                 root.Nodes.Add(subMeshNode);
 
                 //Vertices
-                BXDAEditorNode verticesSectionHeader = new BXDAEditorNode("Vertices", BXDAEditorNode.NodeType.NUMBER, subMesh.verts.Length);
+                BXDAEditorNode verticesSectionHeader = new BXDAEditorNode("Vertices", BXDAEditorNode.NodeType.INTEGER, false,
+                                                                          subMesh.verts.Length);
                 subMeshNode.Nodes.Add(verticesSectionHeader);
-
+                
                 //Vertex Normals
                 if (subMesh.norms != null)
                 {
-                    BXDAEditorNode normalsSectionHeader = new BXDAEditorNode("Surface Normals", BXDAEditorNode.NodeType.NUMBER, subMesh.norms.Length);
+                    BXDAEditorNode normalsSectionHeader = new BXDAEditorNode("Surface Normals", BXDAEditorNode.NodeType.INTEGER, false,
+                                                                             subMesh.norms.Length);
                     subMeshNode.Nodes.Add(normalsSectionHeader);
                 }
 
                 //Surfaces
-                BXDAEditorNode surfacesSectionHeader = new BXDAEditorNode("Surfaces", BXDAEditorNode.NodeType.NUMBER, subMesh.surfaces.Count);
+                BXDAEditorNode surfacesSectionHeader = new BXDAEditorNode("Surfaces", BXDAEditorNode.NodeType.INTEGER, false,
+                                                                          subMesh.surfaces.Count);
                 subMeshNode.Nodes.Add(surfacesSectionHeader);
 
                 foreach (BXDAMesh.BXDASurface surface in subMesh.surfaces)
                 {
-                    BXDAEditorNode surfaceNode = new BXDAEditorNode(BXDAEditorNode.NodeType.SURFACE, surface);
+                    BXDAEditorNode surfaceNode = new BXDAEditorNode(BXDAEditorNode.NodeType.SURFACE, false, surface);
                     surfacesSectionHeader.Nodes.Add(surfaceNode);
 
                     //Material Properties
-                    BXDAEditorNode materialSectionHeader = new BXDAEditorNode("Material Properties", BXDAEditorNode.NodeType.SECTION_HEADER);
+                    BXDAEditorNode materialSectionHeader = new BXDAEditorNode("Material Properties", BXDAEditorNode.NodeType.SECTION_HEADER,
+                                                                              false);
                     surfaceNode.Nodes.Add(materialSectionHeader);
 
-                    if (surface.hasColor) materialSectionHeader.Nodes.Add(new BXDAEditorNode("Surface Color", BXDAEditorNode.NodeType.NUMBER,
-                                                                          surface.color));
-                    materialSectionHeader.Nodes.Add(new BXDAEditorNode("Transparency", BXDAEditorNode.NodeType.NUMBER, surface.transparency));
-                    materialSectionHeader.Nodes.Add(new BXDAEditorNode("Translucency", BXDAEditorNode.NodeType.NUMBER, surface.translucency));
-                    materialSectionHeader.Nodes.Add(new BXDAEditorNode("Specular Intensity", BXDAEditorNode.NodeType.NUMBER, surface.specular));
+                    if (surface.hasColor) materialSectionHeader.Nodes.Add(new BXDAEditorNode("Surface Color", BXDAEditorNode.NodeType.INTEGER,
+                                                                          true, surface.color));
+                    materialSectionHeader.Nodes.Add(new BXDAEditorNode("Transparency", BXDAEditorNode.NodeType.DOUBLE, true,
+                                                                       surface.transparency));
+                    materialSectionHeader.Nodes.Add(new BXDAEditorNode("Translucency", BXDAEditorNode.NodeType.DOUBLE, true,
+                                                    surface.translucency));
+                    materialSectionHeader.Nodes.Add(new BXDAEditorNode("Specular Intensity", BXDAEditorNode.NodeType.DOUBLE, true,
+                                                                       surface.specular));
 
                     //Indices
-                    BXDAEditorNode indicesSectionHeader = new BXDAEditorNode("Indices", BXDAEditorNode.NodeType.NUMBER, surface.indicies.Length);
+                    BXDAEditorNode indicesSectionHeader = new BXDAEditorNode("Indices", BXDAEditorNode.NodeType.INTEGER, false,
+                                                                             surface.indicies.Length);
                     surfaceNode.Nodes.Add(indicesSectionHeader);
                 }
             }
         }
-
+        
+        /// <summary>
+        /// Occurs after a node is double clicked
+        /// </summary>
+        /// <param name="sender">Not used</param>
+        /// <param name="e">Not used</param>
+        private void treeView1_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            BXDAEditorNode selectedNode = (BXDAEditorNode) treeView1.SelectedNode;
+            
+            if (selectedNode.isEditable)
+            {
+                BXDAEditorForm editForm = new BXDAEditorForm(selectedNode);
+                editForm.ShowDialog(this);
+            }
+        }
+        
         /// <summary>
         /// A <see cref="System.Windows.Forms.TreeNode"/> with extra data loaded from .bxda
         /// </summary>
-        private class BXDAEditorNode : TreeNode
+        public class BXDAEditorNode : TreeNode
         {
 
             public NodeType type;
+
+            public bool isEditable;
 
             public NodeData data;
 
@@ -155,10 +180,11 @@ namespace EditorsLibrary
             /// </summary>
             /// <param name="t">The type of node</param>
             /// <param name="dat">Extra data</param>
-            public BXDAEditorNode(NodeType t, params Object[] dat)
+            public BXDAEditorNode(NodeType t, bool editable, params Object[] dat)
                 : base(t.ToString())
             {
                 type = t;
+                isEditable = editable;
                 data = new NodeData(dat);
                 SetText(t.ToString());
                 Name = t.ToString();
@@ -170,13 +196,19 @@ namespace EditorsLibrary
             /// <param name="header">The node's name</param>
             /// <param name="t">The type of node</param>
             /// <param name="dat">Extra data</param>
-            public BXDAEditorNode(string header, NodeType t, params Object[] dat)
+            public BXDAEditorNode(string header, NodeType t, bool editable, params Object[] dat)
                 : base(header)
             {
                 type = t;
+                isEditable = editable;
                 data = new NodeData(dat);
                 SetText(header);
                 Name = header;
+            }
+
+            public void updateName()
+            {
+                SetText(Text.Substring(0, Text.LastIndexOf(":")));
             }
 
             private void SetText(string textRoot)
@@ -194,8 +226,8 @@ namespace EditorsLibrary
                 {
                     case NodeType.VECTOR3:
                         return String.Format("<{0}, {1}, {2}>", data[0], data[1], data[2]);
-                    case NodeType.NUMBER:
-                        return String.Format("{0}", data[0]);
+                    case NodeType.INTEGER:
+                    case NodeType.DOUBLE:
                     case NodeType.STRING:
                         return String.Format("{0}", data[0]);
                     case NodeType.MESH:
@@ -214,8 +246,9 @@ namespace EditorsLibrary
                 MESH, // {BXDAMesh, string}
                 SUBMESH, // {BXDAMesh.BXDASubMesh}
                 SURFACE, // {BXDAMesh.BXDASurface}
-                VECTOR3, // {float, float ,float}
-                NUMBER, // {byte or float}
+                VECTOR3, // {double, double, double}
+                INTEGER, // {int}
+                DOUBLE, // {double}
                 STRING // {string}
             }
 
@@ -258,11 +291,6 @@ namespace EditorsLibrary
                 }
 
             }
-
-        }
-
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
 
         }
 
