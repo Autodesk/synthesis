@@ -99,7 +99,6 @@ public class DriveJoints : MonoBehaviour
 		// Acceleration of the piston, whose value will be determined by the following try/catch statement
 		float acceleration = 0;
 
-
 		// Checks to make sure solenoid data was assigned. We can't really use a try/catch statement because if pressure and diameter data is left blank when the robot is created, Unity will still use its default values.
 		if (node.GetJoint<ConfigurableJoint>().xDrive.maximumForce > 0)
 		{

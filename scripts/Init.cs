@@ -9,13 +9,18 @@ public class Init : MonoBehaviour
     // We will need these
     public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
 
+	public const float FORMAT_3DS_SCALE = 0.2558918f;
+
     private GUIController gui;
+
+	private PhysicMaterial chuteMaterial;
 
     private RigidNode_Base skeleton;
     private GameObject activeRobot;
 	private GameObject cameraObject;
 	private Camera camera;
 	private Field field;
+	private List<GameObject> totes;
 
     private unityPacket udp = new unityPacket();
 	private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
@@ -114,7 +119,7 @@ public class Init : MonoBehaviour
         {
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
-            activeRobot.transform.localPosition = new Vector3(2.5f, 0f, -2.25f);
+            activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
             activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -137,7 +142,15 @@ public class Init : MonoBehaviour
                auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
             }
         }
+
 		camera.SwitchCameraState (new Camera.DriverStationState(camera));
+
+		foreach (GameObject o in totes)
+		{
+			GameObject.Destroy(o);
+		}
+
+		totes.Clear ();
     }
 
     private void TryLoad()
@@ -195,7 +208,7 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
-        Physics.minPenetrationForPenalty = 0.001f;
+		Physics.minPenetrationForPenalty = 0.001f;
 
 		cameraObject = GameObject.Find ("Camera");
 		camera = cameraObject.GetComponent<Camera> ();
@@ -208,12 +221,21 @@ public class Init : MonoBehaviour
 		nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 		/**/
 
+		chuteMaterial = new PhysicMaterial("chuteMaterial");
+		chuteMaterial.dynamicFriction = 0f;
+		chuteMaterial.staticFriction = 0f;
+		chuteMaterial.frictionCombine = PhysicMaterialCombine.Minimum;
+
 		/**/
-		field = new Field ("field2015", new Vector3(0f, 0.58861f, 0f), new Vector3(0.2558918f, 0.2558918f, 0.2558918f));
+		field = new Field ("field2015", new Vector3(0f, 0.58861f, 0f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE));
 
 		field.AddCollisionObjects (
 			"GE-15025_0", "GE-15025_1", "GE-15025_2", "GE-15025_A",
-			"GE-15000_A", "GE-15001_A", "GE-15000_0", "GE-15001_0"
+			"GE-15003_0", "GE-15002_2", "GE-15017_0", "GE-15009_0",
+			"GE-15017_0", "GE-15017_3", "GE-15018_0", "GE-15018_3",
+			"GE-15002_1", "GE-15003_1", "GE-15009_1", "GE-15017_3",
+			"GE-15002_0", "GE-15003_2", "GE-15018_0", "GE-15009_2",
+			"GE-15003_3", "GE-15002_3", "GE-15018_3", "GE-15009_3"
 		);
 
 		BoxCollider floor = field.AddComponent<BoxCollider> ("floor");
@@ -239,7 +261,18 @@ public class Init : MonoBehaviour
 		BoxCollider rightSidePanels = field.AddComponent<BoxCollider> ("rightSidePanels");
 		rightSidePanels.center = new Vector3 (17.08714f, -1.359237f, 0f);
 		rightSidePanels.size = new Vector3 (1.80665f, 2.039491f, 50.91413f);
+
+		field.getCollisionObjects ("GE-15017_0").GetComponent<MeshCollider>().material = chuteMaterial;
+		field.getCollisionObjects ("GE-15009_0").GetComponent<MeshCollider>().material = chuteMaterial;
+		field.getCollisionObjects ("GE-15017_3").GetComponent<MeshCollider>().material = chuteMaterial;
+		field.getCollisionObjects ("GE-15009_1").GetComponent<MeshCollider>().material = chuteMaterial;
+		field.getCollisionObjects ("GE-15018_0").GetComponent<MeshCollider> ().material = chuteMaterial;
+		field.getCollisionObjects ("GE-15009_2").GetComponent<MeshCollider> ().material = chuteMaterial;
+		field.getCollisionObjects ("GE-15018_3").GetComponent<MeshCollider> ().material = chuteMaterial;
+		field.getCollisionObjects ("GE-15009_3").GetComponent<MeshCollider> ().material = chuteMaterial;
 		/**/
+
+		totes = new List<GameObject> ();
 
         reloadInFrames = 2;
     }
@@ -261,6 +294,23 @@ public class Init : MonoBehaviour
             reloadInFrames = -1;
             TryLoad();
         }
+
+		if (Input.GetKeyDown (KeyCode.Z))
+		{
+			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, -8.183f), new Vector3(0f, 323.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
+		if (Input.GetKeyDown (KeyCode.X))
+		{
+			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, -8.183f), new Vector3(0f, 216.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
+		if (Input.GetKeyDown (KeyCode.C))
+		{
+			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, 8.183f), new Vector3(0f, 36.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
+		if (Input.GetKeyDown (KeyCode.V))
+		{
+			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, 8.183f), new Vector3(0f, 143.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
     }
 
     void FixedUpdate()

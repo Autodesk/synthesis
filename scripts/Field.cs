@@ -33,7 +33,7 @@ public class Field
 		field.transform.localScale = scale;
 		field.AddComponent ("Rigidbody");
 		field.rigidbody.constraints = RigidbodyConstraints.FreezeAll;
-		field.rigidbody.SetDensity (10f);
+		field.rigidbody.isKinematic = true;
 
 		extraComponents = new Dictionary<string, Component> ();
 		allTransforms = GetAllChildren (field.transform);
@@ -141,6 +141,21 @@ public class Field
 					collisionTransforms[s].gameObject.GetComponent<MeshCollider>().enabled = enabled;
 				}
 			}
+		}
+	}
+
+	public Transform getCollisionObjects(string collisionObject)
+	{
+		if (collisionTransforms.ContainsKey (collisionObject))
+		{
+			if (collisionTransforms [collisionObject].GetComponent<MeshCollider> () == null)
+				return collisionTransforms [collisionObject].transform;
+			else
+				return collisionTransforms [collisionObject];
+		}
+		else
+		{
+			return null;
 		}
 	}
 
