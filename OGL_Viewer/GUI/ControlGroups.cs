@@ -134,7 +134,6 @@ public partial class ControlGroups
         thread.Join();
 
         txtFilePath.Text = selectedPath;
-        loadFromExisting();
     }
 
     private void loadFromExisting()
@@ -163,6 +162,7 @@ public partial class ControlGroups
         {
             if (System.IO.File.Exists(txtFilePath.Text + "\\node_0.bxda"))
             {
+                Console.WriteLine(true);
                 bxdaEditorPane1.loadModel(txtFilePath.Text);
             }
         }
@@ -177,7 +177,7 @@ public partial class ControlGroups
         loadFromExisting();
     }
 
-    private void Save_Click(object sender, EventArgs e)
+    private void btnSave_Click(object sender, EventArgs e)
     {
         if (txtFilePath.Text.IndexOfAny(System.IO.Path.GetInvalidPathChars()) != -1)
         {
@@ -190,7 +190,7 @@ public partial class ControlGroups
             return;
         }
 
-        formState = FormState.SUBMIT;
+        formState = FormState.SAVE;
         Hide();
     }
 
@@ -202,7 +202,9 @@ public partial class ControlGroups
 
 public enum FormState
 {
-    SUBMIT,
+    IDLE,
+    SAVE,
+    SAVED,
     CANCEL,
     CLOSE
 }

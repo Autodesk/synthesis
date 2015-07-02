@@ -51,9 +51,9 @@ namespace EditorsLibrary
         {
             if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.VECTOR3)
             {
-                editNode.data[0] = Double.Parse(valueX.Text);
-                editNode.data[1] = Double.Parse(valueGen.Text);
-                editNode.data[2] = Double.Parse(valueZ.Text);
+                editNode.data[0] = Single.Parse(valueX.Text);
+                editNode.data[1] = Single.Parse(valueGen.Text);
+                editNode.data[2] = Single.Parse(valueZ.Text);
             }
             else if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.COLOR)
             {
@@ -75,9 +75,9 @@ namespace EditorsLibrary
             {
                 editNode.data[0] = Int32.Parse(valueGen.Text);
             }
-            else if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.DOUBLE)
+            else if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.FLOAT)
             {
-                editNode.data[0] = Double.Parse(valueGen.Text);
+                editNode.data[0] = Single.Parse(valueGen.Text);
             }
             else if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.STRING)
             {
@@ -86,6 +86,7 @@ namespace EditorsLibrary
             else throw new NotImplementedException("Unsupported edit type");
 
             editNode.updateName();
+            DialogResult = DialogResult.OK;
             Close();
         }
 

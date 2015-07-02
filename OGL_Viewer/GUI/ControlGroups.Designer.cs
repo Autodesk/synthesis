@@ -211,7 +211,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnSave.TabIndex = 5;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.Save_Click);
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // ControlGroups
             // 
@@ -255,5 +255,5 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.Button btnExportDrivers;
     private System.Windows.Forms.Button btnSave;
     private System.Windows.Forms.TabPage tabPage1;
-    private EditorsLibrary.BXDAEditorPane bxdaEditorPane1;
+    public EditorsLibrary.BXDAEditorPane bxdaEditorPane1;
 }
