@@ -41,9 +41,10 @@ public static class RWObjectExtensions
     /// <param name="path">Output path</param>
     public static void WriteToFile(this RWObject obj, String path)
     {
-        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate));
-        writer.Write(obj);
-        writer.Close();
+        using(BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate)))
+        {
+            writer.Write(obj);
+        }
     }
 
     /// <summary>
@@ -52,27 +53,28 @@ public static class RWObjectExtensions
     /// <param name="path">Input path</param>
     public static void ReadFromFile(this RWObject obj, String path, BXDIO.ProgressReporter progress = null)
     {
-        BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open));
-        System.Threading.Thread progressThread = null;
-        if (progress != null)
+        using (BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open)))
         {
-            // Not the most informative, but it is something.
-            progressThread = new System.Threading.Thread(() =>
+            System.Threading.Thread progressThread = null;
+            if (progress != null)
             {
-                while (true)
+                // Not the most informative, but it is something.
+                progressThread = new System.Threading.Thread(() =>
                 {
-                    progress(reader.BaseStream.Position, reader.BaseStream.Length);
-                    System.Threading.Thread.Sleep(10);
-                }
-            });
-            progressThread.Start();
+                    while (true)
+                    {
+                        progress(reader.BaseStream.Position, reader.BaseStream.Length);
+                        System.Threading.Thread.Sleep(10);
+                    }
+                });
+                progressThread.Start();
+            }
+            obj.ReadData(reader);
+            if (progressThread != null)
+            {
+                progressThread.Abort();
+            }
         }
-        obj.ReadData(reader);
-        if (progressThread != null)
-        {
-            progressThread.Abort();
-        }
-        reader.Close();
     }
 
     /// <summary>

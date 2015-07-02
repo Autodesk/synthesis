@@ -38,7 +38,7 @@ static class Program
     {
         Console.CursorLeft = 0;
         string part = "Centering: " + component.Name;
-        Console.Write(part + new string(' ', Console.BufferWidth - part.Length - 1));
+        Console.Write(part + new string(' ', Math.Max(0, Console.BufferWidth - part.Length - 1)));
 
         foreach (AssemblyJoint joint in component.Joints)
         {

@@ -31,6 +31,8 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.groups_chCollTris = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabJoints = new System.Windows.Forms.TabPage();
             this.jointPane = new EditorsLibrary.JointEditorPane();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.bxdaEditorPane1 = new EditorsLibrary.BXDAEditorPane();
             this.txtFilePath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.pnlOutput = new System.Windows.Forms.Panel();
@@ -39,6 +41,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabsMain.SuspendLayout();
             this.tabGroups.SuspendLayout();
             this.tabJoints.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.pnlOutput.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,6 +60,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             // 
             this.tabsMain.Controls.Add(this.tabGroups);
             this.tabsMain.Controls.Add(this.tabJoints);
+            this.tabsMain.Controls.Add(this.tabPage1);
             this.tabsMain.Location = new System.Drawing.Point(13, 13);
             this.tabsMain.Name = "tabsMain";
             this.tabsMain.SelectedIndex = 0;
@@ -139,6 +143,25 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.jointPane.Size = new System.Drawing.Size(927, 639);
             this.jointPane.TabIndex = 0;
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.bxdaEditorPane1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 25);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(927, 639);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "Mesh Properties";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // bxdaEditorPane1
+            // 
+            this.bxdaEditorPane1.Location = new System.Drawing.Point(0, 0);
+            this.bxdaEditorPane1.Name = "bxdaEditorPane1";
+            this.bxdaEditorPane1.Size = new System.Drawing.Size(927, 639);
+            this.bxdaEditorPane1.TabIndex = 0;
+            this.bxdaEditorPane1.Load += new System.EventHandler(this.bxdaEditorPane1_Load);
+            // 
             // txtFilePath
             // 
             this.txtFilePath.Enabled = false;
@@ -179,16 +202,16 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.btnExportDrivers.UseVisualStyleBackColor = true;
             this.btnExportDrivers.Click += new System.EventHandler(this.button1_Click);
             // 
-            // Save
+            // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.Location = new System.Drawing.Point(816, 687);
-            this.btnSave.Name = "Save";
+            this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(132, 42);
             this.btnSave.TabIndex = 5;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
-            this.btnSave.Click += new System.EventHandler(this.Save_Click);
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // ControlGroups
             // 
@@ -208,6 +231,7 @@ partial class ControlGroups : System.Windows.Forms.Form
             this.tabsMain.ResumeLayout(false);
             this.tabGroups.ResumeLayout(false);
             this.tabJoints.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.pnlOutput.ResumeLayout(false);
             this.pnlOutput.PerformLayout();
             this.ResumeLayout(false);
@@ -230,4 +254,6 @@ partial class ControlGroups : System.Windows.Forms.Form
     private System.Windows.Forms.Panel pnlOutput;
     private System.Windows.Forms.Button btnExportDrivers;
     private System.Windows.Forms.Button btnSave;
+    private System.Windows.Forms.TabPage tabPage1;
+    public EditorsLibrary.BXDAEditorPane bxdaEditorPane1;
 }
