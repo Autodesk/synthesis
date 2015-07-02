@@ -130,12 +130,12 @@ namespace EditorsLibrary
                                                                               false);
                     surfaceNode.Nodes.Add(materialSectionHeader);
 
-                    if (surface.hasColor) materialSectionHeader.Nodes.Add(new BXDAEditorNode("Surface Color", BXDAEditorNode.NodeType.INTEGER,
-                                                                          true, surface.color));
+                    materialSectionHeader.Nodes.Add(new BXDAEditorNode("Color", BXDAEditorNode.NodeType.COLOR,
+                                                                          true, surface.color, surface.hasColor));
                     materialSectionHeader.Nodes.Add(new BXDAEditorNode("Transparency", BXDAEditorNode.NodeType.DOUBLE, true,
                                                                        surface.transparency));
                     materialSectionHeader.Nodes.Add(new BXDAEditorNode("Translucency", BXDAEditorNode.NodeType.DOUBLE, true,
-                                                    surface.translucency));
+                                                                       surface.translucency));
                     materialSectionHeader.Nodes.Add(new BXDAEditorNode("Specular Intensity", BXDAEditorNode.NodeType.DOUBLE, true,
                                                                        surface.specular));
 
@@ -144,6 +144,58 @@ namespace EditorsLibrary
                                                                              surface.indicies.Length);
                     surfaceNode.Nodes.Add(indicesSectionHeader);
                 }
+            }
+        }
+
+        private void writeModel()
+        {
+            var meshNodes = from BXDAEditorNode node in rootNode.Nodes
+                            where node.type == BXDAEditorNode.NodeType.MESH
+                            select node;
+
+            foreach (BXDAEditorNode node in meshNodes)
+            {
+                reloadMesh(node);
+
+                BinaryWriter writer = new BinaryWriter(new FileStream((string) node.data[1], FileMode.Truncate, FileAccess.Write));
+                ((BXDAMesh) node.data[0]).WriteData(writer);
+                writer.Close();
+            }
+        }
+
+        private void reloadMesh(BXDAEditorNode meshNode)
+        {
+            foreach (BXDAEditorNode visualSubMeshNode in meshNode.Nodes[0].Nodes) //Visual Sub-meshes
+            {
+                reloadSubMesh(visualSubMeshNode);
+            }
+
+            foreach (BXDAEditorNode collisionSubMeshNode in meshNode.Nodes[1].Nodes) //Collision Sub-meshes
+            {
+                reloadSubMesh(collisionSubMeshNode);
+            }
+
+            BXDAMesh mesh = (BXDAMesh) meshNode.data[0];
+            
+            //Physical properties
+            mesh.physics.mass = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[0]).data[0];
+            mesh.physics.centerOfMass.x = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[1]).data[0];
+            mesh.physics.centerOfMass.y = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[1]).data[1];
+            mesh.physics.centerOfMass.z = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[1]).data[2];
+        }
+
+        private void reloadSubMesh(BXDAEditorNode subMeshNode)
+        {
+            foreach (BXDAEditorNode surfaceNode in subMeshNode.Nodes[2].Nodes)
+            {
+                BXDAMesh.BXDASurface surface = (BXDAMesh.BXDASurface) surfaceNode.data[0];
+                BXDAEditorNode materialNode = (BXDAEditorNode) surfaceNode.Nodes[0];
+
+                surface.hasColor = (bool) ((BXDAEditorNode) materialNode.Nodes[0]).data[1];
+                surface.color = (uint) ((BXDAEditorNode) materialNode.Nodes[0]).data[0];
+                surface.transparency = (float) ((BXDAEditorNode) materialNode.Nodes[1]).data[0];
+                surface.translucency = (float) ((BXDAEditorNode) materialNode.Nodes[2]).data[0];
+                surface.specular = (float) ((BXDAEditorNode) materialNode.Nodes[3]).data[0];
             }
         }
         
@@ -226,6 +278,11 @@ namespace EditorsLibrary
                 {
                     case NodeType.VECTOR3:
                         return String.Format("<{0}, {1}, {2}>", data[0], data[1], data[2]);
+                    case NodeType.COLOR:
+                        uint color = (uint) data[0];
+                        if (!((bool)data[1])) return String.Format("{0}", false);
+                        else return String.Format("#{0:X}{1:X}{2:X}{3:X}",
+                            (color >> 24), (color >> 16) & 0x00FF, (color >> 8) & 0x0000FF, color & 0x000000FF);
                     case NodeType.INTEGER:
                     case NodeType.DOUBLE:
                     case NodeType.STRING:
@@ -247,6 +304,7 @@ namespace EditorsLibrary
                 SUBMESH, // {BXDAMesh.BXDASubMesh}
                 SURFACE, // {BXDAMesh.BXDASurface}
                 VECTOR3, // {double, double, double}
+                COLOR, // {uint, bool}
                 INTEGER, // {int}
                 DOUBLE, // {double}
                 STRING // {string}

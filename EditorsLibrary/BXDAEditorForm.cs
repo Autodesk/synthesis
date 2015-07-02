@@ -29,6 +29,14 @@ namespace EditorsLibrary
                 valueGen.Text = String.Format("{0}", editNode.data[1]);
                 valueZ.Text = String.Format("{0}", editNode.data[2]);
             }
+            else if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.COLOR)
+            {
+                valueX.Enabled = false;
+                valueZ.Enabled = false;
+
+                valueGen.Text = ((bool) editNode.data[1]) ? editNode.ToString() : "";
+                valueGen.Enabled = true;
+            }
             else
             {
                 valueX.Enabled = false;
@@ -46,6 +54,22 @@ namespace EditorsLibrary
                 editNode.data[0] = Double.Parse(valueX.Text);
                 editNode.data[1] = Double.Parse(valueGen.Text);
                 editNode.data[2] = Double.Parse(valueZ.Text);
+            }
+            else if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.COLOR)
+            {
+                bool hasColor = (valueGen.Text.Length > 0);
+                uint color;
+
+                if (!hasColor)
+                {
+                    editNode.data[1] = false;
+                    editNode.data[0] = 0xFFFFFFFF;
+                }
+                else if (UInt32.TryParse(valueGen.Text.Substring(1), System.Globalization.NumberStyles.HexNumber, null, out color))
+                {
+                    editNode.data[1] = true;
+                    editNode.data[0] = color;
+                }
             }
             else if (editNode.type == BXDAEditorPane.BXDAEditorNode.NodeType.INTEGER)
             {

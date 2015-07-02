@@ -119,7 +119,7 @@
             this.Controls.Add(this.valueGen);
             this.Controls.Add(this.fieldName);
             this.Name = "BXDAEditorForm";
-            this.Text = "BXDAEditorForm";
+            this.Text = "Value Editor";
             this.ResumeLayout(false);
             this.PerformLayout();
 

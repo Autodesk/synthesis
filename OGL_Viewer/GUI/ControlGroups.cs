@@ -115,34 +115,26 @@ public partial class ControlGroups
 
     private void btnBrowse_Click(object sender, EventArgs e)
     {
-        string selectedPath = "";
-        var t = new Thread((ThreadStart) (() =>
-        {
-            FolderBrowserDialog fbd = new FolderBrowserDialog();
-            fbd.RootFolder = Environment.SpecialFolder.UserProfile;
-            if (BXDSettings.Instance.LastSkeletonDirectory != null)
+        string selectedPath = null;
+        var thread = new Thread(() =>
             {
-                fbd.SelectedPath = BXDSettings.Instance.LastSkeletonDirectory;
-            }
-            if (System.IO.Directory.Exists(txtFilePath.Text))
-            {
-                fbd.SelectedPath = txtFilePath.Text;
-            }
-            fbd.ShowNewFolderButton = true;
-            if (fbd.ShowDialog() == DialogResult.Cancel)
-                return;
+                FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
 
-            selectedPath = fbd.SelectedPath;
-        }));
+                folderBrowser.ShowNewFolderButton = false;
+                folderBrowser.RootFolder = Environment.SpecialFolder.UserProfile;
 
-        t.SetApartmentState(ApartmentState.STA);
-        t.Start();
-        t.Join();
-        if (selectedPath.Length > 0 && (System.IO.Directory.Exists(selectedPath) || !System.IO.File.Exists(selectedPath)))
-        {
-            txtFilePath.Text = selectedPath;
-            //loadFromExisting();
-        }
+                if (folderBrowser.ShowDialog() == DialogResult.OK)
+                {
+                    selectedPath = folderBrowser.SelectedPath;
+                }
+            });
+
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+
+        txtFilePath.Text = selectedPath;
+        loadFromExisting();
     }
 
     private void loadFromExisting()
@@ -171,7 +163,7 @@ public partial class ControlGroups
         {
             if (System.IO.File.Exists(txtFilePath.Text + "\\node_0.bxda"))
             {
-
+                bxdaEditorPane1.loadModel(txtFilePath.Text);
             }
         }
         catch (Exception e)
