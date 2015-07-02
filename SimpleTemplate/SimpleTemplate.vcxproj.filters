@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SimpleRobot.cpp">
+    <ClCompile Include="..\skunkworks-flower\Skunkworks_BasicControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

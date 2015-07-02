@@ -95,7 +95,7 @@ int main() {
 	lpacket[0] = 0x00;  // packet number lesser byte
 	lpacket[1] = 0x00;  // packet number greater byte
 	lpacket[2] = 0x01;  // not a clue
-	lpacket[3] = 0x00; // various states of the robot (teleop enabled/disabled, voltage burnout, etc)
+	lpacket[3] = 0x00; // various states of the robot (teleop enabled/disabled, voltage burnout, etc)  (0 = Disabled Telop), (4 = Enabled Telop), (2 = Disabled Autonomous), (6 = Enabled Autonomous), (5 = Enable Test), (1 = Disabled Test)
 	lpacket[4] = 0x30; // 0x20 shows robot code green, all else appears to do nothing
 	lpacket[5] = 0x0c; // left of decimal voltage, = x
 	lpacket[6] = 0x6d; // right of decimal voltage, = x/255
@@ -131,6 +131,7 @@ int main() {
 		len = 32;
 
 		for (int i=0; i<len; i++) {
+//			if (((int)input[i]) != ((int)input[i-1]))
 			std::cout << std::hex << (int)input[i] << std::dec << " "; // convert to hex using pointers (shh)
 		}
 		std::cout << std::endl;
