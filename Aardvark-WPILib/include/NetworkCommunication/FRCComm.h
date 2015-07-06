@@ -60,7 +60,7 @@ struct FRCCommonControlData{
 	char dsID_Position;
 
 	union {
-		int8_t stick0Axes[6];
+		int8_t stick0Axes[8];
 		struct {
 			int8_t stick0Axis1;
 			int8_t stick0Axis2;
@@ -73,7 +73,7 @@ struct FRCCommonControlData{
 	uint16_t stick0Buttons;		// Left-most 4 bits are unused
 
 	union {
-		int8_t stick1Axes[6];
+		int8_t stick1Axes[8];
 		struct {
 			int8_t stick1Axis1;
 			int8_t stick1Axis2;
@@ -86,7 +86,7 @@ struct FRCCommonControlData{
 	uint16_t stick1Buttons;		// Left-most 4 bits are unused
 
 	union {
-		int8_t stick2Axes[6];
+		int8_t stick2Axes[8];
 		struct {
 			int8_t stick2Axis1;
 			int8_t stick2Axis2;
@@ -99,7 +99,7 @@ struct FRCCommonControlData{
 	uint16_t stick2Buttons;		// Left-most 4 bits are unused
 
 	union {
-		int8_t stick3Axes[6];
+		int8_t stick3Axes[8];
 		struct {
 			int8_t stick3Axis1;
 			int8_t stick3Axis2;
