@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using EditorsLibrary;
 
 static class Program
 {
@@ -105,6 +106,8 @@ static class Program
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
+        ExporterGUI GUI = new ExporterGUI();
+        GUI.ShowDialog();
         ControlGroups controlGUI = new ControlGroups();
         foreach (RigidNode_Base node in nodes)
         {

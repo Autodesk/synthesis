@@ -33,12 +33,13 @@
             // 
             // treeView1
             // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.FullRowSelect = true;
             this.treeView1.HideSelection = false;
             this.treeView1.LineColor = System.Drawing.Color.DarkSlateGray;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(800, 551);
+            this.treeView1.Size = new System.Drawing.Size(800, 723);
             this.treeView1.TabIndex = 0;
             this.treeView1.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseDoubleClick);
             // 
@@ -49,7 +50,7 @@
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
             this.Controls.Add(this.treeView1);
             this.Name = "BXDAEditorPane";
-            this.Size = new System.Drawing.Size(800, 551);
+            this.Size = new System.Drawing.Size(800, 723);
             this.ResumeLayout(false);
 
         }
