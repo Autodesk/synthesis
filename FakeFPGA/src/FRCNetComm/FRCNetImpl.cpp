@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <emulator.h> // For TEAM_ID
 
+BYTE lpacket[0x400];
+
 extern "C" {
 	FRCNetImpl *frcNetInstance = NULL;
 }
@@ -100,6 +102,42 @@ int FRCNetImpl::runThread() {
 		return 2;
 	}
 
+	// CODE THAT WORKS FOR CODE AND COMMS
+
+	/*
+	lpacket[0] = 0x00;  // packet number lesser byte
+	lpacket[1] = 0x00;  // packet number greater byte
+	lpacket[2] = 0x01;  // not a clue
+	lpacket[3] = 0x00; // various states of the robot (teleop enabled/disabled, voltage burnout, etc)  (0 = Disabled Telop), (4 = Enabled Telop), (2 = Disabled Autonomous), (6 = Enabled Autonomous), (5 = Enable Test), (1 = Disabled Test)
+	lpacket[4] = 0x30; // 0x20 shows robot code green, all else appears to do nothing
+	lpacket[5] = 0x0c; // left of decimal voltage, = x
+	lpacket[6] = 0x6d; // right of decimal voltage, = x/255
+	lpacket[7] = 0x00; // to lpacket[11]
+	lpacket[8] = 0x09;
+	lpacket[9] = 0x04;
+	lpacket[10] = 0x00;
+	lpacket[11] = 0x00;
+	lpacket[12] = 0x00;
+	lpacket[13] = 0x00;
+	lpacket[14] = 0x10;
+	lpacket[15] = 0x15;
+	lpacket[16] = 0x30;
+	lpacket[17] = 0x00;
+
+	BYTE input[0x400];
+	memset(&input[0], 0x0, sizeof(input));
+
+	while (true) {
+		(*((uint16_t*)&lpacket[0]))++; // make communications light show up, first two bytes increment
+		const int num = 2;
+		sendto(dsSocket, (const char*)lpacket, 0x400, 0, (const sockaddr*)&dsAddress, sizeof(dsAddress));
+		int len = recv(robotSocket, (char*) &input, sizeof(input), 0);
+		len = 32;
+		//std::cout << std::endl;
+
+		//Sleep(50);
+	}
+	*/	
 	char buffer[1024];
 	for (int i = 0; i < 32; i++)
 	{
