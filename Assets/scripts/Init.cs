@@ -6,8 +6,8 @@ using System.Collections.Generic;
 
 public class Init : MonoBehaviour
 {
-    //Multiples mass to correct physics
-    public const float PHYSICS_MASS_MULTIPLIER = 6.5f;
+    //Multiples mass to correct physics, but isn't righ now
+    public const float PHYSICS_MASS_MULTIPLIER = 1f;
 
     private GUIController gui;
 
@@ -16,6 +16,16 @@ public class Init : MonoBehaviour
 
     private unityPacket udp = new unityPacket();
 	private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+	//main node of robot from which speed and other stats are derived
+	private GameObject mainNode;
+	//sizes and places window and repositions it based on screen size
+	private Rect windowRect = new Rect(Screen.width-320, 20, 300, 150);
+	private float acceleration;
+	private float angvelo;
+	private float speed;
+	private float weight;
+	private float oldSpeed;
+
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -29,9 +39,26 @@ public class Init : MonoBehaviour
     {
     }
 
-    [STAThread]
+	Vector3 lastPosition = Vector3.zero;
+
+
+	//displays stats like speed and acceleration
+	public void StatsWindow(int windowID) {
+		
+		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + speed.ToString() + " m/s, " + Math.Round(speed*3.28084, 2).ToString() + " ft/s");
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + acceleration.ToString() + " m/s^2");
+		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + angvelo.ToString() + " rad/s");
+		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
+		
+		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
+	}
+
+	[STAThread]
     void OnGUI()
     {
+		//draws stats window on to GUI
+		windowRect = GUI.Window(0, windowRect, StatsWindow, "Stats");
+
         if (gui == null)
         {
             gui = new GUIController();
@@ -92,6 +119,7 @@ public class Init : MonoBehaviour
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
         }
+
     }
 
     /// <summary>
@@ -158,15 +186,16 @@ public class Init : MonoBehaviour
                 uNode.CreateMesh(filePath + uNode.modelFileName);
                 uNode.CreateJoint();
 
+
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
 
-            {   // Add some mass to the base object
+            {   // Add some weight to the base object
                 UnityRigidNode uNode = (UnityRigidNode) skeleton;
-                uNode.unityObject.transform.rigidbody.mass *= PHYSICS_MASS_MULTIPLIER; // Battery'
-                Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
-                vec.y *= 0.9f;
-                uNode.unityObject.rigidbody.centerOfMass = vec;
+                if(uNode.unityObject.transform.rigidbody.mass < 10)
+					uNode.unityObject.transform.rigidbody.mass += 10;
+				//mass = uNode.unityObject.transform.rigidbody.mass;
+				//StatsWindow(0);
             }
 
             auxFunctions.IgnoreCollisionDetection(meshColliders);
@@ -239,6 +268,17 @@ public class Init : MonoBehaviour
                 }
             }
             udp.WritePacket(sensorPacket);
+
+
         }
-    }
+		//calculates stats of robot
+		mainNode = GameObject.Find("node_0.bxda");
+		speed = (float)Math.Round(Math.Abs(mainNode.rigidbody.velocity.magnitude), 2);
+		weight = (float)Math.Round(mainNode.rigidbody.mass*2.20462,2);
+		angvelo = (float)Math.Round(Math.Abs(mainNode.rigidbody.angularVelocity.magnitude));
+		acceleration = (float)Math.Round((mainNode.rigidbody.velocity.magnitude-oldSpeed)/Time.deltaTime);
+		oldSpeed = speed;
+		//Init.StatsWindow (0);
+	
+	}
 }
