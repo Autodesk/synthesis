@@ -45,8 +45,10 @@ public class Init : MonoBehaviour
 	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
 		
-		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + speed.ToString() + " m/s, " + Math.Round(speed*3.28084, 2).ToString() + " ft/s");
+		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + speed.ToString() + " m/s");
+		GUI.Label (new Rect (150, 20, 200, 50), Math.Round(speed*3.28084, 2).ToString() + " ft/s");
 		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + acceleration.ToString() + " m/s^2");
+		GUI.Label (new Rect (190, 40, 200, 50), Math.Round(acceleration*3.28084, 2).ToString() + " ft/s^2");
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + angvelo.ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
 		
@@ -78,7 +80,7 @@ public class Init : MonoBehaviour
                 }
                 else
                 {
-                    UserMessageManager.Dispatch("Invalid selection!");
+                    UserMessageManager.Dispatch("Invalid selection!", 0);
                 }
             });
             gui.AddAction("Orient Robot", () =>

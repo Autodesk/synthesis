@@ -112,8 +112,9 @@ class GUIController
     /// <param name="caption">The title of the sidebar entry</param>
     /// <param name="window">The window to control</param>
     /// <param name="onReturn">Optional callback on window close</param>
-    public void AddWindow(string caption, OverlayWindow window, Action<object> onReturn = null)
+    public void AddWindow(string caption, OverlayWindow window, Action<object> onReturn)
     {
+		onReturn = null;
         windows.Add(window);
         AddAction(caption, () =>
         {
