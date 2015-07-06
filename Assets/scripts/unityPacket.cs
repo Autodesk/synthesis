@@ -6,7 +6,6 @@ using System.Threading;
 
 public class unityPacket
 {
-	
 	public class OutputStatePacket
 	{
 		public DIOModule[] dio = new DIOModule[2];
