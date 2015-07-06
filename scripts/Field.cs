@@ -41,6 +41,17 @@ public class Field
 	}
 
 	/// <summary>
+	/// Destroy the field.
+	/// </summary>
+	public void Destroy()
+	{
+		GameObject.Destroy (field);
+		extraComponents.Clear ();
+		allTransforms.Clear ();
+		collisionTransforms.Clear ();
+	}
+
+	/// <summary>
 	/// Adds the specified type of component to the field and returns the added component.
 	/// </summary>
 	/// <returns>The component.</returns>
