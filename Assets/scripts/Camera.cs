@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿                                                                                                                                                                                                                                            using UnityEngine;
 using System.Collections;
 
 public class Camera : MonoBehaviour
@@ -130,7 +130,7 @@ public class Camera : MonoBehaviour
 		{
 			robot = GameObject.Find ("Robot");
 			skeleton = (Rigidbody) robot.GetComponentsInChildren<Rigidbody> ().GetValue(0);
-			offset = new Vector3 (0f, 1.25f, 0f);
+			offset = new Vector3 (0.75f, 1.25f, 0f);
 			mono.transform.position = skeleton.transform.position + offset;
 			mono.transform.rotation = skeleton.transform.rotation;
 			mono.transform.parent = skeleton.transform;

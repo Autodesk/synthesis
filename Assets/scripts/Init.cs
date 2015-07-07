@@ -20,13 +20,15 @@ public class Init : MonoBehaviour
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
 	private Rect windowRect = new Rect(Screen.width-320, 20, 300, 150);
+	//private Vector3 position;
+
 	private float acceleration;
 	private float angvelo;
 	private float speed;
 	private float weight;
 	private float oldSpeed;
 
-
+	public float distance = 4.5f;
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
     /// </summary>
@@ -39,14 +41,13 @@ public class Init : MonoBehaviour
     {
     }
 
-	Vector3 lastPosition = Vector3.zero;
-
-
 	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
 		
-		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + speed.ToString() + " m/s, " + Math.Round(speed*3.28084, 2).ToString() + " ft/s");
+		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + speed.ToString() + " m/s");
+		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 2).ToString() + " ft/s");
 		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + acceleration.ToString() + " m/s^2");
+		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 2).ToString() + " ft/s^2");
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + angvelo.ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
 		
@@ -119,7 +120,6 @@ public class Init : MonoBehaviour
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
         }
-
     }
 
     /// <summary>
@@ -127,7 +127,11 @@ public class Init : MonoBehaviour
     /// joints, velocities, etc..
     /// </summary>
     private void OrientRobot()
-    {
+    {	
+		//position.x=2;
+		//position.y=1;
+		//position.z=-5;
+		//Debug.Log (position);
         if (activeRobot != null && skeleton != null)
         {
             var unityWheelData = new List<GameObject>();
@@ -156,7 +160,7 @@ public class Init : MonoBehaviour
             }
         }
     }
-
+	//loads a robot
     private void TryLoad()
     {
         if (activeRobot != null)
@@ -194,18 +198,16 @@ public class Init : MonoBehaviour
                 UnityRigidNode uNode = (UnityRigidNode) skeleton;
                 if(uNode.unityObject.transform.rigidbody.mass < 10)
 					uNode.unityObject.transform.rigidbody.mass += 10;
-				//mass = uNode.unityObject.transform.rigidbody.mass;
-				//StatsWindow(0);
             }
 
             auxFunctions.IgnoreCollisionDetection(meshColliders);
-            OrientRobot();
         }
         else
         {
             Debug.Log("unityWheelData is null...");
         }
         gui.guiVisible = false;
+		OrientRobot();
     }
 
     void Start()
@@ -278,7 +280,6 @@ public class Init : MonoBehaviour
 		angvelo = (float)Math.Round(Math.Abs(mainNode.rigidbody.angularVelocity.magnitude));
 		acceleration = (float)Math.Round((mainNode.rigidbody.velocity.magnitude-oldSpeed)/Time.deltaTime);
 		oldSpeed = speed;
-		//Init.StatsWindow (0);
 	
 	}
 }
