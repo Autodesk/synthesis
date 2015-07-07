@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 
+/// <summary>
+/// Utility functions for reading/writing BXDJ files
+/// </summary>
 public class BXDJSkeleton
 {
     /// <summary>
@@ -13,12 +16,11 @@ public class BXDJSkeleton
     {
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
+
         for (int i = 0; i < nodes.Count; i++)
         {
-            if (nodes[i].modelFileName == null || overwrite)
-            {
+            if (nodes[i].modelFileName == null || overwrite) 
                 nodes[i].modelFileName = ("node_" + i + ".bxda");
-            }
         }
     }
 
@@ -29,7 +31,6 @@ public class BXDJSkeleton
     /// <param name="baseNode">The base node of the skeleton</param>
     public static void WriteSkeleton(String path, RigidNode_Base baseNode)
     {
-        // Create a list of nodes
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
@@ -40,10 +41,8 @@ public class BXDJSkeleton
             if (nodes[i].GetParent() != null)
             {
                 parentID[i] = nodes.IndexOf(nodes[i].GetParent());
-                if (parentID[i] < 0)
-                {
-                    throw new Exception("Can't resolve parent ID for " + nodes[i].ToString());
-                }
+
+                if (parentID[i] < 0) throw new Exception("Can't resolve parent ID for " + nodes[i].ToString());
             }
             else
             {
@@ -58,10 +57,11 @@ public class BXDJSkeleton
 
         // Write node values
         writer.Write(nodes.Count);
+
         for (int i = 0; i < nodes.Count; i++)
         {
             writer.Write(parentID[i]);
-            nodes[i].modelFileName = (FileUtilities.SanatizeFileName("node_" + i + ".bxda"));
+            nodes[i].modelFileName = FileUtilities.SanatizeFileName("node_" + i + ".bxda");
 
             writer.Write(nodes[i].modelFileName);
             writer.Write(nodes[i].GetModelID());
@@ -83,24 +83,25 @@ public class BXDJSkeleton
         BinaryReader reader = null;
         try
         {
-            reader = new BinaryReader(new FileStream(path, FileMode.Open));
+            reader = new BinaryReader(new FileStream(path, FileMode.Open)); //Throws IOException
             // Sanity check
             uint version = reader.ReadUInt32();
-            BXDIO.CheckReadVersion(version);
+            BXDIO.CheckReadVersion(version); //Throws FormatException
 
             int nodeCount = reader.ReadInt32();
-            if (nodeCount <= 0)
-            {
-                throw new Exception("This appears to be an empty skeleton");
-            }
+            if (nodeCount <= 0) throw new Exception("This appears to be an empty skeleton");
+
             RigidNode_Base root = null;
             RigidNode_Base[] nodes = new RigidNode_Base[nodeCount];
+
             for (int i = 0; i < nodeCount; i++)
             {
                 nodes[i] = RigidNode_Base.NODE_FACTORY();
+
                 int parent = reader.ReadInt32();
                 nodes[i].modelFileName = (reader.ReadString());
                 nodes[i].modelFullID = (reader.ReadString());
+
                 if (parent != -1)
                 {
                     SkeletalJoint_Base joint = SkeletalJoint_Base.ReadJointFully(reader);
@@ -116,7 +117,20 @@ public class BXDJSkeleton
             {
                 throw new Exception("This skeleton has no known base.  \"" + path + "\" is probably corrupted.");
             }
+
             return root;
+        }
+        catch (FormatException fe)
+        {
+            Console.WriteLine("File version mismatch");
+            Console.WriteLine(fe);
+            return null;
+        }
+        catch (IOException ie)
+        {
+            Console.WriteLine("Could not open skeleton file");
+            Console.WriteLine(ie);
+            return null;
         }
         catch (Exception e)
         {
@@ -125,8 +139,7 @@ public class BXDJSkeleton
         }
         finally
         {
-            if (reader != null)
-                reader.Close();
+            if (reader != null) reader.Close();
         }
     }
 
@@ -137,16 +150,18 @@ public class BXDJSkeleton
     /// <param name="to">Destination skeleton</param>
     public static void CloneDriversFromTo(RigidNode_Base from, RigidNode_Base to, bool overwrite = false)
     {
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        from.ListAllNodes(nodes);
+        List<RigidNode_Base> tempNodes = new List<RigidNode_Base>();
+        from.ListAllNodes(tempNodes);
+
         Dictionary<string, RigidNode_Base> fromNodes = new Dictionary<string, RigidNode_Base>();
-        foreach (RigidNode_Base cpy in nodes)
+        foreach (RigidNode_Base cpy in tempNodes)
         {
             fromNodes[cpy.GetModelID()] = cpy;
         }
-        nodes.Clear();
-        to.ListAllNodes(nodes);
-        foreach (RigidNode_Base copyTo in nodes)
+
+        tempNodes.Clear();
+        to.ListAllNodes(tempNodes);
+        foreach (RigidNode_Base copyTo in tempNodes)
         {
             RigidNode_Base fromNode;
             if (fromNodes.TryGetValue(copyTo.GetModelID(), out fromNode))
@@ -168,4 +183,5 @@ public class BXDJSkeleton
             }
         }
     }
+
 }

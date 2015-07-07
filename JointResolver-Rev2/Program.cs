@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Inventor;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -11,7 +12,15 @@ static class Program
     private const int MAX_VERTICIES = 8192;
     public static void Main(String[] args)
     {
-        INVENTOR_APPLICATION = (Inventor.Application) System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+        try
+        {
+            INVENTOR_APPLICATION = (Inventor.Application)Marshal.GetActiveObject("Inventor.Application");
+        }
+        catch (COMException e)
+        {
+            MessageBox.Show("Could not get running instance of Inventor Application");
+            return;
+        }
         //_2014FieldBounding.WriteModel();
         AnalyzeRigidResults();
         //AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
@@ -29,7 +38,7 @@ static class Program
     {
         Console.CursorLeft = 0;
         string part = "Centering: " + component.Name;
-        Console.Write(part + new string(' ', Console.BufferWidth - part.Length - 1));
+        Console.Write(part + new string(' ', Math.Max(0, Console.BufferWidth - part.Length - 1)));
 
         foreach (AssemblyJoint joint in component.Joints)
         {
@@ -67,7 +76,7 @@ static class Program
     {
         AssemblyDocument asmDoc = (AssemblyDocument) INVENTOR_APPLICATION.ActiveDocument;
 
-        //Centers all the joints for each component.  Done to match the assemblie's joint position with the subassembly's position.
+        //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
         foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
         {
             CenterAllJoints(component);

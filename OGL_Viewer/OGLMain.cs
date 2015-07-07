@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Graphics;
@@ -31,7 +32,8 @@ public class OGLMain : GameWindow
     static float[] l_specular = { .1f, .1f, .1f, .1f };
     static float[] ambient = { .125f, .125f, .125f, .125f };
 
-    private ControlGroups editorGUI;
+    private  ControlGroups editorGUI;
+    private Thread editorGUIThread = null;
     private string modelFileName;
 
     // Select info
@@ -44,7 +46,7 @@ public class OGLMain : GameWindow
     {
         if (pathBase == null)
         {
-            pathBase = BXDSettings.Instance.LastSkeletonDirectory + "/";
+            pathBase = BXDSettings.Instance.LastSkeletonDirectory;
         }
         if (!Directory.Exists(pathBase))
         {
@@ -58,35 +60,56 @@ public class OGLMain : GameWindow
         RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton(pathBase + "\\skeleton.bxdj");
         baseNode = (OGL_RigidNode) skeleton;
         nodes = skeleton.ListAllNodes();
-        new System.Threading.Thread(() =>
+        if (editorGUIThread == null)
         {
-            editorGUI = new ControlGroups();
-            editorGUI.SetSkeleton(skeleton);
-            editorGUI.SetGroupList(nodes);
-            editorGUI.jointPane.SelectedJoint += delegate(RigidNode_Base node)
+            editorGUIThread = new Thread(() =>
             {
-                foreach (RigidNode_Base ns in nodes)
+                if (editorGUI == null) editorGUI = new ControlGroups();
+                editorGUI.SetSkeleton(skeleton);
+                editorGUI.SetGroupList(nodes);
+                editorGUI.jointPane.SelectedJoint += delegate(RigidNode_Base node)
                 {
-                    ((OGL_RigidNode) ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
-                }
-                if (node is OGL_RigidNode)
-                {
-                    ((OGL_RigidNode) node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
-                }
-            };
-            editorGUI.ExportPath = pathBase;
-            editorGUI.ShowDialog();
-            if (editorGUI.formState == FormState.SUBMIT)
-            {
-                pathBase = editorGUI.ExportPath;
-                Console.WriteLine("Writing skeleton");
-                BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode);
+                   foreach (RigidNode_Base ns in nodes)
+                   {
+                       ((OGL_RigidNode)ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
+                   }
+                   if (node is OGL_RigidNode)
+                   {
+                       ((OGL_RigidNode)node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
+                   }
+               };
+               editorGUI.ExportPath = pathBase;
 
-                BXDSettings.Instance.LastSkeletonDirectory = pathBase;
-                BXDSettings.Save();
-                MessageBox.Show("Finished Exporting Files!");
-            }
-        }).Start();
+               while (editorGUI.formState != FormState.CLOSE)
+               {
+               lock (editorGUI)
+               {
+                   editorGUI.ShowDialog();
+               }
+
+               if (editorGUI.formState == FormState.SAVE)
+               {
+                   pathBase = editorGUI.ExportPath;
+                   Console.WriteLine("Writing skeleton");
+                   BXDJSkeleton.WriteSkeleton(pathBase + "\\skeleton.bxdj", baseNode);
+
+                   Console.WriteLine("Writing mesh");
+                   for (int i = 0; i < editorGUI.bxdaEditorPane1.NodeCount; i++)
+                   {
+                       ((BXDAMesh)((EditorsLibrary.BXDAEditorPane.BXDAEditorNode)editorGUI.bxdaEditorPane1.rootNode.Nodes[i + 1]).data[0])
+                           .WriteToFile(pathBase + String.Format("\\node_{0}.bxda", i));
+                   }
+
+                   BXDSettings.Instance.LastSkeletonDirectory = pathBase;
+                   BXDSettings.Save();
+                   MessageBox.Show("Finished Exporting Files!");
+                   editorGUI.formState = FormState.SAVED;
+               }
+           }
+        });
+            editorGUIThread.Start();
+        }
+
         foreach (RigidNode_Base node in nodes)
         {
             ((OGL_RigidNode) node).loadMeshes(pathBase + "\\" + node.modelFileName);
@@ -134,6 +157,8 @@ public class OGLMain : GameWindow
         GL.Enable(EnableCap.Light0);
         GL.Enable(EnableCap.Light1);
         GL.Enable(EnableCap.DepthTest);
+        GL.Enable(EnableCap.CullFace);
+        GL.CullFace(CullFaceMode.Front);
         int j = ShaderLoader.PartShader;//Loadshader
 
         setupSelectBuffer();
@@ -166,7 +191,7 @@ public class OGLMain : GameWindow
         GL.Viewport(0, 0, Width, Height);
         GL.Scissor(mouseX, mouseY, 1, 1);
         GL.ClearColor(System.Drawing.Color.White);
-        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         renderInternal(true);
 
         byte[] pixels = new byte[4];
@@ -247,6 +272,12 @@ public class OGLMain : GameWindow
 
         //GL.Enable(EnableCap.DepthTest);
         SwapBuffers();
+
+        if (editorGUI.formState == FormState.SAVED)
+        {
+            editorGUI.formState = FormState.IDLE;
+            loadSkeleton();
+        }
     }
 
     private void renderOverlay()
