@@ -73,10 +73,8 @@ class FileBrowser : OverlayWindow
     /// <param name="stringify">Optional function to convert object to string</param>
     /// <param name="highlight">Optional currently-selected item's string representation</param>
     /// <returns>The selected object</returns>
-    private static object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify, string highlight)
+    private static object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify = null, string highlight = null)
     {
-		stringify = null;
-		highlight = null;
         object selected = null;
         Color bg = GUI.backgroundColor;
         foreach (T o in items)
