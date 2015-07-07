@@ -9,11 +9,6 @@
 #include <stdlib.h>
 #include <emulator.h> // For TEAM_ID
 
-enum State {ENABLED, DISABLED, DAUTONOMOUS, EAUTONOMOUS, ETEST, DTEST};
-State robot;
-enum Station {Red1, Red2, Red3, Blue1, Blue2, Blue3};
-Station locate;
-
 extern "C" {
 	FRCNetImpl *frcNetInstance = NULL;
 }
@@ -397,41 +392,6 @@ int FRCNetImpl::runThread() {
 		memcpy(&sendBuffer[0x3fc], &crc, sizeof(DWORD));
 		sendto(dsSocket,(const char *) &sendBuffer, 0x07, 0,(const sockaddr*)&dsAddress, sizeof(dsAddress));
 	}
-}
-void FRCNetImpl::setState(int8_t status){
-	robot = DISABLED;
-	switch(status){
-		case 0 : robot = DISABLED; break;
-		case 1 : robot = DTEST; break;
-		case 2 : robot = DAUTONOMOUS; break;
-		case 4 : robot = ENABLED; break;
-		case 5 : robot = ETEST; break;
-		case 6 : robot = EAUTONOMOUS; break;
-		default : robot; break;
-	}
-}
-
-void FRCNetImpl::setStation(int8_t station){
-	locate = Red1;
-	switch(station){
-		case 0 : locate = Red1; break;
-		case 1 : locate = Red2; break;
-		case 2 : locate = Red3; break;
-		case 3 : locate = Blue1; break; 
-		case 4 : locate = Blue2; break; 
-		case 5 : locate = Blue3; break;
-		default : locate; break;
-	}
-}
-int FRCNetImpl::setVoltage(int8_t volts, int8_t millivolts){
-	int num = rand();
-	int opr = rand()%2;
-	if (opr = 1){
-		millivolts + num;
-	}else{
-		millivolts - num;
-	}
-	return (volts + millivolts);
 }
 
 void FRCNetImpl::setStatus(int battery, uint8_t dsDigitalOut, 		uint8_t updateNumber, const char *userDataHigh, int userDataHighLength, 	const char *userDataLow, int userDataLowLength, uint8_t control) {
