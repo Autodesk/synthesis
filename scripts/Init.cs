@@ -9,13 +9,30 @@ public class Init : MonoBehaviour
     // We will need these
     public const float PHYSICS_MASS_MULTIPLIER = 0.001f;
 
+	public const float FORMAT_3DS_SCALE = 0.2558918f;
+
+	enum FieldType
+	{
+		None,
+		FRC_2014,
+		FRC_2015
+	};
+
+	FieldType currentFieldType;
+
     private GUIController gui;
+
+	private PhysicMaterial chuteMaterial;
 
     private RigidNode_Base skeleton;
     private GameObject activeRobot;
+	private GameObject cameraObject;
+	private Camera camera;
+	private Field field;
+	private List<GameObject> totes;
 
     private unityPacket udp = new unityPacket();
-    private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+	private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -35,12 +52,22 @@ public class Init : MonoBehaviour
         if (gui == null)
         {
             gui = new GUIController();
+
+			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+				{
+					if ((int) o == 1) {
+						Application.Quit();
+					}
+				});
+
             gui.AddWindow("Load Model", new FileBrowser(), (object o) =>
             {
                 string fileLocation = (string) o;
                 // If dir was selected...
                 if (File.Exists(fileLocation + "\\skeleton.bxdj"))
+				{
                     fileLocation += "\\skeleton.bxdj";
+				}
                 DirectoryInfo parent = Directory.GetParent(fileLocation);
                 if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
                 {
@@ -52,14 +79,49 @@ public class Init : MonoBehaviour
                     UserMessageManager.Dispatch("Invalid selection!");
                 }
             });
+
             gui.AddAction("Orient Robot", () =>
             {
                 OrientRobot();
             });
+
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
                 gui.DoAction("Load Model");
             }
+
+			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
+			    "Driver Station [D]", "Orbit Robot [R]", "First Person [F]"), (object o) =>
+			    {
+					switch ((int) o) {
+					case 0:
+						camera.SwitchCameraState(new Camera.DriverStationState(camera));
+						break;
+					case 1:
+						camera.SwitchCameraState(new Camera.OrbitState(camera));
+						break;
+					case 2:
+						camera.SwitchCameraState(new Camera.FPVState(camera));
+						break;
+					default:
+						Debug.Log("Camera state not found: " + (string) o);
+						break;
+					}
+				});
+
+			gui.AddWindow ("Switch Field", new DialogWindow("Switch Field",
+				"Aerial Asssist (2014)", "Recycle Rush (2015)"), (object o) =>
+			    {
+					switch ((int) o)
+					{
+					case 0:
+						SetField(FieldType.FRC_2014);
+						break;
+					case 1:
+						SetField(FieldType.FRC_2015);
+						break;
+					}
+				});
         }
         gui.Render();
 
@@ -80,7 +142,7 @@ public class Init : MonoBehaviour
         {
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
-            activeRobot.transform.localPosition = Vector3.zero;
+            activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
             activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -103,6 +165,15 @@ public class Init : MonoBehaviour
                auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
             }
         }
+
+		camera.SwitchCameraState (new Camera.DriverStationState(camera));
+
+		foreach (GameObject o in totes)
+		{
+			GameObject.Destroy(o);
+		}
+
+		totes.Clear ();
     }
 
     private void TryLoad()
@@ -125,6 +196,7 @@ public class Init : MonoBehaviour
             };
 
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
+			Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
@@ -159,15 +231,19 @@ public class Init : MonoBehaviour
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 15;
-        Physics.minPenetrationForPenalty = 0.001f;
+		Physics.minPenetrationForPenalty = 0.001f;
 
-        // Load Field
+		cameraObject = GameObject.Find ("Camera");
+		camera = cameraObject.GetComponent<Camera> ();
 
-        UnityRigidNode nodeThing = new UnityRigidNode();
-        nodeThing.modelFileName = "field.bxda";
-        nodeThing.CreateTransform(transform);
-        nodeThing.CreateMesh(UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
-        nodeThing.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+		chuteMaterial = new PhysicMaterial("chuteMaterial");
+		chuteMaterial.dynamicFriction = 0f;
+		chuteMaterial.staticFriction = 0f;
+		chuteMaterial.frictionCombine = PhysicMaterialCombine.Minimum;
+
+		totes = new List<GameObject> ();
+
+		SetField (FieldType.FRC_2015);
 
         reloadInFrames = 2;
     }
@@ -189,6 +265,23 @@ public class Init : MonoBehaviour
             reloadInFrames = -1;
             TryLoad();
         }
+
+		if (Input.GetKeyDown (KeyCode.Z))
+		{
+			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, -8.183f), new Vector3(0f, 323.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
+		if (Input.GetKeyDown (KeyCode.X))
+		{
+			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, -8.183f), new Vector3(0f, 216.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
+		if (Input.GetKeyDown (KeyCode.C))
+		{
+			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, 8.183f), new Vector3(0f, 36.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
+		if (Input.GetKeyDown (KeyCode.V))
+		{
+			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, 8.183f), new Vector3(0f, 143.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+		}
     }
 
     void FixedUpdate()
@@ -204,6 +297,7 @@ public class Init : MonoBehaviour
             {
                 if (node.GetSkeletalJoint() == null)
                     continue;
+
                 foreach (RobotSensor sensor in node.GetSkeletalJoint().attachedSensors)
                 {
                     if (sensor.type == RobotSensorType.POTENTIOMETER && node.GetSkeletalJoint() is RotationalJoint_Base)
@@ -217,4 +311,74 @@ public class Init : MonoBehaviour
             udp.WritePacket(sensorPacket);
         }
     }
+
+	void SetField(FieldType type)
+	{
+		if (!currentFieldType.Equals (type))
+		{
+			currentFieldType = type;
+
+			switch (type)
+			{
+			case FieldType.FRC_2014:
+				if (field != null) field.Destroy();
+
+				UnityRigidNode nodeThing = new UnityRigidNode ();
+
+				nodeThing.modelFileName = "field.bxda";
+				nodeThing.CreateTransform (transform);
+				nodeThing.CreateMesh (UnityEngine.Application.dataPath + "\\Resources\\field.bxda");
+				nodeThing.unityObject.GetComponent<Rigidbody> ().constraints = RigidbodyConstraints.FreezeAll;
+				break;
+			case FieldType.FRC_2015:
+				GameObject.Destroy(GameObject.Find("field.bxda"));
+
+				field = new Field ("field2015", new Vector3(0f, 0.58861f, 0f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE));
+
+				field.AddCollisionObjects (
+					"GE-15025_0", "GE-15025_1", "GE-15025_2", "GE-15025_A",
+					"GE-15003_0", "GE-15002_2", "GE-15017_0", "GE-15009_0",
+					"GE-15017_0", "GE-15017_3", "GE-15018_0", "GE-15018_3",
+					"GE-15002_1", "GE-15003_1", "GE-15009_1", "GE-15017_3",
+					"GE-15002_0", "GE-15003_2", "GE-15018_0", "GE-15009_2",
+					"GE-15003_3", "GE-15002_3", "GE-15018_3", "GE-15009_3"
+					);
+				
+				BoxCollider floor = field.AddComponent<BoxCollider> ("floor");
+				floor.center = new Vector3 (0f, -6.5f, 0f);
+				floor.size = new Vector3 (36.00475f, 8.343518f, 86.43035f);
+				
+				BoxCollider blueDS = field.AddComponent<BoxCollider> ("blueDS");
+				blueDS.center = new Vector3 (0f, 1.529588f, 33.50338f);
+				blueDS.size = new Vector3 (21.74336f, 7.846722f, 2.357369f);
+				
+				BoxCollider redDS = field.AddComponent<BoxCollider> ("redDS");
+				redDS.center = new Vector3 (0f, 1.529588f, -33.50338f);
+				redDS.size = new Vector3 (21.74336f, 7.846722f, 2.357369f);
+				
+				BoxCollider step = field.AddComponent<BoxCollider> ("step");
+				step.center = new Vector3 (0f, -2.022223f, 0f);
+				step.size = new Vector3 (32.41857f, 0.7251982f, 2.498229f);
+				
+				BoxCollider leftSidePanels = field.AddComponent<BoxCollider> ("leftSidePanels");
+				leftSidePanels.center = new Vector3 (-17.08714f, -1.359237f, 0f);
+				leftSidePanels.size = new Vector3 (1.80665f, 2.039491f, 50.91413f);
+				
+				BoxCollider rightSidePanels = field.AddComponent<BoxCollider> ("rightSidePanels");
+				rightSidePanels.center = new Vector3 (17.08714f, -1.359237f, 0f);
+				rightSidePanels.size = new Vector3 (1.80665f, 2.039491f, 50.91413f);
+				
+				field.getCollisionObjects ("GE-15017_0").GetComponent<MeshCollider>().material = chuteMaterial;
+				field.getCollisionObjects ("GE-15009_0").GetComponent<MeshCollider>().material = chuteMaterial;
+				field.getCollisionObjects ("GE-15017_3").GetComponent<MeshCollider>().material = chuteMaterial;
+				field.getCollisionObjects ("GE-15009_1").GetComponent<MeshCollider>().material = chuteMaterial;
+				field.getCollisionObjects ("GE-15018_0").GetComponent<MeshCollider> ().material = chuteMaterial;
+				field.getCollisionObjects ("GE-15009_2").GetComponent<MeshCollider> ().material = chuteMaterial;
+				field.getCollisionObjects ("GE-15018_3").GetComponent<MeshCollider> ().material = chuteMaterial;
+				field.getCollisionObjects ("GE-15009_3").GetComponent<MeshCollider> ().material = chuteMaterial;
+
+				break;
+			}
+		}
+	}
 }

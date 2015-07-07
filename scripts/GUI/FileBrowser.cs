@@ -65,7 +65,6 @@ class FileBrowser : OverlayWindow
         }
     }
 
-    
     /// <summary>
     /// Draws the given list as buttons, and returns whichever one was selected.
     /// </summary>
@@ -166,10 +165,10 @@ class FileBrowser : OverlayWindow
             if (OnComplete != null)
                 OnComplete(directoryLocation);
         }
-        if (directorySelection != null)
-        {
-            lastClick = Time.time;
-        }
+		if (directorySelection != null)
+		{
+			lastClick = Time.time;
+		}
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
     }

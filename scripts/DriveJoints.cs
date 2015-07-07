@@ -90,13 +90,14 @@ public class InputStatePacket
 
 public class DriveJoints : MonoBehaviour
 {
+	private static float speedArrowPWM = 0.25f;
+
 	// A function to handle solenoids
 	// We will have accurate velocity measures later, but for now, we need something that works.
 	public static void SetSolenoid(UnityRigidNode node, bool forward)
 	{
 		// Acceleration of the piston, whose value will be determined by the following try/catch statement
 		float acceleration = 0;
-
 
 		// Checks to make sure solenoid data was assigned. We can't really use a try/catch statement because if pressure and diameter data is left blank when the robot is created, Unity will still use its default values.
 		if (node.GetJoint<ConfigurableJoint>().xDrive.maximumForce > 0)
@@ -161,6 +162,19 @@ public class DriveJoints : MonoBehaviour
 	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] dioModules)
 	{
 		float[] pwm = dioModules [0].pwmValues;
+
+		if (Input.anyKey) {
+			pwm [0] +=
+				(Input.GetKey (KeyCode.UpArrow) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.DownArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.LeftArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.RightArrow) ? speedArrowPWM : 0.0f);
+			pwm [1] +=
+				(Input.GetKey (KeyCode.UpArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.DownArrow) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.LeftArrow) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (KeyCode.RightArrow) ? speedArrowPWM : 0.0f);
+		}
 
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);

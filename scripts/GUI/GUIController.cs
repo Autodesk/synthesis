@@ -95,15 +95,7 @@ class GUIController
     /// </summary>
     public GUIController()
     {
-        AddWindow("Exit", new YesNoWindow("Exit?"), (object o) =>
-        {
-            if ((bool) o)
-            {
-                Application.Quit();
-            }
-        });
-
-        recalcWidth = true;
+		recalcWidth = true;
     }
 
     /// <summary>
@@ -212,13 +204,6 @@ class GUIController
                 else
                 {
                     guiVisible = !guiVisible;
-                }
-                if (!guiVisible)
-                {
-                    foreach (OverlayWindow window in windows)
-                    {
-                        window.Active = true;
-                    }
                 }
             }
             keyDebounce = escPressed;
