@@ -26,13 +26,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -45,13 +45,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -103,7 +103,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies);advapi32.lib;kernel32.lib;ntdll.lib;ole32.lib;setupapi.lib;shell32.lib;user32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -114,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies);advapi32.lib;kernel32.lib;ntdll.lib;ole32.lib;setupapi.lib;shell32.lib;user32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -127,7 +127,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies);advapi32.lib;kernel32.lib;ntdll.lib;ole32.lib;setupapi.lib;shell32.lib;user32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -138,7 +138,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies);advapi32.lib;kernel32.lib;ntdll.lib;ole32.lib;setupapi.lib;shell32.lib;user32.lib;Iphlpapi.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -149,7 +149,7 @@
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies);advapi32.lib;kernel32.lib;ntdll.lib;ole32.lib;setupapi.lib;shell32.lib;user32.lib;Iphlpapi.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -161,7 +161,7 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalDependencies>%(AdditionalDependencies);advapi32.lib;kernel32.lib;ntdll.lib;ole32.lib;setupapi.lib;shell32.lib;user32.lib;Iphlpapi.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
