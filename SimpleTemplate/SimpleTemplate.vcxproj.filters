@@ -18,5 +18,8 @@
     <ClCompile Include="SimpleRobot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\SimpleTemplate\SimpleRobotAdv.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
