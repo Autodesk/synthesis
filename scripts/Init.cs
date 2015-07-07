@@ -27,7 +27,8 @@ public class Init : MonoBehaviour
     private RigidNode_Base skeleton;
     private GameObject activeRobot;
 	private GameObject cameraObject;
-	private Camera camera;
+	private DynamicCamera dynamicCamera;
+	private GameObject light;
 	private Field field;
 	private List<GameObject> totes;
 
@@ -95,13 +96,13 @@ public class Init : MonoBehaviour
 			    {
 					switch ((int) o) {
 					case 0:
-						camera.SwitchCameraState(new Camera.DriverStationState(camera));
+						dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
 						break;
 					case 1:
-						camera.SwitchCameraState(new Camera.OrbitState(camera));
+						dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
 						break;
 					case 2:
-						camera.SwitchCameraState(new Camera.FPVState(camera));
+						dynamicCamera.SwitchCameraState(new DynamicCamera.FPVState(dynamicCamera));
 						break;
 					default:
 						Debug.Log("Camera state not found: " + (string) o);
@@ -166,7 +167,7 @@ public class Init : MonoBehaviour
             }
         }
 
-		camera.SwitchCameraState (new Camera.DriverStationState(camera));
+		dynamicCamera.SwitchCameraState (new DynamicCamera.DriverStationState(dynamicCamera));
 
 		foreach (GameObject o in totes)
 		{
@@ -233,8 +234,18 @@ public class Init : MonoBehaviour
         Physics.solverIterationCount = 15;
 		Physics.minPenetrationForPenalty = 0.001f;
 
-		cameraObject = GameObject.Find ("Camera");
-		camera = cameraObject.GetComponent<Camera> ();
+		cameraObject = new GameObject ("Camera");
+		cameraObject.AddComponent<Camera> ();
+		dynamicCamera = cameraObject.AddComponent<DynamicCamera> ();
+
+		light = new GameObject ("Light");
+		Light lightComponent = light.AddComponent<Light> ();
+		lightComponent.type = LightType.Spot;
+		lightComponent.intensity = 1.5f;
+		lightComponent.range = 30f;
+		lightComponent.spotAngle = 135;
+		light.transform.position = new Vector3 (0f, 10f, 0f);
+		light.transform.Rotate (90f, 0f, 0f);
 
 		chuteMaterial = new PhysicMaterial("chuteMaterial");
 		chuteMaterial.dynamicFriction = 0f;
