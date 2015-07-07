@@ -60,6 +60,9 @@ public:
 	/**
 	* THIS HANDLES ENDIANS!
 	*/
+	void setStation(int8_t);
+	void setState(int8_t);
+	int setVoltage(int8_t volts, int8_t millivolts);
 	void setStatus(int battery, uint8_t dsDigitalOut,
 		uint8_t updateNumber, const char *userDataHigh, int userDataHighLength,
 		const char *userDataLow, int userDataLowLength, uint8_t control);
