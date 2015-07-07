@@ -1,4 +1,4 @@
-#include "WPILib.h"
+/*#include "WPILib.h"
 
 class RobotDemo : public SimpleRobot 
 {
@@ -33,4 +33,4 @@ public:
 
 #include <emulator.h>
 const int TEAM_ID = 9999;
-START_ROBOT_CLASS(RobotDemo);
+START_ROBOT_CLASS(RobotDemo);*/
