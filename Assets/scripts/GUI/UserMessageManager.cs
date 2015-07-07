@@ -58,9 +58,8 @@ public class UserMessageManager
     /// </summary>
     /// <param name="msg">Message</param>
     /// <param name="ttl">Time to live in seconds</param>
-    public static void Dispatch(String msg, float ttl)
+    public static void Dispatch(String msg, float ttl = 10)
     {
-		ttl = 10;
         Dispatch(msg, ttl, Color.white, new Color(0f, 0f, 0f, 0.9f));
     }
 
