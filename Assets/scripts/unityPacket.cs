@@ -37,6 +37,7 @@ public class unityPacket
 				dio [i].digitalOutput = BitConverter.ToUInt32(pack, offset + 8);
 				for (int j = 0; j < dio[i].pwmValues.Length; j++)
 				{
+					//this line has been inverted to correct controls
 					dio [i].pwmValues [j] = -BitConverter.ToSingle(pack, offset + 12 + (4 * j));
 				}
 			}
@@ -47,9 +48,6 @@ public class unityPacket
 				solenoid [i].state = pack [offset];
 			}
 		} 
-		
-		
-		
 	}
 
 	
@@ -66,7 +64,6 @@ public class unityPacket
 	
 	public void Start()
 	{
-	
 		clientMutex = new Mutex();
 		serverMutex = new Mutex();
 		
@@ -120,7 +117,6 @@ public class unityPacket
 			{
                 Debug.Log("Binding...");
 				server.Client.Bind(ipEnd);
-                
 			}
 			while (active)
 			{	
@@ -129,12 +125,10 @@ public class unityPacket
 					Thread.Sleep(20);
 					continue;
 				}
-                
                 byte[] temp = server.Receive(ref ipEnd);
 				serverMutex.WaitOne();
 				receiveBuffer = temp;
 				serverMutex.ReleaseMutex();
-
 			}
 				
 			//int portFromInvAPI = 18;
@@ -202,5 +196,4 @@ public class unityPacket
 		sendBufferLen = input.Write(sendBuffer);
 		clientMutex.ReleaseMutex();
 	}
-	
 }
