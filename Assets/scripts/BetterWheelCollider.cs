@@ -42,7 +42,6 @@ public class BetterWheelCollider : MonoBehaviour
 
         // Get the world rotation specs
         Vector3 axis = transform.localToWorldMatrix * gameObject.GetComponent<HingeJoint>().axis;
-        Vector3 basePoint = transform.localToWorldMatrix * gameObject.GetComponent<HingeJoint>().connectedAnchor;
         axis.Normalize();
 
         Vector3 relativeVelocity = rigidbody.velocity;
