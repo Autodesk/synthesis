@@ -26,6 +26,8 @@ public class Init : MonoBehaviour
 	private float angvelo;
 	private float speed;
 	private float weight;
+	private float time;
+	private bool time_stop=false;
 	private float oldSpeed;
 
 	public float distance = 4.5f;
@@ -50,7 +52,20 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 1).ToString() + " ft/s^2");
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
-		
+		GUI.Label (new Rect (10, 100, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
+		if(GUI.Button (new Rect (120, 100, 80, 25), "Start/Stop"))
+		{
+			if(time_stop == true)
+				time_stop = false;
+			else
+				time_stop = true;
+		}
+
+		if (GUI.Button (new Rect (210, 100, 80, 25), "Reset")) 
+		{
+			time = 0;
+		}
+
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
@@ -267,10 +282,8 @@ public class Init : MonoBehaviour
                         sensorPacket.ai[sensor.module - 1].analogValues[sensor.port - 1] = (int) sensor.equation.Evaluate(angle);
                     }
                 }
-            }
-            udp.WritePacket(sensorPacket);
-
-
+            }     
+			udp.WritePacket(sensorPacket);
         }
 			//finds main node of robot to use its rigidbody
 			mainNode = GameObject.Find ("node_0.bxda");
@@ -281,6 +294,9 @@ public class Init : MonoBehaviour
 			angvelo = (float)Math.Abs (mainNode.rigidbody.angularVelocity.magnitude);
 			acceleration = (float)(mainNode.rigidbody.velocity.magnitude - oldSpeed) / Time.deltaTime;
 			oldSpeed = speed;
+
+			if(!time_stop)
+			time += Time.deltaTime;
 		}
 	}
 }
