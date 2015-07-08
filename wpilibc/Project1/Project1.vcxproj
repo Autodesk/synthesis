@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BD0D65E2-CBF5-4CA1-9D37-CF577F794498}</ProjectGuid>
+    <RootNamespace>Project1</RootNamespace>
+    <ProjectName>wpilibC++</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Base.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\Button.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\ButtonScheduler.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\CancelButtonScheduler.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\HeldButtonScheduler.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\InternalButton.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\JoystickButton.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\NetworkButton.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\PressedButtonScheduler.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\ReleasedButtonScheduler.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\ToggleButtonScheduler.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Buttons\Trigger.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\Command.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\CommandGroup.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\CommandGroupEntry.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\PIDCommand.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\PIDSubsystem.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\PrintCommand.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\Scheduler.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\StartCommand.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\Subsystem.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\WaitCommand.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\WaitForChildren.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Commands\WaitUntilCommand.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Controller.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Error.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\ErrorBase.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\GenericHID.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\HLUsageReporting.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\interfaces\Accelerometer.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\interfaces\Potentiometer.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\LiveWindow\LiveWindow.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\LiveWindow\LiveWindowSendable.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\LiveWindow\LiveWindowStatusListener.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Notifier.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\PIDController.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\PIDOutput.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\PIDSource.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Resource.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\RobotState.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\SensorBase.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\SmartDashboard\NamedSendable.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\SmartDashboard\Sendable.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\SmartDashboard\SendableChooser.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\SmartDashboard\SmartDashboard.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Task.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Timer.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\Utility.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\include\WPIErrors.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\Button.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\ButtonScheduler.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\CancelButtonScheduler.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\HeldButtonScheduler.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\InternalButton.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\JoystickButton.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\NetworkButton.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\PressedButtonScheduler.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\ReleasedButtonScheduler.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\ToggleButtonScheduler.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\Trigger.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\Command.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroup.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroupEntry.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\PIDCommand.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\PIDSubsystem.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\PrintCommand.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\Scheduler.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\StartCommand.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\Subsystem.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\WaitCommand.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\WaitForChildren.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\WaitUntilCommand.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Error.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\ErrorBase.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\HLUsageReporting.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindow.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindowStatusListener.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Resource.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\RobotState.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SendableChooser.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SmartDashboard.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
