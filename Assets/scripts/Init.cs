@@ -44,11 +44,11 @@ public class Init : MonoBehaviour
 	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
 		
-		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + speed.ToString() + " m/s");
-		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 2).ToString() + " ft/s");
-		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + acceleration.ToString() + " m/s^2");
-		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 2).ToString() + " ft/s^2");
-		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + angvelo.ToString() + " rad/s");
+		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
+		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
+		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 1).ToString() + " ft/s^2");
+		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
 		
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
@@ -180,7 +180,6 @@ public class Init : MonoBehaviour
                 return new UnityRigidNode();
             };
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
-			Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
@@ -273,13 +272,15 @@ public class Init : MonoBehaviour
 
 
         }
-		//calculates stats of robot
-		mainNode = GameObject.Find("node_0.bxda");
-		speed = (float)Math.Round(Math.Abs(mainNode.rigidbody.velocity.magnitude), 2);
-		weight = (float)Math.Round(mainNode.rigidbody.mass*2.20462,2);
-		angvelo = (float)Math.Round(Math.Abs(mainNode.rigidbody.angularVelocity.magnitude));
-		acceleration = (float)Math.Round((mainNode.rigidbody.velocity.magnitude-oldSpeed)/Time.deltaTime);
-		oldSpeed = speed;
-	
+			//finds main node of robot to use its rigidbody
+			mainNode = GameObject.Find ("node_0.bxda");
+			//calculates stats of robot
+			if (mainNode != null) {
+			speed = (float)Math.Abs (mainNode.rigidbody.velocity.magnitude);
+			weight = (float)Math.Round (mainNode.rigidbody.mass * 2.20462, 1);
+			angvelo = (float)Math.Abs (mainNode.rigidbody.angularVelocity.magnitude);
+			acceleration = (float)(mainNode.rigidbody.velocity.magnitude - oldSpeed) / Time.deltaTime;
+			oldSpeed = speed;
+		}
 	}
 }
