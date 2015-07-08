@@ -37,8 +37,6 @@ namespace EditorsLibrary
         public BXDAEditorPane()
         {
             InitializeComponent();
-
-            loadModel(BXDSettings.Instance.LastSkeletonDirectory);
         }
 
         public void loadModel(string modelPath)

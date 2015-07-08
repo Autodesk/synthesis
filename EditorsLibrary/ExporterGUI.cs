@@ -17,6 +17,11 @@ namespace EditorsLibrary
             InitializeComponent();
         }
 
+        public void OpenExisting()
+        {
+
+        }
+
         private void bxdaEditorPane1_Load(object sender, EventArgs e)
         {
 
@@ -34,7 +39,13 @@ namespace EditorsLibrary
 
         private void jointEditorPane1_Load(object sender, EventArgs e)
         {
+            RigidNode_Base.NODE_FACTORY = delegate()
+            {
+                return new RigidNode_Base();
+            };
+            RigidNode_Base nodeBase = BXDJSkeleton.ReadSkeleton(BXDSettings.Instance.LastSkeletonDirectory + "\\skeleton.bxdj");
 
+            jointEditorPane1.SetSkeleton(nodeBase);
         }
     }
 }

@@ -108,6 +108,7 @@
             this.jointEditorPane1.Name = "jointEditorPane1";
             this.jointEditorPane1.Size = new System.Drawing.Size(764, 219);
             this.jointEditorPane1.TabIndex = 0;
+            this.jointEditorPane1.Load += jointEditorPane1_Load;
             // 
             // ExporterGUI
             // 

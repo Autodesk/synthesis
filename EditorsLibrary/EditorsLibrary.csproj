@@ -39,9 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="OGLViewer">
-      <HintPath>..\OGLViewer\bin\Debug\OGLViewer.dll</HintPath>
-    </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL" />
     <Reference Include="OpenTK.GLControl, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -51,6 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OGLViewer\OGLViewer.csproj">
+      <Project>{a2c2d3bd-9d46-4ca3-8c03-20dac08d38a8}</Project>
+      <Name>OGLViewer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
