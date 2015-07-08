@@ -1,0 +1,76 @@
+﻿Build started 7/7/2015 5:03:11 PM.
+     1>Project "C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\wpilibc\Project1\Project1.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\Button.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\ButtonScheduler.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\CancelButtonScheduler.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\HeldButtonScheduler.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\InternalButton.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\JoystickButton.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\NetworkButton.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\PressedButtonScheduler.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\ReleasedButtonScheduler.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\ToggleButtonScheduler.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Buttons\Trigger.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\Command.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroup.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\CommandGroupEntry.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\PIDCommand.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\PIDSubsystem.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\PrintCommand.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\Scheduler.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\StartCommand.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\Subsystem.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\WaitCommand.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\WaitForChildren.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Commands\WaitUntilCommand.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Error.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\ErrorBase.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\HLUsageReporting.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindow.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\LiveWindow\LiveWindowStatusListener.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\Resource.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\RobotState.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SendableChooser.cpp ..\..\gazeboCode\allwpilib\wpilibc\wpilibC++\src\SmartDashboard\SmartDashboard.cpp
+         SmartDashboard.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\smartdashboard\smartdashboard.cpp(7): fatal error C1083: Cannot open include file: 'SmartDashboard/SmartDashboard.h': No such file or directory
+         SendableChooser.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\smartdashboard\sendablechooser.cpp(7): fatal error C1083: Cannot open include file: 'SmartDashboard/SendableChooser.h': No such file or directory
+         RobotState.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\robotstate.cpp(1): fatal error C1083: Cannot open include file: 'RobotState.h': No such file or directory
+         Resource.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\resource.cpp(7): fatal error C1083: Cannot open include file: 'Resource.h': No such file or directory
+         LiveWindowStatusListener.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\livewindow\livewindowstatuslistener.cpp(1): fatal error C1083: Cannot open include file: 'LiveWindow/LiveWindowStatusListener.h': No such file or directory
+         LiveWindow.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\livewindow\livewindow.cpp(1): fatal error C1083: Cannot open include file: 'LiveWindow/LiveWindow.h': No such file or directory
+         HLUsageReporting.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\hlusagereporting.cpp(2): fatal error C1083: Cannot open include file: 'HLUsageReporting.h': No such file or directory
+         ErrorBase.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\errorbase.cpp(7): fatal error C1083: Cannot open include file: 'ErrorBase.h': No such file or directory
+         Error.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\error.cpp(7): fatal error C1083: Cannot open include file: 'Error.h': No such file or directory
+         WaitUntilCommand.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\waituntilcommand.cpp(7): fatal error C1083: Cannot open include file: 'Commands/WaitUntilCommand.h': No such file or directory
+         WaitForChildren.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\waitforchildren.cpp(7): fatal error C1083: Cannot open include file: 'Commands/WaitForChildren.h': No such file or directory
+         WaitCommand.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\waitcommand.cpp(7): fatal error C1083: Cannot open include file: 'Commands/WaitCommand.h': No such file or directory
+         Subsystem.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\subsystem.cpp(7): fatal error C1083: Cannot open include file: 'Commands/Subsystem.h': No such file or directory
+         StartCommand.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\startcommand.cpp(7): fatal error C1083: Cannot open include file: 'Commands/StartCommand.h': No such file or directory
+         Scheduler.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\scheduler.cpp(7): fatal error C1083: Cannot open include file: 'Commands/Scheduler.h': No such file or directory
+         PrintCommand.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\printcommand.cpp(7): fatal error C1083: Cannot open include file: 'Commands/PrintCommand.h': No such file or directory
+         PIDSubsystem.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\pidsubsystem.cpp(7): fatal error C1083: Cannot open include file: 'Commands/PIDSubsystem.h': No such file or directory
+         PIDCommand.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\pidcommand.cpp(7): fatal error C1083: Cannot open include file: 'Commands/PIDCommand.h': No such file or directory
+         CommandGroupEntry.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\commandgroupentry.cpp(7): fatal error C1083: Cannot open include file: 'Commands/CommandGroupEntry.h': No such file or directory
+         CommandGroup.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\commandgroup.cpp(7): fatal error C1083: Cannot open include file: 'Commands/CommandGroup.h': No such file or directory
+         Generating Code...
+         Compiling...
+         Command.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\commands\command.cpp(7): fatal error C1083: Cannot open include file: 'Commands/Command.h': No such file or directory
+         Trigger.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\trigger.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/Button.h': No such file or directory
+         ToggleButtonScheduler.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\togglebuttonscheduler.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/ToggleButtonScheduler.h': No such file or directory
+         ReleasedButtonScheduler.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\releasedbuttonscheduler.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/ReleasedButtonScheduler.h': No such file or directory
+         PressedButtonScheduler.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\pressedbuttonscheduler.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/PressedButtonScheduler.h': No such file or directory
+         NetworkButton.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\networkbutton.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/NetworkButton.h': No such file or directory
+         JoystickButton.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\joystickbutton.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/JoystickButton.h': No such file or directory
+         InternalButton.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\internalbutton.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/InternalButton.h': No such file or directory
+         HeldButtonScheduler.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\heldbuttonscheduler.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/HeldButtonScheduler.h': No such file or directory
+         CancelButtonScheduler.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\cancelbuttonscheduler.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/CancelButtonScheduler.h': No such file or directory
+         ButtonScheduler.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\buttonscheduler.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/ButtonScheduler.h': No such file or directory
+         Button.cpp
+     1>c:\users\t_hics\documents\aardvark\aardvark-wpilib\gazebocode\allwpilib\wpilibc\wpilibc++\src\buttons\button.cpp(7): fatal error C1083: Cannot open include file: 'Buttons/Button.h': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\Users\T_hics\Documents\Aardvark\Aardvark-WPILib\wpilibc\Project1\Project1.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:02.74

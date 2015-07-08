@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{34B43116-04D0-427C-AA45-DA398E5FC8E9}</ProjectGuid>
+    <RootNamespace>Project3</RootNamespace>
+    <ProjectName>wpilibC++Devices</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\ADXL345_I2C.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\ADXL345_SPI.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\AnalogAccelerometer.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\AnalogInput.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\AnalogOutput.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\AnalogPotentiometer.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\AnalogTrigger.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\AnalogTriggerOutput.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\BuiltInAccelerometer.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\CameraServer.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\CANJaguar.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\CANSpeedController.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\CANTalon.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\CAN\can_proto.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Compressor.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\ControllerPower.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Counter.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\CounterBase.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\ctre\CanTalonSRX.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\ctre\ctre.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\ctre\CtreCanNode.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\DigitalInput.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\DigitalOutput.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\DigitalSource.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\DoubleSolenoid.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\DriverStation.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Encoder.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\GearTooth.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Gyro.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\I2C.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Internal\HardwareHLReporting.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\InterruptableSensorBase.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\IterativeRobot.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Jaguar.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Joystick.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\MotorSafety.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\MotorSafetyHelper.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NetworkCommunication\AICalibration.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NetworkCommunication\CANInterfacePlugin.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NetworkCommunication\CANSessionMux.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NetworkCommunication\FRCComm.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NetworkCommunication\LoadOut.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NetworkCommunication\symModuleLink.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NetworkCommunication\UsageReporting.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\NIIMAQdx.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\nivision.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\pcre.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\PowerDistributionPanel.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Preferences.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\PWM.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Relay.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\RobotBase.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\RobotDrive.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\SafePWM.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\SampleRobot.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\SerialPort.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Servo.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Solenoid.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\SolenoidBase.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\SpeedController.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\SPI.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Talon.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\TalonSRX.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Ultrasonic.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\USBCamera.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Victor.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\VictorSP.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\AxisCamera.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\BaeUtilities.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\BinaryImage.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\ColorImage.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\FrcError.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\HSLImage.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\ImageBase.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\MonoImage.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\RGBImage.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\Threshold.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\Vision\VisionAPI.h" />
+    <ClInclude Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\include\WPILib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\ADXL345_I2C.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\ADXL345_SPI.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\AnalogAccelerometer.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\AnalogInput.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\AnalogOutput.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\AnalogPotentiometer.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\AnalogTrigger.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\AnalogTriggerOutput.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\BuiltInAccelerometer.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\CameraServer.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\CANJaguar.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\CANTalon.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Compressor.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\ControllerPower.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Counter.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\DigitalInput.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\DigitalOutput.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\DigitalSource.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\DoubleSolenoid.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\DriverStation.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Encoder.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\GearTooth.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Gyro.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\I2C.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Internal\HardwareHLReporting.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\InterruptableSensorBase.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\IterativeRobot.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Jaguar.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Joystick.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\MotorSafetyHelper.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Notifier.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\PIDController.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\PowerDistributionPanel.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Preferences.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\PWM.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Relay.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\RobotBase.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\RobotDrive.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\SafePWM.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\SampleRobot.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\SensorBase.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\SerialPort.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Servo.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Solenoid.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\SolenoidBase.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\SPI.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Talon.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\TalonSRX.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Task.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Timer.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Ultrasonic.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\USBCamera.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Utility.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Victor.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\VictorSP.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\AxisCamera.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\BaeUtilities.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\BinaryImage.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\ColorImage.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\FrcError.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\HSLImage.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\ImageBase.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\MonoImage.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\RGBImage.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\Threshold.cpp" />
+    <ClCompile Include="..\..\gazeboCode\allwpilib\wpilibc\wpilibC++Devices\src\Vision\VisionAPI.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
