@@ -1,12 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\UnityRigidNode\URN_Mesh.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\GUI\GUIController.cs">
     <Files>
-      <File FileName="Assets\scripts\UnityRigidNode\URN_Mesh.cs" Line="39" Column="10" />
-      <File FileName="Assets\scripts\Init.cs" Line="95" Column="18" />
-      <File FileName="Assets\scripts\GUI\GUIController.cs" Line="115" Column="88" />
-      <File FileName="c:\Users\t_johnp\Documents\GitHub\Aardvark-Unity\Assets\scripts\GUI\FileBrowser.cs" Line="186" Column="2" />
-      <File FileName="c:\Users\t_johnp\Documents\GitHub\Aardvark-Unity\Assets\scripts\GUI\UserMessageManager.cs" Line="107" Column="1" />
+      <File FileName="Assets\scripts\Init.cs" Line="97" Column="18" />
+      <File FileName="Assets\scripts\GUI\GUIController.cs" Line="157" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
