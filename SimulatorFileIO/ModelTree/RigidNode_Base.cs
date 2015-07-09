@@ -51,7 +51,7 @@ public class RigidNode_Base
     /// <summary>
     /// A mapping between each child node of this node and the joint connection between the two.
     /// </summary>
-    public Dictionary<SkeletalJoint_Base, RigidNode_Base> children = new Dictionary<SkeletalJoint_Base, RigidNode_Base>();
+    public List<KeyValuePair<SkeletalJoint_Base, RigidNode_Base>> children = new List<KeyValuePair<SkeletalJoint_Base, RigidNode_Base>>();
 
     /// <summary>
     /// Adds the given node as a child of this node.
@@ -60,7 +60,7 @@ public class RigidNode_Base
     /// <param name="child">The child node</param>
     public void AddChild(SkeletalJoint_Base joint, RigidNode_Base child)
     {
-        children.Add(joint, child);
+        children.Add(new KeyValuePair<SkeletalJoint_Base, RigidNode_Base>(joint, child));
         child.parentConnection = joint;
         child.parent = this;
         child.level = this.level + 1;

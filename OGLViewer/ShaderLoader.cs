@@ -9,7 +9,7 @@ namespace OGLViewer
     {
         private static int _partShader = -1;
 
-        public static int Shader
+        public static int PartShader
         {
             get
             {
@@ -46,8 +46,8 @@ namespace OGLViewer
 
             try
             {
-                StreamReader vertexSourceReader = new StreamReader("Shaders\\testshader.vert");
-                StreamReader fragmentSourceReader = new StreamReader("Shaders\\testshader.frag");
+                StreamReader vertexSourceReader = new StreamReader("Shaders\\shader.vert");
+                StreamReader fragmentSourceReader = new StreamReader("Shaders\\shader.frag");
 
                 vertexShaderSource = vertexSourceReader.ReadToEnd();
                 fragmentShaderSource = fragmentSourceReader.ReadToEnd();

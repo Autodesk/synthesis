@@ -39,20 +39,13 @@ namespace EditorsLibrary
             InitializeComponent();
         }
 
-        public void loadModel(string modelPath)
+        public void loadModel(List<BXDAMesh> meshes)
         {
-            List<String> fileNames = new List<String>(Directory.GetFiles(modelPath));
-            var bxdaFiles = from file in fileNames
-                            where file.Substring(file.Length - 4).Equals("bxda")
-                            select file;
-
-            if (bxdaFiles == null) throw new FileNotFoundException("Could not find .bxda files in specified directory");
-
             rootNode = new BXDAEditorNode("Model", BXDAEditorNode.NodeType.SECTION_HEADER, false);
             rootNode.Nodes.Add(new BXDAEditorNode("Version", BXDAEditorNode.NodeType.STRING, false, BXDIO.ASSEMBLY_VERSION));
-            foreach (string fileName in bxdaFiles)
+            foreach (BXDAMesh mesh in meshes)
             {
-                rootNode.Nodes.Add(GenerateTree(fileName));
+                rootNode.Nodes.Add(GenerateTree(mesh));
             }
 
             treeView1.Nodes.Clear();
@@ -64,16 +57,9 @@ namespace EditorsLibrary
         /// </summary>
         /// <param name="meshPath">The path to the .bxda file</param>
         /// <returns>The root node of the mesh tree</returns>
-        private BXDAEditorNode GenerateTree(string meshPath)
+        private BXDAEditorNode GenerateTree(BXDAMesh mesh)
         {
-            BXDAMesh mesh;
-            using (BinaryReader reader = new BinaryReader(new FileStream(meshPath, FileMode.Open, FileAccess.Read)))
-            {
-                mesh = new BXDAMesh();
-                mesh.ReadData(reader);
-            }
-
-            BXDAEditorNode meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, false, mesh, meshPath);
+            BXDAEditorNode meshNode = new BXDAEditorNode(BXDAEditorNode.NodeType.MESH, false, mesh);
 
             BXDAEditorNode visualSectionHeader = new BXDAEditorNode("Visual Sub-meshes", BXDAEditorNode.NodeType.INTEGER, false,
                                                                     mesh.meshes.Count);
@@ -211,7 +197,7 @@ namespace EditorsLibrary
         {
             BXDAEditorNode selectedNode = (BXDAEditorNode) treeView1.SelectedNode;
             
-            if (selectedNode.isEditable)
+            if (selectedNode != null && selectedNode.isEditable)
             {
                 BXDAEditorForm editForm = new BXDAEditorForm(selectedNode);
                 if (editForm.ShowDialog(this) == DialogResult.OK)
@@ -293,8 +279,6 @@ namespace EditorsLibrary
                     case NodeType.FLOAT:
                     case NodeType.STRING:
                         return String.Format("{0}", data[0]);
-                    case NodeType.MESH:
-                        return String.Format("{0}", data[1]);
                     default:
                         return "";
                 }

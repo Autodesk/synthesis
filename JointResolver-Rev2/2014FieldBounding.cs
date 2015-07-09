@@ -17,7 +17,7 @@ public class _2014FieldBounding
     }
     public static void WriteModel()
     {
-        AssemblyDocument asmDoc = (AssemblyDocument) Program.INVENTOR_APPLICATION.ActiveDocument;
+        AssemblyDocument asmDoc = (AssemblyDocument) Exporter.INVENTOR_APPLICATION.ActiveDocument;
         SurfaceExporter exp = new SurfaceExporter();
         exp.ExportAll(asmDoc.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().GetEnumerator(), (long progress, long total) =>
         {
