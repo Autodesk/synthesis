@@ -236,6 +236,7 @@ public class Init : MonoBehaviour
 
 		cameraObject = new GameObject ("Camera");
 		cameraObject.AddComponent<Camera> ();
+		cameraObject.GetComponent<Camera> ().backgroundColor = new Color (.3f, .3f, .3f);
 		dynamicCamera = cameraObject.AddComponent<DynamicCamera> ();
 
 		light = new GameObject ("Light");
