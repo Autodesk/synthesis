@@ -46,6 +46,7 @@ public class Init : MonoBehaviour
 	private float time;
 	private bool time_stop;
 	private float oldSpeed;
+	private bool showStatWindow = true;
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -90,8 +91,9 @@ public class Init : MonoBehaviour
 	[STAThread]
     void OnGUI()
     {
-		//draws stats window on to GUI
-		windowRect = GUI.Window(0, windowRect, StatsWindow, "Stats");
+		// Draws stats window on to GUI
+		if(showStatWindow)
+			windowRect = GUI.Window(0, windowRect, StatsWindow, "Stats");
 
         if (gui == null)
         {
@@ -99,7 +101,7 @@ public class Init : MonoBehaviour
 
 			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 				{
-					if ((int) o == 1) {
+					if ((int) o == 0) {
 						Application.Quit();
 					}
 				});
@@ -337,6 +339,14 @@ public class Init : MonoBehaviour
 		{
 			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, 8.183f), new Vector3(0f, 143.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
 		}
+
+		// Orient Robot
+		if (Input.GetKeyDown (KeyCode.O))
+			gui.DoAction ("Orient Robot");
+
+		// Show/Hide physics window
+		if (Input.GetKeyDown (KeyCode.H))
+			showStatWindow = !showStatWindow;
     }
 
     void FixedUpdate()
