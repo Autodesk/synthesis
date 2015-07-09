@@ -17,8 +17,9 @@ local.properties
 .loadpath
 
 **/Library/
+**/Temp/
 *.csproj
-
+*.sln
 # External tool builders
 .externalToolBuilders/
 
