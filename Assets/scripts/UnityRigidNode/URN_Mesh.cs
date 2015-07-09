@@ -12,7 +12,7 @@ public partial class UnityRigidNode : RigidNode_Base
     public void CreateMesh(string filePath)
     {
         BXDAMesh mesh = new BXDAMesh();
-        mesh.ReadFromFile(filePath);
+        mesh.ReadFromFile(filePath, null);
 
         // Create all submesh objects
         auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
@@ -53,7 +53,6 @@ public partial class UnityRigidNode : RigidNode_Base
                 subCollider.AddComponent<MeshCollider>().sharedMesh = meshu;
                 subCollider.GetComponent<MeshCollider>().convex = true;
             }
-
         });
 
         Rigidbody rigidB = unityObject.GetComponent<Rigidbody>();

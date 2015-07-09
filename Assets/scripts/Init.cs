@@ -32,8 +32,20 @@ public class Init : MonoBehaviour
 	private Field field;
 	private List<GameObject> totes;
 
-    private unityPacket udp = new unityPacket();
-	private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+    private unityPacket udp;
+	private string filePath;
+	//main node of robot from which speed and other stats are derived
+	private GameObject mainNode;
+	//sizes and places window and repositions it based on screen size
+	private Rect windowRect;
+
+	private float acceleration;
+	private float angvelo;
+	private float speed;
+	private float weight;
+	private float time;
+	private bool time_stop;
+	private float oldSpeed;
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -41,15 +53,46 @@ public class Init : MonoBehaviour
     /// <remarks>
     /// This allows reloading the robot to be delayed until a "Loading" dialog can be drawn.
     /// </remarks>
-    private volatile int reloadInFrames = -1;
+    private volatile int reloadInFrames;
 
     public Init()
     {
+		udp = new unityPacket ();
+		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+		windowRect = new Rect (Screen.width - 320, 20, 300, 150);
+		time_stop = false;
+		reloadInFrames = -1;
     }
 
-    [STAThread]
+	//displays stats like speed and acceleration
+	public void StatsWindow(int windowID) {
+		
+		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
+		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
+		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 1).ToString() + " ft/s^2");
+		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
+		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
+		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
+		if(GUI.Button (new Rect (120, 120, 80, 25), "Start/Stop"))
+		{
+			time_stop = !time_stop;
+		}
+
+		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
+		{
+			time = 0;
+		}
+
+		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
+	}
+
+	[STAThread]
     void OnGUI()
     {
+		//draws stats window on to GUI
+		windowRect = GUI.Window(0, windowRect, StatsWindow, "Stats");
+
         if (gui == null)
         {
             gui = new GUIController();
@@ -77,7 +120,7 @@ public class Init : MonoBehaviour
                 }
                 else
                 {
-                    UserMessageManager.Dispatch("Invalid selection!");
+                    UserMessageManager.Dispatch("Invalid selection!", 10f);
                 }
             });
 
@@ -138,7 +181,7 @@ public class Init : MonoBehaviour
     /// joints, velocities, etc..
     /// </summary>
     private void OrientRobot()
-    {
+    {	
         if (activeRobot != null && skeleton != null)
         {
             var unityWheelData = new List<GameObject>();
@@ -298,31 +341,39 @@ public class Init : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (skeleton != null)
-        {
-            unityPacket.OutputStatePacket packet = udp.GetLastPacket();
-            DriveJoints.UpdateAllMotors(skeleton, packet.dio);
-            DriveJoints.UpdateSolenoids(skeleton, packet.solenoid);
-            List<RigidNode_Base> nodes = skeleton.ListAllNodes();
-            InputStatePacket sensorPacket = new InputStatePacket();
-            foreach (RigidNode_Base node in nodes)
-            {
-                if (node.GetSkeletalJoint() == null)
-                    continue;
+		if (skeleton != null) {
+			unityPacket.OutputStatePacket packet = udp.GetLastPacket ();
+			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
+			DriveJoints.UpdateSolenoids (skeleton, packet.solenoid);
+			List<RigidNode_Base> nodes = skeleton.ListAllNodes ();
+			InputStatePacket sensorPacket = new InputStatePacket ();
+			foreach (RigidNode_Base node in nodes) {
+				if (node.GetSkeletalJoint () == null)
+					continue;
 
-                foreach (RobotSensor sensor in node.GetSkeletalJoint().attachedSensors)
-                {
-                    if (sensor.type == RobotSensorType.POTENTIOMETER && node.GetSkeletalJoint() is RotationalJoint_Base)
-                    {
-                        UnityRigidNode uNode = (UnityRigidNode) node;
-                        float angle = DriveJoints.GetAngleBetweenChildAndParent(uNode) + ((RotationalJoint_Base) uNode.GetSkeletalJoint()).currentAngularPosition;
-                        sensorPacket.ai[sensor.module - 1].analogValues[sensor.port - 1] = (int) sensor.equation.Evaluate(angle);
-                    }
-                }
-            }
-            udp.WritePacket(sensorPacket);
-        }
-    }
+				foreach (RobotSensor sensor in node.GetSkeletalJoint().attachedSensors) {
+					if (sensor.type == RobotSensorType.POTENTIOMETER && node.GetSkeletalJoint () is RotationalJoint_Base) {
+						UnityRigidNode uNode = (UnityRigidNode)node;
+						float angle = DriveJoints.GetAngleBetweenChildAndParent (uNode) + ((RotationalJoint_Base)uNode.GetSkeletalJoint ()).currentAngularPosition;
+						sensorPacket.ai [sensor.module - 1].analogValues [sensor.port - 1] = (int)sensor.equation.Evaluate (angle);
+					}
+				}
+			}
+			udp.WritePacket (sensorPacket);
+			//finds main node of robot to use its rigidbody
+			mainNode = GameObject.Find ("node_0.bxda");
+			//calculates stats of robot
+			if (mainNode != null) {
+				speed = (float)Math.Abs (mainNode.rigidbody.velocity.magnitude);
+				weight = (float)Math.Round (mainNode.rigidbody.mass * 2.20462 * 860, 1);
+				angvelo = (float)Math.Abs (mainNode.rigidbody.angularVelocity.magnitude);
+				acceleration = (float)(mainNode.rigidbody.velocity.magnitude - oldSpeed) / Time.deltaTime;
+				oldSpeed = speed;
+				if (!time_stop)
+					time += Time.deltaTime;
+			}
+		}
+	}
 
 	void SetField(FieldType type)
 	{
