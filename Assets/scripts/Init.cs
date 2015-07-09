@@ -93,7 +93,7 @@ public class Init : MonoBehaviour
                 }
                 else
                 {
-                    UserMessageManager.Dispatch("Invalid selection!");
+                    UserMessageManager.Dispatch("Invalid selection!", 10f);
                 }
             });
             gui.AddAction("Orient Robot", () =>
