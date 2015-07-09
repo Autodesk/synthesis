@@ -211,6 +211,7 @@ develop-eggs/
 # Installer logs
 pip-log.txt
 
+<<<<<<< HEAD
 # Unit test / coverage reports
 .coverage
 .tox
@@ -220,3 +221,21 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+=======
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+*.meta
+*.mat
+Plugins/SimulatorAPI.dll
+Plugins/SimulatorAPI.dll
+Plugins/SimulatorAPI.dll
+Plugins/SimulatorAPI.dll
+Plugins/SimulatorAPI.dll
+
+# Eclipse project files
+.project
+.cproject
+.settings
+.csettings
+>>>>>>> physics-improvments
