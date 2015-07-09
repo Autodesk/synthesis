@@ -18,6 +18,8 @@ local.properties
 
 **/Library/
 **/Temp/
+**/Build_Data
+*.exe
 *.csproj
 *.sln
 # External tool builders
