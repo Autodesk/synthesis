@@ -16,7 +16,8 @@ local.properties
 .settings/
 .loadpath
 
-/Library
+**/Library/
+*.csproj
 
 # External tool builders
 .externalToolBuilders/
