@@ -1,9 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\scripts\Init.cs">
     <Files>
-      <File FileName="Assets\scripts\Init.cs" Line="287" Column="10" />
-      <File FileName="Assets\scripts\unityPacket.cs" Line="1" Column="1" />
+      <File FileName="Assets\scripts\Init.cs" Line="74" Column="33" />
+      <File FileName="Assets\scripts\GUI\GUIController.cs" Line="118" Column="13" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

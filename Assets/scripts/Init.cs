@@ -13,19 +13,19 @@ public class Init : MonoBehaviour
     private RigidNode_Base skeleton;
     private GameObject activeRobot;
 
-    private unityPacket udp = new unityPacket();
-	private string filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+    private unityPacket udp;
+	private string filePath;
 	//main node of robot from which speed and other stats are derived
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
-	private Rect windowRect = new Rect(Screen.width-320, 20, 300, 150);
+	private Rect windowRect;
 
 	private float acceleration;
 	private float angvelo;
 	private float speed;
 	private float weight;
 	private float time;
-	private bool time_stop=false;
+	private bool time_stop;
 	private float oldSpeed;
 
     /// <summary>
@@ -34,10 +34,15 @@ public class Init : MonoBehaviour
     /// <remarks>
     /// This allows reloading the robot to be delayed until a "Loading" dialog can be drawn.
     /// </remarks>
-    private volatile int reloadInFrames = -1;
+    private volatile int reloadInFrames;
 
     public Init()
     {
+		udp = new unityPacket ();
+		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+		windowRect = new Rect (Screen.width - 320, 20, 300, 150);
+		time_stop = false;
+		reloadInFrames = -1;
     }
 
 	//displays stats like speed and acceleration
@@ -52,10 +57,7 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
 		if(GUI.Button (new Rect (120, 120, 80, 25), "Start/Stop"))
 		{
-			if(time_stop == true)
-				time_stop = false;
-			else
-				time_stop = true;
+			time_stop = !time_stop;
 		}
 
 		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
@@ -140,10 +142,6 @@ public class Init : MonoBehaviour
     /// </summary>
     private void OrientRobot()
     {	
-		//position.x=2;
-		//position.y=1;
-		//position.z=-5;
-		//Debug.Log (position);
         if (activeRobot != null && skeleton != null)
         {
             var unityWheelData = new List<GameObject>();
