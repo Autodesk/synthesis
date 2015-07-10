@@ -43,6 +43,10 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_19.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
     </Reference>
+    <Reference Include="OGLViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\OGLViewer\bin\Debug\OGLViewer.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -63,14 +67,27 @@
     <Compile Include="ControlGUI\ControlGroups.Designer.cs">
       <DependentUpon>ControlGroups.cs</DependentUpon>
     </Compile>
+    <Compile Include="ControlGUI\ExporterGUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\ExporterGUI.Designer.cs">
+      <DependentUpon>ExporterGUI.cs</DependentUpon>
+    </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
+    <Compile Include="Exporter\Exporter.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RigidAnalyzer\CustomRigidGroup.cs" />
     <Compile Include="RigidAnalyzer\CustomRigidJoint.cs" />
+    <Compile Include="SensorListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SensorListForm.Designer.cs">
+      <DependentUpon>SensorListForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SkeletalStructure\BallJoint.cs" />
     <Compile Include="SkeletalStructure\MotionLimits.cs" />
     <Compile Include="SkeletalStructure\CylindricalJoint.cs" />
@@ -104,6 +121,12 @@
   <ItemGroup>
     <EmbeddedResource Include="ControlGUI\ControlGroups.resx">
       <DependentUpon>ControlGroups.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\ExporterGUI.resx">
+      <DependentUpon>ExporterGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SensorListForm.resx">
+      <DependentUpon>SensorListForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
