@@ -75,16 +75,22 @@ public class DynamicCamera : MonoBehaviour
 
 		public override void Update()
 		{
-			if (robot.transform.childCount > 0)
+			if (robot != null)
 			{
-				magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
+				if (robot.transform.childCount > 0) {
+					magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
 
-				rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
-				rotateVector = rotateYZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
-				mono.transform.position = rotateVector;
+					rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
+					rotateVector = rotateYZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
+					mono.transform.position = rotateVector;
 		
-				targetvector = auxFunctions.TotalCenterOfMass (robot);
-				mono.transform.LookAt (targetvector);
+					targetvector = auxFunctions.TotalCenterOfMass (robot);
+					mono.transform.LookAt (targetvector);
+				}
+			}
+			else
+			{
+				robot = GameObject.Find("Robot");
 			}
 		}
 
@@ -165,7 +171,15 @@ public class DynamicCamera : MonoBehaviour
 
 	}
 
-	CameraState cameraState;
+	CameraState _cameraState;
+
+	public CameraState cameraState
+	{
+		get
+		{
+			return _cameraState;
+		}
+	}
 
 	void Start ()
 	{
@@ -177,18 +191,18 @@ public class DynamicCamera : MonoBehaviour
 		// Will switch the camera state if certain keys are pressed.
 		if (Input.GetKey (KeyCode.D))
 		{
-			if (!cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
+			if (!_cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
 		}
 		else if (Input.GetKey (KeyCode.R))
 		{
-			if (!cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
+			if (!_cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
 		}
 		else if (Input.GetKey (KeyCode.F))
 		{
-			if (!cameraState.GetType().Equals(typeof(FPVState))) SwitchCameraState(new FPVState(this));
+			if (!_cameraState.GetType().Equals(typeof(FPVState))) SwitchCameraState(new FPVState(this));
 		}
 		
-		if (cameraState != null) cameraState.Update ();
+		if (_cameraState != null) _cameraState.Update ();
 	}
 
 	/// <summary>
@@ -197,9 +211,8 @@ public class DynamicCamera : MonoBehaviour
 	/// <param name="state">State</param>
 	public void SwitchCameraState(CameraState state)
 	{
-		if (cameraState != null) cameraState.End ();
-		cameraState = state;
-		cameraState.Init ();
+		if (_cameraState != null) _cameraState.End ();
+		_cameraState = state;
+		_cameraState.Init ();
 	}
-
 }
