@@ -4,7 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventor_Exporter", "JointResolver-Rev2\Inventor_Exporter.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8EC08A21-9BD1-4871-93B3-645A91194424} = {8EC08A21-9BD1-4871-93B3-645A91194424}
-		{A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8} = {A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
@@ -16,11 +15,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPITests", "SimulatorAPITests\SimulatorAPITests.csproj", "{14830A8C-AC23-4EBD-9C4A-8D667ACC7B8D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorsLibrary", "EditorsLibrary\EditorsLibrary.csproj", "{87B8C386-74FF-4F9A-A3F6-20381599E464}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8} = {A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OGLViewer", "OGLViewer\OGLViewer.csproj", "{A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{52DC911D-AD5D-4D01-9FC1-22AAADA97740} = {52DC911D-AD5D-4D01-9FC1-22AAADA97740}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

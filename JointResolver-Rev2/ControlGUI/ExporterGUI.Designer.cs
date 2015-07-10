@@ -129,7 +129,7 @@ partial class ExporterGUI
     }
 
     #endregion
-
+    
     private System.Windows.Forms.SplitContainer splitContainer1;
     private System.Windows.Forms.SplitContainer splitContainer2;
     private RobotViewer robotViewer1;
