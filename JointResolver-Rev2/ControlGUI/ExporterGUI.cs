@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OGLViewer;
@@ -70,7 +71,9 @@ public partial class ExporterGUI : Form
     {
         if (skeletonBase != null && !WarnUnsaved()) return;
 
-        string dirPath = BXDSettings.Instance.LastSkeletonDirectory;
+        string dirPath = OpenFolderPath();
+
+        if (dirPath == null) return;
 
         try
         {
@@ -91,6 +94,53 @@ public partial class ExporterGUI : Form
         }
 
         ReloadPanels();
+    }
+
+    public bool SaveRobot()
+    {
+        if (skeletonBase == null || meshes == null) return false;
+
+        string dirPath = OpenFolderPath();
+
+        if (dirPath == null || (File.Exists(dirPath + "\\skeleton.bxdj") && !WarnOverwrite())) return false;
+
+        try
+        {
+            BXDJSkeleton.WriteSkeleton(dirPath + "\\skeleton.bxdj", skeletonBase);
+
+            for (int i = 0; i < meshes.Count; i++)
+            {
+                meshes[i].WriteToFile(dirPath + "\\node_" + i + ".bxda");
+            }
+        }
+        catch (Exception e)
+        {
+            MessageBox.Show(e.Message);
+        }
+
+        return true;
+    }
+
+    private string OpenFolderPath()
+    {
+        string dirPath = null;
+
+        var dialogThread = new Thread(() =>
+        {
+            FolderBrowserDialog openDialog = new FolderBrowserDialog();
+            openDialog.RootFolder = Environment.SpecialFolder.UserProfile;
+            openDialog.ShowNewFolderButton = false;
+            openDialog.Description = "Choose Robot Folder";
+            DialogResult openResult = openDialog.ShowDialog();
+
+            if (openResult == DialogResult.OK) dirPath = openDialog.SelectedPath;
+        });
+
+        dialogThread.SetApartmentState(ApartmentState.STA);
+        dialogThread.Start();
+        dialogThread.Join();
+
+        return dirPath;
     }
 
     private bool WarnOverwrite()
@@ -117,31 +167,6 @@ public partial class ExporterGUI : Form
         {
             return false;
         }
-    }
-
-    public bool SaveRobot()
-    {
-        if (skeletonBase == null || meshes == null) return false;
-
-        string dirPath = BXDSettings.Instance.LastSkeletonDirectory;
-
-        if (File.Exists(dirPath + "\\skeleton.bxdj") && !WarnOverwrite()) return false;
-
-        try
-        {
-            BXDJSkeleton.WriteSkeleton(dirPath + "\\skeleton.bxdj", skeletonBase);
-
-            for (int i = 0; i < meshes.Count; i++)
-            {
-                meshes[i].WriteToFile(dirPath + "\\node_" + i + ".bxda");
-            }
-        }
-        catch (Exception e)
-        {
-            MessageBox.Show(e.Message);
-        }
-
-        return true;
     }
 
     private void ReloadPanels()
