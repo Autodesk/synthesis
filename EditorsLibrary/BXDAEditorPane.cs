@@ -42,7 +42,7 @@ namespace EditorsLibrary
         public void loadModel(List<BXDAMesh> meshes)
         {
             rootNode = new BXDAEditorNode("Model", BXDAEditorNode.NodeType.SECTION_HEADER, false);
-            rootNode.Nodes.Add(new BXDAEditorNode("Version", BXDAEditorNode.NodeType.STRING, false, BXDIO.ASSEMBLY_VERSION));
+            rootNode.Nodes.Add(new BXDAEditorNode("Exported with version", BXDAEditorNode.NodeType.STRING, false, BXDIO.ASSEMBLY_VERSION));
             foreach (BXDAMesh mesh in meshes)
             {
                 rootNode.Nodes.Add(GenerateTree(mesh));

@@ -37,11 +37,18 @@ public partial class ExporterGUI : Form
         {
             SaveRobot();
         });
+
+        this.FormClosing += new FormClosingEventHandler(delegate(object sender, FormClosingEventArgs e)
+        {
+            if (skeletonBase != null && !WarnUnsaved()) e.Cancel = true;
+        });
     }
 
     public void LoadFromInventor()
     {
-        if (skeletonBase != null) WarnUnsaved();
+        if (skeletonBase != null && !WarnUnsaved()) return;
+
+        Visible = false;
 
         try
         {
@@ -54,12 +61,15 @@ public partial class ExporterGUI : Form
             MessageBox.Show(e.Message);
         }
 
+        Visible = true;
+
         ReloadPanels();
     }
 
     public void OpenExisting()
     {
-        if (skeletonBase != null) WarnUnsaved();
+        if (skeletonBase != null && !WarnUnsaved()) return;
+
         string dirPath = BXDSettings.Instance.LastSkeletonDirectory;
 
         try
@@ -67,7 +77,7 @@ public partial class ExporterGUI : Form
             skeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
             meshes = new List<BXDAMesh>();
 
-            var meshFiles = Directory.GetFiles(dirPath).Where(name => !name.EndsWith("j"));
+            var meshFiles = Directory.GetFiles(dirPath).Where(name => name.EndsWith(".bxda"));
             foreach (string fileName in meshFiles)
             {
                 BXDAMesh mesh = new BXDAMesh();
@@ -91,20 +101,31 @@ public partial class ExporterGUI : Form
         else return false;
     }
 
-    private void WarnUnsaved()
+    private bool WarnUnsaved()
     {
-        DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save", MessageBoxButtons.YesNo);
+        DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save", MessageBoxButtons.YesNoCancel);
 
-        if (saveResult == DialogResult.Yes) SaveRobot();
+        if (saveResult == DialogResult.Yes)
+        {
+            return SaveRobot();
+        }
+        else if (saveResult == DialogResult.No)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public void SaveRobot()
+    public bool SaveRobot()
     {
-        if (skeletonBase == null || meshes == null) return;
+        if (skeletonBase == null || meshes == null) return false;
 
         string dirPath = BXDSettings.Instance.LastSkeletonDirectory;
 
-        if (File.Exists(dirPath + "\\skeleton.bxdj") && !WarnOverwrite()) return;
+        if (File.Exists(dirPath + "\\skeleton.bxdj") && !WarnOverwrite()) return false;
 
         try
         {
@@ -119,6 +140,8 @@ public partial class ExporterGUI : Form
         {
             MessageBox.Show(e.Message);
         }
+
+        return true;
     }
 
     private void ReloadPanels()
