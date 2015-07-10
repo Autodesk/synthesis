@@ -65,6 +65,18 @@ namespace OGLViewer
             myGUID = SelectManager.AllocateGUID(this);
         }
 
+        public OGL_RigidNode(RigidNode_Base baseData)
+        {
+            myGUID = SelectManager.AllocateGUID(this);
+            modelFullID = baseData.modelFullID;
+            modelFileName = baseData.modelFileName;
+
+            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseData.children)
+            {
+                AddChild(child.Key, new OGL_RigidNode(child.Value));
+            }
+        }
+
         public void destroy()
         {
             SelectManager.FreeGUID(myGUID);
@@ -73,7 +85,6 @@ namespace OGLViewer
                 mesh.destroy();
             }
         }
-
 
         public void loadMeshes(BXDAMesh mesh)
         {
@@ -403,5 +414,6 @@ namespace OGLViewer
         {
             return models;
         }
+
     }
 }

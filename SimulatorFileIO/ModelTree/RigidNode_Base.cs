@@ -44,7 +44,7 @@ public class RigidNode_Base
     /// </summary>
     public string modelFullID
     {
-        protected get;
+        get;
         set;
     }
 
