@@ -61,12 +61,6 @@
     <Compile Include="2014FieldBounding.cs" />
     <Compile Include="CollisionAnalyzer\FindRadiusThread.cs" />
     <Compile Include="ControlGUI\ComponentHighlighter.cs" />
-    <Compile Include="ControlGUI\ControlGroups.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\ControlGroups.Designer.cs">
-      <DependentUpon>ControlGroups.cs</DependentUpon>
-    </Compile>
     <Compile Include="ControlGUI\ExporterGUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,9 +113,6 @@
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ControlGUI\ControlGroups.resx">
-      <DependentUpon>ControlGroups.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\ExporterGUI.resx">
       <DependentUpon>ExporterGUI.cs</DependentUpon>
     </EmbeddedResource>
