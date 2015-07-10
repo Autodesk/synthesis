@@ -233,8 +233,6 @@ namespace EditorsLibrary
                 cam.currentMode = InventorCamera.Mode.MOVE;
             else
                 cam.currentMode = InventorCamera.Mode.NONE;
-
-            
         }
 
         #region INPUT
@@ -262,7 +260,7 @@ namespace EditorsLibrary
 
         private void viewer_KeyDown(object source, KeyEventArgs args)
         {
-            if (args.KeyCode == Keys.LShiftKey) keyboardState.LShiftDown = true;
+            if (args.KeyCode == Keys.ShiftKey) keyboardState.LShiftDown = true;
             else if (args.KeyCode == Keys.F2) keyboardState.F2Down = true;
             else if (args.KeyCode == Keys.F3) keyboardState.F3Down = true;
             else if (args.KeyCode == Keys.F4) keyboardState.F4Down = true;
@@ -270,7 +268,7 @@ namespace EditorsLibrary
 
         private void viewer_KeyUp(object source, KeyEventArgs args)
         {
-            if (args.KeyCode == Keys.LShiftKey) keyboardState.LShiftDown = false;
+            if (args.KeyCode == Keys.ShiftKey) keyboardState.LShiftDown = false;
             else if (args.KeyCode == Keys.F2) keyboardState.F2Down = false;
             else if (args.KeyCode == Keys.F3) keyboardState.F3Down = false;
             else if (args.KeyCode == Keys.F4) keyboardState.F4Down = false;
