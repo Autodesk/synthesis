@@ -45,6 +45,53 @@ namespace EditorsLibrary
             InitializeComponent();
         }
 
+        public void loadModel(RigidNode_Base node, List<BXDAMesh> meshes)
+        {
+            baseNode = new OGL_RigidNode(node);
+
+            nodes = baseNode.ListAllNodes();
+
+            for (int i = 0; i < meshes.Count; i++)
+            {
+                ((OGL_RigidNode)nodes[i]).loadMeshes(meshes[i]);
+            }
+
+            cam.pose = Matrix4.Identity;
+
+            modelLoaded = true;
+        }
+
+        private void glControl1_Load(object sender, EventArgs e)
+        {
+            cam = new InventorCamera();
+            glControl1.KeyDown += viewer_KeyDown;
+            glControl1.KeyUp += viewer_KeyUp;
+            glControl1.MouseDown += viewer_MouseDown;
+            glControl1.MouseUp += viewer_MouseUp;
+            glControl1.MouseMove += viewer_MouseMoved;
+            glControl1.MouseWheel += viewer_MouseWheel;
+
+            GL.ClearColor(System.Drawing.Color.Black);
+            GL.Enable(EnableCap.Lighting);
+            GL.Enable(EnableCap.Light0);
+            GL.Enable(EnableCap.Light1);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+            int j = ShaderLoader.PartShader;//Loadshader
+
+            setupSelectBuffer();
+
+            Application.Idle += delegate(object send, EventArgs ea)
+            {
+                while (glControl1.IsIdle)
+                {
+                    glControl1_Paint(null, null);
+                }
+            };
+            isLoaded = true;
+        }
+
         private void setupSelectBuffer()
         {
             selectTextureHandle = GL.GenTexture();
@@ -106,52 +153,8 @@ namespace EditorsLibrary
         {
             foreach (RigidNode_Base node in nodes)
             {
-                ((OGL_RigidNode) node).render(selectState);
+                ((OGL_RigidNode)node).render(selectState);
             }
-        }
-
-        public void loadModel(RigidNode_Base node, List<BXDAMesh> meshes)
-        {
-            baseNode = new OGL_RigidNode(node);
-
-            nodes = baseNode.ListAllNodes();
-
-            for (int i = 0; i < meshes.Count; i++)
-            {
-                ((OGL_RigidNode) nodes[i]).loadMeshes(meshes[i]);
-            }
-
-            modelLoaded = true;
-        }
-
-        private void glControl1_Load(object sender, EventArgs e)
-        {
-            cam = new InventorCamera();
-            KeyDown += viewer_KeyDown;
-            KeyUp += viewer_KeyUp;
-            MouseDown += viewer_MouseDown;
-            MouseMove += viewer_MouseMoved;
-            MouseWheel += viewer_MouseWheel;
-
-            GL.ClearColor(System.Drawing.Color.Black);
-            GL.Enable(EnableCap.Lighting);
-            GL.Enable(EnableCap.Light0);
-            GL.Enable(EnableCap.Light1);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
-            int j = ShaderLoader.PartShader;//Loadshader
-
-            setupSelectBuffer();
-
-            Application.Idle += delegate(object send, EventArgs ea)
-            {
-                while (glControl1.IsIdle)
-                {
-                    glControl1_Paint(null, null);
-                }
-            };
-            isLoaded = true;
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -230,6 +233,8 @@ namespace EditorsLibrary
                 cam.currentMode = InventorCamera.Mode.MOVE;
             else
                 cam.currentMode = InventorCamera.Mode.NONE;
+
+            
         }
 
         #region INPUT
@@ -246,7 +251,6 @@ namespace EditorsLibrary
             public Vector2 lastPos;
             public Vector2 dragStart;
             public Vector3 diffOld;
-            public float offset;
 
             public bool leftButtonDown;
             public bool rightButtonDown;
@@ -290,7 +294,7 @@ namespace EditorsLibrary
 
         private void viewer_MouseWheel(object source, MouseEventArgs args)
         {
-            mouseState.offset -= args.Delta * 10f;
+            cam.offset -= args.Delta / 25f;
         }
 
         private void viewer_MouseMoved(object source, MouseEventArgs args)
@@ -316,17 +320,18 @@ namespace EditorsLibrary
                 else
                 {
                     // Orbiting.
-                    Vector3 rotationAxis = new Vector3(deltaPos);
-                    cam.pose *= Matrix4.CreateFromAxisAngle(rotationAxis, rotationAxis.LengthFast / 100.0f);
+                    Vector3 rotationAxis = new Vector3(deltaPos.Y, deltaPos.X, 0);
+                    if (rotationAxis != Vector3.Zero)
+                        cam.pose *= Matrix4.CreateFromAxisAngle(rotationAxis, rotationAxis.LengthFast / 100.0f);
                 }
             }
             else if (mouseState.leftButtonDown && keyboardState.F3Down)
             {
-                mouseState.offset += deltaPos.Y;
+                cam.offset += deltaPos.Y;
             }
             else if ((mouseState.leftButtonDown && keyboardState.F2Down) || mouseState.middleButtonDown)
             {
-                cam.pose *= Matrix4.CreateTranslation(deltaPos.X / 25f, -deltaPos.Y / 25f, 0);
+                cam.pose *= Matrix4.CreateTranslation(deltaPos.X / 10f, -deltaPos.Y / 10f, 0);
             }
 
             mouseState.lastPos = mousePos;

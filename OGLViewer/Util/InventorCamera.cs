@@ -22,12 +22,13 @@ namespace OGLViewer
 
         public Mode currentMode = Mode.NONE;
         private float width = 100, height = 100;
+        public float offset = -70;
 
         public Matrix4 pose = Matrix4.Identity;
 
         public void translate()
         {
-            GL.Translate(50, -30, -50);
+            GL.Translate(50, -30, offset);
             GL.MultMatrix(ref pose);
         }
 
