@@ -93,7 +93,6 @@
             this.buttonCancel.TabIndex = 6;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
-            this.buttonCancel.Click += buttonCancel_Click;
             // 
             // buttonOK
             // 
@@ -103,7 +102,6 @@
             this.buttonOK.TabIndex = 7;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
-            this.buttonOK.Click += buttonOK_Click;
             // 
             // BXDAEditorForm
             // 
@@ -119,6 +117,7 @@
             this.Controls.Add(this.valueGen);
             this.Controls.Add(this.fieldName);
             this.Name = "BXDAEditorForm";
+            this.ShowIcon = false;
             this.Text = "Value Editor";
             this.ResumeLayout(false);
             this.PerformLayout();
