@@ -9,13 +9,13 @@ class ComponentHighlighter
     {
         if (CHILD_HIGHLIGHT_SET == null)
         {
-            CHILD_HIGHLIGHT_SET = Exporter.INVENTOR_APPLICATION.ActiveDocument.CreateHighlightSet();
-            CHILD_HIGHLIGHT_SET.Color = Exporter.INVENTOR_APPLICATION.TransientObjects.CreateColor(0, 0, 255);
+            CHILD_HIGHLIGHT_SET = Program.INVENTOR_APPLICATION.ActiveDocument.CreateHighlightSet();
+            CHILD_HIGHLIGHT_SET.Color = Program.INVENTOR_APPLICATION.TransientObjects.CreateColor(0, 0, 255);
         }
         if (PARENT_HIGHLIGHT_SET == null)
         {
-            PARENT_HIGHLIGHT_SET = Exporter.INVENTOR_APPLICATION.ActiveDocument.CreateHighlightSet();
-            PARENT_HIGHLIGHT_SET.Color = Exporter.INVENTOR_APPLICATION.TransientObjects.CreateColor(255, 0, 0);
+            PARENT_HIGHLIGHT_SET = Program.INVENTOR_APPLICATION.ActiveDocument.CreateHighlightSet();
+            PARENT_HIGHLIGHT_SET.Color = Program.INVENTOR_APPLICATION.TransientObjects.CreateColor(255, 0, 0);
         }
     }
 

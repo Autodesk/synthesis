@@ -4,7 +4,7 @@ public class Utilities
 {
     public static Vector ToInventorVector(BXDVector3 v)
     {
-        return Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateVector(v.x, v.y, v.z);
+        return Program.INVENTOR_APPLICATION.TransientGeometry.CreateVector(v.x, v.y, v.z);
     }
 
     public static BXDVector3 ToBXDVector(dynamic p)

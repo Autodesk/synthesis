@@ -135,7 +135,7 @@ public class ConvexHullCalculator
                 Array.Copy(simplFace[a].verts[2].pos, 0, major, off + 6, 3);
             }
             minor = new double[9];
-            AssemblyDocument part = ((AssemblyDocument) Exporter.INVENTOR_APPLICATION.ActiveDocument);
+            AssemblyDocument part = ((AssemblyDocument) Program.INVENTOR_APPLICATION.ActiveDocument);
             GraphicsDataSets dataSets;
             try
             {
@@ -198,7 +198,7 @@ public class ConvexHullCalculator
                 primitive.ColorBinding = ColorBindingEnum.kPerItemColors;
                 //primitive.CoordinateIndexSet = indexSetCoords;
             }
-            Exporter.INVENTOR_APPLICATION.ActiveView.Update();
+            Program.INVENTOR_APPLICATION.ActiveView.Update();
 #endif
         #endregion
 
@@ -219,7 +219,7 @@ public class ConvexHullCalculator
                 Array.Copy(bFace.verts[1].pos, 0, minor, 3, 3);
                 Array.Copy(bFace.verts[2].pos, 0, minor, 6, 3);
                 minorCoordSet.PutCoordinates(minor);
-                Exporter.INVENTOR_APPLICATION.ActiveView.Update();
+                Program.INVENTOR_APPLICATION.ActiveView.Update();
 #endif
             #endregion
 
@@ -251,7 +251,7 @@ public class ConvexHullCalculator
                             Array.Copy(face.verts[j].pos, 0, major, face.tmpHead + (3 * j), 3);
                             int index = (face.tmpHead / 3) + j + 1;
                             majorCoordSet.Remove(index);
-                            majorCoordSet.Add(index, Exporter.INVENTOR_APPLICATION.TransientGeometry.CreatePoint(face.verts[j].pos[0], face.verts[j].pos[1], face.verts[j].pos[2]));
+                            majorCoordSet.Add(index, Program.INVENTOR_APPLICATION.TransientGeometry.CreatePoint(face.verts[j].pos[0], face.verts[j].pos[1], face.verts[j].pos[2]));
 #endif
                         #endregion
 

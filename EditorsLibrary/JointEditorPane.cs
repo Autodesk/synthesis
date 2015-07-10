@@ -50,12 +50,12 @@ namespace EditorsLibrary
         {
             this.components = new System.ComponentModel.Container();
             this.lstJoints = new System.Windows.Forms.ListView();
-            this.item_chType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chChild = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chWheel = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.item_chSensors = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.item_chType = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chParent = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chChild = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chDrive = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chWheel = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
+            this.item_chSensors = ((System.Windows.Forms.ColumnHeader) (new System.Windows.Forms.ColumnHeader()));
             this.jointContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.SuspendLayout();
             // 
@@ -117,7 +117,7 @@ namespace EditorsLibrary
             // jointContextMenu
             // 
             this.jointContextMenu.Name = "jointContextMenu";
-            this.jointContextMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.jointContextMenu.RenderMode = ToolStripRenderMode.Professional;
             this.jointContextMenu.ShowImageMargin = false;
             this.jointContextMenu.Size = new System.Drawing.Size(36, 4);
             // 
