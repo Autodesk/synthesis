@@ -276,7 +276,7 @@ public class Init : MonoBehaviour
     void Start()
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
-        Physics.solverIterationCount = 15;
+        Physics.solverIterationCount = 30;
 		Physics.minPenetrationForPenalty = 0.001f;
 
 		cameraObject = new GameObject ("Camera");
