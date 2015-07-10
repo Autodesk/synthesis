@@ -147,7 +147,10 @@ namespace EditorsLibrary
 
             Application.Idle += delegate(object send, EventArgs ea)
             {
-                glControl1_Paint(null, null);
+                while (glControl1.IsIdle)
+                {
+                    glControl1_Paint(null, null);
+                }
             };
             isLoaded = true;
         }

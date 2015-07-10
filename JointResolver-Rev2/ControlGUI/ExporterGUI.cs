@@ -24,11 +24,24 @@ public partial class ExporterGUI : Form
         {
             return new OGL_RigidNode();
         };
+
+        this.robotViewer1.loadInventor.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            LoadFromInventor();
+        });
+        this.robotViewer1.openExisting.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            OpenExisting();
+        });
+        this.robotViewer1.saveButton.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            SaveRobot();
+        });
     }
 
     public void LoadFromInventor()
     {
-        if (skeletonBase != null && !WarnOverwrite()) return;
+        if (skeletonBase != null) WarnUnsaved();
 
         try
         {
@@ -46,8 +59,7 @@ public partial class ExporterGUI : Form
 
     public void OpenExisting()
     {
-        if (skeletonBase != null && !WarnOverwrite()) return;
-
+        if (skeletonBase != null) WarnUnsaved();
         string dirPath = BXDSettings.Instance.LastSkeletonDirectory;
 
         try
@@ -77,6 +89,13 @@ public partial class ExporterGUI : Form
 
         if (overwriteResult == DialogResult.Yes) return true;
         else return false;
+    }
+
+    private void WarnUnsaved()
+    {
+        DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save", MessageBoxButtons.YesNo);
+
+        if (saveResult == DialogResult.Yes) SaveRobot();
     }
 
     public void SaveRobot()

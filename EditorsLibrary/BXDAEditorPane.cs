@@ -229,6 +229,7 @@ namespace EditorsLibrary
             {
                 type = t;
                 isEditable = editable;
+                if (isEditable) BackColor = Color.LightGray;
                 data = new NodeData(dat);
                 SetText(t.ToString());
                 Name = t.ToString();
@@ -245,6 +246,7 @@ namespace EditorsLibrary
             {
                 type = t;
                 isEditable = editable;
+                if (isEditable) BackColor = Color.LightGray;
                 data = new NodeData(dat);
                 SetText(header);
                 Name = header;

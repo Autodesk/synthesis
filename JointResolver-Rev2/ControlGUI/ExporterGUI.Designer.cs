@@ -98,21 +98,6 @@ partial class ExporterGUI
         this.robotViewer1.Name = "robotViewer1";
         this.robotViewer1.Size = new System.Drawing.Size(764, 500);
         this.robotViewer1.TabIndex = 0;
-        //
-        // robotViewer1 buttons
-        //
-        this.robotViewer1.loadInventor.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
-        {
-            LoadFromInventor();
-        });
-        this.robotViewer1.openExisting.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
-        {
-            OpenExisting();
-        });
-        this.robotViewer1.saveButton.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
-        {
-            SaveRobot();
-        });
         // 
         // jointEditorPane1
         // 

@@ -24,12 +24,10 @@ namespace OGLViewer
         private float width = 100, height = 100;
 
         public Matrix4 pose = Matrix4.Identity;
-        private float offsetZ = -50;
-        private float offsetX = 50;
 
         public void translate()
         {
-            GL.Translate(offsetX, 0, offsetZ);
+            GL.Translate(50, -30, -50);
             GL.MultMatrix(ref pose);
         }
 
