@@ -46,8 +46,11 @@ namespace EditorsLibrary
             this.glControl1.Size = new System.Drawing.Size(768, 500);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = true;
-            this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
-            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
+            if (System.ComponentModel.LicenseManager.UsageMode != System.ComponentModel.LicenseUsageMode.Designtime)
+            {
+                this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
+                this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
+            }
             // 
             // saveButton
             // 
@@ -87,8 +90,6 @@ namespace EditorsLibrary
             this.Controls.Add(this.glControl1);
             this.Name = "RobotViewer";
             this.Size = new System.Drawing.Size(768, 500);
-            this.Load += new System.EventHandler(this.glControl1_Load);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.ResumeLayout(false);
 
         }
