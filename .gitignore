@@ -15,7 +15,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
-
+Library/
 **/Library/
 **/Temp/
 **/Build_Data
