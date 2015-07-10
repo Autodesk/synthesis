@@ -75,10 +75,9 @@ public class auxFunctions
 			b = wheels[0] - wheels[i];
 		Vector3 norm = Vector3.Cross(a,b).normalized;
 
-		q.SetFromToRotation (norm, Vector3.up);
-        parent.localRotation *= q;
 
         norm.y *= Mathf.Sign(norm.y * com.y);
+		q.SetFromToRotation (norm, new Vector3(0,Math.Sign ((norm - wheels[0]).y),0));
 
         parent.position = new Vector3(parent.position.x, parent.position.y + .1f, parent.position.z);
 	}

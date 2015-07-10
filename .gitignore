@@ -21,6 +21,7 @@ local.properties
 **/Build_Data
 *.exe
 *.csproj
+*.userprefs
 *.sln
 *.zip
 # External tool builders
