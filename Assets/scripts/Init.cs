@@ -91,13 +91,49 @@ public class Init : MonoBehaviour
 		{
 			time_stop = !time_stop;
 		}
-
+		
 		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
 		{
 			time = 0;
 		}
 
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
+	}
+
+	public void ShowOrient()
+	{
+		List<string> titles = new List<string> ();
+		titles.Add ("Left");
+		titles.Add ("Right");
+		titles.Add ("Forward");
+		titles.Add ("Back");
+		
+		List<Rect> rects = new List<Rect> ();
+		rects.Add (new Rect(50, 125, 75, 30));
+		rects.Add (new Rect(175, 125, 75, 30));
+		rects.Add (new Rect(112, 90, 75, 30));
+		rects.Add (new Rect(112, 160, 75, 30));
+		
+		gui.AddWindow("Orient Robot", new TextWindow("Orient Robot",new Rect((Screen.width/2)-150, (Screen.height/2)-75 , 300, 250),
+		                                             new string[0], new Rect[0], titles.ToArray(), rects.ToArray()), (object o)=>{
+			
+			switch((int)o)
+			{
+			case 0:
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z + 90));
+				break;
+			case 1:	
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z - 90));
+				break;
+			case 2:
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x + 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
+				break;
+			case 3:
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
+				break;
+			}
+			
+		});
 	}
 
 	public void HotkeysWindow()
@@ -231,6 +267,7 @@ public class Init : MonoBehaviour
 				});
 
 			HotkeysWindow();
+			ShowOrient();
 
 			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 			               {
