@@ -70,8 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\SimpleTemplate\SimpleRobotAdv.cpp" />
-    <ClCompile Include="SimpleRobot.cpp" />
+    <ClCompile Include="SimpleRobotAdv.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
