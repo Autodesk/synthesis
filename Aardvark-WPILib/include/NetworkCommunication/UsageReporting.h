@@ -25,6 +25,7 @@ namespace nUsageReporting
         kResourceType_AnalogTrigger,
         kResourceType_AnalogTriggerOutput,
         kResourceType_CANJaguar,
+		kResourceType_CANTalon,
         kResourceType_Compressor,
         kResourceType_Counter,
         kResourceType_Dashboard,

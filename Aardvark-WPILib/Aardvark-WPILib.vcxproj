@@ -95,6 +95,7 @@
     <ClCompile Include="src\Buttons\ToggleButtonScheduler.cpp" />
     <ClCompile Include="src\Buttons\Trigger.cpp" />
     <ClCompile Include="src\CANJaguar.cpp" />
+    <ClCompile Include="src\CANTalon.cpp" />
     <ClCompile Include="src\Commands\Command.cpp" />
     <ClCompile Include="src\Commands\CommandGroup.cpp" />
     <ClCompile Include="src\Commands\CommandGroupEntry.cpp" />
@@ -235,8 +236,10 @@
     <ClInclude Include="include\Buttons\ReleasedButtonScheduler.h" />
     <ClInclude Include="include\Buttons\ToggleButtonScheduler.h" />
     <ClInclude Include="include\Buttons\Trigger.h" />
+    <ClInclude Include="include\CANTalon.h" />
     <ClInclude Include="include\CAN\can_proto.h" />
     <ClInclude Include="include\CAN\JaguarCANDriver.h" />
+    <ClInclude Include="include\CAN\TalonCanDriver.h" />
     <ClInclude Include="include\ChipObject\chipObjectAliases.h" />
     <ClInclude Include="include\ChipObject\NiFpga.h" />
     <ClInclude Include="include\ChipObject\NiRio.h" />
