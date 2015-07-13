@@ -26,7 +26,7 @@ class GUIController
     /// The space between sidebar entries.
     /// </summary>
     private const float GUI_SIDEBAR_ENTRY_PADDING_Y = 5;
-    
+
     // Objects to allow rendering of GUI boxes with black backgrounds.
     #region make it black
     private Texture2D _black;
@@ -63,6 +63,17 @@ class GUIController
     /// All the entries on this sidebar.
     /// </summary>
     private KeyValuePair<string, Action>[] entries;
+
+	/// <summary>
+	/// Callback functions for non dialog windows
+	/// </summary>
+	private  List<Action> callbacks = new List<Action>();
+
+	/// <summary>
+	/// Callback for current non dialog window
+	/// </summary>
+	private Action callback = null;
+
     /// <summary>
     /// All the overlay windows that are linked to this sidebar.
     /// </summary>
@@ -125,18 +136,21 @@ class GUIController
     /// </summary>
     /// <param name="caption">The title of the entry</param>
     /// <param name="act">The action to execute when the entry is pressed</param>
-    public void AddAction(string caption, Action act)
+    public void AddAction(string caption, Action act, Action newCallback = null)
     {
+		// Resizing for callbacks
+		callbacks.Add (newCallback);
+
+		// Resizing for entries
         if (entries == null || entries.Length == 0)
         {
             entries = new KeyValuePair<string, Action>[1] { new KeyValuePair<string, Action>(caption, act) };
             return;
         }
+
         var res = new KeyValuePair<string, Action>[entries.Length + 1];
-        if (entries.Length > 1)
-            Array.Copy(entries, res, entries.Length - 1);
-        res[res.Length - 2] = new KeyValuePair<string, Action>(caption, act);
-        res[res.Length - 1] = entries[entries.Length - 1];
+        Array.Copy(entries, res, entries.Length);
+        res[res.Length - 1] = new KeyValuePair<string, Action>(caption, act);
         entries = res;
         recalcWidth = true;
     }
@@ -194,6 +208,9 @@ class GUIController
             bool escPressed = Input.GetKeyDown(KeyCode.Escape);
             if (escPressed && !keyDebounce)
             {
+				if(callback != null)
+					callback.Invoke();
+
                 if (guiVisible && windowVisible)
                 {
                     foreach (OverlayWindow window in windows)
@@ -234,12 +251,22 @@ class GUIController
 
             #region Render entries
             float y = GUI_SIDEBAR_PADDING.y;
+			int btnIndex = 0;
             foreach (var btn in entries)
             {
-                if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, sidebarWidth - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle) && !windowVisible)
-                {
+                if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, sidebarWidth - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle))
+				{
+					foreach(OverlayWindow window in windows)
+						window.Active = false;
+
+					if(callback != null)
+						callback.Invoke();
+
+					callback = callbacks[btnIndex];
                     btn.Value();
                 }
+
+				btnIndex++;
                 y += GUI_SIDEBAR_ENTRY_HEIGHT + GUI_SIDEBAR_ENTRY_PADDING_Y;
             }
             GUI.EndGroup();
