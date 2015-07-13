@@ -9,11 +9,6 @@
 #include <stdlib.h>
 #include <emulator.h> // For TEAM_ID
 
-enum State {ENABLED, DISABLED, DAUTONOMOUS, EAUTONOMOUS, ETEST, DTEST};
-State robot;
-enum Station {Red1, Red2, Red3, Blue1, Blue2, Blue3};
-Station locate;
-
 extern "C" {
 	FRCNetImpl *frcNetInstance = NULL;
 }
@@ -217,10 +212,7 @@ int FRCNetImpl::runThread() {
 	SOCKET dsSocket;
 
 	uint32_t network = (10 << 24) | (((9999 / 100) & 0xFF) << 16) | ((9999 % 100) << 8) | 0;
-<<<<<<< HEAD
 	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
-=======
->>>>>>> origin/roboRio-config
 
 	robotAddress.sin_family = AF_INET;
 	robotAddress.sin_addr.s_addr = htonl(network | 2);
@@ -316,14 +308,11 @@ int FRCNetImpl::runThread() {
 			p2014.stick2Buttons = p2015.buttons2;
 			p2014.stick3Buttons = p2015.buttons3;
 			p2014.enabled = p2015.state & 4 ? true : false;
-<<<<<<< HEAD
 			p2014.autonomous = p2015.state & 2 ? true : false;
 			p2014.test = p2015.state & 1 ? true : false;
 			ctl.control.enabled = p2014.enabled;
 			ctl.control.autonomous = p2014.autonomous;
 			ctl.control.test = p2014.test;
-=======
->>>>>>> origin/roboRio-config
 
 			memcpy(&lastDataPacket, &p2014, sizeof(p2014));
 		}
@@ -384,7 +373,6 @@ int FRCNetImpl::runThread() {
 		{
 			FRCRobotControl2015 c2015;
 			c2015.packetIndex = ctl.packetIndex++;
-<<<<<<< HEAD
 			c2015.voltage_greater = /*ctl.batteryVolts*/12; // who cares anyways
 			int oscillation = (ctl.control.enabled ? 0 : (rand() % 2)); // don't judge
 			c2015.voltage_lesser = /*ctl.batteryMilliVolts*/ 0x63 - oscillation; // who cares
@@ -392,11 +380,6 @@ int FRCNetImpl::runThread() {
 			c2015.mode += (ctl.control.enabled ? 4 : 0); // sets the 3rd bit to the value of the 3rd bit in ctl.control
 			c2015.mode += (ctl.control.test ? 1 : 0); // sets 1st bit
 			c2015.mode += (ctl.control.autonomous ? 2 : 0); // sets 2nd bit
-=======
-			c2015.voltage_greater = ctl.batteryVolts;
-			c2015.voltage_lesser = ctl.batteryMilliVolts;
-			c2015.mode &= 0xFB & (ctl.control.enabled & 4); // sets the 3rd bit to the value of the 3rd bit in ctl.control
->>>>>>> origin/roboRio-config
 			c2015.state = 0x30; // TODO change
 			memcpy(&sendBuffer, &c2015, sizeof(c2015));
 		}
@@ -420,44 +403,6 @@ int FRCNetImpl::runThread() {
 		memcpy(&sendBuffer[0x3fc], &crc, sizeof(DWORD));
 		sendto(dsSocket,(const char *) &sendBuffer, 0x07, 0,(const sockaddr*)&dsAddress, sizeof(dsAddress));
 	}
-<<<<<<< HEAD
-=======
-}
-void FRCNetImpl::setState(int8_t status){
-	robot = DISABLED;
-	switch(status){
-		case 0 : robot = DISABLED; break;
-		case 1 : robot = DTEST; break;
-		case 2 : robot = DAUTONOMOUS; break;
-		case 4 : robot = ENABLED; break;
-		case 5 : robot = ETEST; break;
-		case 6 : robot = EAUTONOMOUS; break;
-		default : robot; break;
-	}
-}
-
-void FRCNetImpl::setStation(int8_t station){
-	locate = Red1;
-	switch(station){
-		case 0 : locate = Red1; break;
-		case 1 : locate = Red2; break;
-		case 2 : locate = Red3; break;
-		case 3 : locate = Blue1; break; 
-		case 4 : locate = Blue2; break; 
-		case 5 : locate = Blue3; break;
-		default : locate; break;
-	}
-}
-int FRCNetImpl::setVoltage(int8_t volts, int8_t millivolts){
-	int num = rand();
-	int opr = rand()%2;
-	if (opr = 1){
-		millivolts + num;
-	}else{
-		millivolts - num;
-	}
-	return (volts + millivolts);
->>>>>>> origin/roboRio-config
 }
 
 void FRCNetImpl::setStatus(int battery, uint8_t dsDigitalOut, 		uint8_t updateNumber, const char *userDataHigh, int userDataHighLength, 	const char *userDataLow, int userDataLowLength, uint8_t control) {
