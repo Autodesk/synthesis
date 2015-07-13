@@ -4,7 +4,7 @@
 /* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
 /*----------------------------------------------------------------------------*/
 
-#include <Error.h>
+#include "Error.h"
 
 #include <iostream>
 #include <sstream>
