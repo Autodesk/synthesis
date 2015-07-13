@@ -37,7 +37,13 @@ public class Init : MonoBehaviour
 	//main node of robot from which speed and other stats are derived
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
-	private Rect windowRect;
+	private Rect statsWindowRect;
+
+	// Hotkeys window constants
+	private bool showHotkeysWindow = false;
+	private Rect hotkeysWindowRect;
+	private int hotkeysWindowWidth = 400;
+	private int hotkeysWindowHeight = 200;
 
 	private float acceleration;
 	private float angvelo;
@@ -60,7 +66,14 @@ public class Init : MonoBehaviour
     {
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
-		windowRect = new Rect (Screen.width - 320, 20, 300, 150);
+		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
+		hotkeysWindowRect = new Rect(
+			(Screen.width / 2) - (hotkeysWindowWidth / 2), 
+     		(Screen.height / 2) - (hotkeysWindowHeight / 2), 
+         	hotkeysWindowWidth, 
+         	hotkeysWindowHeight
+		);
+
 		time_stop = false;
 		reloadInFrames = -1;
     }
@@ -88,23 +101,40 @@ public class Init : MonoBehaviour
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
+	public void HotkeysWindow(int windowID)
+	{
+		int leftX = 75;
+		int leftXOffset = 275;
+		int heightGap = 25;
+		GUI.Label (new Rect (leftX, 1 * heightGap, 300, 50), "Orient:"); 
+		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Driverstation:");
+		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Orbit Robot:R");
+		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "First Person:F"); 
+		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Stats window toggle:");
+		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Menu:");
+
+		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "[O]"); 
+		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[D]");
+		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]");
+		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[F]"); 
+		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[H]");
+		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[Esc]");
+	}
+
 	[STAThread]
     void OnGUI()
     {
 		// Draws stats window on to GUI
 		if(showStatWindow)
-			windowRect = GUI.Window(0, windowRect, StatsWindow, "Stats");
+			statsWindowRect = GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+
+		// Draw hotkeys window on to GUI
+		if(showHotkeysWindow)
+			hotkeysWindowRect = GUI.Window (1, hotkeysWindowRect, HotkeysWindow, "Hot Key");
 
         if (gui == null)
         {
             gui = new GUIController();
-
-			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
-				{
-					if ((int) o == 0) {
-						Application.Quit();
-					}
-				});
 
             gui.AddWindow("Load Model", new FileBrowser(), (object o) =>
             {
@@ -124,7 +154,7 @@ public class Init : MonoBehaviour
                 {
                     UserMessageManager.Dispatch("Invalid selection!", 10f);
                 }
-            });
+			});
 
             gui.AddAction("Orient Robot", () =>
             {
@@ -139,6 +169,8 @@ public class Init : MonoBehaviour
 			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
 			    "Driver Station [D]", "Orbit Robot [R]", "First Person [F]"), (object o) =>
 			    {
+					gui.guiVisible = false;
+
 					switch ((int) o) {
 					case 0:
 						dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
@@ -158,6 +190,8 @@ public class Init : MonoBehaviour
 			gui.AddWindow ("Switch Field", new DialogWindow("Switch Field",
 				"Aerial Asssist (2014)", "Recycle Rush (2015)"), (object o) =>
 			    {
+					gui.guiVisible = false;
+
 					switch ((int) o)
 					{
 					case 0:
@@ -168,6 +202,23 @@ public class Init : MonoBehaviour
 						break;
 					}
 				});
+
+			gui.AddAction ("Hotkeys", 
+       		() =>
+       		{
+				showHotkeysWindow = !showHotkeysWindow;
+			}, 
+			()=>
+			{
+				showHotkeysWindow = false;
+			});
+
+			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+			               {
+				if ((int) o == 0) {
+					Application.Quit();
+				}
+			});
         }
         gui.Render();
 
