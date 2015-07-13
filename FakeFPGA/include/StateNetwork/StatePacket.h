@@ -13,6 +13,7 @@ typedef struct {
 		uint32_t relayReverse;
 		uint32_t digitalOutput;
 		float32_t pwmValues[10];
+//		float32_t canValues[10];
 	} dio[2];
 	struct {
 		uint8_t state;
