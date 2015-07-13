@@ -429,9 +429,6 @@
     <ClCompile Include="src\Watchdog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CANTalon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Accelerometer.h">
@@ -1047,12 +1044,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\tables\TableKeyNotDefinedException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CANTalon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\CAN\TalonCanDriver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
