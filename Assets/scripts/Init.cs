@@ -101,24 +101,43 @@ public class Init : MonoBehaviour
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
-	public void HotkeysWindow(int windowID)
+	public void HotkeysWindow()
 	{
 		int leftX = 75;
 		int leftXOffset = 275;
 		int heightGap = 25;
-		GUI.Label (new Rect (leftX, 1 * heightGap, 300, 50), "Orient:"); 
-		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Driverstation:");
-		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Orbit Robot:R");
-		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "First Person:F"); 
-		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Stats window toggle:");
-		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Menu:");
+		
+		List<string> labelTitles = new List<string>();
+		labelTitles.Add ("Orient:"); 
+		labelTitles.Add ("Driverstation:");
+		labelTitles.Add ("Orbit Robot:R");
+		labelTitles.Add ("First Person:F"); 
+		labelTitles.Add ("Stats window toggle:");
+		labelTitles.Add ("Menu:");
+		labelTitles.Add ("[O]"); 
+		labelTitles.Add ("[D]");
+		labelTitles.Add ("[R]");
+		labelTitles.Add ("[F]"); 
+		labelTitles.Add ("[H]");
+		labelTitles.Add ("[Esc]");
 
-		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "[O]"); 
-		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[D]");
-		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]");
-		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[F]"); 
-		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[H]");
-		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[Esc]");
+		List<Rect> labelRects = new List<Rect>();
+		labelRects.Add (new Rect (leftX, 1 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 2 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 3 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 4 * heightGap, 300, 50)); 
+		labelRects.Add (new Rect (leftX, 5 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 6 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 1 * heightGap, 300, 50)); 
+		labelRects.Add (new Rect (leftXOffset, 2 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 3 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 4 * heightGap, 300, 50)); 
+		labelRects.Add (new Rect (leftXOffset, 5 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 6 * heightGap, 300, 50));
+
+		string windowTitle = "Hotkeys";
+		Rect windowRect = hotkeysWindowRect;
+		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray()), (object o)=>{});
 	}
 
 	[STAThread]
@@ -127,10 +146,6 @@ public class Init : MonoBehaviour
 		// Draws stats window on to GUI
 		if(showStatWindow)
 			statsWindowRect = GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
-
-		// Draw hotkeys window on to GUI
-		if(showHotkeysWindow)
-			hotkeysWindowRect = GUI.Window (1, hotkeysWindowRect, HotkeysWindow, "Hot Key");
 
         if (gui == null)
         {
@@ -203,15 +218,7 @@ public class Init : MonoBehaviour
 					}
 				});
 
-			gui.AddAction ("Hotkeys", 
-       		() =>
-       		{
-				showHotkeysWindow = !showHotkeysWindow;
-			}, 
-			()=>
-			{
-				showHotkeysWindow = false;
-			});
+			HotkeysWindow();
 
 			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 			               {

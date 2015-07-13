@@ -64,16 +64,6 @@ class GUIController
     /// </summary>
     private KeyValuePair<string, Action>[] entries;
 
-	/// <summary>
-	/// Callback functions for non dialog windows
-	/// </summary>
-	private  List<Action> callbacks = new List<Action>();
-
-	/// <summary>
-	/// Callback for current non dialog window
-	/// </summary>
-	private Action callback = null;
-
     /// <summary>
     /// All the overlay windows that are linked to this sidebar.
     /// </summary>
@@ -136,11 +126,8 @@ class GUIController
     /// </summary>
     /// <param name="caption">The title of the entry</param>
     /// <param name="act">The action to execute when the entry is pressed</param>
-    public void AddAction(string caption, Action act, Action newCallback = null)
+    public void AddAction(string caption, Action act)
     {
-		// Resizing for callbacks
-		callbacks.Add (newCallback);
-
 		// Resizing for entries
         if (entries == null || entries.Length == 0)
         {
@@ -208,10 +195,7 @@ class GUIController
             bool escPressed = Input.GetKeyDown(KeyCode.Escape);
             if (escPressed && !keyDebounce)
             {
-				if(callback != null)
-					callback.Invoke();
-
-                if (guiVisible && windowVisible)
+				if (guiVisible && windowVisible)
                 {
                     foreach (OverlayWindow window in windows)
                     {
@@ -259,10 +243,6 @@ class GUIController
 					foreach(OverlayWindow window in windows)
 						window.Active = false;
 
-					if(callback != null)
-						callback.Invoke();
-
-					callback = callbacks[btnIndex];
                     btn.Value();
                 }
 
