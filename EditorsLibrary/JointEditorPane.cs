@@ -257,16 +257,17 @@ namespace EditorsLibrary
 
         public void SetSkeleton(RigidNode_Base root)
         {
-            nodeList = root.ListAllNodes();
+            if (root == null) nodeList = null;
+            else nodeList = root.ListAllNodes();
             UpdateJointList();
         }
 
         private void UpdateJointList()
         {
-
-            if (nodeList == null)
-                return;
             lstJoints.Items.Clear();
+
+            if (nodeList == null) return;
+
             foreach (RigidNode_Base node in nodeList)
             {
                 if (node.GetSkeletalJoint() != null)

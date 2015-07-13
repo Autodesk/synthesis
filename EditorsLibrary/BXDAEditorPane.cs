@@ -41,6 +41,10 @@ namespace EditorsLibrary
 
         public void loadModel(List<BXDAMesh> meshes)
         {
+            treeView1.Nodes.Clear();
+
+            if (meshes == null) return;
+
             rootNode = new BXDAEditorNode("Model", BXDAEditorNode.NodeType.SECTION_HEADER, false);
             rootNode.Nodes.Add(new BXDAEditorNode("Exported with version", BXDAEditorNode.NodeType.STRING, false, BXDIO.ASSEMBLY_VERSION));
             foreach (BXDAMesh mesh in meshes)
@@ -48,7 +52,6 @@ namespace EditorsLibrary
                 rootNode.Nodes.Add(GenerateTree(mesh));
             }
 
-            treeView1.Nodes.Clear();
             treeView1.Nodes.Add(rootNode);
         }
 

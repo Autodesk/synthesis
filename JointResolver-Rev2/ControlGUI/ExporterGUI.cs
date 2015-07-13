@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EditorsLibrary;
 using OGLViewer;
 
 public partial class ExporterGUI : Form
@@ -16,6 +17,8 @@ public partial class ExporterGUI : Form
 
     private RigidNode_Base skeletonBase;
     private List<BXDAMesh> meshes;
+
+    private string lastDirPath = null;
 
     public ExporterGUI()
     {
@@ -26,17 +29,46 @@ public partial class ExporterGUI : Form
             return new OGL_RigidNode();
         };
 
-        this.robotViewer1.loadInventor.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        fileNew.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            SetNew();
+        });
+        fileLoad.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
             LoadFromInventor();
         });
-        this.robotViewer1.openExisting.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        fileOpen.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
             OpenExisting();
         });
-        this.robotViewer1.saveButton.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        fileSave.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
-            SaveRobot();
+            SaveRobot(false);
+        });
+        fileSaveAs.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            SaveRobot(true);
+        });
+        fileExit.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            Close();
+        });
+
+        settingsExporter.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            ExporterSettings eSettings = new ExporterSettings();
+            eSettings.ShowDialog(this);
+        });
+        settingsViewer.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            ViewerSettings vSettings = new ViewerSettings();
+            vSettings.ShowDialog(this);
+        });
+
+        helpAbout.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
+        {
+            AboutDialog about = new AboutDialog();
+            about.ShowDialog(this);
         });
 
         this.FormClosing += new FormClosingEventHandler(delegate(object sender, FormClosingEventArgs e)
@@ -45,11 +77,17 @@ public partial class ExporterGUI : Form
         });
     }
 
+    public void SetNew()
+    {
+        skeletonBase = null;
+        meshes = null;
+
+        ReloadPanels();
+    }
+
     public void LoadFromInventor()
     {
         if (skeletonBase != null && !WarnUnsaved()) return;
-
-        Visible = false;
 
         try
         {
@@ -60,9 +98,8 @@ public partial class ExporterGUI : Form
         catch (Exception e)
         {
             MessageBox.Show(e.Message);
+            return;
         }
-
-        Visible = true;
 
         ReloadPanels();
     }
@@ -93,16 +130,20 @@ public partial class ExporterGUI : Form
             MessageBox.Show(e.Message);
         }
 
+        lastDirPath = dirPath;
+
         ReloadPanels();
     }
 
-    public bool SaveRobot()
+    public bool SaveRobot(bool isSaveAs)
     {
         if (skeletonBase == null || meshes == null) return false;
 
-        string dirPath = OpenFolderPath();
+        string dirPath = lastDirPath;
 
-        if (dirPath == null || (File.Exists(dirPath + "\\skeleton.bxdj") && !WarnOverwrite())) return false;
+        if (dirPath == null || isSaveAs) dirPath = OpenFolderPath();
+
+        if (!isSaveAs ^ File.Exists(dirPath + "\\skeleton.bxdj") && !WarnOverwrite()) return false;
 
         try
         {
@@ -117,6 +158,10 @@ public partial class ExporterGUI : Form
         {
             MessageBox.Show(e.Message);
         }
+
+        MessageBox.Show("Saved!");
+
+        lastDirPath = dirPath;
 
         return true;
     }
@@ -157,7 +202,7 @@ public partial class ExporterGUI : Form
 
         if (saveResult == DialogResult.Yes)
         {
-            return SaveRobot();
+            return SaveRobot(false);
         }
         else if (saveResult == DialogResult.No)
         {

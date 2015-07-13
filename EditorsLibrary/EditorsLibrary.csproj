@@ -63,6 +63,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutDialog.Designer.cs">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="BXDAEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,8 +99,19 @@
     <Compile Include="DriveChooser.Designer.cs">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExporterSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExporterSettings.Designer.cs">
+      <DependentUpon>ExporterSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="JointEditorPane.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SensorListForm.cs">
       <SubType>Form</SubType>
@@ -108,8 +125,17 @@
     <Compile Include="RobotViewer.Designer.cs">
       <DependentUpon>RobotViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="ViewerSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewerSettings.Designer.cs">
+      <DependentUpon>ViewerSettings.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AboutDialog.resx">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BXDAEditorForm.resx">
       <DependentUpon>BXDAEditorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -125,8 +151,15 @@
     <EmbeddedResource Include="DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ExporterSettings.resx">
+      <DependentUpon>ExporterSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="JointEditorPane.resx">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>
@@ -134,6 +167,15 @@
     <EmbeddedResource Include="RobotViewer.resx">
       <DependentUpon>RobotViewer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ViewerSettings.resx">
+      <DependentUpon>ViewerSettings.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SmallIcon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

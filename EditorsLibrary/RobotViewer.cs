@@ -47,6 +47,10 @@ namespace EditorsLibrary
 
         public void loadModel(RigidNode_Base node, List<BXDAMesh> meshes)
         {
+            modelLoaded = false;
+
+            if (node == null || meshes == null) return;
+
             baseNode = new OGL_RigidNode(node);
 
             nodes = baseNode.ListAllNodes();
