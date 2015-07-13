@@ -5,10 +5,13 @@ using System.Linq;
 using System.Text;
 
 /// <summary>
-/// Generic interface representing an overlay shown by <see cref="GUIController"/>.
+/// Generic window with labels and buttons <see cref="GUIController"/>.
 /// </summary>
 public class TextWindow : OverlayWindow
 {
+	/// <summary>
+	/// The _active.
+	/// </summary>
 	private bool _active = false;
 
 	/// <summary>
@@ -28,22 +31,58 @@ public class TextWindow : OverlayWindow
 		}
 	}
 
+	/// <summary>
+	/// The title.
+	/// </summary>
 	private readonly string title;
+
+	/// <summary>
+	/// The rect.
+	/// </summary>
 	private readonly Rect rect;
+
+	/// <summary>
+	/// The label titles.
+	/// </summary>
 	private readonly string[] labelTitles;
+
+	/// <summary>
+	/// The label rects.
+	/// </summary>
 	private readonly Rect[] labelRects;
+
+	/// <summary>
+	/// The button titles.
+	/// </summary>
+	private readonly string[] buttonTitles;
+
+	/// <summary>
+	/// The button rects.
+	/// </summary>
+	private readonly Rect[] buttonRects;
 
 	/// <summary>
 	/// Passes option selected.
 	/// </summary>
 	public event Action<object> OnComplete;
 
-	public TextWindow(string title, Rect rect, string[] labelTitles, Rect[] labelRects)
+	/// <summary>
+	/// Initializes a new instance of the <see cref="TextWindow"/> class.
+	/// </summary>
+	/// <param name="title">Title.</param>
+	/// <param name="rect">Rect.</param>
+	/// <param name="labelTitles">Label titles.</param>
+	/// <param name="labelRects">Label rects.</param>
+	/// <param name="buttonTitles">Button titles.</param>
+	/// <param name="buttonRects">Button rects.</param>
+	public TextWindow(string title, Rect rect, string[] labelTitles, Rect[] labelRects, string[] buttonTitles, Rect[] buttonRects)
 	{
 		this.title = title;
 		this.rect = rect;
 		this.labelTitles = labelTitles;
 		this.labelRects = labelRects;
+		this.buttonTitles = buttonTitles;
+		this.buttonRects = buttonRects;
 	}
 
 
@@ -60,9 +99,20 @@ public class TextWindow : OverlayWindow
 				rect, 
 				(int windowID) =>
 	           	{
+					// Display the labels
 					for(int i = 0; i < labelTitles.Length; i++)
-					{
 						GUI.Label(labelRects[i], labelTitles[i]);
+
+					// Display the buttons
+					for(int i = 0; i < buttonTitles.Length; i++)
+					{
+						if(GUI.Button (buttonRects[i], buttonTitles[i]))
+						{
+							_active = false;
+
+							if(OnComplete != null)
+								OnComplete(i);
+						}
 					}
 				},
 				title

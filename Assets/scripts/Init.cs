@@ -136,7 +136,7 @@ public class Init : MonoBehaviour
 
 		string windowTitle = "Hotkeys";
 		Rect windowRect = hotkeysWindowRect;
-		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray()), (object o)=>{});
+		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray(), new string[0], new Rect[0]), (object o)=>{});
 	}
 
 	void HideGuiSidebar()
