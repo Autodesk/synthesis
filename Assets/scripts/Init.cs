@@ -40,7 +40,6 @@ public class Init : MonoBehaviour
 	private Rect statsWindowRect;
 
 	// Hotkeys window constants
-	private bool showHotkeysWindow = false;
 	private Rect hotkeysWindowRect;
 	private int hotkeysWindowWidth = 400;
 	private int hotkeysWindowHeight = 200;
@@ -140,6 +139,17 @@ public class Init : MonoBehaviour
 		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray()), (object o)=>{});
 	}
 
+	void HideGuiSidebar()
+	{
+		gui.guiVisible = false;
+		dynamicCamera.EnableMoving ();
+	}
+
+	void ShowGuiSidebar()
+	{
+		dynamicCamera.DisableMoving();
+	}
+
 	[STAThread]
     void OnGUI()
     {
@@ -150,6 +160,8 @@ public class Init : MonoBehaviour
         if (gui == null)
         {
             gui = new GUIController();
+			gui.hideGuiCallback = HideGuiSidebar;
+			gui.showGuiCallback = ShowGuiSidebar;
 
             gui.AddWindow("Load Model", new FileBrowser(), (object o) =>
             {
@@ -381,21 +393,21 @@ public class Init : MonoBehaviour
             TryLoad();
         }
 
-		if (Input.GetKeyDown (KeyCode.Z))
+		// Only allow camera moving if gui is not showing
+		if (gui != null && !gui.guiVisible) 
 		{
-			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, -8.183f), new Vector3(0f, 323.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-		}
-		if (Input.GetKeyDown (KeyCode.X))
-		{
-			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, -8.183f), new Vector3(0f, 216.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-		}
-		if (Input.GetKeyDown (KeyCode.C))
-		{
-			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, 8.183f), new Vector3(0f, 36.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-		}
-		if (Input.GetKeyDown (KeyCode.V))
-		{
-			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, 8.183f), new Vector3(0f, 143.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			if (Input.GetKeyDown (KeyCode.Z)) {
+				totes.Add (Tote.Create (new Vector3 (-3.619f, 0.742f, -8.183f), new Vector3 (0f, 323.3176f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
+			if (Input.GetKeyDown (KeyCode.X)) {
+				totes.Add (Tote.Create (new Vector3 (3.619f, 0.742f, -8.183f), new Vector3 (0f, 216.2776f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
+			if (Input.GetKeyDown (KeyCode.C)) {
+				totes.Add (Tote.Create (new Vector3 (-3.619f, 0.742f, 8.183f), new Vector3 (0f, 36.2776f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
+			if (Input.GetKeyDown (KeyCode.V)) {
+				totes.Add (Tote.Create (new Vector3 (3.619f, 0.742f, 8.183f), new Vector3 (0f, 143.3176f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
 		}
 
 		// Orient Robot

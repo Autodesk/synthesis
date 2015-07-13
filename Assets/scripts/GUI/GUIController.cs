@@ -64,6 +64,16 @@ class GUIController
     /// </summary>
     private KeyValuePair<string, Action>[] entries;
 
+	/// <summary>
+	/// The show GUI.
+	/// </summary>
+	public Action showGuiCallback = null;
+
+	/// <summary>
+	/// The hide GUI.
+	/// </summary>
+	public Action hideGuiCallback = null;
+
     /// <summary>
     /// All the overlay windows that are linked to this sidebar.
     /// </summary>
@@ -195,6 +205,7 @@ class GUIController
             bool escPressed = Input.GetKeyDown(KeyCode.Escape);
             if (escPressed && !keyDebounce)
             {
+				// Hide all windows if gui is visible and windows are active
 				if (guiVisible && windowVisible)
                 {
                     foreach (OverlayWindow window in windows)
@@ -202,9 +213,17 @@ class GUIController
                         window.Active = false;
                     }
                 }
+
+				// Show/Hide the gui if no windows are active
                 else
                 {
                     guiVisible = !guiVisible;
+
+					if(guiVisible && showGuiCallback != null)
+						showGuiCallback.Invoke();
+
+					else if(!guiVisible && hideGuiCallback != null)
+						hideGuiCallback.Invoke();
                 }
             }
             keyDebounce = escPressed;
