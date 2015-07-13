@@ -207,7 +207,8 @@ DWORD FRCNetImpl::runThreadWrapper(LPVOID ptr) {
 int FRCNetImpl::runThread() {
 #if USE_WINAPI
 	WSADATA wsa;
-	WSAStartup(MAKEWORD(2,2),&wsa);		// Hope and pray that this works.
+	int err = WSAStartup(MAKEWORD(2,2),&wsa);		// Hope and pray that this works.
+	printf("WSAStartup() returned `%i`", err);
 #endif
 
 	struct sockaddr_in robotAddress;
