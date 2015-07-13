@@ -114,7 +114,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect(112, 90, 75, 30));
 		rects.Add (new Rect(112, 160, 75, 30));
 		
-		gui.AddWindow("Orient Robot", new TextWindow("Orient Robot",new Rect((Screen.width/2)-150, (Screen.height/2)-75 , 300, 250),
+		gui.AddWindow("Rotate Robot", new TextWindow("Rotate Robot",new Rect((Screen.width/2)-150, (Screen.height/2)-75 , 300, 250),
 		                                             new string[0], new Rect[0], titles.ToArray(), rects.ToArray()), (object o)=>{
 			
 			switch((int)o)
