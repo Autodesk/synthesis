@@ -51,7 +51,8 @@ public class Init : MonoBehaviour
 	private float time;
 	private bool time_stop;
 	private float oldSpeed;
-	private bool showStatWindow = true;
+	private bool showStatWindow;
+	Quaternion rotation;
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -75,6 +76,8 @@ public class Init : MonoBehaviour
 
 		time_stop = false;
 		reloadInFrames = -1;
+		showStatWindow = true;
+		rotation = Quaternion.identity;
     }
 
 	//displays stats like speed and acceleration
@@ -97,6 +100,10 @@ public class Init : MonoBehaviour
 			time = 0;
 		}
 
+		if(GUI.Button (new Rect (175, 75, 110, 25), "Save Orientation"))
+		{
+			rotation = activeRobot.transform.rotation;
+		}
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
@@ -113,15 +120,14 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect(175, 125, 75, 30));
 		rects.Add (new Rect(112, 90, 75, 30));
 		rects.Add (new Rect(112, 160, 75, 30));
-		
-		gui.AddWindow("Rotate Robot", new TextWindow("Rotate Robot",new Rect((Screen.width/2)-150, (Screen.height/2)-75 , 300, 250),
+
+		gui.AddWindow("Orient Robot", new TextWindow("Orient Robot", new Rect((Screen.width/2)-150, (Screen.height/2)-75 , 300, 250),
 		                                             new string[0], new Rect[0], titles.ToArray(), rects.ToArray()), (object o)=>{
-			
 			switch((int)o)
 			{
 			case 0:
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z + 90));
-				break;
+                break;
 			case 1:	
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z - 90));
 				break;
@@ -131,8 +137,7 @@ public class Init : MonoBehaviour
 			case 3:
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
 				break;
-			}
-			
+			}			
 		});
 	}
 
@@ -219,10 +224,12 @@ public class Init : MonoBehaviour
                 }
 			});
 
-            gui.AddAction("Orient Robot", () =>
+            gui.AddAction("Reset Robot", () =>
             {
                 OrientRobot();
             });
+
+			ShowOrient();
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
@@ -267,7 +274,6 @@ public class Init : MonoBehaviour
 				});
 
 			HotkeysWindow();
-			ShowOrient();
 
 			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 			               {
@@ -301,8 +307,8 @@ public class Init : MonoBehaviour
             foreach (RigidNode_Base node in nodes)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
-                uNode.unityObject.transform.localPosition = Vector3.zero;
-                uNode.unityObject.transform.localRotation = Quaternion.identity;
+				uNode.unityObject.transform.localPosition = Vector3.zero;
+                uNode.unityObject.transform.localRotation = rotation;
                 if (uNode.unityObject.rigidbody != null)
                 {
                     uNode.unityObject.rigidbody.velocity = Vector3.zero;
