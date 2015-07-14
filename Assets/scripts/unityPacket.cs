@@ -38,7 +38,7 @@ public class unityPacket
 				dio [i].digitalOutput = BitConverter.ToUInt32(pack, offset + 8);
 				for (int j = 0; j < dio[i].pwmValues.Length; j++)
 				{
-					dio [i].pwmValues [j] = -BitConverter.ToSingle(pack, offset + 12 + (4 * j));
+					dio [i].pwmValues [j] = BitConverter.ToSingle(pack, offset + 12 + (4 * j));
 				}
 			}
 			for (int i = 0; i < solenoid.Length; i++)

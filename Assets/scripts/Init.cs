@@ -148,15 +148,15 @@ public class Init : MonoBehaviour
 		int heightGap = 25;
 		
 		List<string> labelTitles = new List<string>();
-		labelTitles.Add ("Orient:"); 
+		labelTitles.Add ("Reset Robot:"); 
 		labelTitles.Add ("Driverstation:");
-		labelTitles.Add ("Orbit Robot:R");
+		labelTitles.Add ("Orbit Robot:O");
 		labelTitles.Add ("First Person:F"); 
 		labelTitles.Add ("Stats window toggle:");
 		labelTitles.Add ("Menu:");
-		labelTitles.Add ("[O]"); 
+		labelTitles.Add ("[R]"); 
 		labelTitles.Add ("[D]");
-		labelTitles.Add ("[R]");
+		labelTitles.Add ("[O]");
 		labelTitles.Add ("[F]"); 
 		labelTitles.Add ("[H]");
 		labelTitles.Add ("[Esc]");
@@ -454,8 +454,8 @@ public class Init : MonoBehaviour
 		}
 
 		// Orient Robot
-		if (Input.GetKeyDown (KeyCode.O))
-			gui.DoAction ("Orient Robot");
+		if (Input.GetKeyDown (KeyCode.R))
+			gui.DoAction ("Reset Robot");
 
 		// Show/Hide physics window
 		if (Input.GetKeyDown (KeyCode.H))
@@ -495,7 +495,7 @@ public class Init : MonoBehaviour
 				if (!time_stop)
 					time += Time.deltaTime;
 
-				if(!GUIController.isActive)
+				if(GUIController.isActive)
 				{
 					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
 				}

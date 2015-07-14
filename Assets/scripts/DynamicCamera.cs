@@ -185,7 +185,7 @@ public class DynamicCamera : MonoBehaviour
 			{
 				if (!cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
 			}
-			else if (Input.GetKey (KeyCode.R))
+			else if (Input.GetKey (KeyCode.O))
 			{
 				if (!cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
 			}
