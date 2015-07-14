@@ -99,6 +99,12 @@
     <Compile Include="DriveChooser.Designer.cs">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExporterProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExporterProgressForm.Designer.cs">
+      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExporterSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -150,6 +156,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExporterProgressForm.resx">
+      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExporterSettings.resx">
       <DependentUpon>ExporterSettings.cs</DependentUpon>

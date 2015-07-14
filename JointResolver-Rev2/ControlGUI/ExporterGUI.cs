@@ -15,14 +15,20 @@ using OGLViewer;
 public partial class ExporterGUI : Form
 {
 
+    public static ExporterGUI Instance;
+
     private RigidNode_Base skeletonBase;
     private List<BXDAMesh> meshes;
+
+    private ExporterProgressForm exporterProgress;
 
     private string lastDirPath = null;
 
     public ExporterGUI()
     {
         InitializeComponent();
+
+        Instance = this;
 
         RigidNode_Base.NODE_FACTORY = delegate()
         {
@@ -91,9 +97,27 @@ public partial class ExporterGUI : Form
 
         try
         {
+            AutoResetEvent startEvent = new AutoResetEvent(false);
+
+            var exporterThread = new Thread(() =>
+            {
+                exporterProgress = new ExporterProgressForm(startEvent);
+                exporterProgress.ShowDialog();
+            });
+
+            exporterThread.SetApartmentState(ApartmentState.STA);
+            exporterThread.Start();
+
+            startEvent.WaitOne();
+
             Exporter.LoadInventorInstance();
             skeletonBase = Exporter.ExportSkeleton();
             meshes = Exporter.ExportMeshes(skeletonBase);
+
+            Console.WriteLine("Finished!");
+            exporterProgress.SetProgressText("Finished");
+
+            exporterThread.Join();
         }
         catch (Exception e)
         {
@@ -164,6 +188,21 @@ public partial class ExporterGUI : Form
         lastDirPath = dirPath;
 
         return true;
+    }
+
+    public void ExporterReset()
+    {
+        exporterProgress.ResetProgress();
+    }
+
+    public void ExporterSetProgress(double percentLength)
+    {
+        exporterProgress.AddProgress((int) Math.Floor(percentLength) - exporterProgress.GetProgress());
+    }
+
+    public void ExporterSetSubText(string text)
+    {
+        exporterProgress.SetProgressText(text);
     }
 
     private string OpenFolderPath()

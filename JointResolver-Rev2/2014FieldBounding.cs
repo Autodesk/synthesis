@@ -22,7 +22,6 @@ public class _2014FieldBounding
         exp.ExportAll(asmDoc.ComponentDefinition.Occurrences.OfType<ComponentOccurrence>().GetEnumerator(), (long progress, long total) =>
         {
             Console.Write(Math.Round((progress / (float) total) * 100.0f, 2) + "%\t" + progress + " / " + total);
-            Console.CursorLeft = 0;
         });
         Console.WriteLine();
         BXDAMesh mesh = exp.GetOutput();

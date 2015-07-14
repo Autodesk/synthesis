@@ -125,7 +125,6 @@ public partial class SurfaceExporter
             foreach (Face f in surf.Faces)
             {
                 Console.Write(i + "/" + surf.Faces.Count);
-                Console.CursorLeft = 0;
                 i++;
                 AddFacets(f, tolerances[bestIndex]);
             }
