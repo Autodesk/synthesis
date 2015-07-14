@@ -211,7 +211,8 @@ int FRCNetImpl::runThread() {
 	SOCKET robotSocket;
 	SOCKET dsSocket;
 
-	uint32_t network = (10 << 24) | (((9999 / 100) & 0xFF) << 16) | ((9999 % 100) << 8) | 0;
+	uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
+	fprintf(stderr, "Team number: %i\n", teamID);
 	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
 
 	robotAddress.sin_family = AF_INET;
@@ -229,7 +230,7 @@ int FRCNetImpl::runThread() {
 	}
 
 	if (bind(robotSocket, (const struct sockaddr *)&robotAddress, sizeof(robotAddress)) == SOCKET_ERROR) {
-		fprintf(stderr, "Could not bind socket ROBOT!  Did you configure your loopback adapters? %i\n", WSAGetLastError());
+		fprintf(stderr, "Could not bind socket ROBOT!  Did you configure your loopback adapters?\n");
 		return 2;
 	}
 
