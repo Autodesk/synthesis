@@ -29,95 +29,219 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            this.DocumentScanner = new System.ComponentModel.BackgroundWorker();
-            this.ScanButton = new System.Windows.Forms.Button();
-            this.DocumentView = new System.Windows.Forms.TreeView();
-            this.CollisionObjectsLabel = new System.Windows.Forms.Label();
-            this.ComponentsViewLabel = new System.Windows.Forms.Label();
             this.CollisionObjectsView = new System.Windows.Forms.TreeView();
+            this.InventorSelectButton = new System.Windows.Forms.Button();
+            this.PropertyControl = new System.Windows.Forms.TabControl();
+            this.CollisionTab = new System.Windows.Forms.TabPage();
+            this.AddSelectionButton = new System.Windows.Forms.Button();
+            this.ExportPage = new System.Windows.Forms.TabPage();
+            this.FileTypeLabel = new System.Windows.Forms.Label();
+            this.BrowseButton = new System.Windows.Forms.Button();
+            this.FileNameTextBox = new System.Windows.Forms.TextBox();
+            this.FileSeparatorLabel = new System.Windows.Forms.Label();
+            this.FilePathTextBox = new System.Windows.Forms.TextBox();
+            this.ExportLocationLabel = new System.Windows.Forms.Label();
+            this.ExportButton = new System.Windows.Forms.Button();
+            this.SelectionAdder = new System.ComponentModel.BackgroundWorker();
+            this.FolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.Exporter = new System.ComponentModel.BackgroundWorker();
+            this.PropertyControl.SuspendLayout();
+            this.CollisionTab.SuspendLayout();
+            this.ExportPage.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // DocumentScanner
-            // 
-            this.DocumentScanner.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DocumentScanner_DoWork);
-            this.DocumentScanner.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.DocumentScanner_RunWorkerCompleted);
-            // 
-            // ScanButton
-            // 
-            this.ScanButton.Location = new System.Drawing.Point(12, 12);
-            this.ScanButton.Name = "ScanButton";
-            this.ScanButton.Size = new System.Drawing.Size(598, 64);
-            this.ScanButton.TabIndex = 4;
-            this.ScanButton.Text = "Scan Document";
-            this.ScanButton.UseVisualStyleBackColor = true;
-            this.ScanButton.Click += new System.EventHandler(this.ScanButton_Click);
-            // 
-            // DocumentView
-            // 
-            this.DocumentView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.DocumentView.Location = new System.Drawing.Point(12, 99);
-            this.DocumentView.Name = "DocumentView";
-            this.DocumentView.Size = new System.Drawing.Size(296, 321);
-            this.DocumentView.TabIndex = 2;
-            this.DocumentView.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.DocumentView_ItemDrag);
-            // 
-            // CollisionObjectsLabel
-            // 
-            this.CollisionObjectsLabel.Location = new System.Drawing.Point(314, 79);
-            this.CollisionObjectsLabel.Name = "CollisionObjectsLabel";
-            this.CollisionObjectsLabel.Size = new System.Drawing.Size(296, 17);
-            this.CollisionObjectsLabel.TabIndex = 6;
-            this.CollisionObjectsLabel.Text = "Objects With Collision";
-            this.CollisionObjectsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // ComponentsViewLabel
-            // 
-            this.ComponentsViewLabel.Location = new System.Drawing.Point(12, 79);
-            this.ComponentsViewLabel.Name = "ComponentsViewLabel";
-            this.ComponentsViewLabel.Size = new System.Drawing.Size(296, 17);
-            this.ComponentsViewLabel.TabIndex = 7;
-            this.ComponentsViewLabel.Text = "Components In Assembly";
-            this.ComponentsViewLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // CollisionObjectsView
             // 
             this.CollisionObjectsView.AllowDrop = true;
-            this.CollisionObjectsView.Location = new System.Drawing.Point(314, 99);
+            this.CollisionObjectsView.HideSelection = false;
+            this.CollisionObjectsView.HotTracking = true;
+            this.CollisionObjectsView.Location = new System.Drawing.Point(6, 6);
             this.CollisionObjectsView.Name = "CollisionObjectsView";
-            this.CollisionObjectsView.Size = new System.Drawing.Size(293, 105);
+            this.CollisionObjectsView.Size = new System.Drawing.Size(602, 356);
             this.CollisionObjectsView.TabIndex = 8;
-            this.CollisionObjectsView.DragDrop += new System.Windows.Forms.DragEventHandler(this.CollisionObjectsView_DragDrop);
-            this.CollisionObjectsView.DragEnter += new System.Windows.Forms.DragEventHandler(this.CollisionObjectsView_DragEnter);
+            this.CollisionObjectsView.NodeMouseHover += new System.Windows.Forms.TreeNodeMouseHoverEventHandler(this.CollisionObjectsView_NodeMouseHover);
             this.CollisionObjectsView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CollisionObjectsView_KeyDown);
+            // 
+            // InventorSelectButton
+            // 
+            this.InventorSelectButton.Location = new System.Drawing.Point(6, 368);
+            this.InventorSelectButton.Name = "InventorSelectButton";
+            this.InventorSelectButton.Size = new System.Drawing.Size(298, 32);
+            this.InventorSelectButton.TabIndex = 9;
+            this.InventorSelectButton.Tag = "";
+            this.InventorSelectButton.Text = "Select in Inventor";
+            this.InventorSelectButton.UseVisualStyleBackColor = true;
+            this.InventorSelectButton.Click += new System.EventHandler(this.InventorSelectButton_Click);
+            // 
+            // PropertyControl
+            // 
+            this.PropertyControl.Controls.Add(this.CollisionTab);
+            this.PropertyControl.Controls.Add(this.ExportPage);
+            this.PropertyControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertyControl.Location = new System.Drawing.Point(0, 0);
+            this.PropertyControl.Name = "PropertyControl";
+            this.PropertyControl.SelectedIndex = 0;
+            this.PropertyControl.Size = new System.Drawing.Size(622, 435);
+            this.PropertyControl.TabIndex = 10;
+            // 
+            // CollisionTab
+            // 
+            this.CollisionTab.Controls.Add(this.AddSelectionButton);
+            this.CollisionTab.Controls.Add(this.CollisionObjectsView);
+            this.CollisionTab.Controls.Add(this.InventorSelectButton);
+            this.CollisionTab.Location = new System.Drawing.Point(4, 25);
+            this.CollisionTab.Name = "CollisionTab";
+            this.CollisionTab.Padding = new System.Windows.Forms.Padding(3);
+            this.CollisionTab.Size = new System.Drawing.Size(614, 406);
+            this.CollisionTab.TabIndex = 0;
+            this.CollisionTab.Text = "Collision Objects";
+            this.CollisionTab.UseVisualStyleBackColor = true;
+            // 
+            // AddSelectionButton
+            // 
+            this.AddSelectionButton.Enabled = false;
+            this.AddSelectionButton.Location = new System.Drawing.Point(310, 368);
+            this.AddSelectionButton.Name = "AddSelectionButton";
+            this.AddSelectionButton.Size = new System.Drawing.Size(298, 32);
+            this.AddSelectionButton.TabIndex = 10;
+            this.AddSelectionButton.Text = "Add Selection";
+            this.AddSelectionButton.UseVisualStyleBackColor = true;
+            this.AddSelectionButton.Click += new System.EventHandler(this.AddSelectionButton_Click);
+            // 
+            // ExportPage
+            // 
+            this.ExportPage.Controls.Add(this.FileTypeLabel);
+            this.ExportPage.Controls.Add(this.BrowseButton);
+            this.ExportPage.Controls.Add(this.FileNameTextBox);
+            this.ExportPage.Controls.Add(this.FileSeparatorLabel);
+            this.ExportPage.Controls.Add(this.FilePathTextBox);
+            this.ExportPage.Controls.Add(this.ExportLocationLabel);
+            this.ExportPage.Controls.Add(this.ExportButton);
+            this.ExportPage.Location = new System.Drawing.Point(4, 25);
+            this.ExportPage.Name = "ExportPage";
+            this.ExportPage.Padding = new System.Windows.Forms.Padding(3);
+            this.ExportPage.Size = new System.Drawing.Size(614, 406);
+            this.ExportPage.TabIndex = 1;
+            this.ExportPage.Text = "Export";
+            this.ExportPage.UseVisualStyleBackColor = true;
+            // 
+            // FileTypeLabel
+            // 
+            this.FileTypeLabel.AutoSize = true;
+            this.FileTypeLabel.Location = new System.Drawing.Point(568, 9);
+            this.FileTypeLabel.Name = "FileTypeLabel";
+            this.FileTypeLabel.Size = new System.Drawing.Size(42, 17);
+            this.FileTypeLabel.TabIndex = 6;
+            this.FileTypeLabel.Text = ".bxda";
+            // 
+            // BrowseButton
+            // 
+            this.BrowseButton.Location = new System.Drawing.Point(122, 6);
+            this.BrowseButton.Name = "BrowseButton";
+            this.BrowseButton.Size = new System.Drawing.Size(70, 22);
+            this.BrowseButton.TabIndex = 5;
+            this.BrowseButton.Text = "Browse";
+            this.BrowseButton.UseVisualStyleBackColor = true;
+            this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
+            // 
+            // FileNameTextBox
+            // 
+            this.FileNameTextBox.Location = new System.Drawing.Point(441, 6);
+            this.FileNameTextBox.Name = "FileNameTextBox";
+            this.FileNameTextBox.Size = new System.Drawing.Size(121, 22);
+            this.FileNameTextBox.TabIndex = 4;
+            // 
+            // FileSeparatorLabel
+            // 
+            this.FileSeparatorLabel.AutoSize = true;
+            this.FileSeparatorLabel.Location = new System.Drawing.Point(423, 9);
+            this.FileSeparatorLabel.Name = "FileSeparatorLabel";
+            this.FileSeparatorLabel.Size = new System.Drawing.Size(12, 17);
+            this.FileSeparatorLabel.TabIndex = 3;
+            this.FileSeparatorLabel.Text = "\\";
+            // 
+            // FilePathTextBox
+            // 
+            this.FilePathTextBox.Location = new System.Drawing.Point(198, 6);
+            this.FilePathTextBox.Name = "FilePathTextBox";
+            this.FilePathTextBox.ReadOnly = true;
+            this.FilePathTextBox.Size = new System.Drawing.Size(218, 22);
+            this.FilePathTextBox.TabIndex = 2;
+            // 
+            // ExportLocationLabel
+            // 
+            this.ExportLocationLabel.AutoSize = true;
+            this.ExportLocationLabel.Location = new System.Drawing.Point(6, 9);
+            this.ExportLocationLabel.Name = "ExportLocationLabel";
+            this.ExportLocationLabel.Size = new System.Drawing.Size(110, 17);
+            this.ExportLocationLabel.TabIndex = 1;
+            this.ExportLocationLabel.Text = "Export Location:";
+            // 
+            // ExportButton
+            // 
+            this.ExportButton.Location = new System.Drawing.Point(6, 368);
+            this.ExportButton.Name = "ExportButton";
+            this.ExportButton.Size = new System.Drawing.Size(602, 32);
+            this.ExportButton.TabIndex = 0;
+            this.ExportButton.Text = "Export";
+            this.ExportButton.UseVisualStyleBackColor = true;
+            this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
+            // 
+            // SelectionAdder
+            // 
+            this.SelectionAdder.DoWork += new System.ComponentModel.DoWorkEventHandler(this.SelectionAdder_DoWork);
+            this.SelectionAdder.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.SelectionAdder_RunWorkerCompleted);
+            // 
+            // FolderBrowserDialog
+            // 
+            this.FolderBrowserDialog.Description = "Select the file path by which to export the BXDF file.";
+            // 
+            // Exporter
+            // 
+            this.Exporter.DoWork += new System.ComponentModel.DoWorkEventHandler(this.Exporter_DoWork);
+            this.Exporter.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.Exporter_RunWorkerCompleted);
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(255)))), ((int)(((byte)(200)))));
             this.ClientSize = new System.Drawing.Size(622, 435);
-            this.Controls.Add(this.CollisionObjectsView);
-            this.Controls.Add(this.ComponentsViewLabel);
-            this.Controls.Add(this.CollisionObjectsLabel);
-            this.Controls.Add(this.ScanButton);
-            this.Controls.Add(this.DocumentView);
+            this.Controls.Add(this.PropertyControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainWindow";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Field Exporter";
+            this.TopMost = true;
             this.Activated += new System.EventHandler(this.MainWindow_Activated);
+            this.PropertyControl.ResumeLayout(false);
+            this.CollisionTab.ResumeLayout(false);
+            this.ExportPage.ResumeLayout(false);
+            this.ExportPage.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.ComponentModel.BackgroundWorker DocumentScanner;
-        private System.Windows.Forms.Button ScanButton;
-        private System.Windows.Forms.TreeView DocumentView;
-        private System.Windows.Forms.Label CollisionObjectsLabel;
-        private System.Windows.Forms.Label ComponentsViewLabel;
         private System.Windows.Forms.TreeView CollisionObjectsView;
+        private System.Windows.Forms.TabControl PropertyControl;
+        private System.Windows.Forms.TabPage CollisionTab;
+        private System.Windows.Forms.TabPage ExportPage;
+        private System.Windows.Forms.Button AddSelectionButton;
+        private System.Windows.Forms.Button InventorSelectButton;
+        private System.ComponentModel.BackgroundWorker SelectionAdder;
+        private System.Windows.Forms.Button ExportButton;
+        private System.Windows.Forms.TextBox FilePathTextBox;
+        private System.Windows.Forms.Label ExportLocationLabel;
+        private System.Windows.Forms.Button BrowseButton;
+        private System.Windows.Forms.TextBox FileNameTextBox;
+        private System.Windows.Forms.Label FileSeparatorLabel;
+        private System.Windows.Forms.FolderBrowserDialog FolderBrowserDialog;
+        private System.Windows.Forms.Label FileTypeLabel;
+        private System.ComponentModel.BackgroundWorker Exporter;
     }
 }
 

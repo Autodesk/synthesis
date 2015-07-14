@@ -7,7 +7,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
@@ -16,94 +15,204 @@ namespace FieldExporter
     public partial class MainWindow : Form
     {
         /// <summary>
-        /// The Inventor application instance.
+        /// The events caused by user interaction with Inventor.
         /// </summary>
-        Inventor.Application application;
+        private InteractionEvents interactionEvents;
 
         /// <summary>
-        /// The ScanProgressWindow instance.
+        /// The events triggered by object selection in Inventor
         /// </summary>
-        ScanProgressWindow progressWindow;
+        private SelectEvents selectEvents;
+
+        /// <summary>
+        /// Used to determine if Inventor interaction is enabled.
+        /// </summary>
+        private bool interactionEnabled = false;
+
+        /// <summary>
+        /// The ProgressWindow instance.
+        /// </summary>
+        private ProgressWindow progressWindow;
         
         /// <summary>
-        /// Connects to Inventor, constructs the form, and scans for visible documents.
+        /// Connects to Inventor and constructs the form.
         /// </summary>
         public MainWindow()
         {
-            try
-            {
-                application = (Inventor.Application)Marshal.GetActiveObject("Inventor.Application");
-            }
-            catch
-            {
-                MessageBox.Show("Please launch Autodesk Inventor and try again.", "Could not connect to Autodesk Inventor.");
-                System.Environment.Exit(1);
-            }
-
             InitializeComponent();
         }
 
         /// <summary>
-        /// Scans through all components in the specified collection and returns a TreeNode
-        /// containing all of the corresponding Inventor components.
+        /// Enables interaction events.
         /// </summary>
-        /// <param name="collection"></param>
-        /// <param name="parentNode"></param>
-        /// <returns>The parent node</returns>
-        private TreeNode ScanAssembly(ComponentOccurrences collection, TreeNode parentNode)
+        private void EnableInteractionEvents()
         {
-            IEnumerator enumerator = collection.GetEnumerator();
-            ComponentOccurrence occurrence;
+            try
+            {
+                interactionEvents = Program.INVENTOR_APPLICATION.CommandManager.CreateInteractionEvents();
+                interactionEvents.OnActivate += interactionEvents_OnActivate;
+                interactionEvents.Start();
+
+                CollisionObjectsView.HotTracking = false;
+
+                InventorSelectButton.Text = "Cancel Selection";
+
+                interactionEnabled = true;
+            }
+            catch
+            {
+                MessageBox.Show("Cannot enter select mode.", "Document not found.");
+            }
+        }
+
+        /// <summary>
+        /// Disables interaction events.
+        /// </summary>
+        private void DisableInteractionEvents()
+        {
+            interactionEvents.Stop();
+
+            Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
+
+            CollisionObjectsView.HotTracking = true;
+
+            InventorSelectButton.Text = "Select in Inventor";
+            AddSelectionButton.Enabled = false;
+
+            interactionEnabled = false;
+        }
+
+        /// <summary>
+        /// Enables select events when interaction events are activated.
+        /// </summary>
+        void interactionEvents_OnActivate()
+        {
+            selectEvents = interactionEvents.SelectEvents;
+            selectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
+            selectEvents.OnSelect += selectEvents_OnSelect;
+            selectEvents.OnPreSelect += selectEvents_OnPreSelect;
+        }
+
+        /// <summary>
+        /// Allows the user to see if they have already added a collision component in select mode.
+        /// </summary>
+        /// <param name="PreSelectEntity"></param>
+        /// <param name="DoHighlight"></param>
+        /// <param name="MorePreSelectEntities"></param>
+        /// <param name="SelectionDevice"></param>
+        /// <param name="ModelPosition"></param>
+        /// <param name="ViewPosition"></param>
+        /// <param name="View"></param>
+        void selectEvents_OnPreSelect(ref object PreSelectEntity, out bool DoHighlight, ref ObjectCollection MorePreSelectEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+        {
+            DoHighlight = true;
+
+            if (PreSelectEntity is ComponentOccurrence)
+            {
+                ComponentOccurrence componentOccurrence = (ComponentOccurrence)PreSelectEntity;
+
+                if (CollisionObjectsView.Nodes.Find(componentOccurrence.Name, true).Length > 0)
+                {
+                    CollisionObjectsView.Invoke(new Action(() =>
+                        {
+                            CollisionObjectsView.SelectedNode = CollisionObjectsView.Nodes.Find(componentOccurrence.Name, true)[0];
+                            CollisionObjectsView.SelectedNode.EnsureVisible();
+                        }));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enables the "Add Selection" button when an object in Inventor is selected.
+        /// </summary>
+        /// <param name="JustSelectedEntities"></param>
+        /// <param name="SelectionDevice"></param>
+        /// <param name="ModelPosition"></param>
+        /// <param name="ViewPosition"></param>
+        /// <param name="View"></param>
+        void selectEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+        {
+            if (!AddSelectionButton.Enabled)
+            {
+                AddSelectionButton.Invoke(new Action(() =>
+                {
+                    AddSelectionButton.Enabled = true;
+                }));
+            }
+        }
+
+        /// <summary>
+        /// Adds children to a TreeNode based on its Inventor component correspondant.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private TreeNode AddComponentChildren(ComponentOccurrence component, TreeNode node)
+        {
+            IEnumerator enumerator = component.SubOccurrences.GetEnumerator();
+            ComponentOccurrence subOccurrence;
 
             while (enumerator.MoveNext())
             {
-                occurrence = (ComponentOccurrence)enumerator.Current;
+                subOccurrence = (ComponentOccurrence)enumerator.Current;
 
-                TreeNode currentNode = new TreeNode(occurrence.Name);
+                TreeNode currentNode = new TreeNode(subOccurrence.Name);
                 currentNode.Name = currentNode.Text;
+                currentNode.Tag = subOccurrence;
 
-                parentNode.Nodes.Add(currentNode);
+                node.Nodes.Add(currentNode);
 
-                ScanAssembly((ComponentOccurrences)occurrence.SubOccurrences, currentNode);
+                AddComponentChildren(subOccurrence, currentNode);
             }
 
-            return parentNode;
+            return node;
         }
 
         /// <summary>
-        /// Scans through the given TreeNode and returns a list containing its nodes.
+        /// Adds parents to a TreeNode based on its Inventor component correspondant.
         /// </summary>
-        /// <param name="treeNode"></param>
+        /// <param name="component"></param>
+        /// <param name="node"></param>
         /// <returns></returns>
-        private List<TreeNode> ScanTreeNode(TreeNode treeNode)
+        private TreeNode AddComponentParents(ComponentOccurrence component, TreeNode node)
         {
-            List<TreeNode> nodes = new List<TreeNode>();
+            ComponentOccurrence parentOccurrence;
 
-            foreach (TreeNode n in treeNode.Nodes)
+            if (component.ParentOccurrence != null)
             {
-                nodes.Add(n);
-                nodes.AddRange(ScanTreeNode(n));
+                parentOccurrence = component.ParentOccurrence;
+
+                TreeNode currentNode = new TreeNode(parentOccurrence.Name);
+                currentNode.Name = currentNode.Text;
+                currentNode.Tag = parentOccurrence;
+
+                currentNode.Nodes.Add(node);
+
+                AddComponentParents(parentOccurrence, currentNode);
             }
 
-            return nodes;
+            return node;
         }
 
-        /// <summary>
-        /// Scans through the given TreeView and returns a list containing its nodes.
-        /// </summary>
-        /// <param name="treeView"></param>
-        /// <returns></returns>
-        private List<TreeNode> ScanTreeView(TreeView treeView)
+        IEnumerable<TreeNode> AllTreeNodes(TreeNodeCollection nodes)
         {
-            List<TreeNode> nodes = new List<TreeNode>();
-
-            foreach (TreeNode n in treeView.Nodes)
+            foreach (TreeNode node in nodes)
             {
-                nodes.Add(n);
-                nodes.AddRange(ScanTreeNode(n));
-            }
+                yield return node;
 
-            return nodes;
+                foreach (TreeNode child in AllTreeNodes(node.Nodes))
+                {
+                    yield return child;
+                }
+            }
+        }
+
+        IEnumerator<T> Cast<T>(IEnumerator enumerator)
+        {
+            while (enumerator.MoveNext())
+            {
+                yield return (T)enumerator.Current;
+            }
         }
 
         /// <summary>
@@ -113,156 +222,14 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void MainWindow_Activated(object sender, EventArgs e)
         {
-            if (application.ActiveDocument != null)
+            if (Program.INVENTOR_APPLICATION.ActiveDocument is AssemblyDocument)
             {
-                Text = "Field Exporter - " + application.ActiveDocument.DisplayName;
-                if (!DocumentScanner.IsBusy)
-                    ScanButton.Enabled = true;
+                Text = "Field Exporter - " + Program.INVENTOR_APPLICATION.ActiveDocument.DisplayName;
             }
             else
             {
                 Text = "Field Exporter - No Document Found";
-                DocumentView.Nodes.Clear();
                 CollisionObjectsView.Nodes.Clear();
-                ScanButton.Enabled = false;
-            }
-        }
-
-        /// <summary>
-        /// Initializes the Assembly scan process.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ScanButton_Click(object sender, EventArgs e)
-        {
-            ScanButton.Enabled = false;
-            progressWindow = new ScanProgressWindow();
-            progressWindow.Show(this);
-            DocumentScanner.RunWorkerAsync((AssemblyDocument)application.ActiveDocument);
-        }
-        
-        /// <summary>
-        /// Scans the selected Assembly and creates a TreeNode.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DocumentScanner_DoWork(object sender, DoWorkEventArgs e)
-        {
-            try
-            {
-                AssemblyDocument arg = (AssemblyDocument)e.Argument;
-                e.Result = ScanAssembly(arg.ComponentDefinition.Occurrences, new TreeNode(arg.DisplayName));
-            }
-            catch
-            {
-                e.Result = null;
-            }
-        }
-
-        /// <summary>
-        /// Concludes the scanning process, updates the document view, and updates the
-        /// collision objects view.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DocumentScanner_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            ScanButton.Enabled = true;
-
-            progressWindow.Close();
-            DocumentView.Nodes.Clear();
-
-            if (e.Result != null)
-            {
-                DocumentView.Nodes.Add((TreeNode)e.Result);
-                DocumentView.Nodes[0].Expand();
-            }
-            else
-            {
-                MessageBox.Show(this, "Lost connection with the assembly document.", "Document not found.");
-                CollisionObjectsView.Nodes.Clear();
-                return;
-            }
-
-            List<TreeNode> documentViewNodes = ScanTreeView(DocumentView);
-
-            foreach (TreeNode n in ScanTreeView(CollisionObjectsView))
-            {
-                bool containsNode = false;
-
-                foreach (TreeNode n2 in documentViewNodes)
-                {
-                    if (n.Name.Equals(n2.Name))
-                    {
-                        containsNode = true;
-                        break;
-                    }
-                }
-
-                if (!containsNode)
-                {
-                    CollisionObjectsView.Nodes.RemoveByKey(n.Name);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Initializes the drag event when an node is clicked and dragged.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DocumentView_ItemDrag(object sender, ItemDragEventArgs e)
-        {
-            TreeNode treeNode = (TreeNode)e.Item;
-            DoDragDrop(treeNode.Clone(), DragDropEffects.Copy);
-        }
-
-        /// <summary>
-        /// Adds the node to the CollisionObjectsView if it doesn't exist and removes any child duplicates.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CollisionObjectsView_DragDrop(object sender, DragEventArgs e)
-        {
-            TreeNode treeNode = (TreeNode)e.Data.GetData(typeof(TreeNode));
-
-            foreach (TreeNode n in ScanTreeView(CollisionObjectsView))
-            {
-                if (n.Name.Equals(treeNode.Name))
-                {
-                    MessageBox.Show("Component has already been added.", "A conflict has occurred.");
-                    return;
-                }
-            }
-
-            foreach (TreeNode n in ScanTreeNode(treeNode))
-            {
-                foreach (TreeNode n2 in ScanTreeView(CollisionObjectsView))
-                {
-                    if (n2.Name.Equals(n.Name))
-                    {
-                        CollisionObjectsView.Nodes.RemoveByKey(n2.Name);
-                    }
-                }
-            }
-
-            CollisionObjectsView.Nodes.Add(treeNode);
-        }
-
-        /// <summary>
-        /// Changes the mouse icon to show that the dragged item can be dropped.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CollisionObjectsView_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(typeof(TreeNode)))
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
-            else
-            {
-                e.Effect = DragDropEffects.None;
             }
         }
 
@@ -281,5 +248,190 @@ namespace FieldExporter
                 }
             }
         }
+
+        /// <summary>
+        /// Allows the user to see what component each tree node references by selecting the component in Inventor.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CollisionObjectsView_NodeMouseHover(object sender, TreeNodeMouseHoverEventArgs e)
+        {
+            if (!interactionEnabled)
+            {
+                Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
+                Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Select((ComponentOccurrence)e.Node.Tag);
+            }
+        }
+
+        /// <summary>
+        /// Enables or disables Inventor interaction.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void InventorSelectButton_Click(object sender, EventArgs e)
+        {
+            if (interactionEnabled)
+            {
+                DisableInteractionEvents();
+            }
+            else
+            {
+                EnableInteractionEvents();
+            }
+        }
+
+        /// <summary>
+        /// Opens the progess window and starts the selection adding process.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddSelectionButton_Click(object sender, EventArgs e)
+        {
+            AddSelectionButton.Enabled = false;
+            InventorSelectButton.Enabled = false;
+
+            progressWindow = new ProgressWindow();
+            progressWindow.Show(this);
+            progressWindow.ProcessProgressBar.Minimum = 0;
+            progressWindow.ProcessProgressBar.Maximum = selectEvents.SelectedEntities.Count;
+            progressWindow.ProcessProgressBar.Value = 0;
+            progressWindow.ProcessProgressBar.Step = 1;
+
+            SelectionAdder.RunWorkerAsync();
+        }
+
+        /// <summary>
+        /// Scans the selected objects, updates the scan progress window, and
+        /// adds the scanned elements to the collision objects view
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectionAdder_DoWork(object sender, DoWorkEventArgs e)
+        {
+            foreach (ComponentOccurrence component in selectEvents.SelectedEntities)
+            {
+                progressWindow.Invoke(new Action(() =>
+                    {
+                        progressWindow.ProcessInfoLabel.Text = "Processing: " + component.Name;
+                        progressWindow.ProcessProgressBar.PerformStep();
+                    }));
+
+                TreeNode node = new TreeNode(component.Name);
+                node.Name = node.Text;
+                node.Tag = component;
+                node = AddComponentChildren(component, node);
+                node = AddComponentParents(component, node);
+
+                CollisionObjectsView.Invoke(new Action(() =>
+                    {
+                        while (true)
+                        {
+                            TreeNode[] searchResults = CollisionObjectsView.Nodes.Find(node.Name, true);
+                            if (searchResults.Length > 0)
+                            {
+                                if (searchResults[0].Parent != null)
+                                {
+                                    //MessageBox.Show("Object and parent exist, so I'll add to the existing parent and remove the existing object.");
+                                    searchResults[0].Parent.Nodes.Insert(searchResults[0].Index, node);
+                                }
+                                else
+                                {
+                                    //MessageBox.Show("Object exists but parent does not, so I'll add the component as a root and remove the existing object.");
+                                    CollisionObjectsView.Nodes.Add(node);
+                                }
+                                searchResults[0].Remove();
+                                break;
+                            }
+                            else
+                            {
+                                if (node.Parent != null)
+                                {
+                                    //MessageBox.Show("Object does not exist, but potential parent does, so I'll reiterate as the parent.");
+                                    node = node.Parent;
+                                }
+                                else
+                                {
+                                    //MessageBox.Show("Neither object nor parent exist, so I'll just add the component as a root.");
+                                    CollisionObjectsView.Nodes.Add(node);
+                                    break;
+                                }
+                            }
+                        }
+                    }));
+            }
+        }
+
+        /// <summary>
+        /// Closes the progress window, and disables Inventor interaction.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SelectionAdder_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progressWindow.Close();
+            DisableInteractionEvents();
+            InventorSelectButton.Enabled = true;
+        }
+
+        private void BrowseButton_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog.ShowDialog();
+            FilePathTextBox.Text = FolderBrowserDialog.SelectedPath;
+        }
+
+        private void ExportButton_Click(object sender, EventArgs e)
+        {
+            ExportButton.Enabled = false;
+
+            progressWindow = new ProgressWindow();
+            progressWindow.Show(this);
+            progressWindow.Text = "Exporting...";
+            progressWindow.ProcessInfoLabel.Text = "Preparing export...";
+            progressWindow.ProcessProgressBar.Style = ProgressBarStyle.Marquee;
+            progressWindow.ProcessProgressBar.Minimum = 0;
+            progressWindow.ProcessProgressBar.Maximum = ((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences.Count;
+            progressWindow.ProcessProgressBar.Value = 0;
+            progressWindow.ProcessProgressBar.Step = 1;
+
+            Exporter.RunWorkerAsync();
+        }
+
+        private void Exporter_DoWork(object sender, DoWorkEventArgs e)
+        {
+            if (FilePathTextBox.Text.Length == 0 || FileNameTextBox.Text.Length == 0 || FileNameTextBox.Text.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
+            {
+                e.Result = "Invalid Export Parameters.";
+                return;
+            }
+
+            string filepath = FilePathTextBox.Text + "\\" + FileNameTextBox.Text + ".bxda";
+
+            SurfaceExporter surfaceExporter = new SurfaceExporter();
+            surfaceExporter.Reset();
+            surfaceExporter.ExportAll(Cast<ComponentOccurrence>(((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences.GetEnumerator()), (long progress, long total) =>
+                {
+                    progressWindow.Invoke(new Action(() =>
+                        {
+                            if (progressWindow.ProcessProgressBar.Style.Equals(ProgressBarStyle.Marquee))
+                                progressWindow.ProcessProgressBar.Style = ProgressBarStyle.Blocks;
+
+                            progressWindow.ProcessInfoLabel.Text = "Exporting: " + (Math.Round((progress / (float) total) * 100.0f, 2)).ToString() + "%";
+                            progressWindow.ProcessProgressBar.PerformStep();
+                        }));
+                });
+
+            BXDAMesh output = surfaceExporter.GetOutput();
+            output.WriteToFile(filepath);
+
+            e.Result = "Export Successful!";
+        }
+
+        private void Exporter_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show(e.Result.ToString());
+            progressWindow.Close();
+            ExportButton.Enabled = true;
+        }
+
     }
 }
