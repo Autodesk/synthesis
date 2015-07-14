@@ -110,12 +110,14 @@ public class Init : MonoBehaviour
 		titles.Add ("Right");
 		titles.Add ("Forward");
 		titles.Add ("Back");
+		titles.Add ("Save Orientation");
 		
 		List<Rect> rects = new List<Rect> ();
 		rects.Add (new Rect(50, 125, 75, 30));
 		rects.Add (new Rect(175, 125, 75, 30));
 		rects.Add (new Rect(112, 90, 75, 30));
 		rects.Add (new Rect(112, 160, 75, 30));
+		rects.Add (new Rect (95, 30, 110, 30));
 
 		gui.AddWindow("Orient Robot", new TextWindow("Orient Robot", new Rect((Screen.width/2)-150, (Screen.height/2)-75 , 300, 250),
 		                                             new string[0], new Rect[0], titles.ToArray(), rects.ToArray()), (object o)=>{
@@ -132,6 +134,9 @@ public class Init : MonoBehaviour
 				break;
 			case 3:
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
+				break;
+			case 4:
+				rotation = activeRobot.transform.rotation;
 				break;
 			}			
 		});
@@ -226,11 +231,6 @@ public class Init : MonoBehaviour
             });
 			//button to manually orient the robot
 			ShowOrient();
-			//button to save robot rotation
-			gui.AddAction("Save Orientation", () =>
-			              {
-				rotation = activeRobot.transform.rotation;
-			});
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
@@ -496,14 +496,11 @@ public class Init : MonoBehaviour
 				if (!time_stop)
 					time += Time.deltaTime;
 
-				if(!GUIController.isActive)
-				{
+				if(gui.guiVisible)
 					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
-				}
+
 				else
-				{
 					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
-				}
 			}
 		}
 	}
