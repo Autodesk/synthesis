@@ -108,7 +108,7 @@ public class TextWindow : OverlayWindow
 					{
 						if(GUI.Button (buttonRects[i], buttonTitles[i]))
 						{
-							_active = false;
+							//_active = false;
 
 							if(OnComplete != null)
 								OnComplete(i);

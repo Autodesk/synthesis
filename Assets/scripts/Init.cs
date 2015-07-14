@@ -100,10 +100,6 @@ public class Init : MonoBehaviour
 			time = 0;
 		}
 
-		if(GUI.Button (new Rect (175, 75, 110, 25), "Save Orientation"))
-		{
-			rotation = activeRobot.transform.rotation;
-		}
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
@@ -228,8 +224,13 @@ public class Init : MonoBehaviour
             {
                 OrientRobot();
             });
-
+			//button to manually orient the robot
 			ShowOrient();
+			//button to save robot rotation
+			gui.AddAction("Save Orientation", () =>
+			              {
+				rotation = activeRobot.transform.rotation;
+			});
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
