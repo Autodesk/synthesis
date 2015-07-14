@@ -9,6 +9,7 @@ using System.Collections.Generic;
 /// </summary>
 class GUIController
 {
+	public static  bool isActive = false;
     #region Style
     /// <summary>
     /// The sidebar fade time, seconds.
@@ -217,6 +218,9 @@ class GUIController
 				// Show/Hide the gui if no windows are active
                 else
                 {
+					Debug.Log ("happened");
+					//makes robot inactive when gui is open
+					isActive = !isActive;
                     guiVisible = !guiVisible;
 
 					if(guiVisible && showGuiCallback != null)

@@ -494,6 +494,15 @@ public class Init : MonoBehaviour
 				oldSpeed = speed;
 				if (!time_stop)
 					time += Time.deltaTime;
+
+				if(!GUIController.isActive)
+				{
+					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+				}
+				else
+				{
+					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
+				}
 			}
 		}
 	}
