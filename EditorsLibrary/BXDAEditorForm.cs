@@ -65,7 +65,8 @@ namespace EditorsLibrary
                     editNode.data[1] = false;
                     editNode.data[0] = 0xFFFFFFFF;
                 }
-                else if (UInt32.TryParse(valueGen.Text.Substring(1), System.Globalization.NumberStyles.HexNumber, null, out color))
+                else if (UInt32.TryParse((valueGen.Text[0] == '#') ? valueGen.Text.Substring(1) : valueGen.Text, 
+                         System.Globalization.NumberStyles.HexNumber, null, out color))
                 {
                     editNode.data[1] = true;
                     editNode.data[0] = color;

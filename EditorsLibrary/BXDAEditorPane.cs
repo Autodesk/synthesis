@@ -275,8 +275,11 @@ namespace EditorsLibrary
                     case NodeType.COLOR:
                         uint color = (uint) data[0];
                         if (!((bool)data[1])) return String.Format("{0}", false);
-                        else return String.Format("#{0:X}{1:X}{2:X}{3:X}",
-                            (color >> 24), (color >> 16) & 0x00FF, (color >> 8) & 0x0000FF, color & 0x000000FF);
+                        else
+                        {
+                            string colorString = String.Format("{0:X}", color);
+                            return "#" + new string('0', 8 - colorString.Length) + colorString;
+                        }
                     case NodeType.INTEGER:
                     case NodeType.FLOAT:
                     case NodeType.STRING:
