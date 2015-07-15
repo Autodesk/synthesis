@@ -28,8 +28,8 @@ public class BXDSettings
         }
     }
 
-    private static Type[] knownTypes = new Type[] { typeof(EditorsLibrary.ViewerSettings.ViewerSettingsValues),
-                                                    typeof(EditorsLibrary.ExporterSettings.EditorSettingsValues) };
+    private static Type[] settingsTypes = new Type[] { typeof(EditorsLibrary.ViewerSettings.ViewerSettingsValues),
+                                                       typeof(EditorsLibrary.ExporterSettings.ExporterSettingsValues) };
 
     public string LastSkeletonDirectory = null;
 
@@ -82,7 +82,7 @@ public class BXDSettings
             {
                 using (FileStream fStream = new FileStream(path, FileMode.Open))
                 {
-                    var writer = new System.Xml.Serialization.XmlSerializer(typeof(BXDSettings), knownTypes);
+                    var writer = new System.Xml.Serialization.XmlSerializer(typeof(BXDSettings), settingsTypes);
                     object result = writer.Deserialize(fStream);
                     if (result != null && result is BXDSettings)
                     {
@@ -105,7 +105,7 @@ public class BXDSettings
         {
             using (FileStream fStream = new FileStream(path, FileMode.Create))
             {
-                var writer = new System.Xml.Serialization.XmlSerializer(typeof(BXDSettings), knownTypes);
+                var writer = new System.Xml.Serialization.XmlSerializer(typeof(BXDSettings), settingsTypes);
                 writer.Serialize(fStream, Instance);
             }
         }

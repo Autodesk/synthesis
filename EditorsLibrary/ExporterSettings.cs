@@ -14,9 +14,9 @@ namespace EditorsLibrary
     public partial class ExporterSettings : Form
     {
 
-        public EditorSettingsValues values;
+        public ExporterSettingsValues values;
 
-        public ExporterSettings(EditorSettingsValues defaultValues)
+        public ExporterSettings(ExporterSettingsValues defaultValues)
         {
             InitializeComponent();
 
@@ -79,7 +79,7 @@ namespace EditorsLibrary
             {
                 FolderBrowserDialog openDialog = new FolderBrowserDialog();
                 openDialog.RootFolder = Environment.SpecialFolder.UserProfile;
-                openDialog.ShowNewFolderButton = false;
+                openDialog.ShowNewFolderButton = true;
                 openDialog.Description = "Choose log folder";
                 DialogResult openResult = openDialog.ShowDialog();
 
@@ -107,12 +107,12 @@ namespace EditorsLibrary
             buttonChooseBackground.BackColor = colorChooser.Color;
         }
 
-        public static EditorSettingsValues GetDefaultSettings()
+        public static ExporterSettingsValues GetDefaultSettings()
         {
-            EditorSettingsValues defaultValues = new EditorSettingsValues();
+            ExporterSettingsValues defaultValues = new ExporterSettingsValues();
 
             defaultValues.generalSaveLog = true;
-            defaultValues.generalSaveLogLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            defaultValues.generalSaveLogLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BXD_Aardvark";
             defaultValues.generalTextColor = (uint) Color.Lime.ToArgb();
             defaultValues.generalBackgroundColor = 0xFF000000;
 
@@ -124,7 +124,7 @@ namespace EditorsLibrary
             return defaultValues;
         }
 
-        public struct EditorSettingsValues
+        public struct ExporterSettingsValues
         {
             public bool generalSaveLog;
             public string generalSaveLogLocation;

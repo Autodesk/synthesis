@@ -20,6 +20,9 @@ public partial class ExporterGUI : Form
     private RigidNode_Base skeletonBase;
     private List<BXDAMesh> meshes;
 
+    private ExporterSettings.ExporterSettingsValues exporterSettings;
+    private ViewerSettings.ViewerSettingsValues viewerSettings;
+
     private ExporterProgressForm exporterProgress;
 
     private string lastDirPath = null;
@@ -30,6 +33,11 @@ public partial class ExporterGUI : Form
 
         Instance = this;
         BXDSettings.Load();
+        object exportSettings = BXDSettings.Instance.GetSettingsObject("Exporter Settings");
+        object viewSettings = BXDSettings.Instance.GetSettingsObject("Viewer Settings");
+
+        exporterSettings = (exportSettings != null) ? (ExporterSettings.ExporterSettingsValues) exportSettings : ExporterSettings.GetDefaultSettings();
+        viewerSettings = (viewSettings != null) ? (ViewerSettings.ViewerSettingsValues) viewSettings : ViewerSettings.GetDefaultSettings();
 
         RigidNode_Base.NODE_FACTORY = delegate()
         {
@@ -65,22 +73,24 @@ public partial class ExporterGUI : Form
         {
             var defaultValues = BXDSettings.Instance.GetSettingsObject("Exporter Settings");
 
-            ExporterSettings eSettings = new ExporterSettings((defaultValues != null) ? (ExporterSettings.EditorSettingsValues) defaultValues :
+            ExporterSettings eSettingsForm = new ExporterSettings((defaultValues != null) ? (ExporterSettings.ExporterSettingsValues) defaultValues :
                                                                                         ExporterSettings.GetDefaultSettings());
 
-            eSettings.ShowDialog(this);
+            eSettingsForm.ShowDialog(this);
 
-            BXDSettings.Instance.AddSettingsObject("Exporter Settings", eSettings.values);
+            BXDSettings.Instance.AddSettingsObject("Exporter Settings", eSettingsForm.values);
+            exporterSettings = eSettingsForm.values;
         });
         settingsViewer.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
             var defaultValues = BXDSettings.Instance.GetSettingsObject("Viewer Settings");
 
-            ViewerSettings vSettings = new ViewerSettings((defaultValues != null) ? (ViewerSettings.ViewerSettingsValues) defaultValues : 
+            ViewerSettings vSettingsForm = new ViewerSettings((defaultValues != null) ? (ViewerSettings.ViewerSettingsValues) defaultValues : 
                                                                                     ViewerSettings.GetDefaultSettings());
-            vSettings.ShowDialog(this);
+            vSettingsForm.ShowDialog(this);
 
-            BXDSettings.Instance.AddSettingsObject("Viewer Settings", vSettings.values);
+            BXDSettings.Instance.AddSettingsObject("Viewer Settings", vSettingsForm.values);
+            viewerSettings = vSettingsForm.values;
         });
 
         helpAbout.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
@@ -129,8 +139,28 @@ public partial class ExporterGUI : Form
 
             Console.WriteLine("Finished!");
             exporterProgress.SetProgressText("Finished");
-
             exporterThread.Join();
+
+            if (exporterSettings.generalSaveLog)
+            {
+                string logName = exporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
+
+                try
+                {
+                    using (StreamWriter logFileStream = new StreamWriter(logName))
+                    {
+                        logFileStream.Write(exporterProgress.GetLogText());
+#if DEBUG
+                        Console.WriteLine("Wrote " + logName);
+#endif
+                    }
+                }
+                catch (IOException e)
+                {
+                    Console.WriteLine("Couldn't write log file " + logName);
+                    throw e;
+                }
+            }
         }
         catch (Exception e)
         {

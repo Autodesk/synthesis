@@ -94,6 +94,11 @@ namespace EditorsLibrary
             label1.Text = "Progress: " + text;
         }
 
+        public string GetLogText()
+        {
+            return newConsole.getLog();
+        }
+
         private class TextboxWriter : StringWriter
         {
 
@@ -122,6 +127,11 @@ namespace EditorsLibrary
                 base.WriteLine(toPrint);
                 _box.AppendText(toPrint); // When character data is written, append it to the text box.
                 _box.ScrollToCaret();
+            }
+
+            public string getLog()
+            {
+                return _box.Text;
             }
 
             public override void WriteLine(string value)
