@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="2014FieldBounding.cs" />
+    <Compile Include="BXDSettings.cs" />
     <Compile Include="CollisionAnalyzer\FindRadiusThread.cs" />
     <Compile Include="ControlGUI\ComponentHighlighter.cs" />
     <Compile Include="ControlGUI\ExporterGUI.cs">

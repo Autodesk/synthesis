@@ -29,6 +29,7 @@ public partial class ExporterGUI : Form
         InitializeComponent();
 
         Instance = this;
+        BXDSettings.Load();
 
         RigidNode_Base.NODE_FACTORY = delegate()
         {
@@ -62,13 +63,24 @@ public partial class ExporterGUI : Form
 
         settingsExporter.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
-            ExporterSettings eSettings = new ExporterSettings();
+            var defaultValues = BXDSettings.Instance.GetSettingsObject("Exporter Settings");
+
+            ExporterSettings eSettings = new ExporterSettings((defaultValues != null) ? (ExporterSettings.EditorSettingsValues) defaultValues :
+                                                                                        ExporterSettings.GetDefaultSettings());
+
             eSettings.ShowDialog(this);
+
+            BXDSettings.Instance.AddSettingsObject("Exporter Settings", eSettings.values);
         });
         settingsViewer.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
-            ViewerSettings vSettings = new ViewerSettings();
+            var defaultValues = BXDSettings.Instance.GetSettingsObject("Viewer Settings");
+
+            ViewerSettings vSettings = new ViewerSettings((defaultValues != null) ? (ViewerSettings.ViewerSettingsValues) defaultValues : 
+                                                                                    ViewerSettings.GetDefaultSettings());
             vSettings.ShowDialog(this);
+
+            BXDSettings.Instance.AddSettingsObject("Viewer Settings", vSettings.values);
         });
 
         helpAbout.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
@@ -80,6 +92,7 @@ public partial class ExporterGUI : Form
         this.FormClosing += new FormClosingEventHandler(delegate(object sender, FormClosingEventArgs e)
         {
             if (skeletonBase != null && !WarnUnsaved()) e.Cancel = true;
+            else BXDSettings.Save();
         });
     }
 

@@ -369,7 +369,7 @@ public class ConvexHullCalculator
         vertCount = 0;
         indexCount = 0;
         int totalChecks = 0;
-        int onePercent = (copy.Length / 3) / 100;
+        int onePercent = Math.Max(1, (copy.Length / 3) / 100);
         Console.WriteLine("Cleaning...");
         ExporterGUI.Instance.ExporterReset();
         foreach (BXDAMesh.BXDASubMesh mesh in bMesh.meshes)
