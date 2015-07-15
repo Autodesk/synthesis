@@ -122,24 +122,25 @@ public partial class ExporterGUI : Form
         {
             AutoResetEvent startEvent = new AutoResetEvent(false);
 
-            var exporterThread = new Thread(() =>
+            var exporterProgressThread = new Thread(() =>
             {
-                exporterProgress = new ExporterProgressForm(startEvent);
+                exporterProgress = new ExporterProgressForm(startEvent, 
+                                Color.FromArgb((int) exporterSettings.generalTextColor), Color.FromArgb((int) exporterSettings.generalBackgroundColor));
                 exporterProgress.ShowDialog();
             });
 
-            exporterThread.SetApartmentState(ApartmentState.STA);
-            exporterThread.Start();
+            exporterProgressThread.SetApartmentState(ApartmentState.STA);
+            exporterProgressThread.Start();
 
             startEvent.WaitOne();
 
             Exporter.LoadInventorInstance();
             skeletonBase = Exporter.ExportSkeleton();
-            meshes = Exporter.ExportMeshes(skeletonBase);
+            meshes = Exporter.ExportMeshes(skeletonBase, exporterSettings.meshResolutionValue == 1, exporterSettings.meshFancyColors);
 
             Console.WriteLine("Finished!");
             exporterProgress.SetProgressText("Finished");
-            exporterThread.Join();
+            exporterProgressThread.Join();
 
             if (exporterSettings.generalSaveLog)
             {
@@ -256,7 +257,7 @@ public partial class ExporterGUI : Form
         {
             FolderBrowserDialog openDialog = new FolderBrowserDialog();
             openDialog.RootFolder = Environment.SpecialFolder.UserProfile;
-            openDialog.ShowNewFolderButton = false;
+            openDialog.ShowNewFolderButton = true;
             openDialog.Description = "Choose Robot Folder";
             DialogResult openResult = openDialog.ShowDialog();
 

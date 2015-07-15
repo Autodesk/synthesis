@@ -38,16 +38,16 @@
             this.checkboxFancyColors = new System.Windows.Forms.CheckBox();
             this.groupboxMesh = new System.Windows.Forms.GroupBox();
             this.groupboxSkeleton = new System.Windows.Forms.GroupBox();
-            this.groupboxGeneral = new System.Windows.Forms.GroupBox();
-            this.textboxLogLocation = new System.Windows.Forms.TextBox();
-            this.checkboxSaveLog = new System.Windows.Forms.CheckBox();
-            this.labelTextColor = new System.Windows.Forms.Label();
-            this.labelBackgroundColor = new System.Windows.Forms.Label();
-            this.buttonChooseBackground = new System.Windows.Forms.Button();
-            this.buttonChooseText = new System.Windows.Forms.Button();
-            this.checkboxSoftBodies = new System.Windows.Forms.CheckBox();
             this.labelFuture = new System.Windows.Forms.Label();
+            this.checkboxSoftBodies = new System.Windows.Forms.CheckBox();
+            this.groupboxGeneral = new System.Windows.Forms.GroupBox();
             this.buttonChooseFolder = new System.Windows.Forms.Button();
+            this.buttonChooseText = new System.Windows.Forms.Button();
+            this.buttonChooseBackground = new System.Windows.Forms.Button();
+            this.labelBackgroundColor = new System.Windows.Forms.Label();
+            this.labelTextColor = new System.Windows.Forms.Label();
+            this.checkboxSaveLog = new System.Windows.Forms.CheckBox();
+            this.textboxLogLocation = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackbarMeshResolution)).BeginInit();
             this.groupboxMesh.SuspendLayout();
             this.groupboxSkeleton.SuspendLayout();
@@ -76,7 +76,7 @@
             // 
             this.trackbarMeshResolution.BackColor = System.Drawing.SystemColors.Control;
             this.trackbarMeshResolution.Location = new System.Drawing.Point(6, 85);
-            this.trackbarMeshResolution.Maximum = 2;
+            this.trackbarMeshResolution.Maximum = 1;
             this.trackbarMeshResolution.Name = "trackbarMeshResolution";
             this.trackbarMeshResolution.Size = new System.Drawing.Size(346, 56);
             this.trackbarMeshResolution.TabIndex = 6;
@@ -151,6 +151,28 @@
             this.groupboxSkeleton.TabStop = false;
             this.groupboxSkeleton.Text = "Skeleton options";
             // 
+            // labelFuture
+            // 
+            this.labelFuture.AutoSize = true;
+            this.labelFuture.ForeColor = System.Drawing.Color.Black;
+            this.labelFuture.Location = new System.Drawing.Point(3, 29);
+            this.labelFuture.Name = "labelFuture";
+            this.labelFuture.Size = new System.Drawing.Size(281, 17);
+            this.labelFuture.TabIndex = 1;
+            this.labelFuture.Text = "To be implemented sometime in the future?";
+            // 
+            // checkboxSoftBodies
+            // 
+            this.checkboxSoftBodies.AutoSize = true;
+            this.checkboxSoftBodies.Enabled = false;
+            this.checkboxSoftBodies.ForeColor = System.Drawing.Color.Black;
+            this.checkboxSoftBodies.Location = new System.Drawing.Point(6, 61);
+            this.checkboxSoftBodies.Name = "checkboxSoftBodies";
+            this.checkboxSoftBodies.Size = new System.Drawing.Size(143, 21);
+            this.checkboxSoftBodies.TabIndex = 0;
+            this.checkboxSoftBodies.Text = "Export soft bodies";
+            this.checkboxSoftBodies.UseVisualStyleBackColor = true;
+            // 
             // groupboxGeneral
             // 
             this.groupboxGeneral.Controls.Add(this.buttonChooseFolder);
@@ -168,13 +190,58 @@
             this.groupboxGeneral.TabStop = false;
             this.groupboxGeneral.Text = "General options";
             // 
-            // textboxLogLocation
+            // buttonChooseFolder
             // 
-            this.textboxLogLocation.Location = new System.Drawing.Point(6, 51);
-            this.textboxLogLocation.Name = "textboxLogLocation";
-            this.textboxLogLocation.ReadOnly = true;
-            this.textboxLogLocation.Size = new System.Drawing.Size(302, 22);
-            this.textboxLogLocation.TabIndex = 0;
+            this.buttonChooseFolder.ForeColor = System.Drawing.Color.Black;
+            this.buttonChooseFolder.Location = new System.Drawing.Point(314, 51);
+            this.buttonChooseFolder.Name = "buttonChooseFolder";
+            this.buttonChooseFolder.Size = new System.Drawing.Size(29, 22);
+            this.buttonChooseFolder.TabIndex = 6;
+            this.buttonChooseFolder.Text = "...";
+            this.buttonChooseFolder.UseVisualStyleBackColor = true;
+            this.buttonChooseFolder.Click += new System.EventHandler(this.buttonChooseFolder_Click);
+            // 
+            // buttonChooseText
+            // 
+            this.buttonChooseText.BackColor = System.Drawing.Color.Black;
+            this.buttonChooseText.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonChooseText.Location = new System.Drawing.Point(168, 88);
+            this.buttonChooseText.Name = "buttonChooseText";
+            this.buttonChooseText.Size = new System.Drawing.Size(102, 24);
+            this.buttonChooseText.TabIndex = 5;
+            this.buttonChooseText.UseVisualStyleBackColor = false;
+            this.buttonChooseText.Click += new System.EventHandler(this.buttonChooseText_Click);
+            // 
+            // buttonChooseBackground
+            // 
+            this.buttonChooseBackground.BackColor = System.Drawing.Color.Black;
+            this.buttonChooseBackground.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.buttonChooseBackground.Location = new System.Drawing.Point(168, 126);
+            this.buttonChooseBackground.Name = "buttonChooseBackground";
+            this.buttonChooseBackground.Size = new System.Drawing.Size(102, 24);
+            this.buttonChooseBackground.TabIndex = 4;
+            this.buttonChooseBackground.UseVisualStyleBackColor = false;
+            this.buttonChooseBackground.Click += new System.EventHandler(this.buttonChooseBackground_Click);
+            // 
+            // labelBackgroundColor
+            // 
+            this.labelBackgroundColor.AutoSize = true;
+            this.labelBackgroundColor.ForeColor = System.Drawing.Color.Black;
+            this.labelBackgroundColor.Location = new System.Drawing.Point(3, 130);
+            this.labelBackgroundColor.Name = "labelBackgroundColor";
+            this.labelBackgroundColor.Size = new System.Drawing.Size(150, 17);
+            this.labelBackgroundColor.TabIndex = 3;
+            this.labelBackgroundColor.Text = "Log background color:";
+            // 
+            // labelTextColor
+            // 
+            this.labelTextColor.AutoSize = true;
+            this.labelTextColor.ForeColor = System.Drawing.Color.Black;
+            this.labelTextColor.Location = new System.Drawing.Point(3, 92);
+            this.labelTextColor.Name = "labelTextColor";
+            this.labelTextColor.Size = new System.Drawing.Size(97, 17);
+            this.labelTextColor.TabIndex = 2;
+            this.labelTextColor.Text = "Log text color:";
             // 
             // checkboxSaveLog
             // 
@@ -188,80 +255,13 @@
             this.checkboxSaveLog.UseVisualStyleBackColor = true;
             this.checkboxSaveLog.CheckedChanged += new System.EventHandler(this.checkboxSaveLog_CheckedChanged);
             // 
-            // labelTextColor
+            // textboxLogLocation
             // 
-            this.labelTextColor.AutoSize = true;
-            this.labelTextColor.ForeColor = System.Drawing.Color.Black;
-            this.labelTextColor.Location = new System.Drawing.Point(3, 92);
-            this.labelTextColor.Name = "labelTextColor";
-            this.labelTextColor.Size = new System.Drawing.Size(97, 17);
-            this.labelTextColor.TabIndex = 2;
-            this.labelTextColor.Text = "Log text color:";
-            // 
-            // labelBackgroundColor
-            // 
-            this.labelBackgroundColor.AutoSize = true;
-            this.labelBackgroundColor.ForeColor = System.Drawing.Color.Black;
-            this.labelBackgroundColor.Location = new System.Drawing.Point(3, 130);
-            this.labelBackgroundColor.Name = "labelBackgroundColor";
-            this.labelBackgroundColor.Size = new System.Drawing.Size(150, 17);
-            this.labelBackgroundColor.TabIndex = 3;
-            this.labelBackgroundColor.Text = "Log background color:";
-            // 
-            // buttonChooseBackground
-            // 
-            this.buttonChooseBackground.BackColor = System.Drawing.Color.Black;
-            this.buttonChooseBackground.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonChooseBackground.Location = new System.Drawing.Point(168, 126);
-            this.buttonChooseBackground.Name = "buttonChooseBackground";
-            this.buttonChooseBackground.Size = new System.Drawing.Size(102, 24);
-            this.buttonChooseBackground.TabIndex = 4;
-            this.buttonChooseBackground.UseVisualStyleBackColor = false;
-            this.buttonChooseBackground.Click += new System.EventHandler(this.buttonChooseBackground_Click);
-            // 
-            // buttonChooseText
-            // 
-            this.buttonChooseText.BackColor = System.Drawing.Color.Black;
-            this.buttonChooseText.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.buttonChooseText.Location = new System.Drawing.Point(168, 88);
-            this.buttonChooseText.Name = "buttonChooseText";
-            this.buttonChooseText.Size = new System.Drawing.Size(102, 24);
-            this.buttonChooseText.TabIndex = 5;
-            this.buttonChooseText.UseVisualStyleBackColor = false;
-            this.buttonChooseText.Click += new System.EventHandler(this.buttonChooseText_Click);
-            // 
-            // checkboxSoftBodies
-            // 
-            this.checkboxSoftBodies.AutoSize = true;
-            this.checkboxSoftBodies.Enabled = false;
-            this.checkboxSoftBodies.ForeColor = System.Drawing.Color.Black;
-            this.checkboxSoftBodies.Location = new System.Drawing.Point(6, 61);
-            this.checkboxSoftBodies.Name = "checkboxSoftBodies";
-            this.checkboxSoftBodies.Size = new System.Drawing.Size(143, 21);
-            this.checkboxSoftBodies.TabIndex = 0;
-            this.checkboxSoftBodies.Text = "Export soft bodies";
-            this.checkboxSoftBodies.UseVisualStyleBackColor = true;
-            // 
-            // labelFuture
-            // 
-            this.labelFuture.AutoSize = true;
-            this.labelFuture.ForeColor = System.Drawing.Color.Black;
-            this.labelFuture.Location = new System.Drawing.Point(3, 29);
-            this.labelFuture.Name = "labelFuture";
-            this.labelFuture.Size = new System.Drawing.Size(281, 17);
-            this.labelFuture.TabIndex = 1;
-            this.labelFuture.Text = "To be implemented sometime in the future?";
-            // 
-            // buttonChooseFolder
-            // 
-            this.buttonChooseFolder.ForeColor = System.Drawing.Color.Black;
-            this.buttonChooseFolder.Location = new System.Drawing.Point(314, 51);
-            this.buttonChooseFolder.Name = "buttonChooseFolder";
-            this.buttonChooseFolder.Size = new System.Drawing.Size(29, 22);
-            this.buttonChooseFolder.TabIndex = 6;
-            this.buttonChooseFolder.Text = "...";
-            this.buttonChooseFolder.UseVisualStyleBackColor = true;
-            this.buttonChooseFolder.Click += new System.EventHandler(this.buttonChooseFolder_Click);
+            this.textboxLogLocation.Location = new System.Drawing.Point(6, 51);
+            this.textboxLogLocation.Name = "textboxLogLocation";
+            this.textboxLogLocation.ReadOnly = true;
+            this.textboxLogLocation.Size = new System.Drawing.Size(302, 22);
+            this.textboxLogLocation.TabIndex = 0;
             // 
             // ExporterSettings
             // 

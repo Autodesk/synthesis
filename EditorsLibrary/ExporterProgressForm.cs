@@ -23,7 +23,7 @@ namespace EditorsLibrary
         private delegate int getProgressDelegate();
         private delegate void setProgressTextDelegate(string text);
 
-        public ExporterProgressForm(AutoResetEvent startEvent)
+        public ExporterProgressForm(AutoResetEvent startEvent, Color textColor, Color backgroundColor)
         {
             InitializeComponent();
 
@@ -31,6 +31,11 @@ namespace EditorsLibrary
 
             newConsole = new TextboxWriter(logText);
             Console.SetOut(newConsole);
+
+            logText.ForeColor = textColor;
+            logText.BackColor = backgroundColor;
+
+            label1.Text = "";
 
             FormClosing += delegate(object sender, FormClosingEventArgs e)
             {
@@ -96,7 +101,7 @@ namespace EditorsLibrary
 
         public string GetLogText()
         {
-            return newConsole.getLog();
+            return logText.Text;
         }
 
         private class TextboxWriter : StringWriter
@@ -127,11 +132,6 @@ namespace EditorsLibrary
                 base.WriteLine(toPrint);
                 _box.AppendText(toPrint); // When character data is written, append it to the text box.
                 _box.ScrollToCaret();
-            }
-
-            public string getLog()
-            {
-                return _box.Text;
             }
 
             public override void WriteLine(string value)

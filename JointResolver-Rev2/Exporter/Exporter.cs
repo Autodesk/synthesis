@@ -104,7 +104,7 @@ public class Exporter
         return baseNode;
     }
 
-    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode)
+    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode, bool highRes = false, bool colorFaces = true)
     {
         SurfaceExporter surfs = new SurfaceExporter();
         BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -124,6 +124,8 @@ public class Exporter
                 {
                     ExporterGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
+                    group.highRes = highRes;
+                    group.colorFaces = colorFaces;
                     surfs.Reset();
                     Console.WriteLine("Exporting meshes...");
                     surfs.ExportAll(group, (long progress, long total) =>
