@@ -73,11 +73,12 @@ public class Init : MonoBehaviour
          	hotkeysWindowWidth, 
          	hotkeysWindowHeight
 		);
-
 		time_stop = false;
 		reloadInFrames = -1;
 		showStatWindow = true;
-		rotation = Quaternion.identity;
+		StreamReader orientation = new StreamReader ("orientation.txt");
+		rotation = new Quaternion (float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()),float.Parse (orientation.ReadLine ()));
+		orientation.Close ();
     }
 
 	//displays stats like speed and acceleration
@@ -127,7 +128,7 @@ public class Init : MonoBehaviour
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z + 90));
                 break;
 			case 1:	
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z - 90));
+				activeRobot.transform.Rotate (new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z - 90));
 				break;
 			case 2:
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x + 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
@@ -136,8 +137,16 @@ public class Init : MonoBehaviour
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
 				break;
 			case 4:
+			{
 				rotation = activeRobot.transform.rotation;
+				StreamWriter orientation = new StreamWriter("orientation.txt");
+				orientation.WriteLine(rotation.x);
+				orientation.WriteLine(rotation.y);
+				orientation.WriteLine(rotation.z);
+				orientation.WriteLine(rotation.w);
+				orientation.Close ();
 				break;
+			}
 			}			
 		});
 	}
@@ -303,7 +312,7 @@ public class Init : MonoBehaviour
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
             activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
-            activeRobot.transform.localRotation = Quaternion.identity;
+            activeRobot.transform.localRotation = rotation;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
@@ -497,7 +506,7 @@ public class Init : MonoBehaviour
 					time += Time.deltaTime;
 
 				if(gui.guiVisible)
-					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
+					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 
 				else
 					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
