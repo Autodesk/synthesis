@@ -45,7 +45,8 @@ namespace EditorsLibrary
 
             FormClosing += delegate(object sender, FormClosingEventArgs e)
             {
-                
+                Console.SetOut(oldConsole);
+                startEvent.Set();
             };
 
             buttonStart.Click += delegate(object sender, EventArgs e)
