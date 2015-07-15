@@ -47,9 +47,9 @@ partial class ExporterGUI
             this.settingsViewer = new System.Windows.Forms.ToolStripMenuItem();
             this.toolstripHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.helpTutorials = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialsNotFinished = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialsSorry = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpAbout = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -235,12 +235,6 @@ partial class ExporterGUI
             this.helpTutorials.Size = new System.Drawing.Size(182, 24);
             this.helpTutorials.Text = "Online Tutorials";
             // 
-            // helpAbout
-            // 
-            this.helpAbout.Name = "helpAbout";
-            this.helpAbout.Size = new System.Drawing.Size(182, 24);
-            this.helpAbout.Text = "About";
-            // 
             // tutorialsNotFinished
             // 
             this.tutorialsNotFinished.Name = "tutorialsNotFinished";
@@ -253,6 +247,12 @@ partial class ExporterGUI
             this.tutorialsSorry.Size = new System.Drawing.Size(183, 24);
             this.tutorialsSorry.Text = "Sorry :(";
             // 
+            // helpAbout
+            // 
+            this.helpAbout.Name = "helpAbout";
+            this.helpAbout.Size = new System.Drawing.Size(182, 24);
+            this.helpAbout.Text = "About";
+            // 
             // ExporterGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -263,7 +263,7 @@ partial class ExporterGUI
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(1200, 795);
             this.Name = "ExporterGUI";
-            this.Text = "ExporterGUI";
+            this.Text = "BXD Synthesis";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

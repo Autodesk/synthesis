@@ -15,6 +15,8 @@ namespace EditorsLibrary
     public partial class ExporterProgressForm : Form
     {
 
+        public bool finished;
+
         private TextWriter oldConsole;
         private TextboxWriter newConsole;
 
@@ -22,6 +24,7 @@ namespace EditorsLibrary
         private delegate void addProgressDelegate(int value);
         private delegate int getProgressDelegate();
         private delegate void setProgressTextDelegate(string text);
+        private delegate void finishDelegate(string logFile);
 
         public ExporterProgressForm(AutoResetEvent startEvent, Color textColor, Color backgroundColor)
         {
@@ -37,15 +40,22 @@ namespace EditorsLibrary
 
             label1.Text = "";
 
+            buttonSaveLog.Enabled = false;
+            buttonSaveLog.Visible = false;
+
             FormClosing += delegate(object sender, FormClosingEventArgs e)
             {
-                Console.SetOut(oldConsole);
+                
             };
 
             buttonStart.Click += delegate(object sender, EventArgs e)
             {
-                startEvent.Set();
-                buttonStart.Enabled = false;
+                if (!finished)
+                {
+                    startEvent.Set();
+                    buttonStart.Enabled = false;
+                }
+                else Close();
             };
 
             Application.Idle += delegate(object sender, EventArgs e)
@@ -97,6 +107,44 @@ namespace EditorsLibrary
             }
 
             label1.Text = "Progress: " + text;
+        }
+
+        public void Finish(string logFile = null)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new finishDelegate(Finish), logFile);
+                return;
+            }
+
+            label1.Text = "Finished";
+
+            buttonSaveLog.Enabled = (logFile != null);
+            buttonSaveLog.Visible = buttonSaveLog.Enabled;
+
+            buttonStart.Text = "Close";
+            buttonStart.Enabled = true;
+
+            buttonSaveLog.Click += delegate(object sender, EventArgs e)
+            {
+                try
+                {
+                    using (StreamWriter logFileStream = new StreamWriter(logFile))
+                    {
+                        logFileStream.Write(logText.Text);
+#if DEBUG
+                        Console.WriteLine("Wrote " + logFile);
+#endif
+                    }
+                }
+                catch (IOException ie)
+                {
+                    Console.WriteLine(ie);
+                    Console.WriteLine("Couldn't write log file " + logFile);
+                }
+            };
+
+            finished = true;
         }
 
         public string GetLogText()

@@ -30,11 +30,12 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterProgressForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.logPage = new System.Windows.Forms.TabPage();
+            this.logText = new System.Windows.Forms.RichTextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label1 = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
-            this.logText = new System.Windows.Forms.RichTextBox();
-            this.logPage = new System.Windows.Forms.TabPage();
+            this.buttonSaveLog = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.logPage.SuspendLayout();
             this.SuspendLayout();
@@ -48,6 +49,32 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(782, 451);
             this.tabControl1.TabIndex = 0;
+            // 
+            // logPage
+            // 
+            this.logPage.Controls.Add(this.logText);
+            this.logPage.Location = new System.Drawing.Point(4, 25);
+            this.logPage.Name = "logPage";
+            this.logPage.Padding = new System.Windows.Forms.Padding(3);
+            this.logPage.Size = new System.Drawing.Size(774, 422);
+            this.logPage.TabIndex = 1;
+            this.logPage.Text = "Exporter Log";
+            this.logPage.UseVisualStyleBackColor = true;
+            // 
+            // logText
+            // 
+            this.logText.BackColor = System.Drawing.Color.Black;
+            this.logText.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.logText.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.logText.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logText.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.logText.ForeColor = System.Drawing.Color.Lime;
+            this.logText.Location = new System.Drawing.Point(3, 3);
+            this.logText.Name = "logText";
+            this.logText.ReadOnly = true;
+            this.logText.Size = new System.Drawing.Size(768, 416);
+            this.logText.TabIndex = 0;
+            this.logText.Text = "";
             // 
             // progressBar1
             // 
@@ -75,43 +102,30 @@
             this.buttonStart.Text = "Start exporter";
             this.buttonStart.UseVisualStyleBackColor = true;
             // 
-            // logText
+            // buttonSaveLog
             // 
-            this.logText.BackColor = System.Drawing.Color.Black;
-            this.logText.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.logText.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.logText.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logText.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.logText.ForeColor = System.Drawing.Color.Lime;
-            this.logText.Location = new System.Drawing.Point(3, 3);
-            this.logText.Name = "logText";
-            this.logText.ReadOnly = true;
-            this.logText.Size = new System.Drawing.Size(768, 416);
-            this.logText.TabIndex = 0;
-            this.logText.Text = "";
-            // 
-            // logPage
-            // 
-            this.logPage.Controls.Add(this.logText);
-            this.logPage.Location = new System.Drawing.Point(4, 25);
-            this.logPage.Name = "logPage";
-            this.logPage.Padding = new System.Windows.Forms.Padding(3);
-            this.logPage.Size = new System.Drawing.Size(774, 422);
-            this.logPage.TabIndex = 1;
-            this.logPage.Text = "Exporter Log";
-            this.logPage.UseVisualStyleBackColor = true;
+            this.buttonSaveLog.Location = new System.Drawing.Point(517, 457);
+            this.buttonSaveLog.Name = "buttonSaveLog";
+            this.buttonSaveLog.Size = new System.Drawing.Size(126, 34);
+            this.buttonSaveLog.TabIndex = 4;
+            this.buttonSaveLog.Text = "Save log";
+            this.buttonSaveLog.UseVisualStyleBackColor = true;
             // 
             // ExporterProgressForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 555);
+            this.Controls.Add(this.buttonSaveLog);
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ExporterProgressForm";
+            this.ShowInTaskbar = false;
             this.Text = "Inventor Export";
             this.tabControl1.ResumeLayout(false);
             this.logPage.ResumeLayout(false);
@@ -128,5 +142,6 @@
         private System.Windows.Forms.TabPage logPage;
         private System.Windows.Forms.RichTextBox logText;
         private System.Windows.Forms.Button buttonStart;
+        private System.Windows.Forms.Button buttonSaveLog;
     }
 }

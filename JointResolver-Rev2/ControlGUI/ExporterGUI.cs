@@ -134,34 +134,35 @@ public partial class ExporterGUI : Form
 
             startEvent.WaitOne();
 
-            Exporter.LoadInventorInstance();
-            skeletonBase = Exporter.ExportSkeleton();
-            meshes = Exporter.ExportMeshes(skeletonBase, exporterSettings.meshResolutionValue == 1, exporterSettings.meshFancyColors);
-
-            Console.WriteLine("Finished!");
-            exporterProgress.SetProgressText("Finished");
-            exporterProgressThread.Join();
-
-            if (exporterSettings.generalSaveLog)
+            var exporterThread = new Thread(() =>
             {
-                string logName = exporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
-
                 try
                 {
-                    using (StreamWriter logFileStream = new StreamWriter(logName))
-                    {
-                        logFileStream.Write(exporterProgress.GetLogText());
-#if DEBUG
-                        Console.WriteLine("Wrote " + logName);
-#endif
-                    }
+                    Exporter.LoadInventorInstance();
+                    skeletonBase = Exporter.ExportSkeleton();
+                    meshes = Exporter.ExportMeshes(skeletonBase, exporterSettings.meshResolutionValue == 1, exporterSettings.meshFancyColors);
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
-                    Console.WriteLine("Couldn't write log file " + logName);
-                    throw e;
+                    Console.WriteLine(e);
+                }
+            });
+
+            exporterThread.SetApartmentState(ApartmentState.MTA);
+            exporterThread.Start();
+
+            while (!exporterProgressThread.Join(0))
+            {
+                if (!exporterThread.IsAlive && !exporterProgress.finished)
+                {
+                    Console.WriteLine("Finished!");
+                    if (exporterSettings.generalSaveLog)
+                        exporterProgress.Finish(exporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                    else exporterProgress.Finish();
                 }
             }
+
+            if (exporterThread.IsAlive) exporterThread.Abort();
         }
         catch (Exception e)
         {
