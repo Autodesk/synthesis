@@ -118,6 +118,9 @@ public partial class ExporterGUI : Form
     {
         if (skeletonBase != null && !WarnUnsaved()) return;
 
+        RigidNode_Base tmpBase = null;
+        List<BXDAMesh> tmpMeshes = null;
+
         try
         {
             AutoResetEvent startEvent = new AutoResetEvent(false);
@@ -139,8 +142,8 @@ public partial class ExporterGUI : Form
                 try
                 {
                     Exporter.LoadInventorInstance();
-                    skeletonBase = Exporter.ExportSkeleton();
-                    meshes = Exporter.ExportMeshes(skeletonBase, exporterSettings.meshResolutionValue == 1, exporterSettings.meshFancyColors);
+                    tmpBase = Exporter.ExportSkeleton();
+                    tmpMeshes = Exporter.ExportMeshes(tmpBase, exporterSettings.meshResolutionValue > 0, exporterSettings.meshFancyColors);
                 }
                 catch (Exception e)
                 {
@@ -163,6 +166,15 @@ public partial class ExporterGUI : Form
             }
 
             if (exporterThread.IsAlive) exporterThread.Abort();
+            else
+            {
+                exporterThread.Join();
+                if (tmpBase != null && tmpMeshes != null)
+                {
+                    skeletonBase = tmpBase;
+                    meshes = tmpMeshes;
+                }
+            }
         }
         catch (Exception e)
         {
