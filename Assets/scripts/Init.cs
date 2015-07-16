@@ -86,7 +86,7 @@ public class Init : MonoBehaviour
 		
 		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
 		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
-		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
 		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 1).ToString() + " ft/s^2");
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
@@ -113,6 +113,7 @@ public class Init : MonoBehaviour
 		titles.Add ("Back");
 		titles.Add ("Save Orientation");
 		titles.Add ("Close");
+		titles.Add ("Default");
 		
 		List<Rect> rects = new List<Rect> ();
 		rects.Add (new Rect(50, 150, 75, 30));
@@ -121,6 +122,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect(112, 185, 75, 30));
 		rects.Add (new Rect (95, 55, 110, 30));
 		rects.Add (new Rect (230, 20, 50, 30));
+		rects.Add (new Rect (20, 20, 70, 30));
 
 		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 75, 300, 250),
 		                                    new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
@@ -155,6 +157,10 @@ public class Init : MonoBehaviour
 			}
 			case 5:
 				oWindow.Active = false;
+				break;
+			case 6:
+				rotation = Quaternion.identity;
+				activeRobot.transform.rotation = rotation;
 				break;
 
 			}			
