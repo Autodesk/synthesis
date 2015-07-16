@@ -120,16 +120,12 @@ public partial class SurfaceExporter
 #endif
         if (separateFaces || tmpSurface.vertCount > TMP_VERTICIES)
         {
-            Console.WriteLine("Exporting " + surf.Faces.Count + " faces for " + surf.Parent.Name + "\t(" + surf.Name + ")");
             int i = 0;
             foreach (Face f in surf.Faces)
             {
-                Console.Write(i + "/" + surf.Faces.Count);
-                Console.CursorLeft = 0;
                 i++;
                 AddFacets(f, tolerances[bestIndex]);
             }
-            Console.WriteLine(i + "/" + surf.Faces.Count);
         }
         else
         {

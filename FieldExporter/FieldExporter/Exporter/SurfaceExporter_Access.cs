@@ -2,8 +2,6 @@
 using System.IO;
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-
 
 public partial class SurfaceExporter
 {
@@ -24,6 +22,18 @@ public partial class SurfaceExporter
     {
         DumpMeshBuffer();
         return outputMesh;
+    }
+
+    public void Export(ComponentOccurrence component, bool bestResolution = false,
+        bool separateFaces = false, bool ignorePhysics = false)
+    {
+        List<ExportPlan> plans = new List<ExportPlan>();
+        plans.AddRange(GenerateExportList(component, bestResolution, separateFaces, ignorePhysics));
+
+        for (int i = 0; i < plans.Count; i++)
+        {
+            AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
+        }
     }
 
     /// <summary>

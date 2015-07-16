@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Drawing.Drawing2D;
 
 namespace FieldExporter
 {
@@ -35,7 +36,7 @@ namespace FieldExporter
         private ProgressWindow progressWindow;
         
         /// <summary>
-        /// Connects to Inventor and constructs the form.
+        /// Constructs the form.
         /// </summary>
         public MainWindow()
         {
@@ -194,27 +195,6 @@ namespace FieldExporter
             return node;
         }
 
-        IEnumerable<TreeNode> AllTreeNodes(TreeNodeCollection nodes)
-        {
-            foreach (TreeNode node in nodes)
-            {
-                yield return node;
-
-                foreach (TreeNode child in AllTreeNodes(node.Nodes))
-                {
-                    yield return child;
-                }
-            }
-        }
-
-        IEnumerator<T> Cast<T>(IEnumerator enumerator)
-        {
-            while (enumerator.MoveNext())
-            {
-                yield return (T)enumerator.Current;
-            }
-        }
-
         /// <summary>
         /// Checks to see if there is an active document in Inventor.
         /// </summary>
@@ -231,6 +211,19 @@ namespace FieldExporter
                 Text = "Field Exporter - No Document Found";
                 CollisionObjectsView.Nodes.Clear();
             }
+        }
+
+        /// <summary>
+        /// Disposes any background processes to ensure safe closing.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+
+            SelectionAdder.Dispose();
+            Exporter.Dispose();
         }
 
         /// <summary>
@@ -287,6 +280,8 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void AddSelectionButton_Click(object sender, EventArgs e)
         {
+            Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+
             AddSelectionButton.Enabled = false;
             InventorSelectButton.Enabled = false;
 
@@ -302,7 +297,7 @@ namespace FieldExporter
 
         /// <summary>
         /// Scans the selected objects, updates the scan progress window, and
-        /// adds the scanned elements to the collision objects view
+        /// adds the scanned elements to the collision objects view.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -368,26 +363,39 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void SelectionAdder_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+
             progressWindow.Close();
             DisableInteractionEvents();
             InventorSelectButton.Enabled = true;
         }
 
+        /// <summary>
+        /// Launches the file browser dialog window and updates the file path text box text.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BrowseButton_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog.ShowDialog();
             FilePathTextBox.Text = FolderBrowserDialog.SelectedPath;
         }
 
+        /// <summary>
+        /// Shows the progress window and starts the export process.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ExportButton_Click(object sender, EventArgs e)
         {
+            Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+
             ExportButton.Enabled = false;
 
             progressWindow = new ProgressWindow();
             progressWindow.Show(this);
             progressWindow.Text = "Exporting...";
-            progressWindow.ProcessInfoLabel.Text = "Preparing export...";
-            progressWindow.ProcessProgressBar.Style = ProgressBarStyle.Marquee;
+            progressWindow.ProcessInfoLabel.Text = "Exporting...";
             progressWindow.ProcessProgressBar.Minimum = 0;
             progressWindow.ProcessProgressBar.Maximum = ((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences.Count;
             progressWindow.ProcessProgressBar.Value = 0;
@@ -396,6 +404,11 @@ namespace FieldExporter
             Exporter.RunWorkerAsync();
         }
 
+        /// <summary>
+        /// Exports the BXDF and BXDA files.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Exporter_DoWork(object sender, DoWorkEventArgs e)
         {
             if (FilePathTextBox.Text.Length == 0 || FileNameTextBox.Text.Length == 0 || FileNameTextBox.Text.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
@@ -404,30 +417,55 @@ namespace FieldExporter
                 return;
             }
 
-            string filepath = FilePathTextBox.Text + "\\" + FileNameTextBox.Text + ".bxda";
+            FieldDefinition fieldDefinition = new FieldDefinition(FileNameTextBox.Text);
+            SurfaceExporter exporter = new SurfaceExporter();
 
-            SurfaceExporter surfaceExporter = new SurfaceExporter();
-            surfaceExporter.Reset();
-            surfaceExporter.ExportAll(Cast<ComponentOccurrence>(((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences.GetEnumerator()), (long progress, long total) =>
+            ComponentOccurrencesEnumerator componentOccurrences = ((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences;
+
+            for (int i = 0; i < componentOccurrences.Count; i++)
+            {
+                progressWindow.Invoke(new Action(() =>
+                    {
+                        progressWindow.ProcessInfoLabel.Text = "Exporting: " + (Math.Round((i / (float)componentOccurrences.Count) * 100.0f, 2)).ToString() + "%";
+                        progressWindow.ProcessProgressBar.Value = i;
+                    }));
+
+                if (componentOccurrences[i + 1].Visible)
                 {
-                    progressWindow.Invoke(new Action(() =>
-                        {
-                            if (progressWindow.ProcessProgressBar.Style.Equals(ProgressBarStyle.Marquee))
-                                progressWindow.ProcessProgressBar.Style = ProgressBarStyle.Blocks;
+                    exporter.Reset();
+                    exporter.Export(componentOccurrences[i + 1], false, true); // Index starts at 1?
 
-                            progressWindow.ProcessInfoLabel.Text = "Exporting: " + (Math.Round((progress / (float) total) * 100.0f, 2)).ToString() + "%";
-                            progressWindow.ProcessProgressBar.PerformStep();
-                        }));
-                });
+                    BXDAMesh output = exporter.GetOutput();
 
-            BXDAMesh output = surfaceExporter.GetOutput();
-            output.WriteToFile(filepath);
+                    FieldNode outputNode = new FieldNode(componentOccurrences[i + 1].Name,
+                        CollisionObjectsView.Nodes.Find(componentOccurrences[i + 1].Name, true).Length > 0 ?
+                        FieldNodeCollisionType.MESH : FieldNodeCollisionType.NONE);
 
+                    outputNode.AddSubMeshes(output);
+
+                    fieldDefinition.AddChild(outputNode);
+                }
+            }
+
+            BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\" + FileNameTextBox.Text + ".bxdf", fieldDefinition);
+
+            fieldDefinition.CreateMesh();
+            fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\" + FileNameTextBox.Text + ".bxda");
+
+            FieldDefinition_Base copyDefinition = BXDFProperties.ReadProperties(FilePathTextBox.Text + "\\" + FileNameTextBox.Text + ".bxdf");
+            
             e.Result = "Export Successful!";
         }
 
+        /// <summary>
+        /// Shows the completion message and closes the progress window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Exporter_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+
             MessageBox.Show(e.Result.ToString());
             progressWindow.Close();
             ExportButton.Enabled = true;

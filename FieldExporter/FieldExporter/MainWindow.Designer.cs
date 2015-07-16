@@ -130,9 +130,9 @@
             this.FileTypeLabel.AutoSize = true;
             this.FileTypeLabel.Location = new System.Drawing.Point(568, 9);
             this.FileTypeLabel.Name = "FileTypeLabel";
-            this.FileTypeLabel.Size = new System.Drawing.Size(42, 17);
+            this.FileTypeLabel.Size = new System.Drawing.Size(38, 17);
             this.FileTypeLabel.TabIndex = 6;
-            this.FileTypeLabel.Text = ".bxda";
+            this.FileTypeLabel.Text = ".bxdf";
             // 
             // BrowseButton
             // 
@@ -146,15 +146,15 @@
             // 
             // FileNameTextBox
             // 
-            this.FileNameTextBox.Location = new System.Drawing.Point(441, 6);
+            this.FileNameTextBox.Location = new System.Drawing.Point(466, 6);
             this.FileNameTextBox.Name = "FileNameTextBox";
-            this.FileNameTextBox.Size = new System.Drawing.Size(121, 22);
+            this.FileNameTextBox.Size = new System.Drawing.Size(96, 22);
             this.FileNameTextBox.TabIndex = 4;
             // 
             // FileSeparatorLabel
             // 
             this.FileSeparatorLabel.AutoSize = true;
-            this.FileSeparatorLabel.Location = new System.Drawing.Point(423, 9);
+            this.FileSeparatorLabel.Location = new System.Drawing.Point(448, 9);
             this.FileSeparatorLabel.Name = "FileSeparatorLabel";
             this.FileSeparatorLabel.Size = new System.Drawing.Size(12, 17);
             this.FileSeparatorLabel.TabIndex = 3;
@@ -165,7 +165,7 @@
             this.FilePathTextBox.Location = new System.Drawing.Point(198, 6);
             this.FilePathTextBox.Name = "FilePathTextBox";
             this.FilePathTextBox.ReadOnly = true;
-            this.FilePathTextBox.Size = new System.Drawing.Size(218, 22);
+            this.FilePathTextBox.Size = new System.Drawing.Size(244, 22);
             this.FilePathTextBox.TabIndex = 2;
             // 
             // ExportLocationLabel
@@ -203,8 +203,7 @@
             // 
             // MainWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(255)))), ((int)(((byte)(200)))));
             this.ClientSize = new System.Drawing.Size(622, 435);
             this.Controls.Add(this.PropertyControl);
@@ -216,6 +215,7 @@
             this.Text = "Field Exporter";
             this.TopMost = true;
             this.Activated += new System.EventHandler(this.MainWindow_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.PropertyControl.ResumeLayout(false);
             this.CollisionTab.ResumeLayout(false);
             this.ExportPage.ResumeLayout(false);

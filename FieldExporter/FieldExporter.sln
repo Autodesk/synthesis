@@ -5,10 +5,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldExporter", "FieldExpor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "..\..\..\GitHub\Aardvark\SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexAPI", "..\..\..\GitHub\Aardvark\ConvexHull\ConvexHullAPI\ConvexAPI.vcxproj", "{8EC08A21-9BD1-4871-93B3-645A91194424}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexHullImpl", "..\..\..\GitHub\Aardvark\ConvexHull\ConvexHullImpl\ConvexHullImpl.vcxproj", "{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,26 +35,6 @@ Global
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{52DC911D-AD5D-4D01-9FC1-22AAADA97740}.Release|Win32.ActiveCfg = Release|Any CPU
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Win32.Build.0 = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Any CPU.ActiveCfg = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Win32.ActiveCfg = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Win32.Build.0 = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Win32.Build.0 = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Any CPU.ActiveCfg = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Win32.ActiveCfg = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
