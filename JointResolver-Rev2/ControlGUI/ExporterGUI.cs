@@ -17,8 +17,8 @@ public partial class ExporterGUI : Form
 
     public static ExporterGUI Instance;
 
-    private RigidNode_Base skeletonBase;
-    private List<BXDAMesh> meshes;
+    private RigidNode_Base skeletonBase = null;
+    private List<BXDAMesh> meshes = null;
 
     private ExporterSettings.ExporterSettingsValues exporterSettings;
     private ViewerSettings.ViewerSettingsValues viewerSettings;
@@ -38,11 +38,14 @@ public partial class ExporterGUI : Form
 
         exporterSettings = (exportSettings != null) ? (ExporterSettings.ExporterSettingsValues) exportSettings : ExporterSettings.GetDefaultSettings();
         viewerSettings = (viewSettings != null) ? (ViewerSettings.ViewerSettingsValues) viewSettings : ViewerSettings.GetDefaultSettings();
+        robotViewer1.LoadSettings(viewerSettings);
 
         RigidNode_Base.NODE_FACTORY = delegate()
         {
             return new OGL_RigidNode();
         };
+
+        jointEditorPane1.SelectedJoint += robotViewer1.SelectJoint;
 
         fileNew.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
@@ -74,7 +77,7 @@ public partial class ExporterGUI : Form
             var defaultValues = BXDSettings.Instance.GetSettingsObject("Exporter Settings");
 
             ExporterSettings eSettingsForm = new ExporterSettings((defaultValues != null) ? (ExporterSettings.ExporterSettingsValues) defaultValues :
-                                                                                        ExporterSettings.GetDefaultSettings());
+                                                                                             ExporterSettings.GetDefaultSettings());
 
             eSettingsForm.ShowDialog(this);
 
@@ -87,10 +90,13 @@ public partial class ExporterGUI : Form
 
             ViewerSettings vSettingsForm = new ViewerSettings((defaultValues != null) ? (ViewerSettings.ViewerSettingsValues) defaultValues : 
                                                                                     ViewerSettings.GetDefaultSettings());
+
             vSettingsForm.ShowDialog(this);
 
             BXDSettings.Instance.AddSettingsObject("Viewer Settings", vSettingsForm.values);
             viewerSettings = vSettingsForm.values;
+
+            robotViewer1.LoadSettings(viewerSettings);
         });
 
         helpAbout.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
@@ -160,7 +166,7 @@ public partial class ExporterGUI : Form
                 {
                     Console.WriteLine("Finished!");
                     if (exporterSettings.generalSaveLog)
-                        exporterProgress.Finish(exporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                        exporterProgress.Finish(exporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyy-MM-dd_HHmmss") + ".txt");
                     else exporterProgress.Finish();
                 }
             }
@@ -171,7 +177,7 @@ public partial class ExporterGUI : Form
                 exporterThread.Join();
                 if (tmpBase != null && tmpMeshes != null)
                 {
-                    skeletonBase = tmpBase;
+                    skeletonBase = new OGL_RigidNode(tmpBase);
                     meshes = tmpMeshes;
                 }
             }

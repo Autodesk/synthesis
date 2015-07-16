@@ -38,8 +38,6 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.buttonChooseTint = new System.Windows.Forms.Button();
             this.labelTintColor = new System.Windows.Forms.Label();
-            this.checkboxShowImm = new System.Windows.Forms.CheckBox();
-            this.checkboxShowLimits = new System.Windows.Forms.CheckBox();
             this.checkboxActuate = new System.Windows.Forms.CheckBox();
             this.checkboxDrawAxes = new System.Windows.Forms.CheckBox();
             this.checkboxTint = new System.Windows.Forms.CheckBox();
@@ -63,7 +61,7 @@
             this.groupBox1.ForeColor = System.Drawing.Color.Gray;
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(358, 180);
+            this.groupBox1.Size = new System.Drawing.Size(358, 207);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Camera";
@@ -72,7 +70,7 @@
             // 
             this.checkboxDebug.AutoSize = true;
             this.checkboxDebug.ForeColor = System.Drawing.Color.Black;
-            this.checkboxDebug.Location = new System.Drawing.Point(6, 134);
+            this.checkboxDebug.Location = new System.Drawing.Point(6, 168);
             this.checkboxDebug.Name = "checkboxDebug";
             this.checkboxDebug.Size = new System.Drawing.Size(157, 21);
             this.checkboxDebug.TabIndex = 4;
@@ -84,7 +82,7 @@
             this.flavorText2.AutoSize = true;
             this.flavorText2.Font = new System.Drawing.Font("Courier New", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.flavorText2.ForeColor = System.Drawing.Color.Black;
-            this.flavorText2.Location = new System.Drawing.Point(248, 49);
+            this.flavorText2.Location = new System.Drawing.Point(248, 71);
             this.flavorText2.Name = "flavorText2";
             this.flavorText2.Size = new System.Drawing.Size(104, 17);
             this.flavorText2.TabIndex = 3;
@@ -95,7 +93,7 @@
             this.flavorText1.AutoSize = true;
             this.flavorText1.Font = new System.Drawing.Font("Courier New", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.flavorText1.ForeColor = System.Drawing.Color.Black;
-            this.flavorText1.Location = new System.Drawing.Point(7, 49);
+            this.flavorText1.Location = new System.Drawing.Point(7, 71);
             this.flavorText1.Name = "flavorText1";
             this.flavorText1.Size = new System.Drawing.Size(48, 17);
             this.flavorText1.TabIndex = 2;
@@ -104,17 +102,19 @@
             // trackbarCameraSen
             // 
             this.trackbarCameraSen.LargeChange = 2;
-            this.trackbarCameraSen.Location = new System.Drawing.Point(6, 72);
+            this.trackbarCameraSen.Location = new System.Drawing.Point(6, 91);
+            this.trackbarCameraSen.Maximum = 11;
+            this.trackbarCameraSen.Minimum = 1;
             this.trackbarCameraSen.Name = "trackbarCameraSen";
             this.trackbarCameraSen.Size = new System.Drawing.Size(346, 56);
             this.trackbarCameraSen.TabIndex = 1;
-            this.trackbarCameraSen.Value = 5;
+            this.trackbarCameraSen.Value = 6;
             // 
             // labelSensitivity
             // 
             this.labelSensitivity.AutoSize = true;
             this.labelSensitivity.ForeColor = System.Drawing.Color.Black;
-            this.labelSensitivity.Location = new System.Drawing.Point(117, 18);
+            this.labelSensitivity.Location = new System.Drawing.Point(117, 34);
             this.labelSensitivity.Name = "labelSensitivity";
             this.labelSensitivity.Size = new System.Drawing.Size(124, 17);
             this.labelSensitivity.TabIndex = 0;
@@ -124,8 +124,6 @@
             // 
             this.groupBox2.Controls.Add(this.buttonChooseTint);
             this.groupBox2.Controls.Add(this.labelTintColor);
-            this.groupBox2.Controls.Add(this.checkboxShowImm);
-            this.groupBox2.Controls.Add(this.checkboxShowLimits);
             this.groupBox2.Controls.Add(this.checkboxActuate);
             this.groupBox2.Controls.Add(this.checkboxDrawAxes);
             this.groupBox2.Controls.Add(this.checkboxTint);
@@ -133,9 +131,9 @@
             this.groupBox2.Controls.Add(this.labelHighlightColor);
             this.groupBox2.Controls.Add(this.checkboxHighlight);
             this.groupBox2.ForeColor = System.Drawing.Color.Gray;
-            this.groupBox2.Location = new System.Drawing.Point(13, 199);
+            this.groupBox2.Location = new System.Drawing.Point(13, 225);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(357, 278);
+            this.groupBox2.Size = new System.Drawing.Size(357, 252);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Model";
@@ -161,37 +159,13 @@
             this.labelTintColor.TabIndex = 9;
             this.labelTintColor.Text = "Tint color:";
             // 
-            // checkboxShowImm
-            // 
-            this.checkboxShowImm.AutoSize = true;
-            this.checkboxShowImm.Checked = true;
-            this.checkboxShowImm.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkboxShowImm.ForeColor = System.Drawing.Color.Black;
-            this.checkboxShowImm.Location = new System.Drawing.Point(9, 239);
-            this.checkboxShowImm.Name = "checkboxShowImm";
-            this.checkboxShowImm.Size = new System.Drawing.Size(200, 21);
-            this.checkboxShowImm.TabIndex = 8;
-            this.checkboxShowImm.Text = "Show changes immediately";
-            this.checkboxShowImm.UseVisualStyleBackColor = true;
-            // 
-            // checkboxShowLimits
-            // 
-            this.checkboxShowLimits.AutoSize = true;
-            this.checkboxShowLimits.ForeColor = System.Drawing.Color.Black;
-            this.checkboxShowLimits.Location = new System.Drawing.Point(9, 212);
-            this.checkboxShowLimits.Name = "checkboxShowLimits";
-            this.checkboxShowLimits.Size = new System.Drawing.Size(245, 21);
-            this.checkboxShowLimits.TabIndex = 7;
-            this.checkboxShowLimits.Text = "Show limits of motion (If they exist)";
-            this.checkboxShowLimits.UseVisualStyleBackColor = true;
-            // 
             // checkboxActuate
             // 
             this.checkboxActuate.AutoSize = true;
             this.checkboxActuate.Checked = true;
             this.checkboxActuate.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkboxActuate.ForeColor = System.Drawing.Color.Black;
-            this.checkboxActuate.Location = new System.Drawing.Point(9, 185);
+            this.checkboxActuate.Location = new System.Drawing.Point(9, 198);
             this.checkboxActuate.Name = "checkboxActuate";
             this.checkboxActuate.Size = new System.Drawing.Size(115, 21);
             this.checkboxActuate.TabIndex = 6;
@@ -311,8 +285,6 @@
         private System.Windows.Forms.Label labelHighlightColor;
         private System.Windows.Forms.CheckBox checkboxHighlight;
         private System.Windows.Forms.Button buttonChooseHighlight;
-        private System.Windows.Forms.CheckBox checkboxShowImm;
-        private System.Windows.Forms.CheckBox checkboxShowLimits;
         private System.Windows.Forms.CheckBox checkboxActuate;
         private System.Windows.Forms.CheckBox checkboxDrawAxes;
         private System.Windows.Forms.CheckBox checkboxTint;

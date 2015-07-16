@@ -48,8 +48,6 @@ namespace EditorsLibrary
             buttonChooseTint.BackColor = Color.FromArgb((int) values.modelTintColor);
             checkboxDrawAxes.Checked = values.modelDrawAxes;
             checkboxActuate.Checked = values.modelActuateJoints;
-            checkboxShowLimits.Checked = values.modelShowLimits;
-            checkboxShowImm.Checked = values.modelShowImmediately;
 
             checkboxHighlight_CheckedChanged(null, null); //To make sure that things are enabled/disabled correctly
             checkboxTint_CheckedChanged(null, null);
@@ -66,8 +64,6 @@ namespace EditorsLibrary
             values.modelTintColor = (uint) buttonChooseTint.BackColor.ToArgb();
             values.modelDrawAxes = checkboxDrawAxes.Checked;
             values.modelActuateJoints = checkboxActuate.Checked;
-            values.modelShowLimits = checkboxShowLimits.Checked;
-            values.modelShowImmediately = checkboxShowImm.Checked;
         }
 
         private void checkboxHighlight_CheckedChanged(object sender, EventArgs e)
@@ -117,8 +113,6 @@ namespace EditorsLibrary
             defaultValues.modelTintColor = 0xFF00FF00;
             defaultValues.modelDrawAxes = false;
             defaultValues.modelActuateJoints = true;
-            defaultValues.modelShowLimits = false;
-            defaultValues.modelShowImmediately = true;
 
             return defaultValues;
         }
@@ -134,8 +128,6 @@ namespace EditorsLibrary
             public uint modelTintColor;
             public bool modelDrawAxes;
             public bool modelActuateJoints;
-            public bool modelShowLimits;
-            public bool modelShowImmediately;
         }
 
     }

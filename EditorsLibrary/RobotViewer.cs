@@ -28,6 +28,8 @@ namespace EditorsLibrary
         OGL_RigidNode baseNode;
 
         InventorCamera cam;
+        private float cameraMult = 1.0f;
+        private bool cameraDebug;
 
         static float[] l0_position = { 1000f, -1000f, 1000f, 0f };
         static float[] l1_position = { -1000f, 1000f, -1000f, 0f };
@@ -40,6 +42,8 @@ namespace EditorsLibrary
         private object selectedObject;
         private int selectTextureHandle, selectFBOHandle;
 
+        private ViewerSettings.ViewerSettingsValues settings;
+
         public RobotViewer()
         {
             InitializeComponent();
@@ -51,7 +55,7 @@ namespace EditorsLibrary
 
             if (node == null || meshes == null) return;
 
-            baseNode = new OGL_RigidNode(node);
+            baseNode = (OGL_RigidNode) node;
 
             nodes = baseNode.ListAllNodes();
 
@@ -63,6 +67,31 @@ namespace EditorsLibrary
             cam.pose = Matrix4.Identity;
 
             modelLoaded = true;
+        }
+
+        public void LoadSettings(ViewerSettings.ViewerSettingsValues newSettings)
+        {
+            settings = newSettings;
+
+            cameraMult = (float) settings.cameraSensitivity / 3f;
+            cameraDebug = settings.cameraDebugMode;
+            labelDebugPosition.Visible = cameraDebug;
+            labelDebugRotation.Visible = cameraDebug;
+            labelDebugMode.Visible = cameraDebug;
+        }
+
+        public void SelectJoint(RigidNode_Base node)
+        {
+            if (!settings.modelHighlight) return;
+
+            foreach (RigidNode_Base ns in nodes)
+            {
+                ((OGL_RigidNode)ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
+            }
+            if (node is OGL_RigidNode)
+            {
+                ((OGL_RigidNode)node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
+            }
         }
 
         private void glControl1_Load(object sender, EventArgs e)
@@ -123,13 +152,13 @@ namespace EditorsLibrary
             GL.Viewport(0, 0, Width, Height);
             GL.Scissor((int) mouseState.lastPos.X, (int) mouseState.lastPos.Y, 1, 1);
             GL.ClearColor(System.Drawing.Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
             renderInternal(true);
 
             byte[] pixels = new byte[4];
             GL.ReadPixels((int) mouseState.lastPos.X, Height - (int) mouseState.lastPos.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
             UInt32 nextGUID = SelectManager.ColorToGUID(pixels);
-            if (nextGUID != selectedGUID)
+            if (nextGUID != selectedGUID && settings.modelTint && settings.modelHighlight)
             {
                 if (selectedObject != null && selectedObject is OGL_RigidNode)
                 {
@@ -157,7 +186,7 @@ namespace EditorsLibrary
         {
             foreach (RigidNode_Base node in nodes)
             {
-                ((OGL_RigidNode)node).render(selectState);
+                ((OGL_RigidNode)node).render(selectState, settings.modelHighlightColor, settings.modelTintColor);
             }
         }
 
@@ -173,7 +202,7 @@ namespace EditorsLibrary
             }
 
             updateCameraMode();
-            baseNode.compute();
+            baseNode.compute(settings.modelActuateJoints);
 
             // Project
             GL.MatrixMode(MatrixMode.Projection);
@@ -207,7 +236,7 @@ namespace EditorsLibrary
             // Overlay:
             foreach (RigidNode_Base node in nodes)
             {
-                if ((((OGL_RigidNode)node).highlight & OGL_RigidNode.HighlightState.ACTIVE) == OGL_RigidNode.HighlightState.ACTIVE)
+                if ((((OGL_RigidNode)node).highlight & OGL_RigidNode.HighlightState.ACTIVE) == OGL_RigidNode.HighlightState.ACTIVE && settings.modelDrawAxes)
                 {
                     ((OGL_RigidNode)node).renderDebug();
                 }
@@ -237,6 +266,15 @@ namespace EditorsLibrary
                 cam.currentMode = InventorCamera.Mode.MOVE;
             else
                 cam.currentMode = InventorCamera.Mode.NONE;
+
+            if (cameraDebug)
+            {
+                Vector3 pos = cam.pose.ExtractTranslation();
+                labelDebugPosition.Text = String.Format("Camera position: <{0}, {1}, {2}>", pos.X, pos.Y, pos.Z);
+                Vector4 rot = cam.pose.ExtractRotation().ToAxisAngle();
+                labelDebugRotation.Text = String.Format("Camera rotation: {0} radians around <{1}, {2}, {3}>", rot.W, rot.X, rot.Y, rot.Z);
+                labelDebugMode.Text = cam.currentMode.ToString();
+            }
         }
 
         #region INPUT
@@ -317,23 +355,23 @@ namespace EditorsLibrary
                     float angle = (float)Math.Acos(Vector3.Dot(diffCurrent, mouseState.diffOld));
                     mouseState.diffOld = diffCurrent;
                     // Rotating
-                    cam.pose *= Matrix4.CreateRotationZ(dir * angle * 0.1f);
+                    cam.pose *= Matrix4.CreateRotationZ(cameraMult * dir * angle * 0.1f);
                 }
                 else
                 {
                     // Orbiting.
                     Vector3 rotationAxis = new Vector3(deltaPos.Y, deltaPos.X, 0);
                     if (rotationAxis != Vector3.Zero)
-                        cam.pose *= Matrix4.CreateFromAxisAngle(rotationAxis, rotationAxis.LengthFast / 100.0f);
+                        cam.pose *= Matrix4.CreateFromAxisAngle(rotationAxis, (cameraMult * rotationAxis.LengthFast) / 100.0f);
                 }
             }
             else if (mouseState.leftButtonDown && keyboardState.F3Down)
             {
-                cam.offset += deltaPos.Y;
+                cam.offset += cameraMult * deltaPos.Y;
             }
             else if ((mouseState.leftButtonDown && keyboardState.F2Down) || mouseState.middleButtonDown)
             {
-                cam.pose *= Matrix4.CreateTranslation(deltaPos.X / 10f, -deltaPos.Y / 10f, 0);
+                cam.pose *= Matrix4.CreateTranslation(cameraMult * deltaPos.X / 10f, cameraMult * -deltaPos.Y / 10f, 0);
             }
 
             mouseState.lastPos = mousePos;

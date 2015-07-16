@@ -27,7 +27,7 @@ namespace OGLViewer
 
         public float requestedRotation = 0;
         private float requestedTranslation = 0;
-        private BXDVector3 centerOfMass;
+        public BXDVector3 centerOfMass;
 
         public int colliderCount
         {
@@ -111,9 +111,10 @@ namespace OGLViewer
 
         private bool initialPositions = false;
         float i = 0;
-        public void compute()
+        public void compute(bool moveJoints)
         {
-            i += 0.005f;
+            if (moveJoints) i += 0.005f;
+            else i = 0.0f;
 
             #region INIT_POSITION
             if (!initialPositions && GetSkeletalJoint() != null)
@@ -182,14 +183,14 @@ namespace OGLViewer
             foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in children)
             {
                 OGL_RigidNode child = ((OGL_RigidNode) pair.Value);
-                child.compute();
+                child.compute(moveJoints);
             }
         }
 
         public bool animate = true;
         public HighlightState highlight = HighlightState.NOTHING;
 
-        public void render(bool select = false)
+        public void render(bool select = false, uint highlightColor = 0xFFFF0000, uint tintColor = 0xFFBBFFBB)
         {
             int tintLocation = 0;
             HighlightState tmpHighlight = highlight;
@@ -206,15 +207,26 @@ namespace OGLViewer
                     tintLocation = GL.GetUniformLocation(ShaderLoader.PartShader, "tintColor");
                     if ((tmpHighlight & HighlightState.ACTIVE_HOVERING) == HighlightState.ACTIVE_HOVERING)
                     {
-                        GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 1, 1 });
+                        uint activeHoverColor = highlightColor & tintColor;
+
+                        GL.Uniform4(tintLocation, 1, new float[] { (float) (activeHoverColor >> 16 & 0xFF) / 255f, 
+                                                                   (float) (activeHoverColor >> 8 & 0xFF) / 255f, 
+                                                                   (float) (activeHoverColor & 0xFF) / 255f,  
+                                                                   (float) (activeHoverColor >> 24 & 0xFF) / 255f });
                     }
                     else if ((tmpHighlight & HighlightState.ACTIVE) == HighlightState.ACTIVE)
                     {
-                        GL.Uniform4(tintLocation, 1, new float[] { 1, 0, 0, 1 });
+                        GL.Uniform4(tintLocation, 1, new float[] { (float) (highlightColor >> 16 & 0xFF) / 255f, 
+                                                                   (float) (highlightColor >> 8 & 0xFF) / 255f, 
+                                                                   (float) (highlightColor & 0xFF) / 255f,  
+                                                                   (float) (highlightColor >> 24 & 0xFF) / 255f });
                     }
                     else if ((tmpHighlight & HighlightState.HOVERING) == HighlightState.HOVERING)
                     {
-                        GL.Uniform4(tintLocation, 1, new float[] { 0.75f, 1, 0.75f, 1 });
+                        GL.Uniform4(tintLocation, 1, new float[] { (float) (tintColor >> 16 & 0xFF) / 255f, 
+                                                                   (float) (tintColor >> 8 & 0xFF) / 255f, 
+                                                                   (float) (tintColor & 0xFF) / 255f,  
+                                                                   (float) (tintColor >> 24 & 0xFF) / 255f });
                     }
                 }
             }
