@@ -324,7 +324,7 @@ public class Init : MonoBehaviour
                     uNode.unityObject.rigidbody.velocity = Vector3.zero;
                     uNode.unityObject.rigidbody.angularVelocity = Vector3.zero;
                 }
-                if (uNode.HasDriverMeta<WheelDriverMeta>() && uNode.wheelCollider != null)
+                if (uNode.HasDriverMeta<WheelDriverMeta>() && uNode.GetDriverMeta<WheelDriverMeta>().isDriveWheel && uNode.wheelCollider != null)
                 {
                     unityWheelData.Add(uNode.wheelCollider);
                 }
