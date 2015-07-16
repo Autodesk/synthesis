@@ -303,6 +303,17 @@ public class Init : MonoBehaviour
 				}
 			});
         }
+
+		// The Menu bottom on the bottom left corner
+		GUI.Window (1, new Rect (0, Screen.height - 25, 100, 25), 
+        	(int windowID) =>
+        	{
+				if (GUI.Button (new Rect (0, 0, 100, 25), "Menu"))
+					gui.EscPressed();
+			},
+			""
+		);
+
         gui.Render();
 
         if (reloadInFrames >= 0)

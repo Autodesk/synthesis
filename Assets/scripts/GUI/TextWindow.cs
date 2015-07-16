@@ -95,7 +95,7 @@ public class TextWindow : OverlayWindow
 		{
 			GUI.Window
 			(
-				1, 
+				0, 
 				rect, 
 				(int windowID) =>
 	           	{

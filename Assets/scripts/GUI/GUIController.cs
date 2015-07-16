@@ -88,6 +88,11 @@ class GUIController
     /// </summary>
     public bool guiVisible = false;
 
+	/// <summary>
+	/// The fake esc pressed.
+	/// </summary>
+	private bool fakeEscPressed = false;
+
     /// <summary>
     /// Escape key state last time OnGUI was called.
     /// </summary>
@@ -202,7 +207,9 @@ class GUIController
 
         #region hotkeys
         {
-            bool escPressed = Input.GetKeyDown(KeyCode.Escape);
+            bool escPressed = Input.GetKeyDown(KeyCode.Escape) || fakeEscPressed;
+			fakeEscPressed = false;
+
             if (escPressed && !keyDebounce)
             {
 				// Hide all windows if gui is visible and windows are active
@@ -277,4 +284,12 @@ class GUIController
             }
         }
     }
+
+	/// <summary>
+	/// Fake esc key press to trigger a real esc key press
+	/// </summary>
+	public void EscPressed()
+	{
+		fakeEscPressed = true;
+	}
 }
