@@ -77,7 +77,7 @@ public class Init : MonoBehaviour
 		reloadInFrames = -1;
 		showStatWindow = true;
 		StreamReader orientation = new StreamReader ("orientation.txt");
-		rotation = new Quaternion (float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()),float.Parse (orientation.ReadLine ()));
+		rotation = new Quaternion (float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()));
 		orientation.Close ();
     }
 
@@ -112,16 +112,20 @@ public class Init : MonoBehaviour
 		titles.Add ("Forward");
 		titles.Add ("Back");
 		titles.Add ("Save Orientation");
+		titles.Add ("Close");
 		
 		List<Rect> rects = new List<Rect> ();
-		rects.Add (new Rect(50, 125, 75, 30));
-		rects.Add (new Rect(175, 125, 75, 30));
-		rects.Add (new Rect(112, 90, 75, 30));
-		rects.Add (new Rect(112, 160, 75, 30));
-		rects.Add (new Rect (95, 30, 110, 30));
+		rects.Add (new Rect(50, 150, 75, 30));
+		rects.Add (new Rect(175, 150, 75, 30));
+		rects.Add (new Rect(112, 115, 75, 30));
+		rects.Add (new Rect(112, 185, 75, 30));
+		rects.Add (new Rect (95, 55, 110, 30));
+		rects.Add (new Rect (230, 20, 50, 30));
 
-		gui.AddWindow("Orient Robot", new TextWindow("Orient Robot", new Rect((Screen.width/2)-150, (Screen.height/2)-75 , 300, 250),
-		                                             new string[0], new Rect[0], titles.ToArray(), rects.ToArray()), (object o)=>{
+		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 75, 300, 250),
+		                                    new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
+
+		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
 			switch((int)o)
 			{
 			case 0:
@@ -145,8 +149,14 @@ public class Init : MonoBehaviour
 				orientation.WriteLine(rotation.z);
 				orientation.WriteLine(rotation.w);
 				orientation.Close ();
+
+				Debug.Log (rotation);
 				break;
 			}
+			case 5:
+				oWindow.Active = false;
+				break;
+
 			}			
 		});
 	}
@@ -236,6 +246,7 @@ public class Init : MonoBehaviour
 
             gui.AddAction("Reset Robot", () =>
             {
+				Debug.Log (rotation + " reset");
                 OrientRobot();
             });
 			//button to manually orient the robot
@@ -312,7 +323,7 @@ public class Init : MonoBehaviour
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
             activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
-            activeRobot.transform.localRotation = rotation;
+            activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
@@ -506,7 +517,7 @@ public class Init : MonoBehaviour
 					time += Time.deltaTime;
 
 				if(gui.guiVisible)
-					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 
 				else
 					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
