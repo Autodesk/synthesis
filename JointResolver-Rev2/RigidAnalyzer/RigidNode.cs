@@ -13,6 +13,7 @@ public class RigidNode : RigidNode_Base
         : this(null)
     {
     }
+
     public RigidNode(CustomRigidGroup grp)
     {
         this.group = grp;

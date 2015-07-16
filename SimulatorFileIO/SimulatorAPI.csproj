@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="IO\BinaryArrayIO.cs" />
     <Compile Include="IO\BXDAMesh.cs" />
+    <Compile Include="IO\BXDFProperties.cs" />
     <Compile Include="IO\BXDIO.cs" />
     <Compile Include="IO\RWObject.cs" />
     <Compile Include="Joints\BallJoint_Base.cs" />
@@ -68,6 +69,8 @@
     <Compile Include="Math\BXDVector3.cs" />
     <Compile Include="Math\PhysicalProperties.cs" />
     <Compile Include="Math\Polynomial.cs" />
+    <Compile Include="ModelTree\FieldDefinition_Base.cs" />
+    <Compile Include="ModelTree\FieldNode_Base.cs" />
     <Compile Include="ModelTree\RigidNode_Base.cs" />
     <Compile Include="IO\BXDJSkeleton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
