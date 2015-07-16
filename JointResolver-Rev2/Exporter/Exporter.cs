@@ -99,6 +99,7 @@ public class Exporter
         foreach (RigidNode_Base node in nodes)
         {
             node.modelFileName = ((RigidNode)node).group.ToString();
+            node.modelFullID = node.GetModelID();
         }
 
         return baseNode;

@@ -127,7 +127,6 @@
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "ExporterProgressForm";
-            this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Inventor Export";
             this.tabControl1.ResumeLayout(false);
