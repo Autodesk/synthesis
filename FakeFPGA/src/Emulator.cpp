@@ -49,6 +49,9 @@ int StartEmulator() {
 			for (int j = 0; j<2; j++){
 				for (int i = 0; i<8; i++){
 					pack.dio[j].pwmValues[i] = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(j), i);
+					// TODO implement this
+					//pack.dio[j].canValues[i] = 0;//= CANDecoder::decodeCAN(GetFakeFPGA()->getDIOCAN(j), i);
+					
 				}
 				pack.dio[j].digitalOutput = GetFakeFPGA()->getDIO(j)->readDO(&status);
 				pack.dio[j].relayForward = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);

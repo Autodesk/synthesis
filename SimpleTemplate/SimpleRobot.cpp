@@ -25,7 +25,7 @@ public:
 		myRobot.SetSafetyEnabled(true);
 		while (IsOperatorControl()) 
 		{
-			myRobot.ArcadeDrive(stick);
+			myRobot.ArcadeDrive(-stick.GetY()/2, -stick.GetX()/2);
 			Wait(0.005);
 		}
 	}
