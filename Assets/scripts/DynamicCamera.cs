@@ -4,6 +4,11 @@ using System.Collections;
 public class DynamicCamera : MonoBehaviour
 {
 	/// <summary>
+	/// The scrolling enabled.
+	/// </summary>
+	private static bool movingEnabled = true;
+
+	/// <summary>
 	/// Abstract class for defining various states of the camera.
 	/// </summary>
 	public abstract class CameraState
@@ -57,7 +62,6 @@ public class DynamicCamera : MonoBehaviour
 	/// </summary>
 	public class OrbitState : CameraState
 	{
-
 		Vector3 targetvector;
 		Vector3 rotateVector;
 		int magnification = 5;
@@ -77,7 +81,7 @@ public class DynamicCamera : MonoBehaviour
 		{
 			if (robot != null)
 			{
-				if (robot.transform.childCount > 0) {
+				if(movingEnabled)
 					magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
 
 					rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
@@ -86,7 +90,6 @@ public class DynamicCamera : MonoBehaviour
 		
 					targetvector = auxFunctions.TotalCenterOfMass (robot);
 					mono.transform.LookAt (targetvector);
-				}
 			}
 			else
 			{
@@ -117,7 +120,6 @@ public class DynamicCamera : MonoBehaviour
 
 			return output.normalized*mag + origin;
 		}
-		
 	}
 
 	/// <summary>
@@ -188,18 +190,21 @@ public class DynamicCamera : MonoBehaviour
 
 	void Update ()
 	{
-		// Will switch the camera state if certain keys are pressed.
-		if (Input.GetKey (KeyCode.D))
+		if(movingEnabled)
 		{
-			if (!_cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
-		}
-		else if (Input.GetKey (KeyCode.R))
-		{
-			if (!_cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
-		}
-		else if (Input.GetKey (KeyCode.F))
-		{
-			if (!_cameraState.GetType().Equals(typeof(FPVState))) SwitchCameraState(new FPVState(this));
+			// Will switch the camera state if certain keys are pressed.
+			if (Input.GetKey (KeyCode.D))
+			{
+				if (!cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
+			}
+			else if (Input.GetKey (KeyCode.O))
+			{
+				if (!cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
+			}
+			else if (Input.GetKey (KeyCode.F))
+			{
+				if (!cameraState.GetType().Equals(typeof(FPVState))) SwitchCameraState(new FPVState(this));
+			}
 		}
 		
 		if (_cameraState != null) _cameraState.Update ();
@@ -214,5 +219,21 @@ public class DynamicCamera : MonoBehaviour
 		if (_cameraState != null) _cameraState.End ();
 		_cameraState = state;
 		_cameraState.Init ();
+	}
+
+	/// <summary>
+	/// Enables the scrolling.
+	/// </summary>
+	public void EnableMoving()
+	{
+		movingEnabled = true;
+	}
+
+	/// <summary>
+	/// Disables the scrolling.
+	/// </summary>
+	public void DisableMoving()
+	{
+		movingEnabled = false;
 	}
 }
