@@ -9,6 +9,8 @@ using System.Collections.Generic;
 /// </summary>
 class FileBrowser : OverlayWindow
 {
+	private readonly Rect windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
+
     /// <summary>
     /// The maximum time in seconds between clicks to be considered a double click.
     /// </summary>
@@ -180,7 +182,16 @@ class FileBrowser : OverlayWindow
     {
         if (_active)
         {
-            GUI.Window(0, new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380), FileBrowserWindow, "Browse");
+            GUI.Window(0, windowRect, FileBrowserWindow, "Browse");
         }
     }
+
+	/// <summary>
+	/// Gets the rect.
+	/// </summary>
+	/// <returns>The rect.</returns>
+	public Rect GetWindowRect()
+	{
+		return windowRect;
+	}
 }

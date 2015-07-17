@@ -39,11 +39,6 @@ public class Init : MonoBehaviour
 	//sizes and places window and repositions it based on screen size
 	private Rect statsWindowRect;
 
-	// Hotkeys window constants
-	private Rect hotkeysWindowRect;
-	private int hotkeysWindowWidth = 400;
-	private int hotkeysWindowHeight = 200;
-
 	private float acceleration;
 	private float angvelo;
 	private float speed;
@@ -67,15 +62,10 @@ public class Init : MonoBehaviour
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
-		hotkeysWindowRect = new Rect(
-			(Screen.width / 2) - (hotkeysWindowWidth / 2), 
-     		(Screen.height / 2) - (hotkeysWindowHeight / 2), 
-         	hotkeysWindowWidth, 
-         	hotkeysWindowHeight
-		);
+	
 		time_stop = false;
 		reloadInFrames = -1;
-		showStatWindow = true;
+		showStatWindow = false;
     }
 
 	//displays stats like speed and acceleration
@@ -122,7 +112,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect (20, 20, 70, 30));
 
 		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 75, 300, 250),
-		                                    new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
+		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
 			switch((int)o)
@@ -185,7 +175,18 @@ public class Init : MonoBehaviour
 		labelRects.Add (new Rect (leftXOffset, 6 * heightGap, 300, 50));
 
 		string windowTitle = "Hotkeys";
-		Rect windowRect = hotkeysWindowRect;
+
+		// Hotkeys window constants
+		int hotkeysWindowWidth = 400;
+		int hotkeysWindowHeight = 200;
+		
+		Rect windowRect = new Rect(
+			(Screen.width / 2) - (hotkeysWindowWidth / 2), 
+			(Screen.height / 2) - (hotkeysWindowHeight / 2), 
+			hotkeysWindowWidth, 
+			hotkeysWindowHeight
+			);
+
 		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray(), new string[0], new Rect[0]), (object o)=>{});
 	}
 
@@ -294,8 +295,8 @@ public class Init : MonoBehaviour
 			});
         }
 
-		// The Menu bottom on the bottom left corner
-		GUI.Window (1, new Rect (0, Screen.height - 25, 100, 25), 
+		// The Menu bottom on the top left corner
+		GUI.Window (1, new Rect (3, 0, 100, 25), 
         	(int windowID) =>
         	{
 				if (GUI.Button (new Rect (0, 0, 100, 25), "Menu"))
@@ -303,6 +304,12 @@ public class Init : MonoBehaviour
 			},
 			""
 		);
+
+		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
+		{
+			gui.guiVisible = false;
+			gui.HideAllWindows ();
+		}
 
         gui.Render();
 

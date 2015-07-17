@@ -31,6 +31,13 @@ public class TextWindow : OverlayWindow
 		}
 	}
 
+	private float xPosFactor = 1;
+	private float yPosFactor = 1;
+	private int initScreenWidth;
+	private int initScreenHeight;
+	private float initWindowX;
+	private float initWindowY;
+
 	/// <summary>
 	/// The title.
 	/// </summary>
@@ -39,7 +46,7 @@ public class TextWindow : OverlayWindow
 	/// <summary>
 	/// The rect.
 	/// </summary>
-	private readonly Rect rect;
+	private Rect windowRect;
 
 	/// <summary>
 	/// The label titles.
@@ -78,11 +85,15 @@ public class TextWindow : OverlayWindow
 	public TextWindow(string title, Rect rect, string[] labelTitles, Rect[] labelRects, string[] buttonTitles, Rect[] buttonRects)
 	{
 		this.title = title;
-		this.rect = rect;
+		this.windowRect = rect;
 		this.labelTitles = labelTitles;
 		this.labelRects = labelRects;
 		this.buttonTitles = buttonTitles;
 		this.buttonRects = buttonRects;
+		initScreenWidth = Screen.width;
+		initScreenHeight = Screen.height;
+		initWindowX = windowRect.x;
+		initWindowY = windowRect.y;
 	}
 
 
@@ -91,12 +102,18 @@ public class TextWindow : OverlayWindow
 	/// </summary>
 	public void Render()
 	{
+		// Scale factor for when the user changes the window dimensions
+		xPosFactor = (Screen.width - initScreenWidth) / 2.0f;
+		yPosFactor = (Screen.height - initScreenHeight) / 2.0f;
+		windowRect.x = (initWindowX + xPosFactor) + GUIController.sidebarWidth / 2;
+		windowRect.y = initWindowY + yPosFactor;
+
 		if (_active)
 		{
 			GUI.Window
 			(
 				0, 
-				rect, 
+				windowRect, 
 				(int windowID) =>
 	           	{
 					// Display the labels
@@ -118,5 +135,14 @@ public class TextWindow : OverlayWindow
 				title
           	);
 		}
+	}
+
+	/// <summary>
+	/// Gets the rect.
+	/// </summary>
+	/// <returns>The rect.</returns>
+	public Rect GetWindowRect()
+	{
+		return windowRect;
 	}
 }
