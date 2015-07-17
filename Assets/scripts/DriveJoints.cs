@@ -178,7 +178,11 @@ public class DriveJoints : MonoBehaviour
 
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
-
+		foreach(RigidNode_Base node in listOfSubNodes)
+		{
+			UnityRigidNode uNode = (UnityRigidNode) node;
+			//Debug.Log(uNode.GetSkeletalJoint().cDriver == null);
+		}
 		// Cycles through the packet
 		for (int i = 0; i < pwm.Length; i++)
 		{
@@ -186,7 +190,8 @@ public class DriveJoints : MonoBehaviour
 			{
 				// Typcasting RigidNode to UnityRigidNode to use UnityRigidNode functions
 				UnityRigidNode unitySubNode = (UnityRigidNode)node;
-
+			
+		
 				// Checking if there is a joint (and a joint driver) attatched to each joint
 				if (unitySubNode.GetSkeletalJoint() != null && unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
 				{
@@ -197,7 +202,8 @@ public class DriveJoints : MonoBehaviour
 						BetterWheelCollider bwc = unitySubNode.unityObject.GetComponent<BetterWheelCollider>();
 						bwc.currentTorque = OzInToNm * (pwm [i] * 271.1f);
 						bwc.brakeTorque = 343f * OzInToNm;
-					} else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
+					} 
+					else if (unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
 					{
 						Joint joint = unitySubNode.GetJoint<Joint>();
 
@@ -269,6 +275,16 @@ public class DriveJoints : MonoBehaviour
 						}
 					}
 				}
+	/*			if(unitySubNode.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.ELEVATOR)
+				{
+					Debug.Log("got to 1");
+					ElevatorScript es = unitySubNode.unityObject.GetComponent<ElevatorScript>();
+					if(unitySubNode.GetSkeletalJoint().cDriver.portA == i + 1)
+					{
+						Debug.Log("got to 2");
+						es.currentTorque = pwm[i]*.00706155183333f * Init.PHYSICS_MASS_MULTIPLIER;
+					}
+				}*/
 			}
 		}
 	}
