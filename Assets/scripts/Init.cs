@@ -274,6 +274,7 @@ public class Init : MonoBehaviour
 						break;
 					case 1:
 						dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
+						dynamicCamera.EnableMoving();
 						break;
 					case 2:
 						dynamicCamera.SwitchCameraState(new DynamicCamera.FPVState(dynamicCamera));
