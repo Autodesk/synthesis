@@ -28,7 +28,12 @@ public class Init : MonoBehaviour
 	//main node of robot from which speed and other stats are derived
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
-	private Rect windowRect;
+	private Rect statsWindowRect;
+
+	// Hotkeys window constants
+	private Rect hotkeysWindowRect;
+	private int hotkeysWindowWidth = 400;
+	private int hotkeysWindowHeight = 200;
 
 	private float acceleration;
 	private float angvelo;
@@ -37,7 +42,8 @@ public class Init : MonoBehaviour
 	private float time;
 	private bool time_stop;
 	private float oldSpeed;
-	private bool showStatWindow = true;
+	private bool showStatWindow;
+
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -51,9 +57,16 @@ public class Init : MonoBehaviour
     {
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
-		windowRect = new Rect (Screen.width - 320, 20, 300, 150);
+		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
+		hotkeysWindowRect = new Rect(
+			(Screen.width / 2) - (hotkeysWindowWidth / 2), 
+     		(Screen.height / 2) - (hotkeysWindowHeight / 2), 
+         	hotkeysWindowWidth, 
+         	hotkeysWindowHeight
+		);
 		time_stop = false;
 		reloadInFrames = -1;
+		showStatWindow = true;
     }
 
 	//displays stats like speed and acceleration
@@ -61,7 +74,7 @@ public class Init : MonoBehaviour
 		
 		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
 		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
-		GUI.Label (new Rect (10, 40, 300, 50), "Acceleratiion: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
 		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 1).ToString() + " ft/s^2");
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
@@ -70,7 +83,7 @@ public class Init : MonoBehaviour
 		{
 			time_stop = !time_stop;
 		}
-
+		
 		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
 		{
 			time = 0;
@@ -79,23 +92,117 @@ public class Init : MonoBehaviour
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
+	public void ShowOrient()
+	{
+		List<string> titles = new List<string> ();
+		titles.Add ("Left");
+		titles.Add ("Right");
+		titles.Add ("Forward");
+		titles.Add ("Back");
+		//titles.Add ("Save Orientation");
+		titles.Add ("Close");
+		titles.Add ("Default");
+		
+		List<Rect> rects = new List<Rect> ();
+		rects.Add (new Rect(50, 150, 75, 30));
+		rects.Add (new Rect(175, 150, 75, 30));
+		rects.Add (new Rect(112, 115, 75, 30));
+		rects.Add (new Rect(112, 185, 75, 30));
+		//rects.Add (new Rect (95, 55, 110, 30));
+		rects.Add (new Rect (230, 20, 50, 30));
+		rects.Add (new Rect (20, 20, 70, 30));
+
+		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 75, 300, 250),
+		                                    new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
+
+		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
+			switch((int)o)
+			{
+			case 0:
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z + 90));
+                break;
+			case 1:	
+				activeRobot.transform.Rotate (new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z - 90));
+				break;
+			case 2:
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x + 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
+				break;
+			case 3:
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
+				break;
+			case 4:
+				oWindow.Active = false;
+				break;
+			case 5:
+				activeRobot.transform.localRotation = Quaternion.identity;
+				break;
+
+			}			
+		});
+	}
+
+	public void HotkeysWindow()
+	{
+		int leftX = 75;
+		int leftXOffset = 275;
+		int heightGap = 25;
+		
+		List<string> labelTitles = new List<string>();
+		labelTitles.Add ("Reset Robot:"); 
+		labelTitles.Add ("Driverstation:");
+		labelTitles.Add ("Orbit Robot:O");
+		labelTitles.Add ("First Person:F"); 
+		labelTitles.Add ("Stats window toggle:");
+		labelTitles.Add ("Menu:");
+		labelTitles.Add ("[R]"); 
+		labelTitles.Add ("[D]");
+		labelTitles.Add ("[O]");
+		labelTitles.Add ("[F]"); 
+		labelTitles.Add ("[H]");
+		labelTitles.Add ("[Esc]");
+
+		List<Rect> labelRects = new List<Rect>();
+		labelRects.Add (new Rect (leftX, 1 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 2 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 3 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 4 * heightGap, 300, 50)); 
+		labelRects.Add (new Rect (leftX, 5 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftX, 6 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 1 * heightGap, 300, 50)); 
+		labelRects.Add (new Rect (leftXOffset, 2 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 3 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 4 * heightGap, 300, 50)); 
+		labelRects.Add (new Rect (leftXOffset, 5 * heightGap, 300, 50));
+		labelRects.Add (new Rect (leftXOffset, 6 * heightGap, 300, 50));
+
+		string windowTitle = "Hotkeys";
+		Rect windowRect = hotkeysWindowRect;
+		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray(), new string[0], new Rect[0]), (object o)=>{});
+	}
+
+	void HideGuiSidebar()
+	{
+		gui.guiVisible = false;
+		dynamicCamera.EnableMoving ();
+	}
+
+	void ShowGuiSidebar()
+	{
+		dynamicCamera.DisableMoving();
+	}
+
 	[STAThread]
     void OnGUI()
     {
 		// Draws stats window on to GUI
 		if(showStatWindow)
-			windowRect = GUI.Window(0, windowRect, StatsWindow, "Stats");
+			statsWindowRect = GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
 
         if (gui == null)
         {
             gui = new GUIController();
-
-			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
-				{
-					if ((int) o == 0) {
-						Application.Quit();
-					}
-				});
+			gui.hideGuiCallback = HideGuiSidebar;
+			gui.showGuiCallback = ShowGuiSidebar;
 
             gui.AddWindow("Load Model", new FileBrowser(), (object o) =>
             {
@@ -115,12 +222,14 @@ public class Init : MonoBehaviour
                 {
                     UserMessageManager.Dispatch("Invalid selection!", 10f);
                 }
-            });
+			});
 
-            gui.AddAction("Orient Robot", () =>
+            gui.AddAction("Reset Robot", () =>
             {
-                OrientRobot();
+                resetRobot();
             });
+			//shows button to manually orient the robot
+			ShowOrient();
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
@@ -130,12 +239,15 @@ public class Init : MonoBehaviour
 			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
 			    "Driver Station [D]", "Orbit Robot [R]", "First Person [F]"), (object o) =>
 			    {
+					gui.guiVisible = false;
+
 					switch ((int) o) {
 					case 0:
 						dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
 						break;
 					case 1:
 						dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
+						dynamicCamera.EnableMoving();
 						break;
 					case 2:
 						dynamicCamera.SwitchCameraState(new DynamicCamera.FPVState(dynamicCamera));
@@ -145,7 +257,43 @@ public class Init : MonoBehaviour
 						break;
 					}
 				});
+
+			gui.AddWindow ("Switch Field", new DialogWindow("Switch Field",
+				"Aerial Asssist (2014)", "Recycle Rush (2015)"), (object o) =>
+			    {
+					gui.guiVisible = false;
+
+					switch ((int) o)
+					{
+					case 0:
+						SetField(FieldType.FRC_2014);
+						break;
+					case 1:
+						SetField(FieldType.FRC_2015);
+						break;
+					}
+				});
+
+			HotkeysWindow();
+
+			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+			               {
+				if ((int) o == 0) {
+					Application.Quit();
+				}
+			});
         }
+
+		// The Menu bottom on the bottom left corner
+		GUI.Window (1, new Rect (0, Screen.height - 25, 100, 25), 
+        	(int windowID) =>
+        	{
+				if (GUI.Button (new Rect (0, 0, 100, 25), "Menu"))
+					gui.EscPressed();
+			},
+			""
+		);
+
         gui.Render();
 
         if (reloadInFrames >= 0)
@@ -159,7 +307,7 @@ public class Init : MonoBehaviour
     /// Repositions the robot so it is aligned at the center of the field, and resets all the
     /// joints, velocities, etc..
     /// </summary>
-    private void OrientRobot()
+    private void resetRobot()
     {	
         if (activeRobot != null && skeleton != null)
         {
@@ -171,14 +319,14 @@ public class Init : MonoBehaviour
             foreach (RigidNode_Base node in nodes)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
-                uNode.unityObject.transform.localPosition = Vector3.zero;
-                uNode.unityObject.transform.localRotation = Quaternion.identity;
+				uNode.unityObject.transform.localPosition = Vector3.zero;
+				uNode.unityObject.transform.localRotation = Quaternion.identity;
                 if (uNode.unityObject.rigidbody != null)
                 {
                     uNode.unityObject.rigidbody.velocity = Vector3.zero;
                     uNode.unityObject.rigidbody.angularVelocity = Vector3.zero;
                 }
-                if (uNode.HasDriverMeta<WheelDriverMeta>() && uNode.wheelCollider != null)
+                if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null)
                 {
                     unityWheelData.Add(uNode.wheelCollider);
                 }
@@ -257,7 +405,7 @@ public class Init : MonoBehaviour
             }
 
             auxFunctions.IgnoreCollisionDetection(meshColliders);
-            OrientRobot();
+            resetRobot();
         }
         else
         {
@@ -369,26 +517,26 @@ public class Init : MonoBehaviour
             TryLoad();
         }
 
-		if (Input.GetKeyDown (KeyCode.Z))
+		// Only allow camera moving if gui is not showing
+		if (gui != null && !gui.guiVisible) 
 		{
-			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, -8.183f), new Vector3(0f, 323.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-		}
-		if (Input.GetKeyDown (KeyCode.X))
-		{
-			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, -8.183f), new Vector3(0f, 216.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-		}
-		if (Input.GetKeyDown (KeyCode.C))
-		{
-			totes.Add(Tote.Create(new Vector3(-3.619f, 0.742f, 8.183f), new Vector3(0f, 36.2776f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-		}
-		if (Input.GetKeyDown (KeyCode.V))
-		{
-			totes.Add(Tote.Create(new Vector3(3.619f, 0.742f, 8.183f), new Vector3(0f, 143.3176f, 247.9989f), new Vector3(FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			if (Input.GetKeyDown (KeyCode.Z)) {
+				totes.Add (Tote.Create (new Vector3 (-3.619f, 0.742f, -8.183f), new Vector3 (0f, 323.3176f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
+			if (Input.GetKeyDown (KeyCode.X)) {
+				totes.Add (Tote.Create (new Vector3 (3.619f, 0.742f, -8.183f), new Vector3 (0f, 216.2776f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
+			if (Input.GetKeyDown (KeyCode.C)) {
+				totes.Add (Tote.Create (new Vector3 (-3.619f, 0.742f, 8.183f), new Vector3 (0f, 36.2776f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
+			if (Input.GetKeyDown (KeyCode.V)) {
+				totes.Add (Tote.Create (new Vector3 (3.619f, 0.742f, 8.183f), new Vector3 (0f, 143.3176f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
+			}
 		}
 
 		// Orient Robot
-		if (Input.GetKeyDown (KeyCode.O))
-			gui.DoAction ("Orient Robot");
+		if (Input.GetKeyDown (KeyCode.R))
+			gui.DoAction ("Reset Robot");
 
 		// Show/Hide physics window
 		if (Input.GetKeyDown (KeyCode.H))
@@ -427,6 +575,12 @@ public class Init : MonoBehaviour
 				oldSpeed = speed;
 				if (!time_stop)
 					time += Time.deltaTime;
+
+				if(gui.guiVisible)
+					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+
+				else
+					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
 			}
 		}
 	}
