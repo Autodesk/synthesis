@@ -47,7 +47,8 @@ public class Init : MonoBehaviour
 	private bool time_stop;
 	private float oldSpeed;
 	private bool showStatWindow;
-	Quaternion rotation;
+	private Quaternion rotation;
+
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -65,7 +66,8 @@ public class Init : MonoBehaviour
 	
 		time_stop = false;
 		reloadInFrames = -1;
-		showStatWindow = false;
+		showStatWindow = true;
+		rotation = Quaternion.identity;
     }
 
 	//displays stats like speed and acceleration
@@ -98,7 +100,7 @@ public class Init : MonoBehaviour
 		titles.Add ("Right");
 		titles.Add ("Forward");
 		titles.Add ("Back");
-		//titles.Add ("Save Orientation");
+		titles.Add ("Save Orientation");
 		titles.Add ("Close");
 		titles.Add ("Default");
 		
@@ -107,7 +109,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect(175, 150, 75, 30));
 		rects.Add (new Rect(112, 115, 75, 30));
 		rects.Add (new Rect(112, 185, 75, 30));
-		//rects.Add (new Rect (95, 55, 110, 30));
+		rects.Add (new Rect (95, 55, 110, 30));
 		rects.Add (new Rect (230, 20, 50, 30));
 		rects.Add (new Rect (20, 20, 70, 30));
 
@@ -130,9 +132,12 @@ public class Init : MonoBehaviour
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
 				break;
 			case 4:
-				oWindow.Active = false;
+				rotation = activeRobot.transform.localRotation;
 				break;
 			case 5:
+				oWindow.Active = false;
+				break;
+			case 6:
 				activeRobot.transform.localRotation = Quaternion.identity;
 				break;
 
@@ -236,10 +241,9 @@ public class Init : MonoBehaviour
 
             gui.AddAction("Reset Robot", () =>
             {
-				Debug.Log (rotation + " reset");
                 resetRobot();
             });
-			//button to manually orient the robot
+			//shows button to manually orient the robot
 			ShowOrient();
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
@@ -331,7 +335,7 @@ public class Init : MonoBehaviour
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
             activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
-            activeRobot.transform.localRotation = Quaternion.identity;
+            activeRobot.transform.localRotation = rotation;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
