@@ -90,7 +90,6 @@ public class DynamicCamera : MonoBehaviour
 		
 					targetvector = auxFunctions.TotalCenterOfMass (robot);
 					mono.transform.LookAt (targetvector);
-				}
 			}
 			else
 			{
