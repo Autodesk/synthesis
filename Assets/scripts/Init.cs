@@ -43,7 +43,7 @@ public class Init : MonoBehaviour
 	private bool time_stop;
 	private float oldSpeed;
 	private bool showStatWindow;
-	Quaternion rotation;
+
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -226,10 +226,9 @@ public class Init : MonoBehaviour
 
             gui.AddAction("Reset Robot", () =>
             {
-				Debug.Log (rotation + " reset");
                 resetRobot();
             });
-			//button to manually orient the robot
+			//shows button to manually orient the robot
 			ShowOrient();
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
