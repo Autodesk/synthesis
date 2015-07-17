@@ -214,9 +214,14 @@ develop-eggs/
 pip-log.txt
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Unit test / coverage reports
 .coverage
 .tox
+=======
+# Icon must ends with two \r.
+Icon
+>>>>>>> feature-field
 
 #Translations
 *.mo
