@@ -17,6 +17,11 @@ public class DialogWindow : OverlayWindow
 			_active = value;
 		}
 	}
+
+	/// <summary>
+	/// The windowRect.
+	/// </summary>
+	private Rect windowRect;
 	
 	/// <summary>
 	/// Passes option selected.
@@ -49,10 +54,11 @@ public class DialogWindow : OverlayWindow
 	/// </summary>
 	public void Render()
 	{
+		windowRect = new Rect ((Screen.width / 2 - (50 + labels.Length * 250) / 2) + GUIController.sidebarWidth / 2, Screen.height / 2 - 100, 50 + labels.Length * 250, 200);
+
 		if (_active)
 		{
-			GUI.Window(0, new Rect(Screen.width / 2 - (50 + labels.Length * 250) / 2, Screen.height / 2 - 100,
-			                       50 + labels.Length * 250, 200), (int windowID) =>
+			GUI.Window(0, windowRect, (int windowID) =>
 			{
 				for (int i = 0; i < labels.Length; i++)
 				{
@@ -66,5 +72,13 @@ public class DialogWindow : OverlayWindow
 			}, title);
 		}
 	}
-}
 
+	/// <summary>
+	/// Gets the rect.
+	/// </summary>
+	/// <returns>The rect.</returns>
+	public Rect GetWindowRect()
+	{
+		return windowRect;
+	}
+}

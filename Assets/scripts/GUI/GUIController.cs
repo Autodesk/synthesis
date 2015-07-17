@@ -17,7 +17,7 @@ class GUIController
     /// <summary>
     /// The padding for the sidebar content, pixels.
     /// </summary>
-    private static readonly Vector2 GUI_SIDEBAR_PADDING = new Vector2(10, 25);
+    private static readonly Vector2 GUI_SIDEBAR_PADDING = new Vector2(10, 30);
     /// <summary>
     /// The height of a sidebar entry.
     /// </summary>
@@ -104,7 +104,7 @@ class GUIController
     /// <summary>
     /// The current sidebar width, pixels.  This is dynamically calculated.
     /// </summary>
-    private float sidebarWidth = 100f;
+    public static float sidebarWidth = 100f;
 
     /// <summary>
     /// Creates a GUI sidebar with an exit button.
@@ -291,5 +291,41 @@ class GUIController
 	public void EscPressed()
 	{
 		fakeEscPressed = true;
+	}
+
+	/// <summary>
+	/// Gets the width of the sidebar.
+	/// </summary>
+	/// <returns>The sidebar width.</returns>
+	public float GetSidebarWidth()
+	{
+		return sidebarWidth;
+	}
+
+	/// <summary>
+	/// Clickeds the inside window.
+	/// </summary>
+	/// <returns><c>true</c>, if inside window was clickeded, <c>false</c> otherwise.</returns>
+	public bool ClickedInsideWindow()
+	{
+		float mouseX = Input.mousePosition.x;
+		float mouseY = Screen.height - Input.mousePosition.y; // Convert mouse coordinates to unity window positions coordinates
+
+		foreach(OverlayWindow win in windows)
+		{
+			Rect winRect = win.GetWindowRect();
+			bool insideWindow = mouseX > winRect.x && mouseX < winRect.x + winRect.width && mouseY > winRect.y && mouseY < winRect.y + winRect.height;
+
+			if((win.Active && insideWindow) || mouseX < sidebarWidth)
+				return true;
+		}
+
+		return false;
+	}
+
+	public void HideAllWindows()
+	{
+		foreach (OverlayWindow window in windows)
+			window.Active = false;
 	}
 }
