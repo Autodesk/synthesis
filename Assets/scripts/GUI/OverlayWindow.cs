@@ -1,4 +1,5 @@
-﻿using System;
+﻿using UnityEngine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,4 +27,10 @@ interface OverlayWindow
     /// Renders this overlay
     /// </summary>
     void Render();
+
+	/// <summary>
+	/// Gets the rect.
+	/// </summary>
+	/// <returns>The rect.</returns>
+	Rect GetWindowRect();
 }
