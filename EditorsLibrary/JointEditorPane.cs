@@ -106,6 +106,8 @@ namespace EditorsLibrary
         /// <param name="node">The node connected to the joint to edit the sensors on</param>
         private void listSensors_Internal(RigidNode_Base node)
         {
+            if (node == null) return;
+
             currentlyEditing = true;
             SensorListForm listForm = new SensorListForm(node.GetSkeletalJoint());
             listForm.StartPosition = FormStartPosition.Manual;
