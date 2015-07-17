@@ -79,8 +79,8 @@ public class DynamicCamera : MonoBehaviour
 
 		public override void Update()
 		{
-			if (robot != null)
-			{
+			if (robot != null && robot.transform.childCount > 0)
+{
 				if(movingEnabled)
 					magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
 
@@ -92,9 +92,7 @@ public class DynamicCamera : MonoBehaviour
 					mono.transform.LookAt (targetvector);
 			}
 			else
-			{
 				robot = GameObject.Find("Robot");
-			}
 		}
 
 		public override void End () {
