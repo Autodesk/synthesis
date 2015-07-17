@@ -14,42 +14,128 @@ using OGLViewer;
 
 namespace EditorsLibrary
 {
+
+    /// <summary>
+    /// The control that renders the model and handles mouse control
+    /// </summary>
     public partial class RobotViewer : UserControl
     {
 
+        /// <summary>
+        /// Whether or not the GLControl has loaded yet
+        /// </summary>
         public bool isLoaded { get; private set; }
+
+        /// <summary>
+        /// Whether or not a model has been loaded into the viewer
+        /// </summary>
         public bool modelLoaded { get; private set; }
 
-        private const int SELECT_BUFFER_WIDTH = 1920, SELECT_BUFFER_HEIGHT = 1080;
+        /// <summary>
+        /// The width and height of the node selection FBO
+        /// </summary>
+        private const int SELECT_BUFFER_WIDTH = 768, SELECT_BUFFER_HEIGHT = 500;
 
-        private static double horizontalTan = Math.Tan(25.0 * 3.14 / 180.0);
-
+        /// <summary>
+        /// The list of nodes on the robot model
+        /// </summary>
         private List<RigidNode_Base> nodes;
+
+        /// <summary>
+        /// The base node that is actually used to render the model
+        /// </summary>
         OGL_RigidNode baseNode;
 
+        /// <summary>
+        /// The local keyboard state
+        /// </summary>
+        private KeyboardState keyboardState;
+
+        /// <summary>
+        /// The local mouse state
+        /// </summary>
+        private MouseState mouseState;
+
+        /// <summary>
+        /// The viewer's camera
+        /// </summary>
         InventorCamera cam;
+
+        /// <summary>
+        /// The speed multiplier for the camera
+        /// </summary>
         private float cameraMult = 1.0f;
+
+        /// <summary>
+        /// Whether or not the viewer should display camera debug information
+        /// </summary>
+        /// <remarks>
+        /// This information includes:
+        /// Camera translation
+        /// Camera rotation
+        /// Camera mode
+        /// </remarks>
         private bool cameraDebug;
 
+        /// <summary>
+        /// The position of light 0
+        /// </summary>
         static float[] l0_position = { 1000f, -1000f, 1000f, 0f };
-        static float[] l1_position = { -1000f, 1000f, -1000f, 0f };
-        static float[] l_diffuse = { 1f, 1f, 1f, 1f };
-        static float[] l_specular = { .1f, .1f, .1f, .1f };
-        static float[] ambient = { .125f, .125f, .125f, .125f };
 
-        // Select info
+        /// <summary>
+        /// The position of light 1
+        /// </summary>
+        static float[] l1_position = { -1000f, 1000f, -1000f, 0f };
+
+        /// <summary>
+        /// The diffuse color of the lights
+        /// </summary>
+        static float[] l_diffuse = { 1f, 1f, 1f, 1f };
+
+        /// <summary>
+        /// The specular color of the lights
+        /// </summary>
+        static float[] l_specular = { .1f, .1f, .1f, .1f };
+
+        /// <summary>
+        /// The ambient color of the lights
+        /// </summary>
+        static float[] ambient = { .125f, .125f, .125f, .125f };
+        
+        /// <summary>
+        /// The GUID of the selected object
+        /// </summary>
         private UInt32 selectedGUID;
+
+        /// <summary>
+        /// The currently selected object
+        /// </summary>
         private object selectedObject;
+
+        /// <summary>
+        /// The bindings for the selection texture and FBO;
+        /// </summary>
         private int selectTextureHandle, selectFBOHandle;
 
+        /// <summary>
+        /// The local copy of the global viewer settings
+        /// </summary>
         private ViewerSettings.ViewerSettingsValues settings;
 
+        /// <summary>
+        /// Create a new RobotViewer and initialize all components
+        /// </summary>
         public RobotViewer()
         {
             InitializeComponent();
         }
 
-        public void loadModel(RigidNode_Base node, List<BXDAMesh> meshes)
+        /// <summary>
+        /// Load a robot model from a rigid node and list of meshes
+        /// </summary>
+        /// <param name="node">The node to base the model off of</param>
+        /// <param name="meshes">The meshes to render</param>
+        public void LoadModel(RigidNode_Base node, List<BXDAMesh> meshes)
         {
             modelLoaded = false;
 
@@ -69,6 +155,10 @@ namespace EditorsLibrary
             modelLoaded = true;
         }
 
+        /// <summary>
+        /// Load settings for the viewer
+        /// </summary>
+        /// <param name="newSettings">The viewer settings to load</param>
         public void LoadSettings(ViewerSettings.ViewerSettingsValues newSettings)
         {
             settings = newSettings;
@@ -80,20 +170,33 @@ namespace EditorsLibrary
             labelDebugMode.Visible = cameraDebug;
         }
 
+        /// <summary>
+        /// Select a joint in the viewer that was selected in the joint editor
+        /// </summary>
+        /// <remarks>
+        /// This method is subscribed to the SelectedJoint event in JointEditorPane
+        /// </remarks>
+        /// <param name="node">The selected node</param>
         public void SelectJoint(RigidNode_Base node)
         {
-            if (!settings.modelHighlight) return;
-
             foreach (RigidNode_Base ns in nodes)
             {
-                ((OGL_RigidNode)ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE;
+                ((OGL_RigidNode)ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE; //Unselect all currently active nodes
             }
+
+            if (!settings.modelHighlight) return;
+
             if (node is OGL_RigidNode)
             {
                 ((OGL_RigidNode)node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
             }
         }
 
+        /// <summary>
+        /// The method called when the GLControl loads
+        /// </summary>
+        /// <param name="sender">Object sending the event</param>
+        /// <param name="e">Event arguments</param>
         private void glControl1_Load(object sender, EventArgs e)
         {
             cam = new InventorCamera();
@@ -125,6 +228,9 @@ namespace EditorsLibrary
             isLoaded = true;
         }
 
+        /// <summary>
+        /// Set up the node selection texture and FBO
+        /// </summary>
         private void setupSelectBuffer()
         {
             selectTextureHandle = GL.GenTexture();
@@ -144,44 +250,60 @@ namespace EditorsLibrary
             GL.DrawBuffer(DrawBufferMode.Back);
         }
 
+        /// <summary>
+        /// Select nodes that the mouse is hovering over
+        /// </summary>
         private void doSelect()
         {
             GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, selectFBOHandle);
             GL.DrawBuffer((DrawBufferMode)FramebufferAttachment.ColorAttachment0Ext);
+
             GL.PushAttrib(AttribMask.ViewportBit);
-            GL.Viewport(0, 0, Width, Height);
-            GL.Scissor((int) mouseState.lastPos.X, (int) mouseState.lastPos.Y, 1, 1);
-            GL.ClearColor(System.Drawing.Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            renderInternal(true);
-
-            byte[] pixels = new byte[4];
-            GL.ReadPixels((int) mouseState.lastPos.X, Height - (int) mouseState.lastPos.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
-            UInt32 nextGUID = SelectManager.ColorToGUID(pixels);
-            if (nextGUID != selectedGUID && settings.modelTint && settings.modelHighlight)
             {
-                if (selectedObject != null && selectedObject is OGL_RigidNode)
-                {
-                    ((OGL_RigidNode)selectedObject).highlight &= ~OGL_RigidNode.HighlightState.HOVERING;
-                }
-                selectedObject = SelectManager.GetByGUID(nextGUID);
-                if (selectedObject != null)
-                {
-                    ((OGL_RigidNode)selectedObject).highlight |= OGL_RigidNode.HighlightState.HOVERING;
-                }
-            }
-            selectedGUID = nextGUID;
+                GL.Viewport(0, 0, Width, Height);
+                GL.Scissor((int)mouseState.lastPos.X, (int)mouseState.lastPos.Y, 1, 1);
+                GL.ClearColor(System.Drawing.Color.White);
+                GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0);
-            GL.ClearColor(System.Drawing.Color.Black);
+                renderInternal(true);
+
+                byte[] pixels = new byte[4];
+                GL.ReadPixels((int)mouseState.lastPos.X, Height - (int)mouseState.lastPos.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixels);
+                UInt32 nextGUID = SelectManager.ColorToGUID(pixels);
+                if (nextGUID != selectedGUID && settings.modelTint && settings.modelHighlight)
+                {
+                    if (selectedObject != null && selectedObject is OGL_RigidNode)
+                    {
+                        ((OGL_RigidNode)selectedObject).highlight &= ~OGL_RigidNode.HighlightState.HOVERING;
+                    }
+
+                    selectedObject = SelectManager.GetByGUID(nextGUID);
+                    if (selectedObject != null)
+                    {
+                        ((OGL_RigidNode)selectedObject).highlight |= OGL_RigidNode.HighlightState.HOVERING;
+                    }
+                }
+
+                selectedGUID = nextGUID;
+
+                GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0);
+                GL.ClearColor(System.Drawing.Color.Black);
+            }
             GL.PopAttrib();
         }
 
+        /// <summary>
+        /// Render the camera overlay
+        /// </summary>
         private void renderOverlay()
         {
             cam.renderOverlay(Width, Height);
         }
 
+        /// <summary>
+        /// Render each rigid node with any selection information that may exist
+        /// </summary>
+        /// <param name="selectState"></param>
         private void renderInternal(bool selectState = false)
         {
             foreach (RigidNode_Base node in nodes)
@@ -190,6 +312,11 @@ namespace EditorsLibrary
             }
         }
 
+        /// <summary>
+        /// Render the robot model and paint the GLControl
+        /// </summary>
+        /// <param name="sender">Object sending the event</param>
+        /// <param name="e">Paint event arguments</param>
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             GL.Enable(EnableCap.Lighting);
@@ -218,16 +345,14 @@ namespace EditorsLibrary
             cam.translate();
             
             #region LIGHTS
-            {
-                GL.LightModel(LightModelParameter.LightModelAmbient, ambient);
-                GL.Light(LightName.Light0, LightParameter.Position, l0_position);
-                GL.Light(LightName.Light0, LightParameter.Diffuse, l_diffuse);
-                GL.Light(LightName.Light0, LightParameter.Specular, l_specular);
-
-                GL.Light(LightName.Light1, LightParameter.Position, l1_position);
-                GL.Light(LightName.Light1, LightParameter.Diffuse, l_diffuse);
-                GL.Light(LightName.Light1, LightParameter.Specular, l_specular);
-            }
+            GL.LightModel(LightModelParameter.LightModelAmbient, ambient);
+            GL.Light(LightName.Light0, LightParameter.Position, l0_position);
+            GL.Light(LightName.Light0, LightParameter.Diffuse, l_diffuse);
+            GL.Light(LightName.Light0, LightParameter.Specular, l_specular);
+            
+            GL.Light(LightName.Light1, LightParameter.Position, l1_position);
+            GL.Light(LightName.Light1, LightParameter.Diffuse, l_diffuse);
+            GL.Light(LightName.Light1, LightParameter.Specular, l_specular);
             #endregion
             
             doSelect();
@@ -256,6 +381,9 @@ namespace EditorsLibrary
             glControl1.SwapBuffers();
         }
 
+        /// <summary>
+        /// Update the camera's mode
+        /// </summary>
         private void updateCameraMode()
         {
             if (keyboardState.F4Down || (mouseState.middleButtonDown && keyboardState.LShiftDown))
@@ -278,6 +406,9 @@ namespace EditorsLibrary
         }
 
         #region INPUT
+        /// <summary>
+        /// The keyboard's state
+        /// </summary>
         private struct KeyboardState
         {
             public bool LShiftDown;
@@ -286,6 +417,9 @@ namespace EditorsLibrary
             public bool F2Down;
         }
 
+        /// <summary>
+        /// The mouse's state
+        /// </summary>
         private struct MouseState
         {
             public Vector2 lastPos;
@@ -297,9 +431,11 @@ namespace EditorsLibrary
             public bool middleButtonDown;
         }
 
-        private KeyboardState keyboardState;
-        private MouseState mouseState;
-
+        /// <summary>
+        /// The event called when a key is pressed
+        /// </summary>
+        /// <param name="source">The source of the event</param>
+        /// <param name="args">Keyboard event arguments</param>
         private void viewer_KeyDown(object source, KeyEventArgs args)
         {
             if (args.KeyCode == Keys.ShiftKey) keyboardState.LShiftDown = true;
@@ -308,6 +444,11 @@ namespace EditorsLibrary
             else if (args.KeyCode == Keys.F4) keyboardState.F4Down = true;
         }
 
+        /// <summary>
+        /// The event called when a key is released
+        /// </summary>
+        /// <param name="source">The source of the event</param>
+        /// <param name="args">Keyboard event arguments</param>
         private void viewer_KeyUp(object source, KeyEventArgs args)
         {
             if (args.KeyCode == Keys.ShiftKey) keyboardState.LShiftDown = false;
@@ -316,6 +457,11 @@ namespace EditorsLibrary
             else if (args.KeyCode == Keys.F4) keyboardState.F4Down = false;
         }
 
+        /// <summary>
+        /// The event called when a mouse button is pressed
+        /// </summary>
+        /// <param name="source">The source of the event</param>
+        /// <param name="args">Mouse event arguments</param>
         private void viewer_MouseDown(object source, MouseEventArgs args)
         {
             if (args.Button == MouseButtons.Left) mouseState.leftButtonDown = true;
@@ -325,6 +471,11 @@ namespace EditorsLibrary
             mouseState.dragStart = new Vector2(args.X, args.Y);
         }
 
+        /// <summary>
+        /// The event called when a mouse button is released
+        /// </summary>
+        /// <param name="source">The source of the event</param>
+        /// <param name="args">Mouse event arguments</param>
         private void viewer_MouseUp(object source, MouseEventArgs args)
         {
             if (args.Button == MouseButtons.Left) mouseState.leftButtonDown = false;
@@ -332,44 +483,55 @@ namespace EditorsLibrary
             else if (args.Button == MouseButtons.Middle) mouseState.middleButtonDown = false;
         }
 
+        /// <summary>
+        /// The event called when the mouse wheel is moved
+        /// </summary>
+        /// <param name="source">The source of the event</param>
+        /// <param name="args">Mouse event arguments</param>
         private void viewer_MouseWheel(object source, MouseEventArgs args)
         {
             cam.offset -= args.Delta / 25f;
         }
 
+        /// <summary>
+        /// The event called when the mouse is moved
+        /// </summary>
+        /// <param name="source">The source of the event</param>
+        /// <param name="args">Mouse event arguments</param>
         private void viewer_MouseMoved(object source, MouseEventArgs args)
         {
             Vector2 mousePos = new Vector2(args.X, args.Y);
             Vector2 deltaPos = mousePos - mouseState.lastPos;
 
-            if ((mouseState.leftButtonDown && keyboardState.F4Down) || (mouseState.middleButtonDown && keyboardState.LShiftDown))
+            if (cam.currentMode == InventorCamera.Mode.ORBIT)
             {
                 float radius = Math.Min(Width, Height) * 0.3f;
+
                 Vector3 diffStart = new Vector3(mouseState.dragStart.X - (Width / 2), mouseState.dragStart.Y - (Height / 2), 0);
                 float diffLen = diffStart.LengthFast;
-                if (diffLen > radius)
+                if (diffLen > radius) //Rotating
                 {
                     Vector3 diffCurrent = new Vector3(args.X - (Width / 2), args.Y - (Height / 2), 0);
                     diffCurrent.NormalizeFast();
                     float dir = Math.Sign((diffCurrent.X - mouseState.diffOld.X) * (diffCurrent.Y * mouseState.diffOld.Y) * (args.Y - (Height / 2)));
                     float angle = (float)Math.Acos(Vector3.Dot(diffCurrent, mouseState.diffOld));
                     mouseState.diffOld = diffCurrent;
-                    // Rotating
+
                     cam.pose *= Matrix4.CreateRotationZ(cameraMult * dir * angle * 0.1f);
                 }
-                else
+                else //Orbiting
                 {
-                    // Orbiting.
                     Vector3 rotationAxis = new Vector3(deltaPos.Y, deltaPos.X, 0);
+
                     if (rotationAxis != Vector3.Zero)
                         cam.pose *= Matrix4.CreateFromAxisAngle(rotationAxis, (cameraMult * rotationAxis.LengthFast) / 100.0f);
                 }
             }
-            else if (mouseState.leftButtonDown && keyboardState.F3Down)
+            else if (cam.currentMode == InventorCamera.Mode.FINE_ZOOM)
             {
                 cam.offset += cameraMult * deltaPos.Y;
             }
-            else if ((mouseState.leftButtonDown && keyboardState.F2Down) || mouseState.middleButtonDown)
+            else if (cam.currentMode == InventorCamera.Mode.MOVE)
             {
                 cam.pose *= Matrix4.CreateTranslation(cameraMult * deltaPos.X / 10f, cameraMult * -deltaPos.Y / 10f, 0);
             }

@@ -320,7 +320,7 @@ public partial class ExporterGUI : Form
     {
         jointEditorPane1.SetSkeleton(skeletonBase);
         bxdaEditorPane1.loadModel(meshes);
-        robotViewer1.loadModel(skeletonBase, meshes);
+        robotViewer1.LoadModel(skeletonBase, meshes);
     }
 
 }
