@@ -76,9 +76,6 @@ public class Init : MonoBehaviour
 		time_stop = false;
 		reloadInFrames = -1;
 		showStatWindow = true;
-		StreamReader orientation = new StreamReader ("orientation.txt");
-		rotation = new Quaternion (float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()), float.Parse (orientation.ReadLine ()));
-		orientation.Close ();
     }
 
 	//displays stats like speed and acceleration
@@ -111,7 +108,7 @@ public class Init : MonoBehaviour
 		titles.Add ("Right");
 		titles.Add ("Forward");
 		titles.Add ("Back");
-		titles.Add ("Save Orientation");
+		//titles.Add ("Save Orientation");
 		titles.Add ("Close");
 		titles.Add ("Default");
 		
@@ -120,7 +117,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect(175, 150, 75, 30));
 		rects.Add (new Rect(112, 115, 75, 30));
 		rects.Add (new Rect(112, 185, 75, 30));
-		rects.Add (new Rect (95, 55, 110, 30));
+		//rects.Add (new Rect (95, 55, 110, 30));
 		rects.Add (new Rect (230, 20, 50, 30));
 		rects.Add (new Rect (20, 20, 70, 30));
 
@@ -143,24 +140,10 @@ public class Init : MonoBehaviour
 				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
 				break;
 			case 4:
-			{
-				rotation = activeRobot.transform.localRotation;
-				StreamWriter orientation = new StreamWriter("orientation.txt");
-				orientation.WriteLine(rotation.x);
-				orientation.WriteLine(rotation.y);
-				orientation.WriteLine(rotation.z);
-				orientation.WriteLine(rotation.w);
-				orientation.Close ();
-
-				Debug.Log (rotation);
-				break;
-			}
-			case 5:
 				oWindow.Active = false;
 				break;
-			case 6:
-				rotation = Quaternion.identity;
-				activeRobot.transform.localRotation = rotation;
+			case 5:
+				activeRobot.transform.localRotation = Quaternion.identity;
 				break;
 
 			}			
@@ -347,7 +330,7 @@ public class Init : MonoBehaviour
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
 				uNode.unityObject.transform.localPosition = Vector3.zero;
-                uNode.unityObject.transform.localRotation = rotation;
+				uNode.unityObject.transform.localRotation = Quaternion.identity;
                 if (uNode.unityObject.rigidbody != null)
                 {
                     uNode.unityObject.rigidbody.velocity = Vector3.zero;
