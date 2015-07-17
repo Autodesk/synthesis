@@ -499,11 +499,37 @@ public class Init : MonoBehaviour
 
     void FixedUpdate()
     {
-		if (skeleton != null) {
+		if (skeleton != null) 
+		{
+			List<RigidNode_Base> nodes = skeleton.ListAllNodes();
 			unityPacket.OutputStatePacket packet = udp.GetLastPacket ();
 			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
+			foreach(RigidNode_Base node in nodes)
+			{
+				UnityRigidNode uNode = (UnityRigidNode) node;
+				if(uNode.GetSkeletalJoint() != null)
+				{
+					if(uNode.GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR)
+					{
+						ElevatorScript es = uNode.unityObject.GetComponent<ElevatorScript>();
+						float[] pwm = packet.dio[0].pwmValues;
+						if(Input.anyKey)
+						{
+							pwm[3] += (Input.GetKey(KeyCode.Alpha1) ? 1f : 0f);
+							pwm[3] += (Input.GetKey(KeyCode.Alpha2) ? -1f : 0f);
+						}
+						if(es != null)
+						{
+							for(int i = 0; i < 8; i++)
+							{
+								if(uNode.GetSkeletalJoint().cDriver.portA == i)
+									es.currentTorque = pwm[i]*2;
+							}
+						}
+					}
+				}
+			} 
 			DriveJoints.UpdateSolenoids (skeleton, packet.solenoid);
-			List<RigidNode_Base> nodes = skeleton.ListAllNodes ();
 			InputStatePacket sensorPacket = new InputStatePacket ();
 			foreach (RigidNode_Base node in nodes) {
 				if (node.GetSkeletalJoint () == null)
