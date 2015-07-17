@@ -237,6 +237,8 @@ public class Init : MonoBehaviour
                 {
                     UserMessageManager.Dispatch("Invalid selection!", 10f);
                 }
+
+				dynamicCamera.EnableMoving();
 			});
 
             gui.AddAction("Reset Robot", () =>
@@ -273,7 +275,7 @@ public class Init : MonoBehaviour
 					}
 				});
 
-			gui.AddWindow ("Switch Field", new DialogWindow("Switch Field",
+			/*gui.AddWindow ("Switch Field", new DialogWindow("Switch Field",
 				"Aerial Asssist (2014)", "Recycle Rush (2015)"), (object o) =>
 			    {
 					gui.guiVisible = false;
@@ -287,7 +289,7 @@ public class Init : MonoBehaviour
 						SetField(FieldType.FRC_2015);
 						break;
 					}
-				});
+				});*/
 
 			HotkeysWindow();
 
@@ -357,8 +359,6 @@ public class Init : MonoBehaviour
                auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
             }
         }
-
-		dynamicCamera.SwitchCameraState (new DynamicCamera.DriverStationState(dynamicCamera));
 
 		foreach (GameObject o in totes)
 		{
