@@ -347,7 +347,16 @@ public class Init : MonoBehaviour
             }
             if (unityWheelData.Count > 0)
             {
-               auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
+                auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
+				foreach (RigidNode_Base node in nodes)
+				{
+					UnityRigidNode uNode = (UnityRigidNode) node;			
+					if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null)
+					{
+						unityWheelData.Add(uNode.wheelCollider);
+					}
+				}
+				auxFunctions.rightRobot(unityWheelData, activeRobot.transform);
             }
         }
 
