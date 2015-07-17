@@ -31,9 +31,9 @@ namespace EditorsLibrary
         private void InitializeComponent()
         {
             this.glControl1 = new OpenTK.GLControl();
-            this.saveButton = new System.Windows.Forms.Button();
-            this.openExisting = new System.Windows.Forms.Button();
-            this.loadInventor = new System.Windows.Forms.Button();
+            this.labelDebugPosition = new System.Windows.Forms.Label();
+            this.labelDebugRotation = new System.Windows.Forms.Label();
+            this.labelDebugMode = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // glControl1
@@ -52,53 +52,61 @@ namespace EditorsLibrary
                 this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             }
             // 
-            // saveButton
+            // labelDebugPosition
             // 
-            this.saveButton.Location = new System.Drawing.Point(680, 456);
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(75, 29);
-            this.saveButton.TabIndex = 1;
-            this.saveButton.Text = "Save";
-            this.saveButton.UseVisualStyleBackColor = true;
+            this.labelDebugPosition.AutoSize = true;
+            this.labelDebugPosition.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelDebugPosition.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelDebugPosition.Location = new System.Drawing.Point(4, 4);
+            this.labelDebugPosition.Name = "labelDebugPosition";
+            this.labelDebugPosition.Size = new System.Drawing.Size(218, 20);
+            this.labelDebugPosition.TabIndex = 1;
+            this.labelDebugPosition.Text = "Camera position: <0, 0, 0>";
             // 
-            // openExisting
+            // labelDebugRotation
             // 
-            this.openExisting.Location = new System.Drawing.Point(158, 456);
-            this.openExisting.Name = "openExisting";
-            this.openExisting.Size = new System.Drawing.Size(112, 29);
-            this.openExisting.TabIndex = 2;
-            this.openExisting.Text = "Open Existing";
-            this.openExisting.UseVisualStyleBackColor = true;
+            this.labelDebugRotation.AutoSize = true;
+            this.labelDebugRotation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelDebugRotation.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelDebugRotation.Location = new System.Drawing.Point(4, 34);
+            this.labelDebugRotation.Name = "labelDebugRotation";
+            this.labelDebugRotation.Size = new System.Drawing.Size(218, 20);
+            this.labelDebugRotation.TabIndex = 2;
+            this.labelDebugRotation.Text = "Camera rotation: <0, 0, 0>";
             // 
-            // loadInventor
+            // labelDebugMode
             // 
-            this.loadInventor.Location = new System.Drawing.Point(14, 456);
-            this.loadInventor.Name = "loadInventor";
-            this.loadInventor.Size = new System.Drawing.Size(138, 29);
-            this.loadInventor.TabIndex = 3;
-            this.loadInventor.Text = "Load from Inventor";
-            this.loadInventor.UseVisualStyleBackColor = true;
+            this.labelDebugMode.AutoSize = true;
+            this.labelDebugMode.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.labelDebugMode.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelDebugMode.Location = new System.Drawing.Point(4, 64);
+            this.labelDebugMode.Name = "labelDebugMode";
+            this.labelDebugMode.Size = new System.Drawing.Size(146, 20);
+            this.labelDebugMode.TabIndex = 3;
+            this.labelDebugMode.Text = "Camera mode: NONE";
+            this.labelDebugMode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // RobotViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Controls.Add(this.loadInventor);
-            this.Controls.Add(this.openExisting);
-            this.Controls.Add(this.saveButton);
+            this.Controls.Add(this.labelDebugMode);
+            this.Controls.Add(this.labelDebugRotation);
+            this.Controls.Add(this.labelDebugPosition);
             this.Controls.Add(this.glControl1);
             this.Name = "RobotViewer";
             this.Size = new System.Drawing.Size(768, 500);
+            this.Resize += new System.EventHandler(this.RobotViewer_Resize);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
-
         #endregion
 
         private OpenTK.GLControl glControl1;
-        public System.Windows.Forms.Button saveButton;
-        public System.Windows.Forms.Button openExisting;
-        public System.Windows.Forms.Button loadInventor;
+        private Label labelDebugPosition;
+        private Label labelDebugRotation;
+        private Label labelDebugMode;
     }
 }

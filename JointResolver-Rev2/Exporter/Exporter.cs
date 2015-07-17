@@ -30,9 +30,7 @@ public class Exporter
 
     public static void CenterAllJoints(ComponentOccurrence component)
     {
-        Console.CursorLeft = 0;
-        string part = "Centering: " + component.Name;
-        Console.Write(part + new string(' ', Math.Max(0, Console.BufferWidth - part.Length - 1)));
+        Console.Write("Centering: " + component.Name);
 
         foreach (AssemblyJoint joint in component.Joints)
         {
@@ -101,12 +99,13 @@ public class Exporter
         foreach (RigidNode_Base node in nodes)
         {
             node.modelFileName = ((RigidNode)node).group.ToString();
+            node.modelFullID = node.GetModelID();
         }
 
         return baseNode;
     }
 
-    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode)
+    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode, bool highRes = false, bool colorFaces = true)
     {
         SurfaceExporter surfs = new SurfaceExporter();
         BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -124,12 +123,17 @@ public class Exporter
 
                 try
                 {
+                    ExporterGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
+                    group.highRes = highRes;
+                    group.colorFaces = colorFaces;
                     surfs.Reset();
+                    Console.WriteLine("Exporting meshes...");
                     surfs.ExportAll(group, (long progress, long total) =>
                     {
-                        Console.Write(Math.Round((progress / (float)total) * 100.0f, 2) + "%\t" + progress + " / " + total);
-                        Console.CursorLeft = 0;
+                        double totalProgress = (((double) progress / (double) total) * 100.0);
+                        ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), progress, total));
+                        ExporterGUI.Instance.ExporterSetProgress(totalProgress);
                     });
                     Console.WriteLine();
                     BXDAMesh output = surfs.GetOutput();

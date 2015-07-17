@@ -49,7 +49,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelectManager.cs" />
     <Compile Include="ShaderLoader.cs" />
-    <Compile Include="Util\Camera3rdPerson.cs" />
     <Compile Include="Util\InventorCamera.cs" />
     <Compile Include="Util\OGLDrawing.cs" />
     <Compile Include="Util\OpenTK_Math_Ext.cs" />

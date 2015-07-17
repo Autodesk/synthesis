@@ -8,7 +8,8 @@ public enum JointDriverType : byte
     WORM_SCREW = 3,
     BUMPER_PNEUMATIC = 4,
     RELAY_PNEUMATIC = 5,
-    DUAL_MOTOR = 6
+    DUAL_MOTOR = 6,
+    ELEVATOR = 7
 }
 
 public static class JointDriverTypeExtensions
@@ -36,6 +37,7 @@ public static class JointDriverTypeExtensions
             case JointDriverType.SERVO:
             case JointDriverType.DUAL_MOTOR:
             case JointDriverType.WORM_SCREW:
+            case JointDriverType.ELEVATOR:
                 return "PWM";
             case JointDriverType.BUMPER_PNEUMATIC:
                 return "Solenoid";
@@ -63,6 +65,10 @@ public static class JointDriverTypeExtensions
         }
     }
 
+    public static bool IsElevator(this JointDriverType type)
+    {
+        return type == JointDriverType.ELEVATOR;
+    }
     /// <summary>
     /// Checks if the given driver type is pneumatic.
     /// </summary>
@@ -93,6 +99,7 @@ public static class JointDriverTypeExtensions
             case JointDriverType.DUAL_MOTOR:
             case JointDriverType.SERVO:
             case JointDriverType.WORM_SCREW:
+            case JointDriverType.ELEVATOR:
                 return 8; // PWM
             case JointDriverType.BUMPER_PNEUMATIC:
                 return 8; // Bumper

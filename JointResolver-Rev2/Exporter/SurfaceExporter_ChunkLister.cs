@@ -45,9 +45,7 @@ public partial class SurfaceExporter
 
         foreach (SurfaceBody surf in occ.SurfaceBodies)
         {
-            string line = "Including: " + surf.Parent.Name;
-            Console.Write(line + new string(' ', Console.BufferWidth - line.Length - 2));
-            Console.CursorLeft = 0;
+            Console.Write("Including: " + surf.Parent.Name);
             plannedExports.Add(new ExportPlan(surf, bestResolution, separateFaces));
         }
 
