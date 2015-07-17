@@ -26,7 +26,7 @@ class GUIController
     /// The space between sidebar entries.
     /// </summary>
     private const float GUI_SIDEBAR_ENTRY_PADDING_Y = 5;
-    
+
     // Objects to allow rendering of GUI boxes with black backgrounds.
     #region make it black
     private Texture2D _black;
@@ -63,6 +63,17 @@ class GUIController
     /// All the entries on this sidebar.
     /// </summary>
     private KeyValuePair<string, Action>[] entries;
+
+	/// <summary>
+	/// The show GUI.
+	/// </summary>
+	public Action showGuiCallback = null;
+
+	/// <summary>
+	/// The hide GUI.
+	/// </summary>
+	public Action hideGuiCallback = null;
+
     /// <summary>
     /// All the overlay windows that are linked to this sidebar.
     /// </summary>
@@ -76,6 +87,11 @@ class GUIController
     /// Is the sidebar visible.
     /// </summary>
     public bool guiVisible = false;
+
+	/// <summary>
+	/// The fake esc pressed.
+	/// </summary>
+	private bool fakeEscPressed = false;
 
     /// <summary>
     /// Escape key state last time OnGUI was called.
@@ -127,16 +143,16 @@ class GUIController
     /// <param name="act">The action to execute when the entry is pressed</param>
     public void AddAction(string caption, Action act)
     {
+		// Resizing for entries
         if (entries == null || entries.Length == 0)
         {
             entries = new KeyValuePair<string, Action>[1] { new KeyValuePair<string, Action>(caption, act) };
             return;
         }
+
         var res = new KeyValuePair<string, Action>[entries.Length + 1];
-        if (entries.Length > 1)
-            Array.Copy(entries, res, entries.Length - 1);
-        res[res.Length - 2] = new KeyValuePair<string, Action>(caption, act);
-        res[res.Length - 1] = entries[entries.Length - 1];
+        Array.Copy(entries, res, entries.Length);
+        res[res.Length - 1] = new KeyValuePair<string, Action>(caption, act);
         entries = res;
         recalcWidth = true;
     }
@@ -191,19 +207,30 @@ class GUIController
 
         #region hotkeys
         {
-            bool escPressed = Input.GetKeyDown(KeyCode.Escape);
+            bool escPressed = Input.GetKeyDown(KeyCode.Escape) || fakeEscPressed;
+			fakeEscPressed = false;
+
             if (escPressed && !keyDebounce)
             {
-                if (guiVisible && windowVisible)
+				// Hide all windows if gui is visible and windows are active
+				if (guiVisible && windowVisible)
                 {
                     foreach (OverlayWindow window in windows)
                     {
                         window.Active = false;
                     }
                 }
+
+				// Show/Hide the gui if no windows are active
                 else
                 {
                     guiVisible = !guiVisible;
+
+					if(guiVisible && showGuiCallback != null)
+						showGuiCallback.Invoke();
+
+					else if(!guiVisible && hideGuiCallback != null)
+						hideGuiCallback.Invoke();
                 }
             }
             keyDebounce = escPressed;
@@ -234,12 +261,18 @@ class GUIController
 
             #region Render entries
             float y = GUI_SIDEBAR_PADDING.y;
+			int btnIndex = 0;
             foreach (var btn in entries)
             {
-                if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, sidebarWidth - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle) && !windowVisible)
-                {
+                if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, sidebarWidth - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle))
+				{
+					foreach(OverlayWindow window in windows)
+						window.Active = false;
+
                     btn.Value();
                 }
+
+				btnIndex++;
                 y += GUI_SIDEBAR_ENTRY_HEIGHT + GUI_SIDEBAR_ENTRY_PADDING_Y;
             }
             GUI.EndGroup();
@@ -251,4 +284,12 @@ class GUIController
             }
         }
     }
+
+	/// <summary>
+	/// Fake esc key press to trigger a real esc key press
+	/// </summary>
+	public void EscPressed()
+	{
+		fakeEscPressed = true;
+	}
 }
