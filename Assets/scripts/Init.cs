@@ -144,7 +144,7 @@ public class Init : MonoBehaviour
 				break;
 			case 4:
 			{
-				rotation = activeRobot.transform.rotation;
+				rotation = activeRobot.transform.localRotation;
 				StreamWriter orientation = new StreamWriter("orientation.txt");
 				orientation.WriteLine(rotation.x);
 				orientation.WriteLine(rotation.y);
@@ -160,7 +160,7 @@ public class Init : MonoBehaviour
 				break;
 			case 6:
 				rotation = Quaternion.identity;
-				activeRobot.transform.rotation = rotation;
+				activeRobot.transform.localRotation = rotation;
 				break;
 
 			}			
