@@ -230,7 +230,10 @@ public partial class ExporterGUI : Form
 
         if (dirPath == null || isSaveAs) dirPath = OpenFolderPath();
 
-        if (!isSaveAs ^ File.Exists(dirPath + "\\skeleton.bxdj") && !WarnOverwrite()) return false;
+        if (File.Exists(dirPath + "\\skeleton.bxdj"))
+        {
+            if (isSaveAs && !WarnOverwrite()) return false;
+        }
 
         try
         {

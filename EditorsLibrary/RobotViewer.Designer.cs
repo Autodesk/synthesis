@@ -78,7 +78,7 @@ namespace EditorsLibrary
             this.labelDebugMode.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelDebugMode.Location = new System.Drawing.Point(4, 64);
             this.labelDebugMode.Name = "labelDebugMode";
-            this.labelDebugMode.Size = new System.Drawing.Size(186, 20);
+            this.labelDebugMode.Size = new System.Drawing.Size(146, 20);
             this.labelDebugMode.TabIndex = 3;
             this.labelDebugMode.Text = "Camera mode: NONE";
             this.labelDebugMode.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -94,6 +94,7 @@ namespace EditorsLibrary
             this.Controls.Add(this.glControl1);
             this.Name = "RobotViewer";
             this.Size = new System.Drawing.Size(768, 500);
+            this.Resize += new System.EventHandler(this.RobotViewer_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
 

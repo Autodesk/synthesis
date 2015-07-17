@@ -80,6 +80,8 @@ partial class ExporterGUI
             // 
             // bxdaEditorPane1
             // 
+            this.bxdaEditorPane1.AutoSize = true;
+            this.bxdaEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.bxdaEditorPane1.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
             this.bxdaEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bxdaEditorPane1.Location = new System.Drawing.Point(0, 0);
@@ -110,6 +112,7 @@ partial class ExporterGUI
             // 
             // robotViewer1
             // 
+            this.robotViewer1.AutoSize = true;
             this.robotViewer1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.robotViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.robotViewer1.Location = new System.Drawing.Point(0, 0);
@@ -119,6 +122,8 @@ partial class ExporterGUI
             // 
             // jointEditorPane1
             // 
+            this.jointEditorPane1.AutoSize = true;
+            this.jointEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.jointEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jointEditorPane1.Location = new System.Drawing.Point(0, 0);
             this.jointEditorPane1.Name = "jointEditorPane1";
@@ -127,14 +132,20 @@ partial class ExporterGUI
             // 
             // toolStrip1
             // 
+            this.toolStrip1.AutoSize = false;
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolstripFile,
             this.toolstripSettings,
             this.toolstripHelp});
+            this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.MaximumSize = new System.Drawing.Size(1182, 27);
+            this.toolStrip1.MinimumSize = new System.Drawing.Size(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1182, 27);
+            this.toolStrip1.Stretch = true;
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -261,22 +272,26 @@ partial class ExporterGUI
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.MaximumSize = new System.Drawing.Size(1200, 795);
             this.MinimumSize = new System.Drawing.Size(1200, 795);
             this.Name = "ExporterGUI";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "BXD Synthesis";
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel1.PerformLayout();
             this.splitContainer2.Panel2.ResumeLayout(false);
+            this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
     }
 

@@ -115,6 +115,9 @@
     <Compile Include="JointEditorPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="JointEditorPane.Designer.cs">
+      <DependentUpon>JointEditorPane.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

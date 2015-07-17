@@ -34,7 +34,7 @@ namespace EditorsLibrary
         /// <summary>
         /// The width and height of the node selection FBO
         /// </summary>
-        private const int SELECT_BUFFER_WIDTH = 768, SELECT_BUFFER_HEIGHT = 500;
+        private int SELECT_BUFFER_WIDTH = 768, SELECT_BUFFER_HEIGHT = 500;
 
         /// <summary>
         /// The list of nodes on the robot model
@@ -138,7 +138,7 @@ namespace EditorsLibrary
         public void LoadModel(RigidNode_Base node, List<BXDAMesh> meshes)
         {
             modelLoaded = false;
-
+            
             if (node == null || meshes == null) return;
 
             baseNode = (OGL_RigidNode) node;
@@ -379,6 +379,24 @@ namespace EditorsLibrary
             #endregion
             
             glControl1.SwapBuffers();
+        }
+
+        /// <summary>
+        /// Called when the viewer is resized.
+        /// </summary>
+        /// <remarks>
+        /// Used to setup the select buffer again to make sure that node selection isn't broken
+        /// </remarks>
+        /// <param name="sender">The object sending the event</param>
+        /// <param name="e">The event arguments</param>
+        private void RobotViewer_Resize(object sender, EventArgs e)
+        {
+            if (!isLoaded) return;
+
+            SELECT_BUFFER_WIDTH = Width;
+            SELECT_BUFFER_HEIGHT = Height;
+
+            setupSelectBuffer();
         }
 
         /// <summary>
