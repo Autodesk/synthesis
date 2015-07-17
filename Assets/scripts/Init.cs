@@ -236,7 +236,7 @@ public class Init : MonoBehaviour
             gui.AddAction("Reset Robot", () =>
             {
 				Debug.Log (rotation + " reset");
-                OrientRobot();
+                resetRobot();
             });
 			//button to manually orient the robot
 			ShowOrient();
@@ -317,7 +317,7 @@ public class Init : MonoBehaviour
     /// Repositions the robot so it is aligned at the center of the field, and resets all the
     /// joints, velocities, etc..
     /// </summary>
-    private void OrientRobot()
+    private void resetRobot()
     {	
         if (activeRobot != null && skeleton != null)
         {
@@ -399,7 +399,7 @@ public class Init : MonoBehaviour
             }
 
             auxFunctions.IgnoreCollisionDetection(meshColliders);
-            OrientRobot();
+            resetRobot();
         }
         else
         {
