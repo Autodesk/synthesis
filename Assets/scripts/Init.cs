@@ -248,6 +248,11 @@ public class Init : MonoBehaviour
 			//shows button to manually orient the robot
 			ShowOrient();
 
+			gui.AddAction("Change Side", () =>
+			              {
+				activeRobot.transform.position = new Vector3(activeRobot.transform.position.x, activeRobot.transform.position.y, -activeRobot.transform.position.z);
+			});
+
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
                 gui.DoAction("Load Model");
