@@ -13,7 +13,7 @@ class GUIController
     /// <summary>
     /// The sidebar fade time, seconds.
     /// </summary>
-    private const float GUI_SHOW_TIME = 1f;
+    private const float GUI_SHOW_TIME = .75f;
     /// <summary>
     /// The padding for the sidebar content, pixels.
     /// </summary>
@@ -321,5 +321,14 @@ class GUIController
 	{
 		foreach (OverlayWindow window in windows)
 			window.Active = false;
+	}
+
+	/// <summary>
+	/// Gets the width of the sidebar.
+	/// </summary>
+	/// <returns>The sidebar width.</returns>
+	public float GetSidebarWidth()
+	{
+		return sidebarWidth;
 	}
 }

@@ -38,8 +38,9 @@ public class Init : MonoBehaviour
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
 	private Rect statsWindowRect;
-	private Rect exitWindowRect;
-	private Rect quitButtonRect;
+	private Rect helpWindowRect;
+	private GUIContent helpButtonContent;
+	private Rect helpButtonRect;
 	private float acceleration;
 	private float angvelo;
 	private float speed;
@@ -48,7 +49,7 @@ public class Init : MonoBehaviour
 	private bool time_stop;
 	private float oldSpeed;
 	private bool showStatWindow;
-	private bool showExitWindow;
+	private bool showHelpWindow;
 	private Quaternion rotation;
 
 
@@ -65,13 +66,12 @@ public class Init : MonoBehaviour
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
-		exitWindowRect = new Rect (300, 100, 400, 150);
-		quitButtonRect = new Rect (Screen.width - 103, 0, 100, 25);
-
+		helpWindowRect = new Rect (300, 100, 400, 150);
+		helpButtonRect = new Rect (Screen.width - 103, 0, 100, 25);
 		time_stop = false;
 		reloadInFrames = -1;
 		showStatWindow = false;
-		showExitWindow = false;
+		showHelpWindow = false;
 		rotation = Quaternion.identity;
     }
 
@@ -102,12 +102,12 @@ public class Init : MonoBehaviour
 	/// Exits the window.
 	/// </summary>
 	/// <param name="windowID">Window I.</param>
-	public void ExitWindow(int windowID)
+	public void HelpWindow(int windowID)
 	{
 		float topGap = 10;
 		float buttonGap = 20;
-		float buttonWidth = (exitWindowRect.width - (buttonGap * 3)) / 2.0f;
-		float buttonHeight = exitWindowRect.height - (buttonGap * 2) - topGap;
+		float buttonWidth = (helpWindowRect.width - (buttonGap * 3)) / 2.0f;
+		float buttonHeight = helpWindowRect.height - (buttonGap * 2) - topGap;
 
 		if(GUI.Button(new Rect(buttonGap, buttonGap + topGap, buttonWidth, buttonHeight), "Yes"))
 		   Application.Quit();
@@ -227,7 +227,7 @@ public class Init : MonoBehaviour
 	void ShowGuiSidebar()
 	{
 		dynamicCamera.DisableMoving();
-		showExitWindow = false;
+		showHelpWindow = false;
 	}
 
 	[STAThread]
@@ -238,14 +238,14 @@ public class Init : MonoBehaviour
 			GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
 
 		// Draws stats window on to GUI
-		if (showExitWindow)
+		if (showHelpWindow)
 		{
 			int windowWidth = 400;
 			int windowHeight = 150;
 			float paddingX = (Screen.width - windowWidth) / 2.0f;
 			float paddingY = (Screen.height - windowHeight) / 2.0f;
-			exitWindowRect = new Rect (paddingX, paddingY, windowWidth, windowHeight);
-			GUI.Window (0, exitWindowRect, ExitWindow, "Exit?");
+			helpWindowRect = new Rect (paddingX, paddingY, windowWidth, windowHeight);
+			GUI.Window (0, helpWindowRect, HelpWindow, "Help");
 		}
 
         if (gui == null)
@@ -333,33 +333,35 @@ public class Init : MonoBehaviour
 
 			HotkeysWindow();
 
-			/*gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+			gui.AddWindow ("Quit Simulation", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 			               {
 				if ((int) o == 0) {
 					Application.Quit();
 				}
-			});*/
+			});
+
+			//gui.AddWindow("?", new DialogWindow("Halp", "Ha", "lp"), (object o) => {});
         }
 
 		// The Menu bottom on the top left corner
-		GUI.Window (1, new Rect (3, 0, 100, 25), 
+		GUI.Window (1, new Rect (0, 0, gui.GetSidebarWidth(), 25), 
         	(int windowID) =>
         	{
-				if (GUI.Button (new Rect (0, 0, 100, 25), "Menu"))
+				if (GUI.Button (new Rect (0, 0, gui.GetSidebarWidth(), 25), "Menu"))
 					gui.EscPressed();
 			},
 			""
 		);
 
-		quitButtonRect = new Rect (Screen.width - 103, 0, 100, 25);
+		helpButtonRect = new Rect (Screen.width - 25, 0, 25, 25);
 
-		// The Quit button on top right corner
-		GUI.Window (2, quitButtonRect, 
+		// The Help button on top right corner
+		GUI.Window (2, helpButtonRect, 
         	(int windowID) =>
             {
-				if (GUI.Button (new Rect (0, 0, 100, 25), "Quit"))
+				if (GUI.Button (new Rect (0, 0, 25, 25), helpButtonContent))
 				{	
-					showExitWindow = !showExitWindow;
+					showHelpWindow = !showHelpWindow;
 				}
 			},
 		""
@@ -371,8 +373,8 @@ public class Init : MonoBehaviour
 			gui.HideAllWindows ();
 		}
 
-		if (showExitWindow && Input.GetMouseButtonUp (0) && !auxFunctions.MouseInWindow (exitWindowRect) && !auxFunctions.MouseInWindow (quitButtonRect))
-			showExitWindow = false;
+		if (showHelpWindow && Input.GetMouseButtonUp (0) && !auxFunctions.MouseInWindow (helpWindowRect) && !auxFunctions.MouseInWindow (helpButtonRect))
+			showHelpWindow = false;
 
         gui.Render();
 
@@ -478,6 +480,9 @@ public class Init : MonoBehaviour
 
     void Start()
     {
+		helpButtonContent = new GUIContent ("");
+		helpButtonContent.image = Resources.Load ("Images/halp") as Texture2D;
+
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 30;
 		Physics.minPenetrationForPenalty = 0.001f;
