@@ -105,7 +105,7 @@ public class TextWindow : OverlayWindow
 		// Scale factor for when the user changes the window dimensions
 		xPosFactor = (Screen.width - initScreenWidth) / 2.0f;
 		yPosFactor = (Screen.height - initScreenHeight) / 2.0f;
-		windowRect.x = (initWindowX + xPosFactor) + GUIController.sidebarWidth / 2;
+		windowRect.x = (initWindowX + xPosFactor);
 		windowRect.y = initWindowY + yPosFactor;
 
 		if (_active)
