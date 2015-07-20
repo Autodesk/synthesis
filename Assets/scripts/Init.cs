@@ -66,7 +66,7 @@ public class Init : MonoBehaviour
 	
 		time_stop = false;
 		reloadInFrames = -1;
-		showStatWindow = true;
+		showStatWindow = false;
 		rotation = Quaternion.identity;
     }
 
@@ -298,12 +298,12 @@ public class Init : MonoBehaviour
 
 			HotkeysWindow();
 
-			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+			/*gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 			               {
 				if ((int) o == 0) {
 					Application.Quit();
 				}
-			});
+			});*/
         }
 
 		// The Menu bottom on the top left corner

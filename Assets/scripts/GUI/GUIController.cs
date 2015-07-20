@@ -13,7 +13,7 @@ class GUIController
     /// <summary>
     /// The sidebar fade time, seconds.
     /// </summary>
-    private const float GUI_SHOW_TIME = 0.5f;
+    private const float GUI_SHOW_TIME = 1f;
     /// <summary>
     /// The padding for the sidebar content, pixels.
     /// </summary>
@@ -25,7 +25,8 @@ class GUIController
     /// <summary>
     /// The space between sidebar entries.
     /// </summary>
-    private const float GUI_SIDEBAR_ENTRY_PADDING_Y = 5;
+    private const float GUI_SIDEBAR_ENTRY_PADDING_Y = 10;
+	private const float GUI_SIDEBAR_PADDING_Y = 30;
 
     // Objects to allow rendering of GUI boxes with black backgrounds.
     #region make it black
@@ -104,7 +105,9 @@ class GUIController
     /// <summary>
     /// The current sidebar width, pixels.  This is dynamically calculated.
     /// </summary>
-    public static float sidebarWidth = 100f;
+    private float sidebarWidth = 100f;
+
+	private float sidebarHeight = 0;
 
     /// <summary>
     /// Creates a GUI sidebar with an exit button.
@@ -132,6 +135,7 @@ class GUIController
             }
             window.Active = !state;
         });
+
         if (onReturn != null)
             window.OnComplete += onReturn;
     }
@@ -202,6 +206,7 @@ class GUIController
                 width = Math.Max(btnStyle.CalcSize(new GUIContent(btn.Key)).x, width);
             }
             sidebarWidth = width + 2 * GUI_SIDEBAR_PADDING.x;
+			sidebarHeight = entries.Length * (GUI_SIDEBAR_ENTRY_HEIGHT + GUI_SIDEBAR_ENTRY_PADDING_Y) + GUI_SIDEBAR_ENTRY_PADDING_Y;
         }
         #endregion
 
@@ -236,14 +241,13 @@ class GUIController
             keyDebounce = escPressed;
         }
         #endregion
-
         guiFadeIntensity += (guiVisible ? 1f : -1f) * Time.deltaTime / GUI_SHOW_TIME;
         guiFadeIntensity = Mathf.Clamp01(guiFadeIntensity);
 
         // Dims the background
         if (guiFadeIntensity > 0)
         {
-            GUI.backgroundColor = new Color(1, 1, 1, 0.45f * guiFadeIntensity);
+            GUI.backgroundColor = new Color(1, 1, 1, 0.75f * guiFadeIntensity);
             GUI.Box(new Rect(-10, -10, Screen.width + 20, Screen.height + 20), "", BlackBoxStyle);
         }
 
@@ -251,17 +255,19 @@ class GUIController
 
         if (guiFadeIntensity > 0)
         {
-            GUI.BeginGroup(new Rect((1f - guiFadeIntensity) * -sidebarWidth, 0, sidebarWidth, Screen.height));
+			float topOffset = (Screen.height - sidebarHeight) / 2.0f;
+			GUI.BeginGroup(new Rect((1f - guiFadeIntensity) * -sidebarWidth, GUI_SIDEBAR_PADDING_Y, sidebarWidth, sidebarHeight));
+			//GUI.BeginGroup(new Rect(0, 0, sidebarWidth, Screen.height * guiFadeIntensity));
 
             // Render sidebar
             {
                 GUI.backgroundColor = new Color(1, 1, 1, 0.9f);
-                GUI.Box(new Rect(-1, -10, sidebarWidth + 2, Screen.height + 20), "", BlackBoxStyle);
+				GUI.Box(new Rect(-5, 0, sidebarWidth + 5, sidebarHeight), "");//, BlackBoxStyle);
             }
 
             #region Render entries
-            float y = GUI_SIDEBAR_PADDING.y;
-			int btnIndex = 0;
+			float y = GUI_SIDEBAR_ENTRY_PADDING_Y;
+
             foreach (var btn in entries)
             {
                 if (GUI.Button(new Rect(GUI_SIDEBAR_PADDING.x, y, sidebarWidth - GUI_SIDEBAR_PADDING.x * 2, GUI_SIDEBAR_ENTRY_HEIGHT), btn.Key, btnStyle))
@@ -272,7 +278,6 @@ class GUIController
                     btn.Value();
                 }
 
-				btnIndex++;
                 y += GUI_SIDEBAR_ENTRY_HEIGHT + GUI_SIDEBAR_ENTRY_PADDING_Y;
             }
             GUI.EndGroup();
@@ -294,15 +299,6 @@ class GUIController
 	}
 
 	/// <summary>
-	/// Gets the width of the sidebar.
-	/// </summary>
-	/// <returns>The sidebar width.</returns>
-	public float GetSidebarWidth()
-	{
-		return sidebarWidth;
-	}
-
-	/// <summary>
 	/// Clickeds the inside window.
 	/// </summary>
 	/// <returns><c>true</c>, if inside window was clickeded, <c>false</c> otherwise.</returns>
@@ -316,13 +312,16 @@ class GUIController
 			Rect winRect = win.GetWindowRect();
 			bool insideWindow = mouseX > winRect.x && mouseX < winRect.x + winRect.width && mouseY > winRect.y && mouseY < winRect.y + winRect.height;
 
-			if((win.Active && insideWindow) || mouseX < sidebarWidth)
+			if((win.Active && insideWindow) || (mouseX < sidebarWidth && mouseY < GUI_SIDEBAR_PADDING_Y + sidebarHeight))
 				return true;
 		}
 
 		return false;
 	}
 
+	/// <summary>
+	/// Hides all windows.
+	/// </summary>
 	public void HideAllWindows()
 	{
 		foreach (OverlayWindow window in windows)
