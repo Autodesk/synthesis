@@ -248,7 +248,7 @@ class GUIController
         if (guiFadeIntensity > 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.75f * guiFadeIntensity);
-            GUI.Box(new Rect(-10, -10, Screen.width + 20, Screen.height + 20), "", BlackBoxStyle);
+			GUI.Box(new Rect(-10, -10, Screen.width + 20, Screen.height + 20), "", BlackBoxStyle);
         }
 
         UserMessageManager.Render();
@@ -308,13 +308,8 @@ class GUIController
 		float mouseY = Screen.height - Input.mousePosition.y; // Convert mouse coordinates to unity window positions coordinates
 
 		foreach(OverlayWindow win in windows)
-		{
-			Rect winRect = win.GetWindowRect();
-			bool insideWindow = mouseX > winRect.x && mouseX < winRect.x + winRect.width && mouseY > winRect.y && mouseY < winRect.y + winRect.height;
-
-			if((win.Active && insideWindow) || (mouseX < sidebarWidth && mouseY < GUI_SIDEBAR_PADDING_Y + sidebarHeight))
-				return true;
-		}
+			if((win.Active && auxFunctions.MouseInWindow(win.GetWindowRect())) || (mouseX < sidebarWidth && mouseY < GUI_SIDEBAR_PADDING_Y + sidebarHeight))
+			   return true;
 
 		return false;
 	}
