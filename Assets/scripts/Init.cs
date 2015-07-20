@@ -38,7 +38,8 @@ public class Init : MonoBehaviour
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
 	private Rect statsWindowRect;
-
+	private Rect exitWindowRect;
+	private Rect quitButtonRect;
 	private float acceleration;
 	private float angvelo;
 	private float speed;
@@ -47,6 +48,7 @@ public class Init : MonoBehaviour
 	private bool time_stop;
 	private float oldSpeed;
 	private bool showStatWindow;
+	private bool showExitWindow;
 	private Quaternion rotation;
 
 
@@ -63,10 +65,13 @@ public class Init : MonoBehaviour
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
-	
+		exitWindowRect = new Rect (300, 100, 400, 150);
+		quitButtonRect = new Rect (Screen.width - 103, 0, 100, 25);
+
 		time_stop = false;
 		reloadInFrames = -1;
 		showStatWindow = false;
+		showExitWindow = false;
 		rotation = Quaternion.identity;
     }
 
@@ -91,6 +96,24 @@ public class Init : MonoBehaviour
 		}
 
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
+	}
+
+	/// <summary>
+	/// Exits the window.
+	/// </summary>
+	/// <param name="windowID">Window I.</param>
+	public void ExitWindow(int windowID)
+	{
+		float topGap = 10;
+		float buttonGap = 20;
+		float buttonWidth = (exitWindowRect.width - (buttonGap * 3)) / 2.0f;
+		float buttonHeight = exitWindowRect.height - (buttonGap * 2) - topGap;
+
+		if(GUI.Button(new Rect(buttonGap, buttonGap + topGap, buttonWidth, buttonHeight), "Yes"))
+		   Application.Quit();
+
+		if (GUI.Button (new Rect ((buttonGap * 2) + buttonWidth, buttonGap + topGap, buttonWidth, buttonHeight), "No"))
+			return;
 	}
 
 	public void ShowOrient()
@@ -204,6 +227,7 @@ public class Init : MonoBehaviour
 	void ShowGuiSidebar()
 	{
 		dynamicCamera.DisableMoving();
+		showExitWindow = false;
 	}
 
 	[STAThread]
@@ -211,7 +235,18 @@ public class Init : MonoBehaviour
     {
 		// Draws stats window on to GUI
 		if(showStatWindow)
-			statsWindowRect = GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+			GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+
+		// Draws stats window on to GUI
+		if (showExitWindow)
+		{
+			int windowWidth = 400;
+			int windowHeight = 150;
+			float paddingX = (Screen.width - windowWidth) / 2.0f;
+			float paddingY = (Screen.height - windowHeight) / 2.0f;
+			exitWindowRect = new Rect (paddingX, paddingY, windowWidth, windowHeight);
+			GUI.Window (0, exitWindowRect, ExitWindow, "Exit?");
+		}
 
         if (gui == null)
         {
@@ -316,11 +351,28 @@ public class Init : MonoBehaviour
 			""
 		);
 
+		quitButtonRect = new Rect (Screen.width - 103, 0, 100, 25);
+
+		// The Quit button on top right corner
+		GUI.Window (2, quitButtonRect, 
+        	(int windowID) =>
+            {
+				if (GUI.Button (new Rect (0, 0, 100, 25), "Quit"))
+				{	
+					showExitWindow = !showExitWindow;
+				}
+			},
+		""
+		);
+
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
 		{
 			gui.guiVisible = false;
 			gui.HideAllWindows ();
 		}
+
+		if (showExitWindow && Input.GetMouseButtonUp (0) && !auxFunctions.MouseInWindow (exitWindowRect) && !auxFunctions.MouseInWindow (quitButtonRect))
+			showExitWindow = false;
 
         gui.Render();
 
