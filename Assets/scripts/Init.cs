@@ -163,6 +163,7 @@ public class Init : MonoBehaviour
 			case 6:
 				activeRobot.transform.localRotation = Quaternion.identity;
 				break;
+
 			}			
 		});
 	}
@@ -590,10 +591,10 @@ public class Init : MonoBehaviour
 					time += Time.deltaTime;
 
 				if(gui.guiVisible)
-					Time.timeScale = 0;
+					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 
 				else
-					Time.timeScale = 1;
+					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
 			}
 		}
 	}
