@@ -1,0 +1,7 @@
+C:/Users/T_hics/Documents/GitHub/allwpilib/build/networktables/cpp/CMakeFiles/NetworkTables.dir
+C:/Users/T_hics/Documents/GitHub/allwpilib/build/hal/CMakeFiles/HALAthena_shared.dir
+C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/wpilibC++IntegrationTests/CMakeFiles/ALL_BUILD.dir
+C:/Users/T_hics/Documents/GitHub/allwpilib/build/hal/CMakeFiles/HALAthena.dir
+C:/Users/T_hics/Documents/GitHub/allwpilib/build/CMakeFiles/ZERO_CHECK.dir
+C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/wpilibC++IntegrationTests/CMakeFiles/FRCUserProgram.dir
+C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/wpilibC++Devices/CMakeFiles/wpilib_nonshared.dir

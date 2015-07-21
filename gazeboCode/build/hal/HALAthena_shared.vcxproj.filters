@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Accelerometer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Analog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Compressor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\cpp\Synchronized.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CanTalonSRX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\CtreCanNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PCM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\ctre\PDP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Digital.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\HAL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Interrupts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Notifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\PDP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Power.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Semaphore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\SerialPort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Solenoid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\lib\Athena\Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\T_hics\Documents\GitHub\allwpilib\hal\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{D021F4C1-05C6-4A2D-A98A-73681A6B2C93}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
