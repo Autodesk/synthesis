@@ -131,10 +131,13 @@ public partial class ExporterGUI : Form
         {
             AutoResetEvent startEvent = new AutoResetEvent(false);
 
+            Exporter.LoadInventorInstance();
+
             var exporterProgressThread = new Thread(() =>
             {
-                exporterProgress = new ExporterProgressForm(startEvent, 
-                                Color.FromArgb((int) exporterSettings.generalTextColor), Color.FromArgb((int) exporterSettings.generalBackgroundColor));
+                exporterProgress = new ExporterProgressForm(Exporter.INVENTOR_APPLICATION, startEvent, 
+  System.Drawing.Color.FromArgb((int) exporterSettings.generalTextColor), System.Drawing.Color.FromArgb((int) exporterSettings.generalBackgroundColor));
+
                 exporterProgress.ShowDialog();
             });
 
@@ -143,17 +146,22 @@ public partial class ExporterGUI : Form
 
             startEvent.WaitOne();
 
+            if (exporterProgress.finished)
+            {
+                Exporter.INVENTOR_APPLICATION = null;
+                return;
+            }
+
             var exporterThread = new Thread(() =>
             {
                 try
                 {
-                    Exporter.LoadInventorInstance();
-                    tmpBase = Exporter.ExportSkeleton();
+                    tmpBase = Exporter.ExportSkeleton(ExporterProgressForm.Instance.Components);
                     tmpMeshes = Exporter.ExportMeshes(tmpBase, exporterSettings.meshResolutionValue > 0, exporterSettings.meshFancyColors);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    MessageBox.Show(e.Message);
                 }
             });
 
@@ -171,7 +179,10 @@ public partial class ExporterGUI : Form
                 }
             }
 
-            if (exporterThread.IsAlive) exporterThread.Abort();
+            if (exporterThread.IsAlive)
+            {
+                exporterThread.Abort();
+            }
             else
             {
                 exporterThread.Join();
@@ -181,6 +192,8 @@ public partial class ExporterGUI : Form
                     meshes = tmpMeshes;
                 }
             }
+
+            Exporter.INVENTOR_APPLICATION = null;
         }
         catch (Exception e)
         {

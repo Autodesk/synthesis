@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EditorsLibrary", "EditorsLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OGLViewer", "OGLViewer\OGLViewer.csproj", "{A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldExporter", "FieldExporter\FieldExporter\FieldExporter.csproj", "{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,16 @@ Global
 		{A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A2C2D3BD-9D46-4CA3-8C03-20DAC08D38A8}.Release|Win32.ActiveCfg = Release|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

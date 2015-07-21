@@ -100,12 +100,6 @@
     <Compile Include="DriveChooser.Designer.cs">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </Compile>
-    <Compile Include="ExporterProgressForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ExporterProgressForm.Designer.cs">
-      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="ExporterSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -161,9 +155,6 @@
     <EmbeddedResource Include="DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ExporterProgressForm.resx">
-      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ExporterSettings.resx">
       <DependentUpon>ExporterSettings.cs</DependentUpon>
     </EmbeddedResource>
@@ -189,6 +180,26 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\SmallIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Inventor">
+      <Guid>{D98A091D-3A0F-4C3E-B36E-61F62068D488}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

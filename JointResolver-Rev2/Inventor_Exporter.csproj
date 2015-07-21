@@ -67,12 +67,39 @@
     <Compile Include="2014FieldBounding.cs" />
     <Compile Include="BXDSettings.cs" />
     <Compile Include="CollisionAnalyzer\FindRadiusThread.cs" />
+    <Compile Include="ControlGUI\AddJointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\AddJointForm.Designer.cs">
+      <DependentUpon>AddJointForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlGUI\ComponentHighlighter.cs" />
     <Compile Include="ControlGUI\ExporterGUI.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ControlGUI\ExporterGUI.Designer.cs">
       <DependentUpon>ExporterGUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\ExporterProgressForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\ExporterProgressForm.Designer.cs">
+      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\InventorChooserPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\InventorChooserPane.Designer.cs">
+      <DependentUpon>InventorChooserPane.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlGUI\InventorTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\JointGroupPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\JointGroupPane.Designer.cs">
+      <DependentUpon>JointGroupPane.cs</DependentUpon>
     </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
@@ -121,8 +148,20 @@
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ControlGUI\AddJointForm.resx">
+      <DependentUpon>AddJointForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\ExporterGUI.resx">
       <DependentUpon>ExporterGUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\ExporterProgressForm.resx">
+      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\InventorChooserPane.resx">
+      <DependentUpon>InventorChooserPane.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ControlGUI\JointGroupPane.resx">
+      <DependentUpon>JointGroupPane.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>

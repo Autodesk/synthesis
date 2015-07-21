@@ -64,12 +64,14 @@ public class Exporter
         }
     }
 
-    public static RigidNode_Base ExportSkeleton()
+    public static RigidNode_Base ExportSkeleton(List<ComponentOccurrence> occurrences)
     {
+        if (occurrences == null) throw new Exception("No components selected!");
+
         AssemblyDocument asmDoc = (AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
 
         //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
-        foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
+        foreach (ComponentOccurrence component in occurrences)
         {
             CenterAllJoints(component);
         }
@@ -131,7 +133,7 @@ public class Exporter
                     Console.WriteLine("Exporting meshes...");
                     surfs.ExportAll(group, (long progress, long total) =>
                     {
-                        double totalProgress = (((double) progress / (double) total) * 100.0);
+                        double totalProgress = (((double)progress / (double)total) * 100.0);
                         ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), progress, total));
                         ExporterGUI.Instance.ExporterSetProgress(totalProgress);
                     });
