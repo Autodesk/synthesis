@@ -383,6 +383,8 @@ int FRCNetImpl::runThread() {
 			c2015.mode += (ctl.control.autonomous ? 2 : 0); // sets 2nd bit
 			c2015.state = 0x30; // TODO change
 			memcpy(&sendBuffer, &c2015, sizeof(c2015));
+
+			//printf("%s\n", ctl.control.enabled ? "true" : "false");
 		}
 
 		uint32_t pos = 0x21;

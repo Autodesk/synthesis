@@ -48,14 +48,14 @@ int StartEmulator() {
 		{   // Package the output packet
 			for (int j = 0; j<2; j++){
 				for (int i = 0; i<8; i++){
-					pack.dio[j].pwmValues[i] = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(j), i);
-					// TODO implement this
-					//pack.dio[j].canValues[i] = 0;//= CANDecoder::decodeCAN(GetFakeFPGA()->getDIOCAN(j), i);
-					
+					pack.dio[j].pwmValues[i] = PWMDecoder::decodePWM(GetFakeFPGA()->getDIO(j), i);					
 				}
 				pack.dio[j].digitalOutput = GetFakeFPGA()->getDIO(j)->readDO(&status);
 				pack.dio[j].relayForward = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
 				pack.dio[j].relayReverse = GetFakeFPGA()->getDIO(j)->readSlowValue_RelayFwd(&status);
+				for (int i=0; i<32; i++) {
+					pack.dio[j].canValues[i] = JAG_SPEEDS[i];
+				}
 			}
 			for (int j = 0; j < 1; j++){
 				pack.solenoid[j].state = GetFakeFPGA()->getSolenoid()->readDO7_0(j, &status);

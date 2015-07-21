@@ -164,4 +164,6 @@ struct FRCRobotControl2015 {
 	//uint8_t padding; // don't think this is needed
 };
 
+extern float JAG_SPEEDS[32];
+
 #endif
