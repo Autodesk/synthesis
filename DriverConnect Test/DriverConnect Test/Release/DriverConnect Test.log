@@ -1,0 +1,15 @@
+﻿Build started 7/1/2015 2:38:34 PM.
+     1>Project "C:\Users\t_sprij\Documents\Visual Studio 2012\Projects\DriverConnect Test\DriverConnect Test\DriverConnect Test.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
+         Source.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\t_sprij\Documents\Visual Studio 2012\Projects\DriverConnect Test\Release\DriverConnect Test.exe" /NOLOGO ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\t_sprij\Documents\Visual Studio 2012\Projects\DriverConnect Test\Release\DriverConnect Test.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\t_sprij\Documents\Visual Studio 2012\Projects\DriverConnect Test\Release\DriverConnect Test.lib" /MACHINE:X86 /SAFESEH Release\Source.obj
+         Generating code
+         Finished generating code
+         DriverConnect Test.vcxproj -> C:\Users\t_sprij\Documents\Visual Studio 2012\Projects\DriverConnect Test\Release\DriverConnect Test.exe
+     1>Done Building Project "C:\Users\t_sprij\Documents\Visual Studio 2012\Projects\DriverConnect Test\DriverConnect Test\DriverConnect Test.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.08

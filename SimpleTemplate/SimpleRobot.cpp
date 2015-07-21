@@ -7,7 +7,7 @@ private:
 	Joystick stick;
 
 public:
-	RobotDemo(void) : myRobot(1, 2), stick(1) 
+	RobotDemo(void) : myRobot(1, 2), stick(1)
 	{
 		myRobot.SetExpiration(0.1);
 	}
@@ -20,12 +20,13 @@ public:
 		myRobot.Drive(0.0, 0.0);
 	}
 
+	float a;
 	void OperatorControl(void)
 	{
 		myRobot.SetSafetyEnabled(true);
-		while (IsOperatorControl()) 
+		while (IsEnabled() && IsOperatorControl()) 
 		{
-			myRobot.ArcadeDrive(stick);
+			myRobot.ArcadeDrive(-stick.GetY()/2, -stick.GetX()/2);
 			Wait(0.005);
 		}
 	}
