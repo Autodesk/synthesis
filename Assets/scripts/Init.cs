@@ -71,7 +71,7 @@ public class Init : MonoBehaviour
 		time_stop = false;
 		reloadInFrames = -1;
 		showStatWindow = false;
-		showHelpWindow = false;
+		showHelpWindow = true;
 		rotation = Quaternion.identity;
     }
 
@@ -108,12 +108,32 @@ public class Init : MonoBehaviour
 		float buttonGap = 20;
 		float buttonWidth = (helpWindowRect.width - (buttonGap * 3)) / 2.0f;
 		float buttonHeight = helpWindowRect.height - (buttonGap * 2) - topGap;
+		int leftX = 75;
+		int leftXOffset = 400;
+		int heightGap = 45;
+		int underlineGap = 4;
 
-		if(GUI.Button(new Rect(buttonGap, buttonGap + topGap, buttonWidth, buttonHeight), "Yes"))
-		   Application.Quit();
-
-		if (GUI.Button (new Rect ((buttonGap * 2) + buttonWidth, buttonGap + topGap, buttonWidth, buttonHeight), "No"))
-			return;
+		GUIStyle labelSkin = new GUIStyle (GUI.skin.label);
+		labelSkin.fontSize = 24;
+	
+		GUI.Label (new Rect (leftX, 1 * heightGap, 300, 50), "Action", labelSkin);
+		GUI.Label (new Rect (leftX, (1 * heightGap) + underlineGap, 300, 50), "_____", labelSkin);
+		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Menu:", labelSkin);
+		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:", labelSkin);
+		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:", labelSkin);
+		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:", labelSkin);
+		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "To Drive Robot:", labelSkin);
+		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "Toggle stats window:", labelSkin);
+		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Put totes on field:", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key", labelSkin);
+		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[H]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[Z][X][C][V]", labelSkin);
 	}
 
 	public void ShowOrient()
@@ -136,7 +156,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect (230, 20, 50, 30));
 		rects.Add (new Rect (20, 20, 70, 30));
 
-		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 75, 300, 250),
+		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
@@ -168,56 +188,6 @@ public class Init : MonoBehaviour
 		});
 	}
 
-	public void HotkeysWindow()
-	{
-		int leftX = 75;
-		int leftXOffset = 275;
-		int heightGap = 25;
-		
-		List<string> labelTitles = new List<string>();
-		labelTitles.Add ("Reset Robot:"); 
-		labelTitles.Add ("Driverstation:");
-		labelTitles.Add ("Orbit Robot:O");
-		labelTitles.Add ("First Person:F"); 
-		labelTitles.Add ("Stats window toggle:");
-		labelTitles.Add ("Menu:");
-		labelTitles.Add ("[R]"); 
-		labelTitles.Add ("[D]");
-		labelTitles.Add ("[O]");
-		labelTitles.Add ("[F]"); 
-		labelTitles.Add ("[H]");
-		labelTitles.Add ("[Esc]");
-
-		List<Rect> labelRects = new List<Rect>();
-		labelRects.Add (new Rect (leftX, 1 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 2 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 3 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 4 * heightGap, 300, 50)); 
-		labelRects.Add (new Rect (leftX, 5 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 6 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 1 * heightGap, 300, 50)); 
-		labelRects.Add (new Rect (leftXOffset, 2 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 3 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 4 * heightGap, 300, 50)); 
-		labelRects.Add (new Rect (leftXOffset, 5 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 6 * heightGap, 300, 50));
-
-		string windowTitle = "Hotkeys";
-
-		// Hotkeys window constants
-		int hotkeysWindowWidth = 400;
-		int hotkeysWindowHeight = 200;
-		
-		Rect windowRect = new Rect(
-			(Screen.width / 2) - (hotkeysWindowWidth / 2), 
-			(Screen.height / 2) - (hotkeysWindowHeight / 2), 
-			hotkeysWindowWidth, 
-			hotkeysWindowHeight
-			);
-
-		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray(), new string[0], new Rect[0]), (object o)=>{});
-	}
-
 	void HideGuiSidebar()
 	{
 		gui.guiVisible = false;
@@ -240,8 +210,8 @@ public class Init : MonoBehaviour
 		// Draws stats window on to GUI
 		if (showHelpWindow)
 		{
-			int windowWidth = 400;
-			int windowHeight = 150;
+			int windowWidth = 900;
+			int windowHeight = 450;
 			float paddingX = (Screen.width - windowWidth) / 2.0f;
 			float paddingY = (Screen.height - windowHeight) / 2.0f;
 			helpWindowRect = new Rect (paddingX, paddingY, windowWidth, windowHeight);
@@ -331,16 +301,12 @@ public class Init : MonoBehaviour
 					}
 				});*/
 
-			HotkeysWindow();
-
 			gui.AddWindow ("Quit Simulation", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 			               {
 				if ((int) o == 0) {
 					Application.Quit();
 				}
 			});
-
-			//gui.AddWindow("?", new DialogWindow("Halp", "Ha", "lp"), (object o) => {});
         }
 
 		// The Menu bottom on the top left corner
@@ -376,6 +342,7 @@ public class Init : MonoBehaviour
 		if (showHelpWindow && Input.GetMouseButtonUp (0) && !auxFunctions.MouseInWindow (helpWindowRect) && !auxFunctions.MouseInWindow (helpButtonRect))
 			showHelpWindow = false;
 
+		gui.guiBackgroundVisible = showHelpWindow;
         gui.Render();
 
         if (reloadInFrames >= 0)
