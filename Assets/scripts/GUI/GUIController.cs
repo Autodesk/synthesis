@@ -89,6 +89,7 @@ class GUIController
     /// </summary>
     public bool guiVisible = false;
 
+	public bool guiBackgroundVisible = false;
 	/// <summary>
 	/// The fake esc pressed.
 	/// </summary>
@@ -241,7 +242,7 @@ class GUIController
             keyDebounce = escPressed;
         }
         #endregion
-        guiFadeIntensity += (guiVisible ? 1f : -1f) * Time.deltaTime / GUI_SHOW_TIME;
+		guiFadeIntensity += ((guiVisible || guiBackgroundVisible) ? 1f : -1f) * Time.deltaTime / GUI_SHOW_TIME;
         guiFadeIntensity = Mathf.Clamp01(guiFadeIntensity);
 
         // Dims the background
@@ -253,7 +254,7 @@ class GUIController
 
         UserMessageManager.Render();
 
-        if (guiFadeIntensity > 0)
+        if (guiFadeIntensity > 0 && guiVisible)
         {
 			float topOffset = (Screen.height - sidebarHeight) / 2.0f;
 			GUI.BeginGroup(new Rect((1f - guiFadeIntensity) * -sidebarWidth, GUI_SIDEBAR_PADDING_Y, sidebarWidth, sidebarHeight));
