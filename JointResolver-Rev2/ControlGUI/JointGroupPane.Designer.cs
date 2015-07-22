@@ -28,7 +28,7 @@
     {
         this.splitContainer1 = new System.Windows.Forms.SplitContainer();
         this.panelJoints = new System.Windows.Forms.Panel();
-        this.treeviewInventor = new InventorTreeView();
+        this.treeviewInventor = new InventorTreeView(true);
         ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
         this.splitContainer1.Panel1.SuspendLayout();
         this.splitContainer1.Panel2.SuspendLayout();

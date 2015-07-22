@@ -70,6 +70,12 @@
     <Compile Include="AboutDialog.Designer.cs">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddJointForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddJointForm.Designer.cs">
+      <DependentUpon>AddJointForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="BXDAEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +118,12 @@
     <Compile Include="JointEditorPane.Designer.cs">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
     </Compile>
+    <Compile Include="JointGroupNameEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="JointGroupNameEditorForm.Designer.cs">
+      <DependentUpon>JointGroupNameEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -140,6 +152,9 @@
     <EmbeddedResource Include="AboutDialog.resx">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AddJointForm.resx">
+      <DependentUpon>AddJointForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="BXDAEditorForm.resx">
       <DependentUpon>BXDAEditorForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -160,6 +175,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="JointEditorPane.resx">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JointGroupNameEditorForm.resx">
+      <DependentUpon>JointGroupNameEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

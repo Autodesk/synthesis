@@ -34,6 +34,11 @@ public partial class JointGroupPane : UserControl
     public void UpdateComponents(List<ComponentOccurrence> components)
     {
         treeviewInventor.AddComponents(components);
+
+        foreach (ComponentOccurrence component in components)
+        {
+
+        }
     }
 
     private void AddGroup(System.Drawing.Point pos, Size size)
@@ -120,7 +125,7 @@ public partial class JointGroupPane : UserControl
         public JointGroup(Control parent, System.Drawing.Point pos, Size size)
             : base()
         {
-            jointTree = new InventorTreeView();
+            jointTree = new InventorTreeView(true);
             SuspendLayout();
 
             Location = pos;

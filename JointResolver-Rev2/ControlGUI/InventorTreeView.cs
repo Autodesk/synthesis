@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using EditorsLibrary;
 
 public class InventorTreeView : TreeView
 {
@@ -20,12 +21,13 @@ public class InventorTreeView : TreeView
 
     private Timer timer;
 
-    public InventorTreeView()
+    public InventorTreeView(bool allowDragDrop)
     {
         imageListDrag = new ImageList();
         imageListTreeView = new ImageList();
 
         HotTracking = true;
+        AllowDrop = allowDragDrop;
 
         ItemDrag += InventorTreeView_ItemDrag;
         DragOver += InventorTreeView_DragOver;
@@ -203,8 +205,18 @@ public class InventorTreeView : TreeView
         }
     }
 
+    private void InventorTreeView_NodeClick(object sender, TreeNodeMouseClickEventArgs e)
+    {
+        if (e.Node.Tag != null)
+        {
+
+        }
+    }
+
     private void InventorTreeView_ItemDrag(object sender, ItemDragEventArgs e)
     {
+        
+
         // Get drag node and select it
         InventorTreeView.DragNode = (TreeNode)e.Item;
         SelectedNode = InventorTreeView.DragNode;
@@ -242,14 +254,7 @@ public class InventorTreeView : TreeView
         int dx = (int)p.X + Indent - Bounds.Left;
         int dy = (int)p.Y - Bounds.Top;
 
-        // Begin dragging image
-        if (DragHelper.ImageList_BeginDrag(this.imageListDrag.Handle, 0, dx, dy))
-        {
-            // Begin dragging
-            DoDragDrop(bmp, DragDropEffects.Move);
-            // End dragging image
-            DragHelper.ImageList_EndDrag();
-        }
+        DoDragDrop(bmp, DragDropEffects.Move);
     }
 
     private void InventorTreeView_DragOver(object sender, System.Windows.Forms.DragEventArgs e)
@@ -297,25 +302,18 @@ public class InventorTreeView : TreeView
         // If drop node isn't equal to drag node, add drag node as child of drop node
         if (InventorTreeView.DragNode != dropNode)
         {
-            // Remove drag node from parent
-            if (InventorTreeView.DragNode.Parent == null)
-            {
-                Nodes.Remove(InventorTreeView.DragNode);
-            }
-            else
-            {
-                InventorTreeView.DragNode.Parent.Nodes.Remove(InventorTreeView.DragNode);
-            }
+            TreeNode toAdd = new TreeNode(InventorTreeView.DragNode.Text);
+            toAdd.Tag = InventorTreeView.DragNode.Tag;
 
             if (dropNode.Tag != null)
             {
                 AddJointForm addForm = new AddJointForm();
                 addForm.ShowDialog();
-
+                toAdd.Text += String.Format(" ({0})", addForm.chooseType);
             }
 
             // Add drag node to drop node
-            dropNode.Nodes.Add(InventorTreeView.DragNode);
+            dropNode.Nodes.Add(toAdd);
 
             // Set drag node to null
             InventorTreeView.DragNode = null;

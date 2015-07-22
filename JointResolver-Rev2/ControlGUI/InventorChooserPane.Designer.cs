@@ -28,7 +28,7 @@
     {
         this.buttonSelect = new System.Windows.Forms.Button();
         this.buttonAdd = new System.Windows.Forms.Button();
-        this.treeviewInventor = new InventorTreeView();
+        this.treeviewInventor = new InventorTreeView(false);
         this.SuspendLayout();
         // 
         // buttonSelect
