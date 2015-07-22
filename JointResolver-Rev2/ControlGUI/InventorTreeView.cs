@@ -16,18 +16,14 @@ public class InventorTreeView : TreeView
     private static TreeNode DragNode;
     private static TreeNode TempDropNode;
 
-    private ImageList imageListDrag;
-    private ImageList imageListTreeView;
-
     private Timer timer;
 
     public InventorTreeView(bool allowDragDrop)
     {
-        imageListDrag = new ImageList();
-        imageListTreeView = new ImageList();
-
         HotTracking = true;
         AllowDrop = allowDragDrop;
+
+        NodeMouseDoubleClick += InventorTreeView_NodeMouseDoubleClick;
 
         ItemDrag += InventorTreeView_ItemDrag;
         DragOver += InventorTreeView_DragOver;
@@ -205,47 +201,23 @@ public class InventorTreeView : TreeView
         }
     }
 
-    private void InventorTreeView_NodeClick(object sender, TreeNodeMouseClickEventArgs e)
+    private void InventorTreeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
     {
-        if (e.Node.Tag != null)
+        if (e.Node.Tag == null)
         {
+            JointGroupNameEditorForm nameEditorForm = new JointGroupNameEditorForm(e.Node.Text);
+            nameEditorForm.ShowDialog();
 
+            if(nameEditorForm.NewName != null) e.Node.Text = nameEditorForm.NewName;
+            e.Node.Expand();
         }
     }
 
     private void InventorTreeView_ItemDrag(object sender, ItemDragEventArgs e)
     {
-        
-
         // Get drag node and select it
         InventorTreeView.DragNode = (TreeNode)e.Item;
         SelectedNode = InventorTreeView.DragNode;
-
-        // Reset image list used for drag image
-        this.imageListDrag.Images.Clear();
-        this.imageListDrag.ImageSize =
-              new Size(InventorTreeView.DragNode.Bounds.Size.Width
-              + Indent, InventorTreeView.DragNode.Bounds.Height);
-
-        // Create new bitmap
-        // This bitmap will contain the tree node image to be dragged
-        Bitmap bmp = new Bitmap(InventorTreeView.DragNode.Bounds.Width
-            + Indent, Bounds.Height);
-
-        // Get graphics from bitmap
-        Graphics gfx = Graphics.FromImage(bmp);
-
-        // Draw node icon into the bitmap
-        //gfx.DrawImage(imageListTreeView.Images[0], 0, 0);
-
-        // Draw node label into bitmap
-        gfx.DrawString(InventorTreeView.DragNode.Text,
-            Font,
-            new SolidBrush(ForeColor),
-            (float)Indent, 1.0f);
-
-        // Add bitmap to imagelist
-        this.imageListDrag.Images.Add(bmp);
 
         // Get mouse position in client coordinates
         System.Drawing.Point p = PointToClient(Control.MousePosition);
@@ -254,15 +226,11 @@ public class InventorTreeView : TreeView
         int dx = (int)p.X + Indent - Bounds.Left;
         int dy = (int)p.Y - Bounds.Top;
 
-        DoDragDrop(bmp, DragDropEffects.Move);
+        DoDragDrop(InventorTreeView.DragNode.Text, DragDropEffects.Move);
     }
 
     private void InventorTreeView_DragOver(object sender, System.Windows.Forms.DragEventArgs e)
     {
-        // Compute drag position and move image
-        System.Drawing.Point formP = ExporterProgressForm.Instance.PointToClient(new System.Drawing.Point(e.X, e.Y));
-        DragHelper.ImageList_DragMove(formP.X - Left, formP.Y - Top);
-
         // Get actual drop node
         TreeNode dropNode = GetNodeAt(PointToClient(new System.Drawing.Point(e.X, e.Y)));
         if (dropNode == null)
@@ -276,9 +244,7 @@ public class InventorTreeView : TreeView
         // if mouse is on a new node select it
         if (InventorTreeView.TempDropNode != dropNode)
         {
-            DragHelper.ImageList_DragShowNolock(false);
             SelectedNode = dropNode;
-            DragHelper.ImageList_DragShowNolock(true);
             InventorTreeView.TempDropNode = dropNode;
         }
 
@@ -293,9 +259,6 @@ public class InventorTreeView : TreeView
 
     private void InventorTreeView_DragDrop(object sender, System.Windows.Forms.DragEventArgs e)
     {
-        // Unlock updates
-        DragHelper.ImageList_DragLeave(Handle);
-
         // Get drop node
         TreeNode dropNode = GetNodeAt(PointToClient(new System.Drawing.Point(e.X, e.Y)));
 
@@ -320,25 +283,20 @@ public class InventorTreeView : TreeView
             dropNode.Expand();
 
             // Disable scroll timer
-            this.timer.Enabled = false;
+            timer.Enabled = false;
         }
     }
 
     private void InventorTreeView_DragEnter(object sender, System.Windows.Forms.DragEventArgs e)
     {
-        DragHelper.ImageList_DragEnter(Handle, e.X - Left,
-            e.Y - Top);
-
         // Enable timer for scrolling dragged item
-        this.timer.Enabled = true;
+        timer.Enabled = true;
     }
 
     private void InventorTreeView_DragLeave(object sender, System.EventArgs e)
     {
-        DragHelper.ImageList_DragLeave(Handle);
-
         // Disable timer for scrolling dragged item
-        this.timer.Enabled = false;
+        timer.Enabled = false;
     }
 
     private void InventorTreeView_GiveFeedback(object sender, System.Windows.Forms.GiveFeedbackEventArgs e)
@@ -369,14 +327,9 @@ public class InventorTreeView : TreeView
             {
                 node = node.PrevVisibleNode;
 
-                // hide drag image
-                DragHelper.ImageList_DragShowNolock(false);
                 // scroll and refresh
                 node.EnsureVisible();
                 Refresh();
-                // show drag image
-                DragHelper.ImageList_DragShowNolock(true);
-
             }
         }
         // if mouse is near to the bottom, scroll down
@@ -386,60 +339,9 @@ public class InventorTreeView : TreeView
             {
                 node = node.NextVisibleNode;
 
-                DragHelper.ImageList_DragShowNolock(false);
                 node.EnsureVisible();
                 Refresh();
-                DragHelper.ImageList_DragShowNolock(true);
             }
-        }
-    }
-
-    private class DragHelper
-    {
-        [DllImport("comctl32.dll")]
-        public static extern bool InitCommonControls();
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto)]
-        public static extern bool ImageList_BeginDrag(
-            IntPtr himlTrack, // Handler of the image list containing the image to drag
-            int iTrack,       // Index of the image to drag 
-            int dxHotspot,    // x-delta between mouse position and drag image
-            int dyHotspot     // y-delta between mouse position and drag image
-        );
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto)]
-        public static extern bool ImageList_DragMove(
-            int x,   // X-coordinate (relative to the form,
-            // not the treeview) at which to display the drag image.
-            int y   // Y-coordinate (relative to the form,
-            // not the treeview) at which to display the drag image.
-        );
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto)]
-        public static extern void ImageList_EndDrag();
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto)]
-        public static extern bool ImageList_DragEnter(
-            IntPtr hwndLock,  // Handle to the control that owns the drag image.
-            int x,            // X-coordinate (relative to the treeview)
-            // at which to display the drag image. 
-            int y             // Y-coordinate (relative to the treeview)
-            // at which to display the drag image. 
-        );
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto)]
-        public static extern bool ImageList_DragLeave(
-            IntPtr hwndLock  // Handle to the control that owns the drag image.
-        );
-
-        [DllImport("comctl32.dll", CharSet = CharSet.Auto)]
-        public static extern bool ImageList_DragShowNolock(
-            bool fShow       // False to hide, true to show the image
-        );
-
-        static DragHelper()
-        {
-            InitCommonControls();
         }
     }
 

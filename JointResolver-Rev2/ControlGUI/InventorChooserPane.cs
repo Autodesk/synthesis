@@ -167,7 +167,7 @@ public partial class InventorChooserPane : UserControl
         buttonSelect.Enabled = true;
 
         List<ComponentOccurrence> c = GetComponents();
-        ExporterProgressForm.Instance.Components = c;
+        ExporterProgressForm.Instance.UpdateComponents(c);
     }
 
     private void buttonSelect_Click(object sender, EventArgs e)

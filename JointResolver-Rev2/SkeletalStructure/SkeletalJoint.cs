@@ -1,7 +1,6 @@
 ﻿using System;
 using Inventor;
 
-
 public class SkeletalJoint
 {
     public CustomRigidGroup childGroup;
@@ -84,4 +83,61 @@ public class SkeletalJoint
             return new BallJoint(parent, rigidJoint);
         return null;
     }
+}
+
+public static class SkeletalJointType_Extensions
+{
+
+    public static SkeletalJointType ToSkeletalJointType(this AssemblyJointTypeEnum assemblyJoint)
+    {
+        SkeletalJointType jointType = SkeletalJointType.DEFAULT;
+
+        switch (assemblyJoint)
+        {
+            case AssemblyJointTypeEnum.kBallJointType:
+                jointType = SkeletalJointType.BALL;
+                break;
+            case AssemblyJointTypeEnum.kCylindricalJointType:
+                jointType = SkeletalJointType.CYLINDRICAL;
+                break;
+            case AssemblyJointTypeEnum.kPlanarJointType:
+                jointType = SkeletalJointType.PLANAR;
+                break;
+            case AssemblyJointTypeEnum.kRotationalJointType:
+                jointType = SkeletalJointType.ROTATIONAL;
+                break;
+            case AssemblyJointTypeEnum.kSlideJointType:
+                jointType = SkeletalJointType.LINEAR;
+                break;
+        }
+
+        return jointType;
+    }
+
+    public static AssemblyJointTypeEnum ToAssemblyJointType(this SkeletalJointType skeletalJoint)
+    {
+        AssemblyJointTypeEnum jointType = AssemblyJointTypeEnum.kRigidJointType;
+
+        switch (skeletalJoint)
+        {
+            case SkeletalJointType.BALL:
+                jointType = AssemblyJointTypeEnum.kBallJointType;
+                break;
+            case SkeletalJointType.CYLINDRICAL:
+                jointType = AssemblyJointTypeEnum.kCylindricalJointType;
+                break;
+            case SkeletalJointType.LINEAR:
+                jointType = AssemblyJointTypeEnum.kSlideJointType;
+                break;
+            case SkeletalJointType.PLANAR:
+                jointType = AssemblyJointTypeEnum.kPlanarJointType;
+                break;
+            case SkeletalJointType.ROTATIONAL:
+                jointType = AssemblyJointTypeEnum.kRotationalJointType;
+                break;
+        }
+
+        return jointType;
+    }
+
 }

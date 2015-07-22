@@ -20,19 +20,7 @@ public partial class ExporterProgressForm : Form
 
     public bool finished;
 
-    private List<ComponentOccurrence> _components;
-    public List<ComponentOccurrence> Components
-    {
-        get
-        {
-            return _components;
-        }
-        set
-        {
-            jointGroupPane1.UpdateComponents(value);
-            _components = value;
-        }
-    }
+    public List<ComponentOccurrence> Components;
 
     private TextWriter oldConsole;
     private TextboxWriter newConsole;
@@ -49,6 +37,8 @@ public partial class ExporterProgressForm : Form
         InitializeComponent();
 
         inventorChooserPane1.InventorApplication = inventorInstance;
+
+        Components = new List<ComponentOccurrence>();
 
         oldConsole = Console.Out;
 
@@ -87,8 +77,12 @@ public partial class ExporterProgressForm : Form
         };
 
         Instance = this;
+    }
 
-
+    public void UpdateComponents(List<ComponentOccurrence> components)
+    {
+        Components.AddRange(components);
+        jointGroupPane1.UpdateComponents(Components);
     }
 
     public void ResetProgress()

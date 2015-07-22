@@ -13,6 +13,7 @@ public partial class JointGroupPane : UserControl
 {
 
     private List<JointGroup> jointGroups;
+    private JointGroup defaultJointGroup;
 
     private bool isMouseDown;
     private System.Drawing.Point dragStart;
@@ -37,8 +38,25 @@ public partial class JointGroupPane : UserControl
 
         foreach (ComponentOccurrence component in components)
         {
+            if (component.Joints.Count > 0)
+            {
+                if (defaultJointGroup == null)
+                {
+                    defaultJointGroup = new JointGroup(panelJoints, 50, 50, 300, 300);
+                    AddGroup(defaultJointGroup);
+                }
 
+                foreach (AssemblyJoint joint in component.Joints)
+                {
+                    defaultJointGroup.AddJoint(joint);
+                }
+            }
         }
+    }
+
+    private void AddGroup(JointGroup group)
+    {
+        jointGroups.Add(group);
     }
 
     private void AddGroup(System.Drawing.Point pos, Size size)
@@ -147,6 +165,29 @@ public partial class JointGroupPane : UserControl
         public JointGroup(Control parent, int initX, int initY, int initW, int initH)
             : this(parent, new System.Drawing.Point(initX, initY), new Size(initW, initH))
         { }
+
+        public void AddJoint(AssemblyJoint joint)
+        {
+            ComponentOccurrence occ1 = joint.OccurrenceOne;
+            ComponentOccurrence occ2 = joint.OccurrenceTwo;
+
+            TreeNode parent = new TreeNode(occ2.Name);
+            parent.Tag = occ2;
+
+            SkeletalJointType jointType = joint.Definition.JointType.ToSkeletalJointType();
+
+            TreeNode child = new TreeNode(occ1.Name + String.Format(" ({0})", jointType));
+            child.Tag = occ1;
+
+            parent.Nodes.Add(child);
+
+            //Don't add the same joint twice
+            var collisions = from TreeNode node in jointTree.Nodes[0].Nodes
+                             where (node.Tag == parent.Tag) && (node.Nodes[0].Tag == child.Tag)
+                             select true;
+
+            if (collisions.Count() == 0) jointTree.Nodes[0].Nodes.Add(parent);
+        }
 
     }
 
