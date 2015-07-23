@@ -10,6 +10,7 @@ public enum FieldNodeCollisionType : byte
 {
     NONE = 1,
     MESH = 2,
+    BOX = 3
 }
 
 public class FieldNode_Base
@@ -29,6 +30,15 @@ public class FieldNode_Base
     };
 
     /// <summary>
+    /// The string ID for the node.
+    /// </summary>
+    public string nodeID
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
     /// Stores the type of collision for the node.
     /// </summary>
     public FieldNodeCollisionType nodeCollisionType
@@ -36,11 +46,20 @@ public class FieldNode_Base
         get;
         set;
     }
-    
+
     /// <summary>
-    /// The string ID for the node.
+    /// Stores a boolean determining if the collider is convex (always true for box collider)
     /// </summary>
-    public string nodeID
+    public bool convex
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Stores the amount of friction the mesh will have.
+    /// </summary>
+    public int friction
     {
         get;
         set;

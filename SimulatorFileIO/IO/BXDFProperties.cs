@@ -34,6 +34,12 @@ public class BXDFProperties
 
             // Writes the type of collision of the current node.
             writer.Write((byte)nodes[i].nodeCollisionType);
+
+            // Writes a boolean determining if the node's collision mesh is convex.
+            writer.Write(nodes[i].convex);
+
+            // Writes the friction of 
+            writer.Write(nodes[i].friction);
         }
         writer.Close();
     }
@@ -68,10 +74,16 @@ public class BXDFProperties
                 nodes[i] = FieldNode_Base.FIELDNODE_FACTORY();
 
                 // Reads ID of node.
-                nodes[i].nodeID = (reader.ReadString());
+                nodes[i].nodeID = reader.ReadString();
 
                 // Reads type of collision for node.
                 nodes[i].nodeCollisionType = (FieldNodeCollisionType)reader.ReadByte();
+
+                // Reads if collision mesh is convex
+                nodes[i].convex = reader.ReadBoolean();
+
+                // Reads friction value.
+                nodes[i].friction = reader.ReadInt32();
 
                 fieldDefinition.AddChild(nodes[i]);
             }

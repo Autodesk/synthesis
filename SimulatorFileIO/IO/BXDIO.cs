@@ -18,7 +18,7 @@ public class BXDIO
     public delegate void ProgressReporter(long progress, long total);
 
     /// <summary>
-    /// The version of the BXDJ file format this file can read and write.
+    /// The version of the file format this file can read and write.
     /// </summary>
     public const uint FORMAT_VERSION = (MAJOR_VERSION << 24) | (MINOR_VERSION << 16) | (REVISION_VERSION << 8) | REVISION_PORTION;
 
