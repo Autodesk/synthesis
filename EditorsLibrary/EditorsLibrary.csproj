@@ -106,11 +106,11 @@
     <Compile Include="DriveChooser.Designer.cs">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </Compile>
-    <Compile Include="ExporterSettings.cs">
+    <Compile Include="ExporterSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ExporterSettings.Designer.cs">
-      <DependentUpon>ExporterSettings.cs</DependentUpon>
+    <Compile Include="ExporterSettingsForm.Designer.cs">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="JointEditorPane.cs">
       <SubType>UserControl</SubType>
@@ -141,11 +141,11 @@
     <Compile Include="RobotViewer.Designer.cs">
       <DependentUpon>RobotViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="ViewerSettings.cs">
+    <Compile Include="ViewerSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ViewerSettings.Designer.cs">
-      <DependentUpon>ViewerSettings.cs</DependentUpon>
+    <Compile Include="ViewerSettingsForm.Designer.cs">
+      <DependentUpon>ViewerSettingsForm.cs</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -170,8 +170,8 @@
     <EmbeddedResource Include="DriveChooser.resx">
       <DependentUpon>DriveChooser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ExporterSettings.resx">
-      <DependentUpon>ExporterSettings.cs</DependentUpon>
+    <EmbeddedResource Include="ExporterSettingsForm.resx">
+      <DependentUpon>ExporterSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="JointEditorPane.resx">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
@@ -189,8 +189,8 @@
     <EmbeddedResource Include="RobotViewer.resx">
       <DependentUpon>RobotViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ViewerSettings.resx">
-      <DependentUpon>ViewerSettings.cs</DependentUpon>
+    <EmbeddedResource Include="ViewerSettingsForm.resx">
+      <DependentUpon>ViewerSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -200,15 +200,6 @@
     <None Include="Resources\SmallIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="Inventor">
-      <Guid>{D98A091D-3A0F-4C3E-B36E-61F62068D488}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
     <COMReference Include="stdole">
       <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>2</VersionMajor>

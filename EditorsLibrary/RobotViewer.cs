@@ -120,7 +120,7 @@ namespace EditorsLibrary
         /// <summary>
         /// The local copy of the global viewer settings
         /// </summary>
-        private ViewerSettings.ViewerSettingsValues settings;
+        private ViewerSettingsForm.ViewerSettingsValues settings;
 
         /// <summary>
         /// Create a new RobotViewer and initialize all components
@@ -159,7 +159,7 @@ namespace EditorsLibrary
         /// Load settings for the viewer
         /// </summary>
         /// <param name="newSettings">The viewer settings to load</param>
-        public void LoadSettings(ViewerSettings.ViewerSettingsValues newSettings)
+        public void LoadSettings(ViewerSettingsForm.ViewerSettingsValues newSettings)
         {
             settings = newSettings;
 

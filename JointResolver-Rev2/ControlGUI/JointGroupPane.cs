@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-public partial class JointGroupPane : UserControl
+public partial class JointGroupPane : UserControl, IDisposable
 {
 
     private List<JointGroup> jointGroups;
@@ -64,6 +64,7 @@ public partial class JointGroupPane : UserControl
         jointGroups.Add(new JointGroup(panelJoints, pos, size));
     }
 
+    #region Events
     private void panelJoints_MouseDown(object sender, MouseEventArgs e)
     {
         dragStart = new System.Drawing.Point(e.X, e.Y);
@@ -134,7 +135,16 @@ public partial class JointGroupPane : UserControl
             g.Clear(Control.DefaultBackColor);
         }
     }
+    #endregion
 
+    #region Implemented methods
+    public void Dispose()
+    {
+        Dispose(true);
+    }
+    #endregion
+
+    #region Nested classes
     private class JointGroup : Panel
     {
 
@@ -190,6 +200,7 @@ public partial class JointGroupPane : UserControl
         }
 
     }
+    #endregion
 
 }
 

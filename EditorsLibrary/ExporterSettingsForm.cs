@@ -11,12 +11,12 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-    public partial class ExporterSettings : Form
+    public partial class ExporterSettingsForm : Form
     {
 
         public ExporterSettingsValues values;
 
-        public ExporterSettings(ExporterSettingsValues defaultValues)
+        public ExporterSettingsForm(ExporterSettingsValues defaultValues)
         {
             InitializeComponent();
 

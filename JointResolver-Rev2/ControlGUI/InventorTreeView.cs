@@ -272,7 +272,12 @@ public class InventorTreeView : TreeView
             {
                 AddJointForm addForm = new AddJointForm();
                 addForm.ShowDialog();
-                toAdd.Text += String.Format(" ({0})", addForm.chooseType);
+                SkeletalJointType skeletalType = addForm.chooseType;
+                toAdd.Text += String.Format(" ({0})", skeletalType);
+
+                AssemblyJointTypeEnum assemblyType = skeletalType.ToAssemblyJointType();
+                AssemblyDocument asmDoc = (AssemblyDocument) Exporter.INVENTOR_APPLICATION.ActiveDocument;
+                AssemblyComponentDefinition asmDef = asmDoc.ComponentDefinition;
             }
 
             // Add drag node to drop node
@@ -314,7 +319,7 @@ public class InventorTreeView : TreeView
     private void timer_Tick(object sender, EventArgs e)
     {
         // get node at mouse position
-        System.Drawing.Point pt = ExporterProgressForm.Instance.PointToClient(Control.MousePosition);
+        System.Drawing.Point pt = ExporterForm.Instance.PointToClient(Control.MousePosition);
         TreeNode node = GetNodeAt(pt);
 
         if (node == null) return;

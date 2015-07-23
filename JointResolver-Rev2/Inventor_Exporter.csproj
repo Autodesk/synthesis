@@ -68,18 +68,19 @@
     <Compile Include="BXDSettings.cs" />
     <Compile Include="CollisionAnalyzer\FindRadiusThread.cs" />
     <Compile Include="ControlGUI\ComponentHighlighter.cs" />
-    <Compile Include="ControlGUI\ExporterGUI.cs">
+    <Compile Include="ControlGUI\SynthesisGUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlGUI\ExporterGUI.Designer.cs">
-      <DependentUpon>ExporterGUI.cs</DependentUpon>
+    <Compile Include="ControlGUI\SynthesisGUI.Designer.cs">
+      <DependentUpon>SynthesisGUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\ExporterProgressForm.cs">
+    <Compile Include="ControlGUI\ExporterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ControlGUI\ExporterProgressForm.Designer.cs">
-      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
+    <Compile Include="ControlGUI\ExporterForm.Designer.cs">
+      <DependentUpon>ExporterForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ControlGUI\InventorChooser.cs" />
     <Compile Include="ControlGUI\InventorChooserPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -142,11 +143,11 @@
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ControlGUI\ExporterGUI.resx">
-      <DependentUpon>ExporterGUI.cs</DependentUpon>
+    <EmbeddedResource Include="ControlGUI\SynthesisGUI.resx">
+      <DependentUpon>SynthesisGUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\ExporterProgressForm.resx">
-      <DependentUpon>ExporterProgressForm.cs</DependentUpon>
+    <EmbeddedResource Include="ControlGUI\ExporterForm.resx">
+      <DependentUpon>ExporterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\InventorChooserPane.resx">
       <DependentUpon>InventorChooserPane.cs</DependentUpon>

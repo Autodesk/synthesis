@@ -1,4 +1,4 @@
-﻿partial class ExporterProgressForm
+﻿partial class ExporterForm
 {
     /// <summary>
     /// Required designer variable.
@@ -26,7 +26,7 @@
     /// </summary>
     private void InitializeComponent()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterProgressForm));
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterForm));
         this.tabs = new System.Windows.Forms.TabControl();
         this.logPage = new System.Windows.Forms.TabPage();
         this.logText = new System.Windows.Forms.RichTextBox();

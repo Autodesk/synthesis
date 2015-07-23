@@ -11,12 +11,12 @@ using System.Xml.Serialization;
 
 namespace EditorsLibrary
 {
-    public partial class ViewerSettings : Form
+    public partial class ViewerSettingsForm : Form
     {
 
         public ViewerSettingsValues values;
 
-        public ViewerSettings(ViewerSettingsValues defaultValues)
+        public ViewerSettingsForm(ViewerSettingsValues defaultValues)
         {
             InitializeComponent();
 

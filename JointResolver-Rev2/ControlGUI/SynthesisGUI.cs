@@ -12,33 +12,39 @@ using System.Windows.Forms;
 using EditorsLibrary;
 using OGLViewer;
 
-public partial class ExporterGUI : Form
+public partial class SynthesisGUI : Form
 {
 
-    public static ExporterGUI Instance;
+    public static SynthesisGUI Instance;
 
-    private RigidNode_Base skeletonBase = null;
-    private List<BXDAMesh> meshes = null;
+    public static ExporterSettingsForm.ExporterSettingsValues ExporterSettings;
+    public static ViewerSettingsForm.ViewerSettingsValues ViewerSettings;
 
-    private ExporterSettings.ExporterSettingsValues exporterSettings;
-    private ViewerSettings.ViewerSettingsValues viewerSettings;
+    public RigidNode_Base SkeletonBase = null;
+    public List<BXDAMesh> Meshes = null;
 
-    private ExporterProgressForm exporterProgress;
+    private ExporterForm exporter;
 
     private string lastDirPath = null;
 
-    public ExporterGUI()
+    static SynthesisGUI()
     {
-        InitializeComponent();
-
-        Instance = this;
         BXDSettings.Load();
         object exportSettings = BXDSettings.Instance.GetSettingsObject("Exporter Settings");
         object viewSettings = BXDSettings.Instance.GetSettingsObject("Viewer Settings");
 
-        exporterSettings = (exportSettings != null) ? (ExporterSettings.ExporterSettingsValues) exportSettings : ExporterSettings.GetDefaultSettings();
-        viewerSettings = (viewSettings != null) ? (ViewerSettings.ViewerSettingsValues) viewSettings : ViewerSettings.GetDefaultSettings();
-        robotViewer1.LoadSettings(viewerSettings);
+        ExporterSettings = (exportSettings != null) ?
+                           (ExporterSettingsForm.ExporterSettingsValues)exportSettings : ExporterSettingsForm.GetDefaultSettings();
+        ViewerSettings = (viewSettings != null) ? (ViewerSettingsForm.ViewerSettingsValues)viewSettings : ViewerSettingsForm.GetDefaultSettings();
+    }
+
+    public SynthesisGUI()
+    {
+        InitializeComponent();
+
+        Instance = this;
+
+        robotViewer1.LoadSettings(ViewerSettings);
 
         RigidNode_Base.NODE_FACTORY = delegate()
         {
@@ -76,27 +82,27 @@ public partial class ExporterGUI : Form
         {
             var defaultValues = BXDSettings.Instance.GetSettingsObject("Exporter Settings");
 
-            ExporterSettings eSettingsForm = new ExporterSettings((defaultValues != null) ? (ExporterSettings.ExporterSettingsValues) defaultValues :
-                                                                                             ExporterSettings.GetDefaultSettings());
+            ExporterSettingsForm eSettingsForm = new ExporterSettingsForm((defaultValues != null) ? (ExporterSettingsForm.ExporterSettingsValues) defaultValues :
+                                                                                             ExporterSettingsForm.GetDefaultSettings());
 
             eSettingsForm.ShowDialog(this);
 
             BXDSettings.Instance.AddSettingsObject("Exporter Settings", eSettingsForm.values);
-            exporterSettings = eSettingsForm.values;
+            ExporterSettings = eSettingsForm.values;
         });
         settingsViewer.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
             var defaultValues = BXDSettings.Instance.GetSettingsObject("Viewer Settings");
 
-            ViewerSettings vSettingsForm = new ViewerSettings((defaultValues != null) ? (ViewerSettings.ViewerSettingsValues) defaultValues : 
-                                                                                    ViewerSettings.GetDefaultSettings());
+            ViewerSettingsForm vSettingsForm = new ViewerSettingsForm((defaultValues != null) ? (ViewerSettingsForm.ViewerSettingsValues) defaultValues : 
+                                                                                    ViewerSettingsForm.GetDefaultSettings());
 
             vSettingsForm.ShowDialog(this);
 
             BXDSettings.Instance.AddSettingsObject("Viewer Settings", vSettingsForm.values);
-            viewerSettings = vSettingsForm.values;
+            ViewerSettings = vSettingsForm.values;
 
-            robotViewer1.LoadSettings(viewerSettings);
+            robotViewer1.LoadSettings(ViewerSettings);
         });
 
         helpAbout.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
@@ -107,93 +113,37 @@ public partial class ExporterGUI : Form
 
         this.FormClosing += new FormClosingEventHandler(delegate(object sender, FormClosingEventArgs e)
         {
-            if (skeletonBase != null && !WarnUnsaved()) e.Cancel = true;
+            if (SkeletonBase != null && !WarnUnsaved()) e.Cancel = true;
             else BXDSettings.Save();
         });
     }
 
     public void SetNew()
     {
-        skeletonBase = null;
-        meshes = null;
+        SkeletonBase = null;
+        Meshes = null;
 
         ReloadPanels();
     }
 
     public void LoadFromInventor()
     {
-        if (skeletonBase != null && !WarnUnsaved()) return;
-
-        RigidNode_Base tmpBase = null;
-        List<BXDAMesh> tmpMeshes = null;
+        if (SkeletonBase != null && !WarnUnsaved()) return;
 
         try
         {
-            AutoResetEvent startEvent = new AutoResetEvent(false);
-
-            Exporter.LoadInventorInstance();
-
-            var exporterProgressThread = new Thread(() =>
-            {
-                exporterProgress = new ExporterProgressForm(Exporter.INVENTOR_APPLICATION, startEvent, 
-  System.Drawing.Color.FromArgb((int) exporterSettings.generalTextColor), System.Drawing.Color.FromArgb((int) exporterSettings.generalBackgroundColor));
-
-                exporterProgress.ShowDialog();
-            });
-
-            exporterProgressThread.SetApartmentState(ApartmentState.STA);
-            exporterProgressThread.Start();
-
-            startEvent.WaitOne();
-
-            if (exporterProgress.finished)
-            {
-                Exporter.INVENTOR_APPLICATION = null;
-                return;
-            }
-
             var exporterThread = new Thread(() =>
             {
-                try
-                {
-                    tmpBase = Exporter.ExportSkeleton(ExporterProgressForm.Instance.Components);
-                    tmpMeshes = Exporter.ExportMeshes(tmpBase, exporterSettings.meshResolutionValue > 0, exporterSettings.meshFancyColors);
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
+                exporter = new ExporterForm();
+
+                exporter.ShowDialog();
             });
 
-            exporterThread.SetApartmentState(ApartmentState.MTA);
+            exporterThread.SetApartmentState(ApartmentState.STA);
             exporterThread.Start();
 
-            while (!exporterProgressThread.Join(0))
-            {
-                if (!exporterThread.IsAlive && !exporterProgress.finished)
-                {
-                    Console.WriteLine("Finished!");
-                    if (exporterSettings.generalSaveLog)
-                        exporterProgress.Finish(exporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyy-MM-dd_HHmmss") + ".txt");
-                    else exporterProgress.Finish();
-                }
-            }
+            exporterThread.Join();
 
-            if (exporterThread.IsAlive)
-            {
-                exporterThread.Abort();
-            }
-            else
-            {
-                exporterThread.Join();
-                if (tmpBase != null && tmpMeshes != null)
-                {
-                    skeletonBase = new OGL_RigidNode(tmpBase);
-                    meshes = tmpMeshes;
-                }
-            }
-
-            Exporter.INVENTOR_APPLICATION = null;
         }
         catch (Exception e)
         {
@@ -206,7 +156,7 @@ public partial class ExporterGUI : Form
 
     public void OpenExisting()
     {
-        if (skeletonBase != null && !WarnUnsaved()) return;
+        if (SkeletonBase != null && !WarnUnsaved()) return;
 
         string dirPath = OpenFolderPath();
 
@@ -214,15 +164,15 @@ public partial class ExporterGUI : Form
 
         try
         {
-            skeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
-            meshes = new List<BXDAMesh>();
+            SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
+            Meshes = new List<BXDAMesh>();
 
             var meshFiles = Directory.GetFiles(dirPath).Where(name => name.EndsWith(".bxda"));
             foreach (string fileName in meshFiles)
             {
                 BXDAMesh mesh = new BXDAMesh();
                 mesh.ReadFromFile(fileName);
-                meshes.Add(mesh);
+                Meshes.Add(mesh);
             }
         }
         catch (Exception e)
@@ -237,7 +187,7 @@ public partial class ExporterGUI : Form
 
     public bool SaveRobot(bool isSaveAs)
     {
-        if (skeletonBase == null || meshes == null) return false;
+        if (SkeletonBase == null || Meshes == null) return false;
 
         string dirPath = lastDirPath;
 
@@ -250,11 +200,11 @@ public partial class ExporterGUI : Form
 
         try
         {
-            BXDJSkeleton.WriteSkeleton(dirPath + "\\skeleton.bxdj", skeletonBase);
+            BXDJSkeleton.WriteSkeleton(dirPath + "\\skeleton.bxdj", SkeletonBase);
 
-            for (int i = 0; i < meshes.Count; i++)
+            for (int i = 0; i < Meshes.Count; i++)
             {
-                meshes[i].WriteToFile(dirPath + "\\node_" + i + ".bxda");
+                Meshes[i].WriteToFile(dirPath + "\\node_" + i + ".bxda");
             }
         }
         catch (Exception e)
@@ -271,17 +221,17 @@ public partial class ExporterGUI : Form
 
     public void ExporterReset()
     {
-        exporterProgress.ResetProgress();
+        exporter.ResetProgress();
     }
 
     public void ExporterSetProgress(double percentLength)
     {
-        exporterProgress.AddProgress((int) Math.Floor(percentLength) - exporterProgress.GetProgress());
+        exporter.AddProgress((int) Math.Floor(percentLength) - exporter.GetProgress());
     }
 
     public void ExporterSetSubText(string text)
     {
-        exporterProgress.SetProgressText(text);
+        exporter.SetProgressText(text);
     }
 
     private string OpenFolderPath()
@@ -334,9 +284,9 @@ public partial class ExporterGUI : Form
 
     private void ReloadPanels()
     {
-        jointEditorPane1.SetSkeleton(skeletonBase);
-        bxdaEditorPane1.loadModel(meshes);
-        robotViewer1.LoadModel(skeletonBase, meshes);
+        jointEditorPane1.SetSkeleton(SkeletonBase);
+        bxdaEditorPane1.loadModel(Meshes);
+        robotViewer1.LoadModel(SkeletonBase, Meshes);
     }
 
 }

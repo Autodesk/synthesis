@@ -6,7 +6,7 @@ static class Program
 
     public static void Main(String[] args)
     {
-        ExporterGUI GUI = new ExporterGUI();
+        SynthesisGUI GUI = new SynthesisGUI();
         GUI.ShowDialog();
     }
 

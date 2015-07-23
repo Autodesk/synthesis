@@ -5,20 +5,13 @@ using System.Drawing;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-public partial class InventorChooserPane : UserControl
+public partial class InventorChooserPane : UserControl, IDisposable
 {
-
-    public Inventor.Application InventorApplication;
-
-    private InteractionEvents interactionEvents;
-
-    private SelectEvents selectEvents;
-
-    private bool interactionActive;
 
     private BackgroundWorker SelectionAdder;
 
@@ -29,14 +22,6 @@ public partial class InventorChooserPane : UserControl
         SelectionAdder = new BackgroundWorker();
         SelectionAdder.DoWork += selectionAdder_DoWork;
         SelectionAdder.RunWorkerCompleted += selectionAdder_RunWorkerCompleted;
-    }
-
-    public void Kill()
-    {
-        if (!interactionActive) return;
-
-        SelectionAdder.CancelAsync();
-        DisableInteraction();
     }
 
     private List<ComponentOccurrence> GetComponents()
@@ -65,39 +50,7 @@ public partial class InventorChooserPane : UserControl
         return components;
     }
 
-    private void EnableInteraction()
-    {
-        interactionEvents = InventorApplication.CommandManager.CreateInteractionEvents();
-        interactionEvents.OnActivate += interactionEvents_OnActivate;
-        interactionEvents.Start();
-
-        treeviewInventor.HotTracking = false;
-        buttonSelect.Text = "End selection";
-
-        interactionActive = true;
-    }
-
-    private void DisableInteraction()
-    {
-        interactionEvents.Stop();
-
-        InventorApplication.ActiveDocument.SelectSet.Clear();
-
-        buttonAdd.Enabled = false;
-        treeviewInventor.HotTracking = true;
-        buttonSelect.Text = "Select from Inventor";
-
-        interactionActive = false;
-    }
-
-    private void interactionEvents_OnActivate()
-    {
-        selectEvents = interactionEvents.SelectEvents;
-        selectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
-        selectEvents.OnSelect += selectEvents_OnSelect;
-        selectEvents.OnPreSelect += selectEvents_OnPreSelect;
-    }
-
+    #region Events
     /// <summary>
     /// Allows the user to see if they have already added a collision component in select mode.
     /// </summary>
@@ -108,7 +61,8 @@ public partial class InventorChooserPane : UserControl
     /// <param name="ModelPosition"></param>
     /// <param name="ViewPosition"></param>
     /// <param name="View"></param>
-    private void selectEvents_OnPreSelect(ref object PreSelectEntity, out bool DoHighlight, ref ObjectCollection MorePreSelectEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+    private void selectEvents_OnPreSelect(ref object PreSelectEntity, out bool DoHighlight, ref ObjectCollection MorePreSelectEntities, 
+                                             SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
     {
         DoHighlight = true;
 
@@ -135,7 +89,8 @@ public partial class InventorChooserPane : UserControl
     /// <param name="ModelPosition"></param>
     /// <param name="ViewPosition"></param>
     /// <param name="View"></param>
-    private void selectEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+    private void selectEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, 
+                                       Point2d ViewPosition, Inventor.View View)
     {
         if (!buttonAdd.Enabled)
         {
@@ -149,51 +104,68 @@ public partial class InventorChooserPane : UserControl
     private void selectionAdder_DoWork(object sender, DoWorkEventArgs e)
     {
         treeviewInventor.Invoke(new Action<ObjectsEnumerator, Action<int, int>>(treeviewInventor.AddComponents),
-            selectEvents.SelectedEntities, new Action<int, int>((int progress, int total) =>
+            InventorChooser.SelectEvents.SelectedEntities, new Action<int, int>((int progress, int total) =>
                 {
-                    ExporterProgressForm.SetProgressTextStatic((Math.Round((progress / (float)total) * 100.0f, 2)).ToString() + "%");
-                    ExporterProgressForm.AddProgressStatic(
-                                                       (int)Math.Round(((progress / (float)total) - ExporterProgressForm.GetProgressStatic()) * 100.0f, 2));
+                    ExporterForm.Instance.SetProgressText((Math.Round((progress / (float)total) * 100.0f, 2)).ToString() + "%");
+                    ExporterForm.Instance.AddProgress((int)Math.Round(((progress / (float)total) - ExporterForm.Instance.GetProgress()) * 100.0f, 2));
                 }));
     }
 
     private void selectionAdder_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
-        ExporterProgressForm.ResetProgressStatic();
+        ExporterForm.Instance.ResetProgress();
 
-        InventorApplication.UserInterfaceManager.UserInteractionDisabled = false;
+        InventorChooser.InventorApplication.UserInterfaceManager.UserInteractionDisabled = false;
 
-        DisableInteraction();
+        InventorChooser.DisableInteraction();
         buttonSelect.Enabled = true;
 
-        List<ComponentOccurrence> c = GetComponents();
-        ExporterProgressForm.Instance.UpdateComponents(c);
+        ExporterForm.Instance.UpdateComponents(InventorChooser.Components);
     }
 
     private void buttonSelect_Click(object sender, EventArgs e)
     {
-        if (InventorApplication == null) return;
-
-        if (!interactionActive)
+        if (!InventorChooser.InteractionActive)
         {
-            EnableInteraction();
+            InventorChooser.EnableInteraction();
+
+            treeviewInventor.HotTracking = false;
+            buttonSelect.Text = "End selection";
+
+            InventorChooser.SelectEvents.OnPreSelect += selectEvents_OnPreSelect;
+            InventorChooser.SelectEvents.OnSelect += selectEvents_OnSelect;
         }
         else
         {
-            DisableInteraction();
+            InventorChooser.DisableInteraction();
+
+            buttonAdd.Enabled = false;
+            treeviewInventor.HotTracking = true;
+            buttonSelect.Text = "Select from Inventor";
         }
     }
 
     private void buttonAdd_Click(object sender, EventArgs e)
     {
-        InventorApplication.UserInterfaceManager.UserInteractionDisabled = true;
+        InventorChooser.InventorApplication.UserInterfaceManager.UserInteractionDisabled = true;
 
         buttonAdd.Enabled = false;
         buttonSelect.Enabled = false;
 
-        ExporterProgressForm.ResetProgressStatic();
+        ExporterForm.Instance.ResetProgress();
 
         SelectionAdder.RunWorkerAsync();
     }
+    #endregion
+
+    #region Implemented methods
+    public void Dispose()
+    {
+        if (SelectionAdder.IsBusy) SelectionAdder.CancelAsync();
+        if (InventorChooser.InteractionActive) InventorChooser.DisableInteraction();
+
+        Dispose(true);
+    }
+    #endregion
 
 }

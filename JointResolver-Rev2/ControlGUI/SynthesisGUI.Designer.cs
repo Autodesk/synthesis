@@ -1,6 +1,6 @@
 ﻿using EditorsLibrary;
 
-partial class ExporterGUI
+partial class SynthesisGUI
 {
     /// <summary>
     /// Required designer variable.
@@ -28,7 +28,7 @@ partial class ExporterGUI
     /// </summary>
     private void InitializeComponent()
     {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterGUI));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SynthesisGUI));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.bxdaEditorPane1 = new EditorsLibrary.BXDAEditorPane();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();

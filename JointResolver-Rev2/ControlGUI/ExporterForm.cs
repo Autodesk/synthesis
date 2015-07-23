@@ -13,11 +13,13 @@ using System.Windows.Forms;
 using Inventor;
 
 
-public partial class ExporterProgressForm : Form
+public partial class ExporterForm : Form
 {
 
-    public static ExporterProgressForm Instance;
+    public static ExporterForm Instance;
 
+    public RigidNode_Base ExportedNode;
+    public List<BXDAMesh> ExportedMeshes;
     public bool finished;
 
     public List<ComponentOccurrence> Components;
@@ -25,18 +27,9 @@ public partial class ExporterProgressForm : Form
     private TextWriter oldConsole;
     private TextboxWriter newConsole;
 
-    private delegate void resetProgressDelegate();
-    private delegate void addProgressDelegate(int value);
-    private delegate int getProgressDelegate();
-    private delegate void setProgressTextDelegate(string text);
-    private delegate void finishDelegate(string logFile);
-
-    public ExporterProgressForm(Inventor.Application inventorInstance, AutoResetEvent startEvent,
-                                System.Drawing.Color textColor, System.Drawing.Color backgroundColor)
+    public ExporterForm()
     {
         InitializeComponent();
-
-        inventorChooserPane1.InventorApplication = inventorInstance;
 
         Components = new List<ComponentOccurrence>();
 
@@ -45,8 +38,8 @@ public partial class ExporterProgressForm : Form
         newConsole = new TextboxWriter(logText);
         Console.SetOut(newConsole);
 
-        logText.ForeColor = textColor;
-        logText.BackColor = backgroundColor;
+        logText.ForeColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalTextColor);
+        logText.BackColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalBackgroundColor);
 
         label1.Text = "";
 
@@ -56,16 +49,18 @@ public partial class ExporterProgressForm : Form
         FormClosing += delegate(object sender, FormClosingEventArgs e)
         {
             Console.SetOut(oldConsole);
-            inventorChooserPane1.Kill();
+            inventorChooserPane1.Dispose();
+            jointGroupPane1.Dispose();
+
             finished = true;
-            startEvent.Set();
         };
 
         buttonStart.Click += delegate(object sender, EventArgs e)
         {
             if (!finished)
             {
-                startEvent.Set();
+                StartExporter();
+
                 buttonStart.Enabled = false;
             }
             else Close();
@@ -87,9 +82,9 @@ public partial class ExporterProgressForm : Form
 
     public void ResetProgress()
     {
-        if (progressBar1.InvokeRequired)
+        if (InvokeRequired)
         {
-            progressBar1.Invoke(new resetProgressDelegate(ResetProgress));
+            Invoke((Action)(() => ResetProgress()));
             return;
         }
 
@@ -99,9 +94,10 @@ public partial class ExporterProgressForm : Form
 
     public int GetProgress()
     {
-        if (progressBar1.InvokeRequired)
+        if (InvokeRequired)
         {
-            return (int)progressBar1.Invoke(new getProgressDelegate(GetProgress));
+            
+            return (int) Invoke((Func<int>)(() => GetProgress()));
         }
 
         return progressBar1.Value;
@@ -109,9 +105,9 @@ public partial class ExporterProgressForm : Form
 
     public void AddProgress(int percentLength)
     {
-        if (progressBar1.InvokeRequired)
+        if (InvokeRequired)
         {
-            progressBar1.Invoke(new addProgressDelegate(AddProgress), percentLength);
+            Invoke((Action<int>)((int toAdd) => AddProgress(toAdd)), percentLength);
             return;
         }
 
@@ -121,9 +117,9 @@ public partial class ExporterProgressForm : Form
 
     public void SetProgressText(string text)
     {
-        if (label1.InvokeRequired)
+        if (InvokeRequired)
         {
-            label1.Invoke(new setProgressTextDelegate(SetProgressText), text);
+            Invoke((Action<string>)((string newText) => SetProgressText(newText)), text);
             return;
         }
 
@@ -134,7 +130,7 @@ public partial class ExporterProgressForm : Form
     {
         if (InvokeRequired)
         {
-            Invoke(new finishDelegate(Finish), logFile);
+            Invoke((Action<string>)((string file) => Finish(file)), logFile);
             return;
         }
 
@@ -165,39 +161,53 @@ public partial class ExporterProgressForm : Form
             }
         };
 
+        SynthesisGUI.Instance.SkeletonBase = ExportedNode;
+        SynthesisGUI.Instance.Meshes = ExportedMeshes;
+
         finished = true;
     }
 
-    public string GetLogText()
+    private string GetLogText()
     {
         return logText.Text;
     }
 
-    public static void ResetProgressStatic()
+    private void StartExporter()
     {
-        Instance.ResetProgress();
+        var exporterThread = new Thread(RunExporter);
+
+        exporterThread.SetApartmentState(ApartmentState.MTA);
+        exporterThread.Start();
+
+        var exporterProgressThread = new Thread(CheckExporter);
+
+        exporterProgressThread.SetApartmentState(ApartmentState.STA);
+        exporterProgressThread.Start(exporterThread);
     }
 
-    public static int GetProgressStatic()
+    private void RunExporter()
     {
-        return Instance.GetProgress();
+        Exporter.LoadInventorInstance();
+
+        ExportedNode = Exporter.ExportSkeleton(Components);
+        ExportedMeshes = Exporter.ExportMeshes(ExportedNode, 
+                                               SynthesisGUI.ExporterSettings.meshResolutionValue == 1, SynthesisGUI.ExporterSettings.meshFancyColors);
+
+        ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
     }
 
-    public static void AddProgressStatic(int percentLength)
+    private void CheckExporter(object exporter)
     {
-        Instance.AddProgress(percentLength);
+        Thread exporterThread = (Thread) exporter;
+
+        exporterThread.Join();
+
+        string logPath = SynthesisGUI.ExporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+
+        Finish(logPath);
     }
 
-    public static void SetProgressTextStatic(string text)
-    {
-        Instance.SetProgressText(text);
-    }
-
-    public static void FinishStatic()
-    {
-        Instance.Finish();
-    }
-
+    #region Nested classes
     private class TextboxWriter : StringWriter
     {
 
@@ -251,6 +261,7 @@ public partial class ExporterProgressForm : Form
         }
 
     }
+    #endregion
 
 }
 

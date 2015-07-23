@@ -125,7 +125,7 @@ public class Exporter
 
                 try
                 {
-                    ExporterGUI.Instance.ExporterReset();
+                    SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
                     group.highRes = highRes;
                     group.colorFaces = colorFaces;
@@ -134,8 +134,8 @@ public class Exporter
                     surfs.ExportAll(group, (long progress, long total) =>
                     {
                         double totalProgress = (((double)progress / (double)total) * 100.0);
-                        ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), progress, total));
-                        ExporterGUI.Instance.ExporterSetProgress(totalProgress);
+                        SynthesisGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), progress, total));
+                        SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                     });
                     Console.WriteLine();
                     BXDAMesh output = surfs.GetOutput();

@@ -1,6 +1,6 @@
 ﻿namespace EditorsLibrary
 {
-    partial class ViewerSettings
+    partial class ViewerSettingsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewerSettings));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewerSettingsForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.checkboxDebug = new System.Windows.Forms.CheckBox();
             this.flavorText2 = new System.Windows.Forms.Label();
