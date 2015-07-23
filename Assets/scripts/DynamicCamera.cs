@@ -80,21 +80,19 @@ public class DynamicCamera : MonoBehaviour
 		public override void Update()
 		{
 			if (robot != null && robot.transform.childCount > 0)
-			{
+{
 				if(movingEnabled)
 					magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
 
-				rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
-				rotateVector = rotateYZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
-				mono.transform.position = rotateVector;
+					rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
+					rotateVector = rotateYZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
+					mono.transform.position = rotateVector;
 		
-				targetvector = auxFunctions.TotalCenterOfMass (robot);
-				mono.transform.LookAt (targetvector);
+					targetvector = auxFunctions.TotalCenterOfMass (robot);
+					mono.transform.LookAt (targetvector);
 			}
-
 			else
-				robot = GameObject.Find ("Robot");
-
+				robot = GameObject.Find("Robot");
 		}
 
 		public override void End () {
@@ -173,7 +171,15 @@ public class DynamicCamera : MonoBehaviour
 
 	}
 
-	CameraState cameraState;
+	CameraState _cameraState;
+
+	public CameraState cameraState
+	{
+		get
+		{
+			return _cameraState;
+		}
+	}
 
 	void Start ()
 	{
@@ -199,7 +205,7 @@ public class DynamicCamera : MonoBehaviour
 			}
 		}
 		
-		if (cameraState != null) cameraState.Update ();
+		if (_cameraState != null) _cameraState.Update ();
 	}
 
 	/// <summary>
@@ -208,9 +214,9 @@ public class DynamicCamera : MonoBehaviour
 	/// <param name="state">State</param>
 	public void SwitchCameraState(CameraState state)
 	{
-		if (cameraState != null) cameraState.End ();
-		cameraState = state;
-		cameraState.Init ();
+		if (_cameraState != null) _cameraState.End ();
+		_cameraState = state;
+		_cameraState.Init ();
 	}
 
 	/// <summary>
