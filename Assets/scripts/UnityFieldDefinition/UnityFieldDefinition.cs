@@ -36,10 +36,34 @@ public class UnityFieldDefinition : FieldDefinition_Base
 			}
 			subObject.GetComponent<MeshRenderer>().materials = matls;
 
+			Collider collider = null;
+
+			switch (GetChildren()[id].nodeCollisionType)
+			{
+			case FieldNodeCollisionType.MESH:
+				collider = subObject.AddComponent<MeshCollider>();
+				break;
+			case FieldNodeCollisionType.BOX:
+				collider = subObject.AddComponent<BoxCollider>();
+				break;
+			}
+
+			if (collider != null)
+			{
+				if (collider is MeshCollider)
+				{
+					MeshCollider meshCollider = (MeshCollider)collider;
+					meshCollider.convex = GetChildren()[id].convex;
+				}
+				collider.material.dynamicFriction = collider.material.staticFriction = (float)GetChildren()[id].friction / 10f;
+				collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
+			}
+			/*
 			if (GetChildren()[id].nodeCollisionType == FieldNodeCollisionType.MESH)
 			{
 				MeshCollider meshCollider = subObject.AddComponent<MeshCollider>();
 			}
+			*/
 		});
 		
 		if (!unityObject.GetComponent<Rigidbody>())
