@@ -38,6 +38,14 @@ public partial class JointGroupPane : UserControl, IDisposable
 
         foreach (ComponentOccurrence component in components)
         {
+            UpdateComponent(component);
+        }
+    }
+
+    private void UpdateComponent(ComponentOccurrence component)
+    {
+        foreach (ComponentOccurrence subComponent in component.SubOccurrences)
+        {
             if (component.Joints.Count > 0)
             {
                 if (defaultJointGroup == null)
@@ -51,6 +59,8 @@ public partial class JointGroupPane : UserControl, IDisposable
                     defaultJointGroup.AddJoint(joint);
                 }
             }
+
+            UpdateComponent(subComponent);
         }
     }
 
