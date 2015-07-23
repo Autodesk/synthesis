@@ -67,6 +67,10 @@ public partial class UnityRigidNode : RigidNode_Base
         //if the node has a joint and driver
         if (GetSkeletalJoint() != null && GetSkeletalJoint().cDriver != null)
         {
+			if(GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
+			{
+				Debug.Log("swag money");
+			}
             if (GetSkeletalJoint().cDriver.GetDriveType().IsPneumatic())
             {
                 PneumaticDriverMeta pneum = GetSkeletalJoint().cDriver.GetInfo<PneumaticDriverMeta>();
@@ -110,6 +114,7 @@ public partial class UnityRigidNode : RigidNode_Base
                 ((HingeJoint) joint).motor = motor;
                 ((HingeJoint) joint).useMotor = false;
             }
+
         }
     }
 
@@ -122,7 +127,7 @@ public partial class UnityRigidNode : RigidNode_Base
         {
             return;
         }
-        //this is the conditional for Identified wheels
+        //this is the conditional for Identifying wheels
         if (GetSkeletalJoint().GetJointType() == SkeletalJointType.ROTATIONAL)
         {
             if (this.HasDriverMeta<WheelDriverMeta>())
@@ -148,6 +153,7 @@ public partial class UnityRigidNode : RigidNode_Base
             {
                 CreateWheel();
             }
+
         }
         else if (GetSkeletalJoint().GetJointType() == SkeletalJointType.CYLINDRICAL)
         {
@@ -189,9 +195,16 @@ public partial class UnityRigidNode : RigidNode_Base
                             nodeL.linearLimitLow,
                             nodeL.linearLimitHigh);
             });
-
+			//TODO make code good
+			if(GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
+			{
+				Debug.Log(GetSkeletalJoint().cDriver.portA);
+				unityObject.AddComponent<ElevatorScript>();
+				Debug.Log("added");
+			}
         }
         SetXDrives();
+
     }
 
     /// <summary>

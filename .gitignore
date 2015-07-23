@@ -213,10 +213,12 @@ develop-eggs/
 # Installer logs
 pip-log.txt
 
-<<<<<<< HEAD
 # Unit test / coverage reports
 .coverage
 .tox
+=======
+# Icon must ends with two \r.
+Icon
 
 #Translations
 *.mo
@@ -240,4 +242,3 @@ Plugins/SimulatorAPI.dll
 .cproject
 .settings
 .csettings
->>>>>>> physics-improvments

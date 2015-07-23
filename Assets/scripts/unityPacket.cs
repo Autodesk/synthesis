@@ -13,15 +13,17 @@ public class unityPacket
 		public SolenoidModule[] solenoid = new SolenoidModule[1];
 		public class DIOModule
 		{
-			public const int LENGTH = 12 + (10 * 4);
+			/* 3 = relay forward, reverse, and digital output; 10 = pwmValues.Length */ 
+			public const int LENGTH = sizeof(UInt32)*3 + (10 * sizeof(float)) + (32*sizeof(float))*1;
 			public UInt32 relayForward;
 			public UInt32 relayReverse;
 			public UInt32 digitalOutput;
 			public float[] pwmValues = new float[10];
+            public float[] canValues = new float[10];
 		}
-
 		public class SolenoidModule
 		{
+			/* 1 = one byte for state */
 			public const int LENGTH = 1;
 			public byte state;
 		} 
@@ -32,14 +34,20 @@ public class unityPacket
 			for (int i = 0; i < dio.Length; i++)
 			{
 				int offset = i * DIOModule.LENGTH;
-				dio [i] = new DIOModule();
-				dio [i].relayForward = BitConverter.ToUInt32(pack, offset);
-				dio [i].relayReverse = BitConverter.ToUInt32(pack, offset + 4);
-				dio [i].digitalOutput = BitConverter.ToUInt32(pack, offset + 8);
+				dio[i] = new DIOModule();
+				dio[i].relayForward = BitConverter.ToUInt32(pack, offset);
+				dio[i].relayReverse = BitConverter.ToUInt32(pack, offset + 4);
+				dio[i].digitalOutput = BitConverter.ToUInt32(pack, offset + 8);
 				for (int j = 0; j < dio[i].pwmValues.Length; j++)
 				{
-					dio [i].pwmValues [j] = BitConverter.ToSingle(pack, offset + 12 + (4 * j));
+					dio[i].pwmValues[j] = BitConverter.ToSingle(pack, offset + 12 + (4 * j));
 				}
+				//Debug.Log("PWM: " + BitConverter.ToString(pack));
+			
+                //for (int j = 0; j < dio[i].canValues.Length; j++)
+                //{
+                //    dio[i].canValues[j] = BitConverter.ToSingle(pack, offset + 12 + (4 * 10) + (4 * j));
+                //}
 			}
 			for (int i = 0; i < solenoid.Length; i++)
 			{
@@ -47,14 +55,9 @@ public class unityPacket
 				solenoid [i] = new SolenoidModule();
 				solenoid [i].state = pack [offset];
 			}
-		} 
-		
-		
-		
+		}
 	}
 
-	
-	
 	public volatile bool active;
 	public volatile bool stillSend = true;
 	public volatile bool stillRecieve = true;
@@ -96,7 +99,6 @@ public class unityPacket
 			threadSend.Join();
 			threadRecieve.Join();
 			Debug.Log("Stopping UnityPacket...");
-			
 		} catch (Exception ex)
 		{
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
@@ -116,6 +118,7 @@ public class unityPacket
 			IPEndPoint ipEnd = new IPEndPoint(IPAddress.Loopback, 2550);
 			server.ExclusiveAddressUse = false;
 			server.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            Debug.Log("Still recieve is " + (stillRecieve + ".").ToLower());
 			if (stillRecieve)
 			{
 				stillRecieve = false;
@@ -123,10 +126,10 @@ public class unityPacket
 			{
                 Debug.Log("Binding...");
 				server.Client.Bind(ipEnd);
-                
 			}
 			while (active)
-			{	
+			{
+                //Debug.Log(server.Available);
 				if (server.Available <= 0)
 				{
 					Thread.Sleep(20);
@@ -134,10 +137,10 @@ public class unityPacket
 				}
                 
                 byte[] temp = server.Receive(ref ipEnd);
+                //Debug.LogError("Packet len: " + temp.Length);
 				serverMutex.WaitOne();
 				receiveBuffer = temp;
 				serverMutex.ReleaseMutex();
-
 			}
 				
 			//int portFromInvAPI = 18;

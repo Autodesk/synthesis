@@ -45,41 +45,53 @@ public class auxFunctions
 	
     public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)
 	{
-		Quaternion q = new Quaternion();
-		List<Vector3> wheels = new List<Vector3>();
 
-        Vector3 center = new Vector3(0, 0, 0);
-        foreach (GameObject collider in wheelcolliders)
-        {
-            wheels.Add(collider.transform.position);
-            center += collider.transform.position;
-        }
-        center /= wheels.Count;
+            Quaternion q = new Quaternion();
+            List<Vector3> wheels = new List<Vector3>();
 
-        for (int i = 0; i < wheels.Count; i++)
-        {
-            int min = i;
-            for (int j = i + 1; j < wheels.Count; j++)
-                if ((wheelcolliders[min].transform.position - center).magnitude > (wheelcolliders[j].transform.position - center).magnitude)
-                    min = j;
-            GameObject tmp = wheelcolliders[i];
-            wheelcolliders[i] = wheelcolliders[min];
-            wheelcolliders[min] = tmp;
-        }
+            foreach (GameObject collider in wheelcolliders)
+            {
+                wheels.Add(collider.transform.position);
+            }
+            if (wheels.Count > 2)
+            {
+                Vector3 a = wheels[0] - wheels[1];
+                Vector3 b = a;
 
-        Vector3 com = auxFunctions.TotalCenterOfMass(parent.gameObject);
-		Vector3 a = wheels [0] - wheels [1];
-		Vector3 b = a;
+                for (int i = 2; Mathf.Abs(Vector3.Dot(a, b) / (a.magnitude * b.magnitude)) > .9f && i < wheels.Count; i++)
+                    b = wheels[0] - wheels[i];
+                Vector3 norm = Vector3.Cross(a, b).normalized;
+                Debug.DrawRay(wheels[0], norm);
 
-		for(int i = 2; Mathf.Abs(Vector3.Dot(a,b)/(a.magnitude*b.magnitude)) > .9f && i < wheels.Count; i++) 
-			b = wheels[0] - wheels[i];
-		Vector3 norm = Vector3.Cross(a,b).normalized;
+                q.SetFromToRotation(norm, Vector3.up);
+                parent.localRotation *= q;
 
+                parent.position = new Vector3(parent.position.x, parent.position.y + .1f, parent.position.z);
+            }
+            //TODO THROW WHEEL EXCEPTION
+      
+	}
+	public static Boolean rightRobot(List<GameObject> wheelcolliders, Transform parent)
+	{
+		Quaternion q = new Quaternion ();
+		List<Vector3> wheels = new List<Vector3> ();
+		
+		foreach (GameObject collider in wheelcolliders) 
+			wheels.Add (collider.transform.position);
+		
+		Vector3 com = auxFunctions.TotalCenterOfMass(parent.gameObject);
+		Debug.Log (com.y < wheels [0].y);
+		q.SetFromToRotation (parent.localToWorldMatrix*Vector3.up,parent.localToWorldMatrix*Vector3.down);
+		if (com.y > wheels [0].y) 
+		{
+			return false;
+		}
+		else
+		{
+			parent.localRotation *= q; 
+			return true;
+		}
 
-        norm.y *= Mathf.Sign(norm.y * com.y);
-		q.SetFromToRotation (norm, new Vector3(0,Math.Sign ((norm - wheels[0]).y),0));
-
-        parent.position = new Vector3(parent.position.x, parent.position.y + .1f, parent.position.z);
 	}
     public static void IgnoreCollisionDetection(List<Collider> meshColliders)
     {
