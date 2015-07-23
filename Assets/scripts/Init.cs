@@ -329,8 +329,7 @@ public class Init : MonoBehaviour
         {
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
-            //activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
-			activeRobot.transform.localPosition = new Vector3(0f, 0f, 0f);
+			activeRobot.transform.localPosition = new Vector3(0f, 0.25f, 0f);
             activeRobot.transform.localRotation = rotation;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -457,7 +456,7 @@ public class Init : MonoBehaviour
 			return new UnityFieldDefinition();
 		};
 		
-		string fieldDirectory = Application.dataPath + "\\resources\\FieldOutput\\";
+		string fieldDirectory = Application.dataPath + "\\Assets\\resources\\FieldOutput\\";
 		
 		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(fieldDirectory + "field.bxdf");
 		field.CreateTransform(activeField.transform);
