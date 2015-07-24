@@ -49,16 +49,26 @@ public class Init : MonoBehaviour
     /// <remarks>
     /// This allows reloading the robot to be delayed until a "Loading" dialog can be drawn.
     /// </remarks>
-    private volatile int reloadInFrames;
+    private volatile int reloadRobotInFrames;
+
+	/// <summary>
+	/// Used to determine if the field needs to be reloaded.
+	/// </summary>
+	/// <remarks>
+	/// Allows the field loading to be delayed until a "Loading" dialog can be drawn.
+	/// </remarks>
+	private volatile int reloadFieldInFrames;
 
     public Init()
     {
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+		Debug.Log(filePath);
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
 	
 		time_stop = false;
-		reloadInFrames = -1;
+		reloadRobotInFrames = -1;
+		reloadFieldInFrames = -1;
 		showStatWindow = true;
 		rotation = Quaternion.identity;
     }
@@ -212,7 +222,7 @@ public class Init : MonoBehaviour
 			gui.hideGuiCallback = HideGuiSidebar;
 			gui.showGuiCallback = ShowGuiSidebar;
 
-            gui.AddWindow("Load Model", new FileBrowser(), (object o) =>
+            gui.AddWindow("Load Robot", new FileBrowser("Load Robot"), (object o) =>
             {
                 string fileLocation = (string) o;
                 // If dir was selected...
@@ -224,13 +234,35 @@ public class Init : MonoBehaviour
                 if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
                 {
                     this.filePath = parent.FullName + "\\";
-                    reloadInFrames = 2;
+                    reloadRobotInFrames = 2;
                 }
                 else
                 {
                     UserMessageManager.Dispatch("Invalid selection!", 10f);
                 }
 
+				dynamicCamera.EnableMoving();
+			});
+
+			gui.AddWindow("Load Field", new FileBrowser("Load Field"), (object o) =>
+			{
+				string fileLocation = (string) o;
+				// If dir was selected...
+				if (File.Exists(fileLocation + "\\definition.bxdf"))
+				{
+					fileLocation += "\\definition.bxdf";
+				}
+				DirectoryInfo parent = Directory.GetParent(fileLocation);
+				if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\definition.bxdf"))
+				{
+					this.filePath = parent.FullName + "\\";
+					reloadFieldInFrames = 2;
+				}
+				else
+				{
+					UserMessageManager.Dispatch("Invalid selection!", 10f);
+				}
+				
 				dynamicCamera.EnableMoving();
 			});
 
@@ -268,22 +300,6 @@ public class Init : MonoBehaviour
 					}
 				});
 
-			/*gui.AddWindow ("Switch Field", new DialogWindow("Switch Field",
-				"Aerial Asssist (2014)", "Recycle Rush (2015)"), (object o) =>
-			    {
-					gui.guiVisible = false;
-
-					switch ((int) o)
-					{
-					case 0:
-						SetField(FieldType.FRC_2014);
-						break;
-					case 1:
-						SetField(FieldType.FRC_2015);
-						break;
-					}
-				});*/
-
 			HotkeysWindow();
 
 			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
@@ -312,7 +328,7 @@ public class Init : MonoBehaviour
 
         gui.Render();
 
-        if (reloadInFrames >= 0)
+        if (reloadRobotInFrames >= 0 || reloadFieldInFrames >= 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
@@ -370,7 +386,7 @@ public class Init : MonoBehaviour
 		totes.Clear ();
     }
 
-    private void TryLoad()
+    private void TryLoadRobot()
     {
         if (activeRobot != null)
         {
@@ -421,6 +437,31 @@ public class Init : MonoBehaviour
         gui.guiVisible = false;
     }
 
+	private void TryLoadField()
+	{
+		//Debug.Log(filePath);
+		if (activeField != null)
+		{
+			UnityEngine.Object.Destroy(activeField);
+		}
+		if (filePath != null)
+		{
+			activeField = new GameObject("Field");
+			activeField.transform.parent = transform;
+			
+			FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
+			{
+				return new UnityFieldDefinition();
+			};
+
+			field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
+			field.CreateTransform(activeField.transform);
+			field.CreateMesh(filePath + "mesh.bxda");
+			field.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+		}
+		gui.guiVisible = false;
+	}
+
     void Start()
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
@@ -448,22 +489,10 @@ public class Init : MonoBehaviour
 
 		totes = new List<GameObject> ();
 
-		activeField = new GameObject("Field");
-		activeField.transform.parent = transform;
-		
-		FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
-		{
-			return new UnityFieldDefinition();
-		};
-		
-		string fieldDirectory = Application.dataPath + "\\Assets\\resources\\FieldOutput\\";
-		
-		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(fieldDirectory + "field.bxdf");
-		field.CreateTransform(activeField.transform);
-		field.CreateMesh(fieldDirectory + "field.bxda");
-		field.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+		filePath = Application.dataPath + "\\resources\\FieldOutput\\";
 
-        reloadInFrames = 2;
+        reloadRobotInFrames = 2;
+		reloadFieldInFrames = 2;
     }
 
     void OnEnable()
@@ -478,11 +507,18 @@ public class Init : MonoBehaviour
 
     void Update()
     {
-        if (reloadInFrames >= 0 && reloadInFrames-- == 0)
+		//Debug.Log(filePath);
+        if (reloadRobotInFrames >= 0 && reloadRobotInFrames-- == 0)
         {
-            reloadInFrames = -1;
-            TryLoad();
+            reloadRobotInFrames = -1;
+            TryLoadRobot();
         }
+
+		if (reloadFieldInFrames >= 0 && reloadFieldInFrames-- == 0)
+		{
+			reloadFieldInFrames = -1;
+			TryLoadField();
+		}
 
 		// Only allow camera moving if gui is not showing
 		if (gui != null && !gui.guiVisible) 

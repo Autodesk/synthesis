@@ -21,6 +21,11 @@ class FileBrowser : OverlayWindow
     /// </summary>
     private string directoryLocation;
 
+	/// <summary>
+	/// The title of the window.
+	/// </summary>
+	private string title;
+
     private bool _active;
 
     public event Action<object> OnComplete;
@@ -49,8 +54,10 @@ class FileBrowser : OverlayWindow
     /// </summary>
     private float lastClick = 0;
 
-    public FileBrowser()
+    public FileBrowser(string windowTitle)
     {
+		title = windowTitle;
+
         string exampleDir = Application.dataPath + "\\..\\examples\\default-robot-chassis\\synthesis-output";
         // If we have a last-used directory.
         if (BXDSettings.Instance.LastSkeletonDirectory != null && Directory.Exists(BXDSettings.Instance.LastSkeletonDirectory))
@@ -182,7 +189,7 @@ class FileBrowser : OverlayWindow
     {
         if (_active)
         {
-            GUI.Window(0, windowRect, FileBrowserWindow, "Browse");
+            GUI.Window(0, windowRect, FileBrowserWindow, title);
         }
     }
 
