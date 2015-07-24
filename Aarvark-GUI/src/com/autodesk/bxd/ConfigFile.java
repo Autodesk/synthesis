@@ -23,10 +23,6 @@ public class ConfigFile {
    public static enum Delims {Version, Loopback, TeamNumber}; 
    
     public ConfigFile (){
-        File f = new File("config.txt");
-        if (f.exists() == false){
-            System.out.println();
-        }
     }
     
     public boolean writeLine(String line){
@@ -55,6 +51,7 @@ public class ConfigFile {
                 StringTokenizer tokens4days = new StringTokenizer(content, "\n");
                 String[] tokens = content.split("\n");
                 for (int j = 0; j < tokens4days.countTokens(); j++){
+                    System.out.println(tokens[j]);
                     if(tokens[j].contains(returnDelims(delim))){
                         refined = tokens[j].substring(tokens[j].lastIndexOf(returnDelims(delim)), tokens[j].length());
                     }
@@ -65,6 +62,16 @@ public class ConfigFile {
             e.getCause();
             return(null);
         }
+    }
+    
+    public void configTheFile(int Version, int TeamNumber, String name){
+        File f = new File("config.txt");
+        if (f.exists() == false){
+            System.out.println();
+        }
+        f.mkdir();
+        writeLine():
+        
     }
     
     public String returnDelims(Delims delim){
@@ -78,6 +85,7 @@ public class ConfigFile {
                 break;
             case TeamNumber:
                 delimeter = "[TeamNumber]: ";
+                break;
             default: 
                 delimeter = "Can't find the specified delimeter";
                 break;
@@ -94,16 +102,16 @@ public class ConfigFile {
     }
     
     public void setTeamNumber(int number){
-        writeLine(returnDelims(Delims.Loopback) + number);
+        writeLine(returnDelims(Delims.TeamNumber) + number);
     }
     
-    public void getVersion(){
-        readLine(Delims.Version);
+    public String getVersion(){
+        return readLine(Delims.Version);
     }
-    public void getLoopBack(){
-        readLine(Delims.Version);
+    public String getLoopBack(){
+        return readLine(Delims.Loopback);
     }
-    public void getTeamNumber(){
-        readLine(Delims.Version);
+    public String getTeamNumber(){
+        return readLine(Delims.TeamNumber);
     }  
 }
