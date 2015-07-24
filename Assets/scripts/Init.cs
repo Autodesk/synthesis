@@ -41,8 +41,7 @@ public class Init : MonoBehaviour
 	private float oldSpeed;
 	private bool showStatWindow;
 	private Quaternion rotation;
-
-
+	
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
     /// </summary>
@@ -489,7 +488,7 @@ public class Init : MonoBehaviour
 
 		totes = new List<GameObject> ();
 
-		filePath = Application.dataPath + "\\resources\\FieldOutput\\";
+		filePath = Application.dataPath + "\\Assets\\resources\\FieldOutput\\";
 
         reloadRobotInFrames = 2;
 		reloadFieldInFrames = 2;
@@ -518,6 +517,7 @@ public class Init : MonoBehaviour
 		{
 			reloadFieldInFrames = -1;
 			TryLoadField();
+			resetRobot();
 		}
 
 		// Only allow camera moving if gui is not showing
