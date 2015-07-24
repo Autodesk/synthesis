@@ -22,7 +22,8 @@ import javax.swing.JTextArea;
  */
 public class Console {
 
-    public static List<Thread> threads = new ArrayList<Thread>();
+    public static List<Thread> threads = new ArrayList<>();
+    public static List<Process> processes = new ArrayList<>();
     public static JTextArea area;
     public static JButton reload;
     public static JFrame frame;
@@ -33,6 +34,7 @@ public class Console {
         Thread inputStreamThread = new Thread(() -> {
             try {
                 Process process = new ProcessBuilder(file).start();
+                processes.add(process);
                 InputStream is = process.getInputStream();
                 InputStream es = process.getErrorStream();
                 InputStreamReader isr = new InputStreamReader(is);
@@ -73,10 +75,19 @@ public class Console {
         threads.stream().forEach((t) -> {
             t.stop();
         });
+        processes.stream().forEach((t) -> {
+           t.destroyForcibly();
+        });
         threads.clear();
     }
     
     public static boolean running() {
         return threads.size() > 0;
+    }
+    
+    @Override
+    public void finalize() throws Throwable {
+       super.finalize();
+       
     }
 }
