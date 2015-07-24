@@ -84,3 +84,6 @@ FRC_Lib_Version.ini
 .cproject
 .settings
 .csettings
+/Aarvark-GUI/dist/
+/Aarvark-GUI - Copy/build/
+/Aarvark-GUI - Copy/nbproject/private/
