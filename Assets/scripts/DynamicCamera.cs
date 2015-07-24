@@ -62,34 +62,42 @@ public class DynamicCamera : MonoBehaviour
 	/// </summary>
 	public class OrbitState : CameraState
 	{
-		Vector3 targetvector;
+		Vector3 targetVector;
 		Vector3 rotateVector;
-		int magnification = 5;
+		Vector3 lagVector;
+		float lagResponsiveness = 10f;
+		float magnification = 5.0f;
 		GameObject robot;
 
 		public OrbitState(MonoBehaviour mono)
 		{
-			this.mono = mono;	
+			this.mono = mono;
 		}
 
 		public override void Init()
 		{
 			robot = GameObject.Find ("Robot");
+			rotateVector = new Vector3(0f, 1f, 0f);
+			lagVector = rotateVector;
 		}
 
 		public override void Update()
 		{
 			if (robot != null && robot.transform.childCount > 0)
-{
+			{
 				if(movingEnabled)
-					magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
+				{
+					//magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
+					magnification = Mathf.Max (Mathf.Min (magnification - (Input.GetAxis ("Mouse ScrollWheel") * magnification), 12f), 0.1f);
 
-					rotateVector = rotateXZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
-					rotateVector = rotateYZ (rotateVector, targetvector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
-					mono.transform.position = rotateVector;
+					rotateVector = rotateXZ (rotateVector, targetVector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
+					rotateVector = rotateYZ (rotateVector, targetVector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
+					lagVector += (rotateVector - lagVector) * (lagResponsiveness * Time.deltaTime);
+					mono.transform.position = lagVector;
 		
-					targetvector = auxFunctions.TotalCenterOfMass (robot);
-					mono.transform.LookAt (targetvector);
+					targetVector = auxFunctions.TotalCenterOfMass (robot);
+					mono.transform.LookAt (targetVector);
+				}
 			}
 			else
 				robot = GameObject.Find("Robot");
@@ -114,7 +122,7 @@ public class DynamicCamera : MonoBehaviour
 			Vector3 output = vector;
 			output.y = Mathf.Cos (theta) * (vector.y ) - Mathf.Sin (theta) * (vector.z ) ;
 			output.z = Mathf.Sin (theta) * (vector.y ) + Mathf.Cos (theta) * (vector.z ) ;
-			output.y = output.y > 0.1f ? output.y : 0.1f;
+			//output.y = output.y > 0.1f ? output.y : 0.1f;
 
 			return output.normalized*mag + origin;
 		}
