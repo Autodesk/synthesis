@@ -70,8 +70,6 @@ public class ConfigFile {
             System.out.println();
         }
         f.mkdir();
-        writeLine():
-        
     }
     
     public String returnDelims(Delims delim){
