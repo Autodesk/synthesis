@@ -8,12 +8,10 @@ package com.autodesk.bxd;
 import java.awt.Desktop;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -327,7 +325,7 @@ public class AardvarkFrame extends javax.swing.JFrame {
         if (Console.running()) {
             int n = JOptionPane.showConfirmDialog(
                     this,
-                    "Are you sure you want to terminate the current process and start another?",
+                    "Are you sure you want to terminate the current process?",
                     "Confirm",
                     JOptionPane.YES_NO_OPTION);
             if (n == 0) {
@@ -357,15 +355,11 @@ public class AardvarkFrame extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AardvarkFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AardvarkFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AardvarkFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(AardvarkFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+
         //</editor-fold>
 
         /* Create and display the form */
@@ -373,6 +367,13 @@ public class AardvarkFrame extends javax.swing.JFrame {
             public void run() {
                 AardvarkFrame frame = new AardvarkFrame();
                 frame.setBounds(0, 0, 800, 600);
+
+                frame.addWindowListener(new WindowAdapter() {
+                    public void windowClosing(WindowEvent e) {
+                        Console.kill();
+                    }
+                });
+
                 frame.setVisible(true);
                 frame.setWindowPosition(frame, 0);
                 frame.invalidate();
