@@ -375,6 +375,7 @@ public class AardvarkFrame extends javax.swing.JFrame {
                 frame.setBounds(0, 0, 800, 600);
                 frame.setVisible(true);
                 frame.setWindowPosition(frame, 0);
+                frame.invalidate();
                 try {
                     frame.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("com/autodesk/bxd/res/ico.png")));
                 } catch (IOException ex) {
