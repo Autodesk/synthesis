@@ -27,6 +27,7 @@
     <ClCompile Include="src\FRCNetComm\crc32.cpp" />
     <ClCompile Include="src\ChipObject\NiIRQImpl.cpp" />
     <ClCompile Include="src\FRCNetComm\FRCCAN.cpp" />
+    <ClCompile Include="src\ChipObject\SensorHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\emulator.h" />
@@ -51,5 +52,6 @@
     <ClInclude Include="include\ChipObject\tInterruptImpl.h" />
     <ClInclude Include="include\ChipObject\tSolenoidImpl.h" />
     <ClInclude Include="include\ChipObject\tWatchcatImpl.h" />
+    <ClInclude Include="include\ChipObject\SensorHandler.h" />
   </ItemGroup>
 </Project>

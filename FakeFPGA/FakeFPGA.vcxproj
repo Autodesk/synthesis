@@ -143,6 +143,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\ChipObject\SensorHandler.h" />
     <ClInclude Include="include\FRCNetComm\crc32.h" />
     <ClInclude Include="include\ChipObject\NiFakeFpga.h" />
     <ClInclude Include="include\ChipObject\NiFpgaState.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="src\ChipObject\NiIRQImpl.cpp" />
     <ClCompile Include="src\ChipObject\niLoadOut.cpp" />
     <ClCompile Include="src\ChipObject\NiRio.cpp" />
+    <ClCompile Include="src\ChipObject\SensorHandler.cpp" />
     <ClCompile Include="src\ChipObject\tAccumulatorImpl.cpp" />
     <ClCompile Include="src\ChipObject\tAIImpl.cpp" />
     <ClCompile Include="src\ChipObject\tAlarmImpl.cpp" />
