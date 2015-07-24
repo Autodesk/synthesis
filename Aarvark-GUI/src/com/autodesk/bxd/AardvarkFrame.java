@@ -8,9 +8,12 @@ package com.autodesk.bxd;
 import java.awt.Desktop;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
@@ -78,9 +81,11 @@ public class AardvarkFrame extends javax.swing.JFrame {
         mainPane = new javax.swing.JScrollPane();
         console = new javax.swing.JTextArea();
         executable = new javax.swing.JTextField();
+        stopButton = new javax.swing.JButton();
         mainMenu = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         loadExe = new javax.swing.JMenuItem();
+        loopbackAdapterItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         tutorialsItem = new javax.swing.JMenuItem();
         aboutItem = new javax.swing.JMenuItem();
@@ -109,6 +114,13 @@ public class AardvarkFrame extends javax.swing.JFrame {
 
         executable.setText("C:\\path\\to\\executable\\RobotCode.exe");
 
+        stopButton.setText("Stop");
+        stopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopButtonActionPerformed(evt);
+            }
+        });
+
         menuFile.setText("File");
 
         loadExe.setText("Load from Executable");
@@ -118,6 +130,14 @@ public class AardvarkFrame extends javax.swing.JFrame {
             }
         });
         menuFile.add(loadExe);
+
+        loopbackAdapterItem.setText("Setup Loopback Adapter");
+        loopbackAdapterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loopbackAdapterItemActionPerformed(evt);
+            }
+        });
+        menuFile.add(loopbackAdapterItem);
 
         mainMenu.add(menuFile);
 
@@ -154,6 +174,8 @@ public class AardvarkFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(reloadButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(stopButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(executable)))
                 .addContainerGap())
         );
@@ -165,7 +187,8 @@ public class AardvarkFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(reloadButton)
-                    .addComponent(executable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(executable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(stopButton))
                 .addContainerGap())
         );
 
@@ -183,6 +206,7 @@ public class AardvarkFrame extends javax.swing.JFrame {
                         "Confirm",
                         JOptionPane.YES_NO_OPTION);
                 if (n == 0) {
+                    Console.kill();
                     Console.start(executable.getText());
                     console.setText("");
                     currentFile = executable.getText();
@@ -190,6 +214,7 @@ public class AardvarkFrame extends javax.swing.JFrame {
                     executable.setText(currentFile);
                 }
             } else {
+                Console.kill();
                 Console.start(executable.getText());
                 console.setText("");
                 currentFile = executable.getText();
@@ -222,7 +247,7 @@ public class AardvarkFrame extends javax.swing.JFrame {
             }
         } else {
             JOptionPane.showMessageDialog(this,
-                "Your browser could not be opened by us. Visit http://bxd.autodesk.com/synthesis/DriverStation.");
+                    "Your browser could not be opened by us. \nVisit http://bxd.autodesk.com/synthesis/DriverStation.");
         }
     }//GEN-LAST:event_tutorialsItemActionPerformed
 
@@ -230,6 +255,91 @@ public class AardvarkFrame extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this,
                 "Created by the BXD Synthesis team at Autodesk Inc.");
     }//GEN-LAST:event_aboutItemActionPerformed
+
+    private void loopbackAdapterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loopbackAdapterItemActionPerformed
+        String loopbackAdapter = (String) JOptionPane.showInputDialog(
+                this,
+                "Enter the name of your loopback adapter:",
+                "Loopback adapter",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                "Local Area Connection 2");
+        if (loopbackAdapter == null) {
+            return; // on cancel actually cancel
+        }
+        String robotNumber = (String) JOptionPane.showInputDialog(
+                this,
+                "Enter your team number:",
+                "Team number",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                "9999");
+        if (robotNumber == null) {
+            return; // on cancel actually cancel
+        }
+        int teamNumber = 9999;
+        boolean invalidTeam = false;
+        try {
+            teamNumber = Integer.parseInt(robotNumber);
+        } catch (NumberFormatException e) {
+            invalidTeam = true;
+        }
+
+        if (teamNumber > 9999 || teamNumber < 0) {
+            invalidTeam = true;
+        }
+        if (invalidTeam) {
+            JOptionPane.showMessageDialog(this,
+                    "Your team number is invalid.");
+        } else {
+            try {
+                /*
+                 Apperently if you try to include an executable in the .jar file and extract
+                 it to a temporary directory and try to run it, antivirus software starts to
+                 dislike you.
+                 */
+
+                // /*sketchy virusy behavior that luckily is not allowed (and is therefore commented out)*/
+//                String property = "java.io.tmpdir";
+//                String tempDir = System.getProperty(property);
+//
+//                InputStream input = getClass().getResourceAsStream("/com/autodesk/bxd/res/SetupLoopbackAdapter");
+//                File targetFile = new File(tempDir + "\\SetupLoopbackAdapter.exe");
+//                OutputStream outStream = new FileOutputStream(targetFile);
+//
+//                byte[] buffer = new byte[8 * 1024];
+//                int bytesRead;
+//                while ((bytesRead = input.read(buffer)) != -1) {
+//                    outStream.write(buffer, 0, bytesRead);
+//                }
+                Process setupLoopbackProcess = // storing for no reason, can remove
+                        new ProcessBuilder("cmd.exe", "/C", "start", "SetupLoopbackAdapter.exe", // pray that the jar file wasn't run from cmd
+                                loopbackAdapter, robotNumber).start();
+            } catch (IOException ex) {
+                Logger.getLogger(AardvarkFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_loopbackAdapterItemActionPerformed
+
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        if (Console.running()) {
+            int n = JOptionPane.showConfirmDialog(
+                    this,
+                    "Are you sure you want to terminate the current process and start another?",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION);
+            if (n == 0) {
+                Console.kill();
+                console.setText(console.getText() + "\nProcess has been stopped." + "\n");
+                console.invalidate();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "There is no process running.");
+        }
+    }//GEN-LAST:event_stopButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -266,7 +376,7 @@ public class AardvarkFrame extends javax.swing.JFrame {
                 frame.setVisible(true);
                 frame.setWindowPosition(frame, 0);
                 try {
-                    frame.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("com/autodesk/bxd/image/ico.png")));
+                    frame.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("com/autodesk/bxd/res/ico.png")));
                 } catch (IOException ex) {
                     Logger.getLogger(AardvarkFrame.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -283,10 +393,12 @@ public class AardvarkFrame extends javax.swing.JFrame {
     private javax.swing.JTextField executable;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem loadExe;
+    private javax.swing.JMenuItem loopbackAdapterItem;
     private javax.swing.JMenuBar mainMenu;
     private javax.swing.JScrollPane mainPane;
     private javax.swing.JMenu menuFile;
     private javax.swing.JButton reloadButton;
+    private javax.swing.JButton stopButton;
     private javax.swing.JMenuItem tutorialsItem;
     // End of variables declaration//GEN-END:variables
 }
