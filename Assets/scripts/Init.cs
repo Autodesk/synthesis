@@ -125,7 +125,7 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[H]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[S]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[Z][X][C][V]", labelSkin);
 	}
 
@@ -356,13 +356,13 @@ public class Init : MonoBehaviour
             var unityWheelData = new List<GameObject>();
             // Invert the position of the root object
             //activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
-			activeRobot.transform.localPosition = new Vector3(0f, 0f, 0f);
+			activeRobot.transform.localPosition = new Vector3(2f, 0f, 0f);
             activeRobot.transform.localRotation = rotation;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
-				uNode.unityObject.transform.localPosition = Vector3.zero;
+				uNode.unityObject.transform.localPosition = new Vector3(0f, 0f, -5f);
 				uNode.unityObject.transform.localRotation = Quaternion.identity;
                 if (uNode.unityObject.rigidbody != null)
                 {
@@ -536,7 +536,7 @@ public class Init : MonoBehaviour
 			gui.DoAction ("Reset Robot");
 
 		// Show/Hide physics window
-		if (Input.GetKeyDown (KeyCode.H))
+		if (Input.GetKeyDown (KeyCode.S))
 			showStatWindow = !showStatWindow;
     }
 
