@@ -24,12 +24,17 @@ public partial class ExporterForm : Form
 
     public List<ComponentOccurrence> Components;
 
+    private Thread exporterThread;
+    private Thread exporterProgressThread;
+
     private TextWriter oldConsole;
     private TextboxWriter newConsole;
 
     public ExporterForm()
     {
         InitializeComponent();
+
+        Exporter.LoadInventorInstance();
 
         Components = new List<ComponentOccurrence>();
 
@@ -52,8 +57,6 @@ public partial class ExporterForm : Form
             inventorChooserPane1.Cleanup();
             jointGroupPane1.Cleanup();
             Exporter.ReleaseInventorInstance();
-
-            finished = true;
         };
 
         buttonStart.Click += delegate(object sender, EventArgs e)
@@ -163,8 +166,6 @@ public partial class ExporterForm : Form
 
         SynthesisGUI.Instance.SkeletonBase = ExportedNode;
         SynthesisGUI.Instance.Meshes = ExportedMeshes;
-
-        finished = true;
     }
 
     private string GetLogText()
@@ -174,12 +175,12 @@ public partial class ExporterForm : Form
 
     private void StartExporter()
     {
-        var exporterThread = new Thread(RunExporter);
+        exporterThread = new Thread(RunExporter);
 
         exporterThread.SetApartmentState(ApartmentState.MTA);
         exporterThread.Start();
 
-        var exporterProgressThread = new Thread(CheckExporter);
+        exporterProgressThread = new Thread(CheckExporter);
 
         exporterProgressThread.SetApartmentState(ApartmentState.STA);
         exporterProgressThread.Start(exporterThread);
@@ -187,20 +188,33 @@ public partial class ExporterForm : Form
 
     private void RunExporter()
     {
-        Exporter.LoadInventorInstance();
+        finished = false;
 
-        ExportedNode = Exporter.ExportSkeleton(Components);
-        ExportedMeshes = Exporter.ExportMeshes(ExportedNode, 
-                                               SynthesisGUI.ExporterSettings.meshResolutionValue == 1, SynthesisGUI.ExporterSettings.meshFancyColors);
+        try
+        {
+            ExportedNode = Exporter.ExportSkeleton(Components);
+            ExportedMeshes = Exporter.ExportMeshes(ExportedNode,
+                                                 SynthesisGUI.ExporterSettings.meshResolutionValue == 1, SynthesisGUI.ExporterSettings.meshFancyColors);
 
-        ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
+            ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
+        }
+        catch (Exception e)
+        {
+        }
+        finally
+        {
+            finished = true;
+        }
     }
 
     private void CheckExporter(object exporter)
     {
         Thread exporterThread = (Thread) exporter;
 
-        exporterThread.Join();
+        while (!exporterThread.Join(0))
+        {
+            if (!Visible) exporterThread.Abort();
+        }
 
         string logPath = SynthesisGUI.ExporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
 

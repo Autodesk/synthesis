@@ -35,6 +35,7 @@ public class Exporter
         try
         {
             Marshal.FinalReleaseComObject(INVENTOR_APPLICATION);
+            INVENTOR_APPLICATION = null;
         }
         catch (COMException e)
         {

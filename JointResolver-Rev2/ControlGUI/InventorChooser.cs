@@ -19,8 +19,6 @@ public static class InventorChooser
 
     static InventorChooser()
     {
-        Exporter.LoadInventorInstance();
-
         Components = new List<ComponentOccurrence>();
     }
 
