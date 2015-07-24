@@ -8,12 +8,14 @@ package com.autodesk.bxd;
 import java.awt.Desktop;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -86,6 +88,8 @@ public class AardvarkFrame extends javax.swing.JFrame {
         exeChooser.setAcceptAllFileFilterUsed(false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Synthesis Robot Code");
+        setName("mainFrame"); // NOI18N
 
         reloadButton.setLabel("Reload");
         reloadButton.addActionListener(new java.awt.event.ActionListener() {
@@ -212,13 +216,13 @@ public class AardvarkFrame extends javax.swing.JFrame {
     private void tutorialsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tutorialsItemActionPerformed
         if (Desktop.isDesktopSupported()) {
             try {
-                Desktop.getDesktop().browse(new URI("http://git.autodesk.com/BXD/"));
+                Desktop.getDesktop().browse(new URI("http://bxd.autodesk.com/synthesis/DriverStation"));
             } catch (IOException | URISyntaxException ex) {
                 Logger.getLogger(AardvarkFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
             JOptionPane.showMessageDialog(this,
-                "Your browser could not be opened by us. Visit http://git.autodesk.com/BXD/.");
+                "Your browser could not be opened by us. Visit http://bxd.autodesk.com/synthesis/DriverStation.");
         }
     }//GEN-LAST:event_tutorialsItemActionPerformed
 
@@ -261,6 +265,11 @@ public class AardvarkFrame extends javax.swing.JFrame {
                 frame.setBounds(0, 0, 800, 600);
                 frame.setVisible(true);
                 frame.setWindowPosition(frame, 0);
+                try {
+                    frame.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("com/autodesk/bxd/image/ico.png")));
+                } catch (IOException ex) {
+                    Logger.getLogger(AardvarkFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
