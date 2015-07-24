@@ -27,7 +27,7 @@ public class Console {
     public static JTextArea area;
     public static JButton reload;
     public static JFrame frame;
-    public static Object sync = new Object(); // used to sync the console
+    public static final Object sync = new Object(); // used to sync the console
 
     public static void start(String file) throws IOException {
         reload.setText("Reload");
@@ -48,7 +48,7 @@ public class Console {
                         String line;
                         while (true) while ((line = ebr.readLine()) != null) {
                             synchronized (sync) { area.setText(area.getText() + line + "\n"); }
-                            Thread.sleep(20); // don't consume all processor speed and give other thread time to grab sync
+                            Thread.sleep(10); // don't consume all processor speed and give other thread time to grab sync
                         }
                     } catch (IOException | InterruptedException e) {
                         e.printStackTrace();
@@ -60,7 +60,7 @@ public class Console {
                 String line;
                 while (true) while ((line = br.readLine()) != null) {
                     synchronized (sync) { area.setText(area.getText() + "\n" + line); }
-                    Thread.sleep(20); // don't consume all processor speed and give other thread time to grab sync
+                    Thread.sleep(10); // don't consume all processor speed and give other thread time to grab sync
                 }
             } catch (IOException | InterruptedException e) {
                 if (e instanceof IOException) JOptionPane.showMessageDialog(frame, e);
@@ -88,6 +88,6 @@ public class Console {
     @Override
     public void finalize() throws Throwable {
        super.finalize();
-       
+       kill();
     }
 }

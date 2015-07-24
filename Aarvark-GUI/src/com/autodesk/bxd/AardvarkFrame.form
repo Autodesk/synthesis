@@ -22,6 +22,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadExeActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="loopbackAdapterItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Setup Loopback Adapter"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loopbackAdapterItemActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpMenu">
@@ -78,9 +86,11 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="mainPane" alignment="0" pref="626" max="32767" attributes="0"/>
-                  <Group type="102" alignment="0" attributes="0">
+                  <Component id="mainPane" pref="626" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
                       <Component id="reloadButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="stopButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="executable" max="32767" attributes="0"/>
                   </Group>
@@ -98,6 +108,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="reloadButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="executable" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="stopButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -148,6 +159,14 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="C:\u005cpath\u005cto\u005cexecutable\u005cRobotCode.exe" containsInvalidXMLChars="true"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="stopButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Stop"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stopButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
