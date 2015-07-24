@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-public partial class InventorChooserPane : UserControl, IDisposable
+public partial class InventorChooserPane : UserControl
 {
 
     private BackgroundWorker SelectionAdder;
@@ -115,7 +115,7 @@ public partial class InventorChooserPane : UserControl, IDisposable
     {
         ExporterForm.Instance.ResetProgress();
 
-        InventorChooser.InventorApplication.UserInterfaceManager.UserInteractionDisabled = false;
+        Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
 
         InventorChooser.DisableInteraction();
         buttonSelect.Enabled = true;
@@ -147,7 +147,7 @@ public partial class InventorChooserPane : UserControl, IDisposable
 
     private void buttonAdd_Click(object sender, EventArgs e)
     {
-        InventorChooser.InventorApplication.UserInterfaceManager.UserInteractionDisabled = true;
+        Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
 
         buttonAdd.Enabled = false;
         buttonSelect.Enabled = false;
@@ -158,14 +158,10 @@ public partial class InventorChooserPane : UserControl, IDisposable
     }
     #endregion
 
-    #region Implemented methods
-    public void Dispose()
+    public void Cleanup()
     {
         if (SelectionAdder.IsBusy) SelectionAdder.CancelAsync();
         if (InventorChooser.InteractionActive) InventorChooser.DisableInteraction();
-
-        Dispose(true);
     }
-    #endregion
 
 }

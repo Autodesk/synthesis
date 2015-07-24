@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-public partial class JointGroupPane : UserControl, IDisposable
+public partial class JointGroupPane : UserControl
 {
 
     private List<JointGroup> jointGroups;
@@ -147,12 +147,10 @@ public partial class JointGroupPane : UserControl, IDisposable
     }
     #endregion
 
-    #region Implemented methods
-    public void Dispose()
+    public void Cleanup()
     {
-        Dispose(true);
+        
     }
-    #endregion
 
     #region Nested classes
     private class JointGroup : Panel

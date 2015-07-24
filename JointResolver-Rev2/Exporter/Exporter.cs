@@ -28,6 +28,21 @@ public class Exporter
         }
     }
 
+    public static void ReleaseInventorInstance()
+    {
+        if (INVENTOR_APPLICATION == null) return;
+
+        try
+        {
+            Marshal.FinalReleaseComObject(INVENTOR_APPLICATION);
+        }
+        catch (COMException e)
+        {
+            Console.WriteLine(e);
+            throw new Exception("Could not release Inventor instance");
+        }
+    }
+
     public static void CenterAllJoints(ComponentOccurrence component)
     {
         Console.Write("Centering: " + component.Name);

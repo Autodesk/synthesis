@@ -46,11 +46,12 @@ public partial class ExporterForm : Form
         buttonSaveLog.Enabled = false;
         buttonSaveLog.Visible = false;
 
-        FormClosing += delegate(object sender, FormClosingEventArgs e)
+        FormClosed += delegate(object sender, FormClosedEventArgs e)
         {
             Console.SetOut(oldConsole);
-            inventorChooserPane1.Dispose();
-            jointGroupPane1.Dispose();
+            inventorChooserPane1.Cleanup();
+            jointGroupPane1.Cleanup();
+            Exporter.ReleaseInventorInstance();
 
             finished = true;
         };
@@ -96,7 +97,6 @@ public partial class ExporterForm : Form
     {
         if (InvokeRequired)
         {
-            
             return (int) Invoke((Func<int>)(() => GetProgress()));
         }
 

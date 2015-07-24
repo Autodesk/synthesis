@@ -9,8 +9,6 @@ using Inventor;
 public static class InventorChooser
 {
 
-    public static Inventor.Application InventorApplication;
-
     public static SelectEvents SelectEvents;
 
     public static List<ComponentOccurrence> Components;
@@ -22,7 +20,6 @@ public static class InventorChooser
     static InventorChooser()
     {
         Exporter.LoadInventorInstance();
-        InventorApplication = Exporter.INVENTOR_APPLICATION;
 
         Components = new List<ComponentOccurrence>();
     }
@@ -31,7 +28,7 @@ public static class InventorChooser
     {
         Components.Clear();
 
-        interactionEvents = InventorApplication.CommandManager.CreateInteractionEvents();
+        interactionEvents = Exporter.INVENTOR_APPLICATION.CommandManager.CreateInteractionEvents();
         interactionEvents.OnActivate += interactionEvents_OnActivate;
         interactionEvents.Start();
 
@@ -47,7 +44,7 @@ public static class InventorChooser
 
         interactionEvents.Stop();
 
-        InventorApplication.ActiveDocument.SelectSet.Clear();
+        Exporter.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
 
         InteractionActive = false;
     }
