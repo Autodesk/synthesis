@@ -601,7 +601,6 @@ public class Init : MonoBehaviour
 
 				if(gui.guiVisible)
 					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-
 				else
 					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
 			}
