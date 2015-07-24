@@ -5,10 +5,13 @@
  */
 package com.autodesk.bxd;
 
+import java.awt.Desktop;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -76,6 +79,9 @@ public class AardvarkFrame extends javax.swing.JFrame {
         mainMenu = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         loadExe = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        tutorialsItem = new javax.swing.JMenuItem();
+        aboutItem = new javax.swing.JMenuItem();
 
         exeChooser.setAcceptAllFileFilterUsed(false);
 
@@ -110,6 +116,26 @@ public class AardvarkFrame extends javax.swing.JFrame {
         menuFile.add(loadExe);
 
         mainMenu.add(menuFile);
+
+        helpMenu.setText("Help");
+
+        tutorialsItem.setText("Tutorials");
+        tutorialsItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tutorialsItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(tutorialsItem);
+
+        aboutItem.setText("About");
+        aboutItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(aboutItem);
+
+        mainMenu.add(helpMenu);
 
         setJMenuBar(mainMenu);
 
@@ -183,6 +209,24 @@ public class AardvarkFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loadExeActionPerformed
 
+    private void tutorialsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tutorialsItemActionPerformed
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(new URI("http://git.autodesk.com/BXD/"));
+            } catch (IOException | URISyntaxException ex) {
+                Logger.getLogger(AardvarkFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this,
+                "Your browser could not be opened by us. Visit http://git.autodesk.com/BXD/.");
+        }
+    }//GEN-LAST:event_tutorialsItemActionPerformed
+
+    private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
+        JOptionPane.showMessageDialog(this,
+                "Created by the BXD Synthesis team at Autodesk Inc.");
+    }//GEN-LAST:event_aboutItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -224,13 +268,16 @@ public class AardvarkFrame extends javax.swing.JFrame {
     private String currentFile;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutItem;
     private javax.swing.JTextArea console;
     private javax.swing.JFileChooser exeChooser;
     private javax.swing.JTextField executable;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem loadExe;
     private javax.swing.JMenuBar mainMenu;
     private javax.swing.JScrollPane mainPane;
     private javax.swing.JMenu menuFile;
     private javax.swing.JButton reloadButton;
+    private javax.swing.JMenuItem tutorialsItem;
     // End of variables declaration//GEN-END:variables
 }
