@@ -82,11 +82,13 @@ public partial class SurfaceExporter
         if (separateFaces)  // Only separate if they are actually different colors
         {
             separateFaces = false;
+            
             foreach (Face f in surf.Faces)
             {
                 try
                 {
                     Asset ast = f.Appearance;
+                    
                     if (sharedValue == null)
                     {
                         sharedValue = new AssetProperties(ast);
@@ -263,6 +265,7 @@ public partial class SurfaceExporter
             surf.CalculateFacets(tolerance, out tmpSurface.vertCount, out tmpSurface.facetCount, out  tmpSurface.verts, out tmpSurface.norms, out  tmpSurface.indicies);
         }
 #endif
+        
         AssetProperties assetProps = AssetProperties.Create(surf);
         AddFacetsInternal(assetProps);
     }

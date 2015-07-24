@@ -109,6 +109,8 @@ public partial class ExporterGUI : Form
         {
             if (skeletonBase != null && !WarnUnsaved()) e.Cancel = true;
             else BXDSettings.Save();
+
+            Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
         });
     }
 
@@ -148,8 +150,13 @@ public partial class ExporterGUI : Form
                 try
                 {
                     Exporter.LoadInventorInstance();
+
+                    Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+
                     tmpBase = Exporter.ExportSkeleton();
                     tmpMeshes = Exporter.ExportMeshes(tmpBase, exporterSettings.meshResolutionValue > 0, exporterSettings.meshFancyColors);
+
+                    Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
                 }
                 catch (Exception e)
                 {
