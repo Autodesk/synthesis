@@ -117,11 +117,12 @@
             this.checkboxFancyColors.Checked = true;
             this.checkboxFancyColors.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkboxFancyColors.ForeColor = System.Drawing.Color.Black;
-            this.checkboxFancyColors.Location = new System.Drawing.Point(6, 178);
+            this.checkboxFancyColors.Location = new System.Drawing.Point(6, 166);
             this.checkboxFancyColors.Name = "checkboxFancyColors";
-            this.checkboxFancyColors.Size = new System.Drawing.Size(135, 21);
+            this.checkboxFancyColors.Size = new System.Drawing.Size(320, 38);
             this.checkboxFancyColors.TabIndex = 10;
-            this.checkboxFancyColors.Text = "Use fancy colors";
+            this.checkboxFancyColors.Text = "Allow single parts to export with multiple colors\r\n(NOTE: This is probably a bad " +
+    "idea)\r\n";
             this.checkboxFancyColors.UseVisualStyleBackColor = true;
             // 
             // groupboxMesh

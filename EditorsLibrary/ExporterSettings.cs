@@ -118,8 +118,8 @@ namespace EditorsLibrary
 
             defaultValues.skeletonExportSoft = false;
 
-            defaultValues.meshResolutionValue = 1;
-            defaultValues.meshFancyColors = true;
+            defaultValues.meshResolutionValue = 0;
+            defaultValues.meshFancyColors = false;
 
             return defaultValues;
         }
