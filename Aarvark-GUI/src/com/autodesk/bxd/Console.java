@@ -31,7 +31,8 @@ public class Console {
 
     public static void start(String file) throws IOException {
         reload.setText("Reload");
-        Thread inputStreamThread = new Thread(() -> {
+        Thread inputStreamThread;
+        inputStreamThread = new Thread(() -> {
             try {
                 Process process = new ProcessBuilder(file).start();
                 processes.add(process);
@@ -52,6 +53,7 @@ public class Console {
                         }
                     } catch (IOException | InterruptedException e) {
                         e.printStackTrace();
+                        Console.kill();
                     }
                 });
                 threads.add(errorStreamThread);
@@ -63,7 +65,10 @@ public class Console {
                     Thread.sleep(10); // don't consume all processor speed and give other thread time to grab sync
                 }
             } catch (IOException | InterruptedException e) {
-                if (e instanceof IOException) JOptionPane.showMessageDialog(frame, e);
+                if (e instanceof IOException) {
+                    JOptionPane.showMessageDialog(frame, e);
+                    new Thread(() -> { Console.kill(); }).start();
+                }
             }
         });
         threads.add(inputStreamThread);
@@ -75,10 +80,12 @@ public class Console {
         threads.stream().forEach((t) -> {
             t.stop();
         });
+
         processes.stream().forEach((t) -> {
            t.destroyForcibly();
         });
         threads.clear();
+        processes.clear();
     }
     
     public static boolean running() {
