@@ -26,6 +26,5 @@ public class ElevatorScript : MonoBehaviour {
 		} else {
 			Physics.IgnoreCollision(collisionInfo.collider, this.collider, false);
 		}
-
 	}
 }
