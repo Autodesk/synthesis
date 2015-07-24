@@ -33,6 +33,15 @@ public class AardvarkFrame extends javax.swing.JFrame {
      * Creates new form AardvarkFrame
      */
     public AardvarkFrame() {
+        setBounds(0, 0, 800, 600);
+        setVisible(true);
+        setWindowPosition(AardvarkFrame.this, 0);
+        invalidate();
+        try {
+            setIconImage(ImageIO.read(getClass().getClassLoader().getResource("com/autodesk/bxd/res/ico.png")));
+        } catch (IOException ex) {
+            Logger.getLogger(AardvarkFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
         initComponents();
         console.setEditable(false);
         Console.area = console;
@@ -371,16 +380,7 @@ public class AardvarkFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                AardvarkFrame frame = new AardvarkFrame();
-                frame.setBounds(0, 0, 800, 600);
-                frame.setVisible(true);
-                frame.setWindowPosition(frame, 0);
-                frame.invalidate();
-                try {
-                    frame.setIconImage(ImageIO.read(getClass().getClassLoader().getResource("com/autodesk/bxd/res/ico.png")));
-                } catch (IOException ex) {
-                    Logger.getLogger(AardvarkFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                ConfigPanel cpanel = new ConfigPanel();
             }
         });
     }
