@@ -71,7 +71,7 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void ExportButton_Click(object sender, EventArgs e)
         {
-            if (FilePathTextBox.Text.Length == 0 || FileNameTextBox.Text.Length == 0 || FileNameTextBox.Text.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
+            if (FilePathTextBox.Text.Length == 0)
             {
                 MessageBox.Show("Invalid Export Parameters.");
                 return;
@@ -86,7 +86,7 @@ namespace FieldExporter
                 0, ((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences.Count,
                 new Action(() =>
                     {
-                        FieldDefinition fieldDefinition = new FieldDefinition(FileNameTextBox.Text);
+                        FieldDefinition fieldDefinition = new FieldDefinition("definition");
                         SurfaceExporter exporter = new SurfaceExporter();
 
                         ComponentOccurrencesEnumerator componentOccurrences = ((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences;
@@ -130,12 +130,10 @@ namespace FieldExporter
                             }
                         }
 
-                        // TODO: Update WriteProperties to write all the properties, not just collision type.
-
-                        BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\" + FileNameTextBox.Text + ".bxdf", fieldDefinition);
+                        BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
 
                         fieldDefinition.CreateMesh();
-                        fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\" + FileNameTextBox.Text + ".bxda");
+                        fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
                     }),
                 new Action(() =>
                     {

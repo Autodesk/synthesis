@@ -34,9 +34,8 @@ namespace FieldExporter
             this.applicationImages = new System.Windows.Forms.ImageList(this.components);
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.exportPage = new System.Windows.Forms.TabPage();
-            this.FileTypeLabel = new System.Windows.Forms.Label();
+            this.fileNameLabel = new System.Windows.Forms.Label();
             this.BrowseButton = new System.Windows.Forms.Button();
-            this.FileNameTextBox = new System.Windows.Forms.TextBox();
             this.FilePathTextBox = new System.Windows.Forms.TextBox();
             this.FileSeparatorLabel = new System.Windows.Forms.Label();
             this.ExportLocationLabel = new System.Windows.Forms.Label();
@@ -62,9 +61,8 @@ namespace FieldExporter
             // exportPage
             // 
             this.exportPage.BackColor = System.Drawing.Color.White;
-            this.exportPage.Controls.Add(this.FileTypeLabel);
+            this.exportPage.Controls.Add(this.fileNameLabel);
             this.exportPage.Controls.Add(this.BrowseButton);
-            this.exportPage.Controls.Add(this.FileNameTextBox);
             this.exportPage.Controls.Add(this.FilePathTextBox);
             this.exportPage.Controls.Add(this.FileSeparatorLabel);
             this.exportPage.Controls.Add(this.ExportLocationLabel);
@@ -76,14 +74,14 @@ namespace FieldExporter
             this.exportPage.TabIndex = 1;
             this.exportPage.Text = "Export";
             // 
-            // FileTypeLabel
+            // fileNameLabel
             // 
-            this.FileTypeLabel.AutoSize = true;
-            this.FileTypeLabel.Location = new System.Drawing.Point(532, 9);
-            this.FileTypeLabel.Name = "FileTypeLabel";
-            this.FileTypeLabel.Size = new System.Drawing.Size(76, 17);
-            this.FileTypeLabel.TabIndex = 6;
-            this.FileTypeLabel.Text = ".bxdf/.bxda";
+            this.fileNameLabel.AutoSize = true;
+            this.fileNameLabel.Location = new System.Drawing.Point(499, 3);
+            this.fileNameLabel.Name = "fileNameLabel";
+            this.fileNameLabel.Size = new System.Drawing.Size(107, 34);
+            this.fileNameLabel.TabIndex = 6;
+            this.fileNameLabel.Text = "description.bxdf\r\nmesh.bxda";
             // 
             // BrowseButton
             // 
@@ -95,25 +93,18 @@ namespace FieldExporter
             this.BrowseButton.UseVisualStyleBackColor = true;
             this.BrowseButton.Click += new System.EventHandler(this.BrowseButton_Click);
             // 
-            // FileNameTextBox
-            // 
-            this.FileNameTextBox.Location = new System.Drawing.Point(430, 6);
-            this.FileNameTextBox.Name = "FileNameTextBox";
-            this.FileNameTextBox.Size = new System.Drawing.Size(96, 22);
-            this.FileNameTextBox.TabIndex = 4;
-            // 
             // FilePathTextBox
             // 
             this.FilePathTextBox.Location = new System.Drawing.Point(198, 6);
             this.FilePathTextBox.Name = "FilePathTextBox";
             this.FilePathTextBox.ReadOnly = true;
-            this.FilePathTextBox.Size = new System.Drawing.Size(208, 22);
+            this.FilePathTextBox.Size = new System.Drawing.Size(277, 22);
             this.FilePathTextBox.TabIndex = 2;
             // 
             // FileSeparatorLabel
             // 
             this.FileSeparatorLabel.AutoSize = true;
-            this.FileSeparatorLabel.Location = new System.Drawing.Point(412, 9);
+            this.FileSeparatorLabel.Location = new System.Drawing.Point(481, 9);
             this.FileSeparatorLabel.Name = "FileSeparatorLabel";
             this.FileSeparatorLabel.Size = new System.Drawing.Size(12, 17);
             this.FileSeparatorLabel.TabIndex = 3;
@@ -199,9 +190,8 @@ namespace FieldExporter
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.ImageList applicationImages;
         private System.Windows.Forms.TabPage exportPage;
-        private System.Windows.Forms.Label FileTypeLabel;
+        private System.Windows.Forms.Label fileNameLabel;
         private System.Windows.Forms.Button BrowseButton;
-        private System.Windows.Forms.TextBox FileNameTextBox;
         private System.Windows.Forms.TextBox FilePathTextBox;
         private System.Windows.Forms.Label FileSeparatorLabel;
         private System.Windows.Forms.Label ExportLocationLabel;
