@@ -17,4 +17,12 @@ public class ElevatorScript : MonoBehaviour {
 		Vector3 force = forceDirection * currentTorque;
 		rigidbody.AddForce (force*10+Physics.gravity, ForceMode.Acceleration);
 	}
+
+	void OnCollisionStay(Collision collisionInfo)
+	{
+		if (this.rigidbody.velocity.y < 0)
+			Physics.IgnoreCollision (this.collider, collisionInfo.collider, true);
+
+
+	}
 }
