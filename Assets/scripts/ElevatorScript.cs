@@ -18,13 +18,5 @@ public class ElevatorScript : MonoBehaviour {
 		rigidbody.AddForce (force*10+Physics.gravity, ForceMode.Acceleration);
 	}
 
-	void OnCollisionEnter(Collision collision)
-	{
-		if (rigidbody.velocity.y < 0)
-			rigidbody.detectCollisions = false;
-		else
-			rigidbody.detectCollisions = true;
 
-
-	}
 }
