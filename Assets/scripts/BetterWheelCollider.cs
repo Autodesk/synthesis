@@ -30,6 +30,9 @@ public class BetterWheelCollider : MonoBehaviour
 	Color[] dragColor = { Color.magenta, Color.red, Color.yellow };
     public void OnCollisionStay(Collision collisionInfo)
     {
+		if (wheelType == (int)WheelType.OMNI)
+			sidewaysGrip = 0f;
+
         Vector3 normal = Vector3.zero;
         Vector3 point = Vector3.zero;
         #region compute normal and point
@@ -94,7 +97,6 @@ public class BetterWheelCollider : MonoBehaviour
 		Debug.DrawRay(point, -normalDrag / Init.PHYSICS_MASS_MULTIPLIER, showN, 0.5f);
         color = color + 0.1f;
 		#endregion
-
 		rigidbody.AddForce((force + normalDrag) * forceMultiplier, ForceMode.Impulse);
     }
 }
