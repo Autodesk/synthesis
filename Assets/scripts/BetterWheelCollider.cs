@@ -30,9 +30,6 @@ public class BetterWheelCollider : MonoBehaviour
 	Color[] dragColor = { Color.magenta, Color.red, Color.yellow };
     public void OnCollisionStay(Collision collisionInfo)
     {
-		if (wheelType == WheelType.OMNI)
-			sidewaysGrip = 0f; 
-
         Vector3 normal = Vector3.zero;
         Vector3 point = Vector3.zero;
         #region compute normal and point
