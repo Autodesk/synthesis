@@ -207,15 +207,15 @@ class WheelAnalyzer
         double maxWidth = float.NegativeInfinity; //The most positive width ever recorded.
         fullWidth = 0.0; //The difference between min and max widths. The actual width of the part.
         center = new BXDVector3(0, 0, 0); //The average coordinates of all the vertices.  Roughly the center.
-        Matrix partAssemblyConversion = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation between part and assembly axes.
-        Matrix transformedVector = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the rotation axis as it is transformed.
+        Matrix partAssemblyConversion = InventorManager.Instance.TransientGeometry.CreateMatrix(); //The transformation between part and assembly axes.
+        Matrix transformedVector = InventorManager.Instance.TransientGeometry.CreateMatrix(); //Stores the rotation axis as it is transformed.
         Inventor.Point origin;
         Vector partXAxis; //The vectors for the part's coordinate axes.
         Vector partYAxis;
         Vector partZAxis;
-        Vector asmXAxis = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0); //The vector for the assembly's coordinate axes.
-        Vector asmYAxis = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
-        Vector asmZAxis = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
+        Vector asmXAxis = InventorManager.Instance.TransientGeometry.CreateVector(1, 0, 0); //The vector for the assembly's coordinate axes.
+        Vector asmYAxis = InventorManager.Instance.TransientGeometry.CreateVector(0, 1, 0);
+        Vector asmZAxis = InventorManager.Instance.TransientGeometry.CreateVector(0, 0, 1);
         int vertexCount = 0;
 
         Console.WriteLine("Finding width and center of " + wheelTread.Name + ".");

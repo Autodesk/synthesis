@@ -114,7 +114,12 @@ public partial class SynthesisGUI : Form
         this.FormClosing += new FormClosingEventHandler(delegate(object sender, FormClosingEventArgs e)
         {
             if (SkeletonBase != null && !WarnUnsaved()) e.Cancel = true;
-            else BXDSettings.Save();
+            else
+            {
+                BXDSettings.Save();
+                exporter.Cleanup();
+                InventorManager.Instance.ReleaseInventor();
+            }
         });
     }
 

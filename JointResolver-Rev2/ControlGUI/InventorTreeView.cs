@@ -196,14 +196,14 @@ public class InventorTreeView : TreeView
 
         if (e.Node.Tag != null)
         {
-            Exporter.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
-            Exporter.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Select(e.Node.Tag);
+            InventorManager.Instance.ActiveDocument.SelectSet.Clear();
+            InventorManager.Instance.ActiveDocument.SelectSet.Select(e.Node.Tag);
         }
     }
 
     private void InventorTreeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
     {
-        if (e.Node.Tag == null)
+        if (e.Node.Name == "Joint Group")
         {
             JointGroupNameEditorForm nameEditorForm = new JointGroupNameEditorForm(e.Node.Text);
             nameEditorForm.ShowDialog();
@@ -274,10 +274,6 @@ public class InventorTreeView : TreeView
                 addForm.ShowDialog();
                 SkeletalJointType skeletalType = addForm.chooseType;
                 toAdd.Text += String.Format(" ({0})", skeletalType);
-
-                AssemblyJointTypeEnum assemblyType = skeletalType.ToAssemblyJointType();
-                AssemblyDocument asmDoc = (AssemblyDocument) Exporter.INVENTOR_APPLICATION.ActiveDocument;
-                AssemblyComponentDefinition asmDef = asmDoc.ComponentDefinition;
             }
 
             // Add drag node to drop node

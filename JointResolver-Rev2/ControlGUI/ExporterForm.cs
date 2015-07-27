@@ -34,8 +34,6 @@ public partial class ExporterForm : Form
     {
         InitializeComponent();
 
-        Exporter.LoadInventorInstance();
-
         Components = new List<ComponentOccurrence>();
 
         oldConsole = Console.Out;
@@ -54,9 +52,6 @@ public partial class ExporterForm : Form
         FormClosed += delegate(object sender, FormClosedEventArgs e)
         {
             Console.SetOut(oldConsole);
-            inventorChooserPane1.Cleanup();
-            jointGroupPane1.Cleanup();
-            Exporter.ReleaseInventorInstance();
         };
 
         buttonStart.Click += delegate(object sender, EventArgs e)
@@ -166,6 +161,12 @@ public partial class ExporterForm : Form
 
         SynthesisGUI.Instance.SkeletonBase = ExportedNode;
         SynthesisGUI.Instance.Meshes = ExportedMeshes;
+    }
+
+    public void Cleanup()
+    {
+        jointGroupPane1.Cleanup();
+        inventorChooserPane1.Cleanup();
     }
 
     private string GetLogText()

@@ -26,7 +26,7 @@ public static class InventorChooser
     {
         Components.Clear();
 
-        interactionEvents = Exporter.INVENTOR_APPLICATION.CommandManager.CreateInteractionEvents();
+        interactionEvents = InventorManager.Instance.CommandManager.CreateInteractionEvents();
         interactionEvents.OnActivate += interactionEvents_OnActivate;
         interactionEvents.Start();
 
@@ -42,7 +42,7 @@ public static class InventorChooser
 
         interactionEvents.Stop();
 
-        Exporter.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
+        InventorManager.Instance.ActiveDocument.SelectSet.Clear();
 
         InteractionActive = false;
     }

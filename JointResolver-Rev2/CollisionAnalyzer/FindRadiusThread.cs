@@ -73,15 +73,15 @@ class FindRadiusThread
     public void FindMaxRadius()
     {
         BXDVector3 myRotationAxis; //The axis of rotation relative to the part's axes.
-        Matrix asmToPart = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
-        Matrix transformedVector = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
+        Matrix asmToPart = InventorManager.Instance.TransientGeometry.CreateMatrix(); //The transformation from assembly axes to part axes.
+        Matrix transformedVector = InventorManager.Instance.TransientGeometry.CreateMatrix(); //Stores the axis of rotation in matrix form.
         Inventor.Point origin;
         Vector partXAxis;
         Vector partYAxis;
         Vector partZAxis;
-        Vector asmXAxis = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateVector(1, 0, 0);
-        Vector asmYAxis = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 1, 0);
-        Vector asmZAxis = Exporter.INVENTOR_APPLICATION.TransientGeometry.CreateVector(0, 0, 1);
+        Vector asmXAxis = InventorManager.Instance.TransientGeometry.CreateVector(1, 0, 0);
+        Vector asmYAxis = InventorManager.Instance.TransientGeometry.CreateVector(0, 1, 0);
+        Vector asmZAxis = InventorManager.Instance.TransientGeometry.CreateVector(0, 0, 1);
 
         component.Transformation.GetCoordinateSystem(out origin, out partXAxis, out partYAxis, out partZAxis);
 
@@ -121,7 +121,7 @@ class FindRadiusThread
         }
 
         //Stores the largest radius in shared memory once the largest radius for this component is calculated.
-        lock (Exporter.INVENTOR_APPLICATION)
+        lock (treadPart)
         {
             if (localMaxRadius > currentMaxRadius)
             {

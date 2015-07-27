@@ -156,11 +156,19 @@ public partial class JointGroupPane : UserControl
     private class JointGroup : Panel
     {
 
+        private Control parent;
+
         private InventorTreeView jointTree;
 
-        public JointGroup(Control parent, System.Drawing.Point pos, Size size)
+        private bool resizing;
+
+        public JointGroup(Control p, System.Drawing.Point pos, Size size)
             : base()
         {
+            parent = p;
+
+            parent.Controls.Add(this);
+
             jointTree = new InventorTreeView(true);
             SuspendLayout();
 
@@ -169,15 +177,20 @@ public partial class JointGroupPane : UserControl
             BorderStyle = BorderStyle.FixedSingle;
             Visible = true;
 
+            jointTree.MouseDown += JointGroup_MouseDown;
+            parent.MouseDown += JointGroup_MouseDown;
+            jointTree.MouseMove += JointGroup_MouseMove;
+            parent.MouseMove += JointGroup_MouseMove;
+            jointTree.MouseUp += JointGroup_MouseUp;
+            parent.MouseUp += JointGroup_MouseUp;
+
             jointTree.Dock = DockStyle.Fill;
             jointTree.AllowDrop = true;
             Controls.Add(jointTree);
 
             ResumeLayout(false);
 
-            parent.Controls.Add(this);
-
-            jointTree.Nodes.Add("Joint Group");
+            jointTree.Nodes.Add("Joint Group", "Joint Group");
         }
 
         public JointGroup(Control parent, int initX, int initY, int initW, int initH)
@@ -205,6 +218,67 @@ public partial class JointGroupPane : UserControl
                              select true;
 
             if (collisions.Count() == 0) jointTree.Nodes[0].Nodes.Add(parent);
+        }
+
+        private void JointGroup_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (Cursor == Cursors.SizeNWSE)
+            {
+                resizing = true;
+                Visible = false;
+            }
+        }
+
+        private void JointGroup_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!resizing)
+            {
+                if (Math.Abs(Width - e.X) < 50 && Math.Abs(Height - e.Y) < 50)
+                {
+                    Cursor = Cursors.SizeNWSE;
+                }
+                else
+                {
+                    Cursor = Cursors.Default;
+                }
+            }
+            else
+            {
+                using (Graphics g = parent.CreateGraphics())
+                {
+                    System.Drawing.Point parentControlLocation = parent.PointToClient(PointToScreen(new System.Drawing.Point(e.X, e.Y)));
+                    Size rectangleSize = new Size(parentControlLocation.X - Location.X, parentControlLocation.Y - Location.Y);
+
+                    g.Clear(Control.DefaultBackColor);
+                    g.DrawRectangle(new Pen(System.Drawing.Color.DarkGray), 
+                                    Location.X, Location.Y, rectangleSize.Width, rectangleSize.Height);
+                }
+            }
+        }
+
+        private void JointGroup_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (resizing)
+            {
+                int newWidth = e.X - Location.X;
+                int newHeight = e.Y - Location.Y;
+
+                if (newWidth > 30 && newHeight > 30)
+                {
+                    Width = newWidth;
+                    Height = newHeight;
+                    OnResize(null);
+                    base.OnResize(null);
+                }
+
+                resizing = false;
+                Visible = true;
+
+                using (Graphics g = parent.CreateGraphics())
+                {
+                    g.Clear(Control.DefaultBackColor);
+                }
+            }
         }
 
     }

@@ -11,39 +11,6 @@ public class Exporter
 
     private const int MAX_VERTICIES = 8192;
 
-    public static Inventor.Application INVENTOR_APPLICATION;
-
-    public static void LoadInventorInstance()
-    {
-        if (INVENTOR_APPLICATION != null) return;
-
-        try
-        {
-            INVENTOR_APPLICATION = (Inventor.Application)Marshal.GetActiveObject("Inventor.Application");
-        }
-        catch (COMException e)
-        {
-            Console.WriteLine(e);
-            throw new Exception("Could not get a running instance of Inventor");
-        }
-    }
-
-    public static void ReleaseInventorInstance()
-    {
-        if (INVENTOR_APPLICATION == null) return;
-
-        try
-        {
-            Marshal.FinalReleaseComObject(INVENTOR_APPLICATION);
-            INVENTOR_APPLICATION = null;
-        }
-        catch (COMException e)
-        {
-            Console.WriteLine(e);
-            throw new Exception("Could not release Inventor instance");
-        }
-    }
-
     public static void CenterAllJoints(ComponentOccurrence component)
     {
         Console.Write("Centering: " + component.Name);
@@ -84,8 +51,6 @@ public class Exporter
     {
         if (occurrences == null) throw new Exception("No components selected!");
 
-        AssemblyDocument asmDoc = (AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
-
         //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
         foreach (ComponentOccurrence component in occurrences)
         {
@@ -95,9 +60,9 @@ public class Exporter
 
         Console.WriteLine("Get rigid info...");
         //Group components into rigid bodies.
-        NameValueMap options = INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap();
+        NameValueMap options = InventorManager.Instance.TransientObjects.CreateNameValueMap();
         options.Add("DoubleBearing", false);
-        RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(options);
+        RigidBodyResults rigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(options);
 
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);

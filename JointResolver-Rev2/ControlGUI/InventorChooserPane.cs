@@ -115,7 +115,7 @@ public partial class InventorChooserPane : UserControl
     {
         ExporterForm.Instance.ResetProgress();
 
-        Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
 
         InventorChooser.DisableInteraction();
         buttonSelect.Enabled = true;
@@ -141,16 +141,18 @@ public partial class InventorChooserPane : UserControl
 
             buttonAdd.Enabled = false;
             treeviewInventor.HotTracking = true;
-            buttonSelect.Text = "Select from Inventor";
+            buttonSelect.Text = "Select in Inventor";
         }
     }
 
     private void buttonAdd_Click(object sender, EventArgs e)
     {
-        Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
         buttonAdd.Enabled = false;
+        treeviewInventor.HotTracking = true;
         buttonSelect.Enabled = false;
+        buttonSelect.Text = "Select in Inventor";
 
         ExporterForm.Instance.ResetProgress();
 
