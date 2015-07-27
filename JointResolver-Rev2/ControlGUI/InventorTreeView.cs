@@ -23,8 +23,6 @@ public class InventorTreeView : TreeView
         HotTracking = true;
         AllowDrop = allowDragDrop;
 
-        NodeMouseDoubleClick += InventorTreeView_NodeMouseDoubleClick;
-
         ItemDrag += InventorTreeView_ItemDrag;
         DragOver += InventorTreeView_DragOver;
         DragEnter += InventorTreeView_DragEnter;
@@ -198,18 +196,6 @@ public class InventorTreeView : TreeView
         {
             InventorManager.Instance.ActiveDocument.SelectSet.Clear();
             InventorManager.Instance.ActiveDocument.SelectSet.Select(e.Node.Tag);
-        }
-    }
-
-    private void InventorTreeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-    {
-        if (e.Node.Name == "Joint Group")
-        {
-            JointGroupNameEditorForm nameEditorForm = new JointGroupNameEditorForm(e.Node.Text);
-            nameEditorForm.ShowDialog();
-
-            if(nameEditorForm.NewName != null) e.Node.Text = nameEditorForm.NewName;
-            e.Node.Expand();
         }
     }
 

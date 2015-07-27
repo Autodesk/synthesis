@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
+using EditorsLibrary;
 
 public partial class JointGroupPane : UserControl
 {
@@ -124,7 +125,7 @@ public partial class JointGroupPane : UserControl
 
         System.Drawing.Point dragEnd = new System.Drawing.Point(e.X, e.Y);
 
-        if (Math.Abs(dragEnd.X - dragStart.X) > 30 && Math.Abs(dragEnd.Y - dragStart.Y) > 30)
+        if (Math.Abs(dragEnd.X - dragStart.X) > JointGroup.MIN_SIZE.Width && Math.Abs(dragEnd.Y - dragStart.Y) > JointGroup.MIN_SIZE.Height)
         {
             System.Drawing.Point pos = new System.Drawing.Point();
             Size size = new Size();
@@ -149,18 +150,26 @@ public partial class JointGroupPane : UserControl
 
     public void Cleanup()
     {
-        
+
     }
 
     #region Nested classes
     private class JointGroup : Panel
     {
 
+        public static readonly Size MIN_SIZE = new Size(100, 100);
+
         private Control parent;
 
         private InventorTreeView jointTree;
 
+        private Panel menuPanel;
+        private Button minimizeButton;
+        private Button closeButton;
+        private Label nameLabel;
+
         private bool resizing;
+        private bool moving;
 
         public JointGroup(Control p, System.Drawing.Point pos, Size size)
             : base()
@@ -170,25 +179,65 @@ public partial class JointGroupPane : UserControl
             parent.Controls.Add(this);
 
             jointTree = new InventorTreeView(true);
+            menuPanel = new Panel();
+            minimizeButton = new Button();
+            closeButton = new Button();
+            nameLabel = new Label();
             SuspendLayout();
 
             Location = pos;
             Size = size;
             BorderStyle = BorderStyle.FixedSingle;
             Visible = true;
+            Resize += JointGroup_Resize;
 
-            jointTree.MouseDown += JointGroup_MouseDown;
-            parent.MouseDown += JointGroup_MouseDown;
-            jointTree.MouseMove += JointGroup_MouseMove;
-            parent.MouseMove += JointGroup_MouseMove;
-            jointTree.MouseUp += JointGroup_MouseUp;
-            parent.MouseUp += JointGroup_MouseUp;
-
-            jointTree.Dock = DockStyle.Fill;
+            jointTree.Dock = DockStyle.Bottom;
+            jointTree.Height = Height - 15;
             jointTree.AllowDrop = true;
-            Controls.Add(jointTree);
+            jointTree.Scrollable = false;
+            jointTree.MouseDown += jointTree_MouseDown;
+            jointTree.MouseMove += jointTree_MouseMove;
+            jointTree.NodeMouseDoubleClick += jointTree_NodeMouseDoubleClick;
 
-            ResumeLayout(false);
+            menuPanel.Dock = DockStyle.Top;
+            menuPanel.Height = 15;
+            menuPanel.BackColor = System.Drawing.Color.FromArgb(0xFF, System.Drawing.Color.CornflowerBlue);
+            menuPanel.MouseDown += menuPanel_MouseDown;
+            menuPanel.MouseMove += menuPanel_MouseMove;
+
+            nameLabel.Dock = DockStyle.Left;
+            nameLabel.Height = 15;
+            nameLabel.Font = new Font("Microsoft Sans Serif", 6.6f);
+            nameLabel.Text = "Joint Group";
+
+            minimizeButton.Dock = DockStyle.Right;
+            minimizeButton.Location.Offset(-20, 0);
+            minimizeButton.Width = 15;
+            minimizeButton.Height = 15;
+            minimizeButton.BackColor = Control.DefaultBackColor;
+            minimizeButton.Font = new Font("Microsoft Sans Serif", 5.5f);
+            minimizeButton.Text = "-";
+
+            closeButton.Dock = DockStyle.Right;
+            closeButton.Height = 15;
+            closeButton.Width = 15;
+            closeButton.BackColor = Control.DefaultBackColor;
+            closeButton.Font = new Font("Microsoft Sans Serif", 5.5f);
+            closeButton.Text = "X";
+            closeButton.Click += closeButton_Click;
+
+            menuPanel.Controls.Add(nameLabel);
+            menuPanel.Controls.Add(minimizeButton);
+            menuPanel.Controls.Add(closeButton);
+            nameLabel.SendToBack();
+
+            parent.MouseMove += parent_MouseMove;
+            parent.MouseUp += parent_MouseUp;
+
+            Controls.Add(jointTree);
+            Controls.Add(menuPanel);
+
+            ResumeLayout(true);
 
             jointTree.Nodes.Add("Joint Group", "Joint Group");
         }
@@ -220,7 +269,7 @@ public partial class JointGroupPane : UserControl
             if (collisions.Count() == 0) jointTree.Nodes[0].Nodes.Add(parent);
         }
 
-        private void JointGroup_MouseDown(object sender, MouseEventArgs e)
+        private void jointTree_MouseDown(object sender, MouseEventArgs e)
         {
             if (Cursor == Cursors.SizeNWSE)
             {
@@ -229,11 +278,20 @@ public partial class JointGroupPane : UserControl
             }
         }
 
-        private void JointGroup_MouseMove(object sender, MouseEventArgs e)
+        private void menuPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (Cursor == Cursors.Hand)
+            {
+                moving = true;
+                Visible = false;
+            }
+        }
+
+        private void jointTree_MouseMove(object sender, MouseEventArgs e)
         {
             if (!resizing)
             {
-                if (Math.Abs(Width - e.X) < 50 && Math.Abs(Height - e.Y) < 50)
+                if (Math.Abs(Width - e.X) < 30 && Math.Abs(Height - e.Y) < 30)
                 {
                     Cursor = Cursors.SizeNWSE;
                 }
@@ -242,43 +300,110 @@ public partial class JointGroupPane : UserControl
                     Cursor = Cursors.Default;
                 }
             }
-            else
-            {
-                using (Graphics g = parent.CreateGraphics())
-                {
-                    System.Drawing.Point parentControlLocation = parent.PointToClient(PointToScreen(new System.Drawing.Point(e.X, e.Y)));
-                    Size rectangleSize = new Size(parentControlLocation.X - Location.X, parentControlLocation.Y - Location.Y);
+        }
 
-                    g.Clear(Control.DefaultBackColor);
-                    g.DrawRectangle(new Pen(System.Drawing.Color.DarkGray), 
-                                    Location.X, Location.Y, rectangleSize.Width, rectangleSize.Height);
-                }
+        private void menuPanel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!moving)
+            {
+                Cursor = Cursors.Hand;
             }
         }
 
-        private void JointGroup_MouseUp(object sender, MouseEventArgs e)
+        private void parent_MouseMove(object sender, MouseEventArgs e)
         {
             if (resizing)
             {
-                int newWidth = e.X - Location.X;
-                int newHeight = e.Y - Location.Y;
-
-                if (newWidth > 30 && newHeight > 30)
+                using (Graphics g = parent.CreateGraphics())
                 {
-                    Width = newWidth;
-                    Height = newHeight;
-                    OnResize(null);
-                    base.OnResize(null);
+                    System.Drawing.Point parentControlLocation = new System.Drawing.Point(e.X, e.Y);
+                    Size rectangleSize = new Size(parentControlLocation.X - Location.X, parentControlLocation.Y - Location.Y);
+
+                    g.Clear(Control.DefaultBackColor);
+                    g.DrawRectangle(new Pen(System.Drawing.Color.DarkGray),
+                                    Location.X, Location.Y, rectangleSize.Width, rectangleSize.Height);
                 }
+            }
+            else if (moving)
+            {
+                using (Graphics g = parent.CreateGraphics())
+                {
+                    System.Drawing.Point parentControlLocation = new System.Drawing.Point(e.X, e.Y);
+
+                    g.Clear(Control.DefaultBackColor);
+                    g.DrawRectangle(new Pen(System.Drawing.Color.DarkGray),
+                                    parentControlLocation.X, parentControlLocation.Y, Width, Height);
+                }
+            }
+            else
+            {
+                Cursor = Cursors.Default;
+            }
+        }
+
+        private void parent_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (resizing)
+            {
+                int newWidth = Math.Max(e.X - Location.X, MIN_SIZE.Width);
+                int newHeight = Math.Max(e.Y - Location.Y, MIN_SIZE.Height);
+
+                Width = newWidth;
+                Height = newHeight;
+                OnResize(null);
+                base.OnResize(null);
 
                 resizing = false;
                 Visible = true;
 
+                BringToFront();
+
                 using (Graphics g = parent.CreateGraphics())
                 {
                     g.Clear(Control.DefaultBackColor);
                 }
             }
+            else if (moving)
+            {
+                Location = new System.Drawing.Point(e.X, e.Y);
+
+                moving = false;
+                Visible = true;
+
+                BringToFront();
+
+                using (Graphics g = parent.CreateGraphics())
+                {
+                    g.Clear(Control.DefaultBackColor);
+                }
+            }
+        }
+
+        private void JointGroup_Resize(object sender, EventArgs e)
+        {
+            jointTree.Height = Height - 15;
+        }
+
+        private void jointTree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Name == "Joint Group")
+            {
+                JointGroupNameEditorForm nameEditorForm = new JointGroupNameEditorForm(e.Node.Text);
+                nameEditorForm.ShowDialog();
+
+                if (nameEditorForm.NewName != null)
+                {
+                    e.Node.Text = nameEditorForm.NewName;
+                    nameLabel.Text = nameEditorForm.NewName;
+                }
+                e.Node.Expand();
+            }
+        }
+
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            parent.Controls.Remove(this);
+            
         }
 
     }

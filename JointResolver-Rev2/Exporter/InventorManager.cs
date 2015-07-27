@@ -26,8 +26,8 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
-            else return InventorInstance.ActiveDocument;
+            if (!loaded) LoadInventor();
+            return InventorInstance.ActiveDocument;
         }
     }
 
@@ -35,8 +35,8 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
-            else return (AssemblyDocument) ActiveDocument;
+            if (!loaded) LoadInventor();
+            return (AssemblyDocument) ActiveDocument;
         }
     }
 
@@ -44,8 +44,8 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
-            else return InventorInstance.CommandManager;
+            if (!loaded) LoadInventor();
+            return InventorInstance.CommandManager;
         }
     }
 
@@ -53,8 +53,8 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
-            else return InventorInstance.TransientGeometry;
+            if (!loaded) LoadInventor();
+            return InventorInstance.TransientGeometry;
         }
     }
 
@@ -62,8 +62,8 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
-            else return InventorInstance.TransientObjects;
+            if (!loaded) LoadInventor();
+            return InventorInstance.TransientObjects;
         }
     }
 
@@ -71,8 +71,8 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
-            else return InventorInstance.UserInterfaceManager;
+            if (!loaded) LoadInventor();
+            return InventorInstance.UserInterfaceManager;
         }
     }
 
@@ -81,7 +81,7 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
+            if (!loaded) LoadInventor();
 
             if (_interactionEvents == null) _interactionEvents = CommandManager.CreateInteractionEvents();
             return _interactionEvents;
@@ -92,8 +92,8 @@ public class InventorManager
     {
         get
         {
-            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
-            else return InteractionEvents.SelectEvents;
+            if (!loaded) LoadInventor();
+            return InteractionEvents.SelectEvents;
         }
     }
 
@@ -112,6 +112,7 @@ public class InventorManager
         try
         {
             InventorInstance = (Application)Marshal.GetActiveObject("Inventor.Application");
+            _interactionEvents = null;
         }
         catch (COMException e)
         {
@@ -127,7 +128,6 @@ public class InventorManager
         try
         {
             Marshal.ReleaseComObject(Instance.InventorInstance);
-            Marshal.ReleaseComObject(Instance._interactionEvents);
         }
         catch (COMException e)
         {
