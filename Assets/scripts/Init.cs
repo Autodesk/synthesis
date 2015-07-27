@@ -367,6 +367,9 @@ public class Init : MonoBehaviour
 							isMecanum = true;
 							uNode.unityObject.GetComponent<BetterWheelCollider>().wheelType = (int)WheelType.MECANUM;
 						}
+
+						if(uNode.GetDriverMeta<WheelDriverMeta>().GetTypeString().Equals("Omni Wheel"))
+							uNode.unityObject.GetComponent<BetterWheelCollider>().wheelType = (int)WheelType.OMNI;
 					}
 				}
 				auxFunctions.rightRobot(unityWheelData, activeRobot.transform);
