@@ -9,6 +9,19 @@ public class DynamicCamera : MonoBehaviour
 	private static bool movingEnabled = true;
 
 	/// <summary>
+	/// The state of the camera.
+	/// </summary>
+	CameraState _cameraState;
+	
+	public CameraState cameraState
+	{
+		get
+		{
+			return _cameraState;
+		}
+	}
+
+	/// <summary>
 	/// Abstract class for defining various states of the camera.
 	/// </summary>
 	public abstract class CameraState
@@ -37,6 +50,11 @@ public class DynamicCamera : MonoBehaviour
 	public class DriverStationState : CameraState
 	{
 
+		GameObject robot;
+		Quaternion startRotation;
+		Quaternion lookingRotation;
+		Quaternion currentRotation;
+
 		public DriverStationState(MonoBehaviour mono)
 		{
 			this.mono = mono;
@@ -44,12 +62,25 @@ public class DynamicCamera : MonoBehaviour
 
 		public override void Init()
 		{
-			mono.transform.position = new Vector3 (0f, 1.5f, -9.5f);
-			mono.transform.LookAt (new Vector3 (0f, 0f, 0f));
+			robot = GameObject.Find("Robot");
+			mono.transform.position = new Vector3 (0f, 1.5f, -9f);
+			startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
+			currentRotation = startRotation;
 		}
 
 		public override void Update()
 		{
+			if (robot != null && robot.transform.childCount > 0)
+			{
+				lookingRotation = Quaternion.LookRotation(auxFunctions.TotalCenterOfMass(robot) - mono.transform.position);
+				currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
+			}
+			else
+			{
+				robot = GameObject.Find("Robot");
+			}
+
+			mono.transform.rotation = currentRotation;
 		}
 
 		public override void End()
@@ -65,7 +96,7 @@ public class DynamicCamera : MonoBehaviour
 		Vector3 targetVector;
 		Vector3 rotateVector;
 		Vector3 lagVector;
-		float lagResponsiveness = 10f;
+		const float lagResponsiveness = 10f;
 		float magnification = 5.0f;
 		GameObject robot;
 
@@ -87,7 +118,6 @@ public class DynamicCamera : MonoBehaviour
 			{
 				if(movingEnabled)
 				{
-					//magnification = (int)Mathf.Max (Mathf.Min (magnification - Input.GetAxis ("Mouse ScrollWheel") * 10, 8f), 1f);
 					magnification = Mathf.Max (Mathf.Min (magnification - (Input.GetAxis ("Mouse ScrollWheel") * magnification), 12f), 0.1f);
 
 					rotateVector = rotateXZ (rotateVector, targetVector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
@@ -100,10 +130,13 @@ public class DynamicCamera : MonoBehaviour
 				}
 			}
 			else
+			{
 				robot = GameObject.Find("Robot");
+			}
 		}
 
-		public override void End () {
+		public override void End ()
+		{
 		}
 
 		Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
@@ -122,7 +155,6 @@ public class DynamicCamera : MonoBehaviour
 			Vector3 output = vector;
 			output.y = Mathf.Cos (theta) * (vector.y ) - Mathf.Sin (theta) * (vector.z ) ;
 			output.z = Mathf.Sin (theta) * (vector.y ) + Mathf.Cos (theta) * (vector.z ) ;
-			//output.y = output.y > 0.1f ? output.y : 0.1f;
 
 			return output.normalized*mag + origin;
 		}
@@ -131,62 +163,74 @@ public class DynamicCamera : MonoBehaviour
 	/// <summary>
 	/// Derives from CameraState to create a first person view from the robot.
 	/// </summary>
-	public class FPVState : CameraState
+	public class FreeroamState : CameraState
 	{
-		GameObject robot;
-		Rigidbody skeleton;
-		Vector3 offset;
-		Vector3 mouseAxis;
+		Vector3 positionVector;
+		Vector3 lagPosVector;
+		Vector3 rotationVector;
+		Vector3 lagRotVector;
+		float zoomValue;
+		float lagZoom;
+		const float lagResponsiveness = 15f;
+		float rotationSpeed;
+		float transformSpeed;
+		float scrollWheelSensitivity;
 
-		public FPVState(MonoBehaviour mono)
+		public FreeroamState(MonoBehaviour mono)
 		{
 			this.mono = mono;
 		}
 		
 		public override void Init()
 		{
-			robot = GameObject.Find ("Robot");
-			skeleton = (Rigidbody) robot.GetComponentsInChildren<Rigidbody> ().GetValue(0);
-			offset = new Vector3 (0f, 1.25f, 0f);
-			mono.transform.position = skeleton.transform.position + offset;
-			mono.transform.rotation = skeleton.transform.rotation;
-			mono.transform.parent = skeleton.transform;
+			positionVector = new Vector3(0f, 1f, 0f);
+			lagPosVector = positionVector;
+			rotationVector = Vector3.zero;
+			lagRotVector = rotationVector;
+			zoomValue = 60f;
+			lagZoom = zoomValue;
+			rotationSpeed = 3f;
+			transformSpeed = 0.25f;
+			scrollWheelSensitivity = 40f;
 		}
 		
 		public override void Update()
-		{
-			/*
-			 * The below code is temporary for FPV demonstration purposes. Production code
-			 * might allow the user to define a "camera" component on their robot, which will
-			 * be used to determine the position of the FPV camera. For now, 'W' and 'S' pan
-			 * the camera up and down.
-			 */
-
-			if (robot.transform.childCount > 0)
+		{	
+			if (movingEnabled)
 			{
-				if (Input.GetKey (KeyCode.W)) {
-					mono.transform.Rotate (1, 0, 0);
-				} else if (Input.GetKey (KeyCode.S)) {
-					mono.transform.Rotate (-1, 0, 0);
+				if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+				{
+					positionVector += (Input.GetAxis("Mouse Y") * mono.transform.up) * transformSpeed;
+					positionVector += (Input.GetAxis("Mouse X") * mono.transform.right) * transformSpeed;
 				}
+				else if (Input.GetMouseButton(0))
+				{
+					rotationVector.y += Input.GetAxis ("Mouse X") * rotationSpeed;
+					positionVector += (Input.GetAxis("Mouse Y") * mono.transform.forward) * transformSpeed;
+				}
+				else if (Input.GetMouseButton(1))
+				{
+					rotationVector.x -= Input.GetAxis ("Mouse Y") * rotationSpeed;
+					rotationVector.y += Input.GetAxis ("Mouse X") * rotationSpeed;
+				}
+
+				zoomValue = Mathf.Max (Mathf.Min(zoomValue - Input.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
+
+				lagPosVector += (positionVector - lagPosVector) * (lagResponsiveness * Time.deltaTime);
+				lagRotVector += (rotationVector - lagRotVector) * (lagResponsiveness * Time.deltaTime);
+				lagZoom += (zoomValue - lagZoom) * (lagResponsiveness * Time.deltaTime);
+
+				mono.transform.position = lagPosVector;
+				mono.transform.eulerAngles = lagRotVector;
+				mono.camera.fieldOfView = lagZoom;
 			}
 		}
 
 		public override void End()
 		{
-			mono.transform.parent = null;
+			mono.camera.fieldOfView = 60.0f;
 		}
 
-	}
-
-	CameraState _cameraState;
-
-	public CameraState cameraState
-	{
-		get
-		{
-			return _cameraState;
-		}
 	}
 
 	void Start ()
@@ -209,7 +253,7 @@ public class DynamicCamera : MonoBehaviour
 			}
 			else if (Input.GetKey (KeyCode.F))
 			{
-				if (!cameraState.GetType().Equals(typeof(FPVState))) SwitchCameraState(new FPVState(this));
+				if (!cameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new FreeroamState(this));
 			}
 		}
 		

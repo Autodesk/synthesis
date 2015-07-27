@@ -58,12 +58,6 @@ public class UnityFieldDefinition : FieldDefinition_Base
 				collider.material.dynamicFriction = collider.material.staticFriction = (float)GetChildren()[id].friction / 10f;
 				collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
 			}
-			/*
-			if (GetChildren()[id].nodeCollisionType == FieldNodeCollisionType.MESH)
-			{
-				MeshCollider meshCollider = subObject.AddComponent<MeshCollider>();
-			}
-			*/
 		});
 		
 		if (!unityObject.GetComponent<Rigidbody>())
