@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-
 public partial class ExporterForm : Form
 {
 
@@ -52,6 +51,9 @@ public partial class ExporterForm : Form
         FormClosed += delegate(object sender, FormClosedEventArgs e)
         {
             Console.SetOut(oldConsole);
+            if (exporterProgressThread != null && exporterProgressThread.IsAlive) exporterProgressThread.Abort();
+            if (exporterThread != null && exporterThread.IsAlive) exporterThread.Abort();
+            Cleanup();
         };
 
         buttonStart.Click += delegate(object sender, EventArgs e)
@@ -71,6 +73,11 @@ public partial class ExporterForm : Form
         };
 
         Instance = this;
+    }
+
+    ~ExporterForm()
+    {
+
     }
 
     public void UpdateComponents(List<ComponentOccurrence> components)
@@ -167,6 +174,8 @@ public partial class ExporterForm : Form
     {
         jointGroupPane1.Cleanup();
         inventorChooserPane1.Cleanup();
+
+        InventorManager.ReleaseInventor();
     }
 
     private string GetLogText()

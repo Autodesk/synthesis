@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using Inventor;
 
 public static class InventorChooser
 {
 
-    public static SelectEvents SelectEvents;
-
     public static List<ComponentOccurrence> Components;
 
     public static bool InteractionActive;
-
-    private static InteractionEvents interactionEvents;
 
     static InventorChooser()
     {
@@ -26,21 +22,20 @@ public static class InventorChooser
     {
         Components.Clear();
 
-        interactionEvents = InventorManager.Instance.CommandManager.CreateInteractionEvents();
-        interactionEvents.OnActivate += interactionEvents_OnActivate;
-        interactionEvents.Start();
+        InventorManager.Instance.InteractionEvents.OnActivate += interactionEvents_OnActivate;
+        InventorManager.Instance.InteractionEvents.Start();
 
         InteractionActive = true;
     }
 
     public static void DisableInteraction()
     {
-        foreach (ComponentOccurrence component in SelectEvents.SelectedEntities)
+        foreach (ComponentOccurrence component in InventorManager.Instance.SelectEvents.SelectedEntities)
         {
             Components.Add(component);
         }
 
-        interactionEvents.Stop();
+        InventorManager.Instance.InteractionEvents.Stop();
 
         InventorManager.Instance.ActiveDocument.SelectSet.Clear();
 
@@ -49,8 +44,7 @@ public static class InventorChooser
 
     private static void interactionEvents_OnActivate()
     {
-        SelectEvents = interactionEvents.SelectEvents;
-        SelectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
+        InventorManager.Instance.SelectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
     }
 
 }

@@ -76,9 +76,35 @@ public class InventorManager
         }
     }
 
+    private InteractionEvents _interactionEvents;
+    public InteractionEvents InteractionEvents
+    {
+        get
+        {
+            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
+
+            if (_interactionEvents == null) _interactionEvents = CommandManager.CreateInteractionEvents();
+            return _interactionEvents;
+        }
+    }
+
+    public SelectEvents SelectEvents
+    {
+        get
+        {
+            if (!loaded) throw new InvalidComObjectException("Inventor instance not loaded");
+            else return InteractionEvents.SelectEvents;
+        }
+    }
+
     private InventorManager() 
     {
         LoadInventor();
+    }
+
+    ~InventorManager()
+    {
+        ReleaseInventor();
     }
 
     private void LoadInventor()
@@ -96,11 +122,12 @@ public class InventorManager
         loaded = true;
     }
 
-    public void ReleaseInventor()
+    public static void ReleaseInventor()
     {
         try
         {
-            Marshal.FinalReleaseComObject(InventorInstance);
+            Marshal.ReleaseComObject(Instance.InventorInstance);
+            Marshal.ReleaseComObject(Instance._interactionEvents);
         }
         catch (COMException e)
         {
@@ -108,12 +135,12 @@ public class InventorManager
             Console.WriteLine(e);
         }
 
-        loaded = true;
+        Instance.loaded = false;
     }
 
     public static void Reload()
     {
-        Instance.ReleaseInventor();
+        ReleaseInventor();
         Instance.LoadInventor();
     }
 

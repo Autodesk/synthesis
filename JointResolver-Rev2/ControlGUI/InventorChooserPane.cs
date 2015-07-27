@@ -104,7 +104,7 @@ public partial class InventorChooserPane : UserControl
     private void selectionAdder_DoWork(object sender, DoWorkEventArgs e)
     {
         treeviewInventor.Invoke(new Action<ObjectsEnumerator, Action<int, int>>(treeviewInventor.AddComponents),
-            InventorChooser.SelectEvents.SelectedEntities, new Action<int, int>((int progress, int total) =>
+            InventorManager.Instance.SelectEvents.SelectedEntities, new Action<int, int>((int progress, int total) =>
                 {
                     ExporterForm.Instance.SetProgressText((Math.Round((progress / (float)total) * 100.0f, 2)).ToString() + "%");
                     ExporterForm.Instance.AddProgress((int)Math.Round(((progress / (float)total) - ExporterForm.Instance.GetProgress()) * 100.0f, 2));
@@ -132,8 +132,8 @@ public partial class InventorChooserPane : UserControl
             treeviewInventor.HotTracking = false;
             buttonSelect.Text = "End selection";
 
-            InventorChooser.SelectEvents.OnPreSelect += selectEvents_OnPreSelect;
-            InventorChooser.SelectEvents.OnSelect += selectEvents_OnSelect;
+            InventorManager.Instance.SelectEvents.OnPreSelect += selectEvents_OnPreSelect;
+            InventorManager.Instance.SelectEvents.OnSelect += selectEvents_OnSelect;
         }
         else
         {

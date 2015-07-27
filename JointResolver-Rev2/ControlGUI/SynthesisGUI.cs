@@ -114,13 +114,13 @@ public partial class SynthesisGUI : Form
         this.FormClosing += new FormClosingEventHandler(delegate(object sender, FormClosingEventArgs e)
         {
             if (SkeletonBase != null && !WarnUnsaved()) e.Cancel = true;
-            else
-            {
-                BXDSettings.Save();
-                exporter.Cleanup();
-                InventorManager.Instance.ReleaseInventor();
-            }
+            else BXDSettings.Save();
         });
+    }
+
+    ~SynthesisGUI()
+    {
+
     }
 
     public void SetNew()
@@ -148,6 +148,11 @@ public partial class SynthesisGUI : Form
             exporterThread.Start();
 
             exporterThread.Join();
+
+            GC.Collect();
+        }
+        catch (System.Runtime.InteropServices.InvalidComObjectException ce)
+        {
 
         }
         catch (Exception e)
