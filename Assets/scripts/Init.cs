@@ -21,7 +21,6 @@ public class Init : MonoBehaviour
 	private GameObject cameraObject;
 	private DynamicCamera dynamicCamera;
 	private GameObject light;
-	//private Field field;
 	private UnityFieldDefinition field;
 	private List<GameObject> totes;
 
@@ -278,9 +277,9 @@ public class Init : MonoBehaviour
             }
 
 			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
-			    "Driver Station [D]", "Orbit Robot [R]", "First Person [F]"), (object o) =>
+			    "Driver Station [D]", "Orbit Robot [R]", "Freeroam [F]"), (object o) =>
 			    {
-					gui.guiVisible = false;
+					HideGuiSidebar();
 
 					switch ((int) o) {
 					case 0:
@@ -291,7 +290,7 @@ public class Init : MonoBehaviour
 						dynamicCamera.EnableMoving();
 						break;
 					case 2:
-						dynamicCamera.SwitchCameraState(new DynamicCamera.FPVState(dynamicCamera));
+						dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
 						break;
 					default:
 						Debug.Log("Camera state not found: " + (string) o);
@@ -321,7 +320,7 @@ public class Init : MonoBehaviour
 
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
 		{
-			gui.guiVisible = false;
+			HideGuiSidebar();
 			gui.HideAllWindows ();
 		}
 
@@ -394,6 +393,7 @@ public class Init : MonoBehaviour
         }
         if (filePath != null && skeleton == null)
         {
+			//Debug.Log (filePath);
             List<Collider> meshColliders = new List<Collider>();
             activeRobot = new GameObject("Robot");
             activeRobot.transform.parent = transform;
@@ -405,7 +405,7 @@ public class Init : MonoBehaviour
             };
 
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
-			Debug.Log(filePath + "skeleton.bxdj");
+			//Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
@@ -414,6 +414,8 @@ public class Init : MonoBehaviour
                 uNode.CreateTransform(activeRobot.transform);
                 uNode.CreateMesh(filePath + uNode.modelFileName);
                 uNode.CreateJoint();
+
+				Debug.Log("Joint");
 
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
@@ -433,20 +435,25 @@ public class Init : MonoBehaviour
         {
             Debug.Log("unityWheelData is null...");
         }
-        gui.guiVisible = false;
+		HideGuiSidebar();
     }
 
 	private void TryLoadField()
 	{
-		//Debug.Log(filePath);
+		if (activeRobot != null)
+		{
+			skeleton = null;
+			UnityEngine.Object.Destroy(activeRobot);
+		}
+
 		if (activeField != null)
 		{
 			UnityEngine.Object.Destroy(activeField);
 		}
+
 		if (filePath != null)
 		{
 			activeField = new GameObject("Field");
-			activeField.transform.parent = transform;
 			
 			FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
 			{
@@ -458,7 +465,7 @@ public class Init : MonoBehaviour
 			field.CreateMesh(filePath + "mesh.bxda");
 			field.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 		}
-		gui.guiVisible = false;
+		HideGuiSidebar();
 	}
 
     void Start()
@@ -488,7 +495,7 @@ public class Init : MonoBehaviour
 
 		totes = new List<GameObject> ();
 
-		filePath = Application.dataPath + "\\Assets\\resources\\FieldOutput\\";
+		filePath = Application.dataPath + "\\resources\\FieldOutput\\";
 
         reloadRobotInFrames = 2;
 		reloadFieldInFrames = 2;
