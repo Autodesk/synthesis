@@ -42,7 +42,6 @@ public class Init : MonoBehaviour
 	private bool showStatWindow;
 	private Quaternion rotation;
 
-
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
     /// </summary>
@@ -328,9 +327,10 @@ public class Init : MonoBehaviour
         if (activeRobot != null && skeleton != null)
         {
             var unityWheelData = new List<GameObject>();
+			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
-            //activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
-			activeRobot.transform.localPosition = new Vector3(0f, 0f, 0f);
+            activeRobot.transform.localPosition = new Vector3(2.5f, 1f, -2.25f);
+			//activeRobot.transform.localPosition = new Vector3(0f, 0f, 0f);
             activeRobot.transform.localRotation = rotation;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -346,8 +346,12 @@ public class Init : MonoBehaviour
                 if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null)
                 {
                     unityWheelData.Add(uNode.wheelCollider);
+					unityWheels.Add (uNode);
                 }
             }
+
+			bool isMecanum = false;
+
             if (unityWheelData.Count > 0)
             {
                 auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
@@ -357,10 +361,46 @@ public class Init : MonoBehaviour
 					if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null)
 					{
 						unityWheelData.Add(uNode.wheelCollider);
+
+						if(uNode.GetDriverMeta<WheelDriverMeta>().GetTypeString().Equals("Mecanum"))
+						{
+							isMecanum = true;
+							uNode.unityObject.GetComponent<BetterWheelCollider>().wheelType = (int)WheelType.MECANUM;
+						}
 					}
 				}
 				auxFunctions.rightRobot(unityWheelData, activeRobot.transform);
+
+				if(isMecanum)
+			   	{
+					float sumX = 0;
+					float sumZ = 0;
+
+					foreach(UnityRigidNode uNode in unityWheels)
+					{
+						sumX += uNode.wheelCollider.transform.localPosition.x;
+						sumZ += uNode.wheelCollider.transform.localPosition.z;
+					}
+
+					float avgX = sumX / unityWheels.Count;
+					float avgZ = sumZ / unityWheels.Count;
+
+					foreach(UnityRigidNode uNode in unityWheels)
+					{
+						if(uNode.unityObject.GetComponent<BetterWheelCollider>().wheelType == (int)WheelType.MECANUM)
+						{
+							if((avgX > uNode.wheelCollider.transform.localPosition.x && avgZ < uNode.wheelCollider.transform.localPosition.z) ||
+							   (avgX < uNode.wheelCollider.transform.localPosition.x && avgZ > uNode.wheelCollider.transform.localPosition.z))
+								uNode.unityObject.GetComponent<BetterWheelCollider>().wheelAngle = -45;
+
+							else
+								uNode.unityObject.GetComponent<BetterWheelCollider>().wheelAngle = 45;
+						}
+					}
+				}
             }
+
+			Debug.Log ("Mecanum Bruh: " + isMecanum);
         }
 
 		foreach (GameObject o in totes)

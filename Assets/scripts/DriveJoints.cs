@@ -174,6 +174,14 @@ public class DriveJoints : MonoBehaviour
 				(Input.GetKey (KeyCode.DownArrow) ? speedArrowPWM : 0.0f) +
 				(Input.GetKey (KeyCode.LeftArrow) ? -speedArrowPWM : 0.0f) +
 				(Input.GetKey (KeyCode.RightArrow) ? speedArrowPWM : 0.0f);
+
+			//if(Init.isMecanum)
+			{
+				pwm[0] += (Input.GetKey (KeyCode.Q) ? speedArrowPWM : 0) + (Input.GetKey (KeyCode.A) ? -speedArrowPWM : 0);
+				pwm[1] += (Input.GetKey (KeyCode.W) ? speedArrowPWM : 0) + (Input.GetKey (KeyCode.S) ? -speedArrowPWM : 0);
+				pwm[2] += (Input.GetKey (KeyCode.I) ? -speedArrowPWM : 0) + (Input.GetKey (KeyCode.K) ? speedArrowPWM : 0);
+				pwm[3] += (Input.GetKey (KeyCode.O) ? -speedArrowPWM : 0) + (Input.GetKey (KeyCode.L) ? speedArrowPWM : 0);
+			}
 		}
 
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();

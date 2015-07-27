@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +11,8 @@ public class BetterWheelCollider : MonoBehaviour
     public float sidewaysGrip = 0.75f;  // 0=slides, 1=doesn't
     public float forwardsGrip = 1;  // 0=no grip, 1=full grip
     public float forceMultiplier = 4.2f; // idkwhy
+	public float wheelAngle = 0;
+	public int wheelType = (int)WheelType.NORMAL;
 
     public BetterWheelCollider() {
     }
@@ -49,13 +51,21 @@ public class BetterWheelCollider : MonoBehaviour
         if (collisionInfo.rigidbody != null)
             relativeVelocity -= collisionInfo.rigidbody.velocity;
 
-        Vector3 forceDirection = Vector3.Cross(normal, axis).normalized;
+		Vector3 forceDirection = Vector3.Cross (normal, axis).normalized;
+
+		if (wheelType == (int)WheelType.MECANUM)
+			forceDirection = Quaternion.Euler (0, wheelAngle, 0) * forceDirection;
+
 		float appliedRadius = 1;//Vector3.Distance(point, basePoint);
         Vector3 force = Vector3.zero;
         float normalVelocity = Vector3.Dot(relativeVelocity, axis);
 		if (Math.Abs(normalVelocity) > 1)
 			normalVelocity = Math.Sign(normalVelocity);
 		Vector3 normalDrag = -sidewaysGrip * Math.Abs(normalVelocity) * normalVelocity * axis * Init.PHYSICS_MASS_MULTIPLIER;
+
+		if (wheelType == (int)WheelType.MECANUM)
+			normalDrag = Quaternion.Euler (0, wheelAngle, 0) * normalDrag;
+
 		if (lastNormalDrag != Vector3.zero)
 		{
 			Vector3 tmpDrag = normalDrag * 0.5f;
