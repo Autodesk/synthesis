@@ -8,7 +8,11 @@ public enum RobotSensorType : byte
 {
     LIMIT = 0,
     ENCODER = 1,
-    POTENTIOMETER = 2
+    POTENTIOMETER = 2,
+    LIMIT_HALL = 3,
+    ACCELEROMETER = 4,
+    MAGNETOMETER = 5,
+    GYRO = 6
 }
 
 public class RobotSensor : RWObject
