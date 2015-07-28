@@ -446,12 +446,12 @@ public class Init : MonoBehaviour
 			skeleton = null;
 			UnityEngine.Object.Destroy(activeRobot);
 		}
-
+		
 		if (activeField != null)
 		{
 			UnityEngine.Object.Destroy(activeField);
 		}
-
+		
 		if (filePath != null)
 		{
 			activeField = new GameObject("Field");
@@ -460,11 +460,10 @@ public class Init : MonoBehaviour
 			{
 				return new UnityFieldDefinition();
 			};
-
+			
 			field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
 			field.CreateTransform(activeField.transform);
 			field.CreateMesh(filePath + "mesh.bxda");
-			field.unityObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
 		}
 		HideGuiSidebar();
 	}
