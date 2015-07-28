@@ -9,11 +9,11 @@ using System.Text;
 public class BXDIO
 {
     public const byte MAJOR_VERSION = 0;           // Bump on stable releases
-    public const byte MINOR_VERSION = 0;           // Bump on beta releases
-    public const byte REVISION_VERSION = 9;        // Bump on major IO changes.
-    public const byte REVISION_PORTION = 0;        // Bump on IO changes in a meta chunk.
+    public const byte MINOR_VERSION = 3;           // Bump on beta releases
+    public const byte REVISION_VERSION = 3;        // Bump on major IO changes.
+    public const byte REVISION_PORTION = 1;        // Bump on IO changes in a meta chunk.
 
-    public const string ASSEMBLY_VERSION = "0.0.9.0";   // I'm so sorry that this isn't dynamic :'(
+    public const string ASSEMBLY_VERSION = "0.3.3.1";   // I'm so sorry that this isn't dynamic :'(
 
     public delegate void ProgressReporter(long progress, long total);
 
