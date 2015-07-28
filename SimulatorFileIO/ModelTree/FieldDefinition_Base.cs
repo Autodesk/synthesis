@@ -3,6 +3,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+/// <summary>
+/// Stores the type of collision for the node. Extends byte for writability.
+/// </summary>
+public enum PhysicsGroupCollisionType : byte
+{
+    /// <summary>
+    /// No collision.
+    /// </summary>
+    NONE = 1,
+
+    /// <summary>
+    /// Mesh collider.
+    /// </summary>
+    MESH = 2,
+
+    /// <summary>
+    /// Box collider.
+    /// </summary>
+    BOX = 3
+}
+
+/// <summary>
+/// Stores physical properties for a node or group of nodes.
+/// </summary>
+public struct PhysicsGroup
+{
+    /// <summary>
+    /// ID of the PhysicsGroup.
+    /// </summary>
+    public string physicsGroupID;
+
+    /// <summary>
+    /// Collision type of the PhysicsGroup.
+    /// </summary>
+    public PhysicsGroupCollisionType collisionType;
+
+    /// <summary>
+    /// Friction value of the PhysicsGroup.
+    /// </summary>
+    public int friction;
+
+    /// <summary>
+    /// Constructs a new PhysicsGroup with the specified values.
+    /// </summary>
+    /// <param name="ID"></param>
+    /// <param name="type"></param>
+    /// <param name="frictionValue"></param>
+    public PhysicsGroup(string ID, PhysicsGroupCollisionType type, int frictionValue)
+    {
+        physicsGroupID = ID;
+        collisionType = type;
+        friction = frictionValue;
+    }
+}
+
 public class FieldDefinition_Base
 {
     /// <summary>
@@ -29,14 +84,38 @@ public class FieldDefinition_Base
     }
 
     /// <summary>
-    /// The mesh to be exported.
+    /// A dictionary containing each PhysicsGroup and a string identifier.
     /// </summary>
-    private BXDAMesh mesh;
+    private Dictionary<string, PhysicsGroup> physicsGroups = new Dictionary<string,PhysicsGroup>();
 
     /// <summary>
     /// A list of each of the child nodes.
     /// </summary>
     private List<FieldNode_Base> children = new List<FieldNode_Base>();
+
+    /// <summary>
+    /// The mesh to be exported.
+    /// </summary>
+    private BXDAMesh mesh;
+
+    /// <summary>
+    /// Adds a child PhysicsGroup to physicsGroups;
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="group"></param>
+    public void AddPhysicsGroup(PhysicsGroup group)
+    {
+        physicsGroups.Add(group.physicsGroupID, group);
+    }
+
+    /// <summary>
+    /// Returns a Dictionary containing each PhysicsGroup.
+    /// </summary>
+    /// <returns></returns>
+    public Dictionary<string, PhysicsGroup> GetPhysicsGroups()
+    {
+        return physicsGroups;
+    }
 
     /// <summary>
     /// Adds a child FieldNode_Base to the children.

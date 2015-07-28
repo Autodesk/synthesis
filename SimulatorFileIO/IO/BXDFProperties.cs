@@ -13,7 +13,7 @@ public class BXDFProperties
     /// <param name="fieldDefinition">The base node of the skeleton</param>
     public static void WriteProperties(String path, FieldDefinition_Base fieldDefinition)
     {
-        // Begin IO
+        // Begin IO.
         BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.Create));
 
         // Writes the format version.
@@ -21,6 +21,23 @@ public class BXDFProperties
 
         // Writes the name of the field definition.
         writer.Write(fieldDefinition.definitionID);
+
+        Dictionary<string, PhysicsGroup> physicsGroups = fieldDefinition.GetPhysicsGroups();
+
+        // Writes PhysicsGroup count.
+        writer.Write(physicsGroups.Count);
+        
+        for (int i = 0; i < physicsGroups.Count; i++)
+        {
+            // Writes the name/ID of the physics group.
+            writer.Write(physicsGroups.ElementAt(i).Value.physicsGroupID);
+
+            // Writes the collision type of the current PhysicsGroup.
+            writer.Write((byte)physicsGroups.ElementAt(i).Value.collisionType);
+
+            // Writes the friction of the PhysicsGroup.
+            writer.Write(physicsGroups.ElementAt(i).Value.friction);
+        }
 
         List<FieldNode_Base> nodes = fieldDefinition.GetChildren();
 
@@ -32,14 +49,8 @@ public class BXDFProperties
             // Writes the name of the current node.
             writer.Write(nodes[i].nodeID);
 
-            // Writes the type of collision of the current node.
-            writer.Write((byte)nodes[i].nodeCollisionType);
-
-            // Writes a boolean determining if the node's collision mesh is convex.
-            writer.Write(nodes[i].convex);
-
-            // Writes the friction of 
-            writer.Write(nodes[i].friction);
+            // Writes the name of the parent PhysicsGroup.
+            writer.Write(nodes[i].physicsGroupID); //... but this can be null...
         }
         writer.Close();
     }
@@ -63,9 +74,27 @@ public class BXDFProperties
             // Reads definition's ID.
             fieldDefinition.definitionID = reader.ReadString();
 
+            // Reads number of PhysicsGroups.
+            int groupCount = reader.ReadInt32();
+
+            PhysicsGroup[] groups = new PhysicsGroup[groupCount];
+
+            for (int i = 0; i < groupCount; i++)
+            {
+                // Reads the ID of the current PhysicsGroup.
+                groups[i].physicsGroupID = reader.ReadString();
+
+                // Reads the collision type of the current PhysicsGroup.
+                groups[i].collisionType = (PhysicsGroupCollisionType)reader.ReadByte();
+
+                // Reads the friction value of the current PhysicsGroup.
+                groups[i].friction = reader.ReadInt32();
+
+                fieldDefinition.AddPhysicsGroup(groups[i]);
+            }
+
             // Reads number of nodes.
             int nodeCount = reader.ReadInt32();
-            if (nodeCount <= 0) throw new Exception("There appears to be no child nodes.");
 
             FieldNode_Base[] nodes = new FieldNode_Base[nodeCount];
 
@@ -76,14 +105,8 @@ public class BXDFProperties
                 // Reads ID of node.
                 nodes[i].nodeID = reader.ReadString();
 
-                // Reads type of collision for node.
-                nodes[i].nodeCollisionType = (FieldNodeCollisionType)reader.ReadByte();
-
-                // Reads if collision mesh is convex
-                nodes[i].convex = reader.ReadBoolean();
-
-                // Reads friction value.
-                nodes[i].friction = reader.ReadInt32();
+                // Reads ID of node's PhysicsGroup.
+                nodes[i].physicsGroupID = reader.ReadString();
 
                 fieldDefinition.AddChild(nodes[i]);
             }

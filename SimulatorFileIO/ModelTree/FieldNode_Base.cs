@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-/// <summary>
-/// Stores the type of collision for the node. Extends byte for writability.
-/// </summary>
-public enum FieldNodeCollisionType : byte
-{
-    NONE = 1,
-    MESH = 2,
-    BOX = 3
-}
-
 public class FieldNode_Base
 {
     /// <summary>
@@ -39,27 +29,9 @@ public class FieldNode_Base
     }
 
     /// <summary>
-    /// Stores the type of collision for the node.
+    /// The string ID for the parent PhysicsGroup.
     /// </summary>
-    public FieldNodeCollisionType nodeCollisionType
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Stores a boolean determining if the collider is convex (always true for box collider)
-    /// </summary>
-    public bool convex
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Stores the amount of friction the mesh will have.
-    /// </summary>
-    public int friction
+    public string physicsGroupID
     {
         get;
         set;
