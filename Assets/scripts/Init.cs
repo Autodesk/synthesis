@@ -61,11 +61,8 @@ public class Init : MonoBehaviour
     {
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
-<<<<<<< HEAD
-		Debug.Log(filePath);
-=======
 		Debug.Log (filePath);
->>>>>>> origin/forpatrick
+
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
 	
 		time_stop = false;
