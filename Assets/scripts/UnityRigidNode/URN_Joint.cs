@@ -196,11 +196,15 @@ public partial class UnityRigidNode : RigidNode_Base
                             nodeL.linearLimitHigh);
             });
 			//TODO make code good
-			if(GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
+			if(GetSkeletalJoint().cDriver != null)
 			{
-				Debug.Log(GetSkeletalJoint().cDriver.portA);
-				unityObject.AddComponent<ElevatorScript>();
-				Debug.Log("added");
+				if(GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
+				{
+					Debug.Log(GetSkeletalJoint().cDriver.portA);
+					unityObject.AddComponent<ElevatorScript>();
+					unityObject.GetComponent<ElevatorScript>().eType = (ElevatorType) this.GetDriverMeta<ElevatorDriverMeta>().type;
+					Debug.Log("added");
+				}
 			}
         }
         SetXDrives();

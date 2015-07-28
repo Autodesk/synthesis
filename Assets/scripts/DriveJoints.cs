@@ -8,8 +8,21 @@ public class InputStatePacket
 {
 	public DIOModule[] dio = new DIOModule[2];
 	public Encoders[] encoders = new Encoders[4];
-	public AnalogValues[] ai = new AnalogValues[1];
+	public AnalogInput[] ai = new AnalogInput[1];
 	public Counter[] counter = new Counter[8];
+
+	public static Dictionary<RobotSensorType, SignalType> signalLookup = new Dictionary<RobotSensorType, SignalType>()
+	{
+		{RobotSensorType.ENCODER, SignalType.DIGITAL},
+		{RobotSensorType.LIMIT, SignalType.DIGITAL},
+		{RobotSensorType.POTENTIOMETER, SignalType.ANALOG}/*
+		{RobotSensorType.LIMIT_HALL, SignalType.DIGITAL},
+		{RobotSensorType.ACCELEROMETER_DIGITAL, SignalType.DIGITAL},'
+		{RobotSensorType.GYRO_DIGITAL, SignalType.DIGITAL},
+		{RobotSensorType.ACCELEROMETER_ANALOG, SignalType.ANALOG},
+		{RobotSensorType.GYRO_ANALOG, SignalType.ANALOG},	
+		{RobotSensorType.MAGNEPOT, SignalType.ANALOG},*/
+	};
 
 	public InputStatePacket()
 	{
@@ -23,13 +36,23 @@ public class InputStatePacket
 		}
 		for (int i = 0; i < ai.Length; i++)
 		{
-			ai [i] = new AnalogValues();
+			ai [i] = new AnalogInput();
 		}
 		for (int i = 0; i < counter.Length; i++)
 		{
 			counter [i] = new Counter();
 		}
 
+	}
+	public enum SignalType
+	{
+		DIGITAL = 0,
+		ANALOG = 1
+	}
+	public enum DigitalState
+	{
+		LOW = 0,
+		HIGH = 1
 	}
 
 	public class DIOModule
@@ -44,7 +67,7 @@ public class InputStatePacket
 		public Int32 value;
 	}
 
-	public class AnalogValues
+	public class AnalogInput
 	{
 		public const int LENGTH = 4 * (8);
 		public Int32[] analogValues = new Int32[8];
@@ -74,8 +97,8 @@ public class InputStatePacket
 		{
 
 
-			Buffer.BlockCopy(ai [i].analogValues, 0, packet, head, AnalogValues.LENGTH);
-			head += AnalogValues.LENGTH;
+			Buffer.BlockCopy(ai [i].analogValues, 0, packet, head, AnalogInput.LENGTH);
+			head += AnalogInput.LENGTH;
 
 		}
 		for (int i = 0; i < counter.Length; i++)
