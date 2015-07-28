@@ -61,7 +61,11 @@ public class Init : MonoBehaviour
     {
 		udp = new unityPacket ();
 		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
+<<<<<<< HEAD
 		Debug.Log(filePath);
+=======
+		Debug.Log (filePath);
+>>>>>>> origin/forpatrick
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
 	
 		time_stop = false;
@@ -356,7 +360,7 @@ public class Init : MonoBehaviour
                     uNode.unityObject.rigidbody.velocity = Vector3.zero;
                     uNode.unityObject.rigidbody.angularVelocity = Vector3.zero;
                 }
-                if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null)
+                if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null && uNode.GetDriverMeta<WheelDriverMeta>().isDriveWheel)
                 {
                     unityWheelData.Add(uNode.wheelCollider);
                 }
@@ -558,16 +562,20 @@ public class Init : MonoBehaviour
 		if (skeleton != null) 
 		{
 			List<RigidNode_Base> nodes = skeleton.ListAllNodes();
+
 			unityPacket.OutputStatePacket packet = udp.GetLastPacket ();
+
 			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
+			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
 			foreach(RigidNode_Base node in nodes)
 			{
 				UnityRigidNode uNode = (UnityRigidNode) node;
 				if(uNode.GetSkeletalJoint() != null)
 				{
-					if(uNode.GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR)
+					if(uNode.GetSkeletalJoint().GetJointType() == SkeletalJointType.LINEAR && uNode.GetSkeletalJoint().cDriver != null && uNode.GetSkeletalJoint().cDriver.GetDriveType() == JointDriverType.ELEVATOR)
 					{
 						ElevatorScript es = uNode.unityObject.GetComponent<ElevatorScript>();
+
 						float[] pwm = packet.dio[0].pwmValues;
 						if(Input.anyKey)
 						{
@@ -586,20 +594,60 @@ public class Init : MonoBehaviour
 				}
 			} 
 			DriveJoints.UpdateSolenoids (skeleton, packet.solenoid);
+
+			#region HANDLE_SENSORS
 			InputStatePacket sensorPacket = new InputStatePacket ();
-			foreach (RigidNode_Base node in nodes) {
+			foreach (RigidNode_Base node in nodes) 
+			{
+				UnityRigidNode uNode = (UnityRigidNode)node;
+
 				if (node.GetSkeletalJoint () == null)
 					continue;
 
-				foreach (RobotSensor sensor in node.GetSkeletalJoint().attachedSensors) {
-					if (sensor.type == RobotSensorType.POTENTIOMETER && node.GetSkeletalJoint () is RotationalJoint_Base) {
-						UnityRigidNode uNode = (UnityRigidNode)node;
-						float angle = DriveJoints.GetAngleBetweenChildAndParent (uNode) + ((RotationalJoint_Base)uNode.GetSkeletalJoint ()).currentAngularPosition;
-						sensorPacket.ai [sensor.module - 1].analogValues [sensor.port - 1] = (int)sensor.equation.Evaluate (angle);
+				foreach (RobotSensor sensor in node.GetSkeletalJoint().attachedSensors) 
+				{
+					int aiValue; //int between 0 and 1024, typically
+					InputStatePacket.DigitalState dioValue;
+					switch(sensor.type)
+					{
+					case RobotSensorType.POTENTIOMETER:
+						if(node.GetSkeletalJoint() != null && node.GetSkeletalJoint() is RotationalJoint_Base)
+						{
+							float angle = DriveJoints.GetAngleBetweenChildAndParent (uNode) + ((RotationalJoint_Base)uNode.GetSkeletalJoint ()).currentAngularPosition;
+							sensorPacket.ai [sensor.module - 1].analogValues [sensor.port - 1] = (int)sensor.equation.Evaluate (angle);
+						}
+						break;
+
+					case RobotSensorType.ENCODER:
+						throw new NotImplementedException();
+						break;
+
+					case RobotSensorType.LIMIT:
+						throw new NotImplementedException();
+						break;
+
+					 case RobotSensorType.GYRO:
+						throw new NotImplementedException();
+						break;
+
+					 case RobotSensorType.MAGNETOMETER:
+						throw new NotImplementedException();
+						break;
+
+					 case RobotSensorType.ACCELEROMETER:
+						throw new NotImplementedException();
+						break;
+
+					 case RobotSensorType.LIMIT_HALL:
+						throw new NotImplementedException();
+						break;
 					}
+
 				}
 			}
 			udp.WritePacket (sensorPacket);
+			#endregion
+
 			//finds main node of robot to use its rigidbody
 			mainNode = GameObject.Find ("node_0.bxda");
 			//calculates stats of robot
@@ -614,7 +662,6 @@ public class Init : MonoBehaviour
 
 				if(gui.guiVisible)
 					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-
 				else
 					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
 			}
