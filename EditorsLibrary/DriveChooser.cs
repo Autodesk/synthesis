@@ -40,21 +40,21 @@ public partial class DriveChooser : Form
             cmbJointDriver.SelectedIndex = Array.IndexOf(typeOptions, joint.cDriver.GetDriveType()) + 1;
             txtPortA.Value = joint.cDriver.portA;
             txtPortB.Value = joint.cDriver.portB;
-            txtLowLimit.Value = (decimal) joint.cDriver.lowerLimit;
-            txtHighLimit.Value = (decimal) joint.cDriver.upperLimit;
+            txtLowLimit.Value = (decimal)joint.cDriver.lowerLimit;
+            txtHighLimit.Value = (decimal)joint.cDriver.upperLimit;
 
             #region Meta info recovery
             {
                 PneumaticDriverMeta pneumaticMeta = joint.cDriver.GetInfo<PneumaticDriverMeta>();
                 if (pneumaticMeta != null)
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (byte) pneumaticMeta.widthEnum;
-                    cmbPneumaticPressure.SelectedIndex = (byte) pneumaticMeta.pressureEnum;
+                    cmbPneumaticDiameter.SelectedIndex = (byte)pneumaticMeta.widthEnum;
+                    cmbPneumaticPressure.SelectedIndex = (byte)pneumaticMeta.pressureEnum;
                 }
                 else
                 {
-                    cmbPneumaticDiameter.SelectedIndex = (byte) PneumaticDiameter.MEDIUM;
-                    cmbPneumaticPressure.SelectedIndex = (byte) PneumaticPressure.HIGH;
+                    cmbPneumaticDiameter.SelectedIndex = (byte)PneumaticDiameter.MEDIUM;
+                    cmbPneumaticPressure.SelectedIndex = (byte)PneumaticPressure.HIGH;
                 }
             }
             {
@@ -62,19 +62,26 @@ public partial class DriveChooser : Form
                 if (wheelMeta != null)
                 {
                     // TODO:  This is a really sketchy hack and I don't even know where the cat is.
-                    cmbWheelType.SelectedIndex = (byte) wheelMeta.type;
+                    cmbWheelType.SelectedIndex = (byte)wheelMeta.type;
                     if (wheelMeta.forwardExtremeValue > 8)
-                        cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.HIGH;
+                        cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.HIGH;
                     else if (wheelMeta.forwardExtremeValue > 4)
-                        cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.MEDIUM;
+                        cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
                     else
-                        cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.LOW;
+                        cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.LOW;
                     cmbWheelType_SelectedIndexChanged(null, null);
                 }
                 else
                 {
-                    cmbWheelType.SelectedIndex = (byte) WheelType.NOT_A_WHEEL;
-                    cmbFrictionLevel.SelectedIndex = (byte) FrictionLevel.MEDIUM;
+                    cmbWheelType.SelectedIndex = (byte)WheelType.NOT_A_WHEEL;
+                    cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
+                }
+            }
+            {
+                ElevatorDriverMeta elevatorMeta = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+                if (elevatorMeta != null)
+                {
+                    cmbStages.SelectedIndex = (byte)elevatorMeta.type;
                 }
             }
             #endregion
@@ -90,6 +97,8 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     void DriveChooser_Layout(object sender, LayoutEventArgs e)
     {
+        chkBoxDriveWheel.Hide();
+        chkBoxHasBrake.Hide();
         if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
         {
             grpDriveOptions.Visible = false;
@@ -108,12 +117,27 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Clear();
                 tabsMeta.TabPages.Add(metaWheel);
                 tabsMeta.TabPages.Add(metaGearing);
+                chkBoxDriveWheel.Show();
             }
             else if (cType.IsPneumatic())
             {
                 tabsMeta.Visible = true;
                 tabsMeta.TabPages.Clear();
                 tabsMeta.TabPages.Add(metaPneumatic);
+            }
+            else if (cType.IsElevator())
+            {
+                tabsMeta.Visible = true;
+                lblBrakePort.Enabled = false;
+                brakePortA.Enabled = false;
+                brakePortB.Enabled = false;
+                tabsMeta.TabPages.Clear();
+                chkBoxHasBrake.Show();
+                tabsMeta.TabPages.Add(metaElevatorBrake);
+                tabsMeta.TabPages.Add(metaElevatorStages);
+                tabsMeta.TabPages.Add(metaGearing);
+                if(cmbStages.SelectedIndex == -1)
+                    cmbStages.SelectedIndex = 0;
             }
             else
             {
@@ -160,7 +184,7 @@ public partial class DriveChooser : Form
                 #region WHEEL_SAVING
                 WheelDriverMeta wheelDriver = new WheelDriverMeta(); //The info about the wheel attached to the joint.
                 wheelDriver.type = (WheelType) cmbWheelType.SelectedIndex;
-
+                wheelDriver.isDriveWheel = chkBoxDriveWheel.Checked;
                 //TODO: Find real values that make sense for the friction.  Also add Mecanum wheels.
                 switch ((FrictionLevel) cmbFrictionLevel.SelectedIndex)
                 {
@@ -250,6 +274,19 @@ public partial class DriveChooser : Form
             {
                 joint.cDriver.RemoveInfo<PneumaticDriverMeta>();
             }
+
+            if (cType.IsElevator())
+            {
+                #region ELEVATOR_SAVING
+                ElevatorDriverMeta elevatorDriver = new ElevatorDriverMeta();
+                elevatorDriver.type = (ElevatorType)cmbStages.SelectedIndex;
+                joint.cDriver.AddInfo(elevatorDriver);
+                #endregion
+            }
+            else
+            {
+                joint.cDriver.RemoveInfo<ElevatorDriverMeta>();
+            }
         }
         Hide();
     }
@@ -257,5 +294,31 @@ public partial class DriveChooser : Form
     private void cmbWheelType_SelectedIndexChanged(object sender, EventArgs e)
     {
         cmbFrictionLevel.Visible = (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL;
+    }
+
+    private void label1_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void DriveChooser_Load(object sender, EventArgs e)
+    {
+
+    }
+
+    private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
+    {
+        if (chkBoxHasBrake.Checked == true)
+        {
+            lblBrakePort.Enabled = true;
+            brakePortA.Enabled = true;
+            brakePortB.Enabled = true;
+        }
+        else
+        {
+            lblBrakePort.Enabled = false;
+            brakePortA.Enabled = false;
+            brakePortB.Enabled = false;
+        }
     }
 }

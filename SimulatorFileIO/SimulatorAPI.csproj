@@ -54,6 +54,7 @@
     <Compile Include="IO\RWObject.cs" />
     <Compile Include="Joints\BallJoint_Base.cs" />
     <Compile Include="Joints\CylindricalJoint_Base.cs" />
+    <Compile Include="Joints\Driver\ElevatorDriverMeta.cs" />
     <Compile Include="Joints\Driver\PneumaticDriverMeta.cs" />
     <Compile Include="Joints\Driver\JointDriverMeta.cs" />
     <Compile Include="Joints\Driver\JointDriverType.cs" />

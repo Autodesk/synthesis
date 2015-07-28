@@ -33,7 +33,7 @@ public class WheelDriverMeta : JointDriverMeta
     public float sideExtremeValue;
     public float sideAsympSlip;
     public float sideAsympValue;
-
+    public bool isDriveWheel;
     public WheelDriverMeta()
     {
         center = new BXDVector3();
@@ -56,6 +56,7 @@ public class WheelDriverMeta : JointDriverMeta
         writer.Write(sideAsympValue);
         writer.Write(sideExtremeSlip);
         writer.Write(sideExtremeValue);
+        writer.Write(isDriveWheel);
     }
 
     //Reads the position of the wheel from the file.
@@ -75,6 +76,7 @@ public class WheelDriverMeta : JointDriverMeta
         sideAsympValue = reader.ReadSingle();
         sideExtremeSlip = reader.ReadSingle();
         sideExtremeValue = reader.ReadSingle();
+        isDriveWheel = reader.ReadBoolean();
     }
 
     public string GetTypeString()
@@ -94,4 +96,5 @@ public class WheelDriverMeta : JointDriverMeta
     {
         return "WheelMeta[rad=" + radius + "]";
     }
+
 }
