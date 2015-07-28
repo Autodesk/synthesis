@@ -26,7 +26,7 @@ public class UnityFieldDefinition : FieldDefinition_Base
 			GameObject subObject = new GameObject(GetChildren()[id].nodeID);
 			subObject.transform.parent = unityObject.transform;
 			subObject.transform.position = new Vector3(0, 0, 0);
-			
+		    
 			subObject.AddComponent<MeshFilter>().mesh = meshu;
 			subObject.AddComponent<MeshRenderer>();
 			Material[] matls = new Material[meshu.subMeshCount];
@@ -38,35 +38,29 @@ public class UnityFieldDefinition : FieldDefinition_Base
 
 			Collider collider = null;
 
-			switch (GetChildren()[id].nodeCollisionType)
+			if (GetPhysicsGroups().ContainsKey(GetChildren()[id].physicsGroupID))
 			{
-			case FieldNodeCollisionType.MESH:
-				collider = subObject.AddComponent<MeshCollider>();
-				break;
-			case FieldNodeCollisionType.BOX:
-				collider = subObject.AddComponent<BoxCollider>();
-				break;
-			}
-
-			if (collider != null)
-			{
-				if (collider is MeshCollider)
+				switch (GetPhysicsGroups()[GetChildren()[id].physicsGroupID].collisionType)
 				{
-					MeshCollider meshCollider = (MeshCollider)collider;
-					meshCollider.convex = GetChildren()[id].convex;
+				case PhysicsGroupCollisionType.MESH:
+					collider = subObject.AddComponent<MeshCollider>();
+					break;
+				case PhysicsGroupCollisionType.BOX:
+					collider = subObject.AddComponent<BoxCollider>();
+					break;
 				}
-				collider.material.dynamicFriction = collider.material.staticFriction = (float)GetChildren()[id].friction / 10f;
-				collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
+				
+				if (collider != null)
+				{
+					collider.material.dynamicFriction = collider.material.staticFriction = GetPhysicsGroups()[GetChildren()[id].physicsGroupID].friction / 10f;
+					collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
+
+					Rigidbody r = collider.gameObject.AddComponent<Rigidbody>();
+					r.constraints = RigidbodyConstraints.FreezeAll;
+					r.isKinematic = true;
+				}
 			}
 		});
-		
-		if (!unityObject.GetComponent<Rigidbody>())
-			unityObject.AddComponent<Rigidbody>();
-		
-		Rigidbody rigidB = unityObject.GetComponent<Rigidbody>();
-		rigidB.mass = mesh.physics.mass * Init.PHYSICS_MASS_MULTIPLIER; // Unity has magic mass units
-		rigidB.centerOfMass = mesh.physics.centerOfMass.AsV3();
-		rigidB.isKinematic = true;
 		
 		#region Free mesh
 		foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
