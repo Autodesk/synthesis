@@ -45,16 +45,28 @@ public struct PhysicsGroup
     public int friction;
 
     /// <summary>
+    /// Determines if the PhysicsGroup is dynamic (can be pushed around and stuff).
+    /// </summary>
+    public bool dynamic;
+
+    /// <summary>
+    /// Stores the mass of the object (only has effect when PhyicsGroup is dynamic).
+    /// </summary>
+    public double mass;
+
+    /// <summary>
     /// Constructs a new PhysicsGroup with the specified values.
     /// </summary>
     /// <param name="ID"></param>
     /// <param name="type"></param>
     /// <param name="frictionValue"></param>
-    public PhysicsGroup(string ID, PhysicsGroupCollisionType type, int frictionValue)
+    public PhysicsGroup(string physicsGroupID, PhysicsGroupCollisionType collisionType, int friction, bool dynamic, double mass = 0.0)
     {
-        physicsGroupID = ID;
-        collisionType = type;
-        friction = frictionValue;
+        this.physicsGroupID = physicsGroupID;
+        this.collisionType = collisionType;
+        this.friction = friction;
+        this.dynamic = dynamic;
+        this.mass = mass;
     }
 }
 

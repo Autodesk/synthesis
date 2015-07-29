@@ -64,16 +64,10 @@
     <ManifestKeyFile>FieldExporter_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
+    <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetZone>LocalIntranet</TargetZone>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="autodesk.inventor.interop, Version=20.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
@@ -105,6 +99,12 @@
     <Compile Include="Components\CreatePhysicsGroupTabPage.Designer.cs">
       <DependentUpon>CreatePhysicsGroupTabPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\ExportForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\ExportForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Components\InventorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -129,6 +129,7 @@
     <Compile Include="Components\PhysicsGroupsTabControl.Designer.cs">
       <DependentUpon>PhysicsGroupsTabControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Components\SynthesisColorTable.cs" />
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
@@ -174,6 +175,9 @@
     <EmbeddedResource Include="Components\CreatePhysicsGroupTabPage.resx">
       <DependentUpon>CreatePhysicsGroupTabPage.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\ExportForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\PhysicsGroupsTabControl.resx">
       <DependentUpon>PhysicsGroupsTabControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -200,7 +204,6 @@
       <DependentUpon>ProgressWindow.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="FieldExporter_TemporaryKey.pfx" />
-    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -232,7 +235,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SimulatorFileIO\SimulatorAPI.csproj">
+    <ProjectReference Include="..\..\..\..\GitHub\Aardvark\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
     </ProjectReference>

@@ -9,15 +9,13 @@ using Inventor;
 public class FieldNode : FieldNode_Base
 {
     public FieldNode(string ID)
-        : this(ID, FieldNodeCollisionType.NONE, true, 0)
+        : this(ID, "")
     {
     }
 
-    public FieldNode(string ID, FieldNodeCollisionType collisionType, bool isConvex, int frictionValue)
+    public FieldNode(string ID, string groupID)
     {
         nodeID = ID;
-        nodeCollisionType = collisionType;
-        convex = isConvex;
-        friction = frictionValue;
+        this.physicsGroupID = groupID;
     }
 }

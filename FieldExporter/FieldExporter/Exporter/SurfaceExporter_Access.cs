@@ -2,6 +2,7 @@
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 public partial class SurfaceExporter
 {
@@ -24,6 +25,13 @@ public partial class SurfaceExporter
         return outputMesh;
     }
 
+    /// <summary>
+    /// Exports from a ComponentOccurrence.
+    /// </summary>
+    /// <param name="component"></param>
+    /// <param name="bestResolution"></param>
+    /// <param name="separateFaces"></param>
+    /// <param name="ignorePhysics"></param>
     public void Export(ComponentOccurrence component, bool bestResolution = false,
         bool separateFaces = false, bool ignorePhysics = false)
     {

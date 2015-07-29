@@ -19,7 +19,9 @@ namespace FieldExporter.Components
         {
             InitializeComponent();
 
-            this.parentTabPage = tabPage;
+            Dock = DockStyle.Fill;
+
+            parentTabPage = tabPage;
         }
 
         private void newPhysicsButton_Click(object sender, EventArgs e)

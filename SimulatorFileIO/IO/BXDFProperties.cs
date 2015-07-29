@@ -10,7 +10,7 @@ public class BXDFProperties
     /// Writes out the properties file for the node with the base provided to the path provided.
     /// </summary>
     /// <param name="path">The output file path</param>
-    /// <param name="fieldDefinition">The base node of the skeleton</param>
+    /// <param name="fieldDefinition">The field definition to reference</param>
     public static void WriteProperties(String path, FieldDefinition_Base fieldDefinition)
     {
         // Begin IO.
@@ -29,14 +29,23 @@ public class BXDFProperties
         
         for (int i = 0; i < physicsGroups.Count; i++)
         {
+            // The current PhysicsGroup.
+            PhysicsGroup currentGroup = physicsGroups.ElementAt(i).Value;
+
             // Writes the name/ID of the physics group.
-            writer.Write(physicsGroups.ElementAt(i).Value.physicsGroupID);
+            writer.Write(currentGroup.physicsGroupID);
 
             // Writes the collision type of the current PhysicsGroup.
-            writer.Write((byte)physicsGroups.ElementAt(i).Value.collisionType);
+            writer.Write((byte)currentGroup.collisionType);
 
             // Writes the friction of the PhysicsGroup.
-            writer.Write(physicsGroups.ElementAt(i).Value.friction);
+            writer.Write(currentGroup.friction);
+
+            // Writes a boolean determining if the PhysicsGroup is dynamic.
+            writer.Write(currentGroup.dynamic);
+
+            // Writes a double representing the PhysicsGroup's mass.
+            writer.Write(currentGroup.mass);
         }
 
         List<FieldNode_Base> nodes = fieldDefinition.GetChildren();
@@ -50,7 +59,7 @@ public class BXDFProperties
             writer.Write(nodes[i].nodeID);
 
             // Writes the name of the parent PhysicsGroup.
-            writer.Write(nodes[i].physicsGroupID); //... but this can be null...
+            writer.Write(nodes[i].physicsGroupID);
         }
         writer.Close();
     }
@@ -58,7 +67,7 @@ public class BXDFProperties
     /// <summary>
     /// Reads the properties contained in the BXDF file specified and returns the corresponding definition.
     /// </summary>
-    /// <param name="path">The input BXDJ file</param>
+    /// <param name="path">The input BXDF file</param>
     /// <returns>The root node of the skeleton</returns>
     public static FieldDefinition_Base ReadProperties(string path)
     {
@@ -89,6 +98,12 @@ public class BXDFProperties
 
                 // Reads the friction value of the current PhysicsGroup.
                 groups[i].friction = reader.ReadInt32();
+
+                // Reads a boolean to determin if the PhysicsGroup is dynamic.
+                groups[i].dynamic = reader.ReadBoolean();
+
+                // Reads the mass value of the current PhysicsGroup.
+                groups[i].mass = reader.ReadDouble();
 
                 fieldDefinition.AddPhysicsGroup(groups[i]);
             }

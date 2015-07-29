@@ -37,10 +37,11 @@
             // 
             // createButton
             // 
+            this.createButton.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.createButton.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.createButton.ImageKey = "AddIcon.png";
             this.createButton.ImageList = this.imageList;
-            this.createButton.Location = new System.Drawing.Point(268, 175);
+            this.createButton.Location = new System.Drawing.Point(268, 190);
             this.createButton.Name = "createButton";
             this.createButton.Size = new System.Drawing.Size(64, 40);
             this.createButton.TabIndex = 3;
@@ -57,8 +58,9 @@
             // 
             // createLabel
             // 
+            this.createLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.createLabel.AutoSize = true;
-            this.createLabel.Location = new System.Drawing.Point(152, 155);
+            this.createLabel.Location = new System.Drawing.Point(152, 170);
             this.createLabel.Name = "createLabel";
             this.createLabel.Size = new System.Drawing.Size(297, 17);
             this.createLabel.TabIndex = 2;
@@ -72,7 +74,7 @@
             this.Controls.Add(this.createLabel);
             this.Name = "CreatePhysicsGroupForm";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.Size = new System.Drawing.Size(600, 371);
+            this.Size = new System.Drawing.Size(600, 400);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -61,6 +61,34 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
+        /// Translates the information each ComponentPropertiesTabPage to a List of PhysicsGroups.
+        /// </summary>
+        /// <returns>The translation</returns>
+        public List<PhysicsGroup> TranslateToPhysicsGroups()
+        {
+            List<PhysicsGroup> translation = new List<PhysicsGroup>();
+
+            foreach (TabPage t in TabPages)
+            {
+                if (t is ComponentPropertiesTabPage)
+                {
+                    ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
+                    tabPage.Invoke(new Action(() =>
+                        {
+                            translation.Add(new PhysicsGroup(
+                                tabPage.Name,
+                                tabPage.childForm.GetCollisionType(),
+                                tabPage.childForm.GetFriction(),
+                                tabPage.childForm.IsDynamic(),
+                                tabPage.childForm.GetMass()));
+                        }));
+                }
+            }
+
+            return translation;
+        }
+
+        /// <summary>
         /// Scans each nonexcluded InventorTreeView and determines if they contian the supplied key.
         /// </summary>
         /// <param name="key"></param>

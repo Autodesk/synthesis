@@ -5,6 +5,7 @@ using Inventor;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 /// <summary>
 /// Exports Inventor objects into the BXDA format.  One instance per thread.
@@ -135,7 +136,11 @@ public partial class SurfaceExporter
             {
                 assetProps = AssetProperties.Create(surf);
             }
-            AddFacetsInternal(assetProps);
+
+            if (assetProps != null)
+            {
+                AddFacetsInternal(assetProps);
+            }
         }
     }
 

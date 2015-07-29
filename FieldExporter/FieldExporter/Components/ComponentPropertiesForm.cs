@@ -46,6 +46,8 @@ namespace FieldExporter.Controls
         {
             InitializeComponent();
 
+            Dock = DockStyle.Fill;
+
             parentTabPage = tabPage;
 
             nameLabel.Text = "Name: " + tabPage.Name;
@@ -59,26 +61,17 @@ namespace FieldExporter.Controls
         /// Returns the selected type of collision.
         /// </summary>
         /// <returns></returns>
-        public FieldNodeCollisionType GetCollisionType()
+        public PhysicsGroupCollisionType GetCollisionType()
         {
             switch (colliderTypeCombobox.SelectedIndex)
             {
                 case 0:
-                    return FieldNodeCollisionType.MESH;
+                    return PhysicsGroupCollisionType.MESH;
                 case 1:
-                    return FieldNodeCollisionType.BOX;
+                    return PhysicsGroupCollisionType.BOX;
                 default:
-                    return FieldNodeCollisionType.NONE;
+                    return PhysicsGroupCollisionType.NONE;
             }
-        }
-
-        /// <summary>
-        /// Returns true if convex is selected.
-        /// </summary>
-        /// <returns></returns>
-        public bool IsConvex()
-        {
-            return convexCheckBox.Checked;
         }
 
         /// <summary>
@@ -88,6 +81,24 @@ namespace FieldExporter.Controls
         public int GetFriction()
         {
             return frictionTrackBar.Value;
+        }
+
+        /// <summary>
+        /// Returns the value of the dynamic check box.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsDynamic()
+        {
+            return dynamicCheckBox.Checked;
+        }
+
+        /// <summary>
+        /// Returns the value of the mass numeric up down.
+        /// </summary>
+        /// <returns></returns>
+        public double GetMass()
+        {
+            return Decimal.ToDouble(massNumericUpDown.Value);
         }
 
         /// <summary>
@@ -332,26 +343,24 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void frictionTrackBar_Scroll(object sender, EventArgs e)
         {
-            frictionLabel.Text = "Friction:\n" + frictionTrackBar.Value;
+            frictionLabel.Text = "Friction:\n" + frictionTrackBar.Value + "/10";
         }
 
         /// <summary>
-        /// Enables or disables the convex check box depending on the collider type.
+        /// Enables or disables the DynamicGroupBox.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e)
+        private void dynamicCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            switch (colliderTypeCombobox.SelectedIndex)
+            if (dynamicCheckBox.Checked)
             {
-                case 0:
-                    convexCheckBox.Enabled = true;
-                    convexCheckBox.Checked = false;
-                    break;
-                case 1:
-                    convexCheckBox.Enabled = false;
-                    convexCheckBox.Checked = true;
-                    break;
+                dynamicGroupBox.Enabled = true;
+            }
+            else
+            {
+                dynamicGroupBox.Enabled = false;
+                massNumericUpDown.Value = 0;
             }
         }
     }

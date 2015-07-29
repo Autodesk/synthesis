@@ -7,8 +7,19 @@ using System.Windows.Forms;
 
 static class Program
 {
+    /// <summary>
+    /// The global Inventor application instance.
+    /// </summary>
     public static Inventor.Application INVENTOR_APPLICATION;
 
+    /// <summary>
+    /// The global MainWindow instance.
+    /// </summary>
+    public static MainWindow mainWindow;
+
+    /// <summary>
+    /// The global ProgressWindow instance.
+    /// </summary>
     public static ProgressWindow progressWindow;
 
     /// <summary>
@@ -29,6 +40,6 @@ static class Program
 
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new MainWindow());
+        Application.Run(mainWindow = new MainWindow());
     }
 }
