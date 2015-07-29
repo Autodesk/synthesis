@@ -96,8 +96,10 @@ public class InputStatePacket
 		for (int i = 0; i < ai.Length; i++)
 		{
 
+
 			Buffer.BlockCopy(ai [i].analogValues, 0, packet, head, AnalogInput.LENGTH);
 			head += AnalogInput.LENGTH;
+
 		}
 		for (int i = 0; i < counter.Length; i++)
 		{
