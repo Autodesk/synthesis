@@ -56,8 +56,20 @@ public class UnityFieldDefinition : FieldDefinition_Base
 					collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
 
 					Rigidbody r = collider.gameObject.AddComponent<Rigidbody>();
-					r.constraints = RigidbodyConstraints.FreezeAll;
-					r.isKinematic = true;
+
+					if (GetPhysicsGroups()[GetChildren()[id].physicsGroupID].dynamic)
+					{
+						if (collider is MeshCollider)
+						{
+							((MeshCollider)collider).convex = true;
+						}
+						r.mass = (float)GetPhysicsGroups()[GetChildren()[id].physicsGroupID].mass * Init.PHYSICS_MASS_MULTIPLIER;
+					}
+					else
+					{
+						r.constraints = RigidbodyConstraints.FreezeAll;
+						r.isKinematic = true;
+					}
 				}
 			}
 		});
