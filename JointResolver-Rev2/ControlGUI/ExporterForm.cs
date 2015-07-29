@@ -38,7 +38,7 @@ public partial class ExporterForm : Form
         oldConsole = Console.Out;
 
         newConsole = new TextboxWriter(logText);
-        //Console.SetOut(newConsole);
+        Console.SetOut(newConsole);
 
         logText.ForeColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalTextColor);
         logText.BackColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalBackgroundColor);

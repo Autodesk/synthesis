@@ -14,7 +14,8 @@ public partial class JointGroupPane : UserControl
 {
 
     private List<JointGroup> jointGroups;
-    private JointGroup defaultJointGroup;
+    private InventorTreeView unassignedJoints;
+    private bool showUnassigned;
 
     private bool isMouseDown;
     private System.Drawing.Point dragStart;
@@ -26,6 +27,9 @@ public partial class JointGroupPane : UserControl
 
         jointGroups = new List<JointGroup>();
 
+        unassignedJoints = new InventorTreeView(true);
+        
+
         panelJoints.MouseDown += panelJoints_MouseDown;
         panelJoints.MouseMove += panelJoints_MouseMove;
         panelJoints.MouseUp += panelJoints_MouseUp;
@@ -35,29 +39,7 @@ public partial class JointGroupPane : UserControl
     {
         foreach (ComponentOccurrence component in components)
         {
-            UpdateComponent(component);
-        }
-    }
-
-    private void UpdateComponent(ComponentOccurrence component)
-    {
-        foreach (ComponentOccurrence subComponent in component.SubOccurrences)
-        {
-            if (subComponent.Joints.Count > 0)
-            {
-                if (defaultJointGroup == null)
-                {
-                    defaultJointGroup = new JointGroup(panelJoints, 50, 50, 300, 300);
-                    AddGroup(defaultJointGroup);
-                }
-
-                foreach (AssemblyJoint joint in subComponent.Joints)
-                {
-                    defaultJointGroup.AddJoint(joint);
-                }
-            }
-
-            UpdateComponent(subComponent);
+            if (component.Joints.Count > 0) unassignedJoints.AddComponent(component);
         }
     }
 
@@ -154,6 +136,19 @@ public partial class JointGroupPane : UserControl
             g.Clear(Control.DefaultBackColor);
         }
     }
+
+    private void buttonAdd_Click(object sender, EventArgs e)
+    {
+        AddGroup(new JointGroup(panelJoints, 50, 50, 300, 300));
+    }
+
+    private void buttonShow_Click(object sender, EventArgs e)
+    {
+        if (!showUnassigned)
+        {
+
+        }
+    }
     #endregion
 
     public void Cleanup()
@@ -173,12 +168,14 @@ public partial class JointGroupPane : UserControl
 
         private Panel menuPanel;
         private Button minimizeButton;
+        private bool minimized;
         public Button closeButton;
         private Label nameLabel;
 
         private bool resizing;
         private bool moving;
         private System.Drawing.Point dragStart;
+        private Size oldSize;
 
         public JointGroup(Control p, System.Drawing.Point pos, Size size)
             : base()
@@ -213,11 +210,15 @@ public partial class JointGroupPane : UserControl
             menuPanel.BackColor = System.Drawing.Color.FromArgb(0xFF, System.Drawing.Color.CornflowerBlue);
             menuPanel.MouseDown += menuPanel_MouseDown;
             menuPanel.MouseMove += menuPanel_MouseMove;
+            menuPanel.MouseUp += menuPanel_MouseUp;
 
             nameLabel.Dock = DockStyle.Left;
             nameLabel.Height = 15;
             nameLabel.Font = new Font("Microsoft Sans Serif", 6.6f);
             nameLabel.Text = "Joint Group";
+            nameLabel.MouseDown += menuPanel_MouseDown;
+            nameLabel.MouseMove += menuPanel_MouseMove;
+            nameLabel.MouseUp += menuPanel_MouseUp;
 
             minimizeButton.Dock = DockStyle.Right;
             minimizeButton.Location.Offset(-20, 0);
@@ -226,6 +227,7 @@ public partial class JointGroupPane : UserControl
             minimizeButton.BackColor = Control.DefaultBackColor;
             minimizeButton.Font = new Font("Microsoft Sans Serif", 5.5f);
             minimizeButton.Text = "-";
+            minimizeButton.Click += minimizeButton_Click;
 
             closeButton.Dock = DockStyle.Right;
             closeButton.Height = 15;
@@ -323,6 +325,19 @@ public partial class JointGroupPane : UserControl
             {
                 Cursor = Cursors.Hand;
             }
+            else
+            {
+                System.Drawing.Point parentPoint = parent.PointToClient(PointToScreen(new System.Drawing.Point(e.X, e.Y)));
+
+                parent_MouseMove(null, new MouseEventArgs(e.Button, e.Clicks, parentPoint.X, parentPoint.Y, e.Delta));
+            }
+        }
+
+        private void menuPanel_MouseUp(object sender, MouseEventArgs e)
+        {
+            System.Drawing.Point parentPoint = parent.PointToClient(PointToScreen(new System.Drawing.Point(e.X, e.Y)));
+
+            parent_MouseUp(null, new MouseEventArgs(e.Button, e.Clicks, parentPoint.X, parentPoint.Y, e.Delta));
         }
 
         private void parent_MouseMove(object sender, MouseEventArgs e)
@@ -375,6 +390,7 @@ public partial class JointGroupPane : UserControl
                 Visible = true;
 
                 BringToFront();
+                
 
                 using (Graphics g = parent.CreateGraphics())
                 {
@@ -417,6 +433,24 @@ public partial class JointGroupPane : UserControl
                     nameLabel.Text = nameEditorForm.NewName;
                 }
                 e.Node.Expand();
+            }
+        }
+
+        private void minimizeButton_Click(object sender, EventArgs e)
+        {
+            if (minimized)
+            {
+                Width = oldSize.Width;
+                Height = oldSize.Height;
+                jointTree.Visible = true;
+                minimized = false;
+            }
+            else
+            {
+                oldSize = new Size(Width, Height);
+                Height = 15;
+                jointTree.Visible = false;
+                minimized = true;
             }
         }
 
