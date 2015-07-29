@@ -60,11 +60,7 @@ class FileBrowser : OverlayWindow
 
         string exampleDir = Application.dataPath + "\\..\\examples\\default-robot-chassis\\synthesis-output";
         // If we have a last-used directory.
-        if (BXDSettings.Instance.LastSkeletonDirectory != null && Directory.Exists(BXDSettings.Instance.LastSkeletonDirectory))
-        {
-            directoryLocation = BXDSettings.Instance.LastSkeletonDirectory;
-        }
-        else if (Directory.Exists(exampleDir))  // Otherwise try the example directory
+        if (Directory.Exists(exampleDir))  // Otherwise try the example directory
         {
             directoryLocation = (new DirectoryInfo(exampleDir)).FullName;
         }

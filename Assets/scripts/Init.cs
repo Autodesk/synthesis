@@ -60,7 +60,6 @@ public class Init : MonoBehaviour
     public Init()
     {
 		udp = new unityPacket ();
-		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 		Debug.Log (filePath);
 
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
