@@ -58,7 +58,6 @@ public class Init : MonoBehaviour
     public Init()
     {
 		udp = new unityPacket ();
-		filePath = BXDSettings.Instance.LastSkeletonDirectory + "\\";
 		Debug.Log (filePath);
 
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
@@ -552,7 +551,8 @@ public class Init : MonoBehaviour
 			{
 				return new UnityFieldDefinition();
 			};
-			
+
+			Debug.Log(filePath);
 			field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
 			field.CreateTransform(activeField.transform);
 			field.CreateMesh(filePath + "mesh.bxda");
@@ -613,23 +613,6 @@ public class Init : MonoBehaviour
             reloadRobotInFrames = -1;
             TryLoadRobot();
         }
-
-		// Only allow camera moving if gui is not showing
-		if (gui != null && !gui.guiVisible) 
-		{
-			if (Input.GetKeyDown (KeyCode.Z)) {
-				totes.Add (Tote.Create (new Vector3 (-3.619f, 0.742f, -8.183f), new Vector3 (0f, 323.3176f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-			}
-			if (Input.GetKeyDown (KeyCode.X)) {
-				totes.Add (Tote.Create (new Vector3 (3.619f, 0.742f, -8.183f), new Vector3 (0f, 216.2776f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-			}
-			if (Input.GetKeyDown (KeyCode.C)) {
-				totes.Add (Tote.Create (new Vector3 (-3.619f, 0.742f, 8.183f), new Vector3 (0f, 36.2776f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-			}
-			if (Input.GetKeyDown (KeyCode.V)) {
-				totes.Add (Tote.Create (new Vector3 (3.619f, 0.742f, 8.183f), new Vector3 (0f, 143.3176f, 247.9989f), new Vector3 (FORMAT_3DS_SCALE, FORMAT_3DS_SCALE, FORMAT_3DS_SCALE)));
-			}
-		}
 
 		// Orient Robot
 		if (Input.GetKeyDown (KeyCode.R))
