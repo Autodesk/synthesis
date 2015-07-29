@@ -350,7 +350,7 @@ public class Init : MonoBehaviour
             foreach (RigidNode_Base node in nodes)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
-				uNode.unityObject.transform.localPosition = new Vector3(-0.5f, 2f, 0f);
+				uNode.unityObject.transform.localPosition = Vector3.zero;
 				uNode.unityObject.transform.localRotation = Quaternion.identity;
                 if (uNode.unityObject.rigidbody != null)
                 {
