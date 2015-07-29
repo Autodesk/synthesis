@@ -110,7 +110,7 @@ public partial class ExporterGUI : Form
             if (skeletonBase != null && !WarnUnsaved()) e.Cancel = true;
             else BXDSettings.Save();
 
-            Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+            if (Exporter.INVENTOR_APPLICATION != null) Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
         });
     }
 
@@ -149,7 +149,15 @@ public partial class ExporterGUI : Form
             {
                 try
                 {
-                    Exporter.LoadInventorInstance();
+                    try
+                    {
+                        Exporter.LoadInventorInstance();
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Could not get a running instance of Inventor. Open Inventor and try again");
+                        return;
+                    }
 
                     Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
 
