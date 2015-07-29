@@ -54,7 +54,7 @@ public class DialogWindow : OverlayWindow
 	/// </summary>
 	public void Render()
 	{
-		windowRect = new Rect ((Screen.width / 2 - (50 + labels.Length * 250) / 2) + GUIController.sidebarWidth / 2, Screen.height / 2 - 100, 50 + labels.Length * 250, 200);
+		windowRect = new Rect ((Screen.width / 2 - (50 + labels.Length * 250) / 2), Screen.height / 2 - 100, 50 + labels.Length * 250, 200);
 
 		if (_active)
 		{
