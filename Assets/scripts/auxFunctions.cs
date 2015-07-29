@@ -33,7 +33,6 @@ public class auxFunctions
             {
                 int[] cpy = new int[sub.surfaces[i].indicies.Length];
                 Array.Copy(sub.surfaces[i].indicies, cpy, cpy.Length);
-				Array.Reverse(cpy);
                 unityMesh.SetTriangles(cpy, i);
             }
             if (normals != null)
