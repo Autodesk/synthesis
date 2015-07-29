@@ -180,7 +180,8 @@ public partial class ExporterGUI : Form
 
             if (exporterThread.IsAlive)
             {
-                Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+                if (Exporter.INVENTOR_APPLICATION != null) 
+                    Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
                 exporterThread.Abort();
             }
             else
