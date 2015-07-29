@@ -178,7 +178,11 @@ public partial class ExporterGUI : Form
                 }
             }
 
-            if (exporterThread.IsAlive) exporterThread.Abort();
+            if (exporterThread.IsAlive)
+            {
+                Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+                exporterThread.Abort();
+            }
             else
             {
                 exporterThread.Join();
