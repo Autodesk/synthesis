@@ -247,8 +247,6 @@ class GUIController
             GUI.Box(new Rect(-10, -10, Screen.width + 20, Screen.height + 20), "", BlackBoxStyle);
         }
 
-        UserMessageManager.Render();
-
         if (guiFadeIntensity > 0)
         {
             GUI.BeginGroup(new Rect((1f - guiFadeIntensity) * -sidebarWidth, 0, sidebarWidth, Screen.height));
