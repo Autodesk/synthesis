@@ -49,13 +49,8 @@ public class Init : MonoBehaviour
     /// </remarks>
     private volatile int reloadRobotInFrames;
 
-	/// <summary>
-	/// Used to determine if the field needs to be reloaded.
-	/// </summary>
-	/// <remarks>
-	/// Allows the field loading to be delayed until a "Loading" dialog can be drawn.
-	/// </remarks>
-	private volatile int reloadFieldInFrames;
+	private FileBrowser fieldBrowser = null;
+	private bool fieldLoaded = false;
 
     public Init()
     {
@@ -67,7 +62,6 @@ public class Init : MonoBehaviour
 	
 		time_stop = false;
 		reloadRobotInFrames = -1;
-		reloadFieldInFrames = -1;
 		showStatWindow = true;
 		rotation = Quaternion.identity;
     }
@@ -243,28 +237,6 @@ public class Init : MonoBehaviour
 				dynamicCamera.EnableMoving();
 			});
 
-			gui.AddWindow("Load Field", new FileBrowser("Load Field"), (object o) =>
-			{
-				string fileLocation = (string) o;
-				// If dir was selected...
-				if (File.Exists(fileLocation + "\\definition.bxdf"))
-				{
-					fileLocation += "\\definition.bxdf";
-				}
-				DirectoryInfo parent = Directory.GetParent(fileLocation);
-				if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\definition.bxdf"))
-				{
-					this.filePath = parent.FullName + "\\";
-					reloadFieldInFrames = 2;
-				}
-				else
-				{
-					UserMessageManager.Dispatch("Invalid selection!", 10f);
-				}
-				
-				dynamicCamera.EnableMoving();
-			});
-
             gui.AddAction("Reset Robot", () =>
             {
                 resetRobot();
@@ -309,25 +281,72 @@ public class Init : MonoBehaviour
 			});
         }
 
-		// The Menu bottom on the top left corner
-		GUI.Window (1, new Rect (3, 0, 100, 25), 
-        	(int windowID) =>
-        	{
+		if (fieldLoaded) 
+		{
+			// The Menu bottom on the top left corner
+			GUI.Window (1, new Rect (3, 0, 100, 25), 
+	        	(int windowID) =>
+			{
 				if (GUI.Button (new Rect (0, 0, 100, 25), "Menu"))
-					gui.EscPressed();
+					gui.EscPressed ();
 			},
-			""
-		);
+				""
+			);
+		}
 
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
 		{
 			HideGuiSidebar();
-			gui.HideAllWindows ();
+			gui.HideAllWindows();
 		}
 
-        gui.Render();
+		if (fieldBrowser == null) {
+			fieldBrowser = new FileBrowser ("Load Field", false);
+			fieldBrowser.Active = true;
+			fieldBrowser.OnComplete += (object obj) => 
+			{
+				fieldBrowser.Active = true;
+				string fileLocation = (string) obj;
+				// If dir was selected...
+				if (File.Exists(fileLocation + "\\definition.bxdf"))
+				{
+					fileLocation += "\\definition.bxdf";
+				}
+				DirectoryInfo parent = Directory.GetParent(fileLocation);
+				if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\definition.bxdf"))
+				{
+					this.filePath = parent.FullName + "\\";
+					activeField = new GameObject("Field");
+					
+					FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
+					{
+						return new UnityFieldDefinition();
+					};
 
-        if (reloadRobotInFrames >= 0 || reloadFieldInFrames >= 0)
+					Debug.Log (filePath);
+					field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
+					field.CreateTransform(activeField.transform);
+					field.CreateMesh(filePath + "mesh.bxda");
+					fieldLoaded = true;
+					fieldBrowser.Active = false;
+					TryLoadRobot();
+					reloadRobotInFrames = -1;
+				}
+				else
+				{
+					UserMessageManager.Dispatch("Invalid selection!", 10f);
+				}
+			};
+		}
+
+		fieldBrowser.Render ();
+
+		if(fieldLoaded)
+        	gui.Render();
+
+		UserMessageManager.Render();
+
+        if (reloadRobotInFrames >= 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
@@ -497,8 +516,7 @@ public class Init : MonoBehaviour
 
 		filePath = Application.dataPath + "\\resources\\FieldOutput\\";
 
-        reloadRobotInFrames = 2;
-		reloadFieldInFrames = 2;
+        reloadRobotInFrames = -1;
     }
 
     void OnEnable()
@@ -519,13 +537,6 @@ public class Init : MonoBehaviour
             reloadRobotInFrames = -1;
             TryLoadRobot();
         }
-
-		if (reloadFieldInFrames >= 0 && reloadFieldInFrames-- == 0)
-		{
-			reloadFieldInFrames = -1;
-			TryLoadField();
-			resetRobot();
-		}
 
 		// Only allow camera moving if gui is not showing
 		if (gui != null && !gui.guiVisible) 

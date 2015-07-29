@@ -28,6 +28,8 @@ class FileBrowser : OverlayWindow
 
     private bool _active;
 
+	private bool _allowEsc;
+
     public event Action<object> OnComplete;
 
     /// <summary>
@@ -54,9 +56,10 @@ class FileBrowser : OverlayWindow
     /// </summary>
     private float lastClick = 0;
 
-    public FileBrowser(string windowTitle)
+    public FileBrowser(string windowTitle, bool allowEsc = true)
     {
 		title = windowTitle;
+		_allowEsc = allowEsc;
 
         string exampleDir = Application.dataPath + "\\..\\examples\\default-robot-chassis\\synthesis-output";
         // If we have a last-used directory.
@@ -129,7 +132,7 @@ class FileBrowser : OverlayWindow
             }
         }
 
-        if (GUI.Button(new Rect(335, 5, 80, 20), "Exit"))
+        if (_allowEsc && GUI.Button(new Rect(335, 5, 80, 20), "Exit"))
         {
             Active = false;
         }
