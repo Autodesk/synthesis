@@ -27,7 +27,10 @@ public class ElevatorScript : MonoBehaviour {
 			}
 		}
 		rigidbody.AddForce (force*3+Physics.gravity*stageOffset/4, ForceMode.Acceleration);
-		
+	}
+
+	void OnCollisionEnter(Collision collision) {
+		Physics.IgnoreCollision(collision.collider, transform.GetComponentInChildren<MeshCollider>(), true);
 	}
 }  
 

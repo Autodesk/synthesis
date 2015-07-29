@@ -17,6 +17,7 @@ public class BetterWheelCollider : MonoBehaviour
 
     public void Start()
     {
+		gameObject.GetComponentInChildren<CapsuleCollider> ().radius *= 1.25f;      //Scales up wheel colliders so they don't sink through the floor so bad
         rigidbody.drag = 1f;
         rigidbody.angularDrag = 1f;
     }
@@ -87,4 +88,5 @@ public class BetterWheelCollider : MonoBehaviour
 
 		rigidbody.AddForce((force + normalDrag) * forceMultiplier, ForceMode.Impulse);
     }
+	
 }
