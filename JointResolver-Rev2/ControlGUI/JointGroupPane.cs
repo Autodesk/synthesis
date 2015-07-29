@@ -26,8 +26,6 @@ public partial class JointGroupPane : UserControl
 
         jointGroups = new List<JointGroup>();
 
-        treeviewInventor.AllowDrop = true;
-
         panelJoints.MouseDown += panelJoints_MouseDown;
         panelJoints.MouseMove += panelJoints_MouseMove;
         panelJoints.MouseUp += panelJoints_MouseUp;
@@ -35,8 +33,6 @@ public partial class JointGroupPane : UserControl
 
     public void UpdateComponents(List<ComponentOccurrence> components)
     {
-        treeviewInventor.AddComponents(components);
-
         foreach (ComponentOccurrence component in components)
         {
             UpdateComponent(component);
@@ -47,7 +43,7 @@ public partial class JointGroupPane : UserControl
     {
         foreach (ComponentOccurrence subComponent in component.SubOccurrences)
         {
-            if (component.Joints.Count > 0)
+            if (subComponent.Joints.Count > 0)
             {
                 if (defaultJointGroup == null)
                 {
@@ -55,7 +51,7 @@ public partial class JointGroupPane : UserControl
                     AddGroup(defaultJointGroup);
                 }
 
-                foreach (AssemblyJoint joint in component.Joints)
+                foreach (AssemblyJoint joint in subComponent.Joints)
                 {
                     defaultJointGroup.AddJoint(joint);
                 }
@@ -68,11 +64,23 @@ public partial class JointGroupPane : UserControl
     private void AddGroup(JointGroup group)
     {
         jointGroups.Add(group);
+        group.closeButton.Click += (object sender, EventArgs e) =>
+            {
+                group.Visible = false;
+                jointGroups.Remove(group);
+                Controls.Remove(group);
+                group.Dispose();
+
+                using (Graphics g = CreateGraphics())
+                {
+                    g.Clear(Control.DefaultBackColor);
+                }
+            };
     }
 
     private void AddGroup(System.Drawing.Point pos, Size size)
     {
-        jointGroups.Add(new JointGroup(panelJoints, pos, size));
+        AddGroup(new JointGroup(panelJoints, pos, size));
     }
 
     #region Events
@@ -154,7 +162,7 @@ public partial class JointGroupPane : UserControl
     }
 
     #region Nested classes
-    private class JointGroup : Panel
+    public class JointGroup : Panel
     {
 
         public static readonly Size MIN_SIZE = new Size(100, 100);
@@ -165,11 +173,12 @@ public partial class JointGroupPane : UserControl
 
         private Panel menuPanel;
         private Button minimizeButton;
-        private Button closeButton;
+        public Button closeButton;
         private Label nameLabel;
 
         private bool resizing;
         private bool moving;
+        private System.Drawing.Point dragStart;
 
         public JointGroup(Control p, System.Drawing.Point pos, Size size)
             : base()
@@ -224,7 +233,6 @@ public partial class JointGroupPane : UserControl
             closeButton.BackColor = Control.DefaultBackColor;
             closeButton.Font = new Font("Microsoft Sans Serif", 5.5f);
             closeButton.Text = "X";
-            closeButton.Click += closeButton_Click;
 
             menuPanel.Controls.Add(nameLabel);
             menuPanel.Controls.Add(minimizeButton);
@@ -267,14 +275,19 @@ public partial class JointGroupPane : UserControl
                              select true;
 
             if (collisions.Count() == 0) jointTree.Nodes[0].Nodes.Add(parent);
+            parent.Expand();
         }
 
         private void jointTree_MouseDown(object sender, MouseEventArgs e)
         {
+            BringToFront();
+
             if (Cursor == Cursors.SizeNWSE)
             {
                 resizing = true;
                 Visible = false;
+
+                dragStart = parent.PointToClient(PointToScreen(new System.Drawing.Point(e.X, e.Y)));
             }
         }
 
@@ -284,6 +297,8 @@ public partial class JointGroupPane : UserControl
             {
                 moving = true;
                 Visible = false;
+
+                dragStart = parent.PointToClient(PointToScreen(new System.Drawing.Point(e.X, e.Y)));
             }
         }
 
@@ -312,12 +327,14 @@ public partial class JointGroupPane : UserControl
 
         private void parent_MouseMove(object sender, MouseEventArgs e)
         {
+            System.Drawing.Point deltaMove = System.Drawing.Point.Empty;
+            if (moving || resizing) deltaMove = new System.Drawing.Point(e.X - dragStart.X, e.Y - dragStart.Y);
+
             if (resizing)
             {
                 using (Graphics g = parent.CreateGraphics())
                 {
-                    System.Drawing.Point parentControlLocation = new System.Drawing.Point(e.X, e.Y);
-                    Size rectangleSize = new Size(parentControlLocation.X - Location.X, parentControlLocation.Y - Location.Y);
+                    Size rectangleSize = new Size(Width + deltaMove.X, Height + deltaMove.Y);
 
                     g.Clear(Control.DefaultBackColor);
                     g.DrawRectangle(new Pen(System.Drawing.Color.DarkGray),
@@ -328,11 +345,9 @@ public partial class JointGroupPane : UserControl
             {
                 using (Graphics g = parent.CreateGraphics())
                 {
-                    System.Drawing.Point parentControlLocation = new System.Drawing.Point(e.X, e.Y);
-
                     g.Clear(Control.DefaultBackColor);
                     g.DrawRectangle(new Pen(System.Drawing.Color.DarkGray),
-                                    parentControlLocation.X, parentControlLocation.Y, Width, Height);
+                                    Location.X + deltaMove.X, Location.Y + deltaMove.Y, Width, Height);
                 }
             }
             else
@@ -343,10 +358,13 @@ public partial class JointGroupPane : UserControl
 
         private void parent_MouseUp(object sender, MouseEventArgs e)
         {
+            System.Drawing.Point deltaMove = System.Drawing.Point.Empty;
+            if (moving || resizing) deltaMove = new System.Drawing.Point(e.X - dragStart.X, e.Y - dragStart.Y);
+
             if (resizing)
             {
-                int newWidth = Math.Max(e.X - Location.X, MIN_SIZE.Width);
-                int newHeight = Math.Max(e.Y - Location.Y, MIN_SIZE.Height);
+                int newWidth = Math.Max(Width + deltaMove.X, MIN_SIZE.Width);
+                int newHeight = Math.Max(Height + deltaMove.Y, MIN_SIZE.Height);
 
                 Width = newWidth;
                 Height = newHeight;
@@ -365,7 +383,9 @@ public partial class JointGroupPane : UserControl
             }
             else if (moving)
             {
-                Location = new System.Drawing.Point(e.X, e.Y);
+                Location = new System.Drawing.Point(Location.X + deltaMove.X, Location.Y + deltaMove.Y);
+                OnMove(null);
+                base.OnMove(null);
 
                 moving = false;
                 Visible = true;
@@ -398,12 +418,6 @@ public partial class JointGroupPane : UserControl
                 }
                 e.Node.Expand();
             }
-        }
-
-        private void closeButton_Click(object sender, EventArgs e)
-        {
-            parent.Controls.Remove(this);
-            
         }
 
     }

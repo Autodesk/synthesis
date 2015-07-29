@@ -21,6 +21,7 @@ public class InventorManager
     private bool loaded = false;
 
     private Application InventorInstance;
+    private AssemblyDocument RobotDocument;
 
     public _Document ActiveDocument
     {
@@ -37,6 +38,24 @@ public class InventorManager
         {
             if (!loaded) LoadInventor();
             return (AssemblyDocument) ActiveDocument;
+        }
+    }
+
+    public AssemblyComponentDefinition ComponentDefinition
+    {
+        get
+        {
+            if (!loaded) LoadInventor();
+            return AssemblyDocument.ComponentDefinition;
+        }
+    }
+
+    public ComponentOccurrences ComponentOccurrences
+    {
+        get
+        {
+            if (!loaded) LoadInventor();
+            return ComponentDefinition.Occurrences;
         }
     }
 

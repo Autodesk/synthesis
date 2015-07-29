@@ -38,7 +38,7 @@ public partial class ExporterForm : Form
         oldConsole = Console.Out;
 
         newConsole = new TextboxWriter(logText);
-        Console.SetOut(newConsole);
+        //Console.SetOut(newConsole);
 
         logText.ForeColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalTextColor);
         logText.BackColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalBackgroundColor);
@@ -73,11 +73,6 @@ public partial class ExporterForm : Form
         };
 
         Instance = this;
-    }
-
-    ~ExporterForm()
-    {
-
     }
 
     public void UpdateComponents(List<ComponentOccurrence> components)
@@ -136,6 +131,12 @@ public partial class ExporterForm : Form
         if (InvokeRequired)
         {
             Invoke((Action<string>)((string file) => Finish(file)), logFile);
+            return;
+        }
+
+        if (!finished)
+        {
+            buttonStart.Enabled = true;
             return;
         }
 
@@ -208,13 +209,17 @@ public partial class ExporterForm : Form
 
             ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
         }
+        catch (COMException ce)
+        {
+
+        }
         catch (Exception e)
         {
+            MessageBox.Show(e.Message);
+            return;
         }
-        finally
-        {
-            finished = true;
-        }
+
+        finished = true;
     }
 
     private void CheckExporter(object exporter)

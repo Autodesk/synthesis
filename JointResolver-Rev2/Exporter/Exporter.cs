@@ -49,7 +49,7 @@ public class Exporter
 
     public static RigidNode_Base ExportSkeleton(List<ComponentOccurrence> occurrences)
     {
-        if (occurrences == null) throw new Exception("No components selected!");
+        if (occurrences.Count == 0) throw new Exception("No components selected!");
 
         //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
         foreach (ComponentOccurrence component in occurrences)

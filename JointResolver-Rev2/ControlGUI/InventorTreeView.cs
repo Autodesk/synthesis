@@ -217,6 +217,8 @@ public class InventorTreeView : TreeView
 
     private void InventorTreeView_DragOver(object sender, System.Windows.Forms.DragEventArgs e)
     {
+        
+
         // Get actual drop node
         TreeNode dropNode = GetNodeAt(PointToClient(new System.Drawing.Point(e.X, e.Y)));
         if (dropNode == null)
@@ -225,8 +227,6 @@ public class InventorTreeView : TreeView
             return;
         }
 
-        e.Effect = DragDropEffects.Move;
-
         // if mouse is on a new node select it
         if (InventorTreeView.TempDropNode != dropNode)
         {
@@ -234,12 +234,13 @@ public class InventorTreeView : TreeView
             InventorTreeView.TempDropNode = dropNode;
         }
 
-        // Avoid that drop node is child of drag node 
-        TreeNode tmpNode = dropNode;
-        while (tmpNode.Parent != null)
+        if (dropNode.Name != "Joint Group")
         {
-            if (tmpNode.Parent == InventorTreeView.DragNode) e.Effect = DragDropEffects.None;
-            tmpNode = tmpNode.Parent;
+            e.Effect = DragDropEffects.None;
+        }
+        else
+        {
+            e.Effect = DragDropEffects.Move;
         }
     }
 
@@ -251,26 +252,27 @@ public class InventorTreeView : TreeView
         // If drop node isn't equal to drag node, add drag node as child of drop node
         if (InventorTreeView.DragNode != dropNode)
         {
-            TreeNode toAdd = new TreeNode(InventorTreeView.DragNode.Text);
-            toAdd.Tag = InventorTreeView.DragNode.Tag;
-
-            if (dropNode.Tag != null)
+            if (dropNode.Name == "Joint Group" && InventorTreeView.DragNode.Nodes.Count == 1)
             {
-                AddJointForm addForm = new AddJointForm();
-                addForm.ShowDialog();
-                SkeletalJointType skeletalType = addForm.chooseType;
-                toAdd.Text += String.Format(" ({0})", skeletalType);
+                TreeNode toAdd = new TreeNode(InventorTreeView.DragNode.Text);
+                toAdd.Tag = InventorTreeView.DragNode.Tag;
+                TreeNode[] nodes = new TreeNode[InventorTreeView.DragNode.Nodes.Count];
+                InventorTreeView.DragNode.Nodes.CopyTo(nodes, 0);
+                InventorTreeView.DragNode.Nodes.Clear();
+                toAdd.Nodes.AddRange(nodes);
+
+                dropNode.Nodes.Add(toAdd);
+
+                // Remove drag node from original tree
+                InventorTreeView.DragNode.Remove();
             }
 
-            // Add drag node to drop node
-            dropNode.Nodes.Add(toAdd);
-
-            // Set drag node to null
             InventorTreeView.DragNode = null;
-            dropNode.Expand();
 
             // Disable scroll timer
             timer.Enabled = false;
+
+            Cursor = Cursors.Default;
         }
     }
 
@@ -288,13 +290,11 @@ public class InventorTreeView : TreeView
 
     private void InventorTreeView_GiveFeedback(object sender, System.Windows.Forms.GiveFeedbackEventArgs e)
     {
-        if (e.Effect == DragDropEffects.Move)
-        {
-            // Show pointer cursor while dragging
-            e.UseDefaultCursors = false;
-            Cursor = Cursors.Default;
-        }
-        else e.UseDefaultCursors = true;
+        //if (e.Effect == DragDropEffects.Move)
+        //{
+        //    Cursor = Cursors.Hand;
+        //}
+        //else Cursor = Cursors.No;
 
     }
 

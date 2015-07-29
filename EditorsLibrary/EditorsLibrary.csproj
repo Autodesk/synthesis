@@ -70,12 +70,6 @@
     <Compile Include="AboutDialog.Designer.cs">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddJointForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AddJointForm.Designer.cs">
-      <DependentUpon>AddJointForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="BXDAEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,9 +145,6 @@
   <ItemGroup>
     <EmbeddedResource Include="AboutDialog.resx">
       <DependentUpon>AboutDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="AddJointForm.resx">
-      <DependentUpon>AddJointForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BXDAEditorForm.resx">
       <DependentUpon>BXDAEditorForm.cs</DependentUpon>
