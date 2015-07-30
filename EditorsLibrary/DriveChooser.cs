@@ -99,6 +99,8 @@ public partial class DriveChooser : Form
     {
         chkBoxDriveWheel.Hide();
         chkBoxHasBrake.Hide();
+        rbCAN.Hide();
+        rbPWM.Hide();
         if (cmbJointDriver.SelectedIndex <= 0)      //If the joint is not driven
         {
             grpDriveOptions.Visible = false;
@@ -118,6 +120,9 @@ public partial class DriveChooser : Form
                 tabsMeta.TabPages.Add(metaWheel);
                 tabsMeta.TabPages.Add(metaGearing);
                 chkBoxDriveWheel.Show();
+                rbCAN.Show();
+                rbPWM.Show();
+                rbPWM.Checked = true;
             }
             else if (cType.IsPneumatic())
             {
@@ -296,19 +301,9 @@ public partial class DriveChooser : Form
         cmbFrictionLevel.Visible = (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL;
     }
 
-    private void label1_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void DriveChooser_Load(object sender, EventArgs e)
-    {
-
-    }
-
     private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
     {
-        if (chkBoxHasBrake.Checked == true)
+        if (chkBoxHasBrake.Checked)
         {
             lblBrakePort.Enabled = true;
             brakePortA.Enabled = true;
@@ -321,4 +316,29 @@ public partial class DriveChooser : Form
             brakePortB.Enabled = false;
         }
     }
+
+    private void rbCAN_CheckedChanged(object sender, EventArgs e)
+    {
+        if (rbCAN.Checked)
+        {
+            lblPort.Text = "CAN Port";
+        }
+        else
+        {
+            lblPort.Text = "PWM Port";
+        }
+    }
+
+    #region UNUSED
+    private void label1_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void DriveChooser_Load(object sender, EventArgs e)
+    {
+
+    }
+    #endregion
+
 }

@@ -30,6 +30,7 @@ partial class DriveChooser
             this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
+            this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
             this.txtHighLimit = new System.Windows.Forms.NumericUpDown();
             this.lblLimits = new System.Windows.Forms.Label();
             this.txtLowLimit = new System.Windows.Forms.NumericUpDown();
@@ -54,13 +55,14 @@ partial class DriveChooser
             this.txtGearRationNum = new System.Windows.Forms.TextBox();
             this.txtGearRationDenom = new System.Windows.Forms.TextBox();
             this.metaElevatorBrake = new System.Windows.Forms.TabPage();
-            this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
-            this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
-            this.lblBrakePort = new System.Windows.Forms.Label();
-            this.brakePortA = new System.Windows.Forms.NumericUpDown();
             this.brakePortB = new System.Windows.Forms.NumericUpDown();
+            this.brakePortA = new System.Windows.Forms.NumericUpDown();
+            this.lblBrakePort = new System.Windows.Forms.Label();
+            this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.metaElevatorStages = new System.Windows.Forms.TabPage();
             this.cmbStages = new System.Windows.Forms.ComboBox();
+            this.rbCAN = new System.Windows.Forms.RadioButton();
+            this.rbPWM = new System.Windows.Forms.RadioButton();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
@@ -72,8 +74,8 @@ partial class DriveChooser
             this.metaPneumatic.SuspendLayout();
             this.metaGearing.SuspendLayout();
             this.metaElevatorBrake.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
             this.metaElevatorStages.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,6 +101,8 @@ partial class DriveChooser
             // 
             // grpDriveOptions
             // 
+            this.grpDriveOptions.Controls.Add(this.rbPWM);
+            this.grpDriveOptions.Controls.Add(this.rbCAN);
             this.grpDriveOptions.Controls.Add(this.chkBoxDriveWheel);
             this.grpDriveOptions.Controls.Add(this.txtHighLimit);
             this.grpDriveOptions.Controls.Add(this.lblLimits);
@@ -112,6 +116,16 @@ partial class DriveChooser
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Joint Options";
+            // 
+            // chkBoxDriveWheel
+            // 
+            this.chkBoxDriveWheel.AutoSize = true;
+            this.chkBoxDriveWheel.Location = new System.Drawing.Point(219, 0);
+            this.chkBoxDriveWheel.Name = "chkBoxDriveWheel";
+            this.chkBoxDriveWheel.Size = new System.Drawing.Size(111, 21);
+            this.chkBoxDriveWheel.TabIndex = 5;
+            this.chkBoxDriveWheel.Text = "Drive Wheel ";
+            this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
             // 
             // txtHighLimit
             // 
@@ -405,26 +419,19 @@ partial class DriveChooser
             this.metaElevatorBrake.Text = "Break Info";
             this.metaElevatorBrake.UseVisualStyleBackColor = true;
             // 
-            // chkBoxHasBrake
+            // brakePortB
             // 
-            this.chkBoxHasBrake.AutoSize = true;
-            this.chkBoxHasBrake.Location = new System.Drawing.Point(160, 3);
-            this.chkBoxHasBrake.Name = "chkBoxHasBrake";
-            this.chkBoxHasBrake.Size = new System.Drawing.Size(96, 21);
-            this.chkBoxHasBrake.TabIndex = 0;
-            this.chkBoxHasBrake.Text = "Has Brake";
-            this.chkBoxHasBrake.UseVisualStyleBackColor = true;
-            this.chkBoxHasBrake.CheckedChanged += new System.EventHandler(this.chkBoxHasBrake_CheckedChanged);
+            this.brakePortB.Location = new System.Drawing.Point(136, 27);
+            this.brakePortB.Name = "brakePortB";
+            this.brakePortB.Size = new System.Drawing.Size(120, 22);
+            this.brakePortB.TabIndex = 3;
             // 
-            // chkBoxDriveWheel
+            // brakePortA
             // 
-            this.chkBoxDriveWheel.AutoSize = true;
-            this.chkBoxDriveWheel.Location = new System.Drawing.Point(149, 15);
-            this.chkBoxDriveWheel.Name = "chkBoxDriveWheel";
-            this.chkBoxDriveWheel.Size = new System.Drawing.Size(111, 21);
-            this.chkBoxDriveWheel.TabIndex = 5;
-            this.chkBoxDriveWheel.Text = "Drive Wheel ";
-            this.chkBoxDriveWheel.UseVisualStyleBackColor = true;
+            this.brakePortA.Location = new System.Drawing.Point(10, 27);
+            this.brakePortA.Name = "brakePortA";
+            this.brakePortA.Size = new System.Drawing.Size(120, 22);
+            this.brakePortA.TabIndex = 2;
             // 
             // lblBrakePort
             // 
@@ -436,19 +443,16 @@ partial class DriveChooser
             this.lblBrakePort.Text = "Brake Port";
             this.lblBrakePort.Click += new System.EventHandler(this.label1_Click);
             // 
-            // brakePortA
+            // chkBoxHasBrake
             // 
-            this.brakePortA.Location = new System.Drawing.Point(10, 27);
-            this.brakePortA.Name = "brakePortA";
-            this.brakePortA.Size = new System.Drawing.Size(120, 22);
-            this.brakePortA.TabIndex = 2;
-            // 
-            // brakePortB
-            // 
-            this.brakePortB.Location = new System.Drawing.Point(136, 27);
-            this.brakePortB.Name = "brakePortB";
-            this.brakePortB.Size = new System.Drawing.Size(120, 22);
-            this.brakePortB.TabIndex = 3;
+            this.chkBoxHasBrake.AutoSize = true;
+            this.chkBoxHasBrake.Location = new System.Drawing.Point(160, 3);
+            this.chkBoxHasBrake.Name = "chkBoxHasBrake";
+            this.chkBoxHasBrake.Size = new System.Drawing.Size(96, 21);
+            this.chkBoxHasBrake.TabIndex = 0;
+            this.chkBoxHasBrake.Text = "Has Brake";
+            this.chkBoxHasBrake.UseVisualStyleBackColor = true;
+            this.chkBoxHasBrake.CheckedChanged += new System.EventHandler(this.chkBoxHasBrake_CheckedChanged);
             // 
             // metaElevatorStages
             // 
@@ -474,6 +478,29 @@ partial class DriveChooser
             this.cmbStages.Name = "cmbStages";
             this.cmbStages.Size = new System.Drawing.Size(217, 24);
             this.cmbStages.TabIndex = 0;
+            // 
+            // rbCAN
+            // 
+            this.rbCAN.AutoSize = true;
+            this.rbCAN.Location = new System.Drawing.Point(244, 22);
+            this.rbCAN.Name = "rbCAN";
+            this.rbCAN.Size = new System.Drawing.Size(57, 21);
+            this.rbCAN.TabIndex = 6;
+            this.rbCAN.TabStop = true;
+            this.rbCAN.Text = "CAN";
+            this.rbCAN.UseVisualStyleBackColor = true;
+            this.rbCAN.CheckedChanged += new System.EventHandler(this.rbCAN_CheckedChanged);
+            // 
+            // rbPWM
+            // 
+            this.rbPWM.AutoSize = true;
+            this.rbPWM.Location = new System.Drawing.Point(244, 43);
+            this.rbPWM.Name = "rbPWM";
+            this.rbPWM.Size = new System.Drawing.Size(62, 21);
+            this.rbPWM.TabIndex = 7;
+            this.rbPWM.TabStop = true;
+            this.rbPWM.Text = "PWM";
+            this.rbPWM.UseVisualStyleBackColor = true;
             // 
             // DriveChooser
             // 
@@ -504,8 +531,8 @@ partial class DriveChooser
             this.metaGearing.PerformLayout();
             this.metaElevatorBrake.ResumeLayout(false);
             this.metaElevatorBrake.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.brakePortB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
             this.metaElevatorStages.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -547,4 +574,6 @@ partial class DriveChooser
     private System.Windows.Forms.NumericUpDown brakePortA;
     private System.Windows.Forms.TabPage metaElevatorStages;
     private System.Windows.Forms.ComboBox cmbStages;
+    private System.Windows.Forms.RadioButton rbPWM;
+    private System.Windows.Forms.RadioButton rbCAN;
 }
