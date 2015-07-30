@@ -38,7 +38,7 @@ public class BXDIO
     /// <param name="version">The version to compare with</param>
     public static void CheckReadVersion(uint version)
     {
-        if ((version & 0xFFFF0000) == (FORMAT_VERSION & 0xFFFF0000))
+        if ((version & 0xFF000000) == (FORMAT_VERSION & 0xFF000000))
         {
             if (version != FORMAT_VERSION)
             {
