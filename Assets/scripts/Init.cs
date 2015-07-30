@@ -120,7 +120,6 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:", labelSkin);
 		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "To Drive Robot:", labelSkin);
 		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "Toggle stats window:", labelSkin);
-		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Put totes on field:", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key", labelSkin);
 		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]", labelSkin);
@@ -129,7 +128,6 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[S]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[Z][X][C][V]", labelSkin);
 	}
 
 	public void ShowOrient()
@@ -353,8 +351,7 @@ public class Init : MonoBehaviour
 					field.CreateMesh(filePath + "mesh.bxda");
 					fieldLoaded = true;
 					fieldBrowser.Active = false;
-					TryLoadRobot();
-					reloadRobotInFrames = -1;
+					reloadRobotInFrames = 2;
 				}
 				else
 				{
@@ -375,7 +372,7 @@ public class Init : MonoBehaviour
 
 		UserMessageManager.Render();
 
-        if (reloadRobotInFrames >= 0)
+		if (reloadRobotInFrames >= 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
