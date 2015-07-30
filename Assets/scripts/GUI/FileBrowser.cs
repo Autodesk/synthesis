@@ -9,7 +9,7 @@ using System.Collections.Generic;
 /// </summary>
 class FileBrowser : OverlayWindow
 {
-	private readonly Rect windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
+	private Rect windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
 
     /// <summary>
     /// The maximum time in seconds between clicks to be considered a double click.
@@ -27,6 +27,8 @@ class FileBrowser : OverlayWindow
 	private string title;
 
     private bool _active;
+
+	private bool _allowEsc;
 
     public event Action<object> OnComplete;
 
@@ -54,9 +56,10 @@ class FileBrowser : OverlayWindow
     /// </summary>
     private float lastClick = 0;
 
-    public FileBrowser(string windowTitle)
+    public FileBrowser(string windowTitle, bool allowEsc = true)
     {
 		title = windowTitle;
+		_allowEsc = allowEsc;
 
         string exampleDir = Application.dataPath + "\\..\\examples\\default-robot-chassis\\synthesis-output";
         // If we have a last-used directory.
@@ -139,7 +142,7 @@ class FileBrowser : OverlayWindow
             }
         }
 
-        if (GUI.Button(new Rect(335, 5, 80, 20), "Exit"))
+        if (_allowEsc && GUI.Button(new Rect(335, 5, 80, 20), "Exit"))
         {
             Active = false;
         }
@@ -199,6 +202,7 @@ class FileBrowser : OverlayWindow
     {
         if (_active)
         {
+			windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
             GUI.Window(0, windowRect, FileBrowserWindow, title);
         }
     }

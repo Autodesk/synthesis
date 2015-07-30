@@ -130,6 +130,18 @@ public class auxFunctions
         centerOfMass /= sumOfAllWeights;
         return centerOfMass;
     }
+
+	/// <summary>
+	/// Mouses the in window.
+	/// </summary>
+	/// <returns><c>true</c>, if in window was moused, <c>false</c> otherwise.</returns>
+	/// <param name="window">Window.</param>
+	public static bool MouseInWindow(Rect window)
+	{
+		float mouseX = Input.mousePosition.x;
+		float mouseY = Screen.height - Input.mousePosition.y; // Convert mouse coordinates to unity window positions coordinates
+		return mouseX > window.x && mouseX < window.x + window.width && mouseY > window.y && mouseY < window.y + window.height;
+	}
 }
 
 

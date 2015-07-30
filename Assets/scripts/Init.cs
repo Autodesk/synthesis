@@ -30,7 +30,9 @@ public class Init : MonoBehaviour
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
 	private Rect statsWindowRect;
-
+	private Rect helpWindowRect;
+	private GUIContent helpButtonContent;
+	private Rect helpButtonRect;
 	private float acceleration;
 	private float angvelo;
 	private float speed;
@@ -39,8 +41,9 @@ public class Init : MonoBehaviour
 	private bool time_stop;
 	private float oldSpeed;
 	private bool showStatWindow;
+	private bool showHelpWindow;
 	private Quaternion rotation;
-	
+
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
     /// </summary>
@@ -49,13 +52,8 @@ public class Init : MonoBehaviour
     /// </remarks>
     private volatile int reloadRobotInFrames;
 
-	/// <summary>
-	/// Used to determine if the field needs to be reloaded.
-	/// </summary>
-	/// <remarks>
-	/// Allows the field loading to be delayed until a "Loading" dialog can be drawn.
-	/// </remarks>
-	private volatile int reloadFieldInFrames;
+	private FileBrowser fieldBrowser = null;
+	private bool fieldLoaded = false;
 
     public Init()
     {
@@ -63,11 +61,13 @@ public class Init : MonoBehaviour
 		Debug.Log (filePath);
 
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
-	
+		helpWindowRect = new Rect (300, 100, 400, 150);
+		helpButtonRect = new Rect (Screen.width - 103, 0, 100, 25);
 		time_stop = false;
+
 		reloadRobotInFrames = -1;
-		reloadFieldInFrames = -1;
-		showStatWindow = true;
+		showStatWindow = false;
+		showHelpWindow = true;
 		rotation = Quaternion.identity;
     }
 
@@ -94,6 +94,42 @@ public class Init : MonoBehaviour
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
+	/// <summary>
+	/// Exits the window.
+	/// </summary>
+	/// <param name="windowID">Window I.</param>
+	public void HelpWindow(int windowID)
+	{
+		float topGap = 10;
+		float buttonGap = 20;
+		float buttonWidth = (helpWindowRect.width - (buttonGap * 3)) / 2.0f;
+		float buttonHeight = helpWindowRect.height - (buttonGap * 2) - topGap;
+		int leftX = 75;
+		int leftXOffset = 400;
+		int heightGap = 45;
+		int underlineGap = 4;
+
+		GUIStyle labelSkin = new GUIStyle (GUI.skin.label);
+		labelSkin.fontSize = 24;
+	
+		GUI.Label (new Rect (leftX, 1 * heightGap, 300, 50), "Action", labelSkin);
+		GUI.Label (new Rect (leftX, (1 * heightGap) + underlineGap, 300, 50), "_____", labelSkin);
+		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Menu:", labelSkin);
+		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:", labelSkin);
+		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:", labelSkin);
+		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:", labelSkin);
+		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "To Drive Robot:", labelSkin);
+		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "Toggle stats window:", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key", labelSkin);
+		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[S]", labelSkin);
+	}
+
 	public void ShowOrient()
 	{
 		List<string> titles = new List<string> ();
@@ -114,7 +150,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect (230, 20, 50, 30));
 		rects.Add (new Rect (20, 20, 70, 30));
 
-		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 75, 300, 250),
+		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
@@ -146,56 +182,6 @@ public class Init : MonoBehaviour
 		});
 	}
 
-	public void HotkeysWindow()
-	{
-		int leftX = 75;
-		int leftXOffset = 275;
-		int heightGap = 25;
-		
-		List<string> labelTitles = new List<string>();
-		labelTitles.Add ("Reset Robot:"); 
-		labelTitles.Add ("Driverstation:");
-		labelTitles.Add ("Orbit Robot:O");
-		labelTitles.Add ("First Person:F"); 
-		labelTitles.Add ("Stats window toggle:");
-		labelTitles.Add ("Menu:");
-		labelTitles.Add ("[R]"); 
-		labelTitles.Add ("[D]");
-		labelTitles.Add ("[O]");
-		labelTitles.Add ("[F]"); 
-		labelTitles.Add ("[H]");
-		labelTitles.Add ("[Esc]");
-
-		List<Rect> labelRects = new List<Rect>();
-		labelRects.Add (new Rect (leftX, 1 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 2 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 3 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 4 * heightGap, 300, 50)); 
-		labelRects.Add (new Rect (leftX, 5 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftX, 6 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 1 * heightGap, 300, 50)); 
-		labelRects.Add (new Rect (leftXOffset, 2 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 3 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 4 * heightGap, 300, 50)); 
-		labelRects.Add (new Rect (leftXOffset, 5 * heightGap, 300, 50));
-		labelRects.Add (new Rect (leftXOffset, 6 * heightGap, 300, 50));
-
-		string windowTitle = "Hotkeys";
-
-		// Hotkeys window constants
-		int hotkeysWindowWidth = 400;
-		int hotkeysWindowHeight = 200;
-		
-		Rect windowRect = new Rect(
-			(Screen.width / 2) - (hotkeysWindowWidth / 2), 
-			(Screen.height / 2) - (hotkeysWindowHeight / 2), 
-			hotkeysWindowWidth, 
-			hotkeysWindowHeight
-			);
-
-		gui.AddWindow (windowTitle, new TextWindow (windowTitle, windowRect, labelTitles.ToArray(), labelRects.ToArray(), new string[0], new Rect[0]), (object o)=>{});
-	}
-
 	void HideGuiSidebar()
 	{
 		gui.guiVisible = false;
@@ -205,6 +191,7 @@ public class Init : MonoBehaviour
 	void ShowGuiSidebar()
 	{
 		dynamicCamera.DisableMoving();
+		showHelpWindow = false;
 	}
 
 	[STAThread]
@@ -212,7 +199,18 @@ public class Init : MonoBehaviour
     {
 		// Draws stats window on to GUI
 		if(showStatWindow)
-			statsWindowRect = GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+			GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+
+		// Draws stats window on to GUI
+		if (showHelpWindow)
+		{
+			int windowWidth = 900;
+			int windowHeight = 450;
+			float paddingX = (Screen.width - windowWidth) / 2.0f;
+			float paddingY = (Screen.height - windowHeight) / 2.0f;
+			helpWindowRect = new Rect (paddingX, paddingY, windowWidth, windowHeight);
+			GUI.Window (0, helpWindowRect, HelpWindow, "Help");
+		}
 
         if (gui == null)
         {
@@ -242,34 +240,17 @@ public class Init : MonoBehaviour
 				dynamicCamera.EnableMoving();
 			});
 
-			gui.AddWindow("Load Field", new FileBrowser("Load Field"), (object o) =>
-			{
-				string fileLocation = (string) o;
-				// If dir was selected...
-				if (File.Exists(fileLocation + "\\definition.bxdf"))
-				{
-					fileLocation += "\\definition.bxdf";
-				}
-				DirectoryInfo parent = Directory.GetParent(fileLocation);
-				if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\definition.bxdf"))
-				{
-					this.filePath = parent.FullName + "\\";
-					reloadFieldInFrames = 2;
-				}
-				else
-				{
-					UserMessageManager.Dispatch("Invalid selection!", 10f);
-				}
-				
-				dynamicCamera.EnableMoving();
-			});
-
             gui.AddAction("Reset Robot", () =>
             {
                 resetRobot();
             });
 			//shows button to manually orient the robot
 			ShowOrient();
+
+			gui.AddAction("Change Side", () =>
+			              {
+				activeRobot.transform.position = new Vector3(activeRobot.transform.position.x, activeRobot.transform.position.y, -activeRobot.transform.position.z);
+			});
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
@@ -298,9 +279,8 @@ public class Init : MonoBehaviour
 					}
 				});
 
-			HotkeysWindow();
 
-			gui.AddWindow ("Exit", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+			gui.AddWindow ("Quit Simulation", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
 			               {
 				if ((int) o == 0) {
 					Application.Quit();
@@ -308,25 +288,91 @@ public class Init : MonoBehaviour
 			});
         }
 
-		// The Menu bottom on the top left corner
-		GUI.Window (1, new Rect (3, 0, 100, 25), 
-        	(int windowID) =>
-        	{
-				if (GUI.Button (new Rect (0, 0, 100, 25), "Menu"))
-					gui.EscPressed();
+		if (fieldLoaded) 
+		{
+			// The Menu bottom on the top left corner
+			GUI.Window (1, new Rect (0, 0, gui.GetSidebarWidth(), 25), 
+	        	(int windowID) =>
+			{
+				if (GUI.Button (new Rect (0, 0, gui.GetSidebarWidth(), 25), "Menu"))
+					gui.EscPressed ();
+
 			},
-			""
+				""
+			);
+		}
+
+		helpButtonRect = new Rect (Screen.width - 25, 0, 25, 25);
+
+		// The Help button on top right corner
+		GUI.Window (2, helpButtonRect, 
+        	(int windowID) =>
+            {
+				if (GUI.Button (new Rect (0, 0, 25, 25), helpButtonContent))
+				{	
+					showHelpWindow = !showHelpWindow;
+				}
+			},
+		""
 		);
 
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
 		{
 			HideGuiSidebar();
-			gui.HideAllWindows ();
+			gui.HideAllWindows();
 		}
 
-        gui.Render();
+		if (fieldBrowser == null) {
+			fieldBrowser = new FileBrowser ("Load Field", false);
+			fieldBrowser.Active = true;
+			fieldBrowser.OnComplete += (object obj) => 
+			{
+				fieldBrowser.Active = true;
+				string fileLocation = (string) obj;
+				// If dir was selected...
+				if (File.Exists(fileLocation + "\\definition.bxdf"))
+				{
+					fileLocation += "\\definition.bxdf";
+				}
+				DirectoryInfo parent = Directory.GetParent(fileLocation);
+				if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\definition.bxdf"))
+				{
+					this.filePath = parent.FullName + "\\";
+					activeField = new GameObject("Field");
+					
+					FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
+					{
+						return new UnityFieldDefinition();
+					};
 
-        if (reloadRobotInFrames >= 0 || reloadFieldInFrames >= 0)
+					Debug.Log (filePath);
+					field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
+					field.CreateTransform(activeField.transform);
+					field.CreateMesh(filePath + "mesh.bxda");
+					fieldLoaded = true;
+					fieldBrowser.Active = false;
+					reloadRobotInFrames = 2;
+				}
+				else
+				{
+					UserMessageManager.Dispatch("Invalid selection!", 10f);
+				}
+			};
+		}
+
+		if (showHelpWindow && Input.GetMouseButtonUp (0) && !auxFunctions.MouseInWindow (helpWindowRect) && !auxFunctions.MouseInWindow (helpButtonRect))
+			showHelpWindow = false;
+
+		gui.guiBackgroundVisible = showHelpWindow;
+
+		fieldBrowser.Render ();
+
+		if(fieldLoaded)
+        	gui.Render();
+
+		UserMessageManager.Render();
+
+		if (reloadRobotInFrames >= 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
@@ -342,14 +388,16 @@ public class Init : MonoBehaviour
         if (activeRobot != null && skeleton != null)
         {
             var unityWheelData = new List<GameObject>();
+			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
-			activeRobot.transform.localPosition = new Vector3(0f, 0.25f, 0f);
+            activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
+
             activeRobot.transform.localRotation = rotation;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
-				uNode.unityObject.transform.localPosition = Vector3.zero;
+				uNode.unityObject.transform.localPosition = new Vector3(0f, 0f, -5f);
 				uNode.unityObject.transform.localRotation = Quaternion.identity;
                 if (uNode.unityObject.rigidbody != null)
                 {
@@ -359,8 +407,12 @@ public class Init : MonoBehaviour
                 if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null && uNode.GetDriverMeta<WheelDriverMeta>().isDriveWheel)
                 {
                     unityWheelData.Add(uNode.wheelCollider);
+					unityWheels.Add (uNode);
                 }
             }
+
+			bool isMecanum = false;
+
             if (unityWheelData.Count > 0)
             {
                 auxFunctions.OrientRobot(unityWheelData, activeRobot.transform);
@@ -370,9 +422,46 @@ public class Init : MonoBehaviour
 					if (uNode.HasDriverMeta<WheelDriverMeta>()&& uNode.wheelCollider != null)
 					{
 						unityWheelData.Add(uNode.wheelCollider);
+
+						if(uNode.GetDriverMeta<WheelDriverMeta>().GetTypeString().Equals("Mecanum"))
+						{
+							isMecanum = true;
+							uNode.unityObject.GetComponent<BetterWheelCollider>().wheelType = (int)WheelType.MECANUM;
+						}
+
+						if(uNode.GetDriverMeta<WheelDriverMeta>().GetTypeString().Equals("Omni Wheel"))
+							uNode.unityObject.GetComponent<BetterWheelCollider>().wheelType = (int)WheelType.OMNI;
 					}
 				}
 				auxFunctions.rightRobot(unityWheelData, activeRobot.transform);
+
+				if(isMecanum)
+			   	{
+					float sumX = 0;
+					float sumZ = 0;
+
+					foreach(UnityRigidNode uNode in unityWheels)
+					{
+						sumX += uNode.wheelCollider.transform.localPosition.x;
+						sumZ += uNode.wheelCollider.transform.localPosition.z;
+					}
+
+					float avgX = sumX / unityWheels.Count;
+					float avgZ = sumZ / unityWheels.Count;
+
+					foreach(UnityRigidNode uNode in unityWheels)
+					{
+						if(uNode.unityObject.GetComponent<BetterWheelCollider>().wheelType == (int)WheelType.MECANUM)
+						{
+							if((avgX > uNode.wheelCollider.transform.localPosition.x && avgZ < uNode.wheelCollider.transform.localPosition.z) ||
+							   (avgX < uNode.wheelCollider.transform.localPosition.x && avgZ > uNode.wheelCollider.transform.localPosition.z))
+								uNode.unityObject.GetComponent<BetterWheelCollider>().wheelAngle = -45;
+
+							else
+								uNode.unityObject.GetComponent<BetterWheelCollider>().wheelAngle = 45;
+						}
+					}
+				}
             }
         }
 
@@ -470,6 +559,9 @@ public class Init : MonoBehaviour
 
     void Start()
     {
+		helpButtonContent = new GUIContent ("");
+		helpButtonContent.image = Resources.Load ("Images/halp") as Texture2D;
+
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 30;
 		Physics.minPenetrationForPenalty = 0.001f;
@@ -497,8 +589,7 @@ public class Init : MonoBehaviour
 
 		filePath = Application.dataPath + "\\resources\\FieldOutput\\";
 
-        reloadRobotInFrames = 2;
-		reloadFieldInFrames = 2;
+        reloadRobotInFrames = -1;
     }
 
     void OnEnable()
@@ -520,19 +611,12 @@ public class Init : MonoBehaviour
             TryLoadRobot();
         }
 
-		if (reloadFieldInFrames >= 0 && reloadFieldInFrames-- == 0)
-		{
-			reloadFieldInFrames = -1;
-			TryLoadField();
-			resetRobot();
-		}
-
 		// Orient Robot
 		if (Input.GetKeyDown (KeyCode.R))
 			gui.DoAction ("Reset Robot");
 
 		// Show/Hide physics window
-		if (Input.GetKeyDown (KeyCode.H))
+		if (Input.GetKeyDown (KeyCode.S))
 			showStatWindow = !showStatWindow;
     }
 
