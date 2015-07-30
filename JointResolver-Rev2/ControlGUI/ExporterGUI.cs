@@ -111,6 +111,8 @@ public partial class ExporterGUI : Form
             else BXDSettings.Save();
 
             if (Exporter.INVENTOR_APPLICATION != null) Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+
+            Exporter.ReleaseInventorInstance();
         });
     }
 
@@ -135,8 +137,8 @@ public partial class ExporterGUI : Form
 
             var exporterProgressThread = new Thread(() =>
             {
-                exporterProgress = new ExporterProgressForm(startEvent, 
-                                Color.FromArgb((int) exporterSettings.generalTextColor), Color.FromArgb((int) exporterSettings.generalBackgroundColor));
+                exporterProgress = new ExporterProgressForm(startEvent,
+                                Color.FromArgb((int)exporterSettings.generalTextColor), Color.FromArgb((int)exporterSettings.generalBackgroundColor));
                 exporterProgress.ShowDialog();
             });
 
@@ -188,7 +190,7 @@ public partial class ExporterGUI : Form
 
             if (exporterThread.IsAlive)
             {
-                if (Exporter.INVENTOR_APPLICATION != null) 
+                if (Exporter.INVENTOR_APPLICATION != null)
                     Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
                 exporterThread.Abort();
             }
@@ -201,6 +203,8 @@ public partial class ExporterGUI : Form
                     meshes = tmpMeshes;
                 }
             }
+
+            Exporter.ReleaseInventorInstance();
         }
         catch (Exception e)
         {
