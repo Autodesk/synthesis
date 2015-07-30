@@ -213,7 +213,7 @@ public class DriveJoints : MonoBehaviour
 			{
 				// Typcasting RigidNode to UnityRigidNode to use UnityRigidNode functions
 				UnityRigidNode unitySubNode = (UnityRigidNode)node;
-				if(unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.isCan)
+				if(unitySubNode.GetSkeletalJoint()!= null && unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.isCan)
 					pwm = can;
 		
 				// Checking if there is a joint (and a joint driver) attatched to each joint
