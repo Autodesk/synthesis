@@ -213,7 +213,7 @@ namespace EditorsLibrary
             GL.Enable(EnableCap.Light1);
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
+            GL.CullFace(CullFaceMode.Back);
             int j = ShaderLoader.PartShader;//Loadshader
 
             setupSelectBuffer();
