@@ -61,14 +61,27 @@ public partial class DriveChooser : Form
                 WheelDriverMeta wheelMeta = joint.cDriver.GetInfo<WheelDriverMeta>();
                 if (wheelMeta != null)
                 {
-                    // TODO:  This is a really sketchy hack and I don't even know where the cat is.
-                    cmbWheelType.SelectedIndex = (byte)wheelMeta.type;
-                    if (wheelMeta.forwardExtremeValue > 8)
-                        cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.HIGH;
-                    else if (wheelMeta.forwardExtremeValue > 4)
+                    try
+                    {
+                        // TODO:  This is a really sketchy hack and I don't even know where the cat is.
+                        cmbWheelType.SelectedIndex = (byte)wheelMeta.type;
+                        if (wheelMeta.forwardExtremeValue > 8)
+                            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.HIGH;
+                        else if (wheelMeta.forwardExtremeValue > 4)
+                            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
+                        else
+                            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.LOW;
+                    }
+
+                    catch
+                    {
+                        // If an exception was thrown (System.ArguementOutOfRangeException) it means
+                        // the user did not choose a wheel type when they were configuring the 
+                        // wheel joint
+                        cmbWheelType.SelectedIndex = (byte)WheelType.NORMAL;
                         cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
-                    else
-                        cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.LOW;
+                    }
+
                     cmbWheelType_SelectedIndexChanged(null, null);
                 }
                 else
