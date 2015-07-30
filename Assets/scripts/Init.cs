@@ -118,16 +118,18 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:", labelSkin);
 		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:", labelSkin);
 		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:", labelSkin);
-		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "To Drive Robot:", labelSkin);
-		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "Toggle stats window:", labelSkin);
+		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Free Roam View:", labelSkin);
+		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "To Drive Robot:", labelSkin);
+		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Toggle stats window:", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key", labelSkin);
 		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[S]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[F]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
+		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]", labelSkin);
 	}
 
 	public void ShowOrient()
