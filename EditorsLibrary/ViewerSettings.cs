@@ -11,11 +11,22 @@ using System.Xml.Serialization;
 
 namespace EditorsLibrary
 {
+
+    /// <summary>
+    /// The form used to edit <see cref="RobotViewer"/> settings
+    /// </summary>
     public partial class ViewerSettings : Form
     {
 
+        /// <summary>
+        /// The local copy of the setting values
+        /// </summary>
         public ViewerSettingsValues values;
-
+        
+        /// <summary>
+        /// Create a new viewer settings form
+        /// </summary>
+        /// <param name="defaultValues">The form values as previously defined and saved</param>
         public ViewerSettings(ViewerSettingsValues defaultValues)
         {
             InitializeComponent();
@@ -37,6 +48,9 @@ namespace EditorsLibrary
             };
         }
 
+        /// <summary>
+        /// Load values into the form
+        /// </summary>
         private void LoadValues()
         {
             trackbarCameraSen.Value = values.cameraSensitivity;
@@ -53,6 +67,9 @@ namespace EditorsLibrary
             checkboxTint_CheckedChanged(null, null);
         }
 
+        /// <summary>
+        /// Save the form's values in a <see cref="ViewerSettingsValues"/> structure
+        /// </summary>
         private void SaveValues()
         {
             values.cameraSensitivity = trackbarCameraSen.Value;
@@ -66,6 +83,11 @@ namespace EditorsLibrary
             values.modelActuateJoints = checkboxActuate.Checked;
         }
 
+        /// <summary>
+        /// Disable child controls under the "Enable model highlighting" checkbox
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void checkboxHighlight_CheckedChanged(object sender, EventArgs e)
         {
             bool enabled = checkboxHighlight.Checked;
@@ -78,6 +100,11 @@ namespace EditorsLibrary
             checkboxDrawAxes.Enabled = enabled;
         }
 
+        /// <summary>
+        /// Choose highlight color
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void buttonChooseHighlight_Click(object sender, EventArgs e)
         {
             ColorDialog colorChooser = new ColorDialog();
@@ -85,6 +112,11 @@ namespace EditorsLibrary
             buttonChooseHighlight.BackColor = colorChooser.Color;
         }
 
+        /// <summary>
+        /// Disable child controls under the "Tint on mouseover" checkbox
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void checkboxTint_CheckedChanged(object sender, EventArgs e)
         {
             bool enabled = checkboxTint.Checked;
@@ -93,6 +125,11 @@ namespace EditorsLibrary
             buttonChooseTint.Enabled = enabled;
         }
 
+        /// <summary>
+        /// Choose the tint color
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void buttonChooseTint_Click(object sender, EventArgs e)
         {
             ColorDialog colorChooser = new ColorDialog();
@@ -100,6 +137,10 @@ namespace EditorsLibrary
             buttonChooseTint.BackColor = colorChooser.Color;
         }
 
+        /// <summary>
+        /// Get the default values for the <see cref="ViewerSettingsValues"/> structure
+        /// </summary>
+        /// <returns>Default values for the <see cref="RobotViewer"/></returns>
         public static ViewerSettingsValues GetDefaultSettings()
         {
             ViewerSettingsValues defaultValues = new ViewerSettingsValues();
@@ -117,6 +158,9 @@ namespace EditorsLibrary
             return defaultValues;
         }
 
+        /// <summary>
+        /// The struct that stores settings for the <see cref="RobotViewer"/>
+        /// </summary>
         public struct ViewerSettingsValues
         {
             public int cameraSensitivity;

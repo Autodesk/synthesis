@@ -12,20 +12,63 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
+
+    /// <summary>
+    /// The form used to show exporter progress and display the log
+    /// </summary>
     public partial class ExporterProgressForm : Form
     {
 
+        /// <summary>
+        /// Set to true when the exporter has finished
+        /// </summary>
         public bool finished;
 
+        /// <summary>
+        /// The old Console.Out
+        /// </summary>
         private TextWriter oldConsole;
+
+        /// <summary>
+        /// The exporter log displayed to the user in the form
+        /// </summary>
         private TextboxWriter newConsole;
 
+        /// <summary>
+        /// The delegate method for resetting the progress bar
+        /// </summary>
         private delegate void resetProgressDelegate();
+
+        /// <summary>
+        /// The delegate for adding to the progress bar
+        /// </summary>
+        /// <param name="value">The amount to add in percentage points</param>
         private delegate void addProgressDelegate(int value);
+
+        /// <summary>
+        /// The delegate for getting the value of the progress bar
+        /// </summary>
+        /// <returns></returns>
         private delegate int getProgressDelegate();
+
+        /// <summary>
+        /// The delegate for setting the progress bar label text
+        /// </summary>
+        /// <param name="text">The text to set after "Progress:"</param>
         private delegate void setProgressTextDelegate(string text);
+
+        /// <summary>
+        /// The delegate for calling the Finish() method
+        /// </summary>
+        /// <param name="logFile">The location to save the log file</param>
         private delegate void finishDelegate(string logFile);
 
+        /// <summary>
+        /// Create a new progress form
+        /// </summary>
+        /// <param name="startEvent">The event to communicate the exporter starting to the <see cref="ExporterGUI"/></param>
+        /// <param name="textColor">The color of the log text</param>
+        /// <param name="backgroundColor">The color of the log background</param>
         public ExporterProgressForm(AutoResetEvent startEvent, Color textColor, Color backgroundColor)
         {
             InitializeComponent();
@@ -65,6 +108,9 @@ namespace EditorsLibrary
             };
         }
 
+        /// <summary>
+        /// Reset the progress bar
+        /// </summary>
         public void ResetProgress()
         {
             if (progressBar1.InvokeRequired)
@@ -77,6 +123,10 @@ namespace EditorsLibrary
             label1.Text = "";
         }
 
+        /// <summary>
+        /// Get the value of the progress bar
+        /// </summary>
+        /// <returns>The progress bar value</returns>
         public int GetProgress()
         {
             if (progressBar1.InvokeRequired)
@@ -87,6 +137,10 @@ namespace EditorsLibrary
             return progressBar1.Value;
         }
 
+        /// <summary>
+        /// Add progress to the progress bar
+        /// </summary>
+        /// <param name="percentLength">The amount to add in percentage points</param>
         public void AddProgress(int percentLength)
         {
             if (progressBar1.InvokeRequired)
@@ -99,6 +153,10 @@ namespace EditorsLibrary
             progressBar1.PerformStep();
         }
 
+        /// <summary>
+        /// Set the progress bar label text
+        /// </summary>
+        /// <param name="text">The text to set</param>
         public void SetProgressText(string text)
         {
             if (label1.InvokeRequired)
@@ -110,6 +168,10 @@ namespace EditorsLibrary
             label1.Text = "Progress: " + text;
         }
 
+        /// <summary>
+        /// Finish the exporter process and allow the user to save the log
+        /// </summary>
+        /// <param name="logFile">The location to save the log</param>
         public void Finish(string logFile = null)
         {
             if (InvokeRequired)
@@ -148,25 +210,53 @@ namespace EditorsLibrary
             finished = true;
         }
 
+        /// <summary>
+        /// Get the text of the exporter log
+        /// </summary>
+        /// <returns>The log</returns>
         public string GetLogText()
         {
             return logText.Text;
         }
 
+        /// <summary>
+        /// The class that displays the exporter log to the user
+        /// </summary>
         private class TextboxWriter : StringWriter
         {
 
+            /// <summary>
+            /// The delegate for writing to the log
+            /// </summary>
+            /// <param name="value">The text to write</param>
             private delegate void WriteDelegate(string value);
 
+            /// <summary>
+            /// The textbox to display the log in
+            /// </summary>
             private RichTextBox _box;
+
+            /// <summary>
+            /// A queue of text lines to be displayed when the application is idling
+            /// </summary>
+            /// <remarks>
+            /// This prevents significant slowdown while the exporter is running
+            /// </remarks>
             private Queue<string> lineQueue;
 
+            /// <summary>
+            /// Create a new TextboxWriter
+            /// </summary>
+            /// <param name="box">The text box to display the log in</param>
             public TextboxWriter(RichTextBox box)
             {
                 _box = box;
                 lineQueue = new Queue<string>();
             }
 
+            /// <summary>
+            /// Print all lines currently in the queue
+            /// </summary>
             public void printQueue()
             {
                 if (lineQueue.Count == 0) return;
@@ -183,6 +273,10 @@ namespace EditorsLibrary
                 _box.ScrollToCaret();
             }
 
+            /// <summary>
+            /// Write a line of text to the log
+            /// </summary>
+            /// <param name="value">The text to write</param>
             public override void WriteLine(string value)
             {
                 if (_box.InvokeRequired)
@@ -194,11 +288,18 @@ namespace EditorsLibrary
                 lineQueue.Enqueue(value);
             }
 
+            /// <summary>
+            /// Write text to the log
+            /// </summary>
+            /// <param name="value">The text to write</param>
             public override void Write(string value)
             {
                 WriteLine(value);
             }
 
+            /// <summary>
+            /// The text encoding to use for the output
+            /// </summary>
             public override Encoding Encoding
             {
                 get { return System.Text.Encoding.UTF8; }

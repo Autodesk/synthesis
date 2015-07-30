@@ -11,11 +11,22 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
+
+    /// <summary>
+    /// The form used to edit <see cref="Exporter"/> settings
+    /// </summary>
     public partial class ExporterSettings : Form
     {
 
+        /// <summary>
+        /// The local copy of the setting values
+        /// </summary>
         public ExporterSettingsValues values;
 
+        /// <summary>
+        /// Create a new exporter settings form
+        /// </summary>
+        /// <param name="defaultValues">The form values as previously defined and saved</param>
         public ExporterSettings(ExporterSettingsValues defaultValues)
         {
             InitializeComponent();
@@ -37,6 +48,9 @@ namespace EditorsLibrary
             };
         }
 
+        /// <summary>
+        /// Load values into the form
+        /// </summary>
         private void LoadValues()
         {
             checkboxSaveLog.Checked = values.generalSaveLog;
@@ -51,7 +65,10 @@ namespace EditorsLibrary
 
             checkboxSaveLog_CheckedChanged(null, null); //To make sure things are enabled/disabled correctly
         }
-
+        
+        /// <summary>
+        /// Save the form's values in a <see cref="ExporterSettingsValues"/> structure
+        /// </summary>
         private void SaveValues()
         {
             values.generalSaveLog = checkboxSaveLog.Checked;
@@ -65,12 +82,22 @@ namespace EditorsLibrary
             values.meshFancyColors = checkboxFancyColors.Checked;
         }
 
+        /// <summary>
+        /// Disable child controls under the "Save log to folder" checkbox
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void checkboxSaveLog_CheckedChanged(object sender, EventArgs e)
         {
             textboxLogLocation.Enabled = checkboxSaveLog.Checked;
             buttonChooseFolder.Enabled = checkboxSaveLog.Checked;
         }
 
+        /// <summary>
+        /// Choose the folder to save exporter logs in
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void buttonChooseFolder_Click(object sender, EventArgs e)
         {
             string dirPath = null;
@@ -93,6 +120,11 @@ namespace EditorsLibrary
             textboxLogLocation.Text = dirPath;
         }
 
+        /// <summary>
+        /// Choose the color of the exporter log text
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void buttonChooseText_Click(object sender, EventArgs e)
         {
             ColorDialog colorChooser = new ColorDialog();
@@ -100,6 +132,11 @@ namespace EditorsLibrary
             buttonChooseText.BackColor = colorChooser.Color;
         }
 
+        /// <summary>
+        /// Choose the color of the exporter log background
+        /// </summary>
+        /// <param name="sender">N/A</param>
+        /// <param name="e">N/A</param>
         private void buttonChooseBackground_Click(object sender, EventArgs e)
         {
             ColorDialog colorChooser = new ColorDialog();
@@ -107,6 +144,10 @@ namespace EditorsLibrary
             buttonChooseBackground.BackColor = colorChooser.Color;
         }
 
+        /// <summary>
+        /// Get the default values for the <see cref="ExporterSettingsValues"/> structure
+        /// </summary>
+        /// <returns>Default values for the <see cref="Exporter"/></returns>
         public static ExporterSettingsValues GetDefaultSettings()
         {
             ExporterSettingsValues defaultValues = new ExporterSettingsValues();
@@ -124,6 +165,9 @@ namespace EditorsLibrary
             return defaultValues;
         }
 
+        /// <summary>
+        /// The struct that stores settings for the <see cref="Exporter"/>
+        /// </summary>
         public struct ExporterSettingsValues
         {
             public bool generalSaveLog;

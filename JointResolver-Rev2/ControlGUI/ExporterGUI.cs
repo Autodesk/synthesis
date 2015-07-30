@@ -12,21 +12,50 @@ using System.Windows.Forms;
 using EditorsLibrary;
 using OGLViewer;
 
+/// <summary>
+/// The main window of the exporter
+/// </summary>
 public partial class ExporterGUI : Form
 {
-
+    
+    /// <summary>
+    /// The static instance of the Exporter interface
+    /// </summary>
     public static ExporterGUI Instance;
 
+    /// <summary>
+    /// The rigid node at the base of the skeleton structure
+    /// </summary>
     private RigidNode_Base skeletonBase = null;
+
+    /// <summary>
+    /// The list of meshes representing the robot
+    /// </summary>
     private List<BXDAMesh> meshes = null;
 
+    /// <summary>
+    /// Settings for the <see cref="Exporter"/>
+    /// </summary>
     private ExporterSettings.ExporterSettingsValues exporterSettings;
+
+    /// <summary>
+    /// Settings for the <see cref="RobotViewer"/>
+    /// </summary>
     private ViewerSettings.ViewerSettingsValues viewerSettings;
 
+    /// <summary>
+    /// The form that pops up when "Load from Inventor" is clicked
+    /// </summary>
     private ExporterProgressForm exporterProgress;
 
+    /// <summary>
+    /// The last path that was saved to/opened from
+    /// </summary>
     private string lastDirPath = null;
 
+    /// <summary>
+    /// Create a new GUI and load all the settings
+    /// </summary>
     public ExporterGUI()
     {
         InitializeComponent();
@@ -116,14 +145,22 @@ public partial class ExporterGUI : Form
         });
     }
 
+    /// <summary>
+    /// Clear all current work and open a new document
+    /// </summary>
     public void SetNew()
     {
+        if (skeletonBase != null && !WarnUnsaved()) return;
+
         skeletonBase = null;
         meshes = null;
 
         ReloadPanels();
     }
 
+    /// <summary>
+    /// Export a robot from Inventor
+    /// </summary>
     public void LoadFromInventor()
     {
         if (skeletonBase != null && !WarnUnsaved()) return;
@@ -215,6 +252,9 @@ public partial class ExporterGUI : Form
         ReloadPanels();
     }
 
+    /// <summary>
+    /// Open a previously exported robot
+    /// </summary>
     public void OpenExisting()
     {
         if (skeletonBase != null && !WarnUnsaved()) return;
@@ -246,6 +286,11 @@ public partial class ExporterGUI : Form
         ReloadPanels();
     }
 
+    /// <summary>
+    /// Save all changes to an open robot
+    /// </summary>
+    /// <param name="isSaveAs">If this is a "Save As" operation</param>
+    /// <returns>If the save operation succeeded</returns>
     public bool SaveRobot(bool isSaveAs)
     {
         if (skeletonBase == null || meshes == null) return false;
@@ -280,21 +325,36 @@ public partial class ExporterGUI : Form
         return true;
     }
 
+    /// <summary>
+    /// Reset the <see cref="ExporterProgressWindow"/> progress bar
+    /// </summary>
     public void ExporterReset()
     {
         exporterProgress.ResetProgress();
     }
 
+    /// <summary>
+    /// Set the length of the <see cref="ExporterProgressWindow"/> progress bar
+    /// </summary>
+    /// <param name="percentLength">The length of the bar in percentage points (0%-100%)</param>
     public void ExporterSetProgress(double percentLength)
     {
         exporterProgress.AddProgress((int) Math.Floor(percentLength) - exporterProgress.GetProgress());
     }
 
+    /// <summary>
+    /// Set the <see cref="ExporterProgressWindow"/> text after "Progress:"
+    /// </summary>
+    /// <param name="text">The text to add</param>
     public void ExporterSetSubText(string text)
     {
         exporterProgress.SetProgressText(text);
     }
 
+    /// <summary>
+    /// Get the desired folder to open from or save to
+    /// </summary>
+    /// <returns>The full path of the selected folder</returns>
     private string OpenFolderPath()
     {
         string dirPath = null;
@@ -317,6 +377,10 @@ public partial class ExporterGUI : Form
         return dirPath;
     }
 
+    /// <summary>
+    /// Warn the user that they are about to overwrite existing data
+    /// </summary>
+    /// <returns>Whether the user wishes to overwrite the data</returns>
     private bool WarnOverwrite()
     {
         DialogResult overwriteResult = MessageBox.Show("Really overwrite?", "Overwrite Warning", MessageBoxButtons.YesNo);
@@ -325,6 +389,10 @@ public partial class ExporterGUI : Form
         else return false;
     }
 
+    /// <summary>
+    /// Warn the user that they are about to exit without unsaved work
+    /// </summary>
+    /// <returns>Whether the user wishes to continue without saving</returns>
     private bool WarnUnsaved()
     {
         DialogResult saveResult = MessageBox.Show("Do you want to save your work?", "Save", MessageBoxButtons.YesNoCancel);
@@ -343,6 +411,9 @@ public partial class ExporterGUI : Form
         }
     }
 
+    /// <summary>
+    /// Reload all panels with newly loaded robot data
+    /// </summary>
     private void ReloadPanels()
     {
         jointEditorPane1.SetSkeleton(skeletonBase);
