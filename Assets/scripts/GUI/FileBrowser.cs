@@ -189,7 +189,7 @@ class FileBrowser : OverlayWindow
         if (_active)
         {
 			windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
-            GUI.Window(0, windowRect, FileBrowserWindow, "Browse");
+            GUI.Window(0, windowRect, FileBrowserWindow, title);
         }
     }
 
