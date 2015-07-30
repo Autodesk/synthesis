@@ -64,13 +64,10 @@
     <ManifestKeyFile>FieldExporter_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>false</GenerateManifests>
+    <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <TargetZone>LocalIntranet</TargetZone>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="autodesk.inventor.interop, Version=20.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
@@ -207,7 +204,6 @@
       <DependentUpon>ProgressWindow.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="FieldExporter_TemporaryKey.pfx" />
-    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -239,7 +235,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SimulatorFileIO\SimulatorAPI.csproj">
+    <ProjectReference Include="..\..\..\..\GitHub\Aardvark\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
     </ProjectReference>

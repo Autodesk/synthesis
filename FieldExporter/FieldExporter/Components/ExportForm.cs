@@ -64,14 +64,14 @@ namespace FieldExporter.Components
                         }
 
                         ComponentOccurrencesEnumerator componentOccurrences = ((AssemblyDocument)Program.INVENTOR_APPLICATION.ActiveDocument).ComponentDefinition.Occurrences.AllLeafOccurrences;
-
+                        
                         for (int i = 0; i < componentOccurrences.Count; i++)
                         {
                             if (Program.progressWindow.currentState.Equals(ProgressWindow.ProcessState.CANCELLED))
                                 return;
 
                             Program.progressWindow.SetProgress(i, "Exporting... " + (Math.Round((i / (float)componentOccurrences.Count) * 100.0f, 2)).ToString() + "%");
-
+                            
                             if (componentOccurrences[i + 1].Visible)
                             {
                                 exporter.Reset();
@@ -97,12 +97,6 @@ namespace FieldExporter.Components
 
                         fieldDefinition.CreateMesh();
                         fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
-
-                        FieldDefinition_Base readDefinition = BXDFProperties.ReadProperties(FilePathTextBox.Text + "\\definition.bxdf");
-                        foreach (PhysicsGroup g in readDefinition.GetPhysicsGroups().Values)
-                        {
-                            MessageBox.Show(g.dynamic + "\n" + g.mass);
-                        }
                     }),
                 new Action(() =>
                     {

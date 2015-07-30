@@ -86,6 +86,35 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
+        /// Returns the root of a node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        private TreeNode FindRootNode(TreeNode node)
+        {
+            while (node.Parent != null)
+            {
+                node = node.Parent;
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Adds parent and child components to the given node and returns the root node.
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="node"></param>
+        /// <returns>The node</returns>
+        private TreeNode GenerateFullTree(ComponentOccurrence component, TreeNode node)
+        {
+            node = AddComponentChildren(component, node);
+            node = AddComponentParents(component, node);
+            node = FindRootNode(node);
+
+            return node;
+        }
+
+        /// <summary>
         /// Adds the supplied component as a node with its corresponding parents and children.
         /// </summary>
         /// <param name="component"></param>
@@ -97,56 +126,19 @@ namespace FieldExporter.Components
             TreeNode node = new TreeNode(component.Name);
             node.Name = node.Text;
             node.Tag = component;
+            
+            node = GenerateFullTree(component, node);
 
-            node = AddComponentChildren(component, node);
-            node = AddComponentParents(component, node);
+            TreeNodeCollection iterator = Nodes;
 
-            while (true)
+            while (iterator.ContainsKey(node.Name) && node.Nodes.Count == 1)
             {
-                TreeNode[] searchResults = Nodes.Find(node.Name, true);
-
-                // Keep an eye on this bad boy
-                if (searchResults.Length > 0)
-                {
-                    if (searchResults[0].Parent != null)
-                    {
-                        //MessageBox.Show("Object and parent exist, so I'll add to the existing parent and remove the existing object.");
-                        searchResults[0].Parent.Nodes.Insert(searchResults[0].Index, node);
-                    }
-                    else
-                    {
-                        //MessageBox.Show("Object exists but parent does not, so I'll add the component as a root and remove the existing object.");
-                        Nodes.Add(node);
-                    }
-                    searchResults[0].Remove();
-                    break;
-                }
-                else
-                {
-                    if (node.Parent != null)
-                    {
-                        TreeNode[] parentResults = Nodes.Find(node.Parent.Name, true);
-
-                        if (parentResults.Length > 0)
-                        {
-                            //MessageBox.Show("Object does not exist but parent does, so I'll add the node as a child of the parent.");
-                            parentResults[0].Nodes.Add(node);
-                            break;
-                        }
-                        else
-                        {
-                            //MessageBox.Show("Object and parent do not exist, but an Inventor parent does, so I'll reiterate as the parent.");
-                            node = node.Parent;
-                        }
-                    }
-                    else
-                    {
-                        //MessageBox.Show("Neither object nor parent exist, so I'll just add the component as a root.");
-                        Nodes.Add(node);
-                        break;
-                    }
-                }
+                iterator = iterator[iterator.IndexOfKey(node.Name)].Nodes;
+                node = node.Nodes[0];
             }
+
+            iterator.RemoveByKey(node.Name);
+            iterator.Add(node);
         }
 
         /// <summary>
