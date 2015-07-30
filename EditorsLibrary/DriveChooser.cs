@@ -182,7 +182,7 @@ public partial class DriveChooser : Form
             joint.cDriver.portB = (int) txtPortB.Value;
             joint.cDriver.lowerLimit = (float) txtLowLimit.Value;
             joint.cDriver.upperLimit = (float) txtHighLimit.Value;
-
+            joint.cDriver.isCan = rbCAN.Checked;
             //Only need to store wheel driver if run by motor and is a wheel.
             if (cType.IsMotor() && (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL)
             {
@@ -322,6 +322,7 @@ public partial class DriveChooser : Form
         if (rbCAN.Checked)
         {
             lblPort.Text = "CAN Port";
+
         }
         else
         {

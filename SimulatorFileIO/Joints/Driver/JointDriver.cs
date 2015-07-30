@@ -14,6 +14,8 @@ public class JointDriver : RWObject
     /// </summary>
     public int portA, portB;
 
+    public bool isCan = false;
+
     /// <summary>
     /// The motion limits for this driver.  For continuous rotation this is likely a force or velocity.
     /// For linear or limited movement it is motion limits.
@@ -194,6 +196,7 @@ public class JointDriver : RWObject
         writer.Write((short) portB);
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
+        writer.Write(isCan);
         writer.Write(metaInfo.Count); // Extension count
         foreach (JointDriverMeta meta in metaInfo.Values)
         {
@@ -212,6 +215,7 @@ public class JointDriver : RWObject
         portB = reader.ReadInt16();
         lowerLimit = reader.ReadSingle();
         upperLimit = reader.ReadSingle();
+        isCan = reader.ReadBoolean();
         int extensions = reader.ReadInt32();
         metaInfo.Clear();
         for (int i = 0; i < extensions; i++)
