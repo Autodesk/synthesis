@@ -29,14 +29,4 @@ public class ElevatorScript : MonoBehaviour {
 		rigidbody.AddForce (force*3+Physics.gravity*stageOffset/4, ForceMode.Acceleration);
 		
 	}
-
-	void OnCollisionStay(Collision collisionInfo)
-	{
-		if (this.rigidbody.velocity.y < 0) //if the elevator is going down, let it go through objects to pick them up
-		{
-			Physics.IgnoreCollision (collisionInfo.collider, this.collider, true);
-		} else {
-			Physics.IgnoreCollision(collisionInfo.collider, this.collider, false);
-		}
-	}
 }
