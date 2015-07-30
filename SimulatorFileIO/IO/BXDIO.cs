@@ -40,28 +40,11 @@ public class BXDIO
     {
         if ((version & 0xFF000000) == (FORMAT_VERSION & 0xFF000000))
         {
-            if (version != FORMAT_VERSION)
+            if ((version & 0xFFFF0000) != (FORMAT_VERSION & 0xFFFF0000))
             {
                 Console.Write("Trying to read version " + VersionToString(version) + " using API version " + VersionToString(FORMAT_VERSION) + ".  Continue? (y/N)  ");
-                try
-                {
-                    String s = Console.ReadLine();
-                    if (s.ToLower().Trim().Equals("y"))
-                    {
-                        Console.WriteLine("Ignoring version mismatch... beware.");
-                        return;
-                    }
-                }
-                catch   // User input isn't enabled
-                {
-                    Console.WriteLine("Ignoring version mismatch... beware.");
-                    return;
-                }
             }
-            else
-            {
-                return;
-            }
+            return;
         }
         throw new FormatException("Trying to read version " + VersionToString(version) + " using API version " + VersionToString(FORMAT_VERSION));
     }
