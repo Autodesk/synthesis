@@ -185,7 +185,7 @@ public class DriveJoints : MonoBehaviour
 	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] dioModules)
 	{
 		float[] pwm = dioModules [0].pwmValues;
-
+		float[] can = dioModules [0].canValues;
 		if (Input.anyKey) {
 			pwm [0] +=
 				(Input.GetKey (KeyCode.UpArrow) ? speedArrowPWM : 0.0f) +
@@ -213,7 +213,8 @@ public class DriveJoints : MonoBehaviour
 			{
 				// Typcasting RigidNode to UnityRigidNode to use UnityRigidNode functions
 				UnityRigidNode unitySubNode = (UnityRigidNode)node;
-			
+				if(unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.isCan)
+					pwm = can;
 		
 				// Checking if there is a joint (and a joint driver) attatched to each joint
 				if (unitySubNode.GetSkeletalJoint() != null && unitySubNode.GetSkeletalJoint().cDriver != null && unitySubNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
