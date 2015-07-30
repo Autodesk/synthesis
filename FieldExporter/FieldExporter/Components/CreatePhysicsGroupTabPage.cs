@@ -12,18 +12,26 @@ namespace FieldExporter.Components
 {
     public partial class CreatePhysicsGroupTabPage : TabPage
     {
+        /// <summary>
+        /// The parent tab control.
+        /// </summary>
         public PhysicsGroupsTabControl parentTabControl
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// The child CreatePhysicsGroupForm.
+        /// </summary>
         private CreatePhysicsGroupForm childForm;
 
-        private ImageList imageList;
-
-        public CreatePhysicsGroupTabPage(PhysicsGroupsTabControl physicsGroupsTabControl,
-            string name, Image image)
+        /// <summary>
+        /// Initializes the CreatePhysicsGroupTabPage.
+        /// </summary>
+        /// <param name="physicsGroupsTabControl"></param>
+        /// <param name="name"></param>
+        public CreatePhysicsGroupTabPage(PhysicsGroupsTabControl physicsGroupsTabControl, string name)
         {
             InitializeComponent();
 
@@ -33,12 +41,7 @@ namespace FieldExporter.Components
             Controls.Add(childForm);
 
             Text = Name = name;
-
-            imageList = new ImageList();
-            imageList.Images.Add(image);
-            ImageIndex = 0;
         }
-
         
     }
 }

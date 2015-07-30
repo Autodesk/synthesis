@@ -50,8 +50,6 @@ namespace FieldExporter.Controls
 
             parentTabPage = tabPage;
 
-            nameLabel.Text = "Name: " + tabPage.Name;
-
             colliderTypeCombobox.SelectedIndex = 0;
 
             interactionEnabled = false;
@@ -112,8 +110,6 @@ namespace FieldExporter.Controls
                 interactionEvents.OnActivate += interactionEvents_OnActivate;
                 interactionEvents.Start();
 
-                inventorTreeView.HotTracking = false;
-
                 inventorSelectButton.Text = "Cancel Selection";
 
                 interactionEnabled = true;
@@ -133,8 +129,6 @@ namespace FieldExporter.Controls
 
             Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
 
-            inventorTreeView.HotTracking = true;
-
             inventorSelectButton.Text = "Select in Inventor";
             addSelectionButton.Enabled = false;
 
@@ -149,32 +143,6 @@ namespace FieldExporter.Controls
             selectEvents = interactionEvents.SelectEvents;
             selectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
             selectEvents.OnSelect += selectEvents_OnSelect;
-            selectEvents.OnPreSelect += selectEvents_OnPreSelect;
-        }
-
-        /// <summary>
-        /// Allows the user to see if they have already added a collision component in select mode.
-        /// </summary>
-        /// <param name="PreSelectEntity"></param>
-        /// <param name="DoHighlight"></param>
-        /// <param name="MorePreSelectEntities"></param>
-        /// <param name="SelectionDevice"></param>
-        /// <param name="ModelPosition"></param>
-        /// <param name="ViewPosition"></param>
-        /// <param name="View"></param>
-        void selectEvents_OnPreSelect(ref object PreSelectEntity, out bool DoHighlight, ref ObjectCollection MorePreSelectEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
-        {
-            DoHighlight = true;
-
-            if (PreSelectEntity is ComponentOccurrence)
-            {
-                ComponentOccurrence componentOccurrence = (ComponentOccurrence)PreSelectEntity;
-
-                inventorTreeView.Invoke(new Action(() =>
-                    {
-                        inventorTreeView.SelectByComponent(componentOccurrence);
-                    }));
-            }
         }
 
         /// <summary>
@@ -317,23 +285,7 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void changeNameButton_Click(object sender, EventArgs e)
         {
-            EnterNameDialog nameDialog = new EnterNameDialog();
-
-            if (nameDialog.ShowDialog(this).Equals(DialogResult.OK))
-            {
-                if (!parentTabPage.Name.Equals(nameDialog.nameTextBox.Text))
-                {
-                    if (parentTabPage.parentControl.TabPages.ContainsKey(nameDialog.nameTextBox.Text))
-                    {
-                        MessageBox.Show("Name is already taken.", "Invalid name.");
-                    }
-                    else
-                    {
-                        parentTabPage.SetName(nameDialog.nameTextBox.Text);
-                        nameLabel.Text = "Name: " + nameDialog.nameTextBox.Text;
-                    }
-                }
-            }
+            parentTabPage.ChangeName();
         }
 
         /// <summary>

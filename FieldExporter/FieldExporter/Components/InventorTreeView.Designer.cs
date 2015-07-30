@@ -28,7 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // InventorTreeView
+            // 
+            this.LineColor = System.Drawing.Color.Black;
+            this.ResumeLayout(false);
+
         }
 
         #endregion

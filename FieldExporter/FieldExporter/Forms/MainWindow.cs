@@ -82,6 +82,17 @@ namespace FieldExporter
         }
 
         /// <summary>
+        /// Resets the size of the window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void resetSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Normal;
+            Size = new Size(960, 720);
+        }
+
+        /// <summary>
         /// Toggles the TopMost property for the window.
         /// </summary>
         /// <param name="sender"></param>

@@ -151,19 +151,6 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Selects a node based on its corresponding inventor component.
-        /// </summary>
-        /// <param name="component"></param>
-        public void SelectByComponent(ComponentOccurrence component)
-        {
-            if (Nodes.Find(component.Name, true).Length > 0)
-            {
-                SelectedNode = Nodes.Find(component.Name, true)[0];
-                SelectedNode.EnsureVisible();
-            }
-        }
-
-        /// <summary>
         /// Resets the InventorTreeView.
         /// </summary>
         public void Reset()
@@ -189,12 +176,12 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// When a node is hovered over, it's corresponding component will be selected
+        /// When a node is selected, it's corresponding component will be selected.
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnNodeMouseHover(TreeNodeMouseHoverEventArgs e)
+        protected override void OnAfterSelect(TreeViewEventArgs e)
         {
-            base.OnNodeMouseHover(e);
+            base.OnAfterSelect(e);
             Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
             Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Select((ComponentOccurrence)e.Node.Tag);
         }

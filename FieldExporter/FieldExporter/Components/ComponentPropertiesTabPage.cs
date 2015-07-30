@@ -1,4 +1,5 @@
 ﻿using FieldExporter.Controls;
+using FieldExporter.Forms;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,6 +55,7 @@ namespace FieldExporter.Components
 
             rightClickMenu = new ContextMenu();
             rightClickMenu.MenuItems.Add(new MenuItem("Delete", new EventHandler(deleteMenuItem_onClick)));
+            rightClickMenu.MenuItems.Add(new MenuItem("Change Name", new EventHandler(changeNameMenuItem_onClick)));
         }
 
         /// <summary>
@@ -63,6 +65,26 @@ namespace FieldExporter.Components
         public void SetName(string name)
         {
             Text = Name = name;
+        }
+
+        public void ChangeName()
+        {
+            EnterNameDialog nameDialog = new EnterNameDialog();
+
+            if (nameDialog.ShowDialog(this).Equals(DialogResult.OK))
+            {
+                if (!Name.Equals(nameDialog.nameTextBox.Text))
+                {
+                    if (parentControl.TabPages.ContainsKey(nameDialog.nameTextBox.Text))
+                    {
+                        MessageBox.Show("Name is already taken.", "Invalid name.");
+                    }
+                    else
+                    {
+                        SetName(nameDialog.nameTextBox.Text);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -86,9 +108,14 @@ namespace FieldExporter.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void deleteMenuItem_onClick(object sender, EventArgs e)
+        private void deleteMenuItem_onClick(object sender, EventArgs e)
         {
             Remove();
+        }
+
+        private void changeNameMenuItem_onClick(object sender, EventArgs e)
+        {
+            ChangeName();
         }
     }
 }

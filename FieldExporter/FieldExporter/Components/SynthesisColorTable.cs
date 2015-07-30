@@ -16,7 +16,7 @@ namespace FieldExporter.Components
 
         public SynthesisColorTable()
         {
-            backgroundColor = System.Drawing.Color.FromArgb(192, 255, 192);
+            backgroundColor = System.Drawing.Color.FromArgb(158, 205, 163);
         }
 
         /// <summary>

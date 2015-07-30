@@ -28,10 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CreatePhysicsGroupForm));
             this.createButton = new System.Windows.Forms.Button();
-            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.createLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -39,22 +36,14 @@
             // 
             this.createButton.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.createButton.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.createButton.ImageKey = "AddIcon.png";
-            this.createButton.ImageList = this.imageList;
+            this.createButton.ImageKey = "CreateImage.png";
             this.createButton.Location = new System.Drawing.Point(268, 190);
             this.createButton.Name = "createButton";
-            this.createButton.Size = new System.Drawing.Size(64, 40);
+            this.createButton.Size = new System.Drawing.Size(64, 32);
             this.createButton.TabIndex = 3;
             this.createButton.Text = "Create";
-            this.createButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.createButton.UseVisualStyleBackColor = true;
             this.createButton.Click += new System.EventHandler(this.newPhysicsButton_Click);
-            // 
-            // imageList
-            // 
-            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
-            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList.Images.SetKeyName(0, "AddIcon.png");
             // 
             // createLabel
             // 
@@ -84,6 +73,5 @@
 
         private System.Windows.Forms.Button createButton;
         private System.Windows.Forms.Label createLabel;
-        private System.Windows.Forms.ImageList imageList;
     }
 }

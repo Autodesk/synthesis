@@ -40,6 +40,7 @@ namespace FieldExporter
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.physicsGroupsTabControl = new FieldExporter.Components.PhysicsGroupsTabControl();
             this.exportForm1 = new FieldExporter.Components.ExportForm();
@@ -53,7 +54,7 @@ namespace FieldExporter
             // 
             this.applicationImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("applicationImages.ImageStream")));
             this.applicationImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.applicationImages.Images.SetKeyName(0, "AddIcon.png");
+            this.applicationImages.Images.SetKeyName(0, "Synthesis Logo.png");
             // 
             // folderBrowserDialog
             // 
@@ -65,7 +66,7 @@ namespace FieldExporter
             this.physicsTabPage.Controls.Add(this.physicsGroupsTabControl);
             this.physicsTabPage.Location = new System.Drawing.Point(4, 25);
             this.physicsTabPage.Name = "physicsTabPage";
-            this.physicsTabPage.Size = new System.Drawing.Size(632, 423);
+            this.physicsTabPage.Size = new System.Drawing.Size(934, 618);
             this.physicsTabPage.TabIndex = 0;
             this.physicsTabPage.Text = "PhysicsGroups";
             // 
@@ -77,7 +78,7 @@ namespace FieldExporter
             this.PropertyControl.Location = new System.Drawing.Point(0, 28);
             this.PropertyControl.Name = "PropertyControl";
             this.PropertyControl.SelectedIndex = 0;
-            this.PropertyControl.Size = new System.Drawing.Size(640, 452);
+            this.PropertyControl.Size = new System.Drawing.Size(942, 647);
             this.PropertyControl.TabIndex = 10;
             // 
             // exportTabPage
@@ -85,7 +86,7 @@ namespace FieldExporter
             this.exportTabPage.Controls.Add(this.exportForm1);
             this.exportTabPage.Location = new System.Drawing.Point(4, 25);
             this.exportTabPage.Name = "exportTabPage";
-            this.exportTabPage.Size = new System.Drawing.Size(632, 423);
+            this.exportTabPage.Size = new System.Drawing.Size(934, 618);
             this.exportTabPage.TabIndex = 4;
             this.exportTabPage.Text = "Export";
             this.exportTabPage.UseVisualStyleBackColor = true;
@@ -97,7 +98,7 @@ namespace FieldExporter
             this.windowToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(640, 28);
+            this.menuStrip.Size = new System.Drawing.Size(942, 28);
             this.menuStrip.TabIndex = 11;
             this.menuStrip.Text = "Menu";
             // 
@@ -119,10 +120,18 @@ namespace FieldExporter
             // windowToolStripMenuItem
             // 
             this.windowToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resetSizeToolStripMenuItem,
             this.alwaysOnTopToolStripMenuItem});
             this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
             this.windowToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
             this.windowToolStripMenuItem.Text = "Window";
+            // 
+            // resetSizeToolStripMenuItem
+            // 
+            this.resetSizeToolStripMenuItem.Name = "resetSizeToolStripMenuItem";
+            this.resetSizeToolStripMenuItem.Size = new System.Drawing.Size(177, 24);
+            this.resetSizeToolStripMenuItem.Text = "Reset Size";
+            this.resetSizeToolStripMenuItem.Click += new System.EventHandler(this.resetSizeToolStripMenuItem_Click);
             // 
             // alwaysOnTopToolStripMenuItem
             // 
@@ -138,24 +147,26 @@ namespace FieldExporter
             this.physicsGroupsTabControl.Location = new System.Drawing.Point(0, 0);
             this.physicsGroupsTabControl.Name = "physicsGroupsTabControl";
             this.physicsGroupsTabControl.SelectedIndex = 0;
-            this.physicsGroupsTabControl.Size = new System.Drawing.Size(632, 423);
+            this.physicsGroupsTabControl.Size = new System.Drawing.Size(934, 618);
             this.physicsGroupsTabControl.TabIndex = 0;
             // 
             // exportForm1
             // 
             this.exportForm1.BackColor = System.Drawing.Color.White;
+            this.exportForm1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("exportForm1.BackgroundImage")));
+            this.exportForm1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.exportForm1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.exportForm1.Location = new System.Drawing.Point(0, 0);
             this.exportForm1.Name = "exportForm1";
             this.exportForm1.Padding = new System.Windows.Forms.Padding(3);
-            this.exportForm1.Size = new System.Drawing.Size(632, 423);
+            this.exportForm1.Size = new System.Drawing.Size(934, 618);
             this.exportForm1.TabIndex = 0;
             // 
             // MainWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.ClientSize = new System.Drawing.Size(640, 480);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(158)))), ((int)(((byte)(205)))), ((int)(((byte)(163)))));
+            this.ClientSize = new System.Drawing.Size(942, 675);
             this.Controls.Add(this.PropertyControl);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -191,6 +202,7 @@ namespace FieldExporter
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem alwaysOnTopToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resetSizeToolStripMenuItem;
     }
 }
 

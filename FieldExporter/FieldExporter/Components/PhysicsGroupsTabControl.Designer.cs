@@ -28,20 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PhysicsGroupsTabControl));
-            this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.SuspendLayout();
-            // 
-            // imageList
-            // 
-            this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
-            this.imageList.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList.Images.SetKeyName(0, "CreateImage.png");
             // 
             // PhysicsGroupsTabControl
             // 
-            this.ImageList = this.imageList;
             this.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PhysicsGroupsTabControl_Selecting);
             this.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PhysicsGroupsTabControl_Deselecting);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PhysicsGroupsTabControl_MouseClick);
@@ -51,6 +41,5 @@
 
         #endregion
 
-        private System.Windows.Forms.ImageList imageList;
     }
 }

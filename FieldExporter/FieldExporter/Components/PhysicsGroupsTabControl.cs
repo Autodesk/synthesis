@@ -27,7 +27,7 @@ namespace FieldExporter.Components
         {
             InitializeComponent();
 
-            createTabPage = new CreatePhysicsGroupTabPage(this, "Create", imageList.Images["CreateImage.png"]);
+            createTabPage = new CreatePhysicsGroupTabPage(this, "Create");
             TabPages.Add(createTabPage);
         }
 

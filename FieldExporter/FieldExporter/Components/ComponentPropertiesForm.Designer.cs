@@ -34,9 +34,10 @@ namespace FieldExporter.Controls
             this.addSelectionButton = new System.Windows.Forms.Button();
             this.propertiesBox = new System.Windows.Forms.GroupBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.dynamicGroupBox = new System.Windows.Forms.GroupBox();
-            this.massLabel = new System.Windows.Forms.Label();
             this.dynamicCheckBox = new System.Windows.Forms.CheckBox();
+            this.dynamicGroupBox = new System.Windows.Forms.GroupBox();
+            this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
+            this.massLabel = new System.Windows.Forms.Label();
             this.rubberLabel = new System.Windows.Forms.Label();
             this.carpetLabel = new System.Windows.Forms.Label();
             this.iceLabel = new System.Windows.Forms.Label();
@@ -47,17 +48,15 @@ namespace FieldExporter.Controls
             this.physicsGroupOptionsBox = new System.Windows.Forms.GroupBox();
             this.changeNameButton = new System.Windows.Forms.Button();
             this.removeButton = new System.Windows.Forms.Button();
-            this.nameLabel = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.inventorTreeView = new FieldExporter.Components.InventorTreeView(this.components);
             this.propertiesBox.SuspendLayout();
             this.panel1.SuspendLayout();
             this.dynamicGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).BeginInit();
             this.physicsGroupOptionsBox.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // inventorSelectButton
@@ -89,9 +88,9 @@ namespace FieldExporter.Controls
             this.propertiesBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertiesBox.Controls.Add(this.panel1);
-            this.propertiesBox.Location = new System.Drawing.Point(304, 95);
+            this.propertiesBox.Location = new System.Drawing.Point(304, 68);
             this.propertiesBox.Name = "propertiesBox";
-            this.propertiesBox.Size = new System.Drawing.Size(293, 302);
+            this.propertiesBox.Size = new System.Drawing.Size(293, 329);
             this.propertiesBox.TabIndex = 15;
             this.propertiesBox.TabStop = false;
             this.propertiesBox.Text = "Physical Properties";
@@ -112,8 +111,19 @@ namespace FieldExporter.Controls
             this.panel1.Location = new System.Drawing.Point(3, 18);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.panel1.Size = new System.Drawing.Size(287, 281);
+            this.panel1.Size = new System.Drawing.Size(287, 308);
             this.panel1.TabIndex = 8;
+            // 
+            // dynamicCheckBox
+            // 
+            this.dynamicCheckBox.AutoSize = true;
+            this.dynamicCheckBox.Location = new System.Drawing.Point(12, 94);
+            this.dynamicCheckBox.Name = "dynamicCheckBox";
+            this.dynamicCheckBox.Size = new System.Drawing.Size(84, 21);
+            this.dynamicCheckBox.TabIndex = 8;
+            this.dynamicCheckBox.Text = "Dynamic";
+            this.dynamicCheckBox.UseVisualStyleBackColor = true;
+            this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.dynamicCheckBox_CheckedChanged);
             // 
             // dynamicGroupBox
             // 
@@ -126,6 +136,18 @@ namespace FieldExporter.Controls
             this.dynamicGroupBox.TabIndex = 9;
             this.dynamicGroupBox.TabStop = false;
             // 
+            // massNumericUpDown
+            // 
+            this.massNumericUpDown.Location = new System.Drawing.Point(89, 21);
+            this.massNumericUpDown.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.massNumericUpDown.Name = "massNumericUpDown";
+            this.massNumericUpDown.Size = new System.Drawing.Size(159, 22);
+            this.massNumericUpDown.TabIndex = 10;
+            // 
             // massLabel
             // 
             this.massLabel.AutoSize = true;
@@ -134,17 +156,6 @@ namespace FieldExporter.Controls
             this.massLabel.Size = new System.Drawing.Size(77, 17);
             this.massLabel.TabIndex = 9;
             this.massLabel.Text = "Mass (lbs):";
-            // 
-            // dynamicCheckBox
-            // 
-            this.dynamicCheckBox.AutoSize = true;
-            this.dynamicCheckBox.Location = new System.Drawing.Point(12, 94);
-            this.dynamicCheckBox.Name = "dynamicCheckBox";
-            this.dynamicCheckBox.Size = new System.Drawing.Size(84, 21);
-            this.dynamicCheckBox.TabIndex = 8;
-            this.dynamicCheckBox.Text = "Dynamic";
-            this.dynamicCheckBox.UseVisualStyleBackColor = true;
-            this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.dynamicCheckBox_CheckedChanged);
             // 
             // rubberLabel
             // 
@@ -216,19 +227,18 @@ namespace FieldExporter.Controls
             this.physicsGroupOptionsBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.physicsGroupOptionsBox.Controls.Add(this.changeNameButton);
             this.physicsGroupOptionsBox.Controls.Add(this.removeButton);
-            this.physicsGroupOptionsBox.Controls.Add(this.nameLabel);
             this.physicsGroupOptionsBox.Location = new System.Drawing.Point(304, 3);
             this.physicsGroupOptionsBox.Name = "physicsGroupOptionsBox";
-            this.physicsGroupOptionsBox.Size = new System.Drawing.Size(293, 86);
+            this.physicsGroupOptionsBox.Size = new System.Drawing.Size(293, 59);
             this.physicsGroupOptionsBox.TabIndex = 16;
             this.physicsGroupOptionsBox.TabStop = false;
             this.physicsGroupOptionsBox.Text = "PhysicsGroup Options";
             // 
             // changeNameButton
             // 
-            this.changeNameButton.Location = new System.Drawing.Point(159, 13);
+            this.changeNameButton.Location = new System.Drawing.Point(175, 21);
             this.changeNameButton.Name = "changeNameButton";
-            this.changeNameButton.Size = new System.Drawing.Size(128, 32);
+            this.changeNameButton.Size = new System.Drawing.Size(112, 32);
             this.changeNameButton.TabIndex = 3;
             this.changeNameButton.Text = "Change Name";
             this.changeNameButton.UseVisualStyleBackColor = true;
@@ -236,22 +246,13 @@ namespace FieldExporter.Controls
             // 
             // removeButton
             // 
-            this.removeButton.Location = new System.Drawing.Point(6, 48);
+            this.removeButton.Location = new System.Drawing.Point(6, 21);
             this.removeButton.Name = "removeButton";
-            this.removeButton.Size = new System.Drawing.Size(281, 32);
+            this.removeButton.Size = new System.Drawing.Size(163, 32);
             this.removeButton.TabIndex = 2;
             this.removeButton.Text = "Remove PhysicsGroup";
             this.removeButton.UseVisualStyleBackColor = true;
             this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
-            // 
-            // nameLabel
-            // 
-            this.nameLabel.AutoEllipsis = true;
-            this.nameLabel.Location = new System.Drawing.Point(6, 21);
-            this.nameLabel.Name = "nameLabel";
-            this.nameLabel.Size = new System.Drawing.Size(147, 17);
-            this.nameLabel.TabIndex = 0;
-            this.nameLabel.Text = "Name:";
             // 
             // tableLayoutPanel1
             // 
@@ -268,18 +269,6 @@ namespace FieldExporter.Controls
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(301, 40);
             this.tableLayoutPanel1.TabIndex = 8;
-            // 
-            // massNumericUpDown
-            // 
-            this.massNumericUpDown.Location = new System.Drawing.Point(89, 21);
-            this.massNumericUpDown.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.massNumericUpDown.Name = "massNumericUpDown";
-            this.massNumericUpDown.Size = new System.Drawing.Size(159, 22);
-            this.massNumericUpDown.TabIndex = 10;
             // 
             // inventorTreeView
             // 
@@ -307,10 +296,10 @@ namespace FieldExporter.Controls
             this.panel1.PerformLayout();
             this.dynamicGroupBox.ResumeLayout(false);
             this.dynamicGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).EndInit();
             this.physicsGroupOptionsBox.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -321,7 +310,6 @@ namespace FieldExporter.Controls
         private System.Windows.Forms.Button addSelectionButton;
         private System.Windows.Forms.GroupBox propertiesBox;
         private System.Windows.Forms.GroupBox physicsGroupOptionsBox;
-        private System.Windows.Forms.Label nameLabel;
         private System.Windows.Forms.Button removeButton;
         private System.Windows.Forms.Button changeNameButton;
         private System.Windows.Forms.ComboBox colliderTypeCombobox;

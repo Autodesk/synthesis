@@ -178,6 +178,9 @@
     <EmbeddedResource Include="Components\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Components\InventorTreeView.resx">
+      <DependentUpon>InventorTreeView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\PhysicsGroupsTabControl.resx">
       <DependentUpon>PhysicsGroupsTabControl.cs</DependentUpon>
     </EmbeddedResource>
