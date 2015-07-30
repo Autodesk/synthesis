@@ -301,16 +301,6 @@ public partial class DriveChooser : Form
         cmbFrictionLevel.Visible = (WheelType) cmbWheelType.SelectedIndex != WheelType.NOT_A_WHEEL;
     }
 
-    private void label1_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void DriveChooser_Load(object sender, EventArgs e)
-    {
-
-    }
-
     private void chkBoxHasBrake_CheckedChanged(object sender, EventArgs e)
     {
         if (chkBoxHasBrake.Checked)
@@ -338,4 +328,17 @@ public partial class DriveChooser : Form
             lblPort.Text = "PWM Port";
         }
     }
+
+    #region UNUSED
+    private void label1_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void DriveChooser_Load(object sender, EventArgs e)
+    {
+
+    }
+    #endregion
+
 }
