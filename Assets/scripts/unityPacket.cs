@@ -19,7 +19,7 @@ public class unityPacket
 			public UInt32 relayReverse;
 			public UInt32 digitalOutput;
 			public float[] pwmValues = new float[10];
-            public float[] canValues = new float[32];
+            public float[] canValues = new float[10];
 		}
 		public class SolenoidModule
 		{
@@ -42,11 +42,12 @@ public class unityPacket
 				{
 					dio[i].pwmValues[j] = BitConverter.ToSingle(pack, offset + 12 + (4 * j));
 				}
-
-                for (int j = 0; j < dio[i].canValues.Length; j++)
-                {
-                   dio[i].canValues[j] = BitConverter.ToSingle(pack, offset + 12 + (4 * 10) + (4 * j));
-                }
+				//Debug.Log("PWM: " + BitConverter.ToString(pack));
+			
+                //for (int j = 0; j < dio[i].canValues.Length; j++)
+                //{
+                //    dio[i].canValues[j] = BitConverter.ToSingle(pack, offset + 12 + (4 * 10) + (4 * j));
+                //}
 			}
 			for (int i = 0; i < solenoid.Length; i++)
 			{
