@@ -195,6 +195,8 @@ public partial class ExporterGUI : Form
 
             startEvent.WaitOne();
 
+            if (exporterProgress.finished) return;
+
             var exporterThread = new Thread(() =>
             {
                 try
@@ -213,12 +215,15 @@ public partial class ExporterGUI : Form
 
                     tmpBase = Exporter.ExportSkeleton();
                     tmpMeshes = Exporter.ExportMeshes(tmpBase, exporterSettings.meshResolutionValue > 0, exporterSettings.meshFancyColors);
-
-                    Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                }
+                finally
+                {
+                    Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+                    Exporter.ReleaseInventorInstance();
                 }
             });
 
@@ -238,8 +243,6 @@ public partial class ExporterGUI : Form
 
             if (exporterThread.IsAlive)
             {
-                if (Exporter.INVENTOR_APPLICATION != null)
-                    Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
                 exporterThread.Abort();
             }
             else
@@ -251,8 +254,6 @@ public partial class ExporterGUI : Form
                     meshes = tmpMeshes;
                 }
             }
-
-            Exporter.ReleaseInventorInstance();
         }
         catch (Exception e)
         {

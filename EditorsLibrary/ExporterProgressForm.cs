@@ -89,6 +89,7 @@ namespace EditorsLibrary
             FormClosing += delegate(object sender, FormClosingEventArgs e)
             {
                 Console.SetOut(oldConsole);
+                finished = true;
                 startEvent.Set();
             };
 
