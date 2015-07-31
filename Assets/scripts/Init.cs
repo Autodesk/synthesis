@@ -67,7 +67,7 @@ public class Init : MonoBehaviour
 		time_stop = false;
 
 		reloadRobotInFrames = -1;
-		showStatWindow = false;
+		showStatWindow = true;
 		showHelpWindow = true;
 		rotation = Vector3.zero;
 		tempRotation = Vector3.zero;
