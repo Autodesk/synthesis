@@ -159,25 +159,26 @@ public class Init : MonoBehaviour
 			switch((int)o)
 			{
 			case 0:
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z + 90));
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.eulerAngles.x, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z + 90));
                 break;
 			case 1:	
-				activeRobot.transform.Rotate (new Vector3(activeRobot.transform.localRotation.x, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z - 90));
+				activeRobot.transform.Rotate (new Vector3(activeRobot.transform.localRotation.eulerAngles.x, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z - 90));
 				break;
 			case 2:
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x + 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.eulerAngles.x + 90, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z));
 				break;
-			case 3:
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.x - 90, activeRobot.transform.localRotation.y,activeRobot.transform.localRotation.z));
+			case 3:;
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.eulerAngles.x - 90, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z));
 				break;
 			case 4:
-				rotation = activeRobot.transform.localRotation;
+				rotation = activeRobot.transform.rotation;
+				Debug.Log(rotation);
 				break;
 			case 5:
 				oWindow.Active = false;
 				break;
 			case 6:
-				activeRobot.transform.localRotation = Quaternion.identity;
+				activeRobot.transform.rotation = Quaternion.identity;
 				break;
 
 			}			
@@ -248,11 +249,6 @@ public class Init : MonoBehaviour
             });
 			//shows button to manually orient the robot
 			ShowOrient();
-
-			gui.AddAction("Change Side", () =>
-			              {
-				activeRobot.transform.position = new Vector3(activeRobot.transform.position.x, activeRobot.transform.position.y, -activeRobot.transform.position.z);
-			});
 
             if (!File.Exists(filePath + "\\skeleton.bxdj"))
             {
@@ -393,7 +389,7 @@ public class Init : MonoBehaviour
 			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
             activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
-
+			activeRobot.transform.rotation = Quaternion.identity;
             activeRobot.transform.localRotation = rotation;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -725,10 +721,10 @@ public class Init : MonoBehaviour
 				if (!time_stop)
 					time += Time.deltaTime;
 
-				if(gui.guiVisible)
-					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-				else
-					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
+				//if(gui.guiVisible)
+				//	mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+				//else
+					//mainNode.rigidbody.constraints = RigidbodyConstraints.None;
 			}
 		}
 	}
