@@ -42,7 +42,8 @@ public class Init : MonoBehaviour
 	private float oldSpeed;
 	private bool showStatWindow;
 	private bool showHelpWindow;
-	private Quaternion rotation;
+	private Vector3 rotation;
+	private Vector3 tempRotation;
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -68,7 +69,8 @@ public class Init : MonoBehaviour
 		reloadRobotInFrames = -1;
 		showStatWindow = false;
 		showHelpWindow = true;
-		rotation = Quaternion.identity;
+		rotation = Vector3.zero;
+		tempRotation = Vector3.zero;
     }
 
 	//displays stats like speed and acceleration
@@ -154,24 +156,32 @@ public class Init : MonoBehaviour
 
 		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
-
+		//The directional buttons lift the robot to avoid collison with objects, rotates it, and saves the applied rotation to a vector3
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
 			switch((int)o)
 			{
 			case 0:
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.rotation.x, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z + 90));
+				activeRobot.transform.Translate(new Vector3(0, 1, 0));
+				activeRobot.transform.Rotate(new Vector3(0, 0, 90));
+				tempRotation += new Vector3(0, 0, 90);
                 break;
 			case 1:	
-				activeRobot.transform.Rotate (new Vector3(activeRobot.transform.rotation.x, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z - 90));
+				activeRobot.transform.Translate(new Vector3(0, 1, 0));
+				activeRobot.transform.Rotate (new Vector3(0, 0, -90));
+				tempRotation += new Vector3(0, 0, -90);
 				break;
 			case 2:
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.rotation.x + 90, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z));
+				activeRobot.transform.Translate(new Vector3(0, 1, 0));
+				activeRobot.transform.Rotate(new Vector3( 90, 0, 0));
+				tempRotation += new Vector3(90, 0, 0);
 				break;
 			case 3:;
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.rotation.x - 90, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z));
+				activeRobot.transform.Translate(new Vector3(0, 1, 0));
+				activeRobot.transform.Rotate(new Vector3( -90, 0, 0));
+				tempRotation += new Vector3(-90, 0, 0);
 				break;
 			case 4:
-				rotation = activeRobot.transform.rotation;
+				rotation = tempRotation;
 				Debug.Log(rotation);
 				break;
 			case 5:
@@ -179,6 +189,7 @@ public class Init : MonoBehaviour
 				break;
 			case 6:
 				activeRobot.transform.rotation = Quaternion.identity;
+				tempRotation = Vector3.zero;
 				break;
 
 			}			
@@ -389,7 +400,7 @@ public class Init : MonoBehaviour
 			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
             activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
-			activeRobot.transform.rotation = rotation;
+			activeRobot.transform.rotation = Quaternion.identity;
 			activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
@@ -461,6 +472,8 @@ public class Init : MonoBehaviour
 					}
 				}
             }
+			//Resets robot to user saved orientation
+			activeRobot.transform.Rotate(rotation);     
         }
 
 		foreach (GameObject o in totes)
