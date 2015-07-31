@@ -82,6 +82,7 @@ public partial class DriveChooser : Form
                         cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
                     }
 
+                    chkBoxDriveWheel.Checked = wheelMeta.isDriveWheel;
                     cmbWheelType_SelectedIndexChanged(null, null);
                 }
                 else
