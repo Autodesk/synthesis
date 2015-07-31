@@ -601,6 +601,7 @@ public class Init : MonoBehaviour
 			TryLoadField();
 			reloadFieldInFrames = -1;
 			reloadRobotInFrames = 2;
+			showStatWindow = true;
 			showHelpWindow = true;
 		}
 
