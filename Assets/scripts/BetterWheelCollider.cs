@@ -21,6 +21,7 @@ public class BetterWheelCollider : MonoBehaviour
     {
         rigidbody.drag = 1f;
         rigidbody.angularDrag = 1f;
+		gameObject.GetComponentInChildren<CapsuleCollider> ().radius *= 1.2f;
     }
 
 	private Vector3 lastNormalDrag = Vector3.zero;
