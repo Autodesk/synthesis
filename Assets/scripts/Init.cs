@@ -143,18 +143,18 @@ public class Init : MonoBehaviour
 		titles.Add ("Right");
 		titles.Add ("Forward");
 		titles.Add ("Back");
-		titles.Add ("Save Orientation");
+		//titles.Add ("Save Orientation");
 		titles.Add ("Close");
-		titles.Add ("Default");
+	//	titles.Add ("Default");
 		
 		List<Rect> rects = new List<Rect> ();
 		rects.Add (new Rect(50, 150, 75, 30));
 		rects.Add (new Rect(175, 150, 75, 30));
 		rects.Add (new Rect(112, 115, 75, 30));
 		rects.Add (new Rect(112, 185, 75, 30));
-		rects.Add (new Rect (95, 55, 110, 30));
+		//rects.Add (new Rect (95, 55, 110, 30));
 		rects.Add (new Rect (230, 20, 50, 30));
-		rects.Add (new Rect (20, 20, 70, 30));
+		//rects.Add (new Rect (20, 20, 70, 30));
 
 		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
@@ -182,17 +182,17 @@ public class Init : MonoBehaviour
 				activeRobot.transform.Rotate(new Vector3( -90, 0, 0));
 				tempRotation += new Vector3(-90, 0, 0);
 				break;
-			case 4:
+			/*case 4:
 				rotation = tempRotation;
 				Debug.Log(rotation);
-				break;
-			case 5:
+				break;*/
+			case 4:
 				oWindow.Active = false;
 				break;
-			case 6:
+			/*case 6:
 				activeRobot.transform.rotation = Quaternion.identity;
 				tempRotation = Vector3.zero;
-				break;
+				break;*/
 
 			}			
 		});
