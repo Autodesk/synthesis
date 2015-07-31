@@ -21,6 +21,11 @@ namespace EditorsLibrary
         public event JointEditorEvent SelectedJoint;
 
         /// <summary>
+        /// A JointEditorEvent triggered upon joint modification
+        /// </summary>
+        public event JointEditorEvent ModifiedJoint;
+
+        /// <summary>
         /// Whether or not joint data is currently being edited
         /// </summary>
         private bool currentlyEditing = false;
@@ -113,6 +118,10 @@ namespace EditorsLibrary
             listForm.StartPosition = FormStartPosition.Manual;
             listForm.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10);
             listForm.ShowDialog(ParentForm);
+            if (ModifiedJoint != null)
+            {
+                ModifiedJoint(node);
+            }
             this.UpdateJointList();
             currentlyEditing = false;
         }
@@ -130,6 +139,10 @@ namespace EditorsLibrary
             driveChooserDialog.StartPosition = FormStartPosition.Manual;
             driveChooserDialog.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10);
             driveChooserDialog.ShowDialog(joint, node, ParentForm);
+            if (ModifiedJoint != null)
+            {
+                ModifiedJoint(node);
+            }
             UpdateJointList();
             currentlyEditing = false;
         }

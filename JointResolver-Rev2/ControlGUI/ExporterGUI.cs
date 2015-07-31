@@ -17,7 +17,7 @@ using OGLViewer;
 /// </summary>
 public partial class ExporterGUI : Form
 {
-    
+
     /// <summary>
     /// The static instance of the Exporter interface
     /// </summary>
@@ -143,6 +143,17 @@ public partial class ExporterGUI : Form
 
             Exporter.ReleaseInventorInstance();
         });
+
+        jointEditorPane1.ModifiedJoint += delegate(RigidNode_Base node)
+        {
+
+            if (node == null)
+                return;
+            if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null && node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null)
+            {
+                WheelAnalyzer.StartCalculations(node);
+            }
+        };
     }
 
     /// <summary>
@@ -339,7 +350,7 @@ public partial class ExporterGUI : Form
     /// <param name="percentLength">The length of the bar in percentage points (0%-100%)</param>
     public void ExporterSetProgress(double percentLength)
     {
-        exporterProgress.AddProgress((int) Math.Floor(percentLength) - exporterProgress.GetProgress());
+        exporterProgress.AddProgress((int)Math.Floor(percentLength) - exporterProgress.GetProgress());
     }
 
     /// <summary>

@@ -7,12 +7,22 @@ public class RigidNode : RigidNode_Base
     public delegate void DeferredCalculation(RigidNode node);
 
     public CustomRigidGroup group;
-    private Dictionary<string, DeferredCalculation> deferredCalculations = new Dictionary<string, DeferredCalculation>();
 
     public RigidNode()
-        : this(null)
     {
+        group = null;
     }
+
+    //public RigidNode(OGLViewer.OGL_RigidNode oglNode)
+    //{
+    //    modelFullID = oglNode.modelFullID;
+    //    modelFileName = oglNode.modelFileName;
+
+    //    foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseData.children)
+    //    {
+    //        AddChild(child.Key, new OGL_RigidNode(child.Value));
+    //    }
+    //}
 
     public RigidNode(CustomRigidGroup grp)
     {
@@ -22,34 +32,6 @@ public class RigidNode : RigidNode_Base
     public override object GetModel()
     {
         return group;
-    }
-
-    public bool RegisterDeferredCalculation(string id, DeferredCalculation calc)
-    {
-        try
-        {
-            deferredCalculations.Add(id, calc);
-            return false;
-        }
-        catch
-        {
-            deferredCalculations[id] = calc;
-            return true;
-        }
-    }
-
-    public bool UnregisterDeferredCalculation(string id)
-    {
-        return deferredCalculations.Remove(id);
-    }
-
-    public void DoDeferredCalculations()
-    {
-        foreach (DeferredCalculation calc in deferredCalculations.Values)
-        {
-            calc(this);
-        }
-        deferredCalculations.Clear();
     }
 
     public override string GetModelID()

@@ -138,7 +138,6 @@ public class Exporter
             if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)
             {
                 Console.WriteLine("Exporting " + node.modelFileName);
-                ((RigidNode)node).DoDeferredCalculations();
 
                 try
                 {
