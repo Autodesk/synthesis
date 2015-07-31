@@ -52,6 +52,7 @@ public class Init : MonoBehaviour
     /// This allows reloading the robot to be delayed until a "Loading" dialog can be drawn.
     /// </remarks>
     private volatile int reloadRobotInFrames;
+	private volatile int reloadFieldInFrames;
 
 	private FileBrowser fieldBrowser = null;
 	private bool fieldLoaded = false;
@@ -67,8 +68,9 @@ public class Init : MonoBehaviour
 		time_stop = false;
 
 		reloadRobotInFrames = -1;
+		reloadFieldInFrames = -1;
 		showStatWindow = false;
-		showHelpWindow = true;
+		showHelpWindow = false;
 		rotation = Vector3.zero;
 		tempRotation = Vector3.zero;
     }
@@ -296,35 +298,7 @@ public class Init : MonoBehaviour
 				}
 			});
         }
-
-		if (fieldLoaded) 
-		{
-			// The Menu bottom on the top left corner
-			GUI.Window (1, new Rect (0, 0, gui.GetSidebarWidth(), 25), 
-	        	(int windowID) =>
-			{
-				if (GUI.Button (new Rect (0, 0, gui.GetSidebarWidth(), 25), "Menu"))
-					gui.EscPressed ();
-
-			},
-				""
-			);
-		}
-
-		helpButtonRect = new Rect (Screen.width - 25, 0, 25, 25);
-
-		// The Help button on top right corner
-		GUI.Window (2, helpButtonRect, 
-        	(int windowID) =>
-            {
-				if (GUI.Button (new Rect (0, 0, 25, 25), helpButtonContent))
-				{	
-					showHelpWindow = !showHelpWindow;
-				}
-			},
-		""
-		);
-
+		
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
 		{
 			HideGuiSidebar();
@@ -347,20 +321,8 @@ public class Init : MonoBehaviour
 				if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\definition.bxdf"))
 				{
 					this.filePath = parent.FullName + "\\";
-					activeField = new GameObject("Field");
-					
-					FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
-					{
-						return new UnityFieldDefinition();
-					};
-
-					Debug.Log (filePath);
-					field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
-					field.CreateTransform(activeField.transform);
-					field.CreateMesh(filePath + "mesh.bxda");
-					fieldLoaded = true;
 					fieldBrowser.Active = false;
-					reloadRobotInFrames = 2;
+					reloadFieldInFrames = 2;
 				}
 				else
 				{
@@ -374,14 +336,40 @@ public class Init : MonoBehaviour
 
 		gui.guiBackgroundVisible = showHelpWindow;
 
-		fieldBrowser.Render ();
+		if (!fieldLoaded)
+			fieldBrowser.Render ();
 
-		if(fieldLoaded)
-        	gui.Render();
+		else 
+		{
+			// The Menu bottom on the top left corner
+			GUI.Window (1, new Rect (0, 0, gui.GetSidebarWidth (), 25), 
+            	(int windowID) =>
+				{
+					if (GUI.Button (new Rect (0, 0, gui.GetSidebarWidth (), 25), "Menu"))
+						gui.EscPressed();
+				},
+				""
+			);
+		
+			helpButtonRect = new Rect (Screen.width - 25, 0, 25, 25);
+			
+			// The Help button on top right corner
+			GUI.Window (2, helpButtonRect, 
+            	(int windowID) =>
+			{
+				if (GUI.Button (new Rect (0, 0, 25, 25), helpButtonContent)) {	
+					showHelpWindow = !showHelpWindow;
+				}
+			},
+				""
+			);
+
+			gui.Render ();
+		}
 
 		UserMessageManager.Render();
 
-		if (reloadRobotInFrames >= 0)
+		if (reloadRobotInFrames >= 0 || reloadFieldInFrames >= 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
             GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
@@ -540,32 +528,18 @@ public class Init : MonoBehaviour
 
 	private void TryLoadField()
 	{
-		if (activeRobot != null)
-		{
-			skeleton = null;
-			UnityEngine.Object.Destroy(activeRobot);
-		}
+		activeField = new GameObject("Field");
 		
-		if (activeField != null)
+		FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
 		{
-			UnityEngine.Object.Destroy(activeField);
-		}
+			return new UnityFieldDefinition();
+		};
 		
-		if (filePath != null)
-		{
-			activeField = new GameObject("Field");
-			
-			FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
-			{
-				return new UnityFieldDefinition();
-			};
-
-			Debug.Log(filePath);
-			field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
-			field.CreateTransform(activeField.transform);
-			field.CreateMesh(filePath + "mesh.bxda");
-		}
-		HideGuiSidebar();
+		Debug.Log (filePath);
+		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
+		field.CreateTransform(activeField.transform);
+		field.CreateMesh(filePath + "mesh.bxda");
+		fieldLoaded = true;
 	}
 
     void Start()
@@ -621,6 +595,14 @@ public class Init : MonoBehaviour
             reloadRobotInFrames = -1;
             TryLoadRobot();
         }
+
+		if(reloadFieldInFrames >= 0 && reloadFieldInFrames-- == 0)
+		{
+			TryLoadField();
+			reloadFieldInFrames = -1;
+			reloadRobotInFrames = 2;
+			showHelpWindow = true;
+		}
 
 		// Orient Robot
 		if (Input.GetKeyDown (KeyCode.R))
