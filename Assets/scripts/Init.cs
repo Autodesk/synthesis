@@ -159,16 +159,16 @@ public class Init : MonoBehaviour
 			switch((int)o)
 			{
 			case 0:
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.eulerAngles.x, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z + 90));
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.rotation.x, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z + 90));
                 break;
 			case 1:	
-				activeRobot.transform.Rotate (new Vector3(activeRobot.transform.localRotation.eulerAngles.x, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z - 90));
+				activeRobot.transform.Rotate (new Vector3(activeRobot.transform.rotation.x, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z - 90));
 				break;
 			case 2:
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.eulerAngles.x + 90, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z));
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.rotation.x + 90, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z));
 				break;
 			case 3:;
-				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.localRotation.eulerAngles.x - 90, activeRobot.transform.localRotation.eulerAngles.y,activeRobot.transform.localRotation.eulerAngles.z));
+				activeRobot.transform.Rotate(new Vector3(activeRobot.transform.rotation.x - 90, activeRobot.transform.rotation.y,activeRobot.transform.rotation.z));
 				break;
 			case 4:
 				rotation = activeRobot.transform.rotation;
@@ -389,8 +389,8 @@ public class Init : MonoBehaviour
 			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
             activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
-			activeRobot.transform.rotation = Quaternion.identity;
-            activeRobot.transform.localRotation = rotation;
+			activeRobot.transform.rotation = rotation;
+			activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
@@ -721,10 +721,10 @@ public class Init : MonoBehaviour
 				if (!time_stop)
 					time += Time.deltaTime;
 
-				//if(gui.guiVisible)
-				//	mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-				//else
-					//mainNode.rigidbody.constraints = RigidbodyConstraints.None;
+				if(gui.guiVisible)
+					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
+				else
+					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
 			}
 		}
 	}
