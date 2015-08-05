@@ -197,16 +197,29 @@ public partial class SurfaceExporter
 
         BXDAMesh.BXDASurface nextSurface = new BXDAMesh.BXDASurface();
 
+        nextSurface.hasColor = true;
         nextSurface.color = 0xFFFFFFFF;
+        nextSurface.transparency = 0.0f;
+        nextSurface.translucency = 0.0f;
+        nextSurface.specular = 0.5f;
 
-        if (assetProps.color != null)
+        if (assetProps != null)
         {
-            nextSurface.hasColor = true;
-            nextSurface.color = ((uint) assetProps.color.Red << 0) | ((uint) assetProps.color.Green << 8) | ((uint) assetProps.color.Blue << 16) | ((((uint) (assetProps.color.Opacity * 255)) & 0xFF) << 24);
+            if (assetProps.color != null)
+            {
+                nextSurface.hasColor = true;
+                nextSurface.color = ((uint)assetProps.color.Red << 0) | ((uint)assetProps.color.Green << 8) | ((uint)assetProps.color.Blue << 16) | ((((uint)(assetProps.color.Opacity * 255)) & 0xFF) << 24);
+            }
+            else
+            {
+                //nextSurface.hasColor = false;
+                nextSurface.color = 0xFFFFFFFF;
+            }
+
+            nextSurface.transparency = (float)assetProps.transparency;
+            nextSurface.translucency = (float)assetProps.translucency;
+            nextSurface.specular = (float)assetProps.specular;
         }
-        nextSurface.transparency = (float) assetProps.transparency;
-        nextSurface.translucency = (float) assetProps.translucency;
-        nextSurface.specular = (float) assetProps.specular;
 
         nextSurface.indicies = new int[tmpSurface.facetCount * 3];
 
