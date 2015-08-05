@@ -18,13 +18,16 @@ public partial class DriveChooser : Form
         base.Layout += DriveChooser_Layout;
     }
 
+    public bool Saved;
+
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
     private RigidNode_Base node;
 
-
     public void ShowDialog(SkeletalJoint_Base joint, RigidNode_Base node, Form owner)
     {
+        Saved = false;
+
         this.joint = joint;
         this.node = node;
         typeOptions = JointDriver.GetAllowedDrivers(joint);
@@ -100,8 +103,64 @@ public partial class DriveChooser : Form
             }
             #endregion
         }
+        else //Default values
+        {
+            cmbJointDriver.SelectedIndex = 0;
+            txtPortA.Value = txtPortA.Minimum;
+            txtPortB.Value = txtPortB.Minimum;
+            txtLowLimit.Value = txtLowLimit.Minimum;
+            txtHighLimit.Value = txtHighLimit.Minimum;
+
+            cmbPneumaticDiameter.SelectedIndex = (byte)PneumaticDiameter.MEDIUM;
+            cmbPneumaticPressure.SelectedIndex = (byte)PneumaticPressure.MEDIUM;
+
+            cmbWheelType.SelectedIndex = (byte)WheelType.NOT_A_WHEEL;
+            cmbFrictionLevel.SelectedIndex = (byte)FrictionLevel.MEDIUM;
+            chkBoxDriveWheel.Checked = false;
+
+            cmbStages.SelectedIndex = (byte)ElevatorType.NOT_MULTI;
+        }
         PerformLayout();
         this.ShowDialog(owner);
+    }
+
+    private bool shouldSave()
+    {
+        if (joint.cDriver == null) return true;
+
+        PneumaticDriverMeta pneumatic = joint.cDriver.GetInfo<PneumaticDriverMeta>();
+        WheelDriverMeta wheel = joint.cDriver.GetInfo<WheelDriverMeta>();
+        ElevatorDriverMeta elevator = joint.cDriver.GetInfo<ElevatorDriverMeta>();
+
+        bool shouldSave = false;
+
+        if (cmbJointDriver.SelectedIndex != typeOptions.ToList().IndexOf(joint.cDriver.GetDriveType()) + 1 ||
+            txtPortA.Value != joint.cDriver.portA ||
+            txtPortB.Value != joint.cDriver.portB ||
+            txtLowLimit.Value != (decimal) joint.cDriver.lowerLimit ||
+            txtHighLimit.Value != (decimal) joint.cDriver.upperLimit)
+            shouldSave = true;
+
+        if (pneumatic != null && 
+            (cmbPneumaticDiameter.SelectedIndex != (byte) pneumatic.widthEnum ||
+            cmbPneumaticPressure.SelectedIndex != (byte) pneumatic.pressureEnum))
+            shouldSave = true;
+
+        if (wheel != null &&
+            (cmbWheelType.SelectedIndex != (byte) wheel.type ||
+            cmbFrictionLevel.SelectedIndex != (byte) Math.Min(Math.Floor(wheel.forwardExtremeValue / 4), 2) || //ayy lmao
+            chkBoxDriveWheel.Checked != wheel.isDriveWheel))
+            shouldSave = true;
+
+        if (elevator != null &&
+            cmbStages.SelectedIndex != (byte) elevator.type)
+            shouldSave = true;
+
+        //If going from "NOT A WHEEL" to a wheel
+        if (cmbWheelType.SelectedIndex != 0 && wheel == null && joint.cDriver.GetDriveType() == JointDriverType.MOTOR)
+            shouldSave = true;
+
+        return shouldSave;
     }
 
     /// <summary>
@@ -182,6 +241,12 @@ public partial class DriveChooser : Form
     /// <param name="e"></param>
     private void btnSave_Click(object sender, EventArgs e)
     {
+        if (!shouldSave())
+        {
+            Hide();
+            return;
+        }
+
         if (cmbJointDriver.SelectedIndex <= 0)
         {
             joint.cDriver = null;
@@ -307,6 +372,8 @@ public partial class DriveChooser : Form
                 joint.cDriver.RemoveInfo<ElevatorDriverMeta>();
             }
         }
+
+        Saved = true;
         Hide();
     }
 

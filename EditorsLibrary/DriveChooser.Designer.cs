@@ -30,6 +30,8 @@ partial class DriveChooser
             this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
+            this.rbPWM = new System.Windows.Forms.RadioButton();
+            this.rbCAN = new System.Windows.Forms.RadioButton();
             this.chkBoxDriveWheel = new System.Windows.Forms.CheckBox();
             this.txtHighLimit = new System.Windows.Forms.NumericUpDown();
             this.lblLimits = new System.Windows.Forms.Label();
@@ -61,8 +63,6 @@ partial class DriveChooser
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
             this.metaElevatorStages = new System.Windows.Forms.TabPage();
             this.cmbStages = new System.Windows.Forms.ComboBox();
-            this.rbCAN = new System.Windows.Forms.RadioButton();
-            this.rbPWM = new System.Windows.Forms.RadioButton();
             this.grpChooseDriver.SuspendLayout();
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
@@ -116,6 +116,29 @@ partial class DriveChooser
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Joint Options";
+            // 
+            // rbPWM
+            // 
+            this.rbPWM.AutoSize = true;
+            this.rbPWM.Location = new System.Drawing.Point(244, 43);
+            this.rbPWM.Name = "rbPWM";
+            this.rbPWM.Size = new System.Drawing.Size(62, 21);
+            this.rbPWM.TabIndex = 7;
+            this.rbPWM.TabStop = true;
+            this.rbPWM.Text = "PWM";
+            this.rbPWM.UseVisualStyleBackColor = true;
+            // 
+            // rbCAN
+            // 
+            this.rbCAN.AutoSize = true;
+            this.rbCAN.Location = new System.Drawing.Point(244, 22);
+            this.rbCAN.Name = "rbCAN";
+            this.rbCAN.Size = new System.Drawing.Size(57, 21);
+            this.rbCAN.TabIndex = 6;
+            this.rbCAN.TabStop = true;
+            this.rbCAN.Text = "CAN";
+            this.rbCAN.UseVisualStyleBackColor = true;
+            this.rbCAN.CheckedChanged += new System.EventHandler(this.rbCAN_CheckedChanged);
             // 
             // chkBoxDriveWheel
             // 
@@ -478,29 +501,6 @@ partial class DriveChooser
             this.cmbStages.Name = "cmbStages";
             this.cmbStages.Size = new System.Drawing.Size(217, 24);
             this.cmbStages.TabIndex = 0;
-            // 
-            // rbCAN
-            // 
-            this.rbCAN.AutoSize = true;
-            this.rbCAN.Location = new System.Drawing.Point(244, 22);
-            this.rbCAN.Name = "rbCAN";
-            this.rbCAN.Size = new System.Drawing.Size(57, 21);
-            this.rbCAN.TabIndex = 6;
-            this.rbCAN.TabStop = true;
-            this.rbCAN.Text = "CAN";
-            this.rbCAN.UseVisualStyleBackColor = true;
-            this.rbCAN.CheckedChanged += new System.EventHandler(this.rbCAN_CheckedChanged);
-            // 
-            // rbPWM
-            // 
-            this.rbPWM.AutoSize = true;
-            this.rbPWM.Location = new System.Drawing.Point(244, 43);
-            this.rbPWM.Name = "rbPWM";
-            this.rbPWM.Size = new System.Drawing.Size(62, 21);
-            this.rbPWM.TabIndex = 7;
-            this.rbPWM.TabStop = true;
-            this.rbPWM.Text = "PWM";
-            this.rbPWM.UseVisualStyleBackColor = true;
             // 
             // DriveChooser
             // 

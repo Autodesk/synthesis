@@ -149,9 +149,17 @@ public partial class ExporterGUI : Form
 
             if (node == null)
                 return;
-            if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null && node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null)
+            if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null && 
+                node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
+                node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0)
             {
+                PleaseWaitForm waitForm = new PleaseWaitForm();
+                waitForm.Show(this);
+
                 WheelAnalyzer.StartCalculations(node);
+                waitForm.finished = true;
+
+                waitForm.Close();
             }
         };
     }
