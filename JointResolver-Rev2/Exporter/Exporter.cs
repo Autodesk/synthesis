@@ -50,7 +50,6 @@ public class Exporter
     public static void CenterAllJoints(ComponentOccurrence component)
     {
         Console.Write("Centering: " + component.Name);
-
         foreach (AssemblyJoint joint in component.Joints)
         {
             //Takes the average of the linear or rotational limits and sets the joints position to it.
@@ -76,10 +75,16 @@ public class Exporter
             }
         }
 
-        //Contiues down to subassemblies.
-        foreach (ComponentOccurrence subComponent in component.SubOccurrences)
+        try
         {
-            CenterAllJoints(subComponent);
+            //Contiues down to subassemblies.
+            foreach (ComponentOccurrence subComponent in component.SubOccurrences)
+            {
+                 CenterAllJoints(subComponent);
+            }
+        }
+        catch
+        {
         }
     }
 
