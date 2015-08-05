@@ -42,8 +42,7 @@ public class Init : MonoBehaviour
 	private float oldSpeed;
 	private bool showStatWindow;
 	private bool showHelpWindow;
-	private Vector3 rotation;
-	private Vector3 tempRotation;
+	private Quaternion rotation;
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -71,8 +70,7 @@ public class Init : MonoBehaviour
 		reloadFieldInFrames = -1;
 		showStatWindow = false;
 		showHelpWindow = false;
-		rotation = Vector3.zero;
-		tempRotation = Vector3.zero;
+		rotation = Quaternion.identity;
     }
 
 	//displays stats like speed and acceleration
@@ -143,18 +141,18 @@ public class Init : MonoBehaviour
 		titles.Add ("Right");
 		titles.Add ("Forward");
 		titles.Add ("Back");
-		//titles.Add ("Save Orientation");
+		titles.Add ("Save Orientation");
 		titles.Add ("Close");
-	//	titles.Add ("Default");
+		titles.Add ("Default");
 		
 		List<Rect> rects = new List<Rect> ();
 		rects.Add (new Rect(50, 150, 75, 30));
 		rects.Add (new Rect(175, 150, 75, 30));
 		rects.Add (new Rect(112, 115, 75, 30));
 		rects.Add (new Rect(112, 185, 75, 30));
-		//rects.Add (new Rect (95, 55, 110, 30));
+		rects.Add (new Rect (95, 55, 110, 30));
 		rects.Add (new Rect (230, 20, 50, 30));
-		//rects.Add (new Rect (20, 20, 70, 30));
+		rects.Add (new Rect (20, 20, 70, 30));
 
 		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
@@ -163,36 +161,27 @@ public class Init : MonoBehaviour
 			switch((int)o)
 			{
 			case 0:
-				activeRobot.transform.Translate(new Vector3(0, 1, 0));
-				activeRobot.transform.Rotate(new Vector3(0, 0, 90));
-				tempRotation += new Vector3(0, 0, 90);
+				mainNode.transform.Rotate(new Vector3(0, 0, 90));
                 break;
 			case 1:	
-				activeRobot.transform.Translate(new Vector3(0, 1, 0));
-				activeRobot.transform.Rotate (new Vector3(0, 0, -90));
-				tempRotation += new Vector3(0, 0, -90);
+				mainNode.transform.Rotate (new Vector3(0, 0, -90));
 				break;
 			case 2:
-				activeRobot.transform.Translate(new Vector3(0, 1, 0));
-				activeRobot.transform.Rotate(new Vector3( 90, 0, 0));
-				tempRotation += new Vector3(90, 0, 0);
+				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
 				break;
 			case 3:;
-				activeRobot.transform.Translate(new Vector3(0, 1, 0));
-				activeRobot.transform.Rotate(new Vector3( -90, 0, 0));
-				tempRotation += new Vector3(-90, 0, 0);
+				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
 				break;
-			/*case 4:
-				rotation = tempRotation;
-				Debug.Log(rotation);
-				break;*/
 			case 4:
+				rotation = mainNode.transform.rotation;
+				Debug.Log(rotation);
+				break;
+			case 5:
 				oWindow.Active = false;
 				break;
-			/*case 6:
-				activeRobot.transform.rotation = Quaternion.identity;
-				tempRotation = Vector3.zero;
-				break;*/
+			case 6:
+				mainNode.transform.rotation = Quaternion.identity;
+				break;
 
 			}			
 		});
@@ -217,7 +206,7 @@ public class Init : MonoBehaviour
 		if(showStatWindow)
 			GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
 
-		// Draws stats window on to GUI
+		// Draws help window on to GUI
 		if (showHelpWindow)
 		{
 			int windowWidth = 900;
@@ -341,7 +330,7 @@ public class Init : MonoBehaviour
 
 		else 
 		{
-			// The Menu bottom on the top left corner
+			// The Menu button on the top left corner
 			GUI.Window (1, new Rect (0, 0, gui.GetSidebarWidth (), 25), 
             	(int windowID) =>
 				{
@@ -387,7 +376,7 @@ public class Init : MonoBehaviour
             var unityWheelData = new List<GameObject>();
 			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
-            activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
+			activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
 			activeRobot.transform.rotation = Quaternion.identity;
 			activeRobot.transform.localRotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
@@ -407,7 +396,6 @@ public class Init : MonoBehaviour
 					unityWheels.Add (uNode);
                 }
             }
-
 			bool isMecanum = false;
 
             if (unityWheelData.Count > 0)
@@ -461,7 +449,11 @@ public class Init : MonoBehaviour
 				}
             }
 			//Resets robot to user saved orientation
-			activeRobot.transform.Rotate(rotation);     
+			mainNode.transform.rotation = rotation;
+			//makes sure robot spawns in the correct place
+			mainNode.transform.position = new Vector3(0f, 0f, 0f);
+			mainNode.transform.localPosition = new Vector3(0f, 0f, 0f);
+
         }
 
 		foreach (GameObject o in totes)
@@ -483,7 +475,7 @@ public class Init : MonoBehaviour
         {
 			//Debug.Log (filePath);
             List<Collider> meshColliders = new List<Collider>();
-            activeRobot = new GameObject("Robot");
+            activeRobot = new GameObject("Robot");																																																																																																																																																																																																																																																																	
             activeRobot.transform.parent = transform;
 
             List<RigidNode_Base> names = new List<RigidNode_Base>();
@@ -491,7 +483,7 @@ public class Init : MonoBehaviour
             {
                 return new UnityRigidNode();
             };
-
+																																																																																																																																																																																																																																																																																																																					
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
 			//Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
@@ -511,11 +503,12 @@ public class Init : MonoBehaviour
             {   // Add some mass to the base object
                 UnityRigidNode uNode = (UnityRigidNode) skeleton;
                 uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
-                Vector3 vec = uNode.unityObject.rigidbody.centerOfMass;
-                vec.y *= 0.9f;
-                uNode.unityObject.rigidbody.centerOfMass = vec;
             }
 
+			//finds main node of robot to use its rigidbody
+			mainNode = GameObject.Find ("node_0.bxda");
+
+			//Debug.Log ("HELLO AMIREKA: " + mainNode);
             auxFunctions.IgnoreCollisionDetection(meshColliders);
             resetRobot();
         }
@@ -589,6 +582,11 @@ public class Init : MonoBehaviour
 
     void Update()
     {
+		if (mainNode == null) {
+			mainNode = GameObject.Find ("node_0.bxda");
+			resetRobot();
+		}
+
 		//Debug.Log(filePath);
         if (reloadRobotInFrames >= 0 && reloadRobotInFrames-- == 0)
         {
@@ -705,8 +703,6 @@ public class Init : MonoBehaviour
 			udp.WritePacket (sensorPacket);
 			#endregion
 
-			//finds main node of robot to use its rigidbody
-			mainNode = GameObject.Find ("node_0.bxda");
 			//calculates stats of robot
 			if (mainNode != null) {
 				speed = (float)Math.Abs (mainNode.rigidbody.velocity.magnitude);
@@ -721,6 +717,7 @@ public class Init : MonoBehaviour
 					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 				else
 					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
+
 			}
 		}
 	}
