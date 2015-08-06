@@ -32,10 +32,12 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.logPage = new System.Windows.Forms.TabPage();
             this.logText = new System.Windows.Forms.RichTextBox();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.label1 = new System.Windows.Forms.Label();
+            this.progressBarCurrent = new System.Windows.Forms.ProgressBar();
+            this.labelProgress = new System.Windows.Forms.Label();
             this.buttonStart = new System.Windows.Forms.Button();
             this.buttonSaveLog = new System.Windows.Forms.Button();
+            this.progressBarOverall = new System.Windows.Forms.ProgressBar();
+            this.labelOverall = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.logPage.SuspendLayout();
             this.SuspendLayout();
@@ -76,22 +78,22 @@
             this.logText.TabIndex = 0;
             this.logText.Text = "";
             // 
-            // progressBar1
+            // progressBarCurrent
             // 
-            this.progressBar1.Location = new System.Drawing.Point(4, 495);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(774, 48);
-            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBar1.TabIndex = 1;
+            this.progressBarCurrent.Location = new System.Drawing.Point(4, 495);
+            this.progressBarCurrent.Name = "progressBarCurrent";
+            this.progressBarCurrent.Size = new System.Drawing.Size(774, 24);
+            this.progressBarCurrent.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBarCurrent.TabIndex = 1;
             // 
-            // label1
+            // labelProgress
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 465);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 17);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Progress";
+            this.labelProgress.AutoSize = true;
+            this.labelProgress.Location = new System.Drawing.Point(1, 466);
+            this.labelProgress.Name = "labelProgress";
+            this.labelProgress.Size = new System.Drawing.Size(65, 17);
+            this.labelProgress.TabIndex = 2;
+            this.labelProgress.Text = "Progress";
             // 
             // buttonStart
             // 
@@ -111,15 +113,34 @@
             this.buttonSaveLog.Text = "Save log";
             this.buttonSaveLog.UseVisualStyleBackColor = true;
             // 
+            // progressBarOverall
+            // 
+            this.progressBarOverall.Location = new System.Drawing.Point(4, 525);
+            this.progressBarOverall.Name = "progressBarOverall";
+            this.progressBarOverall.Size = new System.Drawing.Size(774, 24);
+            this.progressBarOverall.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.progressBarOverall.TabIndex = 5;
+            // 
+            // labelOverall
+            // 
+            this.labelOverall.AutoSize = true;
+            this.labelOverall.Location = new System.Drawing.Point(242, 466);
+            this.labelOverall.Name = "labelOverall";
+            this.labelOverall.Size = new System.Drawing.Size(86, 17);
+            this.labelOverall.TabIndex = 6;
+            this.labelOverall.Text = "Current step";
+            // 
             // ExporterProgressForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 555);
+            this.Controls.Add(this.labelOverall);
+            this.Controls.Add(this.progressBarOverall);
             this.Controls.Add(this.buttonSaveLog);
             this.Controls.Add(this.buttonStart);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.labelProgress);
+            this.Controls.Add(this.progressBarCurrent);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -139,11 +160,13 @@
         #endregion
 
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ProgressBar progressBarCurrent;
+        private System.Windows.Forms.Label labelProgress;
         private System.Windows.Forms.TabPage logPage;
         private System.Windows.Forms.RichTextBox logText;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Button buttonSaveLog;
+        private System.Windows.Forms.ProgressBar progressBarOverall;
+        private System.Windows.Forms.Label labelOverall;
     }
 }

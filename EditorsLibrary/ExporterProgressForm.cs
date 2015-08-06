@@ -35,35 +35,6 @@ namespace EditorsLibrary
         private TextboxWriter newConsole;
 
         /// <summary>
-        /// The delegate method for resetting the progress bar
-        /// </summary>
-        private delegate void resetProgressDelegate();
-
-        /// <summary>
-        /// The delegate for adding to the progress bar
-        /// </summary>
-        /// <param name="value">The amount to add in percentage points</param>
-        private delegate void addProgressDelegate(int value);
-
-        /// <summary>
-        /// The delegate for getting the value of the progress bar
-        /// </summary>
-        /// <returns></returns>
-        private delegate int getProgressDelegate();
-
-        /// <summary>
-        /// The delegate for setting the progress bar label text
-        /// </summary>
-        /// <param name="text">The text to set after "Progress:"</param>
-        private delegate void setProgressTextDelegate(string text);
-
-        /// <summary>
-        /// The delegate for calling the Finish() method
-        /// </summary>
-        /// <param name="logFile">The location to save the log file</param>
-        private delegate void finishDelegate(string logFile);
-
-        /// <summary>
         /// Create a new progress form
         /// </summary>
         /// <param name="startEvent">The event to communicate the exporter starting to the <see cref="ExporterGUI"/></param>
@@ -81,7 +52,10 @@ namespace EditorsLibrary
             logText.ForeColor = textColor;
             logText.BackColor = backgroundColor;
 
-            label1.Text = "";
+            labelProgress.Text = "";
+            labelOverall.Text = "";
+            progressBarOverall.Maximum = 4;
+            progressBarOverall.Value = 0;
 
             buttonSaveLog.Enabled = false;
             buttonSaveLog.Visible = false;
@@ -114,14 +88,14 @@ namespace EditorsLibrary
         /// </summary>
         public void ResetProgress()
         {
-            if (progressBar1.InvokeRequired)
+            if (InvokeRequired)
             {
-                progressBar1.Invoke(new resetProgressDelegate(ResetProgress));
+                Invoke((Action)ResetProgress);
                 return;
             }
 
-            progressBar1.Value = 0;
-            label1.Text = "";
+            progressBarCurrent.Value = 0;
+            labelProgress.Text = "";
         }
 
         /// <summary>
@@ -130,12 +104,12 @@ namespace EditorsLibrary
         /// <returns>The progress bar value</returns>
         public int GetProgress()
         {
-            if (progressBar1.InvokeRequired)
+            if (InvokeRequired)
             {
-                return (int) progressBar1.Invoke(new getProgressDelegate(GetProgress));
+                return (int) Invoke((Func<int>)GetProgress);
             }
 
-            return progressBar1.Value;
+            return progressBarCurrent.Value;
         }
 
         /// <summary>
@@ -144,14 +118,14 @@ namespace EditorsLibrary
         /// <param name="percentLength">The amount to add in percentage points</param>
         public void AddProgress(int percentLength)
         {
-            if (progressBar1.InvokeRequired)
+            if (InvokeRequired)
             {
-                progressBar1.Invoke(new addProgressDelegate(AddProgress), percentLength);
+                Invoke((Action<int>)AddProgress, percentLength);
                 return;
             }
 
-            progressBar1.Step = percentLength;
-            progressBar1.PerformStep();
+            progressBarCurrent.Step = percentLength;
+            progressBarCurrent.PerformStep();
         }
 
         /// <summary>
@@ -160,13 +134,48 @@ namespace EditorsLibrary
         /// <param name="text">The text to set</param>
         public void SetProgressText(string text)
         {
-            if (label1.InvokeRequired)
+            if (InvokeRequired)
             {
-                label1.Invoke(new setProgressTextDelegate(SetProgressText), text);
+                Invoke((Action<string>)SetProgressText, text);
                 return;
             }
 
-            label1.Text = "Progress: " + text;
+            labelProgress.Text = "Progress: " + text;
+        }
+
+        public void SetNumMeshes(int meshes)
+        {
+            if (InvokeRequired)
+            {
+                Invoke((Action<int>)SetNumMeshes, meshes);
+                return;
+            }
+
+            progressBarOverall.Maximum = meshes * 2;
+            progressBarOverall.Value = meshes;
+        }
+
+        public void AddOverallStep()
+        {
+            if (InvokeRequired)
+            {
+                Invoke((Action)AddOverallStep);
+                return;
+            }
+
+            progressBarOverall.Step = 1;
+            progressBarOverall.PerformStep();
+        }
+
+        public void SetOverallText(string text)
+        {
+            if (InvokeRequired)
+            {
+                Invoke((Action<string>)SetOverallText, text);
+                return;
+            }
+
+            labelOverall.Text = "Current step: " + text;
         }
 
         /// <summary>
@@ -177,11 +186,12 @@ namespace EditorsLibrary
         {
             if (InvokeRequired)
             {
-                Invoke(new finishDelegate(Finish), logFile);
+                Invoke((Action<string>)Finish, logFile);
                 return;
             }
 
-            label1.Text = "Finished";
+            labelProgress.Text = "Finished";
+            labelOverall.Text = "";
 
             buttonSaveLog.Enabled = (logFile != null);
             buttonSaveLog.Visible = buttonSaveLog.Enabled;
@@ -225,12 +235,6 @@ namespace EditorsLibrary
         /// </summary>
         private class TextboxWriter : StringWriter
         {
-
-            /// <summary>
-            /// The delegate for writing to the log
-            /// </summary>
-            /// <param name="value">The text to write</param>
-            private delegate void WriteDelegate(string value);
 
             /// <summary>
             /// The textbox to display the log in
@@ -282,7 +286,7 @@ namespace EditorsLibrary
             {
                 if (_box.InvokeRequired)
                 {
-                    _box.Invoke(new WriteDelegate(WriteLine), value);
+                    _box.Invoke((Action<string>)((string val) => WriteLine(val)), value);
                     return;
                 }
 

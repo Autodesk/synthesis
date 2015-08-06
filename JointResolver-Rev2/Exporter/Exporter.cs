@@ -92,12 +92,24 @@ public class Exporter
     {
         AssemblyDocument asmDoc = (AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
 
+        ExporterGUI.Instance.ExporterSetOverallText("Centering joints");
+
+        ExporterGUI.Instance.ExporterReset();
+        ExporterGUI.Instance.ExporterSetSubText("0% \t 0 / 0");
+        ExporterGUI.Instance.ExporterSetProgress(0);
         //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
-        foreach (ComponentOccurrence component in asmDoc.ComponentDefinition.Occurrences)
+        int numOccurrences = asmDoc.ComponentDefinition.Occurrences.Count;
+        for (int i = 0; i < numOccurrences; i++)
         {
-            CenterAllJoints(component);
+            CenterAllJoints(asmDoc.ComponentDefinition.Occurrences[i + 1]);
+            double totalProgress = (((double) (i + 1) / (double) numOccurrences) * 100.0);
+            ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), (i + 1), numOccurrences));
+            ExporterGUI.Instance.ExporterSetProgress(totalProgress);
         }
         Console.WriteLine();
+
+        ExporterGUI.Instance.ExporterStepOverall();
+        ExporterGUI.Instance.ExporterSetOverallText("Getting rigid info");
 
         Console.WriteLine("Get rigid info...");
         //Group components into rigid bodies.
@@ -116,6 +128,8 @@ public class Exporter
         Console.WriteLine("Built");
 
         Console.WriteLine(baseNode.ToString());
+
+        ExporterGUI.Instance.ExporterStepOverall();
 
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
@@ -137,9 +151,14 @@ public class Exporter
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
+        ExporterGUI.Instance.ExporterSetMeshes(nodes.Count);
+
         List<BXDAMesh> meshes = new List<BXDAMesh>();
         foreach (RigidNode_Base node in nodes)
         {
+            ExporterGUI.Instance.ExporterSetOverallText("Exporting " + node.modelFileName);
+            ExporterGUI.Instance.ExporterStepOverall();
+
             if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)
             {
                 Console.WriteLine("Exporting " + node.modelFileName);

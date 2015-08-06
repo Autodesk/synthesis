@@ -231,6 +231,8 @@ public partial class ExporterGUI : Form
                 finally
                 {
                     Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+                    exporterProgress.ResetProgress();
+                    exporterProgress.AddProgress(100);
                     Exporter.ReleaseInventorInstance();
                 }
             });
@@ -369,6 +371,21 @@ public partial class ExporterGUI : Form
     public void ExporterSetSubText(string text)
     {
         exporterProgress.SetProgressText(text);
+    }
+
+    public void ExporterSetMeshes(int num)
+    {
+        exporterProgress.SetNumMeshes(num);
+    }
+
+    public void ExporterStepOverall()
+    {
+        exporterProgress.AddOverallStep();
+    }
+
+    public void ExporterSetOverallText(string text)
+    {
+        exporterProgress.SetOverallText(text);
     }
 
     /// <summary>
