@@ -452,7 +452,6 @@ public class Init : MonoBehaviour
 			mainNode.transform.rotation = rotation;
 			//makes sure robot spawns in the correct place
 			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
-			//mainNode.transform.localPosition = new Vector3(0f, 0f, 0f);
 
         }
 
@@ -466,6 +465,8 @@ public class Init : MonoBehaviour
 
     private void TryLoadRobot()
     {
+		//resets rotation for new robot
+		rotation = Quaternion.identity;
         if (activeRobot != null)
         {
             skeleton = null;
