@@ -451,8 +451,8 @@ public class Init : MonoBehaviour
 			//Resets robot to user saved orientation
 			mainNode.transform.rotation = rotation;
 			//makes sure robot spawns in the correct place
-			mainNode.transform.position = new Vector3(0f, 0f, 0f);
-			mainNode.transform.localPosition = new Vector3(0f, 0f, 0f);
+			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
+			//mainNode.transform.localPosition = new Vector3(0f, 0f, 0f);
 
         }
 
