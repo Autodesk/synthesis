@@ -21,7 +21,9 @@ public class BetterWheelCollider : MonoBehaviour
     {
         rigidbody.drag = 1f;
         rigidbody.angularDrag = 1f;
-		gameObject.GetComponentInChildren<CapsuleCollider> ().radius *= 1.2f;       //used to scale up wheel colliders
+
+		//gameObject.GetComponentInChildren<CapsuleCollider> ().radius = ((GetComponentInChildren<MeshRenderer>().bounds.size.y/2f) * (GameObject.Find ("node_0.bxda").rigidbody.mass * 2.20462f)/GetComponentInChildren<MeshRenderer>().bounds.size.x);    //this is stupid and migh tsorta work but needs modification
+		gameObject.GetComponentInChildren<CapsuleCollider> ().radius = GetComponentInChildren<MeshRenderer> ().bounds.size.y / 1.8f;
     }
 
 	private Vector3 lastNormalDrag = Vector3.zero;
