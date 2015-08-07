@@ -10,7 +10,7 @@ namespace OGLViewer
     public class VBOMesh
     {
         private int[] bufferObjects = null;
-        private BXDAMesh.BXDASubMesh subMesh;
+        public BXDAMesh.BXDASubMesh subMesh;
 
         public VBOMesh(BXDAMesh.BXDASubMesh subMesh)
         {

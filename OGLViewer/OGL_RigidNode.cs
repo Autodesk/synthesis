@@ -152,6 +152,62 @@ namespace OGLViewer
             }
         }
 
+        public void GetWheelInfo(out float radius, out float width, out BXDVector3 center)
+        {
+            radius = 0;
+            width = 0;
+            center = new BXDVector3();
+
+            if (GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
+                GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
+            {
+                float[] dists = new float[3]; //[0] = x, [1] = y, [2] = z
+
+                //Let's assume that it's aligned on some axis. If it isn't, we have other problems
+                foreach (VBOMesh mesh in models)
+                {
+                    double[] verts = mesh.subMesh.verts;
+
+                    Vector3[] vertices = new Vector3[verts.Length / 3];
+
+                    for (int i = 0; i < verts.Length; i += 3)
+                    {
+                        vertices[i / 3] = new Vector3((float) verts[i], (float) verts[i + 1], (float) verts[i + 2]);
+                    }
+
+                    Vector3 sum = new Vector3();
+
+                    foreach (Vector3 vert in vertices)
+                    {
+                        sum += vert;
+                    }
+
+                    center = new BXDVector3(sum.X / vertices.Length, sum.Y / vertices.Length, sum.Z / vertices.Length);
+                }
+
+                foreach (VBOMesh mesh in models)
+                {
+                    double[] verts = mesh.subMesh.verts;
+
+                    for (int i = 0; i < verts.Length; i += 3)
+                    {
+                        dists[0] = (float) Math.Max(dists[0], Math.Abs(center.x - verts[i]));
+                        dists[1] = (float) Math.Max(dists[1], Math.Abs(center.y - verts[i + 1]));
+                        dists[2] = (float) Math.Max(dists[2], Math.Abs(center.z - verts[i + 2]));
+                    }
+                }
+
+                Array.Sort(dists);
+
+                width = dists[0];
+                radius = (dists[1] + dists[2]) / 2f;
+            }
+
+            Console.WriteLine(String.Format("Found center to be <{0} {1} {2}>", center.x, center.y, center.z));
+            Console.WriteLine(String.Format("Found radius to be {0}", radius));
+            Console.WriteLine(String.Format("Found width to be {0}", width));
+        }
+
         /// <summary>
         /// Load the data from a BXDAMesh into the node
         /// </summary>
