@@ -118,12 +118,6 @@
     <Compile Include="JointEditorPane.Designer.cs">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
     </Compile>
-    <Compile Include="PleaseWaitForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PleaseWaitForm.Designer.cs">
-      <DependentUpon>PleaseWaitForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -175,9 +169,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="JointEditorPane.resx">
       <DependentUpon>JointEditorPane.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PleaseWaitForm.resx">
-      <DependentUpon>PleaseWaitForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

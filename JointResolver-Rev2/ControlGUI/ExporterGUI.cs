@@ -151,15 +151,20 @@ public partial class ExporterGUI : Form
                 return;
             if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null && 
                 node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
-                node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0)
+                node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
+                node is OGL_RigidNode)
             {
-                PleaseWaitForm waitForm = new PleaseWaitForm();
-                waitForm.Show(this);
+                float radius, width;
+                BXDVector3 center;
 
-                WheelAnalyzer.StartCalculations(node);
-                waitForm.finished = true;
+                (node as OGL_RigidNode).GetWheelInfo(out radius, out width, out center);
 
-                waitForm.Close();
+                WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
+                wheelDriver.center = center;
+                wheelDriver.radius = radius;
+                wheelDriver.width = width;
+                node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
+               
             }
         };
     }
