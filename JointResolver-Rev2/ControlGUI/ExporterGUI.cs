@@ -235,7 +235,7 @@ public partial class ExporterGUI : Form
                 }
                 finally
                 {
-                    Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+                    if (Exporter.INVENTOR_APPLICATION != null) Exporter.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
                     exporterProgress.ResetProgress();
                     exporterProgress.AddProgress(100);
                     Exporter.ReleaseInventorInstance();
@@ -325,10 +325,11 @@ public partial class ExporterGUI : Form
         string dirPath = lastDirPath;
 
         if (dirPath == null || isSaveAs) dirPath = OpenFolderPath();
+        if (dirPath == null) return false;
 
         if (File.Exists(dirPath + "\\skeleton.bxdj"))
         {
-            if (isSaveAs && !WarnOverwrite()) return false;
+            if (dirPath != lastDirPath && !WarnOverwrite()) return false;
         }
 
         try
@@ -342,7 +343,8 @@ public partial class ExporterGUI : Form
         }
         catch (Exception e)
         {
-            MessageBox.Show(e.Message);
+            MessageBox.Show("Couldn't save robot \n" + e.Message);
+            return false;
         }
 
         MessageBox.Show("Saved!");
@@ -425,7 +427,7 @@ public partial class ExporterGUI : Form
     /// <returns>Whether the user wishes to overwrite the data</returns>
     private bool WarnOverwrite()
     {
-        DialogResult overwriteResult = MessageBox.Show("Really overwrite?", "Overwrite Warning", MessageBoxButtons.YesNo);
+        DialogResult overwriteResult = MessageBox.Show("Really overwrite existing robot?", "Overwrite Warning", MessageBoxButtons.YesNo);
 
         if (overwriteResult == DialogResult.Yes) return true;
         else return false;
