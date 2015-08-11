@@ -30,10 +30,7 @@ partial class ExporterGUI
     {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterGUI));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.bxdaEditorPane1 = new EditorsLibrary.BXDAEditorPane();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.robotViewer1 = new EditorsLibrary.RobotViewer();
-            this.jointEditorPane1 = new EditorsLibrary.JointEditorPane();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolstripFile = new System.Windows.Forms.ToolStripDropDownButton();
             this.fileNew = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +47,9 @@ partial class ExporterGUI
             this.tutorialsNotFinished = new System.Windows.Forms.ToolStripMenuItem();
             this.tutorialsSorry = new System.Windows.Forms.ToolStripMenuItem();
             this.helpAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.bxdaEditorPane1 = new EditorsLibrary.BXDAEditorPane();
+            this.robotViewer1 = new EditorsLibrary.RobotViewer();
+            this.jointEditorPane1 = new EditorsLibrary.JointEditorPane();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -78,17 +78,6 @@ partial class ExporterGUI
             this.splitContainer1.SplitterDistance = 414;
             this.splitContainer1.TabIndex = 0;
             // 
-            // bxdaEditorPane1
-            // 
-            this.bxdaEditorPane1.AutoSize = true;
-            this.bxdaEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.bxdaEditorPane1.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
-            this.bxdaEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bxdaEditorPane1.Location = new System.Drawing.Point(0, 0);
-            this.bxdaEditorPane1.Name = "bxdaEditorPane1";
-            this.bxdaEditorPane1.Size = new System.Drawing.Size(414, 723);
-            this.bxdaEditorPane1.TabIndex = 0;
-            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -110,30 +99,9 @@ partial class ExporterGUI
             this.splitContainer2.SplitterDistance = 482;
             this.splitContainer2.TabIndex = 0;
             // 
-            // robotViewer1
-            // 
-            this.robotViewer1.AutoSize = true;
-            this.robotViewer1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.robotViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.robotViewer1.Location = new System.Drawing.Point(0, 0);
-            this.robotViewer1.Name = "robotViewer1";
-            this.robotViewer1.Size = new System.Drawing.Size(764, 482);
-            this.robotViewer1.TabIndex = 0;
-            // 
-            // jointEditorPane1
-            // 
-            this.jointEditorPane1.AutoSize = true;
-            this.jointEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.jointEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jointEditorPane1.Location = new System.Drawing.Point(0, 0);
-            this.jointEditorPane1.Name = "jointEditorPane1";
-            this.jointEditorPane1.Size = new System.Drawing.Size(764, 237);
-            this.jointEditorPane1.TabIndex = 0;
-            // 
             // toolStrip1
             // 
             this.toolStrip1.AutoSize = false;
-            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolstripFile,
@@ -141,7 +109,6 @@ partial class ExporterGUI
             this.toolstripHelp});
             this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
-            this.toolStrip1.MaximumSize = new System.Drawing.Size(1182, 27);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1182, 27);
             this.toolStrip1.Stretch = true;
@@ -270,6 +237,37 @@ partial class ExporterGUI
             this.helpAbout.Size = new System.Drawing.Size(182, 24);
             this.helpAbout.Text = "About";
             // 
+            // bxdaEditorPane1
+            // 
+            this.bxdaEditorPane1.AutoSize = true;
+            this.bxdaEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.bxdaEditorPane1.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
+            this.bxdaEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bxdaEditorPane1.Location = new System.Drawing.Point(0, 0);
+            this.bxdaEditorPane1.Name = "bxdaEditorPane1";
+            this.bxdaEditorPane1.Size = new System.Drawing.Size(414, 723);
+            this.bxdaEditorPane1.TabIndex = 0;
+            // 
+            // robotViewer1
+            // 
+            this.robotViewer1.AutoSize = true;
+            this.robotViewer1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.robotViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.robotViewer1.Location = new System.Drawing.Point(0, 0);
+            this.robotViewer1.Name = "robotViewer1";
+            this.robotViewer1.Size = new System.Drawing.Size(764, 482);
+            this.robotViewer1.TabIndex = 0;
+            // 
+            // jointEditorPane1
+            // 
+            this.jointEditorPane1.AutoSize = true;
+            this.jointEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.jointEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jointEditorPane1.Location = new System.Drawing.Point(0, 0);
+            this.jointEditorPane1.Name = "jointEditorPane1";
+            this.jointEditorPane1.Size = new System.Drawing.Size(764, 237);
+            this.jointEditorPane1.TabIndex = 0;
+            // 
             // ExporterGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -278,11 +276,9 @@ partial class ExporterGUI
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(1200, 795);
             this.MinimumSize = new System.Drawing.Size(1200, 795);
             this.Name = "ExporterGUI";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "BXD Synthesis";
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();

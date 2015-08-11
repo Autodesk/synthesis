@@ -465,4 +465,16 @@ public partial class ExporterGUI : Form
         robotViewer1.LoadModel(skeletonBase, meshes);
     }
 
+    protected override void OnResize(EventArgs e)
+    {
+        SuspendLayout();
+        base.OnResize(e);
+
+        toolStrip1.Height = 27;
+        toolStrip1.Width = Width;
+        splitContainer1.Height = Height - 27;
+        splitContainer1.Width = Width;
+        ResumeLayout();
+    }
+
 }
