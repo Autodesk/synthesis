@@ -64,9 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="2014FieldBounding.cs" />
     <Compile Include="BXDSettings.cs" />
-    <Compile Include="ControlGUI\ComponentHighlighter.cs" />
     <Compile Include="ControlGUI\ExporterGUI.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -56,20 +56,6 @@ public class SkeletalJoint
         return parentGroup;
     }
 
-    public void DoHighlight()
-    {
-        ComponentHighlighter.PrepareHighlight();
-        ComponentHighlighter.ClearHighlight();
-        foreach (ComponentOccurrence child in childGroup.occurrences)
-        {
-            ComponentHighlighter.CHILD_HIGHLIGHT_SET.AddItem(child);
-        }
-        foreach (ComponentOccurrence parent in parentGroup.occurrences)
-        {
-            ComponentHighlighter.PARENT_HIGHLIGHT_SET.AddItem(parent);
-        }
-    }
-
     public static SkeletalJoint_Base Create(CustomRigidJoint rigidJoint, CustomRigidGroup parent)
     {
         if (RotationalJoint.IsRotationalJoint(rigidJoint))
