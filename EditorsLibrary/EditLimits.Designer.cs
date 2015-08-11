@@ -57,7 +57,7 @@ namespace EditorsLibrary
             this.btnOkay.Location = new System.Drawing.Point(149, 126);
             this.btnOkay.Name = "btnOkay";
             this.btnOkay.Size = new System.Drawing.Size(124, 26);
-            this.btnOkay.TabIndex = 2;
+            this.btnOkay.TabIndex = 0;
             this.btnOkay.Text = "Okay";
             this.btnOkay.UseVisualStyleBackColor = true;
             this.btnOkay.Click += new System.EventHandler(this.btnOkay_Click);

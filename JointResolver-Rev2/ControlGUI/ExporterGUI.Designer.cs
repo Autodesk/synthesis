@@ -142,7 +142,6 @@ partial class ExporterGUI
             this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.MaximumSize = new System.Drawing.Size(1182, 27);
-            this.toolStrip1.MinimumSize = new System.Drawing.Size(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(1182, 27);
             this.toolStrip1.Stretch = true;
@@ -168,37 +167,44 @@ partial class ExporterGUI
             // fileNew
             // 
             this.fileNew.Name = "fileNew";
-            this.fileNew.Size = new System.Drawing.Size(205, 24);
+            this.fileNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.fileNew.Size = new System.Drawing.Size(254, 24);
             this.fileNew.Text = "New";
             // 
             // fileOpen
             // 
             this.fileOpen.Name = "fileOpen";
-            this.fileOpen.Size = new System.Drawing.Size(205, 24);
+            this.fileOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.fileOpen.Size = new System.Drawing.Size(254, 24);
             this.fileOpen.Text = "Open";
             // 
             // fileLoad
             // 
             this.fileLoad.Name = "fileLoad";
-            this.fileLoad.Size = new System.Drawing.Size(205, 24);
+            this.fileLoad.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.fileLoad.Size = new System.Drawing.Size(254, 24);
             this.fileLoad.Text = "Load from Inventor";
             // 
             // fileSave
             // 
             this.fileSave.Name = "fileSave";
-            this.fileSave.Size = new System.Drawing.Size(205, 24);
+            this.fileSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.fileSave.Size = new System.Drawing.Size(254, 24);
             this.fileSave.Text = "Save";
             // 
             // fileSaveAs
             // 
             this.fileSaveAs.Name = "fileSaveAs";
-            this.fileSaveAs.Size = new System.Drawing.Size(205, 24);
+            this.fileSaveAs.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.fileSaveAs.Size = new System.Drawing.Size(254, 24);
             this.fileSaveAs.Text = "Save As";
             // 
             // fileExit
             // 
             this.fileExit.Name = "fileExit";
-            this.fileExit.Size = new System.Drawing.Size(205, 24);
+            this.fileExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.fileExit.Size = new System.Drawing.Size(254, 24);
             this.fileExit.Text = "Exit";
             // 
             // toolstripSettings

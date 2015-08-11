@@ -100,7 +100,7 @@
             this.buttonStart.Location = new System.Drawing.Point(649, 457);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(126, 34);
-            this.buttonStart.TabIndex = 3;
+            this.buttonStart.TabIndex = 0;
             this.buttonStart.Text = "Start exporter";
             this.buttonStart.UseVisualStyleBackColor = true;
             // 

@@ -198,6 +198,7 @@ namespace EditorsLibrary
 
             buttonStart.Text = "Close";
             buttonStart.Enabled = true;
+            buttonStart.TabIndex = 0;
 
             buttonSaveLog.Click += delegate(object sender, EventArgs e)
             {

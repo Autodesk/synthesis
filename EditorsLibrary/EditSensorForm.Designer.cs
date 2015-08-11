@@ -96,7 +96,7 @@
             this.saveButton.Location = new System.Drawing.Point(77, 195);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(104, 34);
-            this.saveButton.TabIndex = 5;
+            this.saveButton.TabIndex = 0;
             this.saveButton.Text = "Save Sensor";
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
@@ -142,7 +142,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(294, 260);
+            this.ClientSize = new System.Drawing.Size(282, 246);
             this.Controls.Add(this.lblEquationParsed);
             this.Controls.Add(this.coefficentTextBox);
             this.Controls.Add(this.secondaryBox);

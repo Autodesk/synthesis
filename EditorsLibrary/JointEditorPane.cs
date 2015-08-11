@@ -59,6 +59,12 @@ namespace EditorsLibrary
                         limitEditor.ShowDialog(ParentForm);
                     }
                 });
+
+            lstJoints.Activation = ItemActivation.Standard;
+            lstJoints.ItemActivate += (object sender, EventArgs e) =>
+                {
+                    editDriver_Internal((RigidNode_Base)lstJoints.SelectedItems[0].Tag);
+                };
         }
 
         /// <summary>
