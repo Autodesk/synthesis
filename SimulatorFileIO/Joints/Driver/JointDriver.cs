@@ -242,19 +242,4 @@ public class JointDriver : RWObject, IComparable<JointDriver>
         else return 1;
     }
 
-    private bool CompareMetaInfo(JointDriver driver)
-    {
-        if (metaInfo.Count != driver.metaInfo.Count) return false;
-
-        foreach (KeyValuePair<Type, JointDriverMeta> pair in metaInfo)
-        {
-            if (!driver.metaInfo.ContainsKey(pair.Key)) return false;
-
-            JointDriverMeta meta = driver.GetInfo(pair.Key);
-            if (meta.CompareTo(pair.Value) != 0) return false;
-        }
-
-        return true;
-    }
-
 }
