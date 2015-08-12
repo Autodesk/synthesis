@@ -13,7 +13,7 @@ namespace EditorsLibrary
         /// An event triggered in the joint editor pane
         /// </summary>
         /// <param name="node">The Tag of the ListView item to be operated on</param>
-        public delegate void JointEditorEvent(RigidNode_Base node);
+        public delegate void JointEditorEvent(List<RigidNode_Base> nodes);
 
         /// <summary>
         /// A JointEditorEvent triggered upon the selection of a joint
@@ -49,8 +49,11 @@ namespace EditorsLibrary
             
             RegisterContextAction("Edit Driver", editDriver_Internal);
             RegisterContextAction("Edit Sensors", listSensors_Internal);
-            RegisterContextAction("Edit Limits", (RigidNode_Base node) =>
+            RegisterContextAction("Edit Limits", (List<RigidNode_Base> nodes) =>
                 {
+                    if (nodes.Count != 1) return;
+
+                    RigidNode_Base node = nodes[0];
                     if (node != null && node.GetSkeletalJoint() != null)
                     {
                         EditLimits limitEditor = new EditLimits(node.GetSkeletalJoint());
@@ -63,7 +66,8 @@ namespace EditorsLibrary
             lstJoints.Activation = ItemActivation.Standard;
             lstJoints.ItemActivate += (object sender, EventArgs e) =>
                 {
-                    editDriver_Internal((RigidNode_Base)lstJoints.SelectedItems[0].Tag);
+
+                    editDriver_Internal(getSelectedNodes());
                 };
         }
 
@@ -79,9 +83,9 @@ namespace EditorsLibrary
 
             item.Click += (object sender, EventArgs e) =>
             {
-                if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
+                if (lstJoints.SelectedItems.Count > 0 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
                 {
-                    callback((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
+                    callback(getSelectedNodes());
                 }
                 else
                 {
@@ -90,6 +94,7 @@ namespace EditorsLibrary
             };
             
             jointContextMenu.Items.Add(item);
+            jointContextMenu.Opening += jointContextMenu_Opening;
         }
 
         /// <summary>
@@ -115,8 +120,11 @@ namespace EditorsLibrary
         /// The <see cref="JointEditorEvent"/> to open up a <see cref="SensorListForm"/>
         /// </summary>
         /// <param name="node">The node connected to the joint to edit the sensors on</param>
-        private void listSensors_Internal(RigidNode_Base node)
+        private void listSensors_Internal(List<RigidNode_Base> nodes)
         {
+            if (nodes == null || nodes.Count != 1) return;
+            RigidNode_Base node = nodes[0];
+
             if (node == null) return;
 
             currentlyEditing = true;
@@ -126,7 +134,7 @@ namespace EditorsLibrary
             listForm.ShowDialog(ParentForm);
             if (ModifiedJoint != null)
             {
-                ModifiedJoint(node);
+                ModifiedJoint(nodes);
             }
             this.UpdateJointList();
             currentlyEditing = false;
@@ -136,18 +144,19 @@ namespace EditorsLibrary
         /// The <see cref="JointEditorEvent"/> to open up a <see cref="DriveChooser"/> dialog
         /// </summary>
         /// <param name="node">The node connected to the joint with a driver to edit</param>
-        private void editDriver_Internal(RigidNode_Base node)
+        private void editDriver_Internal(List<RigidNode_Base> nodes)
         {
-            if (node == null) return;
+            if (nodes == null || nodes.Count == 0) return;
 
             currentlyEditing = true;
-            SkeletalJoint_Base joint = node.GetSkeletalJoint();
+
             driveChooserDialog.StartPosition = FormStartPosition.Manual;
             driveChooserDialog.Location = new System.Drawing.Point(Cursor.Position.X - 10, Cursor.Position.Y - 10);
-            driveChooserDialog.ShowDialog(joint, node, ParentForm);
+            driveChooserDialog.ShowDialog(nodes[0].GetSkeletalJoint(), nodes, ParentForm);
+
             if (ModifiedJoint != null && driveChooserDialog.Saved)
             {
-                ModifiedJoint(node);
+                ModifiedJoint(nodes);
             }
             UpdateJointList();
             currentlyEditing = false;
@@ -160,10 +169,12 @@ namespace EditorsLibrary
         /// <param name="e"></param>
         private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (lstJoints.SelectedItems.Count == 1 && lstJoints.SelectedItems[0].Tag is RigidNode_Base)
+            if (lstJoints.SelectedItems.Count > 0)
             {
                 if (SelectedJoint != null)
-                    SelectedJoint((RigidNode_Base) lstJoints.SelectedItems[0].Tag);
+                {
+                    SelectedJoint(getSelectedNodes());
+                }
             }
             else
             {
@@ -225,6 +236,41 @@ namespace EditorsLibrary
         public bool IsEditingJoint()
         {
             return currentlyEditing;
+        }
+
+        private void jointContextMenu_Opening(object sender, EventArgs e)
+        {
+            List<SkeletalJointType> types = (from item in lstJoints.SelectedItems.OfType<ListViewItem>()
+                                             select ((RigidNode_Base)item.Tag).GetSkeletalJoint().GetJointType()).ToList();
+
+            if (types.Count > 1 && types[0] != types[1])
+            {
+                jointContextMenu.Items[0].Enabled = false;
+            }
+            else
+            {
+                jointContextMenu.Items[0].Enabled = true;
+            }
+
+            if (lstJoints.SelectedItems.Count > 1)
+            {
+                jointContextMenu.Items[1].Enabled = false;
+                jointContextMenu.Items[2].Enabled = false;
+            }
+            else
+            {
+                jointContextMenu.Items[1].Enabled = true;
+                jointContextMenu.Items[2].Enabled = true;
+            }
+        }
+
+        private List<RigidNode_Base> getSelectedNodes()
+        {
+            var items = from item in lstJoints.SelectedItems.OfType<ListViewItem>()
+                        where item.Tag is RigidNode_Base
+                        select item.Tag as RigidNode_Base;
+
+            return items.ToList();
         }
     }
 }

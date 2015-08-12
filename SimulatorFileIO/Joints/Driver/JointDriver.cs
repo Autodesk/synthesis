@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 /// <summary>
 /// Generic class able to represent all types of joint drivers.
 /// </summary>
-public class JointDriver : RWObject
+public class JointDriver : RWObject, IComparable<JointDriver>
 {
     /// <summary>
     /// The type of this joint driver.
@@ -108,6 +109,14 @@ public class JointDriver : RWObject
             return val;
         }
         return null;
+    }
+
+    public void CopyMetaInfo(JointDriver toCopy)
+    {
+        foreach (KeyValuePair<System.Type, JointDriverMeta> pair in metaInfo)
+        {
+            toCopy.metaInfo.Add(pair.Key, pair.Value);
+        }
     }
 
     /// <summary>
@@ -224,4 +233,28 @@ public class JointDriver : RWObject
             AddInfo(meta);
         }
     }
+
+    public int CompareTo(JointDriver driver)
+    {
+        if (driver == null) return 1;
+
+        if (ToString() == driver.ToString()) return 0;
+        else return 1;
+    }
+
+    private bool CompareMetaInfo(JointDriver driver)
+    {
+        if (metaInfo.Count != driver.metaInfo.Count) return false;
+
+        foreach (KeyValuePair<Type, JointDriverMeta> pair in metaInfo)
+        {
+            if (!driver.metaInfo.ContainsKey(pair.Key)) return false;
+
+            JointDriverMeta meta = driver.GetInfo(pair.Key);
+            if (meta.CompareTo(pair.Value) != 0) return false;
+        }
+
+        return true;
+    }
+
 }

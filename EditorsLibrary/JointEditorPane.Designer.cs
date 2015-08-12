@@ -35,7 +35,7 @@ namespace EditorsLibrary
             this.lstJoints.FullRowSelect = true;
             this.lstJoints.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lstJoints.Location = new System.Drawing.Point(0, 0);
-            this.lstJoints.MultiSelect = false;
+            this.lstJoints.MultiSelect = true;
             this.lstJoints.Name = "lstJoints";
             this.lstJoints.ShowGroups = false;
             this.lstJoints.Size = new System.Drawing.Size(800, 548);

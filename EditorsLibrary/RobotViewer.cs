@@ -177,18 +177,21 @@ namespace EditorsLibrary
         /// This method is subscribed to the SelectedJoint event in JointEditorPane
         /// </remarks>
         /// <param name="node">The selected node</param>
-        public void SelectJoint(RigidNode_Base node)
+        public void SelectJoints(List<RigidNode_Base> selectNodes)
         {
             foreach (RigidNode_Base ns in nodes)
             {
                 ((OGL_RigidNode)ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE; //Unselect all currently active nodes
             }
 
-            if (!settings.modelHighlight) return;
+            if (!settings.modelHighlight || selectNodes == null) return;
 
-            if (node is OGL_RigidNode)
+            foreach (RigidNode_Base node in selectNodes)
             {
-                ((OGL_RigidNode)node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
+                if (node is OGL_RigidNode)
+                {
+                    ((OGL_RigidNode)node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
+                }
             }
         }
 
@@ -361,9 +364,9 @@ namespace EditorsLibrary
             // Overlay:
             foreach (RigidNode_Base node in nodes)
             {
-                if ((((OGL_RigidNode)node).highlight & OGL_RigidNode.HighlightState.ACTIVE) == OGL_RigidNode.HighlightState.ACTIVE && settings.modelDrawAxes)
+                if ((((OGL_RigidNode)node).highlight & OGL_RigidNode.HighlightState.ACTIVE) == OGL_RigidNode.HighlightState.ACTIVE)
                 {
-                    ((OGL_RigidNode)node).renderDebug();
+                    ((OGL_RigidNode)node).renderDebug(settings.modelDrawAxes);
                 }
             }
             

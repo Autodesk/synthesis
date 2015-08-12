@@ -74,7 +74,7 @@ public partial class ExporterGUI : Form
             return new OGL_RigidNode();
         };
 
-        jointEditorPane1.SelectedJoint += robotViewer1.SelectJoint;
+        jointEditorPane1.SelectedJoint += robotViewer1.SelectJoints;
 
         fileNew.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
@@ -144,27 +144,30 @@ public partial class ExporterGUI : Form
             Exporter.ReleaseInventorInstance();
         });
 
-        jointEditorPane1.ModifiedJoint += delegate(RigidNode_Base node)
+        jointEditorPane1.ModifiedJoint += delegate(List<RigidNode_Base> nodes)
         {
 
-            if (node == null)
-                return;
-            if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null && 
-                node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
-                node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
-                node is OGL_RigidNode)
+            if (nodes == null || nodes.Count == 0) return;
+
+            foreach (RigidNode_Base node in nodes)
             {
-                float radius, width;
-                BXDVector3 center;
+                if (node.GetSkeletalJoint() != null && node.GetSkeletalJoint().cDriver != null &&
+                    node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>() != null &&
+                    node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>().radius == 0 &&
+                    node is OGL_RigidNode)
+                {
+                    float radius, width;
+                    BXDVector3 center;
 
-                (node as OGL_RigidNode).GetWheelInfo(out radius, out width, out center);
+                    (node as OGL_RigidNode).GetWheelInfo(out radius, out width, out center);
 
-                WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
-                wheelDriver.center = center;
-                wheelDriver.radius = radius;
-                wheelDriver.width = width;
-                node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
-               
+                    WheelDriverMeta wheelDriver = node.GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
+                    wheelDriver.center = center;
+                    wheelDriver.radius = radius;
+                    wheelDriver.width = width;
+                    node.GetSkeletalJoint().cDriver.AddInfo(wheelDriver);
+
+                }
             }
         };
     }

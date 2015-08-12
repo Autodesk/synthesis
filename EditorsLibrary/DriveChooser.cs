@@ -22,14 +22,28 @@ public partial class DriveChooser : Form
 
     private JointDriverType[] typeOptions;
     private SkeletalJoint_Base joint;
-    private RigidNode_Base node;
+    private List<RigidNode_Base> nodes;
 
-    public void ShowDialog(SkeletalJoint_Base joint, RigidNode_Base node, Form owner)
+    public void ShowDialog(SkeletalJoint_Base baseJoint, List<RigidNode_Base> nodes, Form owner)
     {
         Saved = false;
 
-        this.joint = joint;
-        this.node = node;
+        if (nodes.Count > 1)
+        {
+            bool same = true;
+
+            foreach (RigidNode_Base node in nodes)
+            {
+                JointDriver driver = node.GetSkeletalJoint().cDriver;
+                if (driver == null || driver.CompareTo(baseJoint.cDriver) != 0) 
+                    same = false;
+            }
+
+            if (same) joint = baseJoint;
+            else joint = SkeletalJoint_Base.JOINT_FACTORY(baseJoint.GetJointType());
+        }
+        else joint = baseJoint;
+        this.nodes = nodes;
         typeOptions = JointDriver.GetAllowedDrivers(joint);
 
         cmbJointDriver.Items.Clear();
@@ -370,6 +384,29 @@ public partial class DriveChooser : Form
             else
             {
                 joint.cDriver.RemoveInfo<ElevatorDriverMeta>();
+            }
+        }
+
+        if (nodes.Count > 1)
+        {
+            foreach (RigidNode_Base node in nodes)
+            {
+                if (joint.cDriver == null)
+                {
+                    node.GetSkeletalJoint().cDriver = null;
+                }
+                else
+                {
+                    JointDriver driver = new JointDriver(joint.cDriver.GetDriveType());
+                    driver.portA = joint.cDriver.portA;
+                    driver.portB = joint.cDriver.portB;
+                    driver.isCan = joint.cDriver.isCan;
+                    driver.lowerLimit = joint.cDriver.lowerLimit;
+                    driver.upperLimit = joint.cDriver.upperLimit;
+                    joint.cDriver.CopyMetaInfo(driver);
+
+                    node.GetSkeletalJoint().cDriver = driver;
+                }
             }
         }
 

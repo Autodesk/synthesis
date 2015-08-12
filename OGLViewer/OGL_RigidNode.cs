@@ -401,7 +401,7 @@ namespace OGLViewer
         /// <summary>
         /// Render the node's center of mass and limits of motion along the joint it is connected to (If any)
         /// </summary>
-        public void renderDebug()
+        public void renderDebug(bool drawAxes)
         {
             // Debug Settings
             GL.UseProgram(0);
@@ -426,7 +426,7 @@ namespace OGLViewer
                 }
                 GL.PopAttrib();
 
-                if (GetSkeletalJoint() != null)
+                if (GetSkeletalJoint() != null && drawAxes)
                 {
                     float crosshairLength = 100;
 
