@@ -373,6 +373,7 @@ public class Init : MonoBehaviour
     {	
         if (activeRobot != null && skeleton != null)
         {
+			unityPacket.OutputStatePacket packet = null;
             var unityWheelData = new List<GameObject>();
 			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
