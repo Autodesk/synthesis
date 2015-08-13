@@ -471,12 +471,10 @@ public partial class ExporterGUI : Form
     protected override void OnResize(EventArgs e)
     {
         SuspendLayout();
-        base.OnResize(e);
 
-        toolStrip1.Height = 27;
-        toolStrip1.Width = Width;
-        splitContainer1.Height = Height - 27;
-        splitContainer1.Width = Width;
+        base.OnResize(e);
+        splitContainer1.Height = ClientSize.Height - 27;
+
         ResumeLayout();
     }
 
