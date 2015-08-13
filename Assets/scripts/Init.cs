@@ -161,16 +161,18 @@ public class Init : MonoBehaviour
 			switch((int)o)
 			{
 			case 0:
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate(new Vector3(0, 0, 90));
                 break;
 			case 1:	
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate (new Vector3(0, 0, -90));
 				break;
 			case 2:
-				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
 				break;
 			case 3:;
-				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
 				break;
 			case 4:
 				rotation = mainNode.transform.rotation;
