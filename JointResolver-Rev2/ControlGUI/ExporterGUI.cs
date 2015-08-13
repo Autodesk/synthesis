@@ -170,6 +170,8 @@ public partial class ExporterGUI : Form
                 }
             }
         };
+
+        robotViewer1.NodeSelected += jointEditorPane1.AddSelection;
     }
 
     /// <summary>
@@ -183,6 +185,7 @@ public partial class ExporterGUI : Form
         meshes = null;
 
         ReloadPanels();
+        bxdaEditorPane1.treeView1.Nodes.Add("Test");
     }
 
     /// <summary>

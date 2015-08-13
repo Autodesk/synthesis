@@ -97,6 +97,23 @@ namespace EditorsLibrary
             jointContextMenu.Opening += jointContextMenu_Opening;
         }
 
+        public void AddSelection(RigidNode_Base node, bool clearActive)
+        {
+            if (clearActive) lstJoints.SelectedItems.Clear();
+            foreach (ListViewItem listItem in lstJoints.Items.OfType<ListViewItem>())
+            {
+                listItem.BackColor = Control.DefaultBackColor;
+            }
+            ListViewItem item = lstJoints.Items.OfType<ListViewItem>().FirstOrDefault(i => i.Tag == node);
+
+            if (item != null)
+            {
+                item.BackColor = System.Drawing.Color.LightSteelBlue;
+                item.Selected = true;
+                item.Focused = true;
+            }
+        }
+
         /// <summary>
         /// Set up the control's layout
         /// </summary>
@@ -169,8 +186,18 @@ namespace EditorsLibrary
         /// <param name="e"></param>
         private void lstJoints_SelectedIndexChanged(object sender, EventArgs e)
         {
+            foreach (ListViewItem item in lstJoints.Items.OfType<ListViewItem>())
+            {
+                item.BackColor = Control.DefaultBackColor;
+            }
+
             if (lstJoints.SelectedItems.Count > 0)
             {
+                foreach (ListViewItem item in lstJoints.SelectedItems.OfType<ListViewItem>())
+                {
+                    item.BackColor = System.Drawing.Color.LightSteelBlue;
+                }
+
                 if (SelectedJoint != null)
                 {
                     SelectedJoint(getSelectedNodes());

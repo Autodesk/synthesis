@@ -57,6 +57,6 @@
 
         #endregion
 
-        private System.Windows.Forms.TreeView treeView1;
+        public System.Windows.Forms.TreeView treeView1;
     }
 }

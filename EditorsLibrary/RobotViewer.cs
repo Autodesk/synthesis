@@ -21,6 +21,10 @@ namespace EditorsLibrary
     public partial class RobotViewer : UserControl
     {
 
+        public delegate void RobotViewerEvent(RigidNode_Base node, bool clearExisting);
+
+        public event RobotViewerEvent NodeSelected;
+
         /// <summary>
         /// Whether or not the GLControl has loaded yet
         /// </summary>
@@ -112,6 +116,8 @@ namespace EditorsLibrary
         /// </summary>
         private object selectedObject;
 
+        private List<RigidNode_Base> activeObjects;
+
         /// <summary>
         /// The bindings for the selection texture and FBO;
         /// </summary>
@@ -152,6 +158,8 @@ namespace EditorsLibrary
 
             cam.pose = Matrix4.Identity;
 
+            activeObjects = new List<RigidNode_Base>();
+
             modelLoaded = true;
         }
 
@@ -184,6 +192,8 @@ namespace EditorsLibrary
                 ((OGL_RigidNode)ns).highlight &= ~OGL_RigidNode.HighlightState.ACTIVE; //Unselect all currently active nodes
             }
 
+            activeObjects.Clear();
+
             if (!settings.modelHighlight || selectNodes == null) return;
 
             foreach (RigidNode_Base node in selectNodes)
@@ -191,6 +201,8 @@ namespace EditorsLibrary
                 if (node is OGL_RigidNode)
                 {
                     ((OGL_RigidNode)node).highlight |= OGL_RigidNode.HighlightState.ACTIVE;
+
+                    activeObjects.Add(node);
                 }
             }
         }
@@ -433,6 +445,7 @@ namespace EditorsLibrary
         private struct KeyboardState
         {
             public bool LShiftDown;
+            public bool LControlDown;
             public bool F4Down;
             public bool F3Down;
             public bool F2Down;
@@ -460,6 +473,7 @@ namespace EditorsLibrary
         private void viewer_KeyDown(object source, KeyEventArgs args)
         {
             if (args.KeyCode == Keys.ShiftKey) keyboardState.LShiftDown = true;
+            else if (args.KeyCode == Keys.ControlKey) keyboardState.LControlDown = true;
             else if (args.KeyCode == Keys.F2) keyboardState.F2Down = true;
             else if (args.KeyCode == Keys.F3) keyboardState.F3Down = true;
             else if (args.KeyCode == Keys.F4) keyboardState.F4Down = true;
@@ -473,6 +487,7 @@ namespace EditorsLibrary
         private void viewer_KeyUp(object source, KeyEventArgs args)
         {
             if (args.KeyCode == Keys.ShiftKey) keyboardState.LShiftDown = false;
+            else if (args.KeyCode == Keys.ControlKey) keyboardState.LControlDown = false;
             else if (args.KeyCode == Keys.F2) keyboardState.F2Down = false;
             else if (args.KeyCode == Keys.F3) keyboardState.F3Down = false;
             else if (args.KeyCode == Keys.F4) keyboardState.F4Down = false;
@@ -490,6 +505,15 @@ namespace EditorsLibrary
             else if (args.Button == MouseButtons.Middle) mouseState.middleButtonDown = true;
 
             mouseState.dragStart = new Vector2(args.X, args.Y);
+
+            if (args.Button == MouseButtons.Left && (selectedObject as OGL_RigidNode) != null)
+            {
+                NodeSelected(selectedObject as RigidNode_Base, !keyboardState.LControlDown);
+            }
+            else if (args.Button == MouseButtons.Left)
+            {
+                NodeSelected(null, true);
+            }
         }
 
         /// <summary>
