@@ -102,7 +102,7 @@ namespace EditorsLibrary
             if (clearActive) lstJoints.SelectedItems.Clear();
             foreach (ListViewItem listItem in lstJoints.Items.OfType<ListViewItem>())
             {
-                listItem.BackColor = Control.DefaultBackColor;
+                if (!lstJoints.SelectedItems.Contains(listItem)) listItem.BackColor = Control.DefaultBackColor;
             }
             ListViewItem item = lstJoints.Items.OfType<ListViewItem>().FirstOrDefault(i => i.Tag == node);
 

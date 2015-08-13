@@ -510,7 +510,7 @@ namespace EditorsLibrary
             {
                 NodeSelected(selectedObject as RigidNode_Base, !keyboardState.LControlDown);
             }
-            else if (args.Button == MouseButtons.Left)
+            else if (args.Button == MouseButtons.Left && !keyboardState.LControlDown)
             {
                 NodeSelected(null, true);
             }
