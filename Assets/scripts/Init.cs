@@ -448,11 +448,11 @@ public class Init : MonoBehaviour
 					}
 				}
             }
-			//Resets robot to user saved orientation
-			mainNode.transform.rotation = rotation;
 			//makes sure robot spawns in the correct place
 			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
-
+			//Resets robot to user saved orientation
+			mainNode.transform.rotation = rotation;
+			mainNode.rigidbody.inertiaTensorRotation = Quaternion.identity;
         }
 
 		foreach (GameObject o in totes)
