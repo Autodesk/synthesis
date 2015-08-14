@@ -43,6 +43,7 @@ public class Init : MonoBehaviour
 	private bool showStatWindow;
 	private bool showHelpWindow;
 	private Quaternion rotation;
+	private bool oriented;
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -71,6 +72,7 @@ public class Init : MonoBehaviour
 		showStatWindow = false;
 		showHelpWindow = false;
 		rotation = Quaternion.identity;
+		oriented = false;
     }
 
 	//displays stats like speed and acceleration
@@ -163,16 +165,22 @@ public class Init : MonoBehaviour
 			case 0:
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate(new Vector3(0, 0, 90));
+				oriented = true;
                 break;
 			case 1:	
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate (new Vector3(0, 0, -90));
+				oriented = true;
 				break;
 			case 2:
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
+				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
+				oriented = true;
 				break;
 			case 3:;
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
+				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
+				oriented = true;
 				break;
 			case 4:
 				rotation = mainNode.transform.rotation;
@@ -451,10 +459,13 @@ public class Init : MonoBehaviour
 					}
 				}
             }
+			if(oriented)
+			{
 			//Resets robot to user saved orientation
 			mainNode.transform.rotation = rotation;
 			//makes sure robot spawns in the correct place
 			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
+			}
 
         }
 
