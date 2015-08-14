@@ -74,8 +74,6 @@ public partial class ExporterGUI : Form
             return new OGL_RigidNode();
         };
 
-        jointEditorPane1.SelectedJoint += robotViewer1.SelectJoints;
-
         fileNew.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
         {
             SetNew();
@@ -171,7 +169,28 @@ public partial class ExporterGUI : Form
             }
         };
 
+
+        jointEditorPane1.SelectedJoint += robotViewer1.SelectJoints;
+        jointEditorPane1.SelectedJoint += bxdaEditorPane1.SelectJoints;
+
         robotViewer1.NodeSelected += jointEditorPane1.AddSelection;
+        robotViewer1.NodeSelected += bxdaEditorPane1.AddSelection;
+
+        bxdaEditorPane1.NodeSelected += (BXDAMesh mesh) =>
+            {
+                List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+                skeletonBase.ListAllNodes(nodes);
+
+                jointEditorPane1.AddSelection(nodes[meshes.IndexOf(mesh)], true);
+            };
+
+        bxdaEditorPane1.NodeSelected += (BXDAMesh mesh) =>
+        {
+            List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+            skeletonBase.ListAllNodes(nodes);
+
+            robotViewer1.SelectJoints(nodes.GetRange(meshes.IndexOf(mesh), 1));
+        };
     }
 
     /// <summary>

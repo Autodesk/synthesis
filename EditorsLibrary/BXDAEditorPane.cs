@@ -18,6 +18,10 @@ namespace EditorsLibrary
     public partial class BXDAEditorPane : UserControl
     {
 
+        public delegate void BXDAEditorEvent(BXDAMesh mesh);
+
+        public event BXDAEditorEvent NodeSelected;
+
         /// <summary>
         /// The root node in the tree
         /// </summary>
@@ -37,6 +41,8 @@ namespace EditorsLibrary
         public BXDAEditorPane()
         {
             InitializeComponent();
+            
+            treeView1.NodeMouseClick += treeView1_NodeMouseClick;
         }
 
         public void loadModel(List<BXDAMesh> meshes)
@@ -53,6 +59,40 @@ namespace EditorsLibrary
             }
 
             treeView1.Nodes.Add(rootNode);
+        }
+
+        public void AddSelection(RigidNode_Base node, bool clearExisting)
+        {
+            foreach (BXDAEditorNode treeNode in rootNode.Nodes)
+            {
+                treeNode.BackColor = Color.White;
+            }
+
+            if (node == null)
+            {
+                treeView1.SelectedNode = null;
+                return;
+            }
+
+            treeView1.SelectedNode = rootNode.Nodes.OfType<BXDAEditorNode>().FirstOrDefault(treeNode => 
+                                                          treeNode.data[0] is BXDAMesh && treeNode.data[0] == ((OGLViewer.OGL_RigidNode)node).baseMesh);
+        }
+
+        public void SelectJoints(List<RigidNode_Base> nodes)
+        {
+            if (nodes == null || nodes.Count == 0) AddSelection(null, true);
+            else AddSelection(nodes[0], true);
+        }
+
+        protected void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            AddSelection(null, true);
+
+            if (((BXDAEditorNode)e.Node).type != BXDAEditorNode.NodeType.MESH) return;
+
+            e.Node.BackColor = Color.LightSteelBlue;
+
+            NodeSelected(((BXDAEditorNode)e.Node).data[0] as BXDAMesh);
         }
 
         /// <summary>

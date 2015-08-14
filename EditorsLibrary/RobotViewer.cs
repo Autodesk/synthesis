@@ -513,6 +513,8 @@ namespace EditorsLibrary
             else if (args.Button == MouseButtons.Left && !keyboardState.LControlDown)
             {
                 NodeSelected(null, true);
+                activeObjects.Clear();
+                SelectJoints(activeObjects);
             }
         }
 

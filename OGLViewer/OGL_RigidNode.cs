@@ -26,6 +26,8 @@ namespace OGLViewer
         /// </summary>
         private Matrix4 myTrans = new Matrix4();
 
+        public BXDAMesh baseMesh;
+
         /// <summary>
         /// The node's visual submeshes
         /// </summary>
@@ -215,6 +217,7 @@ namespace OGLViewer
         public void loadMeshes(BXDAMesh mesh)
         {
             this.centerOfMass = mesh.physics.centerOfMass;
+            baseMesh = mesh;
 
             meshTriangleCount = 0;
             foreach (BXDAMesh.BXDASubMesh sub in mesh.meshes)
