@@ -163,22 +163,22 @@ public class Init : MonoBehaviour
 			switch((int)o)
 			{
 			case 0:
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate(new Vector3(0, 0, 90));
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);
+				mainNode.transform.Rotate(new Vector3(0,0, 90));
 				oriented = true;
                 break;
 			case 1:	
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);
 				mainNode.transform.Rotate (new Vector3(0, 0, -90));
 				oriented = true;
 				break;
 			case 2:
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);		
 				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
 				oriented = true;
 				break;
 			case 3:;
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);		
 				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
 				oriented = true;
 				break;
@@ -463,9 +463,10 @@ public class Init : MonoBehaviour
 			{
 			//Resets robot to user saved orientation
 			mainNode.transform.rotation = rotation;
+			}
 			//makes sure robot spawns in the correct place
 			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
-			}
+
         }
 
 		foreach (GameObject o in totes)
