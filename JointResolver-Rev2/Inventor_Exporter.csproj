@@ -129,9 +129,9 @@
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConvexHull\ConvexHullAPI\ConvexAPI.vcxproj">
-      <Project>{8ec08a21-9bd1-4871-93b3-645a91194424}</Project>
-      <Name>ConvexAPI</Name>
+    <ProjectReference Include="..\ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj">
+      <Project>{5664c026-f538-4745-a042-13927ce3259f}</Project>
+      <Name>ConvexLibraryWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\EditorsLibrary\EditorsLibrary.csproj">
       <Project>{87b8c386-74ff-4f9a-a3f6-20381599e464}</Project>

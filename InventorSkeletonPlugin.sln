@@ -2,9 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventor_Exporter", "JointResolver-Rev2\Inventor_Exporter.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
-	ProjectSection(ProjectDependencies) = postProject
-		{8EC08A21-9BD1-4871-93B3-645A91194424} = {8EC08A21-9BD1-4871-93B3-645A91194424}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
 EndProject
@@ -17,9 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OGLViewer", "OGLViewer\OGLV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldExporter", "FieldExporter\FieldExporter\FieldExporter.csproj", "{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexHullImpl", "ConvexHull\ConvexHullImpl\ConvexHullImpl.vcxproj", "{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexAPI", "ConvexHull\ConvexHullAPI\ConvexAPI.vcxproj", "{8EC08A21-9BD1-4871-93B3-645A91194424}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexLibraryWrapper", "ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj", "{5664C026-F538-4745-A042-13927CE3259F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,26 +79,16 @@ Global
 		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}.Release|Win32.ActiveCfg = Release|Any CPU
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Debug|Win32.Build.0 = Debug|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Any CPU.ActiveCfg = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Win32.ActiveCfg = Release|Win32
-		{D12D3CBB-FABA-4BF6-9208-5EBE6AA27C0A}.Release|Win32.Build.0 = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Debug|Win32.Build.0 = Debug|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Any CPU.ActiveCfg = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Win32.ActiveCfg = Release|Win32
-		{8EC08A21-9BD1-4871-93B3-645A91194424}.Release|Win32.Build.0 = Release|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Debug|Win32.Build.0 = Debug|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Release|Any CPU.ActiveCfg = Release|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Release|Win32.ActiveCfg = Release|Win32
+		{5664C026-F538-4745-A042-13927CE3259F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

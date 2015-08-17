@@ -6,10 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Inventor;
 using System.Collections;
 using System.Diagnostics;
+using ConvexLibraryWrapper;
 
 /// <summary>
 /// Computes and simplifies convex hulls for BXDA meshes.
@@ -104,9 +106,9 @@ public class ConvexHullCalculator
         for (int i = 0; i < trisCount * 3; i += 3)
         {
             SimplificationFace face = new SimplificationFace();
-            face.verts[0] = simplVerts[(int) inds[i]];
-            face.verts[1] = simplVerts[(int) inds[i + 1]];
-            face.verts[2] = simplVerts[(int) inds[i + 2]];
+            face.verts[0] = simplVerts[(int)inds[i]];
+            face.verts[1] = simplVerts[(int)inds[i + 1]];
+            face.verts[2] = simplVerts[(int)inds[i + 2]];
             foreach (SimplificationVertex v in face.verts)
             {
                 v.faces.Add(face);  // Make sure all verticies know their neighbors
@@ -287,7 +289,7 @@ public class ConvexHullCalculator
         simplVerts.RemoveAll((vert) => vert.faces.Count <= 0);
 
         // Rebuild arrays
-        vertCount = (uint) simplVerts.Count;
+        vertCount = (uint)simplVerts.Count;
         verts = new float[vertCount * 3];
         for (int i = 0; i < simplVerts.Count; i++)
         {
@@ -295,14 +297,14 @@ public class ConvexHullCalculator
             simplVerts[i].finalIndex = (i);  // Our indices are zero based <3
             Array.Copy(simplVerts[i].pos, 0, verts, off, 3);
         }
-        trisCount = (uint) simplFace.Count;
+        trisCount = (uint)simplFace.Count;
         inds = new uint[trisCount * 3];
         for (int i = 0; i < simplFace.Count; i++)
         {
             int off = i * 3;
-            inds[off] = (uint) simplFace[i].verts[0].finalIndex;
-            inds[off + 1] = (uint) simplFace[i].verts[1].finalIndex;
-            inds[off + 2] = (uint) simplFace[i].verts[2].finalIndex;
+            inds[off] = (uint)simplFace[i].verts[0].finalIndex;
+            inds[off + 1] = (uint)simplFace[i].verts[1].finalIndex;
+            inds[off + 2] = (uint)simplFace[i].verts[2].finalIndex;
         }
     }
 
@@ -332,7 +334,7 @@ public class ConvexHullCalculator
         collisionSurface.indicies = new int[inds.Length];
         for (uint i2 = 0; i2 < trisCount * 3; i2++)
         {
-            collisionSurface.indicies[i2] = (int) inds[i2];
+            collisionSurface.indicies[i2] = (int)inds[i2];
         }
 
         sub.surfaces = new List<BXDAMesh.BXDASurface>();
@@ -382,7 +384,7 @@ public class ConvexHullCalculator
                 if (totalChecks % onePercent == 0)
                 {
                     //Console.Write("Cleaning " + totalChecks + "/" + (copy.Length / 3) + "  " + ((int) (totalChecks * 3 / (float) copy.Length * 10000f) / 100f) + "%");
-                    double totalProgress = ((double) totalChecks / ((double) copy.Length / 3.0)) * 100.0;
+                    double totalProgress = ((double)totalChecks / ((double)copy.Length / 3.0)) * 100.0;
                     ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), totalChecks, copy.Length / 3));
                     ExporterGUI.Instance.ExporterSetProgress(totalProgress);
                 }
@@ -402,25 +404,25 @@ public class ConvexHullCalculator
                     subIndices[i / 3] = vertCount + addedVerts + 1;
                     int offset = (vertCount + addedVerts) * 3;
                     addedVerts++;
-                    copy[offset] = (float) mesh.verts[i];
-                    copy[offset + 1] = (float) mesh.verts[i + 1];
-                    copy[offset + 2] = (float) mesh.verts[i + 2];
+                    copy[offset] = (float)mesh.verts[i];
+                    copy[offset + 1] = (float)mesh.verts[i + 1];
+                    copy[offset + 2] = (float)mesh.verts[i + 2];
                 }
                 else
                 {
                     // Which one is farther from the COM
                     int offset = (subIndices[i / 3] - 1) * 3;
-                    float dx = (float) mesh.verts[i] - bMesh.physics.centerOfMass.x;
-                    float dy = (float) mesh.verts[i + 1] - bMesh.physics.centerOfMass.y;
-                    float dz = (float) mesh.verts[i + 2] - bMesh.physics.centerOfMass.z;
+                    float dx = (float)mesh.verts[i] - bMesh.physics.centerOfMass.x;
+                    float dy = (float)mesh.verts[i + 1] - bMesh.physics.centerOfMass.y;
+                    float dz = (float)mesh.verts[i + 2] - bMesh.physics.centerOfMass.z;
                     float dXC = copy[offset] - bMesh.physics.centerOfMass.x;
                     float dYC = copy[offset] - bMesh.physics.centerOfMass.y;
                     float dZC = copy[offset] - bMesh.physics.centerOfMass.z;
                     if ((dx * dx + dy * dy + dz * dz) > (dXC * dXC + dYC * dYC + dZC * dZC))
                     {
-                        copy[offset] = (float) mesh.verts[i];
-                        copy[offset + 1] = (float) mesh.verts[i + 1];
-                        copy[offset + 2] = (float) mesh.verts[i + 2];
+                        copy[offset] = (float)mesh.verts[i];
+                        copy[offset + 1] = (float)mesh.verts[i + 1];
+                        copy[offset + 2] = (float)mesh.verts[i + 2];
                     }
                 }
             }
@@ -434,9 +436,9 @@ public class ConvexHullCalculator
                         subIndices[surface.indicies[i + 1]] != subIndices[surface.indicies[i + 2]] &&
                         subIndices[surface.indicies[i + 2]] != subIndices[surface.indicies[i]])
                     {
-                        index[indexCount + i] = (uint) subIndices[surface.indicies[i]] - 1;
-                        index[indexCount + i + 1] = (uint) subIndices[surface.indicies[i + 1]] - 1;
-                        index[indexCount + i + 2] = (uint) subIndices[surface.indicies[i + 2]] - 1;
+                        index[indexCount + i] = (uint)subIndices[surface.indicies[i]] - 1;
+                        index[indexCount + i + 1] = (uint)subIndices[surface.indicies[i + 1]] - 1;
+                        index[indexCount + i + 2] = (uint)subIndices[surface.indicies[i + 2]] - 1;
                         addedInds += 3;
                     }
                 }
@@ -445,35 +447,43 @@ public class ConvexHullCalculator
             }
             vertCount += addedVerts;
         }
-        if (decompose)
-        {
-            ConvexAPI.iConvexDecomposition ic = new ConvexAPI.iConvexDecomposition();
-            ic.setMesh((uint) vertCount, copy, (uint) indexCount / 3, index);
-            ic.computeConvexDecomposition();
 
-            while (!ic.isComputeComplete())
+        IVHACD decomposer = new IVHACD();
+        ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
+        //if (!decompose) parameters.m_alpha = 1;
+
+        bool decomposeResult = false;
+
+        Thread t = new Thread(() =>
             {
-                // Wait....
-                System.Threading.Thread.Sleep(1000);
-            }
-            Console.WriteLine();
+                decomposeResult = decomposer.Compute(copy, 3, (uint)vertCount, 
+                                                     Array.ConvertAll<uint, int>(index, (uint ui) => (int) ui), 3, (uint)indexCount / 3, 
+                                                     parameters);
+            });
 
-            uint hullCount = ic.getHullCount();
-            Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
-
-            List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
-            for (uint i = 0; i < hullCount; i++)
-            {
-                ConvexAPI.ConvexHullResult result = ic.getConvexHullResult(i);
-                subs.Add(ExportMeshInternal(result.getVertices(), result.getVertexCount(), result.getIndicies(), result.getTriangleCount()));
-            }
-            return subs;
-        }
-        else
+        t.SetApartmentState(ApartmentState.STA);
+        t.Start();
+        while (!t.Join(0))
         {
-            ConvexAPI.StandaloneConvexHull sch = new ConvexAPI.StandaloneConvexHull();
-            sch.computeFor((uint) vertCount, copy);
-            return new List<BXDAMesh.BXDASubMesh>(new BXDAMesh.BXDASubMesh[] { ExportMeshInternal(sch.getVertices(), sch.getVertexCount(), sch.getIndicies(), sch.getTriangleCount()) });
+            // Wait....
+            System.Threading.Thread.Sleep(1000);
         }
+        Console.WriteLine();
+
+        uint hullCount = decomposer.GetNConvexHulls();
+        Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
+
+        List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
+        for (uint i = 0; i < hullCount; i++)
+        {
+            ConvexHull result = decomposer.GetConvexHull(i);
+            subs.Add(ExportMeshInternal(Array.ConvertAll<double, float>(result.m_points, (double ui) => (float)ui), result.m_nPoints,
+                                        Array.ConvertAll<int, uint>(result.m_triangles, (int ui) => (uint)ui), result.m_nTriangles));
+        }
+
+        decomposer.Clean();
+        decomposer.Release();
+
+        return subs;
     }
 }
