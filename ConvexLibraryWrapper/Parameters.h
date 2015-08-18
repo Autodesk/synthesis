@@ -69,7 +69,10 @@ namespace ConvexLibraryWrapper
 			toCopy->m_pca = m_pca;
 			toCopy->m_mode = m_mode;
 			toCopy->m_convexhullApproximation = m_convexhullApproximation;
-			toCopy->m_oclAcceleration = m_oclAcceleration;	
+			toCopy->m_oclAcceleration = m_oclAcceleration;
+
+			toCopy->m_callback = m_callback;
+			toCopy->m_logger = m_logger;
 		}
 	};
 }

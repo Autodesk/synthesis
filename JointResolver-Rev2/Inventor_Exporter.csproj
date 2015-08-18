@@ -152,6 +152,10 @@
       <Project>{87b8c386-74ff-4f9a-a3f6-20381599e464}</Project>
       <Name>EditorsLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MIConvexHull\MIConvexHull\MIConvexHull.csproj">
+      <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
+      <Name>MIConvexHull</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>

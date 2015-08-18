@@ -1,5 +1,10 @@
 #pragma once
-#pragma comment(lib, "VHACD_LIB.lib")
+
+#if _DEBUG
+#pragma comment(lib, "VHACD_LIB_DEBUG.lib")
+#else
+#pragma comment(lib, "VHACD_LIB_RELEASE.lib")
+#endif
 
 #include <include\VHACD.h>
 
@@ -37,6 +42,6 @@ namespace ConvexLibraryWrapper
 		~IVHACD(void);
 		
 		//The instance of the unmanaged class
-		VHACD::IVHACD *instance;
+		VHACD::IVHACD * instance;
 	};
 }

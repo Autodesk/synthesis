@@ -12,6 +12,7 @@ using Inventor;
 using System.Collections;
 using System.Diagnostics;
 using ConvexLibraryWrapper;
+using MIConvexHull;
 
 /// <summary>
 /// Computes and simplifies convex hulls for BXDA meshes.
@@ -351,6 +352,7 @@ public class ConvexHullCalculator
     /// <returns>The resulting list of convex hulls.</returns>
     public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh bMesh, bool decompose = false)
     {
+        decompose = true;
         int vertCount = 0;
         int indexCount = 0;
         foreach (BXDAMesh.BXDASubMesh mesh in bMesh.meshes)
@@ -448,42 +450,94 @@ public class ConvexHullCalculator
             vertCount += addedVerts;
         }
 
-        IVHACD decomposer = new IVHACD();
-        ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
-        //if (!decompose) parameters.m_alpha = 1;
+        if (decompose)
+        {
+            IVHACD decomposer = new IVHACD();
+            ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
 
-        bool decomposeResult = false;
+            bool decomposeResult = false;
 
-        Thread t = new Thread(() =>
+            Thread t = new Thread(() =>
+                {
+                    decomposeResult = decomposer.Compute(copy, 3, (uint)vertCount,
+                                                         Array.ConvertAll<uint, int>(index, (uint ui) => (int)ui), 3, (uint)indexCount / 3,
+                                                         parameters);
+                });
+
+            t.SetApartmentState(ApartmentState.MTA);
+            t.Start();
+            while (!t.Join(0))
             {
-                decomposeResult = decomposer.Compute(copy, 3, (uint)vertCount, 
-                                                     Array.ConvertAll<uint, int>(index, (uint ui) => (int) ui), 3, (uint)indexCount / 3, 
-                                                     parameters);
-            });
+                // Wait....
+                System.Threading.Thread.Sleep(1000);
+            }
+            Console.WriteLine();
 
-        t.SetApartmentState(ApartmentState.STA);
-        t.Start();
-        while (!t.Join(0))
-        {
-            // Wait....
-            System.Threading.Thread.Sleep(1000);
+            if (!decomposeResult)
+            {
+                //throw new Exception("Couldn't calculate convex hull!");
+            }
+
+            uint hullCount = decomposer.GetNConvexHulls();
+            Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
+
+            List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
+            for (uint i = 0; i < hullCount; i++)
+            {
+                ConvexLibraryWrapper.ConvexHull result = decomposer.GetConvexHull(i);
+                subs.Add(ExportMeshInternal(Array.ConvertAll<double, float>(result.m_points, (double ui) => (float)ui), result.m_nPoints,
+                                            Array.ConvertAll<int, uint>(result.m_triangles, (int ui) => (uint)ui), result.m_nTriangles));
+            }
+
+            decomposer.Clean();
+            decomposer.Release();
+
+            return subs;
         }
-        Console.WriteLine();
-
-        uint hullCount = decomposer.GetNConvexHulls();
-        Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
-
-        List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
-        for (uint i = 0; i < hullCount; i++)
+        else
         {
-            ConvexHull result = decomposer.GetConvexHull(i);
-            subs.Add(ExportMeshInternal(Array.ConvertAll<double, float>(result.m_points, (double ui) => (float)ui), result.m_nPoints,
-                                        Array.ConvertAll<int, uint>(result.m_triangles, (int ui) => (uint)ui), result.m_nTriangles));
+            List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
+
+            double[][] verts = new double[copy.Length / 3][];
+            for (int i = 0; i < copy.Length; i += 3)
+            {
+                verts[i / 3] = new double[] 
+                { 
+                    copy[i],
+                    copy[i + 1],
+                    copy[i + 2]
+                };
+            }
+
+            var hull = MIConvexHull.ConvexHull.Create(verts);
+            var pointList = hull.Points.ToList();
+            var faceList = hull.Faces.ToList();
+
+            float[] convexVerts = new float[hull.Points.Count() * 3];
+            uint[] convexIndices = new uint[hull.Faces.Count() * 3];
+
+            for (int i = 0; i < pointList.Count * 3; i += 3)
+            {
+                var point = pointList[i / 3];
+
+                convexVerts[i] = (float)point.Position[0];
+                convexVerts[i + 1] = (float)point.Position[1];
+                convexVerts[i + 2] = (float)point.Position[2];
+            }
+
+            for (int i = 0; i < faceList.Count * 3; i += 3)
+            {
+                var face = faceList[i / 3];
+
+                convexIndices[i] = (uint)pointList.IndexOf(face.Vertices[2]);
+                convexIndices[i + 1] = (uint)pointList.IndexOf(face.Vertices[1]);
+                convexIndices[i + 2] = (uint)pointList.IndexOf(face.Vertices[0]);
+            }
+
+            subs.Add(ExportMeshInternal(convexVerts, (uint)convexVerts.Length / 3,
+                                        convexIndices, (uint)convexIndices.Length / 3));
+
+            return subs;
         }
-
-        decomposer.Clean();
-        decomposer.Release();
-
-        return subs;
     }
 }

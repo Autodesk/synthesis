@@ -10,7 +10,10 @@ namespace ConvexLibraryWrapper
 		instance = VHACD::CreateVHACD();
 	}
 
-	IVHACD::~IVHACD(void) {}
+	IVHACD::~IVHACD(void)
+	{
+		instance->Release();
+	}
 
 	void IVHACD::Cancel(void)
 	{
@@ -34,9 +37,19 @@ namespace ConvexLibraryWrapper
 		int * meshTriangles = (int *) malloc(triangles->Length * sizeof(unsigned int));
 		System::Runtime::InteropServices::Marshal::Copy(triangles, 0, System::IntPtr((void *)meshTriangles), triangles->Length);
 
-		return instance->Compute((const float * const) meshPoints, stridePoints, countPoints, 
-			                     (const int * const) meshTriangles, strideTriangles, countTriangles, 
-			                     (const VHACD::IVHACD::Parameters &) *newParams);
+		bool result;
+		try
+		{
+		result = instance->Compute((const float * const) meshPoints, stridePoints, countPoints, 
+								   (const int * const) meshTriangles, strideTriangles, countTriangles, 
+								   (const VHACD::IVHACD::Parameters &) *newParams);
+		}
+		catch (System::Runtime::InteropServices::SEHException ^ e)
+		{
+			return false;
+		}
+
+		return result;
 	}
 
 	//bool IVHACD::Compute(double points[],
