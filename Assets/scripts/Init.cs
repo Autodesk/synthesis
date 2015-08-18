@@ -72,7 +72,6 @@ public class Init : MonoBehaviour
 		showStatWindow = false;
 		showHelpWindow = false;
 		rotation = Quaternion.identity;
-		oriented = false;
     }
 
 	//displays stats like speed and acceleration
@@ -163,22 +162,22 @@ public class Init : MonoBehaviour
 			switch((int)o)
 			{
 			case 0:
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);
-				mainNode.transform.Rotate(new Vector3(0,0, 90));
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
+				mainNode.transform.Rotate(new Vector3(0, 0, 90));
 				oriented = true;
                 break;
 			case 1:	
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate (new Vector3(0, 0, -90));
 				oriented = true;
 				break;
 			case 2:
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);		
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
 				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
 				oriented = true;
 				break;
 			case 3:;
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 20, mainNode.transform.position.z);		
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
 				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
 				oriented = true;
 				break;
@@ -728,11 +727,17 @@ public class Init : MonoBehaviour
 				if (!time_stop)
 					time += Time.deltaTime;
 
-				if(gui.guiVisible)
-					mainNode.rigidbody.constraints = RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-				else
-					mainNode.rigidbody.constraints = RigidbodyConstraints.None;
-
+				/*
+				//stops unity packets when menu is open
+				if(gui.guiVisible && udp.active)
+				{
+					udp.Stop();
+				}
+				else if(!udp.active)
+				{
+					udp.Start();
+				}
+				*/
 			}
 		}
 	}
