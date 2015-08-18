@@ -159,25 +159,22 @@ public class Init : MonoBehaviour
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 		//The directional buttons lift the robot to avoid collison with objects, rotates it, and saves the applied rotation to a vector3
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
+			mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 			switch((int)o)
 			{
 			case 0:
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate(new Vector3(0, 0, 90));
 				oriented = true;
                 break;
 			case 1:	
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate (new Vector3(0, 0, -90));
 				oriented = true;
 				break;
-			case 2:
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
+			case 2:	
 				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
 				oriented = true;
 				break;
 			case 3:;
-				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);		
 				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
 				oriented = true;
 				break;
@@ -727,17 +724,19 @@ public class Init : MonoBehaviour
 				if (!time_stop)
 					time += Time.deltaTime;
 
-				/*
-				//stops unity packets when menu is open
-				if(gui.guiVisible && udp.active)
+				if(gui.guiVisible)
 				{
-					udp.Stop();
+					
+					mainNode.rigidbody.isKinematic = true;
+					//mainNode.rigidbody.constraints = RigidbodyConstraints.FreezeAll;// | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 				}
-				else if(!udp.active)
+				else
 				{
-					udp.Start();
+					
+					mainNode.rigidbody.isKinematic = false;
+					//mainNode.rigidbody.constraints = RigidbodyConstraints.None;
 				}
-				*/
+
 			}
 		}
 	}
