@@ -178,12 +178,7 @@
   <PropertyGroup>
     <PostBuildEvent>if exist "$(TargetDir)Shaders" rd /s /q "$(TargetDir)Shaders"
 md "$(TargetDir)Shaders"
-Xcopy /E /I "$(ProjectDir)\..\OGLViewer\Shaders\*" "$(TargetDir)\Shaders"
-if exist "$(TargetDir)include" rd /s /q "$(TargetDir)include"
-md "$(TargetDir)include"
-Xcopy /E /I "$(ProjectDir)\..\ConvexLibraryWrapper\VHACD\include\*" "$(TargetDir)\include"
-if exist "$(TargetDir)VHACD_LIB.lib" del "$(TargetDir)VHACD_LIB.lib"
-Xcopy "$(ProjectDir)\..\ConvexLibraryWrapper\VHACD\VHACD_LIB.lib" "$(TargetDir)"</PostBuildEvent>
+Xcopy /E /I "$(ProjectDir)\..\OGLViewer\Shaders\*" "$(TargetDir)\Shaders"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
