@@ -375,7 +375,7 @@ public class ConvexHullCalculator
         int totalChecks = 0;
         int onePercent = Math.Max(1, (copy.Length / 3) / 100);
         Console.WriteLine("Cleaning...");
-        ExporterGUI.Instance.ExporterReset();
+        SynthesisGUI.Instance.ExporterReset();
         foreach (BXDAMesh.BXDASubMesh mesh in bMesh.meshes)
         {
             int[] subIndices = new int[mesh.verts.Length / 3];
@@ -386,9 +386,9 @@ public class ConvexHullCalculator
                 if (totalChecks % onePercent == 0)
                 {
                     //Console.Write("Cleaning " + totalChecks + "/" + (copy.Length / 3) + "  " + ((int) (totalChecks * 3 / (float) copy.Length * 10000f) / 100f) + "%");
-                    double totalProgress = ((double)totalChecks / ((double)copy.Length / 3.0)) * 100.0;
-                    ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), totalChecks, copy.Length / 3));
-                    ExporterGUI.Instance.ExporterSetProgress(totalProgress);
+                    double totalProgress = ((double) totalChecks / ((double) copy.Length / 3.0)) * 100.0;
+                    SynthesisGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), totalChecks, copy.Length / 3));
+                    SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                 }
                 //Copy all the mesh vertices over, starting at the end of the last mesh copied.
                 for (int j = 0; j < (vertCount + addedVerts) * 3; j += 3)

@@ -11,11 +11,7 @@ using System.Windows.Forms;
 
 namespace EditorsLibrary
 {
-
-    /// <summary>
-    /// The form used to edit <see cref="Exporter"/> settings
-    /// </summary>
-    public partial class ExporterSettings : Form
+    public partial class ExporterSettingsForm : Form
     {
 
         /// <summary>
@@ -23,11 +19,7 @@ namespace EditorsLibrary
         /// </summary>
         public ExporterSettingsValues values;
 
-        /// <summary>
-        /// Create a new exporter settings form
-        /// </summary>
-        /// <param name="defaultValues">The form values as previously defined and saved</param>
-        public ExporterSettings(ExporterSettingsValues defaultValues)
+        public ExporterSettingsForm(ExporterSettingsValues defaultValues)
         {
             InitializeComponent();
 

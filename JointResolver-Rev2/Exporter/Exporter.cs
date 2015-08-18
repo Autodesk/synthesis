@@ -11,42 +11,6 @@ public class Exporter
 
     private const int MAX_VERTICIES = 8192;
 
-    public static Inventor.Application INVENTOR_APPLICATION;
-
-    public static void LoadInventorInstance()
-    {
-        if (INVENTOR_APPLICATION != null) return;
-
-        try
-        {
-            INVENTOR_APPLICATION = (Inventor.Application)Marshal.GetActiveObject("Inventor.Application");
-        }
-        catch (COMException e)
-        {
-            Console.WriteLine(e);
-            throw new Exception("Could not get a running instance of Inventor");
-        }
-    }
-
-    public static void ReleaseInventorInstance()
-    {
-        if (INVENTOR_APPLICATION == null) return;
-
-        try
-        {
-            Marshal.ReleaseComObject(INVENTOR_APPLICATION);
-        }
-        catch (COMException e)
-        {
-            Console.WriteLine(e);
-            throw new Exception("Could not release Inventor (Is it already closed?)");
-        }
-        finally
-        {
-            INVENTOR_APPLICATION = null;
-        }
-    }
-
     public static void CenterAllJoints(ComponentOccurrence component)
     {
         Console.Write("Centering: " + component.Name);
@@ -88,34 +52,38 @@ public class Exporter
         }
     }
 
-    public static RigidNode_Base ExportSkeleton()
+    public static RigidNode_Base ExportSkeleton(List<ComponentOccurrence> occurrences)
     {
-        AssemblyDocument asmDoc = (AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
+        if (occurrences.Count == 0) throw new Exception("No components selected!");
 
-        ExporterGUI.Instance.ExporterSetOverallText("Centering joints");
+        SynthesisGUI.Instance.ExporterSetOverallText("Centering joints");
 
-        ExporterGUI.Instance.ExporterReset();
-        ExporterGUI.Instance.ExporterSetSubText("0% \t 0 / 0");
-        ExporterGUI.Instance.ExporterSetProgress(0);
+        SynthesisGUI.Instance.ExporterReset();
+        SynthesisGUI.Instance.ExporterSetSubText("0% \t 0 / 0");
+        SynthesisGUI.Instance.ExporterSetProgress(0);
+
+        int numOccurrences = occurrences.Count;
+        int current = 0;
+
         //Centers all the joints for each component.  Done to match the assembly's joint position with the subassembly's position.
-        int numOccurrences = asmDoc.ComponentDefinition.Occurrences.Count;
-        for (int i = 0; i < numOccurrences; i++)
+        foreach (ComponentOccurrence component in occurrences)
         {
-            CenterAllJoints(asmDoc.ComponentDefinition.Occurrences[i + 1]);
-            double totalProgress = (((double) (i + 1) / (double) numOccurrences) * 100.0);
-            ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), (i + 1), numOccurrences));
-            ExporterGUI.Instance.ExporterSetProgress(totalProgress);
+            CenterAllJoints(component);
+            double totalProgress = (((double) (current + 1) / (double) numOccurrences) * 100.0);
+            SynthesisGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), (current + 1), numOccurrences));
+            SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
+            current++;
         }
         Console.WriteLine();
 
-        ExporterGUI.Instance.ExporterStepOverall();
-        ExporterGUI.Instance.ExporterSetOverallText("Getting rigid info");
+        SynthesisGUI.Instance.ExporterStepOverall();
+        SynthesisGUI.Instance.ExporterSetOverallText("Getting rigid info");
 
         Console.WriteLine("Get rigid info...");
         //Group components into rigid bodies.
-        NameValueMap options = INVENTOR_APPLICATION.TransientObjects.CreateNameValueMap();
+        NameValueMap options = InventorManager.Instance.TransientObjects.CreateNameValueMap();
         options.Add("DoubleBearing", false);
-        RigidBodyResults rigidResults = asmDoc.ComponentDefinition.RigidBodyAnalysis(options);
+        RigidBodyResults rigidResults = InventorManager.Instance.AssemblyDocument.ComponentDefinition.RigidBodyAnalysis(options);
 
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);
@@ -129,7 +97,7 @@ public class Exporter
 
         Console.WriteLine(baseNode.ToString());
 
-        ExporterGUI.Instance.ExporterStepOverall();
+        SynthesisGUI.Instance.ExporterStepOverall();
 
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
@@ -151,13 +119,13 @@ public class Exporter
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         baseNode.ListAllNodes(nodes);
 
-        ExporterGUI.Instance.ExporterSetMeshes(nodes.Count);
+        SynthesisGUI.Instance.ExporterSetMeshes(nodes.Count);
 
         List<BXDAMesh> meshes = new List<BXDAMesh>();
         foreach (RigidNode_Base node in nodes)
         {
-            ExporterGUI.Instance.ExporterSetOverallText("Exporting " + node.modelFileName);
-            ExporterGUI.Instance.ExporterStepOverall();
+            SynthesisGUI.Instance.ExporterSetOverallText("Exporting " + node.modelFileName);
+            SynthesisGUI.Instance.ExporterStepOverall();
 
             if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)
             {
@@ -165,7 +133,7 @@ public class Exporter
 
                 try
                 {
-                    ExporterGUI.Instance.ExporterReset();
+                    SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
                     group.highRes = highRes;
                     group.colorFaces = colorFaces;
@@ -173,9 +141,9 @@ public class Exporter
                     Console.WriteLine("Exporting meshes...");
                     surfs.ExportAll(group, (long progress, long total) =>
                     {
-                        double totalProgress = (((double) progress / (double) total) * 100.0);
-                        ExporterGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), progress, total));
-                        ExporterGUI.Instance.ExporterSetProgress(totalProgress);
+                        double totalProgress = (((double)progress / (double)total) * 100.0);
+                        SynthesisGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), progress, total));
+                        SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                     });
                     Console.WriteLine();
                     BXDAMesh output = surfs.GetOutput();

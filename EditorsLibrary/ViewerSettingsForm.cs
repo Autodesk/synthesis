@@ -11,23 +11,15 @@ using System.Xml.Serialization;
 
 namespace EditorsLibrary
 {
-
-    /// <summary>
-    /// The form used to edit <see cref="RobotViewer"/> settings
-    /// </summary>
-    public partial class ViewerSettings : Form
+    public partial class ViewerSettingsForm : Form
     {
 
         /// <summary>
         /// The local copy of the setting values
         /// </summary>
         public ViewerSettingsValues values;
-        
-        /// <summary>
-        /// Create a new viewer settings form
-        /// </summary>
-        /// <param name="defaultValues">The form values as previously defined and saved</param>
-        public ViewerSettings(ViewerSettingsValues defaultValues)
+
+        public ViewerSettingsForm(ViewerSettingsValues defaultValues)
         {
             InitializeComponent();
 
