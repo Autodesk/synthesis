@@ -208,9 +208,7 @@ public partial class ExporterForm : Form
                 using (StreamWriter logFileStream = new StreamWriter(logFile))
                 {
                     logFileStream.Write(logText.Text);
-#if DEBUG
-                    Console.WriteLine("Wrote " + logFile);
-#endif
+                    MessageBox.Show("Saved!");
                 }
             }
             catch (IOException ie)

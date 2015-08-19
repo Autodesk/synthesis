@@ -36,7 +36,8 @@ public partial class NodeEditorPane : UserControl
 
     public void AddNode(RigidNode_Base node)
     {
-        if (listViewNodes.Items.Cast<ListViewItem>().FirstOrDefault(i => i.Tag == node) != null) return;
+        if (listViewNodes.Items.Cast<ListViewItem>().FirstOrDefault(i => i.Tag != null && 
+                                                                         ((RigidNode_Base)i.Tag).GetModelID() == node.GetModelID()) != null) return;
 
         ListViewItem item = new ListViewItem(new string[] { (node.GetParent() != null)?node.GetParent().modelFileName:"N/A", node.modelFileName, 
                                                              "false", "false", "false" });

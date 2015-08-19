@@ -18,13 +18,6 @@ public partial class InventorChooserPane : UserControl
         InitializeComponent();
     }
 
-    private List<ComponentOccurrence> GetComponents()
-    {
-        List<ComponentOccurrence> components = new List<ComponentOccurrence>();
-
-        return components;
-    }
-
     #region Events
     /// <summary>
     /// Allows the user to see if they have already added a collision component in select mode.
@@ -53,11 +46,11 @@ public partial class InventorChooserPane : UserControl
     private void selectEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, 
                                        Point2d ViewPosition, Inventor.View View)
     {
-        if (!buttonAdd.Enabled)
+        if (InventorChooser.Components.Count <= 1)
         {
             buttonAdd.Invoke(new Action(() =>
             {
-                buttonAdd.Enabled = true;
+                buttonAdd.Text = "Add Selection";
             }));
         }
     }
@@ -67,8 +60,11 @@ public partial class InventorChooserPane : UserControl
         if (!InventorChooser.InteractionActive)
         {
             InventorChooser.EnableInteraction();
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
 
             buttonSelect.Text = "End selection";
+            buttonAdd.Text = "Add all";
+            buttonAdd.Enabled = true;
 
             InventorManager.Instance.SelectEvents.OnPreSelect += selectEvents_OnPreSelect;
             InventorManager.Instance.SelectEvents.OnSelect += selectEvents_OnSelect;
@@ -84,23 +80,46 @@ public partial class InventorChooserPane : UserControl
 
     private void buttonAdd_Click(object sender, EventArgs e)
     {
-        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
+        if (InventorChooser.Components.Count >= 1)
+        {
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
-        buttonAdd.Enabled = false;
-        buttonSelect.Enabled = false;
-        buttonSelect.Text = "Select in Inventor";
+            buttonAdd.Enabled = false;
+            buttonSelect.Enabled = false;
+            buttonSelect.Text = "Select in Inventor";
 
-        ExporterForm.Instance.ResetProgress();
+            ExporterForm.Instance.ResetProgress();
 
-        InventorChooser.DisableInteraction();
+            InventorChooser.DisableInteraction();
 
-        RigidNode_Base skeleton = Exporter.ExportSkeleton(InventorChooser.Components);
-        ExporterForm.Instance.UpdateComponents(skeleton);
+            RigidNode_Base skeleton = Exporter.ExportSkeleton(InventorChooser.Components);
+            ExporterForm.Instance.UpdateComponents(skeleton);
 
-        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
-        buttonSelect.Enabled = true;
-        SynthesisGUI.Instance.ExporterReset();
-        SynthesisGUI.Instance.ExporterOverallReset();
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
+            buttonSelect.Enabled = true;
+            SynthesisGUI.Instance.ExporterReset();
+            SynthesisGUI.Instance.ExporterOverallReset();
+        }
+        else
+        {
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
+
+            buttonAdd.Enabled = false;
+            buttonSelect.Enabled = false;
+            buttonSelect.Text = "Select in Inventor";
+
+            ExporterForm.Instance.ResetProgress();
+
+            InventorChooser.DisableInteraction();
+
+            RigidNode_Base skeleton = Exporter.ExportSkeleton(InventorManager.Instance.ComponentOccurrences.Cast<ComponentOccurrence>().ToList());
+            ExporterForm.Instance.UpdateComponents(skeleton);
+
+            InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
+            buttonSelect.Enabled = true;
+            SynthesisGUI.Instance.ExporterReset();
+            SynthesisGUI.Instance.ExporterOverallReset();
+        }
     }
     #endregion
 
