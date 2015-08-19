@@ -28,7 +28,6 @@
     {
         this.buttonSelect = new System.Windows.Forms.Button();
         this.buttonAdd = new System.Windows.Forms.Button();
-        this.treeviewInventor = new InventorTreeView(false);
         this.SuspendLayout();
         // 
         // buttonSelect
@@ -52,18 +51,10 @@
         this.buttonAdd.UseVisualStyleBackColor = true;
         this.buttonAdd.Click += new System.EventHandler(this.buttonAdd_Click);
         // 
-        // treeviewInventor
-        // 
-        this.treeviewInventor.Location = new System.Drawing.Point(4, 4);
-        this.treeviewInventor.Name = "treeviewInventor";
-        this.treeviewInventor.Size = new System.Drawing.Size(761, 371);
-        this.treeviewInventor.TabIndex = 2;
-        // 
         // InventorChooserPane
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.Controls.Add(this.treeviewInventor);
         this.Controls.Add(this.buttonAdd);
         this.Controls.Add(this.buttonSelect);
         this.Name = "InventorChooserPane";
@@ -76,5 +67,4 @@
 
     private System.Windows.Forms.Button buttonSelect;
     private System.Windows.Forms.Button buttonAdd;
-    private InventorTreeView treeviewInventor;
 }

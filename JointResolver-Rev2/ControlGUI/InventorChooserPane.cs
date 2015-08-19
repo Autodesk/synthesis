@@ -13,39 +13,14 @@ using Inventor;
 public partial class InventorChooserPane : UserControl
 {
 
-    private BackgroundWorker SelectionAdder;
-
     public InventorChooserPane()
     {
         InitializeComponent();
-
-        SelectionAdder = new BackgroundWorker();
-        SelectionAdder.DoWork += selectionAdder_DoWork;
-        SelectionAdder.RunWorkerCompleted += selectionAdder_RunWorkerCompleted;
     }
 
     private List<ComponentOccurrence> GetComponents()
     {
         List<ComponentOccurrence> components = new List<ComponentOccurrence>();
-
-        foreach (TreeNode node in treeviewInventor.Nodes)
-        {
-            components.AddRange(GetComponents(node));
-        }
-
-        return components;
-    }
-
-    private List<ComponentOccurrence> GetComponents(TreeNode node)
-    {
-        List<ComponentOccurrence> components = new List<ComponentOccurrence>();
-
-        components.Add((ComponentOccurrence)node.Tag);
-
-        foreach (TreeNode subNode in node.Nodes)
-        {
-            components.AddRange(GetComponents(subNode));
-        }
 
         return components;
     }
@@ -65,20 +40,6 @@ public partial class InventorChooserPane : UserControl
                                              SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
     {
         DoHighlight = true;
-
-        if (PreSelectEntity is ComponentOccurrence)
-        {
-            ComponentOccurrence componentOccurrence = (ComponentOccurrence)PreSelectEntity;
-
-            if (treeviewInventor.Nodes.Find(componentOccurrence.Name, true).Length > 0)
-            {
-                treeviewInventor.Invoke(new Action(() =>
-                {
-                    treeviewInventor.SelectedNode = treeviewInventor.Nodes.Find(componentOccurrence.Name, true)[0];
-                    treeviewInventor.SelectedNode.EnsureVisible();
-                }));
-            }
-        }
     }
 
     /// <summary>
@@ -101,35 +62,12 @@ public partial class InventorChooserPane : UserControl
         }
     }
 
-    private void selectionAdder_DoWork(object sender, DoWorkEventArgs e)
-    {
-        treeviewInventor.Invoke(new Action<ObjectsEnumerator, Action<int, int>>(treeviewInventor.AddComponents),
-            InventorManager.Instance.SelectEvents.SelectedEntities, new Action<int, int>((int progress, int total) =>
-                {
-                    ExporterForm.Instance.SetProgressText((Math.Round((progress / (float)total) * 100.0f, 2)).ToString() + "%");
-                    ExporterForm.Instance.AddProgress((int)Math.Round(((progress / (float)total) - ExporterForm.Instance.GetProgress()) * 100.0f, 2));
-                }));
-    }
-
-    private void selectionAdder_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-    {
-        ExporterForm.Instance.ResetProgress();
-
-        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
-
-        InventorChooser.DisableInteraction();
-        buttonSelect.Enabled = true;
-
-        ExporterForm.Instance.UpdateComponents(InventorChooser.Components);
-    }
-
     private void buttonSelect_Click(object sender, EventArgs e)
     {
         if (!InventorChooser.InteractionActive)
         {
             InventorChooser.EnableInteraction();
 
-            treeviewInventor.HotTracking = false;
             buttonSelect.Text = "End selection";
 
             InventorManager.Instance.SelectEvents.OnPreSelect += selectEvents_OnPreSelect;
@@ -140,7 +78,6 @@ public partial class InventorChooserPane : UserControl
             InventorChooser.DisableInteraction();
 
             buttonAdd.Enabled = false;
-            treeviewInventor.HotTracking = true;
             buttonSelect.Text = "Select in Inventor";
         }
     }
@@ -150,19 +87,25 @@ public partial class InventorChooserPane : UserControl
         InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
         buttonAdd.Enabled = false;
-        treeviewInventor.HotTracking = true;
         buttonSelect.Enabled = false;
         buttonSelect.Text = "Select in Inventor";
 
         ExporterForm.Instance.ResetProgress();
 
-        SelectionAdder.RunWorkerAsync();
+        InventorChooser.DisableInteraction();
+
+        RigidNode_Base skeleton = Exporter.ExportSkeleton(InventorChooser.Components);
+        ExporterForm.Instance.UpdateComponents(skeleton);
+
+        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
+        buttonSelect.Enabled = true;
+        SynthesisGUI.Instance.ExporterReset();
+        SynthesisGUI.Instance.ExporterOverallReset();
     }
     #endregion
 
     public void Cleanup()
     {
-        if (SelectionAdder.IsBusy) SelectionAdder.CancelAsync();
         if (InventorChooser.InteractionActive) InventorChooser.DisableInteraction();
     }
 

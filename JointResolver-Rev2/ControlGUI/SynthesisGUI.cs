@@ -303,6 +303,11 @@ public partial class SynthesisGUI : Form
         exporter.ResetProgress();
     }
 
+    public void ExporterOverallReset()
+    {
+        exporter.ResetOverall();
+    }
+
     /// <summary>
     /// Set the length of the <see cref="ExporterProgressWindow"/> progress bar
     /// </summary>

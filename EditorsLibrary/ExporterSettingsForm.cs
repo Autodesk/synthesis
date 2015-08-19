@@ -52,9 +52,6 @@ namespace EditorsLibrary
 
             checkboxSoftBodies.Checked = values.skeletonExportSoft;
 
-            trackbarMeshResolution.Value = values.meshResolutionValue;
-            checkboxFancyColors.Checked = values.meshFancyColors;
-
             checkboxSaveLog_CheckedChanged(null, null); //To make sure things are enabled/disabled correctly
         }
         
@@ -69,9 +66,6 @@ namespace EditorsLibrary
             values.generalBackgroundColor = (uint)buttonChooseBackground.BackColor.ToArgb();
 
             values.skeletonExportSoft = checkboxSoftBodies.Checked;
-
-            values.meshResolutionValue = trackbarMeshResolution.Value;
-            values.meshFancyColors = checkboxFancyColors.Checked;
         }
 
         /// <summary>

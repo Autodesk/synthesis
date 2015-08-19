@@ -80,6 +80,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BXDSettings.cs" />
+    <Compile Include="ControlGUI\NodeEditorPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ControlGUI\NodeEditorPane.Designer.cs">
+      <DependentUpon>NodeEditorPane.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlGUI\SynthesisGUI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,18 +105,10 @@
     <Compile Include="ControlGUI\InventorChooserPane.Designer.cs">
       <DependentUpon>InventorChooserPane.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\InventorTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\JointGroupPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ControlGUI\JointGroupPane.Designer.cs">
-      <DependentUpon>JointGroupPane.cs</DependentUpon>
-    </Compile>
     <Compile Include="Exporter\AssetProperties.cs" />
     <Compile Include="Exporter\ConvexHullCalculator.cs" />
     <Compile Include="Exporter\Exporter.cs" />
+    <Compile Include="Exporter\ExporterHint.cs" />
     <Compile Include="Exporter\InventorManager.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
@@ -155,6 +153,9 @@
     <Compile Include="RigidAnalyzer\RigidNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ControlGUI\NodeEditorPane.resx">
+      <DependentUpon>NodeEditorPane.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\SynthesisGUI.resx">
       <DependentUpon>SynthesisGUI.cs</DependentUpon>
     </EmbeddedResource>
@@ -163,9 +164,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ControlGUI\InventorChooserPane.resx">
       <DependentUpon>InventorChooserPane.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ControlGUI\JointGroupPane.resx">
-      <DependentUpon>JointGroupPane.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SensorListForm.resx">
       <DependentUpon>SensorListForm.cs</DependentUpon>
@@ -183,10 +181,6 @@
     <ProjectReference Include="..\EditorsLibrary\EditorsLibrary.csproj">
       <Project>{87b8c386-74ff-4f9a-a3f6-20381599e464}</Project>
       <Name>EditorsLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MIConvexHull\MIConvexHull\MIConvexHull.csproj">
-      <Project>{2337776d-7d0c-40aa-a439-c26c3ce24fab}</Project>
-      <Name>MIConvexHull</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>

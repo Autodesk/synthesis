@@ -31,12 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterSettingsForm));
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
-            this.trackbarMeshResolution = new System.Windows.Forms.TrackBar();
-            this.labelMeshResolution = new System.Windows.Forms.Label();
-            this.flavorText1 = new System.Windows.Forms.Label();
-            this.flavorText2 = new System.Windows.Forms.Label();
-            this.checkboxFancyColors = new System.Windows.Forms.CheckBox();
-            this.groupboxMesh = new System.Windows.Forms.GroupBox();
             this.groupboxSkeleton = new System.Windows.Forms.GroupBox();
             this.labelFuture = new System.Windows.Forms.Label();
             this.checkboxSoftBodies = new System.Windows.Forms.CheckBox();
@@ -48,15 +42,13 @@
             this.labelTextColor = new System.Windows.Forms.Label();
             this.checkboxSaveLog = new System.Windows.Forms.CheckBox();
             this.textboxLogLocation = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.trackbarMeshResolution)).BeginInit();
-            this.groupboxMesh.SuspendLayout();
             this.groupboxSkeleton.SuspendLayout();
             this.groupboxGeneral.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(12, 507);
+            this.buttonCancel.Location = new System.Drawing.Point(15, 273);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(160, 36);
             this.buttonCancel.TabIndex = 5;
@@ -65,80 +57,12 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(210, 507);
+            this.buttonOK.Location = new System.Drawing.Point(210, 273);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(160, 36);
             this.buttonOK.TabIndex = 0;
             this.buttonOK.Text = "OK";
             this.buttonOK.UseVisualStyleBackColor = true;
-            // 
-            // trackbarMeshResolution
-            // 
-            this.trackbarMeshResolution.BackColor = System.Drawing.SystemColors.Control;
-            this.trackbarMeshResolution.Location = new System.Drawing.Point(6, 85);
-            this.trackbarMeshResolution.Maximum = 1;
-            this.trackbarMeshResolution.Name = "trackbarMeshResolution";
-            this.trackbarMeshResolution.Size = new System.Drawing.Size(346, 56);
-            this.trackbarMeshResolution.TabIndex = 6;
-            // 
-            // labelMeshResolution
-            // 
-            this.labelMeshResolution.AutoSize = true;
-            this.labelMeshResolution.ForeColor = System.Drawing.Color.Black;
-            this.labelMeshResolution.Location = new System.Drawing.Point(122, 43);
-            this.labelMeshResolution.Name = "labelMeshResolution";
-            this.labelMeshResolution.Size = new System.Drawing.Size(108, 17);
-            this.labelMeshResolution.TabIndex = 7;
-            this.labelMeshResolution.Text = "Mesh resolution";
-            // 
-            // flavorText1
-            // 
-            this.flavorText1.AutoSize = true;
-            this.flavorText1.ForeColor = System.Drawing.Color.Black;
-            this.flavorText1.Location = new System.Drawing.Point(6, 124);
-            this.flavorText1.Name = "flavorText1";
-            this.flavorText1.Size = new System.Drawing.Size(138, 17);
-            this.flavorText1.TabIndex = 8;
-            this.flavorText1.Text = "1999 State of the art";
-            // 
-            // flavorText2
-            // 
-            this.flavorText2.AutoSize = true;
-            this.flavorText2.ForeColor = System.Drawing.Color.Black;
-            this.flavorText2.Location = new System.Drawing.Point(250, 124);
-            this.flavorText2.Name = "flavorText2";
-            this.flavorText2.Size = new System.Drawing.Size(102, 17);
-            this.flavorText2.TabIndex = 9;
-            this.flavorText2.Text = "Is this real life?";
-            // 
-            // checkboxFancyColors
-            // 
-            this.checkboxFancyColors.AutoSize = true;
-            this.checkboxFancyColors.Checked = true;
-            this.checkboxFancyColors.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkboxFancyColors.ForeColor = System.Drawing.Color.Black;
-            this.checkboxFancyColors.Location = new System.Drawing.Point(6, 166);
-            this.checkboxFancyColors.Name = "checkboxFancyColors";
-            this.checkboxFancyColors.Size = new System.Drawing.Size(320, 38);
-            this.checkboxFancyColors.TabIndex = 10;
-            this.checkboxFancyColors.Text = "Allow single parts to export with multiple colors\r\n(NOTE: This is probably a bad " +
-    "idea)\r\n";
-            this.checkboxFancyColors.UseVisualStyleBackColor = true;
-            // 
-            // groupboxMesh
-            // 
-            this.groupboxMesh.Controls.Add(this.flavorText2);
-            this.groupboxMesh.Controls.Add(this.flavorText1);
-            this.groupboxMesh.Controls.Add(this.trackbarMeshResolution);
-            this.groupboxMesh.Controls.Add(this.checkboxFancyColors);
-            this.groupboxMesh.Controls.Add(this.labelMeshResolution);
-            this.groupboxMesh.ForeColor = System.Drawing.Color.Gray;
-            this.groupboxMesh.Location = new System.Drawing.Point(12, 273);
-            this.groupboxMesh.Name = "groupboxMesh";
-            this.groupboxMesh.Size = new System.Drawing.Size(358, 204);
-            this.groupboxMesh.TabIndex = 11;
-            this.groupboxMesh.TabStop = false;
-            this.groupboxMesh.Text = "Mesh options";
             // 
             // groupboxSkeleton
             // 
@@ -264,22 +188,18 @@
             this.textboxLogLocation.Size = new System.Drawing.Size(302, 22);
             this.textboxLogLocation.TabIndex = 0;
             // 
-            // ExporterSettings
+            // ExporterSettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(382, 555);
+            this.ClientSize = new System.Drawing.Size(382, 319);
             this.Controls.Add(this.groupboxGeneral);
             this.Controls.Add(this.groupboxSkeleton);
-            this.Controls.Add(this.groupboxMesh);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "ExporterSettings";
+            this.Name = "ExporterSettingsForm";
             this.Text = "Exporter Settings";
-            ((System.ComponentModel.ISupportInitialize)(this.trackbarMeshResolution)).EndInit();
-            this.groupboxMesh.ResumeLayout(false);
-            this.groupboxMesh.PerformLayout();
             this.groupboxSkeleton.ResumeLayout(false);
             this.groupboxSkeleton.PerformLayout();
             this.groupboxGeneral.ResumeLayout(false);
@@ -292,12 +212,6 @@
 
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.Button buttonOK;
-        private System.Windows.Forms.TrackBar trackbarMeshResolution;
-        private System.Windows.Forms.Label labelMeshResolution;
-        private System.Windows.Forms.Label flavorText1;
-        private System.Windows.Forms.Label flavorText2;
-        private System.Windows.Forms.CheckBox checkboxFancyColors;
-        private System.Windows.Forms.GroupBox groupboxMesh;
         private System.Windows.Forms.GroupBox groupboxSkeleton;
         private System.Windows.Forms.GroupBox groupboxGeneral;
         private System.Windows.Forms.Label labelBackgroundColor;

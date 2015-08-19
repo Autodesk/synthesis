@@ -44,6 +44,7 @@ public partial class ExporterForm : Form
         logText.BackColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalBackgroundColor);
 
         label1.Text = "";
+        labelOverall.Text = "";
 
         buttonSaveLog.Enabled = false;
         buttonSaveLog.Visible = false;
@@ -75,10 +76,12 @@ public partial class ExporterForm : Form
         Instance = this;
     }
 
-    public void UpdateComponents(List<ComponentOccurrence> components)
+    public void UpdateComponents(RigidNode_Base skeletonBase)
     {
-        Components.AddRange(components);
-        jointGroupPane1.UpdateComponents(Components);
+        ExportedNode = skeletonBase;
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        skeletonBase.ListAllNodes(nodes);
+        nodeEditorPane1.AddNodes(nodes);
     }
 
     public void ResetProgress()
@@ -91,6 +94,18 @@ public partial class ExporterForm : Form
 
         progressBar1.Value = 0;
         label1.Text = "";
+    }
+
+    public void ResetOverall()
+    {
+        if (InvokeRequired)
+        {
+            Invoke((Action)ResetOverall);
+            return;
+        }
+
+        progressBarOverall.Value = 0;
+        labelOverall.Text = "";
     }
 
     public int GetProgress()
@@ -134,8 +149,8 @@ public partial class ExporterForm : Form
                 return;
             }
 
-            progressBarOverall.Maximum = meshes * 2;
-            progressBarOverall.Value = meshes;
+            progressBarOverall.Maximum = meshes;
+            progressBarOverall.Value = 0;
         }
 
         public void AddOverallStep()
@@ -175,7 +190,10 @@ public partial class ExporterForm : Form
             return;
         }
 
-        label1.Text = "Finished";
+        label1.Text = "";
+        labelOverall.Text = "Finished";
+        progressBar1.Value = 100;
+        progressBarOverall.Value = progressBarOverall.Maximum;
 
         buttonSaveLog.Enabled = (logFile != null);
         buttonSaveLog.Visible = buttonSaveLog.Enabled;
@@ -208,7 +226,6 @@ public partial class ExporterForm : Form
 
     public void Cleanup()
     {
-        jointGroupPane1.Cleanup();
         inventorChooserPane1.Cleanup();
 
         InventorManager.ReleaseInventor();
@@ -239,15 +256,13 @@ public partial class ExporterForm : Form
 
         try
         {
-            ExportedNode = Exporter.ExportSkeleton(Components);
-            ExportedMeshes = Exporter.ExportMeshes(ExportedNode,
-                                                 SynthesisGUI.ExporterSettings.meshResolutionValue == 1, SynthesisGUI.ExporterSettings.meshFancyColors);
+            ExportedMeshes = Exporter.ExportMeshes(ExportedNode);
 
             ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
         }
         catch (COMException ce)
         {
-
+            
         }
         catch (Exception e)
         {

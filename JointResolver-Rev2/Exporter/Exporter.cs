@@ -61,6 +61,7 @@ public class Exporter
         SynthesisGUI.Instance.ExporterReset();
         SynthesisGUI.Instance.ExporterSetSubText("0% \t 0 / 0");
         SynthesisGUI.Instance.ExporterSetProgress(0);
+        SynthesisGUI.Instance.ExporterSetMeshes(2);
 
         int numOccurrences = occurrences.Count;
         int current = 0;
@@ -111,7 +112,7 @@ public class Exporter
         return baseNode;
     }
 
-    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode, bool highRes = false, bool colorFaces = true)
+    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode)
     {
         SurfaceExporter surfs = new SurfaceExporter();
         BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -125,7 +126,6 @@ public class Exporter
         foreach (RigidNode_Base node in nodes)
         {
             SynthesisGUI.Instance.ExporterSetOverallText("Exporting " + node.modelFileName);
-            SynthesisGUI.Instance.ExporterStepOverall();
 
             if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)
             {
@@ -135,8 +135,6 @@ public class Exporter
                 {
                     SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
-                    group.highRes = highRes;
-                    group.colorFaces = colorFaces;
                     surfs.Reset();
                     Console.WriteLine("Exporting meshes...");
                     surfs.ExportAll(group, (long progress, long total) =>
@@ -150,7 +148,7 @@ public class Exporter
                     Console.WriteLine("Output: " + output.meshes.Count + " meshes");
                     Console.WriteLine("Computing colliders...");
                     output.colliders.Clear();
-                    output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.convex));
+                    output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.hint.Convex));
 
                     meshes.Add(output);
                 }
@@ -160,6 +158,8 @@ public class Exporter
                     throw new Exception("Error exporting mesh: " + node.GetModelID());
                 }
             }
+
+            SynthesisGUI.Instance.ExporterStepOverall();
         }
 
         return meshes;

@@ -9,10 +9,7 @@ public class CustomRigidGroup
 
     public bool grounded;
 
-    public bool highRes = false;
-    public bool colorFaces = false;
-
-    public bool convex = true;
+    public ExporterHint hint;
 
     public string fullQualifier;
     public static string GetGroupQualifier(RigidBodyGroup group)
@@ -31,6 +28,11 @@ public class CustomRigidGroup
         {
             occurrences.Add(comp);
         }
+
+        hint = new ExporterHint();
+        hint.Convex = true;
+        hint.HighResolution = false;
+        hint.MultiColor = false;
         grounded = group.Grounded;
         fullQualifier = GetGroupQualifier(group);
     }

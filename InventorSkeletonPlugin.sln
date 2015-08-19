@@ -2,9 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventor_Exporter", "JointResolver-Rev2\Inventor_Exporter.csproj", "{352CDE72-AEE2-4085-ADC5-99A860EA0768}"
-	ProjectSection(ProjectDependencies) = postProject
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB} = {2337776D-7D0C-40AA-A439-C26C3CE24FAB}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
 EndProject
@@ -18,8 +15,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldExporter", "FieldExporter\FieldExporter\FieldExporter.csproj", "{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexLibraryWrapper", "ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj", "{5664C026-F538-4745-A042-13927CE3259F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MIConvexHull", "MIConvexHull\MIConvexHull\MIConvexHull.csproj", "{2337776D-7D0C-40AA-A439-C26C3CE24FAB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Resources", "Resources", "{688AF78A-0087-444A-BC07-4C8AA9D18F91}"
 	ProjectSection(SolutionItems) = preProject
@@ -129,20 +124,6 @@ Global
 		{5664C026-F538-4745-A042-13927CE3259F}.Release|x64.ActiveCfg = Release|Win32
 		{5664C026-F538-4745-A042-13927CE3259F}.Release|x86.ActiveCfg = Release|Win32
 		{5664C026-F538-4745-A042-13927CE3259F}.Release|x86.Build.0 = Release|Win32
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|Win32.ActiveCfg = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|x64.ActiveCfg = Release|Any CPU
-		{2337776D-7D0C-40AA-A439-C26C3CE24FAB}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

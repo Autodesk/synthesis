@@ -89,7 +89,7 @@ public partial class SurfaceExporter
         {
             if (!adaptiveIgnoring || Utilities.BoxVolume(occ.RangeBox) >= totalVolume)
             {
-                plannedExports.AddRange(GenerateExportList(occ, group.highRes, group.colorFaces));
+                plannedExports.AddRange(GenerateExportList(occ, group.hint.HighResolution, group.hint.MultiColor));
             }
         }
         return plannedExports;

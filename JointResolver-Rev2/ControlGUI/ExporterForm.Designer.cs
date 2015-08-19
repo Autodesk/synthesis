@@ -30,8 +30,6 @@
             this.tabs = new System.Windows.Forms.TabControl();
             this.tabSelect = new System.Windows.Forms.TabPage();
             this.inventorChooserPane1 = new InventorChooserPane();
-            this.tabGroup = new System.Windows.Forms.TabPage();
-            this.jointGroupPane1 = new JointGroupPane();
             this.logPage = new System.Windows.Forms.TabPage();
             this.logText = new System.Windows.Forms.RichTextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -40,16 +38,15 @@
             this.buttonSaveLog = new System.Windows.Forms.Button();
             this.progressBarOverall = new System.Windows.Forms.ProgressBar();
             this.labelOverall = new System.Windows.Forms.Label();
+            this.nodeEditorPane1 = new NodeEditorPane();
             this.tabs.SuspendLayout();
             this.tabSelect.SuspendLayout();
-            this.tabGroup.SuspendLayout();
             this.logPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabs
             // 
             this.tabs.Controls.Add(this.tabSelect);
-            this.tabs.Controls.Add(this.tabGroup);
             this.tabs.Controls.Add(this.logPage);
             this.tabs.Dock = System.Windows.Forms.DockStyle.Top;
             this.tabs.Location = new System.Drawing.Point(0, 0);
@@ -60,6 +57,7 @@
             // 
             // tabSelect
             // 
+            this.tabSelect.Controls.Add(this.nodeEditorPane1);
             this.tabSelect.Controls.Add(this.inventorChooserPane1);
             this.tabSelect.Location = new System.Drawing.Point(4, 25);
             this.tabSelect.Name = "tabSelect";
@@ -76,25 +74,6 @@
             this.inventorChooserPane1.Name = "inventorChooserPane1";
             this.inventorChooserPane1.Size = new System.Drawing.Size(768, 416);
             this.inventorChooserPane1.TabIndex = 0;
-            // 
-            // tabGroup
-            // 
-            this.tabGroup.Controls.Add(this.jointGroupPane1);
-            this.tabGroup.Location = new System.Drawing.Point(4, 25);
-            this.tabGroup.Name = "tabGroup";
-            this.tabGroup.Padding = new System.Windows.Forms.Padding(3);
-            this.tabGroup.Size = new System.Drawing.Size(774, 422);
-            this.tabGroup.TabIndex = 3;
-            this.tabGroup.Text = "Group Joints";
-            this.tabGroup.UseVisualStyleBackColor = true;
-            // 
-            // jointGroupPane1
-            // 
-            this.jointGroupPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jointGroupPane1.Location = new System.Drawing.Point(3, 3);
-            this.jointGroupPane1.Name = "jointGroupPane1";
-            this.jointGroupPane1.Size = new System.Drawing.Size(768, 416);
-            this.jointGroupPane1.TabIndex = 2;
             // 
             // logPage
             // 
@@ -156,7 +135,7 @@
             this.buttonSaveLog.TabIndex = 4;
             this.buttonSaveLog.Text = "Save log";
             this.buttonSaveLog.UseVisualStyleBackColor = true;
-			// 
+            // 
             // progressBarOverall
             // 
             this.progressBarOverall.Location = new System.Drawing.Point(4, 525);
@@ -174,6 +153,13 @@
             this.labelOverall.TabIndex = 6;
             this.labelOverall.Text = "Current step";
             // 
+            // nodeEditorPane1
+            // 
+            this.nodeEditorPane1.Location = new System.Drawing.Point(6, 6);
+            this.nodeEditorPane1.Name = "nodeEditorPane1";
+            this.nodeEditorPane1.Size = new System.Drawing.Size(760, 373);
+            this.nodeEditorPane1.TabIndex = 1;
+            // 
             // ExporterForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -183,8 +169,8 @@
             this.Controls.Add(this.buttonStart);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar1);
-			this.Controls.Add(this.labelOverall);
-			this.Controls.Add(this.progressBarOverall);
+            this.Controls.Add(this.labelOverall);
+            this.Controls.Add(this.progressBarOverall);
             this.Controls.Add(this.tabs);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -196,7 +182,6 @@
             this.Text = "Inventor Export";
             this.tabs.ResumeLayout(false);
             this.tabSelect.ResumeLayout(false);
-            this.tabGroup.ResumeLayout(false);
             this.logPage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -215,7 +200,6 @@
 	private System.Windows.Forms.ProgressBar progressBarOverall;
     private System.Windows.Forms.Label labelOverall;
     private System.Windows.Forms.TabPage tabSelect;
-    private System.Windows.Forms.TabPage tabGroup;
     private InventorChooserPane inventorChooserPane1;
-    private JointGroupPane jointGroupPane1;
+    private NodeEditorPane nodeEditorPane1;
 }
