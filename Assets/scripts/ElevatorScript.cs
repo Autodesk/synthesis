@@ -8,14 +8,14 @@ public class ElevatorScript : MonoBehaviour {
 	public bool breakOn = false;
 	// Use this for initialization
 	void Start () {
-        //rigidbody.useGravity = false;
+        rigidbody.useGravity = false;
 	}
 	
 	void Update () 
 	{
 		//TODO this is mostly placeholder stuff
 		Vector3 forceDirection = Vector3.up;
-		Vector3 force = forceDirection * currentTorque;
+		Vector3 force = forceDirection * currentTorque * 5;
 		int stageOffset = (int)eType;// 1 + ((int)eType)%2;
 		for (int i = 0; i < transform.parent.childCount; i++) 
 		{
@@ -23,9 +23,16 @@ public class ElevatorScript : MonoBehaviour {
 			if(rbody.GetComponent<ConfigurableJoint>()!=null && rbody.GetComponent<ConfigurableJoint>().connectedBody == rigidbody)
 			{
 				//rbody.useGravity= false;
-				rbody.AddForce(force*3+Physics.gravity*stageOffset/4, ForceMode.Acceleration);
+				rbody.AddForce(force*3+Physics.gravity*stageOffset, ForceMode.Acceleration);
 			}
 		}
-		rigidbody.AddForce (force*3+Physics.gravity*stageOffset/4, ForceMode.Acceleration);
+		rigidbody.AddForce (force*3+Physics.gravity*stageOffset, ForceMode.Acceleration);
+
+		if (rigidbody.velocity.magnitude > 5) {
+			rigidbody.velocity = rigidbody.velocity.normalized * 5;
+		}
+		else if (rigidbody.velocity.magnitude < 0.5f) {
+			rigidbody.velocity = rigidbody.velocity.normalized * 0;
+		}
 	}
 }
