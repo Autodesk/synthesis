@@ -8,7 +8,7 @@ public class ElevatorScript : MonoBehaviour {
 	public bool breakOn = false;
 	// Use this for initialization
 	void Start () {
-        rigidbody.useGravity = false;
+        //rigidbody.useGravity = false;
 	}
 	
 	void Update () 
@@ -22,11 +22,10 @@ public class ElevatorScript : MonoBehaviour {
 			Rigidbody rbody = transform.parent.GetChild(i).rigidbody;
 			if(rbody.GetComponent<ConfigurableJoint>()!=null && rbody.GetComponent<ConfigurableJoint>().connectedBody == rigidbody)
 			{
-				rbody.useGravity= false;
+				//rbody.useGravity= false;
 				rbody.AddForce(force*3+Physics.gravity*stageOffset/4, ForceMode.Acceleration);
 			}
 		}
 		rigidbody.AddForce (force*3+Physics.gravity*stageOffset/4, ForceMode.Acceleration);
-		
 	}
 }
