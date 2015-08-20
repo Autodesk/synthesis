@@ -28,10 +28,10 @@ public class ElevatorScript : MonoBehaviour {
 		}
 		rigidbody.AddForce (force*3+Physics.gravity*stageOffset, ForceMode.Acceleration);
 
-		if (rigidbody.velocity.magnitude > 5) {
-			rigidbody.velocity = rigidbody.velocity.normalized * 5;
+		if (rigidbody.velocity.magnitude > 1) {
+			rigidbody.velocity = rigidbody.velocity.normalized * 1;
 		}
-		else if (rigidbody.velocity.magnitude < 0.5f) {
+		else if (rigidbody.velocity.magnitude < 1.1f) {
 			rigidbody.velocity = rigidbody.velocity.normalized * 0;
 		}
 	}
