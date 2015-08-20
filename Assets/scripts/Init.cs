@@ -44,6 +44,7 @@ public class Init : MonoBehaviour
 	private bool showHelpWindow;
 	private Quaternion rotation;
 	private bool oriented;
+	private string label;
 
     /// <summary>
     /// Frames before the robot gets reloaded, or -1 if no reload is queued.
@@ -72,6 +73,7 @@ public class Init : MonoBehaviour
 		showStatWindow = false;
 		showHelpWindow = false;
 		rotation = Quaternion.identity;
+		label = "Stop";
     }
 
 	//displays stats like speed and acceleration
@@ -84,14 +86,20 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
 		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
-		if(GUI.Button (new Rect (120, 120, 80, 25), "Start/Stop"))
-		{
-			time_stop = !time_stop;
-		}
-		
+
 		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
 		{
 			time = 0;
+		}
+
+		if(GUI.Button (new Rect (120, 120, 80, 25), label))
+		{
+			time_stop = !time_stop;
+			
+			if(time_stop)
+				label = "Start";
+			else
+				label = "Stop";
 		}
 
 		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
@@ -459,6 +467,7 @@ public class Init : MonoBehaviour
 			{
 			//Resets robot to user saved orientation
 			mainNode.transform.rotation = rotation;
+				mainNode.rigidbody.inertiaTensorRotation = Quaternion.identity;
 			}
 			//makes sure robot spawns in the correct place
 			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
@@ -729,14 +738,6 @@ public class Init : MonoBehaviour
 				oldSpeed = speed;
 				if (!time_stop)
 					time += Time.deltaTime;
-
-				if(gui.guiVisible)
-				{
-					udp = null;
-					//mainNode.rigidbody.isKinematic = true;
-					//mainNode.rigidbody.constraints = RigidbodyConstraints.FreezeAll;// | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
-				}
-
 
 			}
 		}
