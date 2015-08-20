@@ -631,6 +631,12 @@ public class Init : MonoBehaviour
 
 			unityPacket.OutputStatePacket packet = udp.GetLastPacket ();
 
+			//stops robot while menu is open
+			if(gui.guiVisible)
+			{
+				packet = null;
+			}
+
 			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
 			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
 			foreach(RigidNode_Base node in nodes)
@@ -726,16 +732,11 @@ public class Init : MonoBehaviour
 
 				if(gui.guiVisible)
 				{
-					
-					mainNode.rigidbody.isKinematic = true;
+					udp = null;
+					//mainNode.rigidbody.isKinematic = true;
 					//mainNode.rigidbody.constraints = RigidbodyConstraints.FreezeAll;// | RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotationY;
 				}
-				else
-				{
-					
-					mainNode.rigidbody.isKinematic = false;
-					//mainNode.rigidbody.constraints = RigidbodyConstraints.None;
-				}
+
 
 			}
 		}
