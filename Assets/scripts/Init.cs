@@ -167,22 +167,25 @@ public class Init : MonoBehaviour
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 		//The directional buttons lift the robot to avoid collison with objects, rotates it, and saves the applied rotation to a vector3
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
-			mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 			switch((int)o)
 			{
 			case 0:
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate(new Vector3(0, 0, 90));
 				oriented = true;
                 break;
 			case 1:	
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate (new Vector3(0, 0, -90));
 				oriented = true;
 				break;
 			case 2:	
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
 				oriented = true;
 				break;
-			case 3:;
+			case 3:
+				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
 				oriented = true;
 				break;
@@ -194,7 +197,8 @@ public class Init : MonoBehaviour
 				oWindow.Active = false;
 				break;
 			case 6:
-				mainNode.transform.rotation = Quaternion.identity;
+				rotation = Quaternion.identity;
+				mainNode.transform.rotation = rotation;
 				break;
 
 			}			
@@ -394,6 +398,7 @@ public class Init : MonoBehaviour
 			activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
 			activeRobot.transform.rotation = Quaternion.identity;
 			activeRobot.transform.localRotation = Quaternion.identity;
+			mainNode.transform.rotation = Quaternion.identity;
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
