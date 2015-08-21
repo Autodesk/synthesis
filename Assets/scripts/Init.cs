@@ -33,6 +33,7 @@ public class Init : MonoBehaviour
 	private Rect helpWindowRect;
 	private GUIContent helpButtonContent;
 	private Rect helpButtonRect;
+	//robot stats for stats window
 	private float acceleration;
 	private float angvelo;
 	private float speed;
@@ -40,10 +41,13 @@ public class Init : MonoBehaviour
 	private float time;
 	private bool time_stop;
 	private float oldSpeed;
+	//Display windows or not
 	private bool showStatWindow;
 	private bool showHelpWindow;
+	//for orienting the robot
 	private Quaternion rotation;
 	private bool oriented;
+	//start/stop button on the stats window timer
 	private string label;
 
     /// <summary>
@@ -76,9 +80,12 @@ public class Init : MonoBehaviour
 		label = "Stop";
     }
 
-	//displays stats like speed and acceleration
+	/// <summary>
+	/// Displays stats window.
+	/// </summary>
+	/// <param name="windowID">Window I.</param>
 	public void StatsWindow(int windowID) {
-		
+
 		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
 		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
 		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
@@ -101,12 +108,10 @@ public class Init : MonoBehaviour
 			else
 				label = "Stop";
 		}
-
-		GUI.DragWindow (new Rect (0, 0, 10000, 10000));
 	}
 
 	/// <summary>
-	/// Exits the window.
+	/// Displays help windows.
 	/// </summary>
 	/// <param name="windowID">Window I.</param>
 	public void HelpWindow(int windowID)
@@ -142,7 +147,9 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]", labelSkin);
 	}
-
+	/// <summary>
+	/// Opens windows to orient the robot
+	/// </summary>
 	public void ShowOrient()
 	{
 		List<string> titles = new List<string> ();
@@ -487,6 +494,9 @@ public class Init : MonoBehaviour
 		totes.Clear ();
     }
 
+	/// <summary>
+	/// Loads a robot from file into the simulator.
+	/// </summary>
     private void TryLoadRobot()
     {
 		//resets rotation for new robot
@@ -511,6 +521,7 @@ public class Init : MonoBehaviour
 																																																																																																																																																																																																																																																																																																																					
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
 			//Debug.Log(filePath + "skeleton.bxdj");
+			if( skeleton != null)
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
@@ -527,6 +538,7 @@ public class Init : MonoBehaviour
 
             {   // Add some mass to the base object
                 UnityRigidNode uNode = (UnityRigidNode) skeleton;
+				if(uNode != null)
                 uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
             }
 
@@ -544,6 +556,9 @@ public class Init : MonoBehaviour
 		HideGuiSidebar();
     }
 
+	/// <summary>
+	/// Loads a field from file into the simulator.
+	/// </summary>
 	private void TryLoadField()
 	{
 		activeField = new GameObject("Field");
@@ -650,7 +665,7 @@ public class Init : MonoBehaviour
 			{
 				packet = null;
 			}
-
+			if(skeleton != null)
 			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
 			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
 			foreach(RigidNode_Base node in nodes)
