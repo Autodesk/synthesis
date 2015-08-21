@@ -178,22 +178,22 @@ public class Init : MonoBehaviour
 			{
 			case 0:
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate(new Vector3(0, 0, 90));
+				mainNode.transform.Rotate(new Vector3(0, 0, 45));
 				oriented = true;
                 break;
 			case 1:	
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate (new Vector3(0, 0, -90));
+				mainNode.transform.Rotate (new Vector3(0, 0, -45));
 				oriented = true;
 				break;
 			case 2:	
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate(new Vector3( 90, 0, 0));
+				mainNode.transform.Rotate(new Vector3( 45, 0, 0));
 				oriented = true;
 				break;
 			case 3:
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate(new Vector3( -90, 0, 0));
+				mainNode.transform.Rotate(new Vector3( -45, 0, 0));
 				oriented = true;
 				break;
 			case 4:
@@ -663,8 +663,13 @@ public class Init : MonoBehaviour
 			//stops robot while menu is open
 			if(gui.guiVisible)
 			{
-				packet = null;
+				mainNode.rigidbody.isKinematic = true;
 			}
+			else 
+			{
+				mainNode.rigidbody.isKinematic = false;
+			}
+
 			if(skeleton != null)
 			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
 			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
