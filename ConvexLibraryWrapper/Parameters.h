@@ -21,13 +21,13 @@ namespace ConvexLibraryWrapper
 			m_minVolumePerCH = 0.0001;
 			m_resolution = 100000;
 			m_maxNumVerticesPerCH = 64;
-			m_depth = 20;
+			m_depth = 30;
 			m_planeDownsampling = 4;
 			m_convexhullDownsampling = 4;
 			m_pca = 0;
 			m_mode = 0;
 			m_convexhullApproximation = true;
-			m_oclAcceleration = false; //Support OCL eventually
+			m_oclAcceleration = false;
 
 			m_callback = new ProgressCallback();
 			m_logger = new ProgressLogger();

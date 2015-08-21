@@ -349,7 +349,7 @@ public class ConvexHullCalculator
     /// <param name="mesh">Mesh to compute for</param>
     /// <param name="decompose">If a set of convex hulls is required</param>
     /// <returns>The resulting list of convex hulls.</returns>
-    public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh bMesh, bool decompose = false)
+    public static List<BXDAMesh.BXDASubMesh> GetHull(BXDAMesh bMesh, bool decompose = false, bool OCL = false)
     {
         int vertCount = 0;
         int indexCount = 0;
@@ -372,7 +372,6 @@ public class ConvexHullCalculator
         indexCount = 0;
         int totalChecks = 0;
         int onePercent = Math.Max(1, (copy.Length / 3) / 100);
-        Console.WriteLine("Cleaning...");
         SynthesisGUI.Instance.ExporterReset();
         foreach (BXDAMesh.BXDASubMesh mesh in bMesh.meshes)
         {
@@ -385,7 +384,7 @@ public class ConvexHullCalculator
                 {
                     //Console.Write("Cleaning " + totalChecks + "/" + (copy.Length / 3) + "  " + ((int) (totalChecks * 3 / (float) copy.Length * 10000f) / 100f) + "%");
                     double totalProgress = ((double)totalChecks / ((double)copy.Length / 3.0)) * 100.0;
-                    SynthesisGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), totalChecks, copy.Length / 3));
+                    SynthesisGUI.Instance.ExporterSetSubText(String.Format("Clean {0}% \t {1} / {2}", Math.Round(totalProgress, 2), totalChecks, copy.Length / 3));
                     SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                 }
                 //Copy all the mesh vertices over, starting at the end of the last mesh copied.
@@ -450,58 +449,74 @@ public class ConvexHullCalculator
 
         SynthesisGUI.Instance.ExporterSetSubText("Calculating colliders");
 
-        IVHACD decomposer = new IVHACD();
-        ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
-        if (!decompose)
+        unsafe
         {
-            parameters.m_depth = 1;
-            parameters.m_concavity = 1;
-        }
-
-        bool decomposeResult = false;
-
-        Thread t = new Thread(() =>
+            IVHACD decomposer = new IVHACD();
+            ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
+            if (!decompose)
             {
-                decomposeResult = decomposer.Compute(copy, 3, (uint)copy.Length / 3,
-                                                     Array.ConvertAll<uint, int>(index, (uint ui) => (int)ui), 3, (uint)index.Length / 3,
-                                                     parameters);
-            });
-
-        t.SetApartmentState(ApartmentState.MTA);
-        List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
-
-        try
-        {
-            t.Start();
-            while (!t.Join(0))
-            {
-                // Wait....
-                System.Threading.Thread.Sleep(1000);
+                parameters.m_depth = 1;
+                parameters.m_concavity = 1;
             }
-            Console.WriteLine();
-
-            if (!decomposeResult)
+            if (OCL && decompose)
             {
-                //throw new Exception("Couldn't calculate convex hull!");
+                parameters.m_oclAcceleration = 1;
+                decomposer.OCLInit(parameters);
             }
 
-            uint hullCount = decomposer.GetNConvexHulls();
-            Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
+            bool decomposeResult = false;
 
-            for (uint i = 0; i < hullCount; i++)
+            Thread t = new Thread(() =>
+                {
+                    decomposeResult = decomposer.Compute(copy, 3, (uint)copy.Length / 3,
+                                                         Array.ConvertAll<uint, int>(index, (uint ui) => (int)ui), 3, (uint)index.Length / 3,
+                                                         parameters);
+                });
+
+            t.SetApartmentState(ApartmentState.MTA);
+            List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
+
+            try
             {
-                ConvexLibraryWrapper.ConvexHull result = decomposer.GetConvexHull(i);
-                subs.Add(ExportMeshInternal(Array.ConvertAll<double, float>(result.m_points, (double ui) => (float)ui), result.m_nPoints,
-                                            Array.ConvertAll<int, uint>(result.m_triangles, (int ui) => (uint)ui), result.m_nTriangles));
+                t.Start();
+                int dot = 0;
+                while (!t.Join(0))
+                {
+                    SynthesisGUI.Instance.ExporterSetSubText("Calculating colliders" + new String('.', dot));
+                    dot++;
+                    if (dot > 5) dot = 0;
+                    System.Threading.Thread.Sleep(500);
+                }
+                Console.WriteLine();
+
+                if (!decomposeResult)
+                {
+                    throw new Exception("Couldn't calculate convex hull!");
+                }
+
+                uint hullCount = decomposer.GetNConvexHulls();
+                Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
+
+                for (uint i = 0; i < hullCount; i++)
+                {
+                    ConvexLibraryWrapper.ConvexHull result = decomposer.GetConvexHull(i);
+                    subs.Add(ExportMeshInternal(Array.ConvertAll<double, float>(result.m_points, (double ui) => (float)ui), result.m_nPoints,
+                                                Array.ConvertAll<int, uint>(result.m_triangles, (int ui) => (uint)ui), result.m_nTriangles));
+                }
             }
-        }
-        finally
-        {
+            finally
+            { }
+
+            if (OCL && decompose)
+            {
+                decomposer.OCLRelease(parameters);
+            }
+
             decomposer.Cancel();
             decomposer.Clean();
             decomposer.Release();
-        }
 
-        return subs;
+            return subs;
+        }
     }
 }

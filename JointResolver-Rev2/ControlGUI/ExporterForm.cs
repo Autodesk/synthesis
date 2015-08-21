@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
+using EditorsLibrary;
 
 public partial class ExporterForm : Form
 {
@@ -29,7 +30,9 @@ public partial class ExporterForm : Form
     private TextWriter oldConsole;
     private TextboxWriter newConsole;
 
-    public ExporterForm()
+    ExporterSettingsForm.ExporterSettingsValues ExporterSettings;
+
+    public ExporterForm(ExporterSettingsForm.ExporterSettingsValues settings)
     {
         InitializeComponent();
 
@@ -48,6 +51,8 @@ public partial class ExporterForm : Form
 
         buttonSaveLog.Enabled = false;
         buttonSaveLog.Visible = false;
+
+        ExporterSettings = settings;
 
         FormClosed += delegate(object sender, FormClosedEventArgs e)
         {
@@ -254,7 +259,7 @@ public partial class ExporterForm : Form
 
         try
         {
-            ExportedMeshes = Exporter.ExportMeshes(ExportedNode);
+            ExportedMeshes = Exporter.ExportMeshes(ExportedNode, ExporterSettings.meshUseOCL);
 
             ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
         }

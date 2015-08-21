@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "IVHACD.h"
+#include "CLHelper.h"
 
 #include <cstdlib>
+#include <vector>
 
 namespace ConvexLibraryWrapper
 {
@@ -52,20 +54,6 @@ namespace ConvexLibraryWrapper
 		return result;
 	}
 
-	//bool IVHACD::Compute(double points[],
-	//					 const unsigned int stridePoints,
-	//					 const unsigned int countPoints,
-	//					 int triangles[],
-	//					 const unsigned int strideTriangles,
-	//					 const unsigned int countTriangles,
-	//					 Parameters ^ params)
-	//{
-	//	VHACD::IVHACD::Parameters * newParams = new VHACD::IVHACD::Parameters();
-	//	params->CopyToUnmanaged(newParams);
-	//	return instance->Compute(points, stridePoints, countPoints, triangles, strideTriangles, countTriangles,
-	//		                     (const VHACD::IVHACD::Parameters &) newParams);
-	//}
-
 	unsigned int IVHACD::GetNConvexHulls(void)
 	{
 		return instance->GetNConvexHulls();
@@ -87,6 +75,20 @@ namespace ConvexLibraryWrapper
 	void IVHACD::Release(void)
 	{
 		instance->Release();
+	}
+
+	bool IVHACD::OCLInit(Parameters ^ params)
+	{
+		std::vector<cl_device_id> devices;
+		int err = CLHelper::GetDevice(devices);
+		if (err == -1) return false;
+
+		return instance->OCLInit(&devices[1], params->m_logger);
+	}
+
+	bool IVHACD::OCLRelease(Parameters ^ params)
+	{
+		return instance->OCLRelease(params->m_logger);
 	}
 
 }

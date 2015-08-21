@@ -50,7 +50,7 @@ namespace EditorsLibrary
             buttonChooseText.BackColor = Color.FromArgb((int) values.generalTextColor);
             buttonChooseBackground.BackColor = Color.FromArgb((int) values.generalBackgroundColor);
 
-            checkboxSoftBodies.Checked = values.skeletonExportSoft;
+            checkboxOCL.Checked = values.meshUseOCL;
 
             checkboxSaveLog_CheckedChanged(null, null); //To make sure things are enabled/disabled correctly
         }
@@ -65,7 +65,7 @@ namespace EditorsLibrary
             values.generalTextColor = (uint) buttonChooseText.BackColor.ToArgb();
             values.generalBackgroundColor = (uint)buttonChooseBackground.BackColor.ToArgb();
 
-            values.skeletonExportSoft = checkboxSoftBodies.Checked;
+            values.meshUseOCL = checkboxOCL.Checked;
         }
 
         /// <summary>
@@ -143,10 +143,7 @@ namespace EditorsLibrary
             defaultValues.generalTextColor = (uint) Color.Lime.ToArgb();
             defaultValues.generalBackgroundColor = 0xFF000000;
 
-            defaultValues.skeletonExportSoft = false;
-
-            defaultValues.meshResolutionValue = 0;
-            defaultValues.meshFancyColors = false;
+            defaultValues.meshUseOCL = false;
 
             return defaultValues;
         }
@@ -161,10 +158,7 @@ namespace EditorsLibrary
             public uint generalTextColor;
             public uint generalBackgroundColor;
 
-            public bool skeletonExportSoft; //Not actually a thing yet
-
-            public int meshResolutionValue;
-            public bool meshFancyColors;
+            public bool meshUseOCL; //Not actually a thing yet
         }
         
     }

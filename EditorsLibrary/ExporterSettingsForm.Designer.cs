@@ -32,8 +32,9 @@
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
             this.groupboxSkeleton = new System.Windows.Forms.GroupBox();
-            this.labelFuture = new System.Windows.Forms.Label();
-            this.checkboxSoftBodies = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.checkboxOCL = new System.Windows.Forms.CheckBox();
             this.groupboxGeneral = new System.Windows.Forms.GroupBox();
             this.buttonChooseFolder = new System.Windows.Forms.Button();
             this.buttonChooseText = new System.Windows.Forms.Button();
@@ -66,37 +67,49 @@
             // 
             // groupboxSkeleton
             // 
-            this.groupboxSkeleton.Controls.Add(this.labelFuture);
-            this.groupboxSkeleton.Controls.Add(this.checkboxSoftBodies);
+            this.groupboxSkeleton.Controls.Add(this.label2);
+            this.groupboxSkeleton.Controls.Add(this.label1);
+            this.groupboxSkeleton.Controls.Add(this.checkboxOCL);
             this.groupboxSkeleton.ForeColor = System.Drawing.Color.Gray;
             this.groupboxSkeleton.Location = new System.Drawing.Point(15, 178);
             this.groupboxSkeleton.Name = "groupboxSkeleton";
             this.groupboxSkeleton.Size = new System.Drawing.Size(355, 89);
             this.groupboxSkeleton.TabIndex = 12;
             this.groupboxSkeleton.TabStop = false;
-            this.groupboxSkeleton.Text = "Skeleton options";
+            this.groupboxSkeleton.Text = "Export options";
             // 
-            // labelFuture
+            // label2
             // 
-            this.labelFuture.AutoSize = true;
-            this.labelFuture.ForeColor = System.Drawing.Color.Black;
-            this.labelFuture.Location = new System.Drawing.Point(3, 29);
-            this.labelFuture.Name = "labelFuture";
-            this.labelFuture.Size = new System.Drawing.Size(281, 17);
-            this.labelFuture.TabIndex = 1;
-            this.labelFuture.Text = "To be implemented sometime in the future?";
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.Location = new System.Drawing.Point(6, 58);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(349, 13);
+            this.label2.TabIndex = 2;
+            this.label2.Text = "Make sure that your device drivers are up to date before using this option";
             // 
-            // checkboxSoftBodies
+            // label1
             // 
-            this.checkboxSoftBodies.AutoSize = true;
-            this.checkboxSoftBodies.Enabled = false;
-            this.checkboxSoftBodies.ForeColor = System.Drawing.Color.Black;
-            this.checkboxSoftBodies.Location = new System.Drawing.Point(6, 61);
-            this.checkboxSoftBodies.Name = "checkboxSoftBodies";
-            this.checkboxSoftBodies.Size = new System.Drawing.Size(143, 21);
-            this.checkboxSoftBodies.TabIndex = 0;
-            this.checkboxSoftBodies.Text = "Export soft bodies";
-            this.checkboxSoftBodies.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(6, 45);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(284, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Note: This will only speed up the export in specific situations";
+            // 
+            // checkboxOCL
+            // 
+            this.checkboxOCL.AutoSize = true;
+            this.checkboxOCL.ForeColor = System.Drawing.Color.Black;
+            this.checkboxOCL.Location = new System.Drawing.Point(6, 21);
+            this.checkboxOCL.Name = "checkboxOCL";
+            this.checkboxOCL.Size = new System.Drawing.Size(225, 21);
+            this.checkboxOCL.TabIndex = 0;
+            this.checkboxOCL.Text = "Enable OpenCL (Experimental)";
+            this.checkboxOCL.UseVisualStyleBackColor = true;
             // 
             // groupboxGeneral
             // 
@@ -220,9 +233,10 @@
         private System.Windows.Forms.TextBox textboxLogLocation;
         private System.Windows.Forms.Button buttonChooseText;
         private System.Windows.Forms.Button buttonChooseBackground;
-        private System.Windows.Forms.Label labelFuture;
-        private System.Windows.Forms.CheckBox checkboxSoftBodies;
+        private System.Windows.Forms.CheckBox checkboxOCL;
         private System.Windows.Forms.Button buttonChooseFolder;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
 
 
     }

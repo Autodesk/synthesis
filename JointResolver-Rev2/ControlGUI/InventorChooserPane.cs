@@ -82,6 +82,8 @@ public partial class InventorChooserPane : UserControl
     {
         if (InventorChooser.Components.Count >= 1)
         {
+            InventorChooser.DisableInteraction();
+
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
             buttonAdd.Enabled = false;
@@ -89,8 +91,6 @@ public partial class InventorChooserPane : UserControl
             buttonSelect.Text = "Select in Inventor";
 
             ExporterForm.Instance.ResetProgress();
-
-            InventorChooser.DisableInteraction();
 
             RigidNode_Base skeleton = Exporter.ExportSkeleton(InventorChooser.Components);
             ExporterForm.Instance.UpdateComponents(skeleton);
@@ -102,6 +102,8 @@ public partial class InventorChooserPane : UserControl
         }
         else
         {
+            InventorChooser.DisableInteraction();
+
             InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
             buttonAdd.Enabled = false;
@@ -109,8 +111,6 @@ public partial class InventorChooserPane : UserControl
             buttonSelect.Text = "Select in Inventor";
 
             ExporterForm.Instance.ResetProgress();
-
-            InventorChooser.DisableInteraction();
 
             RigidNode_Base skeleton = Exporter.ExportSkeleton(InventorManager.Instance.ComponentOccurrences.Cast<ComponentOccurrence>().ToList());
             ExporterForm.Instance.UpdateComponents(skeleton);

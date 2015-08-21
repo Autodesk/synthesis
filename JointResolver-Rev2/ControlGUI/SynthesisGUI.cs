@@ -196,7 +196,7 @@ public partial class SynthesisGUI : Form
         {
             var exporterThread = new Thread(() =>
             {
-                exporter = new ExporterForm();
+                exporter = new ExporterForm(ExporterSettings);
 
                 exporter.ShowDialog();
             });

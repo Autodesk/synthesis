@@ -89,7 +89,7 @@ public class Exporter
         Console.WriteLine("Got rigid info...");
         CustomRigidResults customRigid = new CustomRigidResults(rigidResults);
 
-        Console.WriteLine("Built model...");
+        Console.WriteLine("Build model...");
         RigidBodyCleaner.CleanGroundedBodies(customRigid);
         //After this point, all grounded groups have been merged into one CustomRigidGroup, and their joints have been updated.
 
@@ -112,7 +112,7 @@ public class Exporter
         return baseNode;
     }
 
-    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode)
+    public static List<BXDAMesh> ExportMeshes(RigidNode_Base baseNode, bool useOCL)
     {
         SurfaceExporter surfs = new SurfaceExporter();
         BXDJSkeleton.SetupFileNames(baseNode, true);
@@ -148,7 +148,7 @@ public class Exporter
                     Console.WriteLine("Output: " + output.meshes.Count + " meshes");
                     Console.WriteLine("Computing colliders...");
                     output.colliders.Clear();
-                    output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.hint.Convex));
+                    output.colliders.AddRange(ConvexHullCalculator.GetHull(output, !group.hint.Convex, useOCL));
 
                     meshes.Add(output);
                 }

@@ -6,6 +6,8 @@
 #pragma comment(lib, "VHACD_LIB_RELEASE.lib")
 #endif
 
+#pragma comment(lib, "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v7.0\\lib\\Win32\\OpenCL.lib")
+
 #include <include\VHACD.h>
 
 #include "ConvexHull.h"
@@ -37,6 +39,8 @@ namespace ConvexLibraryWrapper
 		ConvexHull ^ GetConvexHull(const unsigned int index);
 		void Clean(void);
 		void Release(void);
+		bool OCLInit(Parameters ^ params);
+		bool OCLRelease(Parameters ^ params);
 
 	protected:
 		~IVHACD(void);
