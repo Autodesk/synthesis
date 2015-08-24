@@ -26,7 +26,6 @@
     /// </summary>
     private void InitializeComponent()
     {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("");
             this.columnHeaderParent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderConvex = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -67,8 +66,6 @@
             this.listViewNodes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listViewNodes.FullRowSelect = true;
             this.listViewNodes.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.listViewNodes.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
             this.listViewNodes.Location = new System.Drawing.Point(0, 0);
             this.listViewNodes.Name = "listViewNodes";
             this.listViewNodes.Size = new System.Drawing.Size(760, 373);

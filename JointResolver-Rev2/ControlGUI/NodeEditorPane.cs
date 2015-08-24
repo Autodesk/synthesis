@@ -40,7 +40,7 @@ public partial class NodeEditorPane : UserControl
                                                                          ((RigidNode_Base)i.Tag).GetModelID() == node.GetModelID()) != null) return;
 
         ListViewItem item = new ListViewItem(new string[] { (node.GetParent() != null)?node.GetParent().modelFileName:"N/A", node.modelFileName, 
-                                                             "false", "false", "false" });
+                                                             "False", "False", "False" });
 
         item.Tag = node;
         listViewNodes.Items.Add(item);
@@ -56,15 +56,15 @@ public partial class NodeEditorPane : UserControl
             ListViewItem.ListViewSubItem subItem = item.GetSubItemAt(clientPoint.X, clientPoint.Y);
             if (subItem != null && item.SubItems.IndexOf(subItem) >= 2)
             {
-                subItem.Text = (subItem.Text == "false") ? "true" : "false";
+                subItem.Text = (subItem.Text == "False") ? "True" : "False";
             }
 
             RigidNode_Base node = (RigidNode_Base)item.Tag;
             CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
             ExporterHint newHint;
-            newHint.Convex = item.SubItems[2].Text == "false";
-            newHint.MultiColor = item.SubItems[3].Text == "true";
-            newHint.HighResolution = item.SubItems[4].Text == "true";
+            newHint.Convex = item.SubItems[2].Text == "False";
+            newHint.MultiColor = item.SubItems[3].Text == "True";
+            newHint.HighResolution = item.SubItems[4].Text == "True";
             group.hint = newHint;
         }
     }

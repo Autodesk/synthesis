@@ -449,74 +449,79 @@ public class ConvexHullCalculator
 
         SynthesisGUI.Instance.ExporterSetSubText("Calculating colliders");
 
-        unsafe
+        IVHACD decomposer = new IVHACD();
+        ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
+        if (!decompose)
         {
-            IVHACD decomposer = new IVHACD();
-            ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
-            if (!decompose)
-            {
-                parameters.m_depth = 1;
-                parameters.m_concavity = 1;
-            }
-            if (OCL && decompose)
+            parameters.m_depth = 1;
+            parameters.m_concavity = 1;
+        }
+        if (OCL)
+        {
+            try
             {
                 parameters.m_oclAcceleration = 1;
                 decomposer.OCLInit(parameters);
             }
-
-            bool decomposeResult = false;
-
-            Thread t = new Thread(() =>
-                {
-                    decomposeResult = decomposer.Compute(copy, 3, (uint)copy.Length / 3,
-                                                         Array.ConvertAll<uint, int>(index, (uint ui) => (int)ui), 3, (uint)index.Length / 3,
-                                                         parameters);
-                });
-
-            t.SetApartmentState(ApartmentState.MTA);
-            List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
-
-            try
+            catch (DllNotFoundException e)
             {
-                t.Start();
-                int dot = 0;
-                while (!t.Join(0))
-                {
-                    SynthesisGUI.Instance.ExporterSetSubText("Calculating colliders" + new String('.', dot));
-                    dot++;
-                    if (dot > 5) dot = 0;
-                    System.Threading.Thread.Sleep(500);
-                }
-                Console.WriteLine();
-
-                if (!decomposeResult)
-                {
-                    throw new Exception("Couldn't calculate convex hull!");
-                }
-
-                uint hullCount = decomposer.GetNConvexHulls();
-                Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
-
-                for (uint i = 0; i < hullCount; i++)
-                {
-                    ConvexLibraryWrapper.ConvexHull result = decomposer.GetConvexHull(i);
-                    subs.Add(ExportMeshInternal(Array.ConvertAll<double, float>(result.m_points, (double ui) => (float)ui), result.m_nPoints,
-                                                Array.ConvertAll<int, uint>(result.m_triangles, (int ui) => (uint)ui), result.m_nTriangles));
-                }
+                Console.WriteLine(e.Message);
+                OCL = false;
             }
-            finally
-            { }
-
-            if (OCL && decompose)
-            {
-                decomposer.OCLRelease(parameters);
-            }
-
-            decomposer.Cancel();
-            decomposer.Clean();
-            decomposer.Release();
-
-            return subs;
         }
+
+        bool decomposeResult = false;
+
+        Thread t = new Thread(() =>
+            {
+                decomposeResult = decomposer.Compute(copy, 3, (uint)copy.Length / 3,
+                                                     Array.ConvertAll<uint, int>(index, (uint ui) => (int)ui), 3, (uint)index.Length / 3,
+                                                     parameters);
+            });
+
+        t.SetApartmentState(ApartmentState.MTA);
+        List<BXDAMesh.BXDASubMesh> subs = new List<BXDAMesh.BXDASubMesh>();
+
+        try
+        {
+            t.Start();
+            int dot = 0;
+            while (!t.Join(0))
+            {
+                SynthesisGUI.Instance.ExporterSetSubText("Calculating colliders" + new String('.', dot));
+                dot++;
+                if (dot > 5) dot = 0;
+                System.Threading.Thread.Sleep(500);
+            }
+            Console.WriteLine();
+
+            if (!decomposeResult)
+            {
+                throw new Exception("Couldn't calculate convex hull!");
+            }
+
+            uint hullCount = decomposer.GetNConvexHulls();
+            Console.WriteLine("Convex Decomposition produced " + hullCount + " hulls.");
+
+            for (uint i = 0; i < hullCount; i++)
+            {
+                ConvexLibraryWrapper.ConvexHull result = decomposer.GetConvexHull(i);
+                subs.Add(ExportMeshInternal(Array.ConvertAll<double, float>(result.m_points, (double ui) => (float)ui), result.m_nPoints,
+                                            Array.ConvertAll<int, uint>(result.m_triangles, (int ui) => (uint)ui), result.m_nTriangles));
+            }
+        }
+        finally
+        { }
+
+        if (OCL)
+        {
+            decomposer.OCLRelease(parameters);
+        }
+
+        decomposer.Cancel();
+        decomposer.Clean();
+        decomposer.Release();
+
+        return subs;
     }
 }

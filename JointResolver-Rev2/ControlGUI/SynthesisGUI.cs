@@ -178,11 +178,12 @@ public partial class SynthesisGUI : Form
 
     public void SetNew()
     {
+        if (SkeletonBase == null || !WarnUnsaved()) return;
+
         SkeletonBase = null;
         Meshes = null;
 
         ReloadPanels();
-        bxdaEditorPane1.treeView1.Nodes.Add("Test");
     }
 
     /// <summary>

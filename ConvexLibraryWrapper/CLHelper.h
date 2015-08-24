@@ -1,9 +1,10 @@
 #pragma once
 #pragma comment(lib, "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v7.0\\lib\\Win32\\OpenCL.lib")
 
-#include <CL\cl.h>
+#include <CLEW.h>
 
 #include <vector>
+#include <iostream>
 
 class CLHelper
 {

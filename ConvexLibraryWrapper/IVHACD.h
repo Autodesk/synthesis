@@ -1,14 +1,14 @@
 #pragma once
 
 #if _DEBUG
-#pragma comment(lib, "VHACD_LIB_DEBUG.lib")
+#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Debug\\VHACD.lib")
+#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Debug\\CLEW.lib")
 #else
-#pragma comment(lib, "VHACD_LIB_RELEASE.lib")
+#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Release\\VHACD.lib")
+#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Release\\CLEW.lib")
 #endif
 
-#pragma comment(lib, "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v7.0\\lib\\Win32\\OpenCL.lib")
-
-#include <include\VHACD.h>
+#include <public\VHACD.h>
 
 #include "ConvexHull.h"
 #include "Parameters.h"
@@ -47,5 +47,8 @@ namespace ConvexLibraryWrapper
 		
 		//The instance of the unmanaged class
 		VHACD::IVHACD * instance;
+
+	private:
+		static bool clLoaded = false;
 	};
 }

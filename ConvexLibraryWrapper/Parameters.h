@@ -1,6 +1,6 @@
 #pragma once
 
-#include <include\VHACD.h>
+#include <public\VHACD.h>
 #include "ProgressCallback.h"
 #include "ProgressLogger.h"
 
@@ -13,13 +13,13 @@ namespace ConvexLibraryWrapper
 	public:
 		Parameters(void)
 		{
-			m_concavity = 0.001;
+			m_concavity = 0.0005;
 			m_alpha = 0.05;
 			m_beta = 0.05;
 			m_gamma = 0.0005;
 			m_delta = 0.05;
 			m_minVolumePerCH = 0.0001;
-			m_resolution = 100000;
+			m_resolution = 110000;
 			m_maxNumVerticesPerCH = 64;
 			m_depth = 30;
 			m_planeDownsampling = 4;

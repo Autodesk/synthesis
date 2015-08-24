@@ -3,7 +3,3 @@
 // but are changed infrequently
 
 #pragma once
-
-#include <include\VHACD.h>
-
-#include <iostream>

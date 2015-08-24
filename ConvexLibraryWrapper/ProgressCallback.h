@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <include\VHACD.h>
+#include <public\VHACD.h>
 
 namespace ConvexLibraryWrapper
 {
