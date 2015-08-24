@@ -43,8 +43,8 @@ public partial class ExporterForm : Form
         newConsole = new TextboxWriter(logText);
         Console.SetOut(newConsole);
 
-        logText.ForeColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalTextColor);
-        logText.BackColor = System.Drawing.Color.FromArgb((int) SynthesisGUI.ExporterSettings.generalBackgroundColor);
+        logText.ForeColor = System.Drawing.Color.FromArgb((int)SynthesisGUI.ExporterSettings.generalTextColor);
+        logText.BackColor = System.Drawing.Color.FromArgb((int)SynthesisGUI.ExporterSettings.generalBackgroundColor);
 
         label1.Text = "";
         labelOverall.Text = "";
@@ -117,7 +117,7 @@ public partial class ExporterForm : Form
     {
         if (InvokeRequired)
         {
-            return (int) Invoke((Func<int>)GetProgress);
+            return (int)Invoke((Func<int>)GetProgress);
         }
 
         return progressBar1.Value;
@@ -145,41 +145,41 @@ public partial class ExporterForm : Form
 
         label1.Text = "Progress: " + text;
     }
-	
-	    public void SetNumMeshes(int meshes)
-        {
-            if (InvokeRequired)
-            {
-                Invoke((Action<int>)SetNumMeshes, meshes);
-                return;
-            }
 
-            progressBarOverall.Maximum = meshes;
-            progressBarOverall.Value = 0;
+    public void SetNumMeshes(int meshes)
+    {
+        if (InvokeRequired)
+        {
+            Invoke((Action<int>)SetNumMeshes, meshes);
+            return;
         }
 
-        public void AddOverallStep()
-        {
-            if (InvokeRequired)
-            {
-                Invoke((Action)AddOverallStep);
-                return;
-            }
+        progressBarOverall.Maximum = meshes;
+        progressBarOverall.Value = 0;
+    }
 
-            progressBarOverall.Step = 1;
-            progressBarOverall.PerformStep();
+    public void AddOverallStep()
+    {
+        if (InvokeRequired)
+        {
+            Invoke((Action)AddOverallStep);
+            return;
         }
 
-        public void SetOverallText(string text)
-        {
-            if (InvokeRequired)
-            {
-                Invoke((Action<string>)SetOverallText, text);
-                return;
-            }
+        progressBarOverall.Step = 1;
+        progressBarOverall.PerformStep();
+    }
 
-            labelOverall.Text = "Current step: " + text;
+    public void SetOverallText(string text)
+    {
+        if (InvokeRequired)
+        {
+            Invoke((Action<string>)SetOverallText, text);
+            return;
         }
+
+        labelOverall.Text = "Current step: " + text;
+    }
 
     public void Finish(string logFile = null)
     {
@@ -229,8 +229,6 @@ public partial class ExporterForm : Form
 
     public void Cleanup()
     {
-        inventorChooserPane1.Cleanup();
-
         InventorManager.ReleaseInventor();
     }
 
@@ -255,6 +253,7 @@ public partial class ExporterForm : Form
     private void RunExporter()
     {
         finished = false;
+        if (InventorManager.Instance == null) return;
         InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
         try
@@ -265,7 +264,7 @@ public partial class ExporterForm : Form
         }
         catch (COMException ce)
         {
-            
+
         }
         catch (Exception e)
         {
@@ -280,7 +279,13 @@ public partial class ExporterForm : Form
 
     private void CheckExporter(object exporter)
     {
-        Thread exporterThread = (Thread) exporter;
+        Thread exporterThread = (Thread)exporter;
+
+        Invoke((Action) delegate
+        {
+            nodeEditorPane1.Enabled = false;
+            inventorChooserPane1.Enabled = false;
+        });
 
         while (!exporterThread.Join(0))
         {
@@ -289,6 +294,11 @@ public partial class ExporterForm : Form
 
         string logPath = SynthesisGUI.ExporterSettings.generalSaveLogLocation + "\\log_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
+        Invoke((Action)delegate
+        {
+            nodeEditorPane1.Enabled = true;
+            inventorChooserPane1.Enabled = true;
+        });
         Finish(logPath);
     }
 

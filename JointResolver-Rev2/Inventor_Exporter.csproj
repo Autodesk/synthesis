@@ -98,7 +98,6 @@
     <Compile Include="ControlGUI\ExporterForm.Designer.cs">
       <DependentUpon>ExporterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ControlGUI\InventorChooser.cs" />
     <Compile Include="ControlGUI\InventorChooserPane.cs">
       <SubType>UserControl</SubType>
     </Compile>

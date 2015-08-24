@@ -4,6 +4,7 @@ public class Utilities
 {
     public static Vector ToInventorVector(BXDVector3 v)
     {
+        if (InventorManager.Instance == null) return null;
         return InventorManager.Instance.TransientGeometry.CreateVector(v.x, v.y, v.z);
     }
 

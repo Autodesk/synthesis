@@ -14,7 +14,14 @@ public class InventorManager
     {
         get
         {
-            return _instance.Value;
+            try
+            {
+                return _instance.Value;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 
@@ -132,19 +139,17 @@ public class InventorManager
         {
             InventorInstance = (Application)Marshal.GetActiveObject("Inventor.Application");
             _interactionEvents = null;
+            loaded = true;
         }
         catch (COMException e)
         {
-            Console.WriteLine("Couldn't load Inventor instance");
-            Console.WriteLine(e);
+            throw new COMException("Couldn't load Inventor instance", e);
         }
-
-        loaded = true;
     }
 
     public static void ReleaseInventor()
     {
-        if (!Instance.loaded) return;
+        if (Instance == null || !Instance.loaded) return;
 
         try
         {
