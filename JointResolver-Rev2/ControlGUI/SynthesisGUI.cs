@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -420,6 +421,11 @@ public partial class SynthesisGUI : Form
         splitContainer1.Height = ClientSize.Height - 27;
 
         ResumeLayout();
+    }
+
+    private void helpTutorials_Click(object sender, EventArgs e)
+    {
+        Process.Start("http://bxd.autodesk.com/synthesis/?page=Tutorials");
     }
 
 }

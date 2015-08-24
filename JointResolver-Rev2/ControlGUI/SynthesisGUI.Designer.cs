@@ -30,7 +30,10 @@ partial class SynthesisGUI
     {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SynthesisGUI));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.bxdaEditorPane1 = new EditorsLibrary.BXDAEditorPane();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.robotViewer1 = new EditorsLibrary.RobotViewer();
+            this.jointEditorPane1 = new EditorsLibrary.JointEditorPane();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolstripFile = new System.Windows.Forms.ToolStripDropDownButton();
             this.fileNew = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,12 +47,7 @@ partial class SynthesisGUI
             this.settingsViewer = new System.Windows.Forms.ToolStripMenuItem();
             this.toolstripHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.helpTutorials = new System.Windows.Forms.ToolStripMenuItem();
-            this.tutorialsNotFinished = new System.Windows.Forms.ToolStripMenuItem();
-            this.tutorialsSorry = new System.Windows.Forms.ToolStripMenuItem();
             this.helpAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.bxdaEditorPane1 = new EditorsLibrary.BXDAEditorPane();
-            this.robotViewer1 = new EditorsLibrary.RobotViewer();
-            this.jointEditorPane1 = new EditorsLibrary.JointEditorPane();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -78,6 +76,17 @@ partial class SynthesisGUI
             this.splitContainer1.SplitterDistance = 414;
             this.splitContainer1.TabIndex = 0;
             // 
+            // bxdaEditorPane1
+            // 
+            this.bxdaEditorPane1.AutoSize = true;
+            this.bxdaEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.bxdaEditorPane1.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
+            this.bxdaEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bxdaEditorPane1.Location = new System.Drawing.Point(0, 0);
+            this.bxdaEditorPane1.Name = "bxdaEditorPane1";
+            this.bxdaEditorPane1.Size = new System.Drawing.Size(414, 723);
+            this.bxdaEditorPane1.TabIndex = 0;
+            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -98,6 +107,26 @@ partial class SynthesisGUI
             this.splitContainer2.Size = new System.Drawing.Size(764, 723);
             this.splitContainer2.SplitterDistance = 482;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // robotViewer1
+            // 
+            this.robotViewer1.AutoSize = true;
+            this.robotViewer1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.robotViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.robotViewer1.Location = new System.Drawing.Point(0, 0);
+            this.robotViewer1.Name = "robotViewer1";
+            this.robotViewer1.Size = new System.Drawing.Size(764, 482);
+            this.robotViewer1.TabIndex = 0;
+            // 
+            // jointEditorPane1
+            // 
+            this.jointEditorPane1.AutoSize = true;
+            this.jointEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.jointEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jointEditorPane1.Location = new System.Drawing.Point(0, 0);
+            this.jointEditorPane1.Name = "jointEditorPane1";
+            this.jointEditorPane1.Size = new System.Drawing.Size(764, 237);
+            this.jointEditorPane1.TabIndex = 0;
             // 
             // toolStrip1
             // 
@@ -212,24 +241,10 @@ partial class SynthesisGUI
             // 
             // helpTutorials
             // 
-            this.helpTutorials.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tutorialsNotFinished,
-            this.tutorialsSorry});
             this.helpTutorials.Name = "helpTutorials";
             this.helpTutorials.Size = new System.Drawing.Size(182, 24);
             this.helpTutorials.Text = "Online Tutorials";
-            // 
-            // tutorialsNotFinished
-            // 
-            this.tutorialsNotFinished.Name = "tutorialsNotFinished";
-            this.tutorialsNotFinished.Size = new System.Drawing.Size(183, 24);
-            this.tutorialsNotFinished.Text = "Not finished yet";
-            // 
-            // tutorialsSorry
-            // 
-            this.tutorialsSorry.Name = "tutorialsSorry";
-            this.tutorialsSorry.Size = new System.Drawing.Size(183, 24);
-            this.tutorialsSorry.Text = "Sorry :(";
+            this.helpTutorials.Click += new System.EventHandler(this.helpTutorials_Click);
             // 
             // helpAbout
             // 
@@ -237,38 +252,7 @@ partial class SynthesisGUI
             this.helpAbout.Size = new System.Drawing.Size(182, 24);
             this.helpAbout.Text = "About";
             // 
-            // bxdaEditorPane1
-            // 
-            this.bxdaEditorPane1.AutoSize = true;
-            this.bxdaEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.bxdaEditorPane1.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
-            this.bxdaEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bxdaEditorPane1.Location = new System.Drawing.Point(0, 0);
-            this.bxdaEditorPane1.Name = "bxdaEditorPane1";
-            this.bxdaEditorPane1.Size = new System.Drawing.Size(414, 723);
-            this.bxdaEditorPane1.TabIndex = 0;
-            // 
-            // robotViewer1
-            // 
-            this.robotViewer1.AutoSize = true;
-            this.robotViewer1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.robotViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.robotViewer1.Location = new System.Drawing.Point(0, 0);
-            this.robotViewer1.Name = "robotViewer1";
-            this.robotViewer1.Size = new System.Drawing.Size(764, 482);
-            this.robotViewer1.TabIndex = 0;
-            // 
-            // jointEditorPane1
-            // 
-            this.jointEditorPane1.AutoSize = true;
-            this.jointEditorPane1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.jointEditorPane1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.jointEditorPane1.Location = new System.Drawing.Point(0, 0);
-            this.jointEditorPane1.Name = "jointEditorPane1";
-            this.jointEditorPane1.Size = new System.Drawing.Size(764, 237);
-            this.jointEditorPane1.TabIndex = 0;
-            // 
-            // ExporterGUI
+            // SynthesisGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -277,7 +261,7 @@ partial class SynthesisGUI
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(1200, 795);
-            this.Name = "ExporterGUI";
+            this.Name = "SynthesisGUI";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "BXD Synthesis";
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -317,7 +301,5 @@ partial class SynthesisGUI
     private System.Windows.Forms.ToolStripMenuItem settingsViewer;
     private System.Windows.Forms.ToolStripDropDownButton toolstripHelp;
     private System.Windows.Forms.ToolStripMenuItem helpTutorials;
-    private System.Windows.Forms.ToolStripMenuItem tutorialsNotFinished;
-    private System.Windows.Forms.ToolStripMenuItem tutorialsSorry;
     private System.Windows.Forms.ToolStripMenuItem helpAbout;
 }
