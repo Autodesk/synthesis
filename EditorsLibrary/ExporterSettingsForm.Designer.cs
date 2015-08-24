@@ -33,7 +33,6 @@
             this.buttonOK = new System.Windows.Forms.Button();
             this.groupboxSkeleton = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
             this.checkboxOCL = new System.Windows.Forms.CheckBox();
             this.groupboxGeneral = new System.Windows.Forms.GroupBox();
             this.buttonChooseFolder = new System.Windows.Forms.Button();
@@ -43,6 +42,7 @@
             this.labelTextColor = new System.Windows.Forms.Label();
             this.checkboxSaveLog = new System.Windows.Forms.CheckBox();
             this.textboxLogLocation = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupboxSkeleton.SuspendLayout();
             this.groupboxGeneral.SuspendLayout();
             this.SuspendLayout();
@@ -67,8 +67,8 @@
             // 
             // groupboxSkeleton
             // 
-            this.groupboxSkeleton.Controls.Add(this.label2);
             this.groupboxSkeleton.Controls.Add(this.label1);
+            this.groupboxSkeleton.Controls.Add(this.label2);
             this.groupboxSkeleton.Controls.Add(this.checkboxOCL);
             this.groupboxSkeleton.ForeColor = System.Drawing.Color.Gray;
             this.groupboxSkeleton.Location = new System.Drawing.Point(15, 178);
@@ -83,22 +83,11 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Black;
-            this.label2.Location = new System.Drawing.Point(6, 58);
+            this.label2.Location = new System.Drawing.Point(3, 45);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(349, 13);
+            this.label2.Size = new System.Drawing.Size(340, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Make sure that your device drivers are up to date before using this option";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(6, 45);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(284, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Note: This will only speed up the export in specific situations";
+            this.label2.Text = "Make sure that your GPU drivers are up to date before using this option";
             // 
             // checkboxOCL
             // 
@@ -200,6 +189,17 @@
             this.textboxLogLocation.ReadOnly = true;
             this.textboxLogLocation.Size = new System.Drawing.Size(302, 22);
             this.textboxLogLocation.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(3, 58);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(170, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Actual performance gains may vary";
             // 
             // ExporterSettingsForm
             // 

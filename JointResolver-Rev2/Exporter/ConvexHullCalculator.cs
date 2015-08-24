@@ -384,7 +384,7 @@ public class ConvexHullCalculator
                 {
                     //Console.Write("Cleaning " + totalChecks + "/" + (copy.Length / 3) + "  " + ((int) (totalChecks * 3 / (float) copy.Length * 10000f) / 100f) + "%");
                     double totalProgress = ((double)totalChecks / ((double)copy.Length / 3.0)) * 100.0;
-                    SynthesisGUI.Instance.ExporterSetSubText(String.Format("Clean {0}% \t {1} / {2}", Math.Round(totalProgress, 2), totalChecks, copy.Length / 3));
+                    SynthesisGUI.Instance.ExporterSetSubText(String.Format("Clean {1} / {2}", Math.Round(totalProgress, 2), totalChecks, copy.Length / 3));
                     SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                 }
                 //Copy all the mesh vertices over, starting at the end of the last mesh copied.
@@ -458,6 +458,8 @@ public class ConvexHullCalculator
         }
         if (OCL)
         {
+            Console.WriteLine("Using OpenCL acceleration");
+
             try
             {
                 parameters.m_oclAcceleration = 1;

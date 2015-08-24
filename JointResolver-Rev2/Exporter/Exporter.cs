@@ -59,7 +59,7 @@ public class Exporter
         SynthesisGUI.Instance.ExporterSetOverallText("Centering joints");
 
         SynthesisGUI.Instance.ExporterReset();
-        SynthesisGUI.Instance.ExporterSetSubText("0% \t 0 / 0");
+        SynthesisGUI.Instance.ExporterSetSubText("Centering 0 / 0");
         SynthesisGUI.Instance.ExporterSetProgress(0);
         SynthesisGUI.Instance.ExporterSetMeshes(2);
 
@@ -71,7 +71,7 @@ public class Exporter
         {
             CenterAllJoints(component);
             double totalProgress = (((double) (current + 1) / (double) numOccurrences) * 100.0);
-            SynthesisGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), (current + 1), numOccurrences));
+            SynthesisGUI.Instance.ExporterSetSubText(String.Format("Centering {1} / {2}", Math.Round(totalProgress, 2), (current + 1), numOccurrences));
             SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
             current++;
         }
@@ -140,7 +140,7 @@ public class Exporter
                     surfs.ExportAll(group, (long progress, long total) =>
                     {
                         double totalProgress = (((double)progress / (double)total) * 100.0);
-                        SynthesisGUI.Instance.ExporterSetSubText(String.Format("{0}% \t {1} / {2}", Math.Round(totalProgress, 2), progress, total));
+                        SynthesisGUI.Instance.ExporterSetSubText(String.Format("Export {1} / {2}", Math.Round(totalProgress, 2), progress, total));
                         SynthesisGUI.Instance.ExporterSetProgress(totalProgress);
                     });
                     Console.WriteLine();
