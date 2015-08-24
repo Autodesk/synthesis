@@ -151,6 +151,20 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
+        /// Adds the supplied components as nodes and sends progress updates.
+        /// </summary>
+        /// <param name="components"></param>
+        /// <param name="progressUpdate"></param>
+        public void AddComponents(ObjectsEnumerator components, Action<int, int> progressUpdate)
+        {
+            for (int i = 0; i < components.Count; i++)
+            {
+                AddComponent(components[i + 1]);
+                progressUpdate(i + 1, components.Count);
+            }
+        }
+
+        /// <summary>
         /// Resets the InventorTreeView.
         /// </summary>
         public void Reset()

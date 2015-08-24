@@ -126,11 +126,10 @@ public partial class SurfaceExporter
             int i = 0;
             foreach (Face f in surf.Faces)
             {
-                Console.Write(i + "/" + surf.Faces.Count);
+                SynthesisGUI.Instance.ExporterSetSubText("Face " + i + "/" + surf.Faces.Count);
                 i++;
                 AddFacets(f, tolerances[bestIndex]);
             }
-            Console.WriteLine(i + "/" + surf.Faces.Count);
         }
         else
         {

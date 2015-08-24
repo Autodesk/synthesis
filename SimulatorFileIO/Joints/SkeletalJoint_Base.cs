@@ -6,6 +6,7 @@ using System.Collections.Generic;
 /// </summary>
 public enum SkeletalJointType : byte
 {
+    DEFAULT = 0,
     ROTATIONAL = 1,
     LINEAR = 2,
     PLANAR = 3,

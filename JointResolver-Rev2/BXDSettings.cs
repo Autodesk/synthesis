@@ -28,8 +28,8 @@ public class BXDSettings
         }
     }
 
-    private static Type[] settingsTypes = new Type[] { typeof(EditorsLibrary.ViewerSettings.ViewerSettingsValues),
-                                                       typeof(EditorsLibrary.ExporterSettings.ExporterSettingsValues) };
+    private static Type[] settingsTypes = new Type[] { typeof(EditorsLibrary.ViewerSettingsForm.ViewerSettingsValues),
+                                                       typeof(EditorsLibrary.ExporterSettingsForm.ExporterSettingsValues) };
 
     public string LastSkeletonDirectory = null;
 
