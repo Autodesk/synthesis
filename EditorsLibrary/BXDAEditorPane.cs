@@ -42,7 +42,7 @@ namespace EditorsLibrary
                     {
                         if (meshNode.type == BXDAEditorNode.NodeType.MESH)
                         {
-                            meshNode.Nodes[2].Text = String.Format("Physical Properties ({0})", value);
+                            meshNode.Nodes[2].Text = String.Format("Physical Properties ({0}, cm)", value);
 
                             if (value.Equals("lb"))
                             {
@@ -98,6 +98,8 @@ namespace EditorsLibrary
 
         public void AddSelection(RigidNode_Base node, bool clearExisting)
         {
+            if (rootNode == null) return;
+
             foreach (BXDAEditorNode treeNode in rootNode.Nodes)
             {
                 treeNode.BackColor = Color.White;
@@ -149,7 +151,7 @@ namespace EditorsLibrary
             meshNode.Nodes.Add(collisionSectionHeader);
             generateSubMeshTree(collisionSectionHeader, mesh.colliders);
 
-            BXDAEditorNode physicsSectionHeader = new BXDAEditorNode(String.Format("Physical Properties ({0})", _units), 
+            BXDAEditorNode physicsSectionHeader = new BXDAEditorNode(String.Format("Physical Properties ({0}, cm)", _units), 
                                                                      BXDAEditorNode.NodeType.SECTION_HEADER, false);
             meshNode.Nodes.Add(physicsSectionHeader);
 

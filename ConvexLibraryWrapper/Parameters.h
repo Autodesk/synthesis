@@ -33,6 +33,7 @@ namespace ConvexLibraryWrapper
 			m_logger = new ProgressLogger();
 		}
 
+		//http://kmamou.blogspot.com/2014/12/v-hacd-20-parameters-description.html
 		double m_concavity;
 		double m_alpha;
 		double m_beta;

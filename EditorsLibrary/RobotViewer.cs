@@ -506,11 +506,11 @@ namespace EditorsLibrary
 
             mouseState.dragStart = new Vector2(args.X, args.Y);
 
-            if (args.Button == MouseButtons.Left && (selectedObject as OGL_RigidNode) != null)
+            if (args.Button == MouseButtons.Left && (selectedObject as OGL_RigidNode) != null && modelLoaded)
             {
                 NodeSelected(selectedObject as RigidNode_Base, !keyboardState.LControlDown);
             }
-            else if (args.Button == MouseButtons.Left && !keyboardState.LControlDown)
+            else if (args.Button == MouseButtons.Left && !keyboardState.LControlDown && modelLoaded)
             {
                 NodeSelected(null, true);
                 activeObjects.Clear();
