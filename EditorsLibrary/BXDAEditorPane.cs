@@ -27,7 +27,7 @@ namespace EditorsLibrary
         /// </summary>
         public BXDAEditorNode rootNode;
 
-        private string _units;
+        private string _units = "lb";
         public string Units
         {
             get
@@ -58,7 +58,7 @@ namespace EditorsLibrary
                     }
                 }
 
-                _units = value;
+                _units = (value != null) ? value : "lb";
             }
         }
 

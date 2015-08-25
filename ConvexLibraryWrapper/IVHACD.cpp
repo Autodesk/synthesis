@@ -95,7 +95,7 @@ namespace ConvexLibraryWrapper
 		int err = CLHelper::GetDevice(devices);
 		if (err == -1) return false;
 
-		return instance->OCLInit(&devices[1], params->m_logger);
+		return instance->OCLInit(&devices[0], params->m_logger);
 	}
 
 	bool IVHACD::OCLRelease(Parameters ^ params)
