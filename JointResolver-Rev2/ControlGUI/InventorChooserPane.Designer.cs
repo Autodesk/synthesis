@@ -31,9 +31,9 @@
             // 
             // buttonAdd
             // 
-            this.buttonAdd.Location = new System.Drawing.Point(3, 381);
+            this.buttonAdd.Location = new System.Drawing.Point(3, 3);
             this.buttonAdd.Name = "buttonAdd";
-            this.buttonAdd.Size = new System.Drawing.Size(762, 32);
+            this.buttonAdd.Size = new System.Drawing.Size(176, 32);
             this.buttonAdd.TabIndex = 1;
             this.buttonAdd.Text = "Add from Inventor";
             this.buttonAdd.UseVisualStyleBackColor = true;

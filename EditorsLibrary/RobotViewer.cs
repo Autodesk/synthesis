@@ -105,7 +105,7 @@ namespace EditorsLibrary
         /// The ambient color of the lights
         /// </summary>
         static float[] ambient = { .125f, .125f, .125f, .125f };
-        
+
         /// <summary>
         /// The GUID of the selected object
         /// </summary>
@@ -144,10 +144,10 @@ namespace EditorsLibrary
         public void LoadModel(RigidNode_Base node, List<BXDAMesh> meshes)
         {
             modelLoaded = false;
-            
+
             if (node == null || meshes == null) return;
 
-            baseNode = (OGL_RigidNode) node;
+            baseNode = (OGL_RigidNode)node;
 
             nodes = baseNode.ListAllNodes();
 
@@ -171,7 +171,7 @@ namespace EditorsLibrary
         {
             settings = newSettings;
 
-            cameraMult = (float) settings.cameraSensitivity / 3f;
+            cameraMult = (float)settings.cameraSensitivity / 3f;
             cameraDebug = settings.cameraDebugMode;
             labelDebugPosition.Visible = cameraDebug;
             labelDebugRotation.Visible = cameraDebug;
@@ -222,7 +222,7 @@ namespace EditorsLibrary
             glControl1.MouseMove += viewer_MouseMoved;
             glControl1.MouseWheel += viewer_MouseWheel;
 
-            GL.ClearColor(System.Drawing.Color.Black);
+            GL.ClearColor(System.Drawing.Color.DeepSkyBlue);
             GL.Enable(EnableCap.Lighting);
             GL.Enable(EnableCap.Light0);
             GL.Enable(EnableCap.Light1);
@@ -302,7 +302,7 @@ namespace EditorsLibrary
                 selectedGUID = nextGUID;
 
                 GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0);
-                GL.ClearColor(System.Drawing.Color.Black);
+                GL.ClearColor(System.Drawing.Color.DeepSkyBlue);
             }
             GL.PopAttrib();
         }
@@ -358,21 +358,21 @@ namespace EditorsLibrary
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
             cam.translate();
-            
+
             #region LIGHTS
             GL.LightModel(LightModelParameter.LightModelAmbient, ambient);
             GL.Light(LightName.Light0, LightParameter.Position, l0_position);
             GL.Light(LightName.Light0, LightParameter.Diffuse, l_diffuse);
             GL.Light(LightName.Light0, LightParameter.Specular, l_specular);
-            
+
             GL.Light(LightName.Light1, LightParameter.Position, l1_position);
             GL.Light(LightName.Light1, LightParameter.Diffuse, l_diffuse);
             GL.Light(LightName.Light1, LightParameter.Specular, l_specular);
             #endregion
-            
+
             doSelect();
             renderInternal();
-            
+
             // Overlay:
             foreach (RigidNode_Base node in nodes)
             {
@@ -381,7 +381,7 @@ namespace EditorsLibrary
                     ((OGL_RigidNode)node).renderDebug(settings.modelDrawAxes);
                 }
             }
-            
+
             #region OVERLAY
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
@@ -392,7 +392,7 @@ namespace EditorsLibrary
             GL.Disable(EnableCap.Lighting);
             renderOverlay();
             #endregion
-            
+
             glControl1.SwapBuffers();
         }
 

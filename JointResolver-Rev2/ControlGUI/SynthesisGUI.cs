@@ -49,6 +49,7 @@ public partial class SynthesisGUI : Form
         Instance = this;
 
         robotViewer1.LoadSettings(ViewerSettings);
+        bxdaEditorPane1.Units = ViewerSettings.modelUnits;
 
         RigidNode_Base.NODE_FACTORY = delegate()
         {
@@ -105,6 +106,7 @@ public partial class SynthesisGUI : Form
             ViewerSettings = vSettingsForm.values;
 
             robotViewer1.LoadSettings(ViewerSettings);
+            bxdaEditorPane1.Units = ViewerSettings.modelUnits;
         });
 
         helpAbout.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)

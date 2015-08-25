@@ -44,7 +44,7 @@
             // 
             // columnHeaderConvex
             // 
-            this.columnHeaderConvex.Text = "Decompose Convex Hull";
+            this.columnHeaderConvex.Text = "Accurate Colliders";
             // 
             // columnHeaderMulti
             // 

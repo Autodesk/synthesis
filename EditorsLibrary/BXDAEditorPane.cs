@@ -27,6 +27,41 @@ namespace EditorsLibrary
         /// </summary>
         public BXDAEditorNode rootNode;
 
+        private string _units;
+        public string Units
+        {
+            get
+            {
+                return _units;
+            }
+            set
+            {
+                if (rootNode != null)
+                {
+                    foreach (BXDAEditorNode meshNode in rootNode.Nodes)
+                    {
+                        if (meshNode.type == BXDAEditorNode.NodeType.MESH)
+                        {
+                            meshNode.Nodes[2].Text = String.Format("Physical Properties ({0})", value);
+
+                            if (value.Equals("lb"))
+                            {
+                                (meshNode.Nodes[2].Nodes[0] as BXDAEditorNode).data[0] = (meshNode.data[0] as BXDAMesh).physics.mass * 2.205f;
+                            }
+                            else
+                            {
+                                (meshNode.Nodes[2].Nodes[0] as BXDAEditorNode).data[0] = (meshNode.data[0] as BXDAMesh).physics.mass;
+                            }
+
+                            (meshNode.Nodes[2].Nodes[0] as BXDAEditorNode).updateName();
+                        }
+                    }
+                }
+
+                _units = value;
+            }
+        }
+
         public int NodeCount
         {
             get
@@ -114,10 +149,12 @@ namespace EditorsLibrary
             meshNode.Nodes.Add(collisionSectionHeader);
             generateSubMeshTree(collisionSectionHeader, mesh.colliders);
 
-            BXDAEditorNode physicsSectionHeader = new BXDAEditorNode("Physical Properties", BXDAEditorNode.NodeType.SECTION_HEADER, false);
+            BXDAEditorNode physicsSectionHeader = new BXDAEditorNode(String.Format("Physical Properties ({0})", _units), 
+                                                                     BXDAEditorNode.NodeType.SECTION_HEADER, false);
             meshNode.Nodes.Add(physicsSectionHeader);
 
-            physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Total Mass", BXDAEditorNode.NodeType.FLOAT, true, mesh.physics.mass));
+            physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Total Mass", BXDAEditorNode.NodeType.FLOAT, true, 
+                                                              _units.Equals("lb") ? mesh.physics.mass * 2.205f : mesh.physics.mass));
             physicsSectionHeader.Nodes.Add(new BXDAEditorNode("Center of Mass", BXDAEditorNode.NodeType.VECTOR3, true,
                                                        mesh.physics.centerOfMass.x, mesh.physics.centerOfMass.y, mesh.physics.centerOfMass.z));
 
@@ -209,8 +246,9 @@ namespace EditorsLibrary
             BXDAMesh mesh = (BXDAMesh) meshNode.data[0];
             
             //Physical properties
-            Console.WriteLine(((BXDAEditorNode) meshNode.Nodes[2].Nodes[0]).data[0].GetType());
-            mesh.physics.mass = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[0]).data[0];
+            float mass = (float)((BXDAEditorNode)meshNode.Nodes[2].Nodes[0]).data[0];
+            if (_units.Equals("lb")) mesh.physics.mass = mass / 2.205f;
+            else mesh.physics.mass = mass;
             mesh.physics.centerOfMass.x = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[1]).data[0];
             mesh.physics.centerOfMass.y = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[1]).data[1];
             mesh.physics.centerOfMass.z = (float) ((BXDAEditorNode) meshNode.Nodes[2].Nodes[1]).data[2];

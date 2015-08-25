@@ -54,6 +54,7 @@ namespace EditorsLibrary
             buttonChooseTint.BackColor = Color.FromArgb((int) values.modelTintColor);
             checkboxDrawAxes.Checked = values.modelDrawAxes;
             checkboxActuate.Checked = values.modelActuateJoints;
+            comboBoxUnits.SelectedIndex = values.modelUnits == "lb" ? 0 : 1;
 
             checkboxHighlight_CheckedChanged(null, null); //To make sure that things are enabled/disabled correctly
             checkboxTint_CheckedChanged(null, null);
@@ -73,6 +74,7 @@ namespace EditorsLibrary
             values.modelTintColor = (uint) buttonChooseTint.BackColor.ToArgb();
             values.modelDrawAxes = checkboxDrawAxes.Checked;
             values.modelActuateJoints = checkboxActuate.Checked;
+            values.modelUnits = comboBoxUnits.SelectedIndex == 0 ? "lb" : "kg";
         }
 
         /// <summary>
@@ -146,6 +148,7 @@ namespace EditorsLibrary
             defaultValues.modelTintColor = 0xFF00FF00;
             defaultValues.modelDrawAxes = false;
             defaultValues.modelActuateJoints = true;
+            defaultValues.modelUnits = "lb";
 
             return defaultValues;
         }
@@ -164,6 +167,7 @@ namespace EditorsLibrary
             public uint modelTintColor;
             public bool modelDrawAxes;
             public bool modelActuateJoints;
+            public string modelUnits;
         }
 
     }

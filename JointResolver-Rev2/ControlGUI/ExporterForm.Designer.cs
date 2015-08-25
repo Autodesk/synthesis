@@ -29,6 +29,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExporterForm));
             this.tabs = new System.Windows.Forms.TabControl();
             this.tabSelect = new System.Windows.Forms.TabPage();
+            this.nodeEditorPane1 = new NodeEditorPane();
             this.inventorChooserPane1 = new InventorChooserPane();
             this.logPage = new System.Windows.Forms.TabPage();
             this.logText = new System.Windows.Forms.RichTextBox();
@@ -38,7 +39,6 @@
             this.buttonSaveLog = new System.Windows.Forms.Button();
             this.progressBarOverall = new System.Windows.Forms.ProgressBar();
             this.labelOverall = new System.Windows.Forms.Label();
-            this.nodeEditorPane1 = new NodeEditorPane();
             this.tabs.SuspendLayout();
             this.tabSelect.SuspendLayout();
             this.logPage.SuspendLayout();
@@ -66,6 +66,13 @@
             this.tabSelect.TabIndex = 2;
             this.tabSelect.Text = "Select Parts";
             this.tabSelect.UseVisualStyleBackColor = true;
+            // 
+            // nodeEditorPane1
+            // 
+            this.nodeEditorPane1.Location = new System.Drawing.Point(3, 43);
+            this.nodeEditorPane1.Name = "nodeEditorPane1";
+            this.nodeEditorPane1.Size = new System.Drawing.Size(760, 373);
+            this.nodeEditorPane1.TabIndex = 1;
             // 
             // inventorChooserPane1
             // 
@@ -152,13 +159,6 @@
             this.labelOverall.Size = new System.Drawing.Size(86, 17);
             this.labelOverall.TabIndex = 6;
             this.labelOverall.Text = "Current step";
-            // 
-            // nodeEditorPane1
-            // 
-            this.nodeEditorPane1.Location = new System.Drawing.Point(6, 6);
-            this.nodeEditorPane1.Name = "nodeEditorPane1";
-            this.nodeEditorPane1.Size = new System.Drawing.Size(760, 373);
-            this.nodeEditorPane1.TabIndex = 1;
             // 
             // ExporterForm
             // 

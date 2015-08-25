@@ -20,7 +20,18 @@ public partial class InventorChooserPane : UserControl
 
     private void buttonAdd_Click(object sender, EventArgs e)
     {
-        if (InventorManager.Instance == null) return;
+        if (InventorManager.Instance == null)
+        {
+            MessageBox.Show("Couldn't detect a running instance of Inventor.");
+            return;
+        }
+
+        if (InventorManager.Instance.ActiveDocument == null || !(InventorManager.Instance.ActiveDocument is AssemblyDocument))
+        {
+            MessageBox.Show("Couldn't detect an open assembly");
+            return;
+        }
+
         InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = true;
 
         buttonAdd.Enabled = false;

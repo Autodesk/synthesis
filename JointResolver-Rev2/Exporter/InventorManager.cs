@@ -9,7 +9,7 @@ using Inventor;
 public class InventorManager
 {
 
-    private static readonly Lazy<InventorManager> _instance = new Lazy<InventorManager>(() => new InventorManager());
+    private static Lazy<InventorManager> _instance = new Lazy<InventorManager>(() => new InventorManager());
     public static InventorManager Instance
     {
         get
@@ -20,12 +20,13 @@ public class InventorManager
             }
             catch
             {
+                _instance = new Lazy<InventorManager>(() => new InventorManager());
                 return null;
             }
         }
     }
 
-    private bool loaded = false;
+    public bool loaded = false;
 
     public Application InventorInstance;
     private AssemblyDocument RobotDocument;

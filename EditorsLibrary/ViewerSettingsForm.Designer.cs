@@ -46,6 +46,8 @@
             this.checkboxHighlight = new System.Windows.Forms.CheckBox();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.comboBoxUnits = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackbarCameraSen)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -122,6 +124,8 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label1);
+            this.groupBox2.Controls.Add(this.comboBoxUnits);
             this.groupBox2.Controls.Add(this.buttonChooseTint);
             this.groupBox2.Controls.Add(this.labelTintColor);
             this.groupBox2.Controls.Add(this.checkboxActuate);
@@ -165,7 +169,7 @@
             this.checkboxActuate.Checked = true;
             this.checkboxActuate.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkboxActuate.ForeColor = System.Drawing.Color.Black;
-            this.checkboxActuate.Location = new System.Drawing.Point(9, 198);
+            this.checkboxActuate.Location = new System.Drawing.Point(9, 174);
             this.checkboxActuate.Name = "checkboxActuate";
             this.checkboxActuate.Size = new System.Drawing.Size(115, 21);
             this.checkboxActuate.TabIndex = 6;
@@ -250,7 +254,29 @@
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
-            // ViewerSettings
+            // comboBoxUnits
+            // 
+            this.comboBoxUnits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxUnits.FormattingEnabled = true;
+            this.comboBoxUnits.Items.AddRange(new object[] {
+            "Pounds (lb)",
+            "Kilograms (kg)"});
+            this.comboBoxUnits.Location = new System.Drawing.Point(104, 211);
+            this.comboBoxUnits.Name = "comboBoxUnits";
+            this.comboBoxUnits.Size = new System.Drawing.Size(154, 24);
+            this.comboBoxUnits.TabIndex = 11;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.Location = new System.Drawing.Point(6, 214);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(92, 17);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "Weight Units:";
+            // 
+            // ViewerSettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -260,7 +286,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "ViewerSettings";
+            this.Name = "ViewerSettingsForm";
             this.Text = "Viewer Settings";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -290,6 +316,8 @@
         private System.Windows.Forms.CheckBox checkboxTint;
         private System.Windows.Forms.Button buttonChooseTint;
         private System.Windows.Forms.Label labelTintColor;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ComboBox comboBoxUnits;
 
 
     }
