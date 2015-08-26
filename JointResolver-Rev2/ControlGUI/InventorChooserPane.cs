@@ -41,7 +41,7 @@ public partial class InventorChooserPane : UserControl
         RigidNode_Base skeleton = Exporter.ExportSkeleton(InventorManager.Instance.ComponentOccurrences.OfType<ComponentOccurrence>().ToList());
         ExporterForm.Instance.UpdateComponents(skeleton);
 
-        InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
+        //InventorManager.Instance.UserInterfaceManager.UserInteractionDisabled = false;
         buttonAdd.Enabled = true;
         SynthesisGUI.Instance.ExporterReset();
         SynthesisGUI.Instance.ExporterOverallReset();
