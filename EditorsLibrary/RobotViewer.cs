@@ -222,7 +222,7 @@ namespace EditorsLibrary
             glControl1.MouseMove += viewer_MouseMoved;
             glControl1.MouseWheel += viewer_MouseWheel;
 
-            GL.ClearColor(System.Drawing.Color.DeepSkyBlue);
+            GL.ClearColor(System.Drawing.Color.LightGreen);
             GL.Enable(EnableCap.Lighting);
             GL.Enable(EnableCap.Light0);
             GL.Enable(EnableCap.Light1);
@@ -302,7 +302,7 @@ namespace EditorsLibrary
                 selectedGUID = nextGUID;
 
                 GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0);
-                GL.ClearColor(System.Drawing.Color.Green);
+                GL.ClearColor(System.Drawing.Color.LightGreen);
             }
             GL.PopAttrib();
         }
