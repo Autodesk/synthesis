@@ -302,7 +302,7 @@ namespace EditorsLibrary
                 selectedGUID = nextGUID;
 
                 GL.Ext.BindFramebuffer(FramebufferTarget.FramebufferExt, 0);
-                GL.ClearColor(System.Drawing.Color.DeepSkyBlue);
+                GL.ClearColor(System.Drawing.Color.Green);
             }
             GL.PopAttrib();
         }
