@@ -356,7 +356,6 @@ public partial class SynthesisGUI : Form
         var dialogThread = new Thread(() =>
         {
             FolderBrowserDialog openDialog = new FolderBrowserDialog();
-            openDialog.RootFolder = Environment.SpecialFolder.UserProfile;
             openDialog.ShowNewFolderButton = true;
             openDialog.Description = "Choose Robot Folder";
             DialogResult openResult = openDialog.ShowDialog();
