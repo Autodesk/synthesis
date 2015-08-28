@@ -154,11 +154,11 @@
     <Compile Include="Forms\EnterNameDialog.Designer.cs">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\UnhandledExceptionForm.cs">
+    <Compile Include="Forms\ErrorSubmissionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\UnhandledExceptionForm.Designer.cs">
-      <DependentUpon>UnhandledExceptionForm.cs</DependentUpon>
+    <Compile Include="Forms\ErrorSubmissionForm.Designer.cs">
+      <DependentUpon>ErrorSubmissionForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -199,8 +199,8 @@
     <EmbeddedResource Include="Forms\EnterNameDialog.resx">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UnhandledExceptionForm.resx">
-      <DependentUpon>UnhandledExceptionForm.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ErrorSubmissionForm.resx">
+      <DependentUpon>ErrorSubmissionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

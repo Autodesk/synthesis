@@ -18,22 +18,34 @@ namespace FieldExporter.Controls
         /// <summary>
         /// The parent ComponentPropertiesTabPage.
         /// </summary>
-        private ComponentPropertiesTabPage parentTabPage;
+        public ComponentPropertiesTabPage ParentTabPage
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// The events caused by user interaction with Inventor.
         /// </summary>
-        private InteractionEvents interactionEvents;
+        public InteractionEvents InteractionEvents
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// The events triggered by object selection in Inventor.
         /// </summary>
-        private SelectEvents selectEvents;
+        public SelectEvents SelectEvents
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Used to determine if Inventor interaction is enabled.
         /// </summary>
-        public bool interactionEnabled
+        public bool InteractionEnabled
         {
             get;
             private set;
@@ -48,11 +60,11 @@ namespace FieldExporter.Controls
 
             Dock = DockStyle.Fill;
 
-            parentTabPage = tabPage;
+            ParentTabPage = tabPage;
 
             colliderTypeCombobox.SelectedIndex = 0;
 
-            interactionEnabled = false;
+            InteractionEnabled = false;
         }
 
         /// <summary>
@@ -102,19 +114,19 @@ namespace FieldExporter.Controls
         /// <summary>
         /// Enables interaction events with Inventor.
         /// </summary>
-        private void EnableInteractionEvents()
+        public void EnableInteractionEvents()
         {
             if (Program.INVENTOR_APPLICATION.ActiveDocument == Program.ASSEMBLY_DOCUMENT)
             {
                 try
                 {
-                    interactionEvents = Program.INVENTOR_APPLICATION.CommandManager.CreateInteractionEvents();
-                    interactionEvents.OnActivate += interactionEvents_OnActivate;
-                    interactionEvents.Start();
+                    InteractionEvents = Program.INVENTOR_APPLICATION.CommandManager.CreateInteractionEvents();
+                    InteractionEvents.OnActivate += interactionEvents_OnActivate;
+                    InteractionEvents.Start();
 
                     inventorSelectButton.Text = "Cancel Selection";
 
-                    interactionEnabled = true;
+                    InteractionEnabled = true;
                 }
                 catch
                 {
@@ -130,15 +142,16 @@ namespace FieldExporter.Controls
         /// <summary>
         /// Disables interaction events with Inventor.
         /// </summary>
-        private void DisableInteractionEvents()
+        public void DisableInteractionEvents()
         {
-            interactionEvents.Stop();
+            InteractionEvents.Stop();
             Program.ASSEMBLY_DOCUMENT.SelectSet.Clear();
 
             inventorSelectButton.Text = "Select in Inventor";
             addSelectionButton.Enabled = false;
+            inventorSelectButton.Enabled = true;
 
-            interactionEnabled = false;
+            InteractionEnabled = false;
         }
 
         /// <summary>
@@ -146,9 +159,9 @@ namespace FieldExporter.Controls
         /// </summary>
         private void interactionEvents_OnActivate()
         {
-            selectEvents = interactionEvents.SelectEvents;
-            selectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
-            selectEvents.OnSelect += selectEvents_OnSelect;
+            SelectEvents = InteractionEvents.SelectEvents;
+            SelectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
+            SelectEvents.OnSelect += selectEvents_OnSelect;
         }
 
         /// <summary>
@@ -177,7 +190,7 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void inventorSelectButton_Click(object sender, EventArgs e)
         {
-            if (interactionEnabled)
+            if (InteractionEnabled)
             {
                 DisableInteractionEvents();
             }
@@ -194,83 +207,88 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void addSelectionButton_Click(object sender, EventArgs e)
         {
-            //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
             Program.LockInventor();
 
             addSelectionButton.Enabled = false;
             inventorSelectButton.Enabled = false;
 
-            Program.PROCESSWINDOW = new ProcessWindow(this, "Adding Selection...", "Processing...",
-                0, selectEvents.SelectedEntities.Count,
-                new Action(() =>
-                {
-                    DialogResult permanentChoice = DialogResult.None;
-
-                    for (int i = 0; i < selectEvents.SelectedEntities.Count; i++)
+            try
+            {
+                Program.PROCESSWINDOW = new ProcessWindow(this, "Adding Selection...", "Processing...",
+                    0, SelectEvents.SelectedEntities.Count,
+                    new Action(() =>
                     {
-                        if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
-                            return;
+                        DialogResult permanentChoice = DialogResult.None;
 
-                        Program.PROCESSWINDOW.SetProgress(i, "Processing: " + (Math.Round((i / (float)selectEvents.SelectedEntities.Count) * 100.0f, 2)).ToString() + "%");
-
-                        if (parentTabPage.parentControl.NodeExists(selectEvents.SelectedEntities[i + 1].Name, parentTabPage))
+                        for (int i = 0; i < SelectEvents.SelectedEntities.Count; i++)
                         {
-                            Invoke(new Action(() =>
+                            if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
+                                return;
+
+                            Program.PROCESSWINDOW.SetProgress(i, "Processing: " + (Math.Round((i / (float)SelectEvents.SelectedEntities.Count) * 100.0f, 2)).ToString() + "%");
+
+                            if (ParentTabPage.parentControl.NodeExists(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage))
                             {
-                                switch (permanentChoice)
+                                Invoke(new Action(() =>
                                 {
-                                    case DialogResult.None:
-                                        ConfirmMoveDialog confirmDialog = new ConfirmMoveDialog(
-                                            selectEvents.SelectedEntities[i + 1].Name + " has already been added to another PhysicsGroup. Move " +
-                                            selectEvents.SelectedEntities[i + 1].Name + " to " + parentTabPage.Name + "?");
+                                    switch (permanentChoice)
+                                    {
+                                        case DialogResult.None:
+                                            ConfirmMoveDialog confirmDialog = new ConfirmMoveDialog(
+                                                SelectEvents.SelectedEntities[i + 1].Name + " has already been added to another PhysicsGroup. Move " +
+                                                SelectEvents.SelectedEntities[i + 1].Name + " to " + ParentTabPage.Name + "?");
 
-                                        DialogResult result = confirmDialog.ShowDialog(Program.PROCESSWINDOW);
+                                            DialogResult result = confirmDialog.ShowDialog(Program.PROCESSWINDOW);
 
-                                        if (result == DialogResult.OK)
-                                        {
-                                            parentTabPage.parentControl.RemoveNode(selectEvents.SelectedEntities[i + 1].Name, parentTabPage);
+                                            if (result == DialogResult.OK)
+                                            {
+                                                ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
+                                                inventorTreeView.Invoke(new Action(() =>
+                                                {
+                                                    inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                                                }));
+                                            }
+
+                                            if (confirmDialog.IsChecked())
+                                            {
+                                                permanentChoice = result;
+                                            }
+                                            break;
+                                        case DialogResult.OK:
+                                            ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
                                             inventorTreeView.Invoke(new Action(() =>
                                             {
-                                                inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
+                                                inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
                                             }));
-                                        }
+                                            break;
+                                    }
 
-                                        if (confirmDialog.IsChecked())
-                                        {
-                                            permanentChoice = result;
-                                        }
-                                        break;
-                                    case DialogResult.OK:
-                                        parentTabPage.parentControl.RemoveNode(selectEvents.SelectedEntities[i + 1].Name, parentTabPage);
-                                        inventorTreeView.Invoke(new Action(() =>
-                                        {
-                                            inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
-                                        }));
-                                        break;
-                                }
-
-                            }));
-                        }
-                        else
-                        {
-                            inventorTreeView.Invoke(new Action(() =>
+                                }));
+                            }
+                            else
                             {
-                                inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
-                            }));
+                                inventorTreeView.Invoke(new Action(() =>
+                                {
+                                    inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                                }));
+                            }
+
                         }
+                    }),
+                    new Action(() =>
+                    {
+                        Program.UnlockInventor();
 
-                    }
-                }),
-                new Action(() =>
-                {
-                    Program.UnlockInventor();
-                    //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+                        DisableInteractionEvents();
+                    }));
 
-                    DisableInteractionEvents();
-                    inventorSelectButton.Enabled = true;
-                }));
-
-            Program.PROCESSWINDOW.StartProcess();
+                Program.PROCESSWINDOW.StartProcess();
+            }
+            catch
+            {
+                MessageBox.Show("Unable to add selection.");
+                DisableInteractionEvents();
+            }
         }
 
         /// <summary>
@@ -280,9 +298,9 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void removeButton_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to remove \"" + parentTabPage.Name + "\"?", "Dangerous operation.", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show("Are you sure you want to remove \"" + ParentTabPage.Name + "\"?", "Dangerous operation.", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                parentTabPage.Remove();
+                ParentTabPage.Remove();
             }
         }
 
@@ -293,7 +311,7 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void changeNameButton_Click(object sender, EventArgs e)
         {
-            parentTabPage.ChangeName();
+            ParentTabPage.ChangeName();
         }
 
         /// <summary>

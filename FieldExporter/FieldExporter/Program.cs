@@ -1,9 +1,12 @@
 ﻿using FieldExporter;
+using FieldExporter.Components;
 using FieldExporter.Forms;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -149,7 +152,7 @@ static class Program
     private static void ApplicationEvents_OnCloseDocument(Inventor._Document DocumentObject, string FullDocumentName, Inventor.EventTimingEnum BeforeOrAfter, Inventor.NameValueMap Context, out Inventor.HandlingCodeEnum HandlingCode)
     {
         HandlingCode = Inventor.HandlingCodeEnum.kEventHandled;
-        
+
         if (ASSEMBLY_DOCUMENT.RevisionId == DocumentObject.RevisionId)
             MAINWINDOW.BeginInvoke(new Action(RequestConnection));
     }
@@ -161,7 +164,7 @@ static class Program
     /// <param name="e"></param>
     private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
     {
-        new UnhandledExceptionForm(e.Exception.ToString()).ShowDialog();
+        new ErrorSubmissionForm(e.Exception.ToString()).ShowDialog();
         Application.Exit();
     }
 
@@ -172,7 +175,7 @@ static class Program
     /// <param name="e"></param>
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        new UnhandledExceptionForm(e.ExceptionObject.ToString()).ShowDialog();
+        new ErrorSubmissionForm(e.ExceptionObject.ToString()).ShowDialog();
         Application.Exit();
     }
 
@@ -197,11 +200,5 @@ static class Program
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(MAINWINDOW = new MainWindow());
-
-        try
-        {
-            UnlockInventor();
-        }
-        catch { }
     }
 }

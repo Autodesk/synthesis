@@ -77,10 +77,10 @@ namespace FieldExporter.Components
                         {
                             translation.Add(new PhysicsGroup(
                                 tabPage.Name,
-                                tabPage.childForm.GetCollisionType(),
-                                tabPage.childForm.GetFriction(),
-                                tabPage.childForm.IsDynamic(),
-                                tabPage.childForm.GetMass()));
+                                tabPage.ChildForm.GetCollisionType(),
+                                tabPage.ChildForm.GetFriction(),
+                                tabPage.ChildForm.IsDynamic(),
+                                tabPage.ChildForm.GetMass()));
                         }));
                 }
             }
@@ -103,7 +103,7 @@ namespace FieldExporter.Components
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
                     if (!excludedPages.Contains<ComponentPropertiesTabPage>(tabPage))
                     {
-                        if (tabPage.childForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
+                        if (tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
                         {
                             return true;
                         }
@@ -125,7 +125,7 @@ namespace FieldExporter.Components
                 if (t is ComponentPropertiesTabPage)
                 {
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
-                    if (tabPage.childForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
+                    if (tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true).Length > 0)
                     {
                         return tabPage;
                     }
@@ -148,7 +148,7 @@ namespace FieldExporter.Components
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
                     if (!excludedPages.Contains<ComponentPropertiesTabPage>(tabPage))
                     {
-                        TreeNode[] nodeCollection = tabPage.childForm.inventorTreeView.Nodes.Find(key, true);
+                        TreeNode[] nodeCollection = tabPage.ChildForm.inventorTreeView.Nodes.Find(key, true);
                         for (int i = 0; i < nodeCollection.Length; i++)
                         {
                             nodeCollection[i].Remove();
@@ -174,7 +174,7 @@ namespace FieldExporter.Components
                     ComponentPropertiesForm form = (ComponentPropertiesForm)controlCollection[0];
                     if (form != null)
                     {
-                        if (form.interactionEnabled)
+                        if (form.InteractionEnabled)
                         {
                             e.Cancel = true;
                             MessageBox.Show("Please exit select mode before changing or adding tabs.", "Invalid operation.");

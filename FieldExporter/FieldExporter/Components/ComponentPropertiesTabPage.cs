@@ -26,7 +26,7 @@ namespace FieldExporter.Components
         /// <summary>
         /// The child ComponentPropertiesForm.
         /// </summary>
-        public ComponentPropertiesForm childForm
+        public ComponentPropertiesForm ChildForm
         {
             get;
             private set;
@@ -50,8 +50,8 @@ namespace FieldExporter.Components
 
             SetName(name);
 
-            childForm = new ComponentPropertiesForm(this);
-            Controls.Add(childForm);
+            ChildForm = new ComponentPropertiesForm(this);
+            Controls.Add(ChildForm);
 
             rightClickMenu = new ContextMenu();
             rightClickMenu.MenuItems.Add(new MenuItem("Delete", new EventHandler(deleteMenuItem_onClick)));
