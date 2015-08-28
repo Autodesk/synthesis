@@ -26,7 +26,7 @@ namespace FieldExporter.Controls
         private InteractionEvents interactionEvents;
 
         /// <summary>
-        /// The events triggered by object selection in Inventor
+        /// The events triggered by object selection in Inventor.
         /// </summary>
         private SelectEvents selectEvents;
 
@@ -40,7 +40,7 @@ namespace FieldExporter.Controls
         }
 
         /// <summary>
-        /// Initializes the component.
+        /// Initializes a new ComponentPropertiesForm instance.
         /// </summary>
         public ComponentPropertiesForm(ComponentPropertiesTabPage tabPage)
         {
@@ -100,34 +100,40 @@ namespace FieldExporter.Controls
         }
 
         /// <summary>
-        /// Enables interaction events.
+        /// Enables interaction events with Inventor.
         /// </summary>
         private void EnableInteractionEvents()
         {
-            try
+            if (Program.INVENTOR_APPLICATION.ActiveDocument == Program.ASSEMBLY_DOCUMENT)
             {
-                interactionEvents = Program.INVENTOR_APPLICATION.CommandManager.CreateInteractionEvents();
-                interactionEvents.OnActivate += interactionEvents_OnActivate;
-                interactionEvents.Start();
+                try
+                {
+                    interactionEvents = Program.INVENTOR_APPLICATION.CommandManager.CreateInteractionEvents();
+                    interactionEvents.OnActivate += interactionEvents_OnActivate;
+                    interactionEvents.Start();
 
-                inventorSelectButton.Text = "Cancel Selection";
+                    inventorSelectButton.Text = "Cancel Selection";
 
-                interactionEnabled = true;
+                    interactionEnabled = true;
+                }
+                catch
+                {
+                    MessageBox.Show("Cannot enter select mode.", "Document not found.");
+                }
             }
-            catch
+            else
             {
-                MessageBox.Show("Cannot enter select mode.", "Document not found.");
+                MessageBox.Show("Can only enter select mode for " + Program.ASSEMBLY_DOCUMENT.DisplayName);
             }
         }
 
         /// <summary>
-        /// Disables interaction events.
+        /// Disables interaction events with Inventor.
         /// </summary>
         private void DisableInteractionEvents()
         {
             interactionEvents.Stop();
-
-            Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
+            Program.ASSEMBLY_DOCUMENT.SelectSet.Clear();
 
             inventorSelectButton.Text = "Select in Inventor";
             addSelectionButton.Enabled = false;
@@ -138,7 +144,7 @@ namespace FieldExporter.Controls
         /// <summary>
         /// Enables select events when interaction events are activated.
         /// </summary>
-        void interactionEvents_OnActivate()
+        private void interactionEvents_OnActivate()
         {
             selectEvents = interactionEvents.SelectEvents;
             selectEvents.AddSelectionFilter(SelectionFilterEnum.kAssemblyOccurrenceFilter);
@@ -153,7 +159,7 @@ namespace FieldExporter.Controls
         /// <param name="ModelPosition"></param>
         /// <param name="ViewPosition"></param>
         /// <param name="View"></param>
-        void selectEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+        private void selectEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
             if (!addSelectionButton.Enabled)
             {
@@ -188,81 +194,83 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void addSelectionButton_Click(object sender, EventArgs e)
         {
-            Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+            //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+            Program.LockInventor();
 
             addSelectionButton.Enabled = false;
             inventorSelectButton.Enabled = false;
 
-            Program.progressWindow = new ProgressWindow(this, "Adding Selection...", "Processing...",
+            Program.PROCESSWINDOW = new ProcessWindow(this, "Adding Selection...", "Processing...",
                 0, selectEvents.SelectedEntities.Count,
                 new Action(() =>
-                    {
-                        DialogResult permanentChoice = DialogResult.None;
+                {
+                    DialogResult permanentChoice = DialogResult.None;
 
-                        for (int i = 0; i < selectEvents.SelectedEntities.Count; i++)
+                    for (int i = 0; i < selectEvents.SelectedEntities.Count; i++)
+                    {
+                        if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
+                            return;
+
+                        Program.PROCESSWINDOW.SetProgress(i, "Processing: " + (Math.Round((i / (float)selectEvents.SelectedEntities.Count) * 100.0f, 2)).ToString() + "%");
+
+                        if (parentTabPage.parentControl.NodeExists(selectEvents.SelectedEntities[i + 1].Name, parentTabPage))
                         {
-                            if (Program.progressWindow.currentState.Equals(ProgressWindow.ProcessState.CANCELLED))
-                                return;
-
-                            Program.progressWindow.SetProgress(i, "Processing: " + (Math.Round((i / (float)selectEvents.SelectedEntities.Count) * 100.0f, 2)).ToString() + "%");
-
-                            if (parentTabPage.parentControl.NodeExists(selectEvents.SelectedEntities[i + 1].Name, parentTabPage))
+                            Invoke(new Action(() =>
                             {
-                                Invoke(new Action(() =>
-                                    {
-                                        switch (permanentChoice)
+                                switch (permanentChoice)
+                                {
+                                    case DialogResult.None:
+                                        ConfirmMoveDialog confirmDialog = new ConfirmMoveDialog(
+                                            selectEvents.SelectedEntities[i + 1].Name + " has already been added to another PhysicsGroup. Move " +
+                                            selectEvents.SelectedEntities[i + 1].Name + " to " + parentTabPage.Name + "?");
+
+                                        DialogResult result = confirmDialog.ShowDialog(Program.PROCESSWINDOW);
+
+                                        if (result == DialogResult.OK)
                                         {
-                                            case DialogResult.None:
-                                                ConfirmMoveDialog confirmDialog = new ConfirmMoveDialog(
-                                                    selectEvents.SelectedEntities[i + 1].Name + " has already been added to another PhysicsGroup. Move " +
-                                                    selectEvents.SelectedEntities[i + 1].Name + " to " + parentTabPage.Name + "?");
-
-                                                DialogResult result = confirmDialog.ShowDialog(Program.progressWindow);
-
-                                                if (result == DialogResult.OK)
-                                                {
-                                                    parentTabPage.parentControl.RemoveNode(selectEvents.SelectedEntities[i + 1].Name, parentTabPage);
-                                                    inventorTreeView.Invoke(new Action(() =>
-                                                    {
-                                                        inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
-                                                    }));
-                                                }
-
-                                                if (confirmDialog.futureCheckBox.Checked)
-                                                {
-                                                    permanentChoice = result;
-                                                }
-                                                break;
-                                            case DialogResult.OK:
-                                                parentTabPage.parentControl.RemoveNode(selectEvents.SelectedEntities[i + 1].Name, parentTabPage);
-                                                    inventorTreeView.Invoke(new Action(() =>
-                                                    {
-                                                        inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
-                                                    }));
-                                                break;
+                                            parentTabPage.parentControl.RemoveNode(selectEvents.SelectedEntities[i + 1].Name, parentTabPage);
+                                            inventorTreeView.Invoke(new Action(() =>
+                                            {
+                                                inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
+                                            }));
                                         }
-                                        
-                                    }));
-                            }
-                            else
-                            {
-                                inventorTreeView.Invoke(new Action(() =>
-                                    {
-                                        inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
-                                    }));
-                            }
-                            
+
+                                        if (confirmDialog.IsChecked())
+                                        {
+                                            permanentChoice = result;
+                                        }
+                                        break;
+                                    case DialogResult.OK:
+                                        parentTabPage.parentControl.RemoveNode(selectEvents.SelectedEntities[i + 1].Name, parentTabPage);
+                                        inventorTreeView.Invoke(new Action(() =>
+                                        {
+                                            inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
+                                        }));
+                                        break;
+                                }
+
+                            }));
                         }
-                    }),
+                        else
+                        {
+                            inventorTreeView.Invoke(new Action(() =>
+                            {
+                                inventorTreeView.AddComponent(selectEvents.SelectedEntities[i + 1]);
+                            }));
+                        }
+
+                    }
+                }),
                 new Action(() =>
-                    {
-                        Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+                {
+                    Program.UnlockInventor();
+                    //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
 
-                        DisableInteractionEvents();
-                        inventorSelectButton.Enabled = true;
-                    }));
+                    DisableInteractionEvents();
+                    inventorSelectButton.Enabled = true;
+                }));
 
-            Program.progressWindow.StartProcess();
+            Program.PROCESSWINDOW.StartProcess();
         }
 
         /// <summary>

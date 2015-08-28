@@ -14,7 +14,7 @@ namespace FieldExporter.Components
     public partial class InventorTreeView : TreeView
     {
         /// <summary>
-        /// Initializes this component.
+        /// Initializes a new instance of the InventorTreeView class.
         /// </summary>
         public InventorTreeView()
         {
@@ -22,7 +22,7 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Adds this component to the supplied container and initializes this component.
+        /// Initializes a new instance of the InventorTreeView class and adds it to the supplied container.
         /// </summary>
         /// <param name="container"></param>
         public InventorTreeView(IContainer container)
@@ -142,26 +142,12 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Removes the node by the name supplied.
+        /// Removes a node by the name supplied.
         /// </summary>
         /// <param name="name"></param>
         public void RemoveNode(string name)
         {
             Nodes.RemoveByKey(name);
-        }
-
-        /// <summary>
-        /// Adds the supplied components as nodes and sends progress updates.
-        /// </summary>
-        /// <param name="components"></param>
-        /// <param name="progressUpdate"></param>
-        public void AddComponents(ObjectsEnumerator components, Action<int, int> progressUpdate)
-        {
-            for (int i = 0; i < components.Count; i++)
-            {
-                AddComponent(components[i + 1]);
-                progressUpdate(i + 1, components.Count);
-            }
         }
 
         /// <summary>
@@ -196,8 +182,8 @@ namespace FieldExporter.Components
         protected override void OnAfterSelect(TreeViewEventArgs e)
         {
             base.OnAfterSelect(e);
-            Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Clear();
-            Program.INVENTOR_APPLICATION.ActiveDocument.SelectSet.Select((ComponentOccurrence)e.Node.Tag);
+            Program.ASSEMBLY_DOCUMENT.SelectSet.Clear();
+            Program.ASSEMBLY_DOCUMENT.SelectSet.Select((ComponentOccurrence)e.Node.Tag);
         }
     }
 }

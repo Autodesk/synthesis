@@ -67,7 +67,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="autodesk.inventor.interop, Version=20.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
@@ -154,13 +154,19 @@
     <Compile Include="Forms\EnterNameDialog.Designer.cs">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\ProgressWindow.cs">
+    <Compile Include="Forms\UnhandledExceptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\ProgressWindow.Designer.cs">
-      <DependentUpon>ProgressWindow.cs</DependentUpon>
+    <Compile Include="Forms\UnhandledExceptionForm.Designer.cs">
+      <DependentUpon>UnhandledExceptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Forms\ProcessWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProcessWindow.Designer.cs">
+      <DependentUpon>ProcessWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="Components\ComponentPropertiesForm.resx">
@@ -193,6 +199,9 @@
     <EmbeddedResource Include="Forms\EnterNameDialog.resx">
       <DependentUpon>EnterNameDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UnhandledExceptionForm.resx">
+      <DependentUpon>UnhandledExceptionForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -203,9 +212,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Forms\ProgressWindow.resx">
-      <DependentUpon>ProgressWindow.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\ProcessWindow.resx">
+      <DependentUpon>ProcessWindow.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="FieldExporter_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -237,7 +247,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SimulatorFileIO\SimulatorAPI.csproj">
+    <ProjectReference Include="..\..\..\..\GitHub\Aardvark\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
     </ProjectReference>

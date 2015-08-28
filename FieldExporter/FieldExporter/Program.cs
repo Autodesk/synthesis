@@ -1,6 +1,8 @@
 ﻿using FieldExporter;
+using FieldExporter.Forms;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,14 +15,166 @@ static class Program
     public static Inventor.Application INVENTOR_APPLICATION;
 
     /// <summary>
+    /// The global assembly document.
+    /// </summary>
+    public static Inventor.AssemblyDocument ASSEMBLY_DOCUMENT;
+
+    /// <summary>
     /// The global MainWindow instance.
     /// </summary>
-    public static MainWindow mainWindow;
+    public static MainWindow MAINWINDOW;
 
     /// <summary>
     /// The global ProgressWindow instance.
     /// </summary>
-    public static ProgressWindow progressWindow;
+    public static ProcessWindow PROCESSWINDOW;
+
+    /// <summary>
+    /// Used for distinguishing between the first assembly document open and another one opened later.
+    /// </summary>
+    private static string fullDocumentName = "undef";
+
+    /// <summary>
+    /// Used for determining if a reconnection has been requested.
+    /// </summary>
+    private static bool connectionRequested = false;
+
+    /// <summary>
+    /// Locks the Inventor UI loop to help a process run faster.
+    /// </summary>
+    /// <param name="process"></param>
+    public static void LockInventor()
+    {
+        INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+    }
+
+    /// <summary>
+    /// Unlocks the Inventor UI loop to resume interaction with Inventor.
+    /// </summary>
+    public static void UnlockInventor()
+    {
+        INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+        Connect();
+    }
+
+    /// <summary>
+    /// Attempts to connect to an open Inventor Application instance and the active assembly document.
+    /// </summary>
+    /// <returns>true if successful, false if failed</returns>
+    private static bool Connect()
+    {
+        try
+        {
+            INVENTOR_APPLICATION = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+            INVENTOR_APPLICATION.ApplicationEvents.OnQuit += ApplicationEvents_OnQuit;
+            INVENTOR_APPLICATION.ApplicationEvents.OnCloseDocument += ApplicationEvents_OnCloseDocument;
+        }
+        catch
+        {
+            return false;
+        }
+
+        if (fullDocumentName.Equals("undef"))
+        {
+            ASSEMBLY_DOCUMENT = (Inventor.AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
+
+            if (ASSEMBLY_DOCUMENT == null)
+                return false;
+
+            fullDocumentName = ASSEMBLY_DOCUMENT.FullDocumentName;
+        }
+        else
+        {
+            ASSEMBLY_DOCUMENT = null;
+
+            foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments)
+            {
+                if (doc.FullDocumentName == fullDocumentName)
+                    ASSEMBLY_DOCUMENT = (Inventor.AssemblyDocument)doc;
+            }
+
+            if (ASSEMBLY_DOCUMENT == null)
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Shows a MessageBox prompting the user to either retry the Assembly connection or cancel.
+    /// </summary>
+    /// <returns></returns>
+    private static void RequestConnection()
+    {
+        if (connectionRequested)
+            return;
+
+        connectionRequested = true;
+
+        do
+        {
+            if (MessageBox.Show(MAINWINDOW, "Unable to connect to the Assembly.\nRetry Assembly connection?", "Connection lost.", MessageBoxButtons.RetryCancel) == DialogResult.Cancel)
+            {
+                MAINWINDOW.Activate();
+                MAINWINDOW.Close();
+                break;
+            }
+        }
+        while (!Connect());
+
+        connectionRequested = false;
+    }
+
+    /// <summary>
+    /// Handles the OnQuit event by attempting to reconnect to Inventor and then attempting to reconnect to the Assembly.
+    /// </summary>
+    /// <param name="BeforeOrAfter"></param>
+    /// <param name="Context"></param>
+    /// <param name="HandlingCode"></param>
+    private static void ApplicationEvents_OnQuit(Inventor.EventTimingEnum BeforeOrAfter, Inventor.NameValueMap Context, out Inventor.HandlingCodeEnum HandlingCode)
+    {
+        HandlingCode = Inventor.HandlingCodeEnum.kEventHandled;
+
+        MAINWINDOW.BeginInvoke(new Action(RequestConnection));
+    }
+
+    /// <summary>
+    /// Handles the OnCloseDocument event by attempting to reconnect to the Assembly Document.
+    /// </summary>
+    /// <param name="DocumentObject"></param>
+    /// <param name="FullDocumentName"></param>
+    /// <param name="BeforeOrAfter"></param>
+    /// <param name="Context"></param>
+    /// <param name="HandlingCode"></param>
+    private static void ApplicationEvents_OnCloseDocument(Inventor._Document DocumentObject, string FullDocumentName, Inventor.EventTimingEnum BeforeOrAfter, Inventor.NameValueMap Context, out Inventor.HandlingCodeEnum HandlingCode)
+    {
+        HandlingCode = Inventor.HandlingCodeEnum.kEventHandled;
+        
+        if (ASSEMBLY_DOCUMENT.RevisionId == DocumentObject.RevisionId)
+            MAINWINDOW.BeginInvoke(new Action(RequestConnection));
+    }
+
+    /// <summary>
+    /// Used for catching any unexpected thread exceptions by displaying a message and closing the application.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+    {
+        new UnhandledExceptionForm(e.Exception.ToString()).ShowDialog();
+        Application.Exit();
+    }
+
+    /// <summary>
+    /// Used for catching any unexpected exceptions by displaying a message and closing the application.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        new UnhandledExceptionForm(e.ExceptionObject.ToString()).ShowDialog();
+        Application.Exit();
+    }
 
     /// <summary>
     /// The main entry point for the application.
@@ -28,18 +182,26 @@ static class Program
     [STAThread]
     static void Main()
     {
-        try
+        Application.ThreadException += Application_ThreadException;
+
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+        if (!Connect())
         {
-            INVENTOR_APPLICATION = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
-        }
-        catch
-        {
-            MessageBox.Show("Please launch Autodesk Inventor and try again.", "Could not connect to Autodesk Inventor.");
+            MessageBox.Show("Please open the field Assembly Document and try again.", "Could not connect to the Assembly Document.");
             return;
         }
 
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(mainWindow = new MainWindow());
+        Application.Run(MAINWINDOW = new MainWindow());
+
+        try
+        {
+            UnlockInventor();
+        }
+        catch { }
     }
 }

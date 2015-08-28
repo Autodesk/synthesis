@@ -18,11 +18,13 @@ namespace FieldExporter
     public partial class MainWindow : Form
     {   
         /// <summary>
-        /// Constructs the form.
+        /// Initializes a new instance of the MainWindow class.
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
+
+            Text = "Synthesis Field Exporter - " + Program.ASSEMBLY_DOCUMENT.DisplayName;
         }
 
         /// <summary>
@@ -42,33 +44,6 @@ namespace FieldExporter
         private void MainWindow_Load(object sender, EventArgs e)
         {
             menuStrip.Renderer = new ToolStripProfessionalRenderer(new SynthesisColorTable());
-        }
-
-        /// <summary>
-        /// Checks to see if there is an active document in Inventor.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MainWindow_Activated(object sender, EventArgs e)
-        {
-            if (Program.INVENTOR_APPLICATION.ActiveDocument is AssemblyDocument)
-            {
-                Text = "Field Exporter - " + Program.INVENTOR_APPLICATION.ActiveDocument.DisplayName;
-            }
-            else
-            {
-                Text = "Field Exporter - No Document Found";
-            }
-        }
-
-        /// <summary>
-        /// Disposes any background processes to ensure safe closing.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
         }
 
         /// <summary>
@@ -106,6 +81,19 @@ namespace FieldExporter
             else
             {
                 TopMost = false;
+            }
+        }
+
+        /// <summary>
+        /// Prevents the user from switching tabs when the progress window is open.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (System.Windows.Forms.Application.OpenForms.OfType<ProcessWindow>().Any())
+            {
+                e.Cancel = true;
             }
         }
 

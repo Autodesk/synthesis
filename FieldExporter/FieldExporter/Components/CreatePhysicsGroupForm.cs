@@ -13,8 +13,15 @@ namespace FieldExporter.Components
 {
     public partial class CreatePhysicsGroupForm : UserControl
     {
+        /// <summary>
+        /// The parent CreatePhysicsGroupTabPage.
+        /// </summary>
         private CreatePhysicsGroupTabPage parentTabPage;
 
+        /// <summary>
+        /// Initializes a new instance of the CreatePhysicsGroupForm class.
+        /// </summary>
+        /// <param name="tabPage"></param>
         public CreatePhysicsGroupForm(CreatePhysicsGroupTabPage tabPage)
         {
             InitializeComponent();
@@ -24,6 +31,11 @@ namespace FieldExporter.Components
             parentTabPage = tabPage;
         }
 
+        /// <summary>
+        /// Adds a ComponentPropertiesTabPage when the "Create" button is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newPhysicsButton_Click(object sender, EventArgs e)
         {
             parentTabPage.parentTabControl.AddComponentPropertiesTab();

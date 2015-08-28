@@ -13,7 +13,7 @@ namespace FieldExporter.Components
     public partial class CreatePhysicsGroupTabPage : TabPage
     {
         /// <summary>
-        /// The parent tab control.
+        /// The parent PhysicsGroupsTabControl.
         /// </summary>
         public PhysicsGroupsTabControl parentTabControl
         {
@@ -27,7 +27,7 @@ namespace FieldExporter.Components
         private CreatePhysicsGroupForm childForm;
 
         /// <summary>
-        /// Initializes the CreatePhysicsGroupTabPage.
+        /// Initializes a new instance of the CreatePhysicsGroupTabPage class.
         /// </summary>
         /// <param name="physicsGroupsTabControl"></param>
         /// <param name="name"></param>

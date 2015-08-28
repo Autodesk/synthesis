@@ -97,6 +97,6 @@
         private System.Windows.Forms.Label messageLabel;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button okButton;
-        public System.Windows.Forms.CheckBox futureCheckBox;
+        private System.Windows.Forms.CheckBox futureCheckBox;
     }
 }

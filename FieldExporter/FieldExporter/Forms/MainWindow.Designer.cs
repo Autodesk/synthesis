@@ -34,18 +34,18 @@ namespace FieldExporter
             this.applicationImages = new System.Windows.Forms.ImageList(this.components);
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.physicsTabPage = new System.Windows.Forms.TabPage();
-            this.PropertyControl = new System.Windows.Forms.TabControl();
+            this.physicsGroupsTabControl = new FieldExporter.Components.PhysicsGroupsTabControl();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.exportTabPage = new System.Windows.Forms.TabPage();
+            this.exportForm1 = new FieldExporter.Components.ExportForm();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.windowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.alwaysOnTopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.physicsGroupsTabControl = new FieldExporter.Components.PhysicsGroupsTabControl();
-            this.exportForm1 = new FieldExporter.Components.ExportForm();
             this.physicsTabPage.SuspendLayout();
-            this.PropertyControl.SuspendLayout();
+            this.tabControl.SuspendLayout();
             this.exportTabPage.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -70,16 +70,26 @@ namespace FieldExporter
             this.physicsTabPage.TabIndex = 0;
             this.physicsTabPage.Text = "PhysicsGroups";
             // 
-            // PropertyControl
+            // physicsGroupsTabControl
             // 
-            this.PropertyControl.Controls.Add(this.physicsTabPage);
-            this.PropertyControl.Controls.Add(this.exportTabPage);
-            this.PropertyControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PropertyControl.Location = new System.Drawing.Point(0, 28);
-            this.PropertyControl.Name = "PropertyControl";
-            this.PropertyControl.SelectedIndex = 0;
-            this.PropertyControl.Size = new System.Drawing.Size(942, 647);
-            this.PropertyControl.TabIndex = 10;
+            this.physicsGroupsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.physicsGroupsTabControl.Location = new System.Drawing.Point(0, 0);
+            this.physicsGroupsTabControl.Name = "physicsGroupsTabControl";
+            this.physicsGroupsTabControl.SelectedIndex = 0;
+            this.physicsGroupsTabControl.Size = new System.Drawing.Size(934, 618);
+            this.physicsGroupsTabControl.TabIndex = 0;
+            // 
+            // tabControl
+            // 
+            this.tabControl.Controls.Add(this.physicsTabPage);
+            this.tabControl.Controls.Add(this.exportTabPage);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(0, 28);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(942, 647);
+            this.tabControl.TabIndex = 10;
+            this.tabControl.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl_Selecting);
             // 
             // exportTabPage
             // 
@@ -90,6 +100,18 @@ namespace FieldExporter
             this.exportTabPage.TabIndex = 4;
             this.exportTabPage.Text = "Export";
             this.exportTabPage.UseVisualStyleBackColor = true;
+            // 
+            // exportForm1
+            // 
+            this.exportForm1.BackColor = System.Drawing.Color.White;
+            this.exportForm1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("exportForm1.BackgroundImage")));
+            this.exportForm1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.exportForm1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.exportForm1.Location = new System.Drawing.Point(0, 0);
+            this.exportForm1.Name = "exportForm1";
+            this.exportForm1.Padding = new System.Windows.Forms.Padding(3);
+            this.exportForm1.Size = new System.Drawing.Size(934, 618);
+            this.exportForm1.TabIndex = 0;
             // 
             // menuStrip
             // 
@@ -141,45 +163,22 @@ namespace FieldExporter
             this.alwaysOnTopToolStripMenuItem.Text = "Always On Top";
             this.alwaysOnTopToolStripMenuItem.Click += new System.EventHandler(this.alwaysOnTopToolStripMenuItem_Click);
             // 
-            // physicsGroupsTabControl
-            // 
-            this.physicsGroupsTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.physicsGroupsTabControl.Location = new System.Drawing.Point(0, 0);
-            this.physicsGroupsTabControl.Name = "physicsGroupsTabControl";
-            this.physicsGroupsTabControl.SelectedIndex = 0;
-            this.physicsGroupsTabControl.Size = new System.Drawing.Size(934, 618);
-            this.physicsGroupsTabControl.TabIndex = 0;
-            // 
-            // exportForm1
-            // 
-            this.exportForm1.BackColor = System.Drawing.Color.White;
-            this.exportForm1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("exportForm1.BackgroundImage")));
-            this.exportForm1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.exportForm1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.exportForm1.Location = new System.Drawing.Point(0, 0);
-            this.exportForm1.Name = "exportForm1";
-            this.exportForm1.Padding = new System.Windows.Forms.Padding(3);
-            this.exportForm1.Size = new System.Drawing.Size(934, 618);
-            this.exportForm1.TabIndex = 0;
-            // 
             // MainWindow
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(158)))), ((int)(((byte)(205)))), ((int)(((byte)(163)))));
             this.ClientSize = new System.Drawing.Size(942, 675);
-            this.Controls.Add(this.PropertyControl);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "MainWindow";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Field Exporter";
-            this.Activated += new System.EventHandler(this.MainWindow_Activated);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
+            this.Text = "Synthesis Field Exporter";
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.physicsTabPage.ResumeLayout(false);
-            this.PropertyControl.ResumeLayout(false);
+            this.tabControl.ResumeLayout(false);
             this.exportTabPage.ResumeLayout(false);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
@@ -193,7 +192,7 @@ namespace FieldExporter
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.ImageList applicationImages;
         private System.Windows.Forms.TabPage physicsTabPage;
-        private System.Windows.Forms.TabControl PropertyControl;
+        private System.Windows.Forms.TabControl tabControl;
         private PhysicsGroupsTabControl physicsGroupsTabControl;
         private System.Windows.Forms.TabPage exportTabPage;
         private ExportForm exportForm1;

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
             this.fileNameLabel = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
             this.FilePathTextBox = new System.Windows.Forms.TextBox();
@@ -95,7 +96,8 @@
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.Controls.Add(this.fileNameLabel);
             this.Controls.Add(this.browseButton);
             this.Controls.Add(this.FilePathTextBox);

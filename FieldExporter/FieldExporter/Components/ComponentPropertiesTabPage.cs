@@ -24,7 +24,7 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// The child ComponentPropertiesForm
+        /// The child ComponentPropertiesForm.
         /// </summary>
         public ComponentPropertiesForm childForm
         {
@@ -35,7 +35,7 @@ namespace FieldExporter.Components
         /// <summary>
         /// Right-click menu options.
         /// </summary>
-        ContextMenu rightClickMenu;
+        private ContextMenu rightClickMenu;
 
         /// <summary>
         /// Initalizes the component with a specified parent and name.
@@ -67,6 +67,9 @@ namespace FieldExporter.Components
             Text = Name = name;
         }
 
+        /// <summary>
+        /// Changes the name of the ComponentPropertiesTabPage if the name is not already taken.
+        /// </summary>
         public void ChangeName()
         {
             EnterNameDialog nameDialog = new EnterNameDialog();
@@ -96,7 +99,7 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Removes this component.
+        /// Removes this component from its parent control.
         /// </summary>
         public void Remove()
         {
@@ -104,7 +107,7 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Removes this control when the delete menu item is selected.
+        /// Removes this control when the "Delete" right-click option is selected.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -113,6 +116,11 @@ namespace FieldExporter.Components
             Remove();
         }
 
+        /// <summary>
+        /// Changes the name when the "Change Name" right-click option is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void changeNameMenuItem_onClick(object sender, EventArgs e)
         {
             ChangeName();

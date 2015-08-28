@@ -18,7 +18,7 @@ namespace FieldExporter.Components
         /// <summary>
         /// The TabPage for creating new instances.
         /// </summary>
-        CreatePhysicsGroupTabPage createTabPage;
+        private CreatePhysicsGroupTabPage createTabPage;
 
         /// <summary>
         /// Initializes this component.
@@ -61,7 +61,7 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Translates the information each ComponentPropertiesTabPage to a List of PhysicsGroups.
+        /// Translates the information in each ComponentPropertiesTabPage to a List of PhysicsGroups.
         /// </summary>
         /// <returns>The translation</returns>
         public List<PhysicsGroup> TranslateToPhysicsGroups()
@@ -159,7 +159,7 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
-        /// Checks if interactionEvents are enabled before switching tabs.
+        /// Checks if interaction events are enabled before switching tabs.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

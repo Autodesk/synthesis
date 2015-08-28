@@ -14,6 +14,9 @@ namespace FieldExporter.Components
         /// </summary>
         private System.Drawing.Color backgroundColor;
 
+        /// <summary>
+        /// Initializes a new instance of the SynthesisColorTable class.
+        /// </summary>
         public SynthesisColorTable()
         {
             backgroundColor = System.Drawing.Color.FromArgb(158, 205, 163);
