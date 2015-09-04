@@ -12,7 +12,11 @@ public class DynamicCamera : MonoBehaviour
 	/// The state of the camera.
 	/// </summary>
 	CameraState _cameraState;
-	
+
+	/// <summary>
+	/// Gets the state of the camera.
+	/// </summary>
+	/// <value>The state of the camera.</value>
 	public CameraState cameraState
 	{
 		get
@@ -98,6 +102,8 @@ public class DynamicCamera : MonoBehaviour
 		Vector3 lagVector;
 		const float lagResponsiveness = 10f;
 		float magnification = 5.0f;
+		float cameraAngle = 45f;
+		float panValue = 0f;
 		GameObject robot;
 
 		public OrbitState(MonoBehaviour mono)
@@ -118,14 +124,28 @@ public class DynamicCamera : MonoBehaviour
 			{
 				if(movingEnabled)
 				{
-					magnification = Mathf.Max (Mathf.Min (magnification - (Input.GetAxis ("Mouse ScrollWheel") * magnification), 12f), 0.1f);
+					targetVector = auxFunctions.TotalCenterOfMass(robot);
 
-					rotateVector = rotateXZ (rotateVector, targetVector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse X") / 5f : 0f, (float)magnification);
-					rotateVector = rotateYZ (rotateVector, targetVector, Input.GetMouseButton (2) ? Input.GetAxis ("Mouse Y") / 5f : 0f, (float)magnification);
+					if (Input.GetMouseButton(1))
+					{
+						cameraAngle = Mathf.Max(Mathf.Min (cameraAngle + Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
+						panValue = Input.GetAxis ("Mouse X") / 5f;
+					}
+					else
+					{
+						panValue = 0f;
+
+						if (Input.GetMouseButton(0))
+						{
+							magnification = Mathf.Max (Mathf.Min (magnification - ((Input.GetAxis ("Mouse Y") / 5f) * magnification), 12f), 0.1f);
+						}
+					}
+
+					rotateVector = rotateXZ (rotateVector, targetVector, panValue, magnification);
+					rotateVector.y = targetVector.y + magnification * Mathf.Sin (cameraAngle * Mathf.Deg2Rad);
+
 					lagVector += (rotateVector - lagVector) * (lagResponsiveness * Time.deltaTime);
 					mono.transform.position = lagVector;
-		
-					targetVector = auxFunctions.TotalCenterOfMass (robot);
 					mono.transform.LookAt (targetVector);
 				}
 			}
@@ -138,25 +158,15 @@ public class DynamicCamera : MonoBehaviour
 		public override void End ()
 		{
 		}
-
+		
 		Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
 		{
 			vector -= origin;
 			Vector3 output = vector;
-			output.x = Mathf.Cos (theta) * (vector.x ) - Mathf.Sin (theta) * (vector.z ) ;
-			output.z = Mathf.Sin (theta) * (vector.x ) + Mathf.Cos (theta) * (vector.z ) ;
+			output.x = Mathf.Cos (theta) * (vector.x ) - Mathf.Sin (theta) * (vector.z );
+			output.z = Mathf.Sin (theta) * (vector.x ) + Mathf.Cos (theta) * (vector.z );
 			
-			return output.normalized*mag + origin;
-		}
-		
-		Vector3 rotateYZ(Vector3 vector, Vector3 origin, float theta, float mag)
-		{
-			vector -= origin;
-			Vector3 output = vector;
-			output.y = Mathf.Cos (theta) * (vector.y ) - Mathf.Sin (theta) * (vector.z ) ;
-			output.z = Mathf.Sin (theta) * (vector.y ) + Mathf.Cos (theta) * (vector.z ) ;
-
-			return output.normalized*mag + origin;
+			return output.normalized * mag + origin;
 		}
 	}
 
