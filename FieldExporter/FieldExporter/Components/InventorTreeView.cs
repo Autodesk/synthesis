@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -115,6 +116,35 @@ namespace FieldExporter.Components
         }
 
         /// <summary>
+        /// Used for finding a component by the supplied name.
+        /// </summary>
+        /// <param name="enumerator"></param>
+        /// <param name="fullname"></param>
+        /// <returns></returns>
+        private ComponentOccurrence FindComponentByFullName(IEnumerator enumerator, string fullname)
+        {
+            ComponentOccurrence component = null;
+            string componentName = fullname.Contains('\\') ? fullname.Substring(0, fullname.IndexOf('\\')) : fullname;
+
+            while (enumerator.MoveNext())
+            {
+                component = (ComponentOccurrence)enumerator.Current;
+
+                if (component.Name.Equals(componentName))
+                {
+                    if (componentName != fullname)
+                    {
+                        fullname = fullname.Replace(componentName + "\\", "");
+                        component = FindComponentByFullName(component.SubOccurrences.GetEnumerator(), fullname);
+                    }
+                    break;
+                }
+            }
+
+            return component;
+        }
+
+        /// <summary>
         /// Adds the supplied component as a node with its corresponding parents and children.
         /// </summary>
         /// <param name="component"></param>
@@ -182,8 +212,23 @@ namespace FieldExporter.Components
         protected override void OnAfterSelect(TreeViewEventArgs e)
         {
             base.OnAfterSelect(e);
+
             Program.ASSEMBLY_DOCUMENT.SelectSet.Clear();
-            Program.ASSEMBLY_DOCUMENT.SelectSet.Select((ComponentOccurrence)e.Node.Tag);
+
+            try
+            {
+                Program.ASSEMBLY_DOCUMENT.SelectSet.Select((ComponentOccurrence)e.Node.Tag);
+            }
+            catch // Garbage collector has irresponsibly removed our reference; create a new one.
+            {
+                ComponentOccurrence component = FindComponentByFullName(Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.GetEnumerator(), e.Node.FullPath);
+
+                if (component != null)
+                {
+                    e.Node.Tag = component;
+                    Program.ASSEMBLY_DOCUMENT.SelectSet.Select(e.Node.Tag);
+                }
+            }
         }
     }
 }

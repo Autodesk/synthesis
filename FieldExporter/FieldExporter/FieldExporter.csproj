@@ -142,6 +142,18 @@
     <Compile Include="Forms\ConfirmMoveDialog.Designer.cs">
       <DependentUpon>ConfirmMoveDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CrashForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CrashForm.Designer.cs">
+      <DependentUpon>CrashForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FieldSelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FieldSelectForm.Designer.cs">
+      <DependentUpon>FieldSelectForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -192,6 +204,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConfirmMoveDialog.resx">
       <DependentUpon>ConfirmMoveDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CrashForm.resx">
+      <DependentUpon>CrashForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FieldSelectForm.resx">
+      <DependentUpon>FieldSelectForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>

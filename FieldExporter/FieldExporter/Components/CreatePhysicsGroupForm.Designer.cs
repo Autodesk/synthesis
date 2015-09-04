@@ -56,6 +56,7 @@
             this.createLabel.Size = new System.Drawing.Size(297, 17);
             this.createLabel.TabIndex = 2;
             this.createLabel.Text = "You have not yet created any PhysicsGroups.";
+            this.createLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // CreatePhysicsGroupForm
             // 

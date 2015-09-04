@@ -12,6 +12,23 @@ using System.Windows.Forms;
 
 static class Program
 {
+    /*
+     * TODO:
+     * 1. Invest in using a non-binary file type (something like XML).
+     *    This will be better for backwards compatibility and stability, etc.
+     * 2. Consider using an Inventor.ApprenticeServer instead of directly referencing the
+     *    Inventor application. Right now, there is a lot of code for simply making sure
+     *    the application is constantly connected to Inventor and preventing the garbage
+     *    collector from abusing us. However, an ApprenticeServer allows us to reference
+     *    an AssemblyDocument without needing Inventor to be open. Plus, the Inventor API
+     *    has a way to implement the Inventor viewer as a .NET component into the application
+     *    very easily (we should have discovered this sooner). There are several advantages to this:
+     *      A. We don't have to worry about accidentally disconnecting from the assembly/application (minimal runtime errors).
+     *      B. We don't need the user to have Inventor open AT ALL.
+     *      C. Communication with the assembly is much faster (meaning better export times).
+     *      D. We don't need to implment a custom OpenGL viewer like the robot exporter does.
+     */
+
     /// <summary>
     /// The global Inventor application instance.
     /// </summary>
@@ -77,19 +94,38 @@ static class Program
             return false;
         }
 
+        ASSEMBLY_DOCUMENT = null;
+
         if (fullDocumentName.Equals("undef"))
         {
-            ASSEMBLY_DOCUMENT = (Inventor.AssemblyDocument)INVENTOR_APPLICATION.ActiveDocument;
+            if (INVENTOR_APPLICATION.Documents.VisibleDocuments.Count > 0)
+            {
+                FieldSelectForm fieldSelector = new FieldSelectForm();
+                if (fieldSelector.ShowDialog() == DialogResult.OK)
+                {
+                    foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments)
+                    {
+                        if (doc.DisplayName == fieldSelector.SelectedField)
+                            ASSEMBLY_DOCUMENT = (Inventor.AssemblyDocument)doc;
+                    }
 
-            if (ASSEMBLY_DOCUMENT == null)
+                    if (ASSEMBLY_DOCUMENT == null)
+                        return false;
+
+                    fullDocumentName = ASSEMBLY_DOCUMENT.FullDocumentName;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
                 return false;
-
-            fullDocumentName = ASSEMBLY_DOCUMENT.FullDocumentName;
+            }
         }
         else
         {
-            ASSEMBLY_DOCUMENT = null;
-
             foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments)
             {
                 if (doc.FullDocumentName == fullDocumentName)
@@ -164,7 +200,11 @@ static class Program
     /// <param name="e"></param>
     private static void Application_ThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
     {
-        new ErrorSubmissionForm(e.Exception.ToString()).ShowDialog();
+        new CrashForm(e.Exception.ToString()).ShowDialog();
+
+        if (INVENTOR_APPLICATION != null)
+            INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+
         Application.Exit();
     }
 
@@ -175,7 +215,11 @@ static class Program
     /// <param name="e"></param>
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        new ErrorSubmissionForm(e.ExceptionObject.ToString()).ShowDialog();
+        new CrashForm(e.ExceptionObject.ToString()).ShowDialog();
+
+        if (INVENTOR_APPLICATION != null)
+            INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+
         Application.Exit();
     }
 
@@ -185,6 +229,9 @@ static class Program
     [STAThread]
     static void Main()
     {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        
         Application.ThreadException += Application_ThreadException;
 
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
@@ -197,8 +244,12 @@ static class Program
             return;
         }
 
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
         Application.Run(MAINWINDOW = new MainWindow());
+
+        try
+        {
+            INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+        }
+        catch { }
     }
 }
