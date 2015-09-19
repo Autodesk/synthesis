@@ -47,7 +47,6 @@ namespace FieldExporter.Components
             }
 
             Program.LockInventor();
-            //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
 
             exportButton.Enabled = false;
             browseButton.Enabled = false;
@@ -55,8 +54,8 @@ namespace FieldExporter.Components
             Program.PROCESSWINDOW = new ProcessWindow(this, "Exporting...", "Exporting...",
                 0, Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences.Count,
                 new Action(() =>
-                {
-                    FieldDefinition fieldDefinition = new FieldDefinition("definition");
+                { 
+                    FieldDefinition fieldDefinition = new FieldDefinition(Program.ASSEMBLY_DOCUMENT.DisplayName);
                     SurfaceExporter exporter = new SurfaceExporter();
 
                     foreach (PhysicsGroup g in Program.MAINWINDOW.GetPhysicsGroupsTabControl().TranslateToPhysicsGroups())
@@ -65,7 +64,54 @@ namespace FieldExporter.Components
                     }
 
                     ComponentOccurrencesEnumerator componentOccurrences = Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences;
+                    ComponentOccurrence currentOccurrence;
 
+                    StringBuilder pathBuilder = new StringBuilder();
+
+                    for (int i = 0; i < componentOccurrences.Count; i++)
+                    {
+                        if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
+                            return;
+
+                        Program.PROCESSWINDOW.SetProgress(i, "Exporting... " + (Math.Round((i / (float)componentOccurrences.Count) * 100.0f, 2)).ToString() + "%");
+
+                        currentOccurrence = componentOccurrences[i + 1];
+
+                        if (currentOccurrence.Visible)
+                        {
+                            exporter.Reset();
+                            exporter.Export(currentOccurrence, false, true);
+
+                            BXDAMesh output = exporter.GetOutput();
+
+                            FieldNode outputNode = new FieldNode(currentOccurrence.Name);
+
+                            ComponentPropertiesTabPage tabPage = Program.MAINWINDOW.GetPhysicsGroupsTabControl().GetParentTabPage(currentOccurrence.Name);
+
+                            if (tabPage != null)
+                                outputNode.PhysicsGroupID = tabPage.Name;
+
+                            outputNode.AddSubMeshes(output);
+
+                            pathBuilder.Clear();
+
+                            foreach (ComponentOccurrence co in currentOccurrence.OccurrencePath)
+                            {
+                                pathBuilder.Append(co.Name + "/");
+                            }
+
+                            pathBuilder.Length--;
+
+                            fieldDefinition.NodeGroup[pathBuilder.ToString()] = outputNode;
+                        }
+                    }
+
+                    fieldDefinition.CreateMesh();
+                    fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
+                    
+                    // TODO: Translate the below into the above.
+
+                    /** /
                     for (int i = 0; i < componentOccurrences.Count; i++)
                     {
                         if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
@@ -85,26 +131,28 @@ namespace FieldExporter.Components
                             ComponentPropertiesTabPage tabPage = Program.MAINWINDOW.GetPhysicsGroupsTabControl().GetParentTabPage(componentOccurrences[i + 1].Name);
                             if (tabPage != null)
                             {
-                                outputNode.physicsGroupID = tabPage.Name;
+                                outputNode.PhysicsGroupID = tabPage.Name;
                             }
 
                             outputNode.AddSubMeshes(output);
 
-                            fieldDefinition.AddChild(outputNode);
+                            //fieldDefinition.AddChild(outputNode);
                         }
                     }
 
-                    BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
+                    //BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
 
                     fieldDefinition.CreateMesh();
                     fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
+
+                    /**/
                 }),
                 new Action(() =>
                 {
                     MessageBox.Show(Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.SUCCEEDED) ? "Export Successful :D" : "Export Failed :(");
                     
                     Program.UnlockInventor();
-                    //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
+
                     exportButton.Enabled = true;
                     browseButton.Enabled = true;
                 }));

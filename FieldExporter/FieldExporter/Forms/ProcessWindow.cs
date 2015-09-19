@@ -145,6 +145,9 @@ namespace FieldExporter
         /// <param name="e"></param>
         private void backgroundProcess_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            if (e.Error != null)
+                MessageBox.Show(e.Error.ToString());
+
             Complete();
             Dispose();
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 /// <summary>
 /// Stores the type of collision for the node. Extends byte for writability.
@@ -70,40 +71,30 @@ public struct PhysicsGroup
     }
 }
 
-public class FieldDefinition_Base
+public class FieldDefinition
 {
-    /// <summary>
-    /// Delegate for returning new FieldDefinition_Base instances.
-    /// </summary>
-    /// <returns></returns>
-    public delegate FieldDefinition_Base FieldDefinitionFactory();
-
-    /// <summary>
-    /// Default delegate for returning new instances.
-    /// </summary>
-    public static FieldDefinitionFactory FIELDDEFINITION_FACTORY = delegate()
-    {
-        return new FieldDefinition_Base();
-    };
-
     /// <summary>
     /// Stores the ID of this definition (for naming, labels, etc.)
     /// </summary>
-    public string definitionID
+    public string DefinitionID
     {
-        set;
         get;
+        private set;
+    }
+
+    /// <summary>
+    /// The group containing each child node.
+    /// </summary>
+    public FieldNodeGroup NodeGroup
+    {
+        get;
+        private set;
     }
 
     /// <summary>
     /// A dictionary containing each PhysicsGroup and a string identifier.
     /// </summary>
-    private Dictionary<string, PhysicsGroup> physicsGroups = new Dictionary<string,PhysicsGroup>();
-
-    /// <summary>
-    /// A list of each of the child nodes.
-    /// </summary>
-    private List<FieldNode_Base> children = new List<FieldNode_Base>();
+    private Dictionary<string, PhysicsGroup> physicsGroups = new Dictionary<string, PhysicsGroup>();
 
     /// <summary>
     /// The mesh to be exported.
@@ -111,7 +102,17 @@ public class FieldDefinition_Base
     private BXDAMesh mesh;
 
     /// <summary>
-    /// Adds a child PhysicsGroup to physicsGroups;
+    /// Initializes a new instance of the FieldDefinition class.
+    /// </summary>
+    /// <param name="definitionID"></param>
+    public FieldDefinition(string definitionID)
+    {
+        DefinitionID = definitionID;
+        NodeGroup = new FieldNodeGroup(definitionID);
+    }
+
+    /// <summary>
+    /// Adds a child PhysicsGroup to physicsGroups.
     /// </summary>
     /// <param name="name"></param>
     /// <param name="group"></param>
@@ -130,33 +131,14 @@ public class FieldDefinition_Base
     }
 
     /// <summary>
-    /// Adds a child FieldNode_Base to the children.
-    /// </summary>
-    /// <param name="node"></param>
-    public void AddChild(FieldNode_Base node)
-    {
-        children.Add(node);
-    }
-
-    /// <summary>
-    /// Returns the list of children.
-    /// </summary>
-    /// <returns></returns>
-    public List<FieldNode_Base> GetChildren()
-    {
-        return children;
-    }
-
-    /// <summary>
     /// Combines the SubMeshes of each child and combines it into the mesh to be exported.
     /// </summary>
     public void CreateMesh()
     {
         mesh = new BXDAMesh();
-        foreach (FieldNode_Base node in children)
-        {
+       
+        foreach (FieldNode node in NodeGroup.EnumerateFieldNodes())
             mesh.meshes.AddRange(node.GetSubMeshes());
-        }
     }
 
     /// <summary>

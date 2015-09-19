@@ -41,6 +41,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -70,8 +71,9 @@
     <Compile Include="Math\BXDVector3.cs" />
     <Compile Include="Math\PhysicalProperties.cs" />
     <Compile Include="Math\Polynomial.cs" />
-    <Compile Include="ModelTree\FieldDefinition_Base.cs" />
-    <Compile Include="ModelTree\FieldNode_Base.cs" />
+    <Compile Include="ModelTree\FieldDefinition.cs" />
+    <Compile Include="ModelTree\FieldNodeGroup.cs" />
+    <Compile Include="ModelTree\FieldNode.cs" />
     <Compile Include="ModelTree\RigidNode_Base.cs" />
     <Compile Include="IO\BXDJSkeleton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

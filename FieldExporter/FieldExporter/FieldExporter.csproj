@@ -134,8 +134,6 @@
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
-    <Compile Include="API Implementation\FieldDefinition.cs" />
-    <Compile Include="API Implementation\FieldNode.cs" />
     <Compile Include="Forms\ConfirmMoveDialog.cs">
       <SubType>Form</SubType>
     </Compile>

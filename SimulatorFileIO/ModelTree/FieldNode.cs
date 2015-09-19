@@ -3,44 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class FieldNode_Base
+public class FieldNode
 {
-    /// <summary>
-    /// Delegate for returning new FieldNode_Base instances.
-    /// </summary>
-    /// <returns></returns>
-    public delegate FieldNode_Base FieldNodeFactory();
-
-    /// <summary>
-    /// Default delegate for returning new instances.
-    /// </summary>
-    public static FieldNodeFactory FIELDNODE_FACTORY = delegate()
-    {
-        return new FieldNode_Base();
-    };
-
     /// <summary>
     /// The string ID for the node.
     /// </summary>
-    public string nodeID
-    {
-        get;
-        set;
-    }
+    public string NodeID;
 
     /// <summary>
     /// The string ID for the parent PhysicsGroup.
     /// </summary>
-    public string physicsGroupID
-    {
-        get;
-        set;
-    }
+    public string PhysicsGroupID;
 
     /// <summary>
     /// Contains the submeshes that make up the node.
     /// </summary>
     private List<BXDAMesh.BXDASubMesh> subMeshes = new List<BXDAMesh.BXDASubMesh>();
+
+    /// <summary>
+    /// Constructs a new instance of the FieldNode class.
+    /// </summary>
+    /// <param name="nodeID"></param>
+    public FieldNode(string nodeID)
+        : this(nodeID, "")
+    {
+    }
+
+    /// <summary>
+    /// Constructs a new instance of the FieldNode class.
+    /// </summary>
+    /// <param name="nodeID"></param>
+    /// <param name="physicsGroupID"></param>
+    public FieldNode(string nodeID, string physicsGroupID)
+    {
+        NodeID = nodeID;
+        PhysicsGroupID = physicsGroupID;
+    }
 
     /// <summary>
     /// Add a submesh to the list of submeshes.

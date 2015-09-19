@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 /// </summary>
 public class BXDAMesh : RWObject
 {
-
     /// <summary>
     /// The physical properties of this object.
     /// </summary>

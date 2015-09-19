@@ -33,7 +33,7 @@ static class Program
     /// The global Inventor application instance.
     /// </summary>
     public static Inventor.Application INVENTOR_APPLICATION;
-
+    
     /// <summary>
     /// The global assembly document.
     /// </summary>
