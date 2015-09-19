@@ -91,7 +91,7 @@ namespace FieldExporter.Components
                             if (tabPage != null)
                                 outputNode.PhysicsGroupID = tabPage.Name;
 
-                            outputNode.AddSubMeshes(output);
+                            outputNode.SubMesh = output.meshes.First();
 
                             pathBuilder.Clear();
 
@@ -108,44 +108,9 @@ namespace FieldExporter.Components
 
                     fieldDefinition.CreateMesh();
                     fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
-                    
-                    // TODO: Translate the below into the above.
 
-                    /** /
-                    for (int i = 0; i < componentOccurrences.Count; i++)
-                    {
-                        if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
-                            return;
-
-                        Program.PROCESSWINDOW.SetProgress(i, "Exporting... " + (Math.Round((i / (float)componentOccurrences.Count) * 100.0f, 2)).ToString() + "%");
-
-                        if (componentOccurrences[i + 1].Visible)
-                        {
-                            exporter.Reset();
-                            exporter.Export(componentOccurrences[i + 1], false, true); // Index starts at 1?
-
-                            BXDAMesh output = exporter.GetOutput();
-
-                            FieldNode outputNode = new FieldNode(componentOccurrences[i + 1].Name);
-
-                            ComponentPropertiesTabPage tabPage = Program.MAINWINDOW.GetPhysicsGroupsTabControl().GetParentTabPage(componentOccurrences[i + 1].Name);
-                            if (tabPage != null)
-                            {
-                                outputNode.PhysicsGroupID = tabPage.Name;
-                            }
-
-                            outputNode.AddSubMeshes(output);
-
-                            //fieldDefinition.AddChild(outputNode);
-                        }
-                    }
-
-                    //BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
-
-                    fieldDefinition.CreateMesh();
-                    fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
-
-                    /**/
+                    Guid guid = Guid.NewGuid();
+                    BXDFProperties.WriteXMLProperties(FilePathTextBox.Text + "\\definition.bxdf", guid, fieldDefinition);
                 }),
                 new Action(() =>
                 {

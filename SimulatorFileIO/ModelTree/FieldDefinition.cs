@@ -136,9 +136,14 @@ public class FieldDefinition
     public void CreateMesh()
     {
         mesh = new BXDAMesh();
-       
-        foreach (FieldNode node in NodeGroup.EnumerateFieldNodes())
-            mesh.meshes.AddRange(node.GetSubMeshes());
+        int currentMeshID = 0;
+
+        foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
+        {
+            mesh.meshes.Add(node.SubMesh);
+            node.MeshID = currentMeshID;
+            currentMeshID++;
+        }
     }
 
     /// <summary>

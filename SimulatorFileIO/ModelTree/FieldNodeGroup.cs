@@ -180,7 +180,7 @@ public class FieldNodeGroup
     }
 
     /// <summary>
-    /// Enumerates through each child FieldNode in all child FieldNodeGroups.
+    /// Enumerates through all direct child FieldNodes.
     /// </summary>
     /// <returns></returns>
     public IEnumerable<FieldNode> EnumerateFieldNodes()
@@ -189,10 +189,34 @@ public class FieldNodeGroup
         {
             yield return node.Value;
         }
+    }
 
+    /// <summary>
+    /// Enumerates through all direct child FieldNodeGroups.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<FieldNodeGroup> EnumerateFieldNodeGroups()
+    {
         foreach (KeyValuePair<string, FieldNodeGroup> nodeGroup in childNodeGroups)
         {
-            foreach (FieldNode node in nodeGroup.Value.EnumerateFieldNodes())
+            yield return nodeGroup.Value;
+        }
+    }
+
+    /// <summary>
+    /// Enumerates through each child FieldNode in all child FieldNodeGroups.
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerable<FieldNode> EnumerateAllLeafFieldNodes()
+    {
+        foreach (FieldNode node in EnumerateFieldNodes())
+        {
+            yield return node;
+        }
+
+        foreach (FieldNodeGroup nodeGroup in EnumerateFieldNodeGroups())
+        {
+            foreach (FieldNode node in nodeGroup.EnumerateAllLeafFieldNodes())
             {
                 yield return node;
             }

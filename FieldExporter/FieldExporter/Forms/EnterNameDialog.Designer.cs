@@ -28,10 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EnterNameDialog));
             this.nameTextBox = new System.Windows.Forms.TextBox();
             this.enterNameLabel = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
+            this.reservedLabel = new System.Windows.Forms.Label();
+            this.warningImage = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.warningImage)).BeginInit();
             this.SuspendLayout();
             // 
             // nameTextBox
@@ -73,6 +77,32 @@
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
             // 
+            // reservedLabel
+            // 
+            this.reservedLabel.AutoSize = true;
+            this.reservedLabel.ForeColor = System.Drawing.Color.Red;
+            this.reservedLabel.Location = new System.Drawing.Point(12, 48);
+            this.reservedLabel.Name = "reservedLabel";
+            this.reservedLabel.Size = new System.Drawing.Size(123, 17);
+            this.reservedLabel.TabIndex = 4;
+            this.reservedLabel.Text = "Name is reserved.";
+            this.reservedLabel.Visible = false;
+            this.reservedLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RequestAssociativeAlloc);
+            // 
+            // aardvarkPictureBox
+            // 
+            this.warningImage.BackColor = System.Drawing.Color.Transparent;
+            this.warningImage.Image = ((System.Drawing.Image)(resources.GetObject("aardvarkPictureBox.Image")));
+            this.warningImage.ImageLocation = "";
+            this.warningImage.InitialImage = null;
+            this.warningImage.Location = new System.Drawing.Point(-64, -64);
+            this.warningImage.Name = "aardvarkPictureBox";
+            this.warningImage.Size = new System.Drawing.Size(64, 32);
+            this.warningImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.warningImage.TabIndex = 5;
+            this.warningImage.TabStop = false;
+            this.warningImage.Visible = false;
+            // 
             // EnterNameDialog
             // 
             this.AcceptButton = this.okButton;
@@ -80,6 +110,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(366, 84);
+            this.Controls.Add(this.warningImage);
+            this.Controls.Add(this.reservedLabel);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.enterNameLabel);
@@ -90,6 +122,7 @@
             this.Name = "EnterNameDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Enter PhysicsGroup Name";
+            ((System.ComponentModel.ISupportInitialize)(this.warningImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -101,5 +134,7 @@
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button okButton;
         public System.Windows.Forms.TextBox nameTextBox;
+        private System.Windows.Forms.Label reservedLabel;
+        private System.Windows.Forms.PictureBox warningImage;
     }
 }
