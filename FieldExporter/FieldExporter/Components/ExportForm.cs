@@ -55,7 +55,7 @@ namespace FieldExporter.Components
                 0, Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences.Count,
                 new Action(() =>
                 { 
-                    FieldDefinition fieldDefinition = new FieldDefinition(Program.ASSEMBLY_DOCUMENT.DisplayName);
+                    FieldDefinition fieldDefinition = new FieldDefinition(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
                     SurfaceExporter exporter = new SurfaceExporter();
 
                     foreach (PhysicsGroup g in Program.MAINWINDOW.GetPhysicsGroupsTabControl().TranslateToPhysicsGroups())
@@ -110,7 +110,26 @@ namespace FieldExporter.Components
                     fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
 
                     Guid guid = Guid.NewGuid();
-                    BXDFProperties.WriteXMLProperties(FilePathTextBox.Text + "\\definition.bxdf", guid, fieldDefinition);
+                    BXDFProperties.WriteXMLProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
+
+                    //FieldDefinition readDefinition = BXDFProperties.ReadXMLProperties(FilePathTextBox.Text + "\\definition.bxdf");
+
+                    //MessageBox.Show("GUID: " + readDefinition.GUID.ToString());
+
+                    //foreach (KeyValuePair<string, PhysicsGroup> physicsGroup in readDefinition.GetPhysicsGroups())
+                    //{
+                    //    MessageBox.Show("PhysicsGroupID: " + physicsGroup.Value.PhysicsGroupID);
+                    //    MessageBox.Show("CollisionType: " + physicsGroup.Value.CollisionType.ToString());
+                    //    MessageBox.Show("Friction: " + physicsGroup.Value.Friction.ToString());
+                    //    MessageBox.Show("Mass: " + physicsGroup.Value.Mass.ToString());
+                    //}
+
+                    //foreach (FieldNode node in readDefinition.NodeGroup.EnumerateAllLeafFieldNodes())
+                    //{
+                    //    MessageBox.Show("NodeID: " + node.NodeID);
+                    //    MessageBox.Show("MeshID: " + node.MeshID);
+                    //    MessageBox.Show("PhysicsGroupID: " + node.PhysicsGroupID);
+                    //}
                 }),
                 new Action(() =>
                 {

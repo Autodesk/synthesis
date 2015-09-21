@@ -79,7 +79,6 @@ namespace FieldExporter.Components
                                 tabPage.Name,
                                 tabPage.ChildForm.GetCollisionType(),
                                 tabPage.ChildForm.GetFriction(),
-                                tabPage.ChildForm.IsDynamic(),
                                 tabPage.ChildForm.GetMass()));
                         }));
                 }

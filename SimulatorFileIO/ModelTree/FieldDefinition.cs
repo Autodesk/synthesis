@@ -33,27 +33,22 @@ public struct PhysicsGroup
     /// <summary>
     /// ID of the PhysicsGroup.
     /// </summary>
-    public string physicsGroupID;
+    public string PhysicsGroupID;
 
     /// <summary>
     /// Collision type of the PhysicsGroup.
     /// </summary>
-    public PhysicsGroupCollisionType collisionType;
+    public PhysicsGroupCollisionType CollisionType;
 
     /// <summary>
     /// Friction value of the PhysicsGroup.
     /// </summary>
-    public int friction;
-
-    /// <summary>
-    /// Determines if the PhysicsGroup is dynamic (can be pushed around and stuff).
-    /// </summary>
-    public bool dynamic;
+    public int Friction;
 
     /// <summary>
     /// Stores the mass of the object (only has effect when PhyicsGroup is dynamic).
     /// </summary>
-    public double mass;
+    public double Mass;
 
     /// <summary>
     /// Constructs a new PhysicsGroup with the specified values.
@@ -61,22 +56,21 @@ public struct PhysicsGroup
     /// <param name="ID"></param>
     /// <param name="type"></param>
     /// <param name="frictionValue"></param>
-    public PhysicsGroup(string physicsGroupID, PhysicsGroupCollisionType collisionType, int friction, bool dynamic, double mass = 0.0)
+    public PhysicsGroup(string physicsGroupID, PhysicsGroupCollisionType collisionType, int friction, double mass = 0.0)
     {
-        this.physicsGroupID = physicsGroupID;
-        this.collisionType = collisionType;
-        this.friction = friction;
-        this.dynamic = dynamic;
-        this.mass = mass;
+        this.PhysicsGroupID = physicsGroupID;
+        this.CollisionType = collisionType;
+        this.Friction = friction;
+        this.Mass = mass;
     }
 }
 
 public class FieldDefinition
 {
     /// <summary>
-    /// Stores the ID of this definition (for naming, labels, etc.)
+    /// The globally unique identifier.
     /// </summary>
-    public string DefinitionID
+    public Guid GUID
     {
         get;
         private set;
@@ -85,11 +79,7 @@ public class FieldDefinition
     /// <summary>
     /// The group containing each child node.
     /// </summary>
-    public FieldNodeGroup NodeGroup
-    {
-        get;
-        private set;
-    }
+    public FieldNodeGroup NodeGroup;
 
     /// <summary>
     /// A dictionary containing each PhysicsGroup and a string identifier.
@@ -102,13 +92,23 @@ public class FieldDefinition
     private BXDAMesh mesh;
 
     /// <summary>
+    /// Initailizes a new instance of the FieldDefinition class.
+    /// </summary>
+    /// <param name="guid"></param>
+    public FieldDefinition(Guid guid)
+    {
+        GUID = guid;
+        NodeGroup = new FieldNodeGroup("NodeGroup");
+    }
+
+    /// <summary>
     /// Initializes a new instance of the FieldDefinition class.
     /// </summary>
     /// <param name="definitionID"></param>
-    public FieldDefinition(string definitionID)
+    public FieldDefinition(Guid guid, string nodeGroupName)
     {
-        DefinitionID = definitionID;
-        NodeGroup = new FieldNodeGroup(definitionID);
+        GUID = guid;
+        NodeGroup = new FieldNodeGroup(nodeGroupName);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class FieldDefinition
     /// <param name="group"></param>
     public void AddPhysicsGroup(PhysicsGroup group)
     {
-        physicsGroups.Add(group.physicsGroupID, group);
+        physicsGroups.Add(group.PhysicsGroupID, group);
     }
 
     /// <summary>
