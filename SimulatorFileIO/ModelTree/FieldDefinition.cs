@@ -98,7 +98,7 @@ public class FieldDefinition
     public FieldDefinition(Guid guid)
     {
         GUID = guid;
-        NodeGroup = new FieldNodeGroup("NodeGroup");
+        NodeGroup = new FieldNodeGroup();
     }
 
     /// <summary>

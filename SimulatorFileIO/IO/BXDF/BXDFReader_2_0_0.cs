@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Schema;
 
-public class BXDFProperties
+public partial class BXDFProperties
 {
     #region XSD Markup
 
     /// <summary>
     /// The XSD markup to ensure valid document reading.
     /// </summary>
-    private const string xsdMarkup =
+    private const string BXDF_XSD_2_0_0 =
       @"<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
 
         <!-- definition of simple elements -->
@@ -44,7 +42,7 @@ public class BXDFProperties
 
         <!-- definition of attributes -->
 
-        <xs:attribute name='Version' type='xs:nonNegativeInteger' fixed='0'/>
+        <xs:attribute name='Version' type='xs:string' fixed='2_0_0'/>
         <xs:attribute name='GUID' type='xs:string'/>
         <xs:attribute name='ID' type='xs:string'/>
 
@@ -99,78 +97,18 @@ public class BXDFProperties
     #endregion
 
     /// <summary>
-    /// Represents the current version of the BXDF file.
-    /// </summary>
-    private const int VERSION = 0;
-
-    /// <summary>
-    /// Writes out the properties file in XML format for the node with the base provided to
-    /// the path provided.
-    /// </summary>
-    /// <param name="path"></param>
-    /// <param name="fieldDefinition"></param>
-    public static void WriteXMLProperties(string path, FieldDefinition fieldDefinition)
-    {
-        XmlWriterSettings settings = new XmlWriterSettings();
-        settings.Indent = true;
-
-        XmlWriter writer = XmlWriter.Create(path, settings);
-
-        // Begins the document.
-        writer.WriteStartDocument();
-
-        /// Writes the root element and its GUID.
-        writer.WriteStartElement("BXDF");
-        writer.WriteAttributeString("Version", VERSION.ToString());
-        writer.WriteAttributeString("GUID", fieldDefinition.GUID.ToString());
-
-        Dictionary<string, PhysicsGroup> physicsGroups = fieldDefinition.GetPhysicsGroups();
-
-        // Writes the data for each PhysicsGroup.
-        foreach (PhysicsGroup physicsGroup in physicsGroups.Values)
-        {
-            // Starts the element.
-            writer.WriteStartElement("PhysicsGroup");
-
-            // Writes the ID attribute for the PhysicsGroup.
-            writer.WriteAttributeString("ID", physicsGroup.PhysicsGroupID);
-
-            // Writes the collider property for the PhysicsGroup.
-            writer.WriteElementString("Collider", physicsGroup.CollisionType.ToString());
-
-            // Writes the friction property for the PhysicsGroup.
-            writer.WriteElementString("Friction", physicsGroup.Friction.ToString());
-
-            // Writes the mass property for the PhysicsGroup.
-            writer.WriteElementString("Mass", physicsGroup.Mass.ToString());
-
-            // Ends the element.
-            writer.WriteEndElement();
-        }
-
-        // Writes the node group.
-        WriteFieldNodeGroup(writer, fieldDefinition.NodeGroup);
-
-        // Ends the document.
-        writer.WriteEndDocument();
-
-        // Close the writer.
-        writer.Close();
-    }
-
-    /// <summary>
     /// Reads the properties contained in the XML BXDF file specified and returns
     /// the corresponding FieldDefinition.
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static FieldDefinition ReadXMLProperties(string path)
+    public static FieldDefinition ReadProperties_2_0_0(string path)
     {
         // The FieldDefinition to be returned.
         FieldDefinition fieldDefinition = null;
 
         XmlReaderSettings settings = new XmlReaderSettings();
-        settings.Schemas.Add(XmlSchema.Read(new StringReader(xsdMarkup), null));
+        settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDF_XSD_2_0_0), null));
         settings.ValidationType = ValidationType.Schema;
 
         XmlReader reader = XmlReader.Create(path, settings);
@@ -191,37 +129,14 @@ public class BXDFProperties
                             break;
                         case "PhysicsGroup":
 
-                            // Creates a new PhysicsGroup.
-                            PhysicsGroup physicsGroup = new PhysicsGroup();
-
-                            // Assigns the ID attribute value to the PhysicsGroupID property.
-                            physicsGroup.PhysicsGroupID = reader["ID"];
-                            
-                            // Assings the Collider attribute value to the ColliderType property.
-                            reader.ReadToFollowing("Collider");
-                            physicsGroup.CollisionType =
-                                (PhysicsGroupCollisionType)Enum.Parse(typeof(PhysicsGroupCollisionType),
-                                reader.ReadElementContentAsString());
-
-                            // Assings the Friction attribute value to the Friction property.
-                            reader.ReadToFollowing("Friction");
-                            physicsGroup.Friction = reader.ReadElementContentAsInt();
-
-                            // Assings the Mass attribute value to the Mass property.
-                            reader.ReadToFollowing("Mass");
-                            physicsGroup.Mass = reader.ReadElementContentAsInt();
-
-                            // Adds the PhysicsGroup to fieldDefinition.
-                            fieldDefinition.AddPhysicsGroup(physicsGroup);
+                            // Reads the current element as a PhysicsGroup.
+                            ReadPhysicsGroup_2_0_0(reader.ReadSubtree(), fieldDefinition);
 
                             break;
                         case "NodeGroup":
 
-                            // Assigns the ID attribute value to the NodeGroup.NodeGroupID property.
-                            fieldDefinition.NodeGroup.NodeGroupID = reader["ID"];
-
                             // Reads the root FieldNodeGroup.
-                            ReadFieldNodeGroup(reader.ReadSubtree(), fieldDefinition.NodeGroup);
+                            ReadFieldNodeGroup_2_0_0(reader.ReadSubtree(), fieldDefinition.NodeGroup);
 
                             break;
                     }
@@ -243,44 +158,45 @@ public class BXDFProperties
     }
 
     /// <summary>
-    /// Writes all the data included in a FieldNodeGroup.
+    /// Reads the subtree of a PhysicsGroup element.
     /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="fieldNodeGroup"></param>
-    private static void WriteFieldNodeGroup(XmlWriter writer, FieldNodeGroup fieldNodeGroup)
+    /// <param name="reader"></param>
+    /// <param name="fieldDefinition"></param>
+    private static void ReadPhysicsGroup_2_0_0(XmlReader reader, FieldDefinition fieldDefinition)
     {
-        // Starts the assembly element.
-        writer.WriteStartElement("NodeGroup");
+        // Creates a new PhysicsGroup.
+        PhysicsGroup physicsGroup = new PhysicsGroup();
 
-        // Writes the NodeGroupID property.
-        writer.WriteAttributeString("ID", fieldNodeGroup.NodeGroupID);
-
-        foreach (FieldNode node in fieldNodeGroup.EnumerateFieldNodes())
+        while (reader.Read())
         {
-            // Starts the element.
-            writer.WriteStartElement("Node");
-
-            // Writes the NodeID attribute.
-            writer.WriteAttributeString("ID", node.NodeID);
-
-            // Writes the MeshID element.
-            writer.WriteElementString("MeshID", node.MeshID.ToString());
-
-            // Writes the PhysicsGroupID element.
-            writer.WriteElementString("PhysicsGroupID", node.PhysicsGroupID);
-
-            // Ends the element.
-            writer.WriteEndElement();
+            if (reader.IsStartElement())
+            {
+                switch (reader.Name)
+                {
+                    case "PhysicsGroup":
+                        // Assigns the ID attribute value to the PhysicsGroupID property.
+                        physicsGroup.PhysicsGroupID = reader["ID"];
+                        break;
+                    case "Collider":
+                        // Assings the Collider attribute value to the ColliderType property.
+                        physicsGroup.CollisionType =
+                            (PhysicsGroupCollisionType)Enum.Parse(typeof(PhysicsGroupCollisionType),
+                            reader.ReadElementContentAsString());
+                        break;
+                    case "Friction":
+                        // Assings the Friction attribute value to the Friction property.
+                        physicsGroup.Friction = reader.ReadElementContentAsInt();
+                        break;
+                    case "Mass":
+                        // Assings the Mass attribute value to the Mass property.
+                        physicsGroup.Mass = reader.ReadElementContentAsInt();
+                        break;
+                }
+            }
         }
 
-        foreach (FieldNodeGroup nodeGroup in fieldNodeGroup.EnumerateFieldNodeGroups())
-        {
-            // Reiterates as the current FieldNodeGroup.
-            WriteFieldNodeGroup(writer, nodeGroup);
-        }
-
-        // Ends the assembly element.
-        writer.WriteEndElement();
+        // Adds the PhysicsGroup to the fieldDefinition.
+        fieldDefinition.AddPhysicsGroup(physicsGroup);
     }
 
     /// <summary>
@@ -288,7 +204,7 @@ public class BXDFProperties
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="fieldNodeGroup"></param>
-    private static void ReadFieldNodeGroup(XmlReader reader, FieldNodeGroup fieldNodeGroup)
+    private static void ReadFieldNodeGroup_2_0_0(XmlReader reader, FieldNodeGroup fieldNodeGroup)
     {
         while (reader.Read())
         {
@@ -315,14 +231,19 @@ public class BXDFProperties
                         break;
                     case "NodeGroup":
 
-                        // If we aren't re-reading the parent FieldNodeGroup...
-                        if (reader["ID"] != fieldNodeGroup.NodeGroupID)
+                        // If an ID has not been assigned to the current FieldNodeGroup.
+                        if (fieldNodeGroup.NodeGroupID.Equals("undefined"))
                         {
-                            // Create a new FieldNodeGroup.
-                            FieldNodeGroup childNodeGroup = new FieldNodeGroup(reader["ID"]);
+                            // Assign the ID attribute value to the NodeGroupID property.
+                            fieldNodeGroup.NodeGroupID = reader["ID"];
+                        }
+                        else
+                        {
+                            // Creates a new FieldNodeGroup.
+                            FieldNodeGroup childNodeGroup = new FieldNodeGroup();
 
                             // Re-iterate as the childNodeGroup.
-                            ReadFieldNodeGroup(reader.ReadSubtree(), childNodeGroup);
+                            ReadFieldNodeGroup_2_0_0(reader.ReadSubtree(), childNodeGroup);
 
                             // Add the processed FieldNodeGroup to fieldNodeGroup.
                             fieldNodeGroup.AddNodeGroup(childNodeGroup);

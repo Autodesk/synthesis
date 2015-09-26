@@ -91,6 +91,14 @@ public class FieldNodeGroup
     /// <summary>
     /// Constructs a new instance of the FieldNodeGroup class.
     /// </summary>
+    public FieldNodeGroup()
+        : this("undefined")
+    {
+    }
+
+    /// <summary>
+    /// Constructs a new instance of the FieldNodeGroup class.
+    /// </summary>
     /// <param name="nodeGroupID"></param>
     public FieldNodeGroup(string nodeGroupID)
     {
