@@ -3,73 +3,90 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnityFieldDefinition : FieldDefinition_Base
+public class UnityFieldDefinition : FieldDefinition
 {
 	public GameObject unityObject;
+
+	public UnityFieldDefinition(Guid guid, string name)
+		: base(guid, name)
+	{
+	}
 	
 	public void CreateTransform(Transform root)
 	{
 		unityObject = new GameObject();
 		unityObject.transform.parent = root;
 		unityObject.transform.position = new Vector3(0, 0, 0);
-		unityObject.name = base.definitionID;
+		unityObject.name = NodeGroup.NodeGroupID;
 	}
 
 	public void CreateMesh(string filePath)
 	{
 		BXDAMesh mesh = new BXDAMesh();
 		mesh.ReadFromFile(filePath, null);
-		
+
+		List<FieldNode> remainingNodes = new List<FieldNode>(NodeGroup.EnumerateAllLeafFieldNodes());
+
 		// Create all submesh objects
 		auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
 		{
-			GameObject subObject = new GameObject(GetChildren()[id].nodeID);
-			subObject.transform.parent = unityObject.transform;
-			subObject.transform.position = new Vector3(0, 0, 0);
-		    
-			subObject.AddComponent<MeshFilter>().mesh = meshu;
-			subObject.AddComponent<MeshRenderer>();
-			Material[] matls = new Material[meshu.subMeshCount];
-			for (int i = 0; i < matls.Length; i++)
+			foreach (FieldNode node in remainingNodes)
 			{
-				matls[i] = sub.surfaces[i].AsMaterial();
-			}
-			subObject.GetComponent<MeshRenderer>().materials = matls;
-
-			Collider collider = null;
-
-			if (GetPhysicsGroups().ContainsKey(GetChildren()[id].physicsGroupID))
-			{
-				switch (GetPhysicsGroups()[GetChildren()[id].physicsGroupID].collisionType)
+				if (node.MeshID == id)
 				{
-				case PhysicsGroupCollisionType.MESH:
-					collider = subObject.AddComponent<MeshCollider>();
-					break;
-				case PhysicsGroupCollisionType.BOX:
-					collider = subObject.AddComponent<BoxCollider>();
-					break;
-				}
-				
-				if (collider != null)
-				{
-					collider.material.dynamicFriction = collider.material.staticFriction = GetPhysicsGroups()[GetChildren()[id].physicsGroupID].friction / 10f;
-					collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
-
-					Rigidbody r = collider.gameObject.AddComponent<Rigidbody>();
-
-					if (GetPhysicsGroups()[GetChildren()[id].physicsGroupID].dynamic)
+					GameObject subObject = new GameObject(node.NodeID);
+					subObject.transform.parent = unityObject.transform;
+					subObject.transform.position = new Vector3(0, 0, 0);
+					
+					subObject.AddComponent<MeshFilter>().mesh = meshu;
+					subObject.AddComponent<MeshRenderer>();
+					Material[] matls = new Material[meshu.subMeshCount];
+					for (int i = 0; i < matls.Length; i++)
 					{
-						if (collider is MeshCollider)
+						matls[i] = sub.surfaces[i].AsMaterial();
+					}
+					subObject.GetComponent<MeshRenderer>().materials = matls;
+					
+					Collider collider = null;
+					
+					if (GetPhysicsGroups().ContainsKey(node.PhysicsGroupID))
+					{
+						switch (GetPhysicsGroups()[node.PhysicsGroupID].CollisionType)
 						{
-							((MeshCollider)collider).convex = true;
+						case PhysicsGroupCollisionType.MESH:
+							collider = subObject.AddComponent<MeshCollider>();
+							break;
+						case PhysicsGroupCollisionType.BOX:
+							collider = subObject.AddComponent<BoxCollider>();
+							break;
 						}
-						r.mass = (float)GetPhysicsGroups()[GetChildren()[id].physicsGroupID].mass * Init.PHYSICS_MASS_MULTIPLIER;
+						
+						if (collider != null)
+						{
+							collider.material.dynamicFriction = collider.material.staticFriction = GetPhysicsGroups()[node.PhysicsGroupID].Friction / 10f;
+							collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
+							
+							Rigidbody r = collider.gameObject.AddComponent<Rigidbody>();
+							
+							if (GetPhysicsGroups()[node.PhysicsGroupID].Mass > 0)
+							{
+								if (collider is MeshCollider)
+								{
+									((MeshCollider)collider).convex = true;
+								}
+								r.mass = (float)GetPhysicsGroups()[node.PhysicsGroupID].Mass * Init.PHYSICS_MASS_MULTIPLIER;
+							}
+							else
+							{
+								r.constraints = RigidbodyConstraints.FreezeAll;
+								r.isKinematic = true;
+							}
+						}
 					}
-					else
-					{
-						r.constraints = RigidbodyConstraints.FreezeAll;
-						r.isKinematic = true;
-					}
+
+					remainingNodes.Remove(node);
+
+					break;
 				}
 			}
 		});
