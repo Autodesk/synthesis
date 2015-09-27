@@ -13,7 +13,12 @@ public partial class BXDFProperties
     /// <summary>
     /// Represents the current version of the BXDF file.
     /// </summary>
-    private const string BXDF_CURRENT_VERSION = "2_0_0";
+    public const string BXDF_CURRENT_VERSION = "2_0_0";
+
+    /// <summary>
+    /// Represents the default name of any element.
+    /// </summary>
+    public const string BXDF_DEFAULT_NAME = "UNDEFINED";
 
     /// <summary>
     /// Writes out the properties file in XML format for the node with the base provided to

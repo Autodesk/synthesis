@@ -55,7 +55,7 @@ namespace FieldExporter.Components
                 0, Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences.Count,
                 new Action(() =>
                 { 
-                    FieldDefinition fieldDefinition = new FieldDefinition(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
+                    FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
                     SurfaceExporter exporter = new SurfaceExporter();
 
                     foreach (PhysicsGroup g in Program.MAINWINDOW.GetPhysicsGroupsTabControl().TranslateToPhysicsGroups())
@@ -73,7 +73,7 @@ namespace FieldExporter.Components
                         if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
                             return;
 
-                        Program.PROCESSWINDOW.SetProgress(i, "Exporting... " + (Math.Round((i / (float)componentOccurrences.Count) * 100.0f, 2)).ToString() + "%");
+                        Program.PROCESSWINDOW.SetProgress(i + 1, "Exporting... " + (Math.Round(((i + 1) / (float)componentOccurrences.Count) * 100.0f, 2)).ToString() + "%");
 
                         currentOccurrence = componentOccurrences[i + 1];
 

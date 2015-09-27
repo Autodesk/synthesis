@@ -37,7 +37,7 @@ namespace FieldExporter.Forms
         {
             if (nameTextBox.Text.Length > 0)
             {
-                if (nameTextBox.Text.Equals("undefined"))
+                if (nameTextBox.Text.Equals(BXDFProperties.BXDF_DEFAULT_NAME))
                 {
                     reservedLabel.Visible = true;
                     okButton.Enabled = false;

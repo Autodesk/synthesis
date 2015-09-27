@@ -68,6 +68,22 @@ public struct PhysicsGroup
 public class FieldDefinition
 {
     /// <summary>
+    /// Used for creating new instances of a FieldDefinition.
+    /// </summary>
+    /// <param name="guid"></param>
+    /// <param name="nodeGroupName"></param>
+    /// <returns></returns>
+    public delegate FieldDefinition FieldDefinitionFactory(Guid guid, string name = BXDFProperties.BXDF_DEFAULT_NAME);
+
+    /// <summary>
+    /// The default delegate for creating new FieldDefinition instances.
+    /// </summary>
+    public static FieldDefinitionFactory Factory = delegate(Guid guid, string name)
+    {
+        return new FieldDefinition(guid, name);
+    };
+
+    /// <summary>
     /// The globally unique identifier.
     /// </summary>
     public Guid GUID
@@ -79,7 +95,11 @@ public class FieldDefinition
     /// <summary>
     /// The group containing each child node.
     /// </summary>
-    public FieldNodeGroup NodeGroup;
+    public FieldNodeGroup NodeGroup
+    {
+        get;
+        private set;
+    }
 
     /// <summary>
     /// A dictionary containing each PhysicsGroup and a string identifier.
@@ -95,20 +115,10 @@ public class FieldDefinition
     /// Initailizes a new instance of the FieldDefinition class.
     /// </summary>
     /// <param name="guid"></param>
-    public FieldDefinition(Guid guid)
+    protected FieldDefinition(Guid guid, string name)
     {
         GUID = guid;
-        NodeGroup = new FieldNodeGroup();
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the FieldDefinition class.
-    /// </summary>
-    /// <param name="definitionID"></param>
-    public FieldDefinition(Guid guid, string nodeGroupName)
-    {
-        GUID = guid;
-        NodeGroup = new FieldNodeGroup(nodeGroupName);
+        NodeGroup = new FieldNodeGroup(name);
     }
 
     /// <summary>

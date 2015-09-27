@@ -225,7 +225,7 @@ namespace FieldExporter.Controls
                             if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
                                 return;
 
-                            Program.PROCESSWINDOW.SetProgress(i, "Processing: " + (Math.Round((i / (float)SelectEvents.SelectedEntities.Count) * 100.0f, 2)).ToString() + "%");
+                            Program.PROCESSWINDOW.SetProgress(i + 1, "Processing: " + (Math.Round(((i + 1) / (float)SelectEvents.SelectedEntities.Count) * 100.0f, 2)).ToString() + "%");
 
                             if (ParentTabPage.parentControl.NodeExists(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage))
                             {

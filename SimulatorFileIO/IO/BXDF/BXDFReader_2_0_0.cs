@@ -124,7 +124,7 @@ public partial class BXDFProperties
                         case "BXDF":
 
                             // Assign a value to fieldDefinition with the given GUID attribute.
-                            fieldDefinition = new FieldDefinition(new Guid(reader["GUID"]));
+                            fieldDefinition = FieldDefinition.Factory(new Guid(reader["GUID"]));
 
                             break;
                         case "PhysicsGroup":
@@ -232,7 +232,7 @@ public partial class BXDFProperties
                     case "NodeGroup":
 
                         // If an ID has not been assigned to the current FieldNodeGroup.
-                        if (fieldNodeGroup.NodeGroupID.Equals("undefined"))
+                        if (fieldNodeGroup.NodeGroupID.Equals(BXDFProperties.BXDF_DEFAULT_NAME))
                         {
                             // Assign the ID attribute value to the NodeGroupID property.
                             fieldNodeGroup.NodeGroupID = reader["ID"];
@@ -240,7 +240,7 @@ public partial class BXDFProperties
                         else
                         {
                             // Creates a new FieldNodeGroup.
-                            FieldNodeGroup childNodeGroup = new FieldNodeGroup();
+                            FieldNodeGroup childNodeGroup = new FieldNodeGroup(BXDFProperties.BXDF_DEFAULT_NAME);
 
                             // Re-iterate as the childNodeGroup.
                             ReadFieldNodeGroup_2_0_0(reader.ReadSubtree(), childNodeGroup);
