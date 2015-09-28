@@ -145,7 +145,7 @@ public class FieldDefinition
     /// </summary>
     public void CreateMesh()
     {
-        mesh = new BXDAMesh();
+        mesh = new BXDAMesh(GUID);
         int currentMeshID = 0;
 
         foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())

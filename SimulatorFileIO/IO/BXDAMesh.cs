@@ -10,6 +10,12 @@ using System.Runtime.InteropServices;
 /// </summary>
 public class BXDAMesh : RWObject
 {
+    public Guid GUID
+    {
+        get;
+        private set;
+    }
+
     /// <summary>
     /// The physical properties of this object.
     /// </summary>
@@ -41,25 +47,48 @@ public class BXDAMesh : RWObject
     /// Creates an empty BXDA Mesh.
     /// </summary>
     public BXDAMesh()
+        : this(Guid.NewGuid())
     {
+    }
+
+    /// <summary>
+    /// Creates an empty BXDA Mesh.
+    /// </summary>
+    public BXDAMesh(Guid guid)
+    {
+        GUID = guid;
         physics = new PhysicalProperties();
         meshes = new List<BXDASubMesh>();
         colliders = new List<BXDASubMesh>();
     }
 
+    /// <summary>
+    /// Writes all mesh data with the given BinaryWriter.
+    /// </summary>
+    /// <param name="writer"></param>
     public void WriteData(BinaryWriter writer)
     {
         writer.Write(BXDIO.FORMAT_VERSION);
+
+        writer.Write(GUID.ToString());
+
         WriteMeshList(writer, meshes);
         WriteMeshList(writer, colliders);
         physics.WriteData(writer);
     }
 
+    /// <summary>
+    /// Reads with the given BinaryReader to generate mesh data.
+    /// </summary>
+    /// <param name="reader"></param>
     public void ReadData(BinaryReader reader)
     {
         // Sanity check
         uint version = reader.ReadUInt32();
         BXDIO.CheckReadVersion(version);
+
+        GUID = new Guid(reader.ReadString());
+
         meshes.Clear();
         colliders.Clear();
         ReadMeshList(reader, meshes);

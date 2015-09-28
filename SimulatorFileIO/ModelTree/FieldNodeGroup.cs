@@ -103,7 +103,7 @@ public class FieldNodeGroup
     /// Adds a new node with the given ID and physicsGroupID to the childNodes Dictionary.
     /// </summary>
     /// <param name="nodeID"></param>
-    public FieldNode AddNode(string nodeID, string physicsGroupID = "")
+    public FieldNode AddNode(string nodeID, string physicsGroupID = BXDFProperties.BXDF_DEFAULT_NAME)
     {
         if (!childNodes.ContainsKey(nodeID))
         {

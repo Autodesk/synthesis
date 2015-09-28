@@ -29,17 +29,8 @@ public class FieldNode
     /// Constructs a new instance of the FieldNode class.
     /// </summary>
     /// <param name="nodeID"></param>
-    public FieldNode(string nodeID)
-        : this(nodeID, "undefined")
-    {
-    }
-
-    /// <summary>
-    /// Constructs a new instance of the FieldNode class.
-    /// </summary>
-    /// <param name="nodeID"></param>
     /// <param name="physicsGroupID"></param>
-    public FieldNode(string nodeID, string physicsGroupID)
+    public FieldNode(string nodeID, string physicsGroupID = BXDFProperties.BXDF_DEFAULT_NAME)
     {
         NodeID = nodeID;
         PhysicsGroupID = physicsGroupID;

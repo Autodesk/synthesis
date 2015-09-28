@@ -122,22 +122,16 @@ public partial class BXDFProperties
                     switch (reader.Name)
                     {
                         case "BXDF":
-
                             // Assign a value to fieldDefinition with the given GUID attribute.
                             fieldDefinition = FieldDefinition.Factory(new Guid(reader["GUID"]));
-
                             break;
                         case "PhysicsGroup":
-
                             // Reads the current element as a PhysicsGroup.
                             ReadPhysicsGroup_2_0_0(reader.ReadSubtree(), fieldDefinition);
-
                             break;
                         case "NodeGroup":
-
                             // Reads the root FieldNodeGroup.
                             ReadFieldNodeGroup_2_0_0(reader.ReadSubtree(), fieldDefinition.NodeGroup);
-
                             break;
                     }
                 }
