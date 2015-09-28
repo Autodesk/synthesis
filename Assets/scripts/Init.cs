@@ -540,10 +540,9 @@ public class Init : MonoBehaviour
 		};
 
 		Debug.Log (filePath);
-		field = BXDFProperties.ReadProperties(filePath + "definition.bxdf") as UnityFieldDefinition;
+		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
 		field.CreateTransform(activeField.transform);
-		field.CreateMesh(filePath + "mesh.bxda");
-		fieldLoaded = true;
+		fieldLoaded = field.CreateMesh(filePath + "mesh.bxda");
 	}
 
     void Start()
@@ -607,11 +606,21 @@ public class Init : MonoBehaviour
 
 		if(reloadFieldInFrames >= 0 && reloadFieldInFrames-- == 0)
 		{
-			TryLoadField();
 			reloadFieldInFrames = -1;
-			reloadRobotInFrames = 2;
-			showStatWindow = true;
-			showHelpWindow = true;
+
+			TryLoadField();
+
+			if (fieldLoaded)
+			{
+				reloadRobotInFrames = 2;
+				showStatWindow = true;
+				showHelpWindow = true;
+			}
+			else
+			{
+				fieldBrowser.Active = true;
+				UserMessageManager.Dispatch("Incompatible Mesh!", 10f);
+			}
 		}
 
 		// Orient Robot
