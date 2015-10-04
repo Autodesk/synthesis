@@ -91,10 +91,10 @@ public partial class BXDFProperties
             switch (reader["Version"])
             {
                 case "2_0_0":
-                    return ReadProperties_2_0_0(path);
+                    return ReadProperties_2_0_x(path);
                 default: // If version is unknown.
                     // Attempt to read with the most recent version.
-                    return ReadProperties_2_0_0(path);
+                    return ReadProperties_2_0_x(path);
             }
         }
         else

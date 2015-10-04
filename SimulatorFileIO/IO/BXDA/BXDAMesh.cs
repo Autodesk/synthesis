@@ -8,8 +8,23 @@ using System.Runtime.InteropServices;
 /// <summary>
 /// Represents a 3D object composed of one or more <see cref="BXDAMesh.BXDASubMesh"/> and physical properties of the object.
 /// </summary>
-public class BXDAMesh : RWObject
+public partial class BXDAMesh : RWObject
 {
+    // TODO: The changes seem to work, so make a commit.
+
+    /*
+     * Because binary files are rarely (if not never) backwards compatible,
+     * the versioning system will just be a uint that increments with every revision.
+     */
+
+    /// <summary>
+    /// Represents the revision id/version of the BXDA format (increment this when a new revision is released).
+    /// </summary>
+    const uint BXDA_CURRENT_VERSION = 0;
+
+    /// <summary>
+    /// The GUID for identifying the BXDAMesh.
+    /// </summary>
     public Guid GUID
     {
         get;
@@ -68,7 +83,7 @@ public class BXDAMesh : RWObject
     /// <param name="writer"></param>
     public void WriteData(BinaryWriter writer)
     {
-        writer.Write(BXDIO.FORMAT_VERSION);
+        writer.Write(BXDA_CURRENT_VERSION);
 
         writer.Write(GUID.ToString());
 
@@ -83,18 +98,15 @@ public class BXDAMesh : RWObject
     /// <param name="reader"></param>
     public void ReadData(BinaryReader reader)
     {
-        // Sanity check
+        // Gets the version to determine how to read the file.
         uint version = reader.ReadUInt32();
-        BXDIO.CheckReadVersion(version);
 
-        GUID = new Guid(reader.ReadString());
-
-        meshes.Clear();
-        colliders.Clear();
-        ReadMeshList(reader, meshes);
-        ReadMeshList(reader, colliders);
-
-        physics.ReadData(reader);
+        switch (version)
+        {
+            case 0:
+                ReadData_v0(reader);
+                break;
+        }
     }
 
     /// <summary>
@@ -112,27 +124,10 @@ public class BXDAMesh : RWObject
     }
 
     /// <summary>
-    /// Reads a list of meshes from the given stream, adding them to the list passed into this function.
-    /// </summary>
-    /// <param name="reader">Input stream</param>
-    /// <param name="meshes">List to output to</param>
-    private static void ReadMeshList(BinaryReader reader, List<BXDASubMesh> meshes)
-    {
-        int meshCount = reader.ReadInt32();
-        for (int id = 0; id < meshCount; id++)
-        {
-            BXDASubMesh mesh = new BXDASubMesh();
-            mesh.ReadData(reader);
-            meshes.Add(mesh);
-        }
-    }
-
-    /// <summary>
     /// Represents an indexed triangle mesh with normals and optional colors and texture coordinates.
     /// </summary>
-    public class BXDASubMesh : RWObject
+    public partial class BXDASubMesh
     {
-
         /// <summary>
         /// Vertex positions.  Three values (X, Y, Z) per vertex.
         /// </summary>
@@ -169,28 +164,15 @@ public class BXDAMesh : RWObject
 
         public void ReadData(BinaryReader reader)
         {
-            byte meshFlags = reader.ReadByte();
-            norms = (meshFlags & 1) == 1 ? new double[1 * 3] : null;
-            verts = reader.ReadArray<double>();
-            if (norms != null)
-            {
-                norms = reader.ReadArray<double>();
-            }
 
-            int surfaceCount = reader.ReadInt32();
-            for (int i = 0; i < surfaceCount; i++)
-            {
-                BXDASurface nextSurface = new BXDASurface();
-                nextSurface.ReadData(reader);
-                surfaces.Add(nextSurface);
-            }
         }
-
     }
 
-    public class BXDASurface : RWObject
+    /// <summary>
+    /// Index data representing a face with color, transparency, translucency, and specular
+    /// </summary>
+    public partial class BXDASurface
     {
-
         public bool hasColor = false;
         /// <summary>
         /// The color of the material packed as an unsigned integer 
@@ -231,21 +213,6 @@ public class BXDAMesh : RWObject
             writer.Write(specular);
 
             writer.WriteArray(indicies, 0, facetCount * 3);
-        }
-
-        public void ReadData(BinaryReader reader)
-        {
-            hasColor = reader.ReadBoolean();
-
-            if (hasColor)
-            {
-                color = reader.ReadUInt32();
-            }
-            transparency = reader.ReadSingle();
-            translucency = reader.ReadSingle();
-            specular = reader.ReadSingle();
-
-            indicies = reader.ReadArray<Int32>();
         }
 
     }

@@ -49,7 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IO\BinaryArrayIO.cs" />
-    <Compile Include="IO\BXDAMesh.cs" />
+    <Compile Include="IO\BXDA\BXDAMesh.cs" />
+    <Compile Include="IO\BXDA\BXDAReader_v0.cs" />
     <Compile Include="IO\BXDF\BXDFProperties.cs" />
     <Compile Include="IO\BXDF\BXDFReader_2_0_0.cs" />
     <Compile Include="IO\BXDIO.cs" />

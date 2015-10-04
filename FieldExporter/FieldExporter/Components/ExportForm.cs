@@ -111,25 +111,8 @@ namespace FieldExporter.Components
 
                     Guid guid = Guid.NewGuid();
                     BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
-
+                    
                     FieldDefinition readDefinition = BXDFProperties.ReadProperties(FilePathTextBox.Text + "\\definition.bxdf");
-
-                    //MessageBox.Show("GUID: " + readDefinition.GUID.ToString());
-
-                    //foreach (KeyValuePair<string, PhysicsGroup> physicsGroup in readDefinition.GetPhysicsGroups())
-                    //{
-                    //    MessageBox.Show("PhysicsGroupID: " + physicsGroup.Value.PhysicsGroupID);
-                    //    MessageBox.Show("CollisionType: " + physicsGroup.Value.CollisionType.ToString());
-                    //    MessageBox.Show("Friction: " + physicsGroup.Value.Friction.ToString());
-                    //    MessageBox.Show("Mass: " + physicsGroup.Value.Mass.ToString());
-                    //}
-
-                    //foreach (FieldNode node in readDefinition.NodeGroup.EnumerateAllLeafFieldNodes())
-                    //{
-                    //    MessageBox.Show("NodeID: " + node.NodeID);
-                    //    MessageBox.Show("MeshID: " + node.MeshID);
-                    //    MessageBox.Show("PhysicsGroupID: " + node.PhysicsGroupID);
-                    //}
                 }),
                 new Action(() =>
                 {

@@ -102,7 +102,7 @@ public partial class BXDFProperties
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public static FieldDefinition ReadProperties_2_0_0(string path)
+    private static FieldDefinition ReadProperties_2_0_x(string path)
     {
         // The FieldDefinition to be returned.
         FieldDefinition fieldDefinition = null;
@@ -127,11 +127,11 @@ public partial class BXDFProperties
                             break;
                         case "PhysicsGroup":
                             // Reads the current element as a PhysicsGroup.
-                            ReadPhysicsGroup_2_0_0(reader.ReadSubtree(), fieldDefinition);
+                            ReadPhysicsGroup_2_0_x(reader.ReadSubtree(), fieldDefinition);
                             break;
                         case "NodeGroup":
                             // Reads the root FieldNodeGroup.
-                            ReadFieldNodeGroup_2_0_0(reader.ReadSubtree(), fieldDefinition.NodeGroup);
+                            ReadFieldNodeGroup_2_0_x(reader.ReadSubtree(), fieldDefinition.NodeGroup);
                             break;
                     }
                 }
@@ -156,7 +156,7 @@ public partial class BXDFProperties
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="fieldDefinition"></param>
-    private static void ReadPhysicsGroup_2_0_0(XmlReader reader, FieldDefinition fieldDefinition)
+    private static void ReadPhysicsGroup_2_0_x(XmlReader reader, FieldDefinition fieldDefinition)
     {
         // Creates a new PhysicsGroup.
         PhysicsGroup physicsGroup = new PhysicsGroup();
@@ -198,7 +198,7 @@ public partial class BXDFProperties
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="fieldNodeGroup"></param>
-    private static void ReadFieldNodeGroup_2_0_0(XmlReader reader, FieldNodeGroup fieldNodeGroup)
+    private static void ReadFieldNodeGroup_2_0_x(XmlReader reader, FieldNodeGroup fieldNodeGroup)
     {
         while (reader.Read())
         {
@@ -237,7 +237,7 @@ public partial class BXDFProperties
                             FieldNodeGroup childNodeGroup = new FieldNodeGroup(BXDFProperties.BXDF_DEFAULT_NAME);
 
                             // Re-iterate as the childNodeGroup.
-                            ReadFieldNodeGroup_2_0_0(reader.ReadSubtree(), childNodeGroup);
+                            ReadFieldNodeGroup_2_0_x(reader.ReadSubtree(), childNodeGroup);
 
                             // Add the processed FieldNodeGroup to fieldNodeGroup.
                             fieldNodeGroup.AddNodeGroup(childNodeGroup);
