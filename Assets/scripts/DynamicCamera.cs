@@ -248,7 +248,7 @@ public class DynamicCamera : MonoBehaviour
 		SwitchCameraState(new DriverStationState(this));
 	}
 
-	void Update ()
+	void LateUpdate ()
 	{
 		if(movingEnabled)
 		{
