@@ -117,7 +117,8 @@ namespace OGLViewer
         /// <summary>
         /// Create a blank OGL_RigidNode with a unique GUID
         /// </summary>
-        public OGL_RigidNode()
+        public OGL_RigidNode(Guid guid)
+            : base(guid)
         {
             myGUID = SelectManager.AllocateGUID(this);
         }
@@ -131,12 +132,13 @@ namespace OGLViewer
         /// </remarks>
         /// <param name="baseData">The rigid node containing existing model data</param>
         public OGL_RigidNode(RigidNode_Base baseData)
+            : base(baseData.GUID)
         {
             myGUID = SelectManager.AllocateGUID(this);
-            modelFullID = baseData.modelFullID;
-            modelFileName = baseData.modelFileName;
+            ModelFullID = baseData.ModelFullID;
+            ModelFileName = baseData.ModelFileName;
 
-            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseData.children)
+            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseData.Children)
             {
                 AddChild(child.Key, new OGL_RigidNode(child.Value));
             }
@@ -317,7 +319,7 @@ namespace OGLViewer
                 myTrans = myTrans * ((OGL_RigidNode)GetParent()).myTrans;
             }
 
-            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in children)
+            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in Children)
             {
                 OGL_RigidNode child = ((OGL_RigidNode)pair.Value);
                 child.compute(moveJoints);

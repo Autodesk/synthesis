@@ -22,7 +22,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                rjb.enforceOrder();
+                rjb.EnforceOrder();
                 return rjb.hasAngularLimit ? rjb.angularLimitHigh : float.PositiveInfinity;
             }
             set
@@ -36,7 +36,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                rjb.enforceOrder();
+                rjb.EnforceOrder();
                 return rjb.hasAngularLimit ? rjb.angularLimitLow : float.NegativeInfinity;
             }
             set
@@ -92,9 +92,9 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         return SkeletalJointType.ROTATIONAL;
     }
 
-    protected override void WriteJointInternal(System.IO.BinaryWriter writer)
+    protected override void WriteBinaryJointInternal(System.IO.BinaryWriter writer)
     {
-        enforceOrder();
+        EnforceOrder();
         writer.Write(basePoint);
         writer.Write(axis);
 
@@ -108,7 +108,7 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         writer.Write(currentAngularPosition);
     }
 
-    protected override void ReadJointInternal(System.IO.BinaryReader reader)
+    protected override void ReadBinaryJointInternal(System.IO.BinaryReader reader)
     {
         basePoint = reader.ReadRWObject<BXDVector3>();
         axis = reader.ReadRWObject<BXDVector3>();
@@ -121,10 +121,10 @@ public class RotationalJoint_Base : SkeletalJoint_Base
         }
 
         currentAngularPosition = reader.ReadSingle();
-        enforceOrder();
+        EnforceOrder();
     }
 
-    private void enforceOrder()
+    public void EnforceOrder()
     {
         if (hasAngularLimit && angularLimitLow > angularLimitHigh)
         {

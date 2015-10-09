@@ -8,15 +8,8 @@ using System.Runtime.InteropServices;
 /// <summary>
 /// Represents a 3D object composed of one or more <see cref="BXDAMesh.BXDASubMesh"/> and physical properties of the object.
 /// </summary>
-public partial class BXDAMesh : RWObject
+public partial class BXDAMesh : BinaryRWObject
 {
-    // TODO: The changes seem to work, so make a commit.
-
-    /*
-     * Because binary files are rarely (if not never) backwards compatible,
-     * the versioning system will just be a uint that increments with every revision.
-     */
-
     /// <summary>
     /// Represents the revision id/version of the BXDA format (increment this when a new revision is released).
     /// </summary>
@@ -81,7 +74,7 @@ public partial class BXDAMesh : RWObject
     /// Writes all mesh data with the given BinaryWriter.
     /// </summary>
     /// <param name="writer"></param>
-    public void WriteData(BinaryWriter writer)
+    public void WriteBinaryData(BinaryWriter writer)
     {
         writer.Write(BXDA_CURRENT_VERSION);
 
@@ -89,14 +82,14 @@ public partial class BXDAMesh : RWObject
 
         WriteMeshList(writer, meshes);
         WriteMeshList(writer, colliders);
-        physics.WriteData(writer);
+        physics.WriteBinaryData(writer);
     }
 
     /// <summary>
     /// Reads with the given BinaryReader to generate mesh data.
     /// </summary>
     /// <param name="reader"></param>
-    public void ReadData(BinaryReader reader)
+    public void ReadBinaryData(BinaryReader reader)
     {
         // Gets the version to determine how to read the file.
         uint version = reader.ReadUInt32();

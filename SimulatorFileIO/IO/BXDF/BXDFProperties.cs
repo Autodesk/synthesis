@@ -13,7 +13,7 @@ public partial class BXDFProperties
     /// <summary>
     /// Represents the current version of the BXDF file.
     /// </summary>
-    public const string BXDF_CURRENT_VERSION = "2_0_0";
+    public const string BXDF_CURRENT_VERSION = "2.0.1";
 
     /// <summary>
     /// Represents the default name of any element.
@@ -87,14 +87,16 @@ public partial class BXDFProperties
         // Find the BXDF element.
         if (reader.ReadToFollowing("BXDF"))
         {
+            string version = reader["Version"];
+
             // Determine the version of the file.
-            switch (reader["Version"])
+            switch (version.Substring(0, version.LastIndexOf('.')))
             {
-                case "2_0_0":
-                    return ReadProperties_2_0_x(path);
+                case "2.0":
+                    return ReadProperties_2_0(path);
                 default: // If version is unknown.
                     // Attempt to read with the most recent version.
-                    return ReadProperties_2_0_x(path);
+                    return ReadProperties_2_0(path, false);
             }
         }
         else

@@ -55,14 +55,14 @@
     <Compile Include="Util\VBOMesh.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\shader.frag" />
+    <None Include="Shaders\shader.vert" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\shader.frag" />
-    <None Include="Shaders\shader.vert" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

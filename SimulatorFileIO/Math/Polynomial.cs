@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class Polynomial : RWObject
+public class Polynomial : BinaryRWObject
 {
     public float[] coeff;
 
@@ -33,12 +33,12 @@ public class Polynomial : RWObject
         return result;
     }
 
-    public void WriteData(System.IO.BinaryWriter writer)
+    public void WriteBinaryData(System.IO.BinaryWriter writer)
     {
         writer.WriteArray(coeff);
     }
 
-    public void ReadData(System.IO.BinaryReader reader)
+    public void ReadBinaryData(System.IO.BinaryReader reader)
     {
         coeff = reader.ReadArray<float>();
     }

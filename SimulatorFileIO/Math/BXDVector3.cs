@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Xml;
 
-public class BXDVector3 : RWObject
+public class BXDVector3 : BinaryRWObject
 {
     /// <summary>
     /// If two floating point values have an absolute difference less than this they are considered the same.
@@ -98,14 +99,14 @@ public class BXDVector3 : RWObject
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
-    public void WriteData(System.IO.BinaryWriter w)
+    public void WriteBinaryData(System.IO.BinaryWriter w)
     {
         w.Write(x);
         w.Write(y);
         w.Write(z);
     }
 
-    public void ReadData(System.IO.BinaryReader r)
+    public void ReadBinaryData(System.IO.BinaryReader r)
     {
         x = r.ReadSingle();
         y = r.ReadSingle();

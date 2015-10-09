@@ -23,7 +23,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                ljb.enforceOrder();
+                ljb.EnforceOrder();
                 return ljb.hasUpperLimit ? ljb.linearLimitHigh : float.PositiveInfinity;
             }
             set
@@ -37,7 +37,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                ljb.enforceOrder();
+                ljb.EnforceOrder();
                 return ljb.hasLowerLimit ? ljb.linearLimitLow : float.NegativeInfinity;
             }
             set
@@ -91,9 +91,9 @@ public class LinearJoint_Base : SkeletalJoint_Base
         return SkeletalJointType.LINEAR;
     }
 
-    protected override void WriteJointInternal(System.IO.BinaryWriter writer)
+    protected override void WriteBinaryJointInternal(System.IO.BinaryWriter writer)
     {
-        enforceOrder();
+        EnforceOrder();
 
         writer.Write(basePoint);
         writer.Write(axis);
@@ -111,7 +111,7 @@ public class LinearJoint_Base : SkeletalJoint_Base
         writer.Write(currentLinearPosition);
     }
 
-    protected override void ReadJointInternal(System.IO.BinaryReader reader)
+    protected override void ReadBinaryJointInternal(System.IO.BinaryReader reader)
     {
         basePoint = reader.ReadRWObject<BXDVector3>();
         axis = reader.ReadRWObject<BXDVector3>();
@@ -129,10 +129,10 @@ public class LinearJoint_Base : SkeletalJoint_Base
         }
         currentLinearPosition = reader.ReadSingle();
 
-        enforceOrder();
+        EnforceOrder();
     }
 
-    private void enforceOrder()
+    public void EnforceOrder()
     {
         if (hasLowerLimit && hasUpperLimit && linearLimitLow > linearLimitHigh)
         {

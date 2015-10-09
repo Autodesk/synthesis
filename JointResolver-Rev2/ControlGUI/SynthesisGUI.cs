@@ -51,9 +51,9 @@ public partial class SynthesisGUI : Form
         robotViewer1.LoadSettings(ViewerSettings);
         bxdaEditorPane1.Units = ViewerSettings.modelUnits;
 
-        RigidNode_Base.NODE_FACTORY = delegate()
+        RigidNode_Base.NODE_FACTORY = delegate(Guid guid)
         {
-            return new OGL_RigidNode();
+            return new OGL_RigidNode(guid);
         };
 
         fileNew.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)

@@ -26,7 +26,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                cjb.enforceOrder();
+                cjb.EnforceOrder();
                 return cjb.hasLinearEndLimit ? cjb.linearLimitEnd : float.PositiveInfinity;
             }
             set
@@ -40,7 +40,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                cjb.enforceOrder();
+                cjb.EnforceOrder();
                 return cjb.hasLinearStartLimit ? cjb.linearLimitStart : float.NegativeInfinity;
             }
             set
@@ -95,7 +95,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                cjb.enforceOrder();
+                cjb.EnforceOrder();
                 return cjb.hasAngularLimit ? cjb.angularLimitHigh : float.PositiveInfinity;
             }
             set
@@ -109,7 +109,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         {
             get
             {
-                cjb.enforceOrder();
+                cjb.EnforceOrder();
                 return cjb.hasAngularLimit ? cjb.angularLimitLow : float.NegativeInfinity;
             }
             set
@@ -172,9 +172,9 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         return SkeletalJointType.CYLINDRICAL;
     }
 
-    protected override void WriteJointInternal(System.IO.BinaryWriter writer)
+    protected override void WriteBinaryJointInternal(System.IO.BinaryWriter writer)
     {
-        enforceOrder();
+        EnforceOrder();
 
         writer.Write(basePoint);
         writer.Write(axis);
@@ -200,7 +200,7 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         writer.Write(currentAngularPosition);
     }
 
-    protected override void ReadJointInternal(System.IO.BinaryReader reader)
+    protected override void ReadBinaryJointInternal(System.IO.BinaryReader reader)
     {
         basePoint = reader.ReadRWObject<BXDVector3>();
         axis = reader.ReadRWObject<BXDVector3>();
@@ -228,10 +228,10 @@ public class CylindricalJoint_Base : SkeletalJoint_Base
         currentLinearPosition = reader.ReadSingle();
         currentAngularPosition = reader.ReadSingle();
 
-        enforceOrder();
+        EnforceOrder();
     }
 
-    private void enforceOrder()
+    public void EnforceOrder()
     {
         if (hasAngularLimit && angularLimitLow > angularLimitHigh)
         {

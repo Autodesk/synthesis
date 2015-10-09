@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 /// <summary>
 /// Represents a 3D object composed of one or more <see cref="BXDAMesh.BXDASubMesh"/> and physical properties of the object.
 /// </summary>
-public partial class BXDAMesh : RWObject
+public partial class BXDAMesh : BinaryRWObject
 {
     /// <summary>
     /// Reads with the given BinaryReader to generate mesh data of v0.
@@ -24,7 +24,7 @@ public partial class BXDAMesh : RWObject
         ReadMeshList_v0(reader, meshes);
         ReadMeshList_v0(reader, colliders);
 
-        physics.ReadData(reader);
+        physics.ReadBinaryData(reader);
     }
 
     /// <summary>

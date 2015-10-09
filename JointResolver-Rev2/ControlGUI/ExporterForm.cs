@@ -271,9 +271,10 @@ public partial class ExporterForm : Form
         {
             ExportedMeshes = Exporter.ExportMeshes(ExportedNode, ExporterSettings.meshUseOCL);
 
+            // TODO: This is throwing the error. Fix it.
             ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
         }
-        catch (COMException ce)
+        catch (COMException)
         {
 
         }

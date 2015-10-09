@@ -15,7 +15,7 @@ public enum RobotSensorType : byte
     GYRO = 6
 }
 
-public class RobotSensor : RWObject
+public class RobotSensor : BinaryRWObject
 {
     public short module, port;
     public RobotSensorType type;
@@ -53,7 +53,7 @@ public class RobotSensor : RWObject
         }
     }
 
-    public void WriteData(BinaryWriter writer)
+    public void WriteBinaryData(BinaryWriter writer)
     {
         writer.Write((byte) type);
         writer.Write(module);
@@ -62,7 +62,7 @@ public class RobotSensor : RWObject
         writer.Write(useSecondarySource);
     }
 
-    public void ReadData(BinaryReader reader)
+    public void ReadBinaryData(BinaryReader reader)
     {
         type = (RobotSensorType) reader.ReadByte();
         module = reader.ReadInt16();
@@ -74,7 +74,7 @@ public class RobotSensor : RWObject
     public static RobotSensor ReadSensorFully(BinaryReader reader)
     {
         RobotSensor sensor = new RobotSensor(RobotSensorType.LIMIT);
-        sensor.ReadData(reader);
+        sensor.ReadBinaryData(reader);
         return sensor;
     }
     

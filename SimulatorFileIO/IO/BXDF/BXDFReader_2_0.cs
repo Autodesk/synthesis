@@ -13,7 +13,7 @@ public partial class BXDFProperties
     /// <summary>
     /// The XSD markup to ensure valid document reading.
     /// </summary>
-    private const string BXDF_XSD_2_0_0 =
+    private const string BXDF_XSD_2_0 =
       @"<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>
 
         <!-- definition of simple elements -->
@@ -24,71 +24,78 @@ public partial class BXDFProperties
 
         <xs:element name='Collider'>
             <xs:simpleType>
-            <xs:restriction base='xs:string'>
-                <xs:enumeration value='MESH'/>
-                <xs:enumeration value='BOX'/>
-            </xs:restriction>
+                <xs:restriction base='xs:string'>
+                    <xs:enumeration value='MESH'/>
+                    <xs:enumeration value='BOX'/>
+                </xs:restriction>
             </xs:simpleType>
         </xs:element>
 
         <xs:element name='Friction'>
             <xs:simpleType>
-            <xs:restriction base='xs:integer'>
-                <xs:minInclusive value='0'/>
-                <xs:maxInclusive value='10'/>
-            </xs:restriction>
+                <xs:restriction base='xs:integer'>
+                    <xs:minInclusive value='0'/>
+                    <xs:maxInclusive value='10'/>
+                </xs:restriction>
             </xs:simpleType>
         </xs:element>
 
         <!-- definition of attributes -->
 
-        <xs:attribute name='Version' type='xs:string' fixed='2_0_0'/>
         <xs:attribute name='GUID' type='xs:string'/>
         <xs:attribute name='ID' type='xs:string'/>
+
+        <xs:attribute name='Version'>
+            <xs:simpleType>
+                <xs:restriction base='xs:string'>
+                    <xs:pattern value='2\.0\.\d+'/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
 
         <!-- definition of complex elements -->
 
         <xs:element name='NodeGroup'>
             <xs:complexType>
-            <xs:sequence>
-                <xs:choice minOccurs='0' maxOccurs='unbounded'>
-                <xs:element ref='NodeGroup'/>
-                <xs:element ref='Node'/>
-                </xs:choice>
-            </xs:sequence>
-            <xs:attribute ref='ID' use='required'/>
+                <xs:sequence>
+                    <xs:choice minOccurs='0' maxOccurs='unbounded'>
+                    <xs:element ref='NodeGroup'/>
+                    <xs:element ref='Node'/>
+                    </xs:choice>
+                </xs:sequence>
+                <xs:attribute ref='ID' use='required'/>
             </xs:complexType>
         </xs:element>
 
         <xs:element name='PhysicsGroup'>
             <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='Collider'/>
-                <xs:element ref='Friction'/>
-                <xs:element ref='Mass'/>
-            </xs:sequence>
-            <xs:attribute ref='ID' use='required'/>
+                <xs:sequence>
+                    <xs:element ref='Collider'/>
+                    <xs:element ref='Friction'/>
+                    <xs:element ref='Mass'/>
+                </xs:sequence>
+                <xs:attribute ref='ID' use='required'/>
             </xs:complexType>
         </xs:element>
 
         <xs:element name='Node'>
             <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='MeshID'/>
-                <xs:element ref='PhysicsGroupID'/>
-            </xs:sequence>
-            <xs:attribute ref='ID' use='required'/>
+                <xs:sequence>
+                    <xs:element ref='MeshID'/>
+                    <xs:element ref='PhysicsGroupID'/>
+                </xs:sequence>
+                <xs:attribute ref='ID' use='required'/>
             </xs:complexType>
         </xs:element>
 
         <xs:element name='BXDF'>
             <xs:complexType>
-            <xs:sequence>
-                <xs:element ref='PhysicsGroup' minOccurs='0' maxOccurs='unbounded'/>
-                <xs:element ref='NodeGroup'/>
-            </xs:sequence>
-            <xs:attribute ref='Version' use='required'/>
-            <xs:attribute ref='GUID' use='required'/>
+                <xs:sequence>
+                    <xs:element ref='PhysicsGroup' minOccurs='0' maxOccurs='unbounded'/>
+                    <xs:element ref='NodeGroup'/>
+                </xs:sequence>
+                <xs:attribute ref='Version' use='required'/>
+                <xs:attribute ref='GUID' use='required'/>
             </xs:complexType>
         </xs:element>
 
@@ -101,15 +108,24 @@ public partial class BXDFProperties
     /// the corresponding FieldDefinition.
     /// </summary>
     /// <param name="path"></param>
+    /// <param name="useValidation"></param>
     /// <returns></returns>
-    private static FieldDefinition ReadProperties_2_0_x(string path)
+    private static FieldDefinition ReadProperties_2_0(string path, bool useValidation = true)
     {
         // The FieldDefinition to be returned.
         FieldDefinition fieldDefinition = null;
 
         XmlReaderSettings settings = new XmlReaderSettings();
-        settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDF_XSD_2_0_0), null));
-        settings.ValidationType = ValidationType.Schema;
+
+        if (useValidation)
+        {
+            settings.Schemas.Add(XmlSchema.Read(new StringReader(BXDF_XSD_2_0), null));
+            settings.ValidationType = ValidationType.Schema;
+        }
+        else
+        {
+            settings.ValidationType = ValidationType.None;
+        }
 
         XmlReader reader = XmlReader.Create(path, settings);
 
@@ -127,11 +143,11 @@ public partial class BXDFProperties
                             break;
                         case "PhysicsGroup":
                             // Reads the current element as a PhysicsGroup.
-                            ReadPhysicsGroup_2_0_x(reader.ReadSubtree(), fieldDefinition);
+                            ReadPhysicsGroup_2_0(reader.ReadSubtree(), fieldDefinition);
                             break;
                         case "NodeGroup":
                             // Reads the root FieldNodeGroup.
-                            ReadFieldNodeGroup_2_0_x(reader.ReadSubtree(), fieldDefinition.NodeGroup);
+                            ReadFieldNodeGroup_2_0(reader.ReadSubtree(), fieldDefinition.NodeGroup);
                             break;
                     }
                 }
@@ -139,7 +155,7 @@ public partial class BXDFProperties
 
             return fieldDefinition;
         }
-        catch (XmlSchemaValidationException)
+        catch // A variety of exceptions can take place if the file is invalid, but we will always want to return null.
         {
             // If the file is invalid, return null.
             return null;
@@ -156,7 +172,7 @@ public partial class BXDFProperties
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="fieldDefinition"></param>
-    private static void ReadPhysicsGroup_2_0_x(XmlReader reader, FieldDefinition fieldDefinition)
+    private static void ReadPhysicsGroup_2_0(XmlReader reader, FieldDefinition fieldDefinition)
     {
         // Creates a new PhysicsGroup.
         PhysicsGroup physicsGroup = new PhysicsGroup();
@@ -198,7 +214,7 @@ public partial class BXDFProperties
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="fieldNodeGroup"></param>
-    private static void ReadFieldNodeGroup_2_0_x(XmlReader reader, FieldNodeGroup fieldNodeGroup)
+    private static void ReadFieldNodeGroup_2_0(XmlReader reader, FieldNodeGroup fieldNodeGroup)
     {
         while (reader.Read())
         {
@@ -237,7 +253,7 @@ public partial class BXDFProperties
                             FieldNodeGroup childNodeGroup = new FieldNodeGroup(BXDFProperties.BXDF_DEFAULT_NAME);
 
                             // Re-iterate as the childNodeGroup.
-                            ReadFieldNodeGroup_2_0_x(reader.ReadSubtree(), childNodeGroup);
+                            ReadFieldNodeGroup_2_0(reader.ReadSubtree(), childNodeGroup);
 
                             // Add the processed FieldNodeGroup to fieldNodeGroup.
                             fieldNodeGroup.AddNodeGroup(childNodeGroup);

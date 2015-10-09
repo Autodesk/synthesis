@@ -77,7 +77,7 @@ namespace FieldExporter.Components
 
                         currentOccurrence = componentOccurrences[i + 1];
 
-                        if (currentOccurrence.Visible)
+                        if (currentOccurrence.Visible && currentOccurrence.SurfaceBodies.Count > 0) // If the part has a mesh.
                         {
                             exporter.Reset();
                             exporter.Export(currentOccurrence, false, true);
@@ -112,7 +112,7 @@ namespace FieldExporter.Components
                     Guid guid = Guid.NewGuid();
                     BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
                     
-                    FieldDefinition readDefinition = BXDFProperties.ReadProperties(FilePathTextBox.Text + "\\definition.bxdf");
+                    //FieldDefinition readDefinition = BXDFProperties.ReadProperties(FilePathTextBox.Text + "\\definition.bxdf"); // For testing.
                 }),
                 new Action(() =>
                 {

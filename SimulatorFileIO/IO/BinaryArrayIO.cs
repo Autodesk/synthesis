@@ -12,12 +12,12 @@ public static class BinaryArrayIO
     {
         if (len == -1) len = arr.Length - off;
 
-        if (typeof(RWObject).IsAssignableFrom(typeof(T)))
+        if (typeof(BinaryRWObject).IsAssignableFrom(typeof(T)))
         {
             writer.Write(len);
             for (int i = off; i < off + len; i++)
             {
-                writer.Write((RWObject) arr[i]);
+                writer.Write((BinaryRWObject) arr[i]);
             }
 
             return;
@@ -44,9 +44,9 @@ public static class BinaryArrayIO
         }
     }
 
-    public static T[] ReadArray<T>(this BinaryReader reader, RWObjectExtensions.ReadObjectFully readInternal = null)
+    public static T[] ReadArray<T>(this BinaryReader reader, BinaryRWObjectExtensions.ReadObjectFully readInternal = null)
     {
-        if (typeof(RWObject).IsAssignableFrom(typeof(T)))
+        if (typeof(BinaryRWObject).IsAssignableFrom(typeof(T)))
         {
             if (readInternal == null)
             {
@@ -56,8 +56,8 @@ public static class BinaryArrayIO
 
                 readInternal = (BinaryReader rdr) =>
                     {
-                        RWObject ro = (RWObject) ctr.Invoke(new object[0]);
-                        ro.ReadData(rdr);
+                        BinaryRWObject ro = (BinaryRWObject) ctr.Invoke(new object[0]);
+                        ro.ReadBinaryData(rdr);
                         return ro;
                     };
             }

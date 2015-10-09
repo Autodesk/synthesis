@@ -245,8 +245,8 @@ namespace EditorsLibrary
 
                         System.Windows.Forms.ListViewItem item = new System.Windows.Forms.ListViewItem(new string[] { 
                     Enum.GetName(typeof(SkeletalJointType),joint.GetJointType()).ToLowerInvariant(),
-                        node.GetParent().modelFileName,
-                        node.modelFileName, joint.cDriver!=null ? joint.cDriver.ToString() : "No driver",
+                        node.GetParent().ModelFileName,
+                        node.ModelFileName, joint.cDriver!=null ? joint.cDriver.ToString() : "No driver",
                         wheelData!=null ? wheelData.GetTypeString() : "No Wheel",
                         joint.attachedSensors.Count.ToString()});
                         item.Tag = node;
