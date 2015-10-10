@@ -13,12 +13,17 @@ public partial class UnityRigidNode : RigidNode_Base
     /// </summary>
     private PhysicalProperties bxdPhysics;
 
+	public UnityRigidNode(Guid guid)
+		: base(guid)
+	{
+	}
+
     //The root transform for the whole object model is determined in this constructor passively
     public void CreateTransform(Transform root)
     {
         unityObject = new GameObject();
         unityObject.transform.parent = root;
         unityObject.transform.position = new Vector3(0, 0, 0);
-        unityObject.name = base.modelFileName;
+        unityObject.name = base.ModelFileName;
     }
 }
