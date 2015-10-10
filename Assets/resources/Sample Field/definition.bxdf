@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BXDF Version="2.0.1" GUID="86e1b232-16d5-4647-866f-5731df672440">
+  <PhysicsGroup ID="Ground">
+    <Collider>BOX</Collider>
+    <Friction>5</Friction>
+    <Mass>0</Mass>
+  </PhysicsGroup>
+  <PhysicsGroup ID="Walls">
+    <Collider>BOX</Collider>
+    <Friction>4</Friction>
+    <Mass>0</Mass>
+  </PhysicsGroup>
+  <PhysicsGroup ID="Footballs">
+    <Collider>MESH</Collider>
+    <Friction>6</Friction>
+    <Mass>1</Mass>
+  </PhysicsGroup>
+  <NodeGroup ID="BunnyBots 2015 Field (Synthesis).iam">
+    <NodeGroup ID="BunnyBots 2015 Field:1">
+      <Node ID="Ground:1">
+        <MeshID>0</MeshID>
+        <PhysicsGroupID>Ground</PhysicsGroupID>
+      </Node>
+      <Node ID="BlueLine:1">
+        <MeshID>1</MeshID>
+        <PhysicsGroupID>UNDEFINED</PhysicsGroupID>
+      </Node>
+      <Node ID="RedLine:1">
+        <MeshID>2</MeshID>
+        <PhysicsGroupID>UNDEFINED</PhysicsGroupID>
+      </Node>
+      <Node ID="WhiteLine:1">
+        <MeshID>3</MeshID>
+        <PhysicsGroupID>UNDEFINED</PhysicsGroupID>
+      </Node>
+      <Node ID="Short 4x4:1">
+        <MeshID>4</MeshID>
+        <PhysicsGroupID>Walls</PhysicsGroupID>
+      </Node>
+      <Node ID="Short 4x4:2">
+        <MeshID>5</MeshID>
+        <PhysicsGroupID>Walls</PhysicsGroupID>
+      </Node>
+      <Node ID="Long 4x4:1">
+        <MeshID>6</MeshID>
+        <PhysicsGroupID>Walls</PhysicsGroupID>
+      </Node>
+      <Node ID="Long 4x4:2">
+        <MeshID>7</MeshID>
+        <PhysicsGroupID>Walls</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:1">
+        <MeshID>8</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:2">
+        <MeshID>9</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:3">
+        <MeshID>10</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:4">
+        <MeshID>11</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:5">
+        <MeshID>12</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:6">
+        <MeshID>13</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:7">
+        <MeshID>14</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+      <Node ID="Ball:8">
+        <MeshID>15</MeshID>
+        <PhysicsGroupID>Footballs</PhysicsGroupID>
+      </Node>
+    </NodeGroup>
+  </NodeGroup>
+</BXDF>

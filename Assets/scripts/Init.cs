@@ -490,9 +490,9 @@ public class Init : MonoBehaviour
             activeRobot.transform.parent = transform;
 
             List<RigidNode_Base> names = new List<RigidNode_Base>();
-            RigidNode_Base.NODE_FACTORY = delegate()
+            RigidNode_Base.NODE_FACTORY = delegate(Guid guid)
             {
-                return new UnityRigidNode();
+                return new UnityRigidNode(guid);
             };
 																																																																																																																																																																																																																																																																																																																					
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
@@ -503,7 +503,7 @@ public class Init : MonoBehaviour
                 UnityRigidNode uNode = (UnityRigidNode) node;
 
                 uNode.CreateTransform(activeRobot.transform);
-                uNode.CreateMesh(filePath + uNode.modelFileName);
+                uNode.CreateMesh(filePath + uNode.ModelFileName);
                 uNode.CreateJoint();
 
 				Debug.Log("Joint");
