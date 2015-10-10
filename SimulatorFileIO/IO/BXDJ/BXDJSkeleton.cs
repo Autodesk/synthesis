@@ -43,6 +43,7 @@ public static partial class BXDJSkeleton
 
         // Determine the parent ID for each node in the list.
         int[] parentID = new int[nodes.Count];
+
         for (int i = 0; i < nodes.Count; i++)
         {
             if (nodes[i].GetParent() != null)
@@ -399,55 +400,6 @@ public static partial class BXDJSkeleton
         }
 
         writer.WriteEndElement();
-    }
-
-    /// <summary>
-    /// Writes out the skeleton file for the skeleton with the base provided to the path provided.
-    /// </summary>
-    /// <param name="path">The output file path</param>
-    /// <param name="baseNode">The base node of the skeleton</param>
-    public static void WriteBinarySkeleton(String path, RigidNode_Base baseNode)
-    {
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        baseNode.ListAllNodes(nodes);
-
-        // Determine the parent ID for each node in the list.
-        int[] parentID = new int[nodes.Count];
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            if (nodes[i].GetParent() != null)
-            {
-                parentID[i] = nodes.IndexOf(nodes[i].GetParent());
-
-                if (parentID[i] < 0) throw new Exception("Can't resolve parent ID for " + nodes[i].ToString());
-            }
-            else
-            {
-                parentID[i] = -1;
-            }
-        }
-
-        // Begin IO
-        BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.Create));
-
-        writer.Write(BXDIO.FORMAT_VERSION);
-
-        // Write node values
-        writer.Write(nodes.Count);
-
-        for (int i = 0; i < nodes.Count; i++)
-        {
-            writer.Write(parentID[i]);
-            nodes[i].ModelFileName = FileUtilities.SanatizeFileName("node_" + i + ".bxda");
-
-            writer.Write(nodes[i].ModelFileName);
-            writer.Write(nodes[i].GetModelID());
-            if (parentID[i] >= 0)
-            {
-                nodes[i].GetSkeletalJoint().WriteBinaryJoint(writer);
-            }
-        }
-        writer.Close();
     }
 
     /// <summary>

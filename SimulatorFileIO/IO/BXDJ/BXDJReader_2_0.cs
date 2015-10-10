@@ -370,7 +370,7 @@ public partial class BXDJSkeleton
     /// <param name="reader"></param>
     /// <param name="nodes"></param>
     /// <param name="root"></param>
-    public static void ReadNode_2_0(XmlReader reader, List<RigidNode_Base> nodes, ref RigidNode_Base root)
+    private static void ReadNode_2_0(XmlReader reader, List<RigidNode_Base> nodes, ref RigidNode_Base root)
     {
         int parentID = -1;
 
@@ -433,7 +433,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static BallJoint_Base ReadBallJoint_2_0(XmlReader reader)
+    private static BallJoint_Base ReadBallJoint_2_0(XmlReader reader)
     {
         // Create a new BallJoint_Base.
         BallJoint_Base ballJoint = (BallJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.BALL);
@@ -457,7 +457,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static CylindricalJoint_Base ReadCylindricalJoint_2_0(XmlReader reader)
+    private static CylindricalJoint_Base ReadCylindricalJoint_2_0(XmlReader reader)
     {
         // Create a new CylindricalJoint_Base.
         CylindricalJoint_Base cylindricalJoint = (CylindricalJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.CYLINDRICAL);
@@ -514,7 +514,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static LinearJoint_Base ReadLinearJoint_2_0(XmlReader reader)
+    private static LinearJoint_Base ReadLinearJoint_2_0(XmlReader reader)
     {
         // Create a new LinearJoint_Base.
         LinearJoint_Base linearJoint = (LinearJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.LINEAR);
@@ -559,7 +559,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static PlanarJoint_Base ReadPlanarJoint_2_0(XmlReader reader)
+    private static PlanarJoint_Base ReadPlanarJoint_2_0(XmlReader reader)
     {
         // Create a new PlanarJoint_Base.
         PlanarJoint_Base planarJoint = (PlanarJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.PLANAR);
@@ -592,7 +592,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static RotationalJoint_Base ReadRotationalJoint_2_0(XmlReader reader)
+    private static RotationalJoint_Base ReadRotationalJoint_2_0(XmlReader reader)
     {
         // Create a new RotationalJoint_Base.
         RotationalJoint_Base rotationalJoint = (RotationalJoint_Base)SkeletalJoint_Base.JOINT_FACTORY(SkeletalJointType.ROTATIONAL);
@@ -637,7 +637,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static BXDVector3 ReadBXDVector3_2_0(XmlReader reader)
+    private static BXDVector3 ReadBXDVector3_2_0(XmlReader reader)
     {
         BXDVector3 vec = new BXDVector3();
 
@@ -668,7 +668,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static JointDriver ReadJointDriver_2_0(XmlReader reader)
+    private static JointDriver ReadJointDriver_2_0(XmlReader reader)
     {
         JointDriver driver = null;
 
@@ -723,7 +723,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static ElevatorDriverMeta ReadElevatorDriverMeta_2_0(XmlReader reader)
+    private static ElevatorDriverMeta ReadElevatorDriverMeta_2_0(XmlReader reader)
     {
         // Create a new ElevatorDriveMeta.
         ElevatorDriverMeta elevatorDriverMeta = new ElevatorDriverMeta();
@@ -747,7 +747,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static PneumaticDriverMeta ReadPneumaticDriverMeta_2_0(XmlReader reader)
+    private static PneumaticDriverMeta ReadPneumaticDriverMeta_2_0(XmlReader reader)
     {
         // Create a new pneumaticDriverMeta.
         PneumaticDriverMeta pneumaticDriverMeta = new PneumaticDriverMeta();
@@ -775,7 +775,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static WheelDriverMeta ReadWheelDriverMeta_2_0(XmlReader reader)
+    private static WheelDriverMeta ReadWheelDriverMeta_2_0(XmlReader reader)
     {
         // Create new WheelDriveMeta.
         WheelDriverMeta wheelDriverMeta = new WheelDriverMeta();
@@ -847,7 +847,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static RobotSensor ReadRobotSensor_2_0(XmlReader reader)
+    private static RobotSensor ReadRobotSensor_2_0(XmlReader reader)
     {
         RobotSensor robotSensor = null;
 
@@ -886,7 +886,7 @@ public partial class BXDJSkeleton
     /// </summary>
     /// <param name="reader"></param>
     /// <returns></returns>
-    public static Polynomial ReadPolynomial_2_0(XmlReader reader)
+    private static Polynomial ReadPolynomial_2_0(XmlReader reader)
     {
         // Initialize a list of floats.
         List<float> coeff = new List<float>();

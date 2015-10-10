@@ -237,7 +237,7 @@ public partial class SynthesisGUI : Form
 
         try
         {
-            SkeletonBase = BXDJSkeleton.ReadBinarySkeleton(dirPath + "\\skeleton.bxdj");
+            SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
             Meshes = new List<BXDAMesh>();
 
             var meshFiles = Directory.GetFiles(dirPath).Where(name => name.EndsWith(".bxda"));
