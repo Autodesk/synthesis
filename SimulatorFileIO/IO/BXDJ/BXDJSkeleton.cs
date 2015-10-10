@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 
 /// <summary>
@@ -158,18 +159,18 @@ public static partial class BXDJSkeleton
 
         if (joint.hasAngularLimit)
         {
-            writer.WriteElementString("AngularLowLimit", joint.angularLimitLow.ToString("F6"));
-            writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F6"));
+            writer.WriteElementString("AngularLowLimit", joint.angularLimitLow.ToString("F4"));
+            writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F4"));
         }
 
         if (joint.hasLinearStartLimit)
-            writer.WriteElementString("LinearStartLimit", joint.linearLimitStart.ToString("F6"));
+            writer.WriteElementString("LinearStartLimit", joint.linearLimitStart.ToString("F4"));
 
         if (joint.hasLinearEndLimit)
-            writer.WriteElementString("LinearEndLimit", joint.linearLimitEnd.ToString("F6"));
+            writer.WriteElementString("LinearEndLimit", joint.linearLimitEnd.ToString("F4"));
 
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F6"));
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F6"));
+        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
+        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
 
         writer.WriteEndElement();
     }
@@ -189,12 +190,12 @@ public static partial class BXDJSkeleton
         WriteBXDVector3(joint.axis, writer, "Axis");
 
         if (joint.hasLowerLimit)
-            writer.WriteElementString("LinearLowLimit", joint.linearLimitLow.ToString("F6"));
+            writer.WriteElementString("LinearLowLimit", joint.linearLimitLow.ToString("F4"));
 
         if (joint.hasUpperLimit)
-            writer.WriteElementString("LinearUpperLimit", joint.linearLimitHigh.ToString("F6"));
+            writer.WriteElementString("LinearUpperLimit", joint.linearLimitHigh.ToString("F4"));
 
-        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F6"));
+        writer.WriteElementString("CurrentLinearPosition", joint.currentLinearPosition.ToString("F4"));
 
         writer.WriteEndElement();
     }
@@ -213,7 +214,7 @@ public static partial class BXDJSkeleton
 
         writer.WriteEndElement();
     }
-
+    
     /// <summary>
     /// Used for writing the data of a RotationalJoint_Base.
     /// </summary>
@@ -230,11 +231,11 @@ public static partial class BXDJSkeleton
 
         if (joint.hasAngularLimit)
         {
-            writer.WriteElementString("AngularLowLimit", joint.angularLimitLow.ToString("F6"));
-            writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F6"));
+            writer.WriteElementString("AngularLowLimit", joint.angularLimitLow.ToString("F4"));
+            writer.WriteElementString("AngularHighLimit", joint.angularLimitHigh.ToString("F4"));
         }
 
-        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F6"));
+        writer.WriteElementString("CurrentAngularPosition", joint.currentAngularPosition.ToString("F4"));
 
         writer.WriteEndElement();
     }
@@ -250,9 +251,9 @@ public static partial class BXDJSkeleton
 
         writer.WriteAttributeString("VectorID", id);
 
-        writer.WriteElementString("X", vec.x.ToString("F6"));
-        writer.WriteElementString("Y", vec.y.ToString("F6"));
-        writer.WriteElementString("Z", vec.z.ToString("F6"));
+        writer.WriteElementString("X", vec.x.ToString("F4"));
+        writer.WriteElementString("Y", vec.y.ToString("F4"));
+        writer.WriteElementString("Z", vec.z.ToString("F4"));
 
         writer.WriteEndElement();
     }
@@ -269,8 +270,8 @@ public static partial class BXDJSkeleton
         writer.WriteElementString("DriveType", driver.GetDriveType().ToString());
         writer.WriteElementString("PortA", driver.portA.ToString());
         writer.WriteElementString("PortB", driver.portB.ToString());
-        writer.WriteElementString("LowerLimit", driver.lowerLimit.ToString("F6"));
-        writer.WriteElementString("UpperLimit", driver.upperLimit.ToString("F6"));
+        writer.WriteElementString("LowerLimit", driver.lowerLimit.ToString("F4"));
+        writer.WriteElementString("UpperLimit", driver.upperLimit.ToString("F4"));
         writer.WriteElementString("SignalType", driver.isCan ? "CAN" : "PWM");
         
         foreach (JointDriverMeta meta in driver.MetaInfo.Values)
@@ -329,8 +330,8 @@ public static partial class BXDJSkeleton
 
         writer.WriteAttributeString("DriverMetaID", meta.GetID().ToString());
 
-        writer.WriteElementString("WidthMM", meta.widthMM.ToString("F6"));
-        writer.WriteElementString("PressurePSI", meta.pressurePSI.ToString("F6"));
+        writer.WriteElementString("WidthMM", meta.widthMM.ToString("F4"));
+        writer.WriteElementString("PressurePSI", meta.pressurePSI.ToString("F4"));
 
         writer.WriteEndElement();
     }
@@ -347,19 +348,19 @@ public static partial class BXDJSkeleton
         writer.WriteAttributeString("DriverMetaID", meta.GetID().ToString());
 
         writer.WriteElementString("WheelType", meta.type.ToString());
-        writer.WriteElementString("WheelRadius", meta.radius.ToString("F6"));
-        writer.WriteElementString("WheelWidth", meta.width.ToString("F6"));
+        writer.WriteElementString("WheelRadius", meta.radius.ToString("F4"));
+        writer.WriteElementString("WheelWidth", meta.width.ToString("F4"));
 
         WriteBXDVector3(meta.center, writer, "WheelCenter");
 
-        writer.WriteElementString("ForwardAsympSlip", meta.forwardAsympSlip.ToString("F6"));
-        writer.WriteElementString("ForwardAsympValue", meta.forwardAsympValue.ToString("F6"));
-        writer.WriteElementString("ForwardExtremeSlip", meta.forwardExtremeSlip.ToString("F6"));
-        writer.WriteElementString("ForwardExtremeValue", meta.forwardExtremeValue.ToString("F6"));
-        writer.WriteElementString("SideAsympSlip", meta.sideAsympSlip.ToString("F6"));
-        writer.WriteElementString("SideAsympValue", meta.sideAsympValue.ToString("F6"));
-        writer.WriteElementString("SideExtremeSlip", meta.sideExtremeSlip.ToString("F6"));
-        writer.WriteElementString("SideExtremeValue", meta.sideExtremeValue.ToString("F6"));
+        writer.WriteElementString("ForwardAsympSlip", meta.forwardAsympSlip.ToString("F4"));
+        writer.WriteElementString("ForwardAsympValue", meta.forwardAsympValue.ToString("F4"));
+        writer.WriteElementString("ForwardExtremeSlip", meta.forwardExtremeSlip.ToString("F4"));
+        writer.WriteElementString("ForwardExtremeValue", meta.forwardExtremeValue.ToString("F4"));
+        writer.WriteElementString("SideAsympSlip", meta.sideAsympSlip.ToString("F4"));
+        writer.WriteElementString("SideAsympValue", meta.sideAsympValue.ToString("F4"));
+        writer.WriteElementString("SideExtremeSlip", meta.sideExtremeSlip.ToString("F4"));
+        writer.WriteElementString("SideExtremeValue", meta.sideExtremeValue.ToString("F4"));
         writer.WriteElementString("IsDriveWheel", meta.isDriveWheel.ToString().ToLower());
 
         writer.WriteEndElement();
@@ -394,7 +395,7 @@ public static partial class BXDJSkeleton
 
         for (int i = 0; i < poly.coeff.Length; i++)
         {
-            writer.WriteElementString("Coefficient", poly.coeff[i].ToString("F6"));
+            writer.WriteElementString("Coefficient", poly.coeff[i].ToString("F4"));
         }
 
         writer.WriteEndElement();
@@ -450,11 +451,40 @@ public static partial class BXDJSkeleton
     }
 
     /// <summary>
+    /// Reads the skeleton contained in the BXDJ XML file specified and returns the root node for that skeleton.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static RigidNode_Base ReadSkeleton(string path)
+    {
+        XmlReader reader = XmlReader.Create(path);
+
+        if (reader.ReadToFollowing("BXDJ"))
+        {
+            string version = reader["Version"];
+
+            switch (version.Substring(0, version.LastIndexOf('.')))
+            {
+                case "2.0":
+                    return ReadSkeleton_2_0(path);
+                default: // If version is unknown.
+                    // Attempt to read with the most recent version (but without validation).
+                    return ReadSkeleton_2_0(path, false);
+            }
+        }
+        else
+        {
+            // Could not find element, so return null.
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton.
     /// </summary>
     /// <param name="path">The input BXDJ file</param>
     /// <returns>The root node of the skeleton</returns>
-    public static RigidNode_Base ReadSkeleton(string path)
+    public static RigidNode_Base ReadBinarySkeleton(string path)
     {
         BinaryReader reader = null;
         try

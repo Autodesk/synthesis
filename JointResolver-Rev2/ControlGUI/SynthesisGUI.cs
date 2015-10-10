@@ -212,7 +212,7 @@ public partial class SynthesisGUI : Form
 
             GC.Collect();
         }
-        catch (System.Runtime.InteropServices.InvalidComObjectException ce)
+        catch (System.Runtime.InteropServices.InvalidComObjectException)
         {
         }
         catch (Exception e)
@@ -237,7 +237,7 @@ public partial class SynthesisGUI : Form
 
         try
         {
-            SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
+            SkeletonBase = BXDJSkeleton.ReadBinarySkeleton(dirPath + "\\skeleton.bxdj");
             Meshes = new List<BXDAMesh>();
 
             var meshFiles = Directory.GetFiles(dirPath).Where(name => name.EndsWith(".bxda"));
@@ -285,6 +285,19 @@ public partial class SynthesisGUI : Form
             {
                 Meshes[i].WriteToFile(dirPath + "\\node_" + i + ".bxda");
             }
+
+            /*
+             * The commented code below is for testing purposes.
+             * To determine if the reading/writing process runs
+             * without loss of data, compare the text of skeleton.bxdj
+             * and skeleton2.bxdj. If they are equal, no data was lost.
+             */
+
+            /** /
+            RigidNode_Base testRigidNode = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
+
+            BXDJSkeleton.WriteSkeleton(dirPath + "\\skeleton2.bxdj", testRigidNode);
+            /**/
         }
         catch (Exception e)
         {

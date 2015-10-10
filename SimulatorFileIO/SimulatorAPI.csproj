@@ -54,8 +54,9 @@
     <Compile Include="IO\BXDF\BXDFProperties.cs" />
     <Compile Include="IO\BXDF\BXDFReader_2_0.cs" />
     <Compile Include="IO\BXDIO.cs" />
-    <Compile Include="IO\BXDJ\BXDJReader_2_0_0.cs" />
+    <Compile Include="IO\BXDJ\BXDJReader_2_0.cs" />
     <Compile Include="IO\BinaryRWObject.cs" />
+    <Compile Include="IO\IOUtilities.cs" />
     <Compile Include="Joints\BallJoint_Base.cs" />
     <Compile Include="Joints\CylindricalJoint_Base.cs" />
     <Compile Include="Joints\Driver\ElevatorDriverMeta.cs" />

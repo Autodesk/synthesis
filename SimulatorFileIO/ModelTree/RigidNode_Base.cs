@@ -12,7 +12,7 @@ public class RigidNode_Base
     public delegate RigidNode_Base RigidNodeFactory(Guid guid);
 
     /// <summary>
-    /// By setting this to a custom value skeletons that are read using <see cref="BXDJSkeleton.ReadSkeleton(string)"/> can 
+    /// By setting this to a custom value skeletons that are read using <see cref="BXDJSkeleton.ReadBinarySkeleton(string)"/> can 
     /// be composed of a custom rigid node type.
     /// </summary>
     public static RigidNodeFactory NODE_FACTORY = delegate(Guid guid)
