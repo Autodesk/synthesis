@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
 
@@ -351,7 +350,6 @@ public partial class BXDJSkeleton
         }
         catch (Exception e)// A variety of exceptions can take place if the file is invalid, but we will always want to return null.
         {
-            MessageBox.Show(e.Message); // TODO: Floats aren't working.
             // If the file is invalid, return null.
             return null;
         }
