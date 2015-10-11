@@ -503,7 +503,15 @@ public class Init : MonoBehaviour
                 UnityRigidNode uNode = (UnityRigidNode) node;
 
                 uNode.CreateTransform(activeRobot.transform);
-                uNode.CreateMesh(filePath + uNode.ModelFileName);
+
+                if (!uNode.CreateMesh(filePath + uNode.ModelFileName))
+				{
+					UserMessageManager.Dispatch(node.ModelFileName + " has been modified and cannot be loaded.", 6f);
+					skeleton = null;
+					UnityEngine.Object.Destroy(activeRobot);
+					return;
+				}
+
                 uNode.CreateJoint();
 
 				Debug.Log("Joint");
