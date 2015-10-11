@@ -348,7 +348,7 @@ public partial class BXDJSkeleton
                 }
             }
         }
-        catch (Exception e)// A variety of exceptions can take place if the file is invalid, but we will always want to return null.
+        catch (Exception)// A variety of exceptions can take place if the file is invalid, but we will always want to return null.
         {
             // If the file is invalid, return null.
             return null;

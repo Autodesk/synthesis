@@ -135,7 +135,7 @@ public class Exporter
                 {
                     SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
-                    surfs.Reset();
+                    surfs.Reset(node.GUID);
                     Console.WriteLine("Exporting meshes...");
                     surfs.ExportAll(group, (long progress, long total) =>
                     {

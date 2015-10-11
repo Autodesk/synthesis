@@ -109,7 +109,6 @@ namespace FieldExporter.Components
                     fieldDefinition.CreateMesh();
                     fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
 
-                    Guid guid = Guid.NewGuid();
                     BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
                     
                     //FieldDefinition readDefinition = BXDFProperties.ReadProperties(FilePathTextBox.Text + "\\definition.bxdf"); // For testing.

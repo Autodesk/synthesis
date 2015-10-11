@@ -239,12 +239,24 @@ public partial class SynthesisGUI : Form
         {
             SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
             Meshes = new List<BXDAMesh>();
-
+            
             var meshFiles = Directory.GetFiles(dirPath).Where(name => name.EndsWith(".bxda"));
+            
             foreach (string fileName in meshFiles)
             {
                 BXDAMesh mesh = new BXDAMesh();
                 mesh.ReadFromFile(fileName);
+
+                foreach (RigidNode_Base node in SkeletonBase.ListAllNodes())
+                {
+                    if (node.ModelFileName.Equals(fileName.Substring(fileName.LastIndexOf('\\') + 1)) &&
+                        !node.GUID.Equals(mesh.GUID))
+                    {
+                        MessageBox.Show(fileName + " has been modified.", "Could not load mesh.");
+                        return;
+                    }
+                }
+
                 Meshes.Add(mesh);
             }
         }
