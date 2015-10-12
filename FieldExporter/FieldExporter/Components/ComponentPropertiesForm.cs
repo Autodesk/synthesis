@@ -207,88 +207,56 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void addSelectionButton_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
+
             Program.LockInventor();
 
             addSelectionButton.Enabled = false;
             inventorSelectButton.Enabled = false;
 
-            try
+            DialogResult permanentChoice = DialogResult.None;
+
+            for (int i = 0; i < SelectEvents.SelectedEntities.Count; i++)
             {
-                Program.PROCESSWINDOW = new ProcessWindow(this, "Adding Selection...", "Processing...",
-                    0, SelectEvents.SelectedEntities.Count,
-                    new Action(() =>
+                if (ParentTabPage.parentControl.NodeExists(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage))
+                {
+                    switch (permanentChoice)
                     {
-                        DialogResult permanentChoice = DialogResult.None;
+                        case DialogResult.None:
+                            ConfirmMoveDialog confirmDialog = new ConfirmMoveDialog(
+                                SelectEvents.SelectedEntities[i + 1].Name + " has already been added to another PhysicsGroup. Move " +
+                                SelectEvents.SelectedEntities[i + 1].Name + " to " + ParentTabPage.Name + "?");
 
-                        for (int i = 0; i < SelectEvents.SelectedEntities.Count; i++)
-                        {
-                            if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
-                                return;
+                            DialogResult result = confirmDialog.ShowDialog(Program.MAINWINDOW);
 
-                            Program.PROCESSWINDOW.SetProgress(i + 1, "Processing: " + (Math.Round(((i + 1) / (float)SelectEvents.SelectedEntities.Count) * 100.0f, 2)).ToString() + "%");
-
-                            if (ParentTabPage.parentControl.NodeExists(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage))
+                            if (result == DialogResult.OK)
                             {
-                                Invoke(new Action(() =>
-                                {
-                                    switch (permanentChoice)
-                                    {
-                                        case DialogResult.None:
-                                            ConfirmMoveDialog confirmDialog = new ConfirmMoveDialog(
-                                                SelectEvents.SelectedEntities[i + 1].Name + " has already been added to another PhysicsGroup. Move " +
-                                                SelectEvents.SelectedEntities[i + 1].Name + " to " + ParentTabPage.Name + "?");
-
-                                            DialogResult result = confirmDialog.ShowDialog(Program.PROCESSWINDOW);
-
-                                            if (result == DialogResult.OK)
-                                            {
-                                                ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
-                                                inventorTreeView.Invoke(new Action(() =>
-                                                {
-                                                    inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
-                                                }));
-                                            }
-
-                                            if (confirmDialog.IsChecked())
-                                            {
-                                                permanentChoice = result;
-                                            }
-                                            break;
-                                        case DialogResult.OK:
-                                            ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
-                                            inventorTreeView.Invoke(new Action(() =>
-                                            {
-                                                inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
-                                            }));
-                                            break;
-                                    }
-
-                                }));
-                            }
-                            else
-                            {
-                                inventorTreeView.Invoke(new Action(() =>
-                                {
-                                    inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
-                                }));
+                                ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
+                                inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
                             }
 
-                        }
-                    }),
-                    new Action(() =>
-                    {
-                        Program.UnlockInventor();
-
-                        DisableInteractionEvents();
-                    }));
-
-                Program.PROCESSWINDOW.StartProcess();
+                            if (confirmDialog.IsChecked())
+                            {
+                                permanentChoice = result;
+                            }
+                            break;
+                        case DialogResult.OK:
+                            ParentTabPage.parentControl.RemoveNode(SelectEvents.SelectedEntities[i + 1].Name, ParentTabPage);
+                            inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                            break;
+                    }
+                }
+                else
+                {
+                    inventorTreeView.AddComponent(SelectEvents.SelectedEntities[i + 1]);
+                }
             }
-            catch
-            {
-                MessageBox.Show("Unable to add selection.");
-                DisableInteractionEvents();
-            }
+
+            Program.UnlockInventor();
+
+            DisableInteractionEvents();
+
+            Cursor.Current = Cursors.Default;
         }
 
         /// <summary>

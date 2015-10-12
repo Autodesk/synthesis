@@ -29,60 +29,52 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExportForm));
-            this.fileNameLabel = new System.Windows.Forms.Label();
             this.browseButton = new System.Windows.Forms.Button();
-            this.FilePathTextBox = new System.Windows.Forms.TextBox();
-            this.ExportLocationLabel = new System.Windows.Forms.Label();
+            this.filePathTextBox = new System.Windows.Forms.TextBox();
+            this.exportLocationLabel = new System.Windows.Forms.Label();
             this.exportButton = new System.Windows.Forms.Button();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.exportProgressBar = new System.Windows.Forms.ProgressBar();
+            this.statusLabel = new System.Windows.Forms.Label();
+            this.exporter = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
-            // 
-            // fileNameLabel
-            // 
-            this.fileNameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileNameLabel.AutoSize = true;
-            this.fileNameLabel.Location = new System.Drawing.Point(487, 0);
-            this.fileNameLabel.Name = "fileNameLabel";
-            this.fileNameLabel.Size = new System.Drawing.Size(107, 34);
-            this.fileNameLabel.TabIndex = 11;
-            this.fileNameLabel.Text = "description.bxdf\r\nmesh.bxda";
             // 
             // browseButton
             // 
             this.browseButton.Location = new System.Drawing.Point(122, 6);
             this.browseButton.Name = "browseButton";
-            this.browseButton.Size = new System.Drawing.Size(70, 22);
+            this.browseButton.Size = new System.Drawing.Size(64, 24);
             this.browseButton.TabIndex = 10;
             this.browseButton.Text = "Browse";
             this.browseButton.UseVisualStyleBackColor = true;
             this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
             // 
-            // FilePathTextBox
+            // filePathTextBox
             // 
-            this.FilePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.filePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.FilePathTextBox.Location = new System.Drawing.Point(198, 6);
-            this.FilePathTextBox.Name = "FilePathTextBox";
-            this.FilePathTextBox.ReadOnly = true;
-            this.FilePathTextBox.Size = new System.Drawing.Size(283, 22);
-            this.FilePathTextBox.TabIndex = 9;
+            this.filePathTextBox.Location = new System.Drawing.Point(192, 6);
+            this.filePathTextBox.Name = "filePathTextBox";
+            this.filePathTextBox.ReadOnly = true;
+            this.filePathTextBox.Size = new System.Drawing.Size(402, 22);
+            this.filePathTextBox.TabIndex = 9;
             // 
-            // ExportLocationLabel
+            // exportLocationLabel
             // 
-            this.ExportLocationLabel.AutoSize = true;
-            this.ExportLocationLabel.Location = new System.Drawing.Point(6, 9);
-            this.ExportLocationLabel.Name = "ExportLocationLabel";
-            this.ExportLocationLabel.Size = new System.Drawing.Size(110, 17);
-            this.ExportLocationLabel.TabIndex = 8;
-            this.ExportLocationLabel.Text = "Export Location:";
+            this.exportLocationLabel.AutoSize = true;
+            this.exportLocationLabel.Location = new System.Drawing.Point(6, 10);
+            this.exportLocationLabel.Name = "exportLocationLabel";
+            this.exportLocationLabel.Size = new System.Drawing.Size(110, 17);
+            this.exportLocationLabel.TabIndex = 8;
+            this.exportLocationLabel.Text = "Export Location:";
             // 
             // exportButton
             // 
-            this.exportButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.exportButton.Location = new System.Drawing.Point(6, 362);
+            this.exportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.exportButton.Enabled = false;
+            this.exportButton.Location = new System.Drawing.Point(9, 324);
             this.exportButton.Name = "exportButton";
-            this.exportButton.Size = new System.Drawing.Size(588, 32);
+            this.exportButton.Size = new System.Drawing.Size(128, 32);
             this.exportButton.TabIndex = 7;
             this.exportButton.Text = "Export";
             this.exportButton.UseVisualStyleBackColor = true;
@@ -92,16 +84,45 @@
             // 
             this.folderBrowserDialog.Description = "Select the file path by which to export the BXDF file.";
             // 
+            // exportProgressBar
+            // 
+            this.exportProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.exportProgressBar.Location = new System.Drawing.Point(9, 362);
+            this.exportProgressBar.Name = "exportProgressBar";
+            this.exportProgressBar.Size = new System.Drawing.Size(585, 32);
+            this.exportProgressBar.Step = 1;
+            this.exportProgressBar.TabIndex = 11;
+            // 
+            // statusLabel
+            // 
+            this.statusLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(143, 339);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(212, 17);
+            this.statusLabel.TabIndex = 12;
+            this.statusLabel.Text = "Please select an export location.";
+            // 
+            // exporter
+            // 
+            this.exporter.WorkerReportsProgress = true;
+            this.exporter.WorkerSupportsCancellation = true;
+            this.exporter.DoWork += new System.ComponentModel.DoWorkEventHandler(this.exporter_DoWork);
+            this.exporter.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.exporter_ProgressChanged);
+            this.exporter.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.exporter_RunWorkerCompleted);
+            // 
             // ExportForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.Controls.Add(this.fileNameLabel);
+            this.Controls.Add(this.statusLabel);
+            this.Controls.Add(this.exportProgressBar);
             this.Controls.Add(this.browseButton);
-            this.Controls.Add(this.FilePathTextBox);
-            this.Controls.Add(this.ExportLocationLabel);
+            this.Controls.Add(this.filePathTextBox);
+            this.Controls.Add(this.exportLocationLabel);
             this.Controls.Add(this.exportButton);
             this.DoubleBuffered = true;
             this.Name = "ExportForm";
@@ -114,11 +135,13 @@
 
         #endregion
 
-        private System.Windows.Forms.Label fileNameLabel;
         private System.Windows.Forms.Button browseButton;
-        private System.Windows.Forms.TextBox FilePathTextBox;
-        private System.Windows.Forms.Label ExportLocationLabel;
+        private System.Windows.Forms.TextBox filePathTextBox;
+        private System.Windows.Forms.Label exportLocationLabel;
         private System.Windows.Forms.Button exportButton;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
+        private System.Windows.Forms.ProgressBar exportProgressBar;
+        private System.Windows.Forms.Label statusLabel;
+        private System.ComponentModel.BackgroundWorker exporter;
     }
 }

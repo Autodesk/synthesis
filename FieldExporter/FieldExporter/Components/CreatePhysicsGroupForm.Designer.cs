@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CreatePhysicsGroupForm));
             this.createButton = new System.Windows.Forms.Button();
             this.createLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -48,12 +47,11 @@
             // 
             // createLabel
             // 
-            this.createLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.createLabel.AutoSize = true;
+            this.createLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.createLabel.BackColor = System.Drawing.Color.Transparent;
-            this.createLabel.Location = new System.Drawing.Point(152, 170);
+            this.createLabel.Location = new System.Drawing.Point(6, 165);
             this.createLabel.Name = "createLabel";
-            this.createLabel.Size = new System.Drawing.Size(297, 17);
+            this.createLabel.Size = new System.Drawing.Size(588, 22);
             this.createLabel.TabIndex = 2;
             this.createLabel.Text = "You have not yet created any PhysicsGroups.";
             this.createLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -62,7 +60,6 @@
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
-            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.Controls.Add(this.createButton);
             this.Controls.Add(this.createLabel);
@@ -71,7 +68,6 @@
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(600, 400);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

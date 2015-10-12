@@ -15,7 +15,7 @@ static class Program
     /*
      * TODO:
      * 1. Invest in using a non-binary file type (something like XML).
-     *    This will be better for backwards compatibility and stability, etc.
+     *    This will be better for backwards compatibility and stability, etc. (Done)
      * 2. Consider using an Inventor.ApprenticeServer instead of directly referencing the
      *    Inventor application. Right now, there is a lot of code for simply making sure
      *    the application is constantly connected to Inventor and preventing the garbage
@@ -43,11 +43,6 @@ static class Program
     /// The global MainWindow instance.
     /// </summary>
     public static MainWindow MAINWINDOW;
-
-    /// <summary>
-    /// The global ProgressWindow instance.
-    /// </summary>
-    public static ProcessWindow PROCESSWINDOW;
 
     /// <summary>
     /// Used for distinguishing between the first assembly document open and another one opened later.

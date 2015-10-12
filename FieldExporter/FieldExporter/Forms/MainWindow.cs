@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Drawing.Drawing2D;
 using FieldExporter.Components;
 using FieldExporter.Controls;
+using System.Diagnostics;
 
 namespace FieldExporter
 {
@@ -64,7 +65,7 @@ namespace FieldExporter
         private void resetSizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             WindowState = FormWindowState.Normal;
-            Size = new Size(960, 720);
+            Size = MinimumSize;
         }
 
         /// <summary>
@@ -85,16 +86,24 @@ namespace FieldExporter
         }
 
         /// <summary>
-        /// Prevents the user from switching tabs when the progress window is open.
+        /// Opens the user's browser and brings them to the field exporter tutorial page.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tutorialsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://bxd.autodesk.com/synthesis/?page=tutorialFieldExporter");
+        }
+
+        /// <summary>
+        /// Prevents the user from switching tabs when the exporter is running.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void tabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            if (System.Windows.Forms.Application.OpenForms.OfType<ProcessWindow>().Any())
-            {
+            if (exportForm.IsExporting)
                 e.Cancel = true;
-            }
         }
 
     }
