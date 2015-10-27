@@ -11,18 +11,18 @@ using FieldExporter.Controls;
 
 namespace FieldExporter.Components
 {
-    public partial class CreatePhysicsGroupForm : UserControl
+    public partial class CreatePropertySetForm : UserControl
     {
         /// <summary>
         /// The parent CreatePhysicsGroupTabPage.
         /// </summary>
-        private CreatePhysicsGroupTabPage parentTabPage;
+        private CreatePropertySetTabPage parentTabPage;
 
         /// <summary>
         /// Initializes a new instance of the CreatePhysicsGroupForm class.
         /// </summary>
         /// <param name="tabPage"></param>
-        public CreatePhysicsGroupForm(CreatePhysicsGroupTabPage tabPage)
+        public CreatePropertySetForm(CreatePropertySetTabPage tabPage)
         {
             InitializeComponent();
 

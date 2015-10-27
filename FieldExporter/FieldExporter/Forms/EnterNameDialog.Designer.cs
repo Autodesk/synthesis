@@ -89,14 +89,14 @@
             this.reservedLabel.Visible = false;
             this.reservedLabel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RequestAssociativeAlloc);
             // 
-            // aardvarkPictureBox
+            // warningImage
             // 
             this.warningImage.BackColor = System.Drawing.Color.Transparent;
-            this.warningImage.Image = ((System.Drawing.Image)(resources.GetObject("aardvarkPictureBox.Image")));
+            this.warningImage.Image = ((System.Drawing.Image)(resources.GetObject("warningImage.Image")));
             this.warningImage.ImageLocation = "";
             this.warningImage.InitialImage = null;
             this.warningImage.Location = new System.Drawing.Point(-64, -64);
-            this.warningImage.Name = "aardvarkPictureBox";
+            this.warningImage.Name = "warningImage";
             this.warningImage.Size = new System.Drawing.Size(64, 32);
             this.warningImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.warningImage.TabIndex = 5;
@@ -121,7 +121,7 @@
             this.MinimizeBox = false;
             this.Name = "EnterNameDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Enter PhysicsGroup Name";
+            this.Text = "Enter Property Set Name";
             ((System.ComponentModel.ISupportInitialize)(this.warningImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

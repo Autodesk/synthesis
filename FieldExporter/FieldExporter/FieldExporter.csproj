@@ -75,6 +75,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_20.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
     </Reference>
+    <Reference Include="ConvexLibraryWrapper">
+      <HintPath>..\..\..\..\GitHub\Aardvark\Release\ConvexLibraryWrapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -88,17 +91,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\BoxColliderPropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\BoxColliderPropertiesForm.Designer.cs">
+      <DependentUpon>BoxColliderPropertiesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\ColliderPropertiesForm.cs" />
     <Compile Include="Components\ComponentPropertiesTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Components\ComponentPropertiesTabPage.Designer.cs">
       <DependentUpon>ComponentPropertiesTabPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\CreatePhysicsGroupTabPage.cs">
+    <Compile Include="Components\CreatePropertySetTabPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\CreatePhysicsGroupTabPage.Designer.cs">
-      <DependentUpon>CreatePhysicsGroupTabPage.cs</DependentUpon>
+    <Compile Include="Components\CreatePropertySetTabPage.Designer.cs">
+      <DependentUpon>CreatePropertySetTabPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\ExportForm.cs">
       <SubType>UserControl</SubType>
@@ -118,20 +128,33 @@
     <Compile Include="Components\ComponentPropertiesForm.Designer.cs">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\CreatePhysicsGroupForm.cs">
+    <Compile Include="Components\CreatePropertySetForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Components\CreatePhysicsGroupForm.Designer.cs">
-      <DependentUpon>CreatePhysicsGroupForm.cs</DependentUpon>
+    <Compile Include="Components\CreatePropertySetForm.Designer.cs">
+      <DependentUpon>CreatePropertySetForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Components\PhysicsGroupsTabControl.cs">
+    <Compile Include="Components\MeshColliderPropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\MeshColliderPropertiesForm.Designer.cs">
+      <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\PropertySetsTabControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Components\PhysicsGroupsTabControl.Designer.cs">
-      <DependentUpon>PhysicsGroupsTabControl.cs</DependentUpon>
+    <Compile Include="Components\PropertySetsTabControl.Designer.cs">
+      <DependentUpon>PropertySetsTabControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Components\SphereColliderPropertiesForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Components\SphereColliderPropertiesForm.Designer.cs">
+      <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Components\SynthesisColorTable.cs" />
     <Compile Include="Exporter\AssetProperties.cs" />
+    <Compile Include="Exporter\ConvexHullCalculator.cs" />
     <Compile Include="Exporter\SurfaceExporter_Access.cs" />
     <Compile Include="Exporter\SurfaceExporter_ChunkLister.cs" />
     <Compile Include="Exporter\SurfaceExporter_MeshGenerator.cs" />
@@ -174,17 +197,20 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
+    <EmbeddedResource Include="Components\BoxColliderPropertiesForm.resx">
+      <DependentUpon>BoxColliderPropertiesForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Components\ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ComponentPropertiesTabPage.resx">
       <DependentUpon>ComponentPropertiesTabPage.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Components\CreatePhysicsGroupForm.resx">
-      <DependentUpon>CreatePhysicsGroupForm.cs</DependentUpon>
+    <EmbeddedResource Include="Components\CreatePropertySetForm.resx">
+      <DependentUpon>CreatePropertySetForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Components\CreatePhysicsGroupTabPage.resx">
-      <DependentUpon>CreatePhysicsGroupTabPage.cs</DependentUpon>
+    <EmbeddedResource Include="Components\CreatePropertySetTabPage.resx">
+      <DependentUpon>CreatePropertySetTabPage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Components\ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
@@ -192,8 +218,14 @@
     <EmbeddedResource Include="Components\InventorTreeView.resx">
       <DependentUpon>InventorTreeView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Components\PhysicsGroupsTabControl.resx">
-      <DependentUpon>PhysicsGroupsTabControl.cs</DependentUpon>
+    <EmbeddedResource Include="Components\MeshColliderPropertiesForm.resx">
+      <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\PropertySetsTabControl.resx">
+      <DependentUpon>PropertySetsTabControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Components\SphereColliderPropertiesForm.resx">
+      <DependentUpon>SphereColliderPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\ConfirmMoveDialog.resx">
       <DependentUpon>ConfirmMoveDialog.cs</DependentUpon>

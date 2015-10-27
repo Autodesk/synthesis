@@ -12,21 +12,37 @@ using System.Windows.Forms;
 
 static class Program
 {
-    /*
-     * TODO:
-     * 1. Invest in using a non-binary file type (something like XML).
-     *    This will be better for backwards compatibility and stability, etc. (Done)
-     * 2. Consider using an Inventor.ApprenticeServer instead of directly referencing the
-     *    Inventor application. Right now, there is a lot of code for simply making sure
-     *    the application is constantly connected to Inventor and preventing the garbage
-     *    collector from abusing us. However, an ApprenticeServer allows us to reference
-     *    an AssemblyDocument without needing Inventor to be open. Plus, the Inventor API
-     *    has a way to implement the Inventor viewer as a .NET component into the application
-     *    very easily (we should have discovered this sooner). There are several advantages to this:
-     *      A. We don't have to worry about accidentally disconnecting from the assembly/application (minimal runtime errors).
-     *      B. We don't need the user to have Inventor open AT ALL.
-     *      C. Communication with the assembly is much faster (meaning better export times).
-     *      D. We don't need to implment a custom OpenGL viewer like the robot exporter does.
+    /* TODO:
+     * Consider using an Inventor.ApprenticeServer instead of directly referencing the
+     * Inventor application. Right now, there is a lot of code for simply making sure
+     * the application is constantly connected to Inventor and preventing the garbage
+     * collector from abusing us. However, an ApprenticeServer allows us to reference
+     * an AssemblyDocument without needing Inventor to be open. Plus, the Inventor API
+     * has a way to implement the Inventor viewer as a .NET component into the application
+     * very easily (we should have discovered this sooner). There are several advantages to this:
+     *   A. We don't have to worry about accidentally disconnecting from the assembly/application (minimal runtime errors).
+     *   B. We don't need the user to have Inventor open AT ALL.
+     *   C. Communication with the assembly is much faster (meaning better export times).
+     *   D. We don't need to implment a custom OpenGL viewer like the robot exporter does.
+     *   
+     * *Update*
+     * After some testing, the built-in Inventor viewer from the Inventor API doesn't seem
+     * to suit our needs well (it is lacking some crucial functionality). However, we could still
+     * use the Inventor.ApprenticeServer object to retrieve information from an Inventor
+     * assembly. Here's what I'm thinking we should do:
+     * We create an application somewhat similar to the Field Exporter, but it has more
+     * functionaliy than simply exporting a field. We'd call it the FRC Game Exporter or something similar.
+     * Unlike the Field Exporter, the Game Exporter will have its own viewer, completely independent
+     * from the Autodesk Inventor application. On startup, the game expoter will give the user the option
+     * of either opening an existing game exporter project (from a .bxdg file maybe?) or opening from an Inventor
+     * assembly file. If the Inventor assembly file option is chosen, then the export process
+     * will run to generate a new .bxdg and .bxda file. The main editor will then appear, with a viewer
+     * in the center, a treeview similar to that of the Inventor treeview on the left, and a properties
+     * window on the right, where users can manipulate options (like PhysicsGroups, etc.). In the Game
+     * Exporter, the user can define everything about how the game runs. Camera positions, lights, legal
+     * autonomous starting zones, spawn points for game pieces, etc. can all be customized. An application
+     * like this will be a necessity if we implement multiplayer, where details like this need to be taken
+     * care of.
      */
 
     /// <summary>

@@ -4,67 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-/// <summary>
-/// Stores the type of collision for the node. Extends byte for writability.
-/// </summary>
-public enum PhysicsGroupCollisionType : byte
-{
-    /// <summary>
-    /// No collision.
-    /// </summary>
-    NONE = 1,
-
-    /// <summary>
-    /// Mesh collider.
-    /// </summary>
-    MESH = 2,
-
-    /// <summary>
-    /// Box collider.
-    /// </summary>
-    BOX = 3
-}
-
-/// <summary>
-/// Stores physical properties for a node or group of nodes.
-/// </summary>
-public struct PhysicsGroup
-{
-    /// <summary>
-    /// ID of the PhysicsGroup.
-    /// </summary>
-    public string PhysicsGroupID;
-
-    /// <summary>
-    /// Collision type of the PhysicsGroup.
-    /// </summary>
-    public PhysicsGroupCollisionType CollisionType;
-
-    /// <summary>
-    /// Friction value of the PhysicsGroup.
-    /// </summary>
-    public int Friction;
-
-    /// <summary>
-    /// Stores the mass of the object (only has effect when PhyicsGroup is dynamic).
-    /// </summary>
-    public double Mass;
-
-    /// <summary>
-    /// Constructs a new PhysicsGroup with the specified values.
-    /// </summary>
-    /// <param name="ID"></param>
-    /// <param name="type"></param>
-    /// <param name="frictionValue"></param>
-    public PhysicsGroup(string physicsGroupID, PhysicsGroupCollisionType collisionType, int friction, double mass = 0.0)
-    {
-        this.PhysicsGroupID = physicsGroupID;
-        this.CollisionType = collisionType;
-        this.Friction = friction;
-        this.Mass = mass;
-    }
-}
-
 public class FieldDefinition
 {
     /// <summary>
@@ -102,9 +41,9 @@ public class FieldDefinition
     }
 
     /// <summary>
-    /// A dictionary containing each PhysicsGroup and a string identifier.
+    /// A dictionary containing each PropertySet and a string identifier.
     /// </summary>
-    private Dictionary<string, PhysicsGroup> physicsGroups = new Dictionary<string, PhysicsGroup>();
+    private Dictionary<string, PropertySet> propertySets;
 
     /// <summary>
     /// The mesh to be exported.
@@ -119,6 +58,8 @@ public class FieldDefinition
     {
         GUID = guid;
         NodeGroup = new FieldNodeGroup(name);
+        propertySets = new Dictionary<string, PropertySet>();
+        mesh = new BXDAMesh(GUID);
     }
 
     /// <summary>
@@ -126,34 +67,60 @@ public class FieldDefinition
     /// </summary>
     /// <param name="name"></param>
     /// <param name="group"></param>
-    public void AddPhysicsGroup(PhysicsGroup group)
+    public void AddPropertySet(PropertySet group)
     {
-        physicsGroups.Add(group.PhysicsGroupID, group);
+        propertySets.Add(group.PropertySetID, group);
     }
 
     /// <summary>
     /// Returns a Dictionary containing each PhysicsGroup.
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, PhysicsGroup> GetPhysicsGroups()
+    public Dictionary<string, PropertySet> GetPropertySet()
     {
-        return physicsGroups;
+        return propertySets;
     }
 
     /// <summary>
-    /// Combines the SubMeshes of each child and combines it into the mesh to be exported.
+    /// Used for adding a submesh and creating a sub mesh ID for the given node.
     /// </summary>
-    public void CreateMesh()
+    /// <param name="subMesh"></param>
+    /// <param name="node"></param>
+    public void AddSubMesh(BXDAMesh.BXDASubMesh subMesh, FieldNode node)
     {
-        mesh = new BXDAMesh(GUID);
-        int currentMeshID = 0;
+        mesh.meshes.Add(subMesh);
+        node.SubMeshID = mesh.meshes.Count - 1;
+    }
 
-        foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
-        {
-            mesh.meshes.Add(node.SubMesh);
-            node.MeshID = currentMeshID;
-            currentMeshID++;
-        }
+    /// <summary>
+    /// Used for adding a collision mesh and creating a collision mesh ID for the given node.
+    /// </summary>
+    /// <param name="collisionMesh"></param>
+    /// <param name="node"></param>
+    public void AddCollisionMesh(BXDAMesh.BXDASubMesh collisionMesh, FieldNode node)
+    {
+        mesh.colliders.Add(collisionMesh);
+        node.CollisionMeshID = mesh.colliders.Count - 1;
+    }
+
+    /// <summary>
+    /// Used for getting a submesh from the given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public BXDAMesh.BXDASubMesh GetSubMesh(int id)
+    {
+        return mesh.meshes[id];
+    }
+
+    /// <summary>
+    /// Used for getting a collision mesh from the given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public BXDAMesh.BXDASubMesh GetCollisionMesh(int id)
+    {
+        return mesh.colliders[id];
     }
 
     /// <summary>

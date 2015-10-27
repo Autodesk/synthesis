@@ -32,9 +32,9 @@ namespace FieldExporter
         /// Returns the physicsGroupsTabControl instance.
         /// </summary>
         /// <returns></returns>
-        public PhysicsGroupsTabControl GetPhysicsGroupsTabControl()
+        public PropertySetsTabControl GetPropertySetsTabControl()
         {
-            return physicsGroupsTabControl;
+            return propertySetsTabControl;
         }
 
         /// <summary>

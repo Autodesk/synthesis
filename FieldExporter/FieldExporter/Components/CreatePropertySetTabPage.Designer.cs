@@ -1,6 +1,6 @@
 ﻿namespace FieldExporter.Components
 {
-    partial class CreatePhysicsGroupTabPage
+    partial class CreatePropertySetTabPage
     {
         /// <summary>
         /// Required designer variable.

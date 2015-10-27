@@ -1,6 +1,6 @@
 ﻿namespace FieldExporter.Components
 {
-    partial class CreatePhysicsGroupForm
+    partial class CreatePropertySetForm
     {
         /// <summary> 
         /// Required designer variable.
@@ -53,10 +53,10 @@
             this.createLabel.Name = "createLabel";
             this.createLabel.Size = new System.Drawing.Size(588, 22);
             this.createLabel.TabIndex = 2;
-            this.createLabel.Text = "You have not yet created any PhysicsGroups.";
+            this.createLabel.Text = "You have not yet created any Property Sets.";
             this.createLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // CreatePhysicsGroupForm
+            // CreatePropertySetForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.White;
@@ -64,7 +64,7 @@
             this.Controls.Add(this.createButton);
             this.Controls.Add(this.createLabel);
             this.DoubleBuffered = true;
-            this.Name = "CreatePhysicsGroupForm";
+            this.Name = "CreatePropertySetForm";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(600, 400);
             this.ResumeLayout(false);

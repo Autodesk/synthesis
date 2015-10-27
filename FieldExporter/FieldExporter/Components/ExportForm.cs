@@ -80,9 +80,9 @@ namespace FieldExporter.Components
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
             SurfaceExporter surfaceExporter = new SurfaceExporter();
 
-            foreach (PhysicsGroup g in Program.MAINWINDOW.GetPhysicsGroupsTabControl().TranslateToPhysicsGroups())
+            foreach (PropertySet g in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
             {
-                fieldDefinition.AddPhysicsGroup(g);
+                fieldDefinition.AddPropertySet(g);
             }
 
             ComponentOccurrencesEnumerator componentOccurrences = Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences;
@@ -104,19 +104,28 @@ namespace FieldExporter.Components
 
                 if (currentOccurrence.Visible && currentOccurrence.SurfaceBodies.Count > 0) // If the part has a mesh.
                 {
+                    FieldNode outputNode = new FieldNode(currentOccurrence.Name);
+
                     surfaceExporter.Reset();
                     surfaceExporter.Export(currentOccurrence, false, true);
 
                     BXDAMesh output = surfaceExporter.GetOutput();
 
-                    FieldNode outputNode = new FieldNode(currentOccurrence.Name);
+                    fieldDefinition.AddSubMesh(output.meshes.First(), outputNode);
 
-                    ComponentPropertiesTabPage tabPage = Program.MAINWINDOW.GetPhysicsGroupsTabControl().GetParentTabPage(currentOccurrence.Name);
+                    ComponentPropertiesTabPage tabPage = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
 
                     if (tabPage != null)
-                        outputNode.PhysicsGroupID = tabPage.Name;
+                    {
+                        outputNode.PropertySetID = tabPage.Name;
 
-                    outputNode.SubMesh = output.meshes.First();
+                        if (fieldDefinition.GetPropertySet()[outputNode.PropertySetID].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
+                        {
+                            fieldDefinition.AddCollisionMesh(ConvexHullCalculator.GetHull(fieldDefinition.GetSubMesh(outputNode.SubMeshID),
+                                ((PropertySet.MeshCollider)fieldDefinition.GetPropertySet()[outputNode.PropertySetID].Collider).Convex),
+                                outputNode);
+                        }
+                    }
 
                     pathBuilder.Clear();
 
@@ -131,7 +140,6 @@ namespace FieldExporter.Components
                 }
             }
 
-            fieldDefinition.CreateMesh();
             fieldDefinition.GetMeshOutput().WriteToFile(filePathTextBox.Text + "\\mesh.bxda");
 
             BXDFProperties.WriteProperties(filePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
@@ -160,6 +168,7 @@ namespace FieldExporter.Components
             if (e.Cancelled || e.Error != null)
             {
                 statusLabel.Text = "Export Failed.";
+                MessageBox.Show(e.Error.Message);
                 exportProgressBar.Value = 0;
             }
             else

@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace FieldExporter.Components
 {
-    public partial class CreatePhysicsGroupTabPage : TabPage
+    public partial class CreatePropertySetTabPage : TabPage
     {
         /// <summary>
         /// The parent PhysicsGroupsTabControl.
         /// </summary>
-        public PhysicsGroupsTabControl parentTabControl
+        public PropertySetsTabControl parentTabControl
         {
             get;
             private set;
@@ -24,20 +24,20 @@ namespace FieldExporter.Components
         /// <summary>
         /// The child CreatePhysicsGroupForm.
         /// </summary>
-        private CreatePhysicsGroupForm childForm;
+        private CreatePropertySetForm childForm;
 
         /// <summary>
         /// Initializes a new instance of the CreatePhysicsGroupTabPage class.
         /// </summary>
         /// <param name="physicsGroupsTabControl"></param>
         /// <param name="name"></param>
-        public CreatePhysicsGroupTabPage(PhysicsGroupsTabControl physicsGroupsTabControl, string name)
+        public CreatePropertySetTabPage(PropertySetsTabControl physicsGroupsTabControl, string name)
         {
             InitializeComponent();
 
             parentTabControl = physicsGroupsTabControl;
 
-            childForm = new CreatePhysicsGroupForm(this);
+            childForm = new CreatePropertySetForm(this);
             Controls.Add(childForm);
 
             Text = Name = name;

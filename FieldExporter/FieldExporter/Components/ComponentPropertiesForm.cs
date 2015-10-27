@@ -71,17 +71,9 @@ namespace FieldExporter.Controls
         /// Returns the selected type of collision.
         /// </summary>
         /// <returns></returns>
-        public PhysicsGroupCollisionType GetCollisionType()
+        public PropertySet.PropertySetCollider GetCollider()
         {
-            switch (colliderTypeCombobox.SelectedIndex)
-            {
-                case 0:
-                    return PhysicsGroupCollisionType.MESH;
-                case 1:
-                    return PhysicsGroupCollisionType.BOX;
-                default:
-                    return PhysicsGroupCollisionType.NONE;
-            }
+            return ((ColliderPropertiesForm)meshPropertiesTable.Controls[1]).GetCollider();
         }
 
         /// <summary>
@@ -283,13 +275,46 @@ namespace FieldExporter.Controls
         }
 
         /// <summary>
+        /// Updates the collider properties form when the selected collider is changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Type selectedType = null;
+
+            switch (colliderTypeCombobox.SelectedIndex)
+            {
+                case 0: // Box
+                    selectedType = typeof(BoxColliderPropertiesForm);
+                    break;
+                case 1: // Sphere
+                    selectedType = typeof(SphereColliderPropertiesForm);
+                    break;
+                case 2: // Mesh
+                    selectedType = typeof(MeshColliderPropertiesForm);
+                    break;
+            }
+
+            if (meshPropertiesTable.Controls.Count > 1)
+            {
+                if (selectedType == null || meshPropertiesTable.Controls[1].GetType().Equals(selectedType))
+                    return;
+
+                meshPropertiesTable.Controls.RemoveAt(1);
+            }
+
+            meshPropertiesTable.Controls.Add((UserControl)Activator.CreateInstance(selectedType), 0, 1);
+        }
+
+        /// <summary>
         /// Changes the friction label when the friction trackbar's value changes.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void frictionTrackBar_Scroll(object sender, EventArgs e)
         {
-            frictionLabel.Text = "Friction:\n" + frictionTrackBar.Value + "/10";
+            frictionLabel.Text = "Friction:\n" + frictionTrackBar.Value + "/100";
         }
 
         /// <summary>

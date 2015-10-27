@@ -11,19 +11,19 @@ public class FieldNode
     public string NodeID;
 
     /// <summary>
-    /// The string ID for the parent PhysicsGroup.
+    /// The string ID for the parent PropertySet.
     /// </summary>
-    public string PhysicsGroupID;
+    public string PropertySetID;
 
     /// <summary>
-    /// The mesh ID for the FieldNode.
+    /// The sub mesh ID for the FieldNode.
     /// </summary>
-    public int MeshID;
+    public int SubMeshID;
 
     /// <summary>
-    /// Contains the submeshes that make up the node.
+    /// The collision mesh ID for the FieldNode.
     /// </summary>
-    public BXDAMesh.BXDASubMesh SubMesh;
+    public int CollisionMeshID;
 
     /// <summary>
     /// Constructs a new instance of the FieldNode class.
@@ -33,6 +33,8 @@ public class FieldNode
     public FieldNode(string nodeID, string physicsGroupID = BXDFProperties.BXDF_DEFAULT_NAME)
     {
         NodeID = nodeID;
-        PhysicsGroupID = physicsGroupID;
+        PropertySetID = physicsGroupID;
+        SubMeshID = -1;
+        CollisionMeshID = -1;
     }
 }

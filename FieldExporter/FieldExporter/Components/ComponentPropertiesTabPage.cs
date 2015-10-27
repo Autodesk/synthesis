@@ -17,7 +17,7 @@ namespace FieldExporter.Components
         /// <summary>
         /// The parent PhysicsGroupsTabControl.
         /// </summary>
-        public PhysicsGroupsTabControl parentControl
+        public PropertySetsTabControl parentControl
         {
             get;
             private set;
@@ -42,7 +42,7 @@ namespace FieldExporter.Components
         /// </summary>
         /// <param name="physicsGroupsTabControl"></param>
         /// <param name="name"></param>
-        public ComponentPropertiesTabPage(PhysicsGroupsTabControl physicsGroupsTabControl, string name)
+        public ComponentPropertiesTabPage(PropertySetsTabControl physicsGroupsTabControl, string name)
         {
             InitializeComponent();
 

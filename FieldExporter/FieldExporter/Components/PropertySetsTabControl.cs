@@ -13,21 +13,21 @@ using System.Windows.Forms;
 
 namespace FieldExporter.Components
 {
-    public partial class PhysicsGroupsTabControl : TabControl
+    public partial class PropertySetsTabControl : TabControl
     {
         /// <summary>
         /// The TabPage for creating new instances.
         /// </summary>
-        private CreatePhysicsGroupTabPage createTabPage;
+        private CreatePropertySetTabPage createTabPage;
 
         /// <summary>
         /// Initializes this component.
         /// </summary>
-        public PhysicsGroupsTabControl()
+        public PropertySetsTabControl()
         {
             InitializeComponent();
 
-            createTabPage = new CreatePhysicsGroupTabPage(this, "Create");
+            createTabPage = new CreatePropertySetTabPage(this, "Create");
             TabPages.Add(createTabPage);
         }
 
@@ -64,9 +64,9 @@ namespace FieldExporter.Components
         /// Translates the information in each ComponentPropertiesTabPage to a List of PhysicsGroups.
         /// </summary>
         /// <returns>The translation</returns>
-        public List<PhysicsGroup> TranslateToPhysicsGroups()
+        public List<PropertySet> TranslateToPropertySets()
         {
-            List<PhysicsGroup> translation = new List<PhysicsGroup>();
+            List<PropertySet> translation = new List<PropertySet>();
 
             foreach (TabPage t in TabPages)
             {
@@ -75,9 +75,9 @@ namespace FieldExporter.Components
                     ComponentPropertiesTabPage tabPage = (ComponentPropertiesTabPage)t;
                     tabPage.Invoke(new Action(() =>
                         {
-                            translation.Add(new PhysicsGroup(
+                            translation.Add(new PropertySet(
                                 tabPage.Name,
-                                tabPage.ChildForm.GetCollisionType(),
+                                tabPage.ChildForm.GetCollider(),
                                 tabPage.ChildForm.GetFriction(),
                                 tabPage.ChildForm.GetMass()));
                         }));
@@ -162,7 +162,7 @@ namespace FieldExporter.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PhysicsGroupsTabControl_Deselecting(object sender, TabControlCancelEventArgs e)
+        private void PropertySetsTabControl_Deselecting(object sender, TabControlCancelEventArgs e)
         {
             if (e.TabPage != null)
             {
@@ -188,7 +188,7 @@ namespace FieldExporter.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PhysicsGroupsTabControl_Selecting(object sender, TabControlCancelEventArgs e)
+        private void PropertySetsTabControl_Selecting(object sender, TabControlCancelEventArgs e)
         {
             if (SelectedTab == createTabPage)
             {
@@ -207,7 +207,7 @@ namespace FieldExporter.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void PhysicsGroupsTabControl_MouseClick(object sender, MouseEventArgs e)
+        private void PropertySetsTabControl_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button.Equals(MouseButtons.Right))
             {
