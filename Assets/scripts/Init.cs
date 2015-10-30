@@ -548,7 +548,9 @@ public class Init : MonoBehaviour
 		};
 
 		Debug.Log (filePath);
-		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
+		string loadResult;
+		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf", out loadResult);
+		Debug.Log(loadResult);
 		field.CreateTransform(activeField.transform);
 		fieldLoaded = field.CreateMesh(filePath + "mesh.bxda");
 	}

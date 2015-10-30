@@ -25,101 +25,139 @@ public class UnityFieldDefinition : FieldDefinition
 		BXDAMesh mesh = new BXDAMesh();
 		mesh.ReadFromFile(filePath, null);
 
-		if (mesh.GUID.Equals(GUID))
+		if (!mesh.GUID.Equals(GUID))
+			return false;
+		
+		List<FieldNode> remainingNodes = new List<FieldNode>(NodeGroup.EnumerateAllLeafFieldNodes());
+
+		List<KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>> submeshes = new List<KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>>();
+		List<KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>> colliders = new List<KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>>();
+
+		// Create all submesh objects
+		auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
 		{
-			List<FieldNode> remainingNodes = new List<FieldNode>(NodeGroup.EnumerateAllLeafFieldNodes());
+			submeshes.Add(new KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>(sub, meshu));
+		});
 
-			// Create all submesh objects
-			auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+		// Create all collider objects
+		auxFunctions.ReadMeshSet(mesh.colliders, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
+		{
+			colliders.Add(new KeyValuePair<BXDAMesh.BXDASubMesh, Mesh>(sub, meshu));
+		});
+
+		foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
+		{
+			GameObject subObject = new GameObject(node.NodeID);
+			subObject.transform.parent = unityObject.transform;
+			subObject.transform.position = Vector3.zero;
+
+			if (node.SubMeshID != -1)
 			{
-				foreach (FieldNode node in remainingNodes)
+				KeyValuePair<BXDAMesh.BXDASubMesh, Mesh> currentSubMesh = submeshes[node.SubMeshID];
+
+				BXDAMesh.BXDASubMesh sub = currentSubMesh.Key;
+				Mesh meshu = currentSubMesh.Value;
+
+				subObject.AddComponent<MeshFilter>().mesh = meshu;
+				subObject.AddComponent<MeshRenderer>();
+				Material[] matls = new Material[meshu.subMeshCount];
+
+				for (int i = 0; i < matls.Length; i++)
 				{
-					if (node.MeshID == id)
-					{
-						GameObject subObject = new GameObject(node.NodeID);
-						subObject.transform.parent = unityObject.transform;
-						subObject.transform.position = new Vector3(0, 0, 0);
-						
-						subObject.AddComponent<MeshFilter>().mesh = meshu;
-						subObject.AddComponent<MeshRenderer>();
-						Material[] matls = new Material[meshu.subMeshCount];
-						for (int i = 0; i < matls.Length; i++)
-						{
-							matls[i] = sub.surfaces[i].AsMaterial();
-						}
-						subObject.GetComponent<MeshRenderer>().materials = matls;
-						
-						Collider collider = null;
-						
-						if (GetPhysicsGroups().ContainsKey(node.PhysicsGroupID))
-						{
-							switch (GetPhysicsGroups()[node.PhysicsGroupID].CollisionType)
-							{
-							case PhysicsGroupCollisionType.MESH:
-								collider = subObject.AddComponent<MeshCollider>();
-								break;
-							case PhysicsGroupCollisionType.BOX:
-								collider = subObject.AddComponent<BoxCollider>();
-								break;
-							}
-							
-							if (collider != null)
-							{
-								collider.material.dynamicFriction = collider.material.staticFriction = GetPhysicsGroups()[node.PhysicsGroupID].Friction / 10f;
-								collider.material.frictionCombine = PhysicMaterialCombine.Minimum;
-								
-								Rigidbody r = collider.gameObject.AddComponent<Rigidbody>();
-								
-								if (GetPhysicsGroups()[node.PhysicsGroupID].Mass > 0)
-								{
-									if (collider is MeshCollider)
-									{
-										((MeshCollider)collider).convex = true;
-									}
-									r.mass = (float)GetPhysicsGroups()[node.PhysicsGroupID].Mass * Init.PHYSICS_MASS_MULTIPLIER;
-								}
-								else
-								{
-									r.constraints = RigidbodyConstraints.FreezeAll;
-									r.isKinematic = true;
-								}
-							}
-						}
-
-						remainingNodes.Remove(node);
-
-						break;
-					}
+					matls[i] = sub.surfaces[i].AsMaterial();
 				}
-			});
-			
-			#region Free mesh
-			foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
+
+				subObject.GetComponent<MeshRenderer>().materials = matls;
+			}
+
+			if (GetPropertySets().ContainsKey(node.PropertySetID))
 			{
-				foreach (BXDAMesh.BXDASubMesh sub in list)
+				PropertySet currentPropertySet = GetPropertySets()[node.PropertySetID];
+				PropertySet.PropertySetCollider psCollider = currentPropertySet.Collider;
+				Collider unityCollider = null;
+
+				Debug.Log(psCollider == null);
+
+				switch (psCollider.CollisionType)
 				{
-					sub.verts = null;
-					sub.norms = null;
-					foreach (BXDAMesh.BXDASurface surf in sub.surfaces)
+				case PropertySet.PropertySetCollider.PropertySetCollisionType.BOX:
+					PropertySet.BoxCollider psBoxCollider = (PropertySet.BoxCollider)psCollider;
+					BoxCollider unityBoxCollider = subObject.AddComponent<BoxCollider>();
+
+					//unityBoxCollider.size.Scale(new Vector3(psBoxCollider.Scale.x, psBoxCollider.Scale.y, psBoxCollider.Scale.z));
+					unityBoxCollider.size = new Vector3(
+						unityBoxCollider.size.x * psBoxCollider.Scale.x,
+						unityBoxCollider.size.y * psBoxCollider.Scale.y,
+						unityBoxCollider.size.z * psBoxCollider.Scale.z);
+
+					unityCollider = unityBoxCollider;
+					break;
+				case PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE:
+					PropertySet.SphereCollider psSphereCollider = (PropertySet.SphereCollider)psCollider;
+					SphereCollider unitySphereCollider = subObject.AddComponent<SphereCollider>();
+
+					unitySphereCollider.radius *= psSphereCollider.Scale;
+
+					unityCollider = unitySphereCollider;
+					break;
+				case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
+					if (node.CollisionMeshID != -1)
 					{
-						surf.indicies = null;
+						KeyValuePair<BXDAMesh.BXDASubMesh, Mesh> currentSubMesh = colliders[node.CollisionMeshID];
+						
+						BXDAMesh.BXDASubMesh sub = currentSubMesh.Key;
+						Mesh meshu = currentSubMesh.Value;
+
+						MeshCollider unityMeshCollider = subObject.AddComponent<MeshCollider>();
+						unityMeshCollider.sharedMesh = meshu;
+						unityMeshCollider.convex = true;
+
+						unityCollider = unityMeshCollider;
 					}
+					break;
 				}
-				for (int i = 0; i < list.Count; i++)
+
+				if (unityCollider != null)
 				{
-					list[i] = null;
+					unityCollider.material.dynamicFriction = unityCollider.material.staticFriction = currentPropertySet.Friction / 100f;
+					unityCollider.material.frictionCombine = PhysicMaterialCombine.Minimum;
+
+					Rigidbody rb = unityCollider.gameObject.AddComponent<Rigidbody>();
+
+					if (currentPropertySet.Mass > 0)
+					{
+						rb.mass = (float)currentPropertySet.Mass * Init.PHYSICS_MASS_MULTIPLIER;
+					}
+					else
+					{
+						rb.constraints = RigidbodyConstraints.FreezeAll;
+						rb.isKinematic = true;
+					}
 				}
 			}
-			mesh = null;
-			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
-			#endregion
+		}
 
-			return true;
-		}
-		else
+		#region Free mesh
+		foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
 		{
-			Debug.Log("The BXDF and BXDA GUIDs didn't match. Could not load mesh.");
-			return false;
+			foreach (BXDAMesh.BXDASubMesh sub in list)
+			{
+				sub.verts = null;
+				sub.norms = null;
+				foreach (BXDAMesh.BXDASurface surf in sub.surfaces)
+				{
+					surf.indicies = null;
+				}
+			}
+			for (int i = 0; i < list.Count; i++)
+			{
+				list[i] = null;
+			}
 		}
+		mesh = null;
+		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
+		#endregion
+
+		return true;
 	}
 }
