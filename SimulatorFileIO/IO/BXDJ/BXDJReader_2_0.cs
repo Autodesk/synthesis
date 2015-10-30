@@ -306,10 +306,6 @@ public partial class BXDJSkeleton
 
     #endregion
 
-    /*
-     * TODO: Test the living heck out of this code.
-     */
-
     /// <summary>
     /// Reads the skeleton contained in the XML BXDJ file specified and
     /// returns the corresponding RigidNode_Base.

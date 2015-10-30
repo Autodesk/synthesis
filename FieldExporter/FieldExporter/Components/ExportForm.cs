@@ -119,10 +119,10 @@ namespace FieldExporter.Components
                     {
                         outputNode.PropertySetID = tabPage.Name;
 
-                        if (fieldDefinition.GetPropertySet()[outputNode.PropertySetID].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
+                        if (fieldDefinition.GetPropertySets()[outputNode.PropertySetID].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
                         {
                             fieldDefinition.AddCollisionMesh(ConvexHullCalculator.GetHull(fieldDefinition.GetSubMesh(outputNode.SubMeshID),
-                                ((PropertySet.MeshCollider)fieldDefinition.GetPropertySet()[outputNode.PropertySetID].Collider).Convex),
+                                ((PropertySet.MeshCollider)fieldDefinition.GetPropertySets()[outputNode.PropertySetID].Collider).Convex),
                                 outputNode);
                         }
                     }
@@ -143,6 +143,14 @@ namespace FieldExporter.Components
             fieldDefinition.GetMeshOutput().WriteToFile(filePathTextBox.Text + "\\mesh.bxda");
 
             BXDFProperties.WriteProperties(filePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
+
+            // Use the commented code below for debugging.
+
+            /** /
+            string result;
+            FieldDefinition readDefinition = BXDFProperties.ReadProperties(filePathTextBox.Text + "\\definition.bxdf", out result);
+            MessageBox.Show(result);
+            /**/
         }
 
         /// <summary>
@@ -168,7 +176,6 @@ namespace FieldExporter.Components
             if (e.Cancelled || e.Error != null)
             {
                 statusLabel.Text = "Export Failed.";
-                MessageBox.Show(e.Error.Message);
                 exportProgressBar.Value = 0;
             }
             else

@@ -134,7 +134,7 @@ public struct PropertySet
     /// <summary>
     /// Stores the mass of the object.
     /// </summary>
-    public double Mass;
+    public float Mass;
 
     /// <summary>
     /// Constructs a new PhysicsGroup with the specified values.
@@ -142,7 +142,7 @@ public struct PropertySet
     /// <param name="ID"></param>
     /// <param name="type"></param>
     /// <param name="frictionValue"></param>
-    public PropertySet(string physicsGroupID, PropertySetCollider collider, int friction, double mass = 0.0)
+    public PropertySet(string physicsGroupID, PropertySetCollider collider, int friction, float mass = 0.0f)
     {
         this.PropertySetID = physicsGroupID;
         this.Collider = collider;

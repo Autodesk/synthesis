@@ -52,7 +52,7 @@
     <Compile Include="IO\BXDA\BXDAMesh.cs" />
     <Compile Include="IO\BXDA\BXDAReader_v0.cs" />
     <Compile Include="IO\BXDF\BXDFProperties.cs" />
-    <Compile Include="IO\BXDF\BXDFReader_2_1.cs" />
+    <Compile Include="IO\BXDF\BXDFReader_2_2.cs" />
     <Compile Include="IO\BXDIO.cs" />
     <Compile Include="IO\BXDJ\BXDJReader_2_0.cs" />
     <Compile Include="IO\BinaryRWObject.cs" />

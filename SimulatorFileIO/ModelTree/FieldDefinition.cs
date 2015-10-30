@@ -76,7 +76,7 @@ public class FieldDefinition
     /// Returns a Dictionary containing each PhysicsGroup.
     /// </summary>
     /// <returns></returns>
-    public Dictionary<string, PropertySet> GetPropertySet()
+    public Dictionary<string, PropertySet> GetPropertySets()
     {
         return propertySets;
     }

@@ -26,6 +26,17 @@ public partial class BXDFProperties
     /// <returns></returns>
     public static FieldDefinition ReadProperties(string path)
     {
+        string result;
+        return ReadProperties(path, out result);
+    }
+
+    /// <summary>
+    /// Reads the given BXDF file from the given path with the latest version possible.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static FieldDefinition ReadProperties(string path, out string result)
+    {
         XmlReader reader = XmlReader.Create(path);
 
         // Find the BXDF element.
@@ -37,15 +48,16 @@ public partial class BXDFProperties
             switch (version.Substring(0, version.LastIndexOf('.')))
             {
                 case "2.2":
-                    return ReadProperties_2_2(path);
+                    return ReadProperties_2_2(path, out result);
                 default: // If version is unknown.
                     // Attempt to read with the most recent version (but without validation).
-                    return ReadProperties_2_2(path, false);
+                    return ReadProperties_2_2(path, out result, false);
             }
         }
         else
         {
             // Could not find element, so return null.
+            result = "Could not find BXDF element.";
             return null;
         }
     }
@@ -71,7 +83,7 @@ public partial class BXDFProperties
         writer.WriteAttributeString("Version", BXDF_CURRENT_VERSION);
         writer.WriteAttributeString("GUID", fieldDefinition.GUID.ToString());
 
-        Dictionary<string, PropertySet> propertySets = fieldDefinition.GetPropertySet();
+        Dictionary<string, PropertySet> propertySets = fieldDefinition.GetPropertySets();
 
         // Writes the data for each PropertySet.
         foreach (PropertySet propertySet in propertySets.Values)
@@ -89,7 +101,7 @@ public partial class BXDFProperties
             writer.WriteElementString("Friction", propertySet.Friction.ToString());
 
             // Writes the mass property for the PropertySet.
-            writer.WriteElementString("Mass", propertySet.Mass.ToString());
+            writer.WriteElementString("Mass", propertySet.Mass.ToString("F4"));
 
             // Ends the element.
             writer.WriteEndElement();
@@ -114,7 +126,7 @@ public partial class BXDFProperties
     {
         writer.WriteStartElement("BXDVector3");
 
-        writer.WriteAttributeString("VectorID", id);
+        writer.WriteAttributeString("ID", id);
 
         writer.WriteElementString("X", vec.x.ToString("F4"));
         writer.WriteElementString("Y", vec.y.ToString("F4"));
@@ -160,7 +172,7 @@ public partial class BXDFProperties
     {
         writer.WriteStartElement("MeshCollider");
 
-        writer.WriteElementString("Convex", meshCollider.Convex.ToString());
+        writer.WriteElementString("Convex", meshCollider.Convex.ToString().ToLower());
 
         writer.WriteEndElement();
     }

@@ -147,7 +147,7 @@ public partial class BXDFProperties
     /// <param name="path"></param>
     /// <param name="useValidation"></param>
     /// <returns></returns>
-    private static FieldDefinition ReadProperties_2_2(string path, bool useValidation = true)
+    private static FieldDefinition ReadProperties_2_2(string path, out string result, bool useValidation = true)
     {
         // The FieldDefinition to be returned.
         FieldDefinition fieldDefinition = null;
@@ -187,10 +187,14 @@ public partial class BXDFProperties
                 }
             }
 
+            result = "Success.";
+
             return fieldDefinition;
         }
-        catch // A variety of exceptions can take place if the file is invalid, but we will always want to return null.
+        catch (Exception e)// A variety of exceptions can take place if the file is invalid, but we will always want to return null.
         {
+            result = e.Message;
+
             // If the file is invalid, return null.
             return null;
         }
@@ -199,6 +203,109 @@ public partial class BXDFProperties
             // Closes the reader.
             reader.Close();
         }
+    }
+
+    /// <summary>
+    /// Reads a BXDVector3 with the given XmlReader and returns the reading.
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static BXDVector3 ReadBXDVector3_2_2(XmlReader reader)
+    {
+        BXDVector3 vec = new BXDVector3();
+
+        foreach (string name in IOUtilities.AllElements(reader))
+        {
+            switch (name)
+            {
+                case "X":
+                    // Assign the x value.
+                    vec.x = float.Parse(reader.ReadElementContentAsString());
+                    break;
+                case "Y":
+                    // Assign the y value.
+                    vec.y = float.Parse(reader.ReadElementContentAsString());
+                    break;
+                case "Z":
+                    // Assign the z value.
+                    vec.z = float.Parse(reader.ReadElementContentAsString());
+                    break;
+            }
+        }
+
+        return vec;
+    }
+
+    /// <summary>
+    /// Reads a BoxCollider with the given XmlReader.
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static PropertySet.BoxCollider ReadBoxCollider_2_2(XmlReader reader)
+    {
+        // Create the BoxCollider.
+        PropertySet.BoxCollider boxCollider = null;
+
+        foreach (string name in IOUtilities.AllElements(reader))
+        {
+            switch (name)
+            {
+                case "BXDVector3":
+                    // Reads the scale properties and initializes the BoxCollider.
+                    boxCollider = new PropertySet.BoxCollider(ReadBXDVector3_2_2(reader.ReadSubtree()));
+                    break;
+            }
+        }
+
+        return boxCollider;
+    }
+
+    /// <summary>
+    /// Reads a SphereCollider with the given XmlReader.
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static PropertySet.SphereCollider ReadSphereCollider_2_2(XmlReader reader)
+    {
+        // Create the SphereCollider.
+        PropertySet.SphereCollider sphereCollider = null;
+
+        foreach (string name in IOUtilities.AllElements(reader))
+        {
+            switch (name)
+            {
+                case "Scale":
+                    // Reads the scale property and initializes the SphereCollider.
+                    sphereCollider = new PropertySet.SphereCollider(float.Parse(reader.ReadElementContentAsString()));
+                    break;
+            }
+        }
+
+        return sphereCollider;
+    }
+
+    /// <summary>
+    /// Reads a MeshCollider with the given XmlReader.
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static PropertySet.MeshCollider ReadMeshCollider_2_2(XmlReader reader)
+    {
+        // Create the MeshCollider.
+        PropertySet.MeshCollider meshCollider = null;
+
+        foreach (string name in IOUtilities.AllElements(reader))
+        {
+            switch (name)
+            {
+                case "Convex":
+                    // Reads the convex property and initializes the MeshCollider.
+                    meshCollider = new PropertySet.MeshCollider(reader.ReadElementContentAsBoolean());
+                    break;
+            }
+        }
+
+        return meshCollider;
     }
 
     /// <summary>
@@ -219,11 +326,17 @@ public partial class BXDFProperties
                     // Assigns the ID attribute value to the PropertySetID property.
                     propertySet.PropertySetID = reader["ID"];
                     break;
-                case "Collider":
-                    // Assings the Collider attribute value to the ColliderType property.
-                    propertySet.Collider =
-                        (PropertySet.PropertySetCollider)Enum.Parse(typeof(PropertySet.PropertySetCollider),
-                        reader.ReadElementContentAsString());
+                case "BoxCollider":
+                    // Assigns the BoxCollider read by the XmlReader to the PropertySet's Collider property.
+                    propertySet.Collider = ReadBoxCollider_2_2(reader.ReadSubtree());
+                    break;
+                case "SphereCollider":
+                    // Assigns the SphereCollider read by the XmlReader to the PropertySet's Collider property.
+                    propertySet.Collider = ReadSphereCollider_2_2(reader.ReadSubtree());
+                    break;
+                case "MeshCollider":
+                    // Assigns the MeshCollider read by the XmlReader to the PropertySet's Collider property.
+                    propertySet.Collider = ReadMeshCollider_2_2(reader.ReadSubtree());
                     break;
                 case "Friction":
                     // Assings the Friction attribute value to the Friction property.
@@ -231,7 +344,7 @@ public partial class BXDFProperties
                     break;
                 case "Mass":
                     // Assings the Mass attribute value to the Mass property.
-                    propertySet.Mass = reader.ReadElementContentAsInt();
+                    propertySet.Mass = float.Parse(reader.ReadElementContentAsString());
                     break;
             }
         }

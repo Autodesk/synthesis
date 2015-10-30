@@ -98,9 +98,9 @@ namespace FieldExporter.Controls
         /// Returns the value of the mass numeric up down.
         /// </summary>
         /// <returns></returns>
-        public double GetMass()
+        public float GetMass()
         {
-            return Decimal.ToDouble(massNumericUpDown.Value);
+            return (float)Decimal.ToDouble(massNumericUpDown.Value);
         }
 
         /// <summary>
