@@ -48,8 +48,7 @@ public class UnityFieldDefinition : FieldDefinition
 		foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
 		{
 			GameObject subObject = new GameObject(node.NodeID);
-			subObject.transform.parent = unityObject.transform;
-			subObject.transform.position = Vector3.zero;
+			//subObject.transform.parent = unityObject.transform;
 
 			if (node.SubMeshID != -1)
 			{
@@ -135,6 +134,15 @@ public class UnityFieldDefinition : FieldDefinition
 					}
 				}
 			}
+
+			// Invert the x-axis to compensate for Unity's inverted coordinate system.
+			subObject.transform.localScale = new Vector3(-1f, 1f, 1f);
+
+			// Set the position of the object (scaled by 1/100 to match Unity's scaling correctly).
+			subObject.transform.position = new Vector3(-node.Position.x * 0.01f, node.Position.y * 0.01f, node.Position.z * 0.01f);
+
+			// Set the rotation of the object (the x and w properties are inverted to once again compensate for Unity's differences).
+			subObject.transform.rotation = new Quaternion(-node.Rotation.X, node.Rotation.Y, node.Rotation.Z, -node.Rotation.W);
 		}
 
 		#region Free mesh
