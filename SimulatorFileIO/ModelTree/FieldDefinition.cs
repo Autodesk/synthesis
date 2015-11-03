@@ -86,10 +86,9 @@ public class FieldDefinition
     /// </summary>
     /// <param name="subMesh"></param>
     /// <param name="node"></param>
-    public void AddSubMesh(BXDAMesh.BXDASubMesh subMesh, FieldNode node)
+    public void AddSubMesh(BXDAMesh.BXDASubMesh subMesh)
     {
         mesh.meshes.Add(subMesh);
-        node.SubMeshID = mesh.meshes.Count - 1;
     }
 
     /// <summary>
@@ -97,10 +96,9 @@ public class FieldDefinition
     /// </summary>
     /// <param name="collisionMesh"></param>
     /// <param name="node"></param>
-    public void AddCollisionMesh(BXDAMesh.BXDASubMesh collisionMesh, FieldNode node)
+    public void AddCollisionMesh(BXDAMesh.BXDASubMesh collisionMesh)
     {
         mesh.colliders.Add(collisionMesh);
-        node.CollisionMeshID = mesh.colliders.Count - 1;
     }
 
     /// <summary>

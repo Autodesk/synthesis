@@ -8,22 +8,48 @@ public class BXDVector3 : BinaryRWObject
     /// </summary>
     private const float EPSILON = 1.0E-6F;
 
+    /// <summary>
+    /// The x, y, and z values for the BXDVector3.
+    /// </summary>
     public float x, y, z;
+
+    /// <summary>
+    /// Initializes a new instance of the BXDVector3 class.
+    /// </summary>
     public BXDVector3()
     {
     }
+
+    /// <summary>
+    /// Initializes a new instance of the BXDVector3 class from the given x, y, and z values.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     public BXDVector3(double x, double y, double z)
     {
         this.x = (float) x;
         this.y = (float) y;
         this.z = (float) z;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the BXDVector3 class from the given x, y, and z values.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     public BXDVector3(float x, float y, float z)
     {
         this.x = x;
         this.y = y;
         this.z = z;
-    }
+    }   
+    
+    /// <summary>
+    /// Converts the x, y, and z values to a string.
+    /// </summary>
+    /// <returns></returns>
     public override String ToString()
     {
         return "[" + x + "," + y + "," + z + "]";

@@ -349,7 +349,7 @@ public class ConvexHullCalculator
     /// <param name="subMesh"></param>
     /// <param name="decompose"></param>
     /// <returns></returns>
-    public static BXDAMesh.BXDASubMesh GetHull(BXDAMesh.BXDASubMesh subMesh, bool decompose)
+    public static BXDAMesh.BXDASubMesh GetHull(BXDAMesh.BXDASubMesh subMesh)
     {
         List<int> indices = new List<int>();
 
@@ -362,12 +362,8 @@ public class ConvexHullCalculator
 
         ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
         parameters.m_oclAcceleration = 1;
-
-        if (!decompose)
-        {
-            parameters.m_depth = 1;
-            parameters.m_concavity = 1;
-        }
+        parameters.m_depth = 1;
+        parameters.m_concavity = 1;
 
         decomposer.OCLInit(parameters);
 

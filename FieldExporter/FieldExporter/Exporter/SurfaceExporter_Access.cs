@@ -43,4 +43,23 @@ public partial class SurfaceExporter
             AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
         }
     }
+
+    /// <summary>
+    /// Exports from a ComponentPartDefinition.
+    /// </summary>
+    /// <param name="pcd"></param>
+    /// <param name="bestResolution"></param>
+    /// <param name="separateFaces"></param>
+    /// <param name="ignorePhysics"></param>
+    public void Export(PartComponentDefinition pcd, bool bestResolution = false,
+        bool separateFaces = false, bool ignorePhysics = false)
+    {
+        List<ExportPlan> plans = new List<ExportPlan>();
+        plans.AddRange(GenerateExportList(pcd, bestResolution, separateFaces, ignorePhysics));
+
+        for (int i = 0; i < plans.Count; i++)
+        {
+            AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
+        }
+    }
 }

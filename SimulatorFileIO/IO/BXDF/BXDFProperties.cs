@@ -136,6 +136,26 @@ public partial class BXDFProperties
     }
 
     /// <summary>
+    /// Writes the BXDQuaternion to an XML file with the given XmlWriter.
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="quat"></param>
+    /// <param name="id"></param>
+    private static void WriteBXDQuaternion(XmlWriter writer, BXDQuaternion quat, string id)
+    {
+        writer.WriteStartElement("BXDQuaternion");
+
+        writer.WriteAttributeString("ID", id);
+
+        writer.WriteElementString("X", quat.X.ToString("F4"));
+        writer.WriteElementString("Y", quat.Y.ToString("F4"));
+        writer.WriteElementString("Z", quat.Z.ToString("F4"));
+        writer.WriteElementString("W", quat.W.ToString("F4"));
+
+        writer.WriteEndElement();
+    }
+
+    /// <summary>
     /// Write the BoxCollider to an XML file with the given XmlWriter.
     /// </summary>
     /// <param name="writer"></param>
@@ -218,6 +238,12 @@ public partial class BXDFProperties
 
             // Writes the NodeID attribute.
             writer.WriteAttributeString("ID", node.NodeID);
+
+            // Writes the Position property as a BXDVector3.
+            WriteBXDVector3(writer, node.Position, "Position");
+
+            // Write the EulerRotation property as a BXDQuaternion.
+            WriteBXDQuaternion(writer, node.Rotation, "Rotation");
 
             // Writes the MeshID element.
             writer.WriteElementString("SubMeshID", node.SubMeshID.ToString());

@@ -21,6 +21,7 @@ public partial class BXDFProperties
         <xs:element name='X' type='xs:decimal'/>
         <xs:element name='Y' type='xs:decimal'/>
         <xs:element name='Z' type='xs:decimal'/>
+        <xs:element name='W' type='xs:decimal'/>
         <xs:element name='Mass' type='xs:decimal'/>
         <xs:element name='SubMeshID' type='xs:integer'/>
         <xs:element name='CollisionMeshID' type='xs:integer'/>
@@ -58,6 +59,18 @@ public partial class BXDFProperties
                     <xs:element ref='X'/>
                     <xs:element ref='Y'/>
                     <xs:element ref='Z'/>
+                </xs:sequence>
+                <xs:attribute ref='ID' use='required'/>
+            </xs:complexType>
+        </xs:element>
+
+        <xs:element name='BXDQuaternion'>
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref='X'/>
+                    <xs:element ref='Y'/>
+                    <xs:element ref='Z'/>
+                    <xs:element ref='W'/>
                 </xs:sequence>
                 <xs:attribute ref='ID' use='required'/>
             </xs:complexType>
@@ -117,6 +130,8 @@ public partial class BXDFProperties
         <xs:element name='Node'>
             <xs:complexType>
                 <xs:sequence>
+                    <xs:element ref='BXDVector3'/>
+                    <xs:element ref='BXDQuaternion'/>
                     <xs:element ref='SubMeshID'/>
                     <xs:element ref='CollisionMeshID' minOccurs='0' maxOccurs='1'/>
                     <xs:element ref='PropertySetID' minOccurs='0' maxOccurs='1'/>
@@ -234,6 +249,41 @@ public partial class BXDFProperties
         }
 
         return vec;
+    }
+
+    /// <summary>
+    /// Reads a BXDQuaternion with the given XmlReader and returns the reading.
+    /// </summary>
+    /// <param name="reader"></param>
+    /// <returns></returns>
+    private static BXDQuaternion ReadBXDQuaternion_2_2(XmlReader reader)
+    {
+        BXDQuaternion quat = new BXDQuaternion();
+
+        foreach (string name in IOUtilities.AllElements(reader))
+        {
+            switch (name)
+            {
+                case "X":
+                    // Assign the X value.
+                    quat.X = float.Parse(reader.ReadElementContentAsString());
+                    break;
+                case "Y":
+                    // Assign the Y value.
+                    quat.Y = float.Parse(reader.ReadElementContentAsString());
+                    break;
+                case "Z":
+                    // Assign the Z value.
+                    quat.Z = float.Parse(reader.ReadElementContentAsString());
+                    break;
+                case "W":
+                    // Assign the W value.
+                    quat.W = float.Parse(reader.ReadElementContentAsString());
+                    break;
+            }
+        }
+
+        return quat;
     }
 
     /// <summary>
@@ -368,6 +418,14 @@ public partial class BXDFProperties
             {
                 case "Node":
                     node = new FieldNode(reader["ID"]);
+                    break;
+                case "BXDVector3":
+                    // Read the BXDVector3 as the node's position.
+                    node.Position = ReadBXDVector3_2_2(reader.ReadSubtree());
+                    break;
+                case "BXDQuaternion":
+                    // Read the BXDVector3 as the node's rotation.
+                    node.Rotation = ReadBXDQuaternion_2_2(reader.ReadSubtree());
                     break;
                 case "SubMeshID":
                     // Assign the MeshID attribute value to the SubMeshID property.

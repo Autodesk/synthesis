@@ -78,19 +78,22 @@ namespace FieldExporter.Components
         private void exporter_DoWork(object sender, DoWorkEventArgs e)
         {
             FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
-            SurfaceExporter surfaceExporter = new SurfaceExporter();
 
-            foreach (PropertySet g in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
+            foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
             {
-                fieldDefinition.AddPropertySet(g);
+                fieldDefinition.AddPropertySet(ps);
             }
 
-            ComponentOccurrencesEnumerator componentOccurrences = Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences;
-            ComponentOccurrence currentOccurrence;
-
+            SurfaceExporter surfaceExporter = new SurfaceExporter();
+            List<string> exportedMeshes = new List<string>();
+            List<string> exportedColliders = new List<string>();
             StringBuilder pathBuilder = new StringBuilder();
 
-            for (int i = 0; i < componentOccurrences.Count; i++)
+            int numOccurrences = Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences.Count;
+            int progressPercent = 0;
+            int currentOccurrenceID = 0;
+
+            foreach (ComponentOccurrence currentOccurrence in Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences)
             {
                 if (exporter.CancellationPending)
                 {
@@ -98,32 +101,46 @@ namespace FieldExporter.Components
                     return;
                 }
 
-                exporter.ReportProgress((int)Math.Round(((i + 1) / (float)componentOccurrences.Count) * 100.0f));
+                progressPercent = (int)Math.Floor((currentOccurrenceID / (double)numOccurrences) * 100.0);
+                exporter.ReportProgress(progressPercent, "Exporting... " + progressPercent + "%");
 
-                currentOccurrence = componentOccurrences[i + 1];
-
-                if (currentOccurrence.Visible && currentOccurrence.SurfaceBodies.Count > 0) // If the part has a mesh.
+                if (currentOccurrence.Visible && currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocumentType == DocumentTypeEnum.kPartDocumentObject)
                 {
                     FieldNode outputNode = new FieldNode(currentOccurrence.Name);
 
-                    surfaceExporter.Reset();
-                    surfaceExporter.Export(currentOccurrence, false, true);
+                    outputNode.Position = Utilities.ToBXDVector(currentOccurrence.Transformation.Translation);
+                    outputNode.Rotation = Utilities.QuaternionFromMatrix(currentOccurrence.Transformation);
 
-                    BXDAMesh output = surfaceExporter.GetOutput();
-
-                    fieldDefinition.AddSubMesh(output.meshes.First(), outputNode);
-
-                    ComponentPropertiesTabPage tabPage = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
-
-                    if (tabPage != null)
+                    if (!exportedMeshes.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                     {
-                        outputNode.PropertySetID = tabPage.Name;
+                        surfaceExporter.Reset();
+                        surfaceExporter.Export(((PartDocument)currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocument).ComponentDefinition, false, true);
 
-                        if (fieldDefinition.GetPropertySets()[outputNode.PropertySetID].Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
+                        BXDAMesh.BXDASubMesh outputMesh = surfaceExporter.GetOutput().meshes.First();
+
+                        exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
+                        fieldDefinition.AddSubMesh(outputMesh);
+                    }
+
+                    outputNode.SubMeshID = exportedMeshes.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
+
+                    ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
+
+                    if (componentProperties != null)
+                    {
+                        outputNode.PropertySetID = componentProperties.Name;
+
+                        PropertySet propertySet = fieldDefinition.GetPropertySets()[outputNode.PropertySetID];
+
+                        if (propertySet.Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
                         {
-                            fieldDefinition.AddCollisionMesh(ConvexHullCalculator.GetHull(fieldDefinition.GetSubMesh(outputNode.SubMeshID),
-                                ((PropertySet.MeshCollider)fieldDefinition.GetPropertySets()[outputNode.PropertySetID].Collider).Convex),
-                                outputNode);
+                            if (!exportedColliders.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
+                            {
+                                exportedColliders.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
+                                fieldDefinition.AddCollisionMesh(ConvexHullCalculator.GetHull(fieldDefinition.GetSubMesh(outputNode.SubMeshID)));
+                            }
+
+                            outputNode.CollisionMeshID = exportedColliders.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
                         }
                     }
 
@@ -138,7 +155,11 @@ namespace FieldExporter.Components
 
                     fieldDefinition.NodeGroup[pathBuilder.ToString()] = outputNode;
                 }
+
+                currentOccurrenceID++;
             }
+
+            exporter.ReportProgress(100, "Export Successful!");
 
             fieldDefinition.GetMeshOutput().WriteToFile(filePathTextBox.Text + "\\mesh.bxda");
 
@@ -160,7 +181,7 @@ namespace FieldExporter.Components
         /// <param name="e"></param>
         private void exporter_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            statusLabel.Text = "Exporting... " + e.ProgressPercentage.ToString() + "%";
+            statusLabel.Text = (string)e.UserState;
             exportProgressBar.Value = e.ProgressPercentage;
         }
 
@@ -177,10 +198,6 @@ namespace FieldExporter.Components
             {
                 statusLabel.Text = "Export Failed.";
                 exportProgressBar.Value = 0;
-            }
-            else
-            {
-                statusLabel.Text = "Export Successful!";
             }
 
             exportButton.Text = "Export";

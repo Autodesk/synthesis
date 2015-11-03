@@ -11,9 +11,14 @@ public class FieldNode
     public string NodeID;
 
     /// <summary>
-    /// The string ID for the parent PropertySet.
+    /// The initial position for the FieldNode.
     /// </summary>
-    public string PropertySetID;
+    public BXDVector3 Position;
+
+    /// <summary>
+    /// The initial rotation for the FieldNode.
+    /// </summary>
+    public BXDQuaternion Rotation;
 
     /// <summary>
     /// The sub mesh ID for the FieldNode.
@@ -26,6 +31,11 @@ public class FieldNode
     public int CollisionMeshID;
 
     /// <summary>
+    /// The string ID for the parent PropertySet.
+    /// </summary>
+    public string PropertySetID;
+
+    /// <summary>
     /// Constructs a new instance of the FieldNode class.
     /// </summary>
     /// <param name="nodeID"></param>
@@ -33,8 +43,10 @@ public class FieldNode
     public FieldNode(string nodeID, string physicsGroupID = BXDFProperties.BXDF_DEFAULT_NAME)
     {
         NodeID = nodeID;
-        PropertySetID = physicsGroupID;
+        Position = new BXDVector3();
+        Rotation = new BXDQuaternion();
         SubMeshID = -1;
         CollisionMeshID = -1;
+        PropertySetID = physicsGroupID;
     }
 }

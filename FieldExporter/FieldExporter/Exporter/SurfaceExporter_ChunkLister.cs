@@ -66,4 +66,36 @@ public partial class SurfaceExporter
         return plannedExports;
     }
 
+    /// <summary>
+    /// Adds the mesh for the given component, and all its subcomponents to the mesh storage structure.
+    /// </summary>
+    /// <param name="pcd">The component to export</param>
+    /// <param name="bestResolution">Use the best possible resolution</param>
+    /// <param name="separateFaces">Export each face as a separate mesh</param>
+    /// <param name="ignorePhysics">Don't add the physical properties of this component to the exporter</param>
+    /// <returns>All the sufaces to export</returns>
+    private List<ExportPlan> GenerateExportList(PartComponentDefinition pcd, bool bestResolution = false, bool separateFaces = false, bool ignorePhysics = false)
+    {
+        List<ExportPlan> plannedExports = new List<ExportPlan>();
+
+        if (!ignorePhysics)
+        {
+            // Compute physics
+            try
+            {
+                outputMesh.physics.Add((float)pcd.MassProperties.Mass, Utilities.ToBXDVector(pcd.MassProperties.CenterOfMass));
+            }
+            catch
+            {
+            }
+        }
+
+        foreach (SurfaceBody surf in pcd.SurfaceBodies)
+        {
+            plannedExports.Add(new ExportPlan(surf, bestResolution, separateFaces));
+        }
+        
+        return plannedExports;
+    }
+
 }

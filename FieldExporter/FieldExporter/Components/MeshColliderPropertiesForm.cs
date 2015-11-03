@@ -18,6 +18,9 @@ namespace FieldExporter.Components
         public MeshColliderPropertiesForm()
         {
             InitializeComponent();
+
+            infoPictureBox.Image = System.Drawing.SystemIcons.Information.ToBitmap();
+            infoToolTip.SetToolTip(infoPictureBox, "Export may take longer when using mesh colliders.");
         }
 
         /// <summary>
@@ -26,7 +29,7 @@ namespace FieldExporter.Components
         /// <returns></returns>
         PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
         {
-            return new PropertySet.MeshCollider(convexCheckBox.Checked);
+            return new PropertySet.MeshCollider(false);
         }
     }
 }
