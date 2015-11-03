@@ -21,7 +21,7 @@ public class auxFunctions
             Vector3[] normals = sub.norms == null ? null : ArrayUtilities.WrapArray<Vector3>(
                 delegate(double x, double y, double z)
                 {
-                    return new Vector3((float) x, (float) y, (float) z);
+					return new Vector3((float) x, (float) y, (float) z);
                 }, sub.norms);
 
             Mesh unityMesh = new Mesh();
@@ -40,6 +40,7 @@ public class auxFunctions
             {
                 unityMesh.RecalculateNormals();
             }
+
             handleMesh(j, sub, unityMesh);
         }
     }
