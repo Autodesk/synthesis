@@ -3,16 +3,15 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 
-
 public partial class SurfaceExporter
 {
     /// <summary>
     /// Clears the mesh structure and physical properties, 
     /// preparing this exporter for another set of objects.
     /// </summary>
-    public void Reset()
+    public void Reset(Guid guid)
     {
-        outputMesh = new BXDAMesh();
+        outputMesh = new BXDAMesh(guid);
     }
 
     /// <summary>

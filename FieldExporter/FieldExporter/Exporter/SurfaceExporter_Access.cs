@@ -45,27 +45,21 @@ public partial class SurfaceExporter
     }
 
     /// <summary>
-    /// Exports all the components in this enumerable to the in-RAM mesh.
+    /// Exports from a ComponentPartDefinition.
     /// </summary>
-    /// <param name="enumm">Enumerable to export from</param>
-    /// <param name="reporter">Progress reporter</param>
-    public void ExportAll(IEnumerator<ComponentOccurrence> enumm, BXDIO.ProgressReporter reporter = null)
+    /// <param name="pcd"></param>
+    /// <param name="bestResolution"></param>
+    /// <param name="separateFaces"></param>
+    /// <param name="ignorePhysics"></param>
+    public void Export(PartComponentDefinition pcd, bool bestResolution = false,
+        bool separateFaces = false, bool ignorePhysics = false)
     {
         List<ExportPlan> plans = new List<ExportPlan>();
-        while (enumm.MoveNext()){
-            plans.AddRange(GenerateExportList(enumm.Current));
-        }
-        if (reporter != null)
-        {
-            reporter(0, plans.Count);
-        }
+        plans.AddRange(GenerateExportList(pcd, bestResolution, separateFaces, ignorePhysics));
+
         for (int i = 0; i < plans.Count; i++)
         {
             AddFacets(plans[i].surf, plans[i].bestResolution, plans[i].separateFaces);
-            if (reporter != null)
-            {
-                reporter((i + 1), plans.Count);
-            }
         }
     }
 }

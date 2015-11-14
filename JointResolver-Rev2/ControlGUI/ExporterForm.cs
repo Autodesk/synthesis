@@ -270,12 +270,10 @@ public partial class ExporterForm : Form
         try
         {
             ExportedMeshes = Exporter.ExportMeshes(ExportedNode, ExporterSettings.meshUseOCL);
-
             ExportedNode = new OGLViewer.OGL_RigidNode(ExportedNode);
         }
-        catch (COMException ce)
+        catch (COMException)
         {
-
         }
         catch (Exception e)
         {

@@ -64,10 +64,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_19.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
     </Reference>
-    <Reference Include="OGLViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\OGLViewer\bin\Debug\OGLViewer.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -180,6 +176,10 @@
     <ProjectReference Include="..\EditorsLibrary\EditorsLibrary.csproj">
       <Project>{87b8c386-74ff-4f9a-a3f6-20381599e464}</Project>
       <Name>EditorsLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OGLViewer\OGLViewer.csproj">
+      <Project>{a2c2d3bd-9d46-4ca3-8c03-20dac08d38a8}</Project>
+      <Name>OGLViewer</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>

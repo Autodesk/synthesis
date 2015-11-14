@@ -32,31 +32,43 @@ namespace FieldExporter.Controls
             this.components = new System.ComponentModel.Container();
             this.inventorSelectButton = new System.Windows.Forms.Button();
             this.addSelectionButton = new System.Windows.Forms.Button();
-            this.propertiesBox = new System.Windows.Forms.GroupBox();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.inventorActionsPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.physicalPropertiesGroupBox = new System.Windows.Forms.GroupBox();
+            this.frictionLabelsLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.rubberLabel = new System.Windows.Forms.Label();
+            this.iceLabel = new System.Windows.Forms.Label();
+            this.carpetLabel = new System.Windows.Forms.Label();
             this.dynamicCheckBox = new System.Windows.Forms.CheckBox();
+            this.frictionTrackBar = new System.Windows.Forms.TrackBar();
             this.dynamicGroupBox = new System.Windows.Forms.GroupBox();
             this.massNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.massLabel = new System.Windows.Forms.Label();
-            this.rubberLabel = new System.Windows.Forms.Label();
-            this.carpetLabel = new System.Windows.Forms.Label();
-            this.iceLabel = new System.Windows.Forms.Label();
+            this.frictionLabel = new System.Windows.Forms.Label();
+            this.meshPropertiesGroupBox = new System.Windows.Forms.GroupBox();
+            this.meshPropertiesTable = new System.Windows.Forms.TableLayoutPanel();
+            this.colliderTypePanel = new System.Windows.Forms.Panel();
             this.colliderTypeLabel = new System.Windows.Forms.Label();
             this.colliderTypeCombobox = new System.Windows.Forms.ComboBox();
-            this.frictionTrackBar = new System.Windows.Forms.TrackBar();
-            this.frictionLabel = new System.Windows.Forms.Label();
-            this.physicsGroupOptionsBox = new System.Windows.Forms.GroupBox();
+            this.propertySetOptionsBox = new System.Windows.Forms.GroupBox();
+            this.propertyOptionsLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.changeNameButton = new System.Windows.Forms.Button();
             this.removeButton = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.propertiesLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.propertiesScrollablePanel = new System.Windows.Forms.Panel();
             this.inventorTreeView = new FieldExporter.Components.InventorTreeView(this.components);
-            this.propertiesBox.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.inventorActionsPanel.SuspendLayout();
+            this.physicalPropertiesGroupBox.SuspendLayout();
+            this.frictionLabelsLayoutPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).BeginInit();
             this.dynamicGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).BeginInit();
-            this.physicsGroupOptionsBox.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.meshPropertiesGroupBox.SuspendLayout();
+            this.meshPropertiesTable.SuspendLayout();
+            this.colliderTypePanel.SuspendLayout();
+            this.propertySetOptionsBox.SuspendLayout();
+            this.propertyOptionsLayoutPanel.SuspendLayout();
+            this.propertiesLayoutPanel.SuspendLayout();
+            this.propertiesScrollablePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // inventorSelectButton
@@ -83,41 +95,89 @@ namespace FieldExporter.Controls
             this.addSelectionButton.UseVisualStyleBackColor = true;
             this.addSelectionButton.Click += new System.EventHandler(this.addSelectionButton_Click);
             // 
-            // propertiesBox
+            // inventorActionsPanel
             // 
-            this.propertiesBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.inventorActionsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.propertiesBox.Controls.Add(this.panel1);
-            this.propertiesBox.Location = new System.Drawing.Point(304, 68);
-            this.propertiesBox.Name = "propertiesBox";
-            this.propertiesBox.Size = new System.Drawing.Size(293, 329);
-            this.propertiesBox.TabIndex = 15;
-            this.propertiesBox.TabStop = false;
-            this.propertiesBox.Text = "Physical Properties";
+            this.inventorActionsPanel.ColumnCount = 2;
+            this.inventorActionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.inventorActionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.inventorActionsPanel.Controls.Add(this.inventorSelectButton, 0, 0);
+            this.inventorActionsPanel.Controls.Add(this.addSelectionButton, 1, 0);
+            this.inventorActionsPanel.Location = new System.Drawing.Point(0, 360);
+            this.inventorActionsPanel.Name = "inventorActionsPanel";
+            this.inventorActionsPanel.RowCount = 1;
+            this.inventorActionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.inventorActionsPanel.Size = new System.Drawing.Size(301, 40);
+            this.inventorActionsPanel.TabIndex = 8;
             // 
-            // panel1
+            // physicalPropertiesGroupBox
             // 
-            this.panel1.AutoScroll = true;
-            this.panel1.Controls.Add(this.dynamicCheckBox);
-            this.panel1.Controls.Add(this.dynamicGroupBox);
-            this.panel1.Controls.Add(this.rubberLabel);
-            this.panel1.Controls.Add(this.carpetLabel);
-            this.panel1.Controls.Add(this.iceLabel);
-            this.panel1.Controls.Add(this.colliderTypeLabel);
-            this.panel1.Controls.Add(this.colliderTypeCombobox);
-            this.panel1.Controls.Add(this.frictionTrackBar);
-            this.panel1.Controls.Add(this.frictionLabel);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(3, 18);
-            this.panel1.Name = "panel1";
-            this.panel1.Padding = new System.Windows.Forms.Padding(0, 0, 3, 0);
-            this.panel1.Size = new System.Drawing.Size(287, 308);
-            this.panel1.TabIndex = 8;
+            this.physicalPropertiesGroupBox.Controls.Add(this.frictionLabelsLayoutPanel);
+            this.physicalPropertiesGroupBox.Controls.Add(this.dynamicCheckBox);
+            this.physicalPropertiesGroupBox.Controls.Add(this.frictionTrackBar);
+            this.physicalPropertiesGroupBox.Controls.Add(this.dynamicGroupBox);
+            this.physicalPropertiesGroupBox.Controls.Add(this.frictionLabel);
+            this.physicalPropertiesGroupBox.Location = new System.Drawing.Point(3, 125);
+            this.physicalPropertiesGroupBox.Name = "physicalPropertiesGroupBox";
+            this.physicalPropertiesGroupBox.Size = new System.Drawing.Size(290, 139);
+            this.physicalPropertiesGroupBox.TabIndex = 15;
+            this.physicalPropertiesGroupBox.TabStop = false;
+            this.physicalPropertiesGroupBox.Text = "Physical Properties";
+            // 
+            // frictionLabelsLayoutPanel
+            // 
+            this.frictionLabelsLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.frictionLabelsLayoutPanel.ColumnCount = 3;
+            this.frictionLabelsLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.frictionLabelsLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.frictionLabelsLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.frictionLabelsLayoutPanel.Controls.Add(this.rubberLabel, 2, 0);
+            this.frictionLabelsLayoutPanel.Controls.Add(this.iceLabel, 0, 0);
+            this.frictionLabelsLayoutPanel.Controls.Add(this.carpetLabel, 1, 0);
+            this.frictionLabelsLayoutPanel.Location = new System.Drawing.Point(74, 57);
+            this.frictionLabelsLayoutPanel.Name = "frictionLabelsLayoutPanel";
+            this.frictionLabelsLayoutPanel.RowCount = 1;
+            this.frictionLabelsLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.frictionLabelsLayoutPanel.Size = new System.Drawing.Size(210, 20);
+            this.frictionLabelsLayoutPanel.TabIndex = 10;
+            // 
+            // rubberLabel
+            // 
+            this.rubberLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rubberLabel.Location = new System.Drawing.Point(143, 0);
+            this.rubberLabel.Name = "rubberLabel";
+            this.rubberLabel.Size = new System.Drawing.Size(64, 20);
+            this.rubberLabel.TabIndex = 6;
+            this.rubberLabel.Text = "Rubber";
+            this.rubberLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // iceLabel
+            // 
+            this.iceLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.iceLabel.Location = new System.Drawing.Point(3, 0);
+            this.iceLabel.Name = "iceLabel";
+            this.iceLabel.Size = new System.Drawing.Size(64, 20);
+            this.iceLabel.TabIndex = 5;
+            this.iceLabel.Text = "Ice";
+            // 
+            // carpetLabel
+            // 
+            this.carpetLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.carpetLabel.Location = new System.Drawing.Point(73, 0);
+            this.carpetLabel.Name = "carpetLabel";
+            this.carpetLabel.Size = new System.Drawing.Size(64, 20);
+            this.carpetLabel.TabIndex = 7;
+            this.carpetLabel.Text = "Carpet";
+            this.carpetLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // dynamicCheckBox
             // 
+            this.dynamicCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dynamicCheckBox.AutoSize = true;
-            this.dynamicCheckBox.Location = new System.Drawing.Point(12, 94);
+            this.dynamicCheckBox.Location = new System.Drawing.Point(12, 82);
             this.dynamicCheckBox.Name = "dynamicCheckBox";
             this.dynamicCheckBox.Size = new System.Drawing.Size(84, 21);
             this.dynamicCheckBox.TabIndex = 8;
@@ -125,19 +185,37 @@ namespace FieldExporter.Controls
             this.dynamicCheckBox.UseVisualStyleBackColor = true;
             this.dynamicCheckBox.CheckedChanged += new System.EventHandler(this.dynamicCheckBox_CheckedChanged);
             // 
+            // frictionTrackBar
+            // 
+            this.frictionTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.frictionTrackBar.Location = new System.Drawing.Point(70, 21);
+            this.frictionTrackBar.Maximum = 100;
+            this.frictionTrackBar.Name = "frictionTrackBar";
+            this.frictionTrackBar.Size = new System.Drawing.Size(214, 56);
+            this.frictionTrackBar.TabIndex = 2;
+            this.frictionTrackBar.TickFrequency = 50;
+            this.frictionTrackBar.Value = 50;
+            this.frictionTrackBar.Scroll += new System.EventHandler(this.frictionTrackBar_Scroll);
+            // 
             // dynamicGroupBox
             // 
+            this.dynamicGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dynamicGroupBox.Controls.Add(this.massNumericUpDown);
             this.dynamicGroupBox.Controls.Add(this.massLabel);
             this.dynamicGroupBox.Enabled = false;
-            this.dynamicGroupBox.Location = new System.Drawing.Point(6, 95);
+            this.dynamicGroupBox.Location = new System.Drawing.Point(6, 83);
             this.dynamicGroupBox.Name = "dynamicGroupBox";
-            this.dynamicGroupBox.Size = new System.Drawing.Size(254, 49);
+            this.dynamicGroupBox.Size = new System.Drawing.Size(278, 50);
             this.dynamicGroupBox.TabIndex = 9;
             this.dynamicGroupBox.TabStop = false;
             // 
             // massNumericUpDown
             // 
+            this.massNumericUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.massNumericUpDown.DecimalPlaces = 2;
             this.massNumericUpDown.Location = new System.Drawing.Point(89, 21);
             this.massNumericUpDown.Maximum = new decimal(new int[] {
             1000,
@@ -145,7 +223,7 @@ namespace FieldExporter.Controls
             0,
             0});
             this.massNumericUpDown.Name = "massNumericUpDown";
-            this.massNumericUpDown.Size = new System.Drawing.Size(159, 22);
+            this.massNumericUpDown.Size = new System.Drawing.Size(183, 22);
             this.massNumericUpDown.TabIndex = 10;
             // 
             // massLabel
@@ -157,31 +235,56 @@ namespace FieldExporter.Controls
             this.massLabel.TabIndex = 9;
             this.massLabel.Text = "Mass (lbs):";
             // 
-            // rubberLabel
+            // frictionLabel
             // 
-            this.rubberLabel.Location = new System.Drawing.Point(199, 72);
-            this.rubberLabel.Name = "rubberLabel";
-            this.rubberLabel.Size = new System.Drawing.Size(55, 17);
-            this.rubberLabel.TabIndex = 6;
-            this.rubberLabel.Text = "Rubber";
+            this.frictionLabel.AutoSize = true;
+            this.frictionLabel.Location = new System.Drawing.Point(6, 18);
+            this.frictionLabel.Name = "frictionLabel";
+            this.frictionLabel.Size = new System.Drawing.Size(58, 34);
+            this.frictionLabel.TabIndex = 3;
+            this.frictionLabel.Text = "Friction:\r\n50/100";
+            this.frictionLabel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.frictionLabel_MouseDoubleClick);
             // 
-            // carpetLabel
+            // meshPropertiesGroupBox
             // 
-            this.carpetLabel.AutoSize = true;
-            this.carpetLabel.Location = new System.Drawing.Point(129, 72);
-            this.carpetLabel.Name = "carpetLabel";
-            this.carpetLabel.Size = new System.Drawing.Size(50, 17);
-            this.carpetLabel.TabIndex = 7;
-            this.carpetLabel.Text = "Carpet";
+            this.meshPropertiesGroupBox.AutoSize = true;
+            this.meshPropertiesGroupBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.meshPropertiesGroupBox.Controls.Add(this.meshPropertiesTable);
+            this.meshPropertiesGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meshPropertiesGroupBox.Location = new System.Drawing.Point(3, 68);
+            this.meshPropertiesGroupBox.Name = "meshPropertiesGroupBox";
+            this.meshPropertiesGroupBox.Size = new System.Drawing.Size(290, 51);
+            this.meshPropertiesGroupBox.TabIndex = 17;
+            this.meshPropertiesGroupBox.TabStop = false;
+            this.meshPropertiesGroupBox.Text = "Mesh Properties";
             // 
-            // iceLabel
+            // meshPropertiesTable
             // 
-            this.iceLabel.AutoSize = true;
-            this.iceLabel.Location = new System.Drawing.Point(81, 72);
-            this.iceLabel.Name = "iceLabel";
-            this.iceLabel.Size = new System.Drawing.Size(26, 17);
-            this.iceLabel.TabIndex = 5;
-            this.iceLabel.Text = "Ice";
+            this.meshPropertiesTable.AutoSize = true;
+            this.meshPropertiesTable.ColumnCount = 1;
+            this.meshPropertiesTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.meshPropertiesTable.Controls.Add(this.colliderTypePanel, 0, 0);
+            this.meshPropertiesTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.meshPropertiesTable.Location = new System.Drawing.Point(3, 18);
+            this.meshPropertiesTable.Margin = new System.Windows.Forms.Padding(0);
+            this.meshPropertiesTable.Name = "meshPropertiesTable";
+            this.meshPropertiesTable.RowCount = 2;
+            this.meshPropertiesTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.meshPropertiesTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.meshPropertiesTable.Size = new System.Drawing.Size(284, 30);
+            this.meshPropertiesTable.TabIndex = 2;
+            // 
+            // colliderTypePanel
+            // 
+            this.colliderTypePanel.AutoSize = true;
+            this.colliderTypePanel.Controls.Add(this.colliderTypeLabel);
+            this.colliderTypePanel.Controls.Add(this.colliderTypeCombobox);
+            this.colliderTypePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.colliderTypePanel.Location = new System.Drawing.Point(0, 0);
+            this.colliderTypePanel.Margin = new System.Windows.Forms.Padding(0);
+            this.colliderTypePanel.Name = "colliderTypePanel";
+            this.colliderTypePanel.Size = new System.Drawing.Size(284, 30);
+            this.colliderTypePanel.TabIndex = 0;
             // 
             // colliderTypeLabel
             // 
@@ -194,51 +297,51 @@ namespace FieldExporter.Controls
             // 
             // colliderTypeCombobox
             // 
+            this.colliderTypeCombobox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.colliderTypeCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.colliderTypeCombobox.FormattingEnabled = true;
             this.colliderTypeCombobox.Items.AddRange(new object[] {
-            "Mesh Collider",
-            "Box Collider"});
+            "Box",
+            "Sphere",
+            "Mesh"});
             this.colliderTypeCombobox.Location = new System.Drawing.Point(104, 3);
             this.colliderTypeCombobox.Name = "colliderTypeCombobox";
-            this.colliderTypeCombobox.Size = new System.Drawing.Size(156, 24);
+            this.colliderTypeCombobox.Size = new System.Drawing.Size(177, 24);
             this.colliderTypeCombobox.TabIndex = 0;
+            this.colliderTypeCombobox.SelectedIndexChanged += new System.EventHandler(this.colliderTypeCombobox_SelectedIndexChanged);
             // 
-            // frictionTrackBar
+            // propertySetOptionsBox
             // 
-            this.frictionTrackBar.LargeChange = 1;
-            this.frictionTrackBar.Location = new System.Drawing.Point(67, 33);
-            this.frictionTrackBar.Name = "frictionTrackBar";
-            this.frictionTrackBar.Size = new System.Drawing.Size(193, 56);
-            this.frictionTrackBar.TabIndex = 2;
-            this.frictionTrackBar.Scroll += new System.EventHandler(this.frictionTrackBar_Scroll);
+            this.propertySetOptionsBox.Controls.Add(this.propertyOptionsLayoutPanel);
+            this.propertySetOptionsBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertySetOptionsBox.Location = new System.Drawing.Point(3, 3);
+            this.propertySetOptionsBox.Name = "propertySetOptionsBox";
+            this.propertySetOptionsBox.Size = new System.Drawing.Size(290, 59);
+            this.propertySetOptionsBox.TabIndex = 16;
+            this.propertySetOptionsBox.TabStop = false;
+            this.propertySetOptionsBox.Text = "Property Set Options";
             // 
-            // frictionLabel
+            // propertyOptionsLayoutPanel
             // 
-            this.frictionLabel.AutoSize = true;
-            this.frictionLabel.Location = new System.Drawing.Point(3, 33);
-            this.frictionLabel.Name = "frictionLabel";
-            this.frictionLabel.Size = new System.Drawing.Size(58, 34);
-            this.frictionLabel.TabIndex = 3;
-            this.frictionLabel.Text = "Friction:\r\n0/10";
-            // 
-            // physicsGroupOptionsBox
-            // 
-            this.physicsGroupOptionsBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.physicsGroupOptionsBox.Controls.Add(this.changeNameButton);
-            this.physicsGroupOptionsBox.Controls.Add(this.removeButton);
-            this.physicsGroupOptionsBox.Location = new System.Drawing.Point(304, 3);
-            this.physicsGroupOptionsBox.Name = "physicsGroupOptionsBox";
-            this.physicsGroupOptionsBox.Size = new System.Drawing.Size(293, 59);
-            this.physicsGroupOptionsBox.TabIndex = 16;
-            this.physicsGroupOptionsBox.TabStop = false;
-            this.physicsGroupOptionsBox.Text = "PhysicsGroup Options";
+            this.propertyOptionsLayoutPanel.ColumnCount = 2;
+            this.propertyOptionsLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.propertyOptionsLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.propertyOptionsLayoutPanel.Controls.Add(this.changeNameButton, 1, 0);
+            this.propertyOptionsLayoutPanel.Controls.Add(this.removeButton, 0, 0);
+            this.propertyOptionsLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyOptionsLayoutPanel.Location = new System.Drawing.Point(3, 18);
+            this.propertyOptionsLayoutPanel.Name = "propertyOptionsLayoutPanel";
+            this.propertyOptionsLayoutPanel.RowCount = 1;
+            this.propertyOptionsLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.propertyOptionsLayoutPanel.Size = new System.Drawing.Size(284, 38);
+            this.propertyOptionsLayoutPanel.TabIndex = 19;
             // 
             // changeNameButton
             // 
-            this.changeNameButton.Location = new System.Drawing.Point(175, 21);
+            this.changeNameButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.changeNameButton.Location = new System.Drawing.Point(145, 3);
             this.changeNameButton.Name = "changeNameButton";
-            this.changeNameButton.Size = new System.Drawing.Size(112, 32);
+            this.changeNameButton.Size = new System.Drawing.Size(136, 32);
             this.changeNameButton.TabIndex = 3;
             this.changeNameButton.Text = "Change Name";
             this.changeNameButton.UseVisualStyleBackColor = true;
@@ -246,29 +349,45 @@ namespace FieldExporter.Controls
             // 
             // removeButton
             // 
-            this.removeButton.Location = new System.Drawing.Point(6, 21);
+            this.removeButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.removeButton.Location = new System.Drawing.Point(3, 3);
             this.removeButton.Name = "removeButton";
-            this.removeButton.Size = new System.Drawing.Size(163, 32);
+            this.removeButton.Size = new System.Drawing.Size(136, 32);
             this.removeButton.TabIndex = 2;
-            this.removeButton.Text = "Remove PhysicsGroup";
+            this.removeButton.Text = "Remove";
             this.removeButton.UseVisualStyleBackColor = true;
             this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
             // 
-            // tableLayoutPanel1
+            // propertiesLayoutPanel
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.propertiesLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.inventorSelectButton, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.addSelectionButton, 1, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 360);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(301, 40);
-            this.tableLayoutPanel1.TabIndex = 8;
+            this.propertiesLayoutPanel.AutoSize = true;
+            this.propertiesLayoutPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.propertiesLayoutPanel.ColumnCount = 1;
+            this.propertiesLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.propertiesLayoutPanel.Controls.Add(this.propertySetOptionsBox, 0, 0);
+            this.propertiesLayoutPanel.Controls.Add(this.physicalPropertiesGroupBox, 0, 2);
+            this.propertiesLayoutPanel.Controls.Add(this.meshPropertiesGroupBox, 0, 1);
+            this.propertiesLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.propertiesLayoutPanel.Name = "propertiesLayoutPanel";
+            this.propertiesLayoutPanel.RowCount = 3;
+            this.propertiesLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.propertiesLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.propertiesLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.propertiesLayoutPanel.Size = new System.Drawing.Size(296, 267);
+            this.propertiesLayoutPanel.TabIndex = 18;
+            // 
+            // propertiesScrollablePanel
+            // 
+            this.propertiesScrollablePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.propertiesScrollablePanel.AutoScroll = true;
+            this.propertiesScrollablePanel.Controls.Add(this.propertiesLayoutPanel);
+            this.propertiesScrollablePanel.Location = new System.Drawing.Point(304, 0);
+            this.propertiesScrollablePanel.Name = "propertiesScrollablePanel";
+            this.propertiesScrollablePanel.Size = new System.Drawing.Size(296, 400);
+            this.propertiesScrollablePanel.TabIndex = 19;
             // 
             // inventorTreeView
             // 
@@ -283,23 +402,32 @@ namespace FieldExporter.Controls
             // ComponentPropertiesForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.AutoSize = true;
             this.BackColor = System.Drawing.Color.White;
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.physicsGroupOptionsBox);
-            this.Controls.Add(this.propertiesBox);
+            this.Controls.Add(this.propertiesScrollablePanel);
+            this.Controls.Add(this.inventorActionsPanel);
             this.Controls.Add(this.inventorTreeView);
             this.Name = "ComponentPropertiesForm";
             this.Size = new System.Drawing.Size(600, 400);
-            this.propertiesBox.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.inventorActionsPanel.ResumeLayout(false);
+            this.physicalPropertiesGroupBox.ResumeLayout(false);
+            this.physicalPropertiesGroupBox.PerformLayout();
+            this.frictionLabelsLayoutPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).EndInit();
             this.dynamicGroupBox.ResumeLayout(false);
             this.dynamicGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.massNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.frictionTrackBar)).EndInit();
-            this.physicsGroupOptionsBox.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.meshPropertiesGroupBox.ResumeLayout(false);
+            this.meshPropertiesGroupBox.PerformLayout();
+            this.meshPropertiesTable.ResumeLayout(false);
+            this.meshPropertiesTable.PerformLayout();
+            this.colliderTypePanel.ResumeLayout(false);
+            this.colliderTypePanel.PerformLayout();
+            this.propertySetOptionsBox.ResumeLayout(false);
+            this.propertyOptionsLayoutPanel.ResumeLayout(false);
+            this.propertiesLayoutPanel.ResumeLayout(false);
+            this.propertiesLayoutPanel.PerformLayout();
+            this.propertiesScrollablePanel.ResumeLayout(false);
+            this.propertiesScrollablePanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -308,23 +436,29 @@ namespace FieldExporter.Controls
 
         private System.Windows.Forms.Button inventorSelectButton;
         private System.Windows.Forms.Button addSelectionButton;
-        private System.Windows.Forms.GroupBox propertiesBox;
-        private System.Windows.Forms.GroupBox physicsGroupOptionsBox;
-        private System.Windows.Forms.Button removeButton;
-        private System.Windows.Forms.Button changeNameButton;
-        private System.Windows.Forms.ComboBox colliderTypeCombobox;
-        private System.Windows.Forms.Label colliderTypeLabel;
-        private System.Windows.Forms.Label frictionLabel;
-        private System.Windows.Forms.TrackBar frictionTrackBar;
         public InventorTreeView inventorTreeView;
-        private System.Windows.Forms.Label rubberLabel;
-        private System.Windows.Forms.Label iceLabel;
-        private System.Windows.Forms.Label carpetLabel;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.GroupBox dynamicGroupBox;
+        private System.Windows.Forms.TableLayoutPanel inventorActionsPanel;
+        private System.Windows.Forms.GroupBox physicalPropertiesGroupBox;
         private System.Windows.Forms.CheckBox dynamicCheckBox;
-        private System.Windows.Forms.Label massLabel;
+        private System.Windows.Forms.GroupBox dynamicGroupBox;
         private System.Windows.Forms.NumericUpDown massNumericUpDown;
+        private System.Windows.Forms.Label massLabel;
+        private System.Windows.Forms.Label rubberLabel;
+        private System.Windows.Forms.Label carpetLabel;
+        private System.Windows.Forms.Label iceLabel;
+        private System.Windows.Forms.TrackBar frictionTrackBar;
+        private System.Windows.Forms.Label frictionLabel;
+        private System.Windows.Forms.GroupBox meshPropertiesGroupBox;
+        private System.Windows.Forms.Label colliderTypeLabel;
+        private System.Windows.Forms.ComboBox colliderTypeCombobox;
+        private System.Windows.Forms.GroupBox propertySetOptionsBox;
+        private System.Windows.Forms.Button changeNameButton;
+        private System.Windows.Forms.Button removeButton;
+        private System.Windows.Forms.TableLayoutPanel propertiesLayoutPanel;
+        private System.Windows.Forms.TableLayoutPanel meshPropertiesTable;
+        private System.Windows.Forms.Panel colliderTypePanel;
+        private System.Windows.Forms.TableLayoutPanel frictionLabelsLayoutPanel;
+        private System.Windows.Forms.TableLayoutPanel propertyOptionsLayoutPanel;
+        private System.Windows.Forms.Panel propertiesScrollablePanel;
     }
 }

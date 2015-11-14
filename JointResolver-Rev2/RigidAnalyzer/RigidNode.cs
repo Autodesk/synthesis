@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Inventor;
+using System;
 
 public class RigidNode : RigidNode_Base
 {
@@ -8,23 +9,14 @@ public class RigidNode : RigidNode_Base
 
     public CustomRigidGroup group;
 
-    public RigidNode()
+    public RigidNode(Guid guid)
+        : base(guid)
     {
         group = null;
     }
 
-    //public RigidNode(OGLViewer.OGL_RigidNode oglNode)
-    //{
-    //    modelFullID = oglNode.modelFullID;
-    //    modelFileName = oglNode.modelFileName;
-
-    //    foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> child in baseData.children)
-    //    {
-    //        AddChild(child.Key, new OGL_RigidNode(child.Value));
-    //    }
-    //}
-
-    public RigidNode(CustomRigidGroup grp)
+    public RigidNode(Guid guid, CustomRigidGroup grp)
+        : base(guid)
     {
         this.group = grp;
     }

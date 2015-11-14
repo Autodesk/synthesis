@@ -154,7 +154,7 @@ static class RigidBodyCleaner
             {
                 openNodes.Add(new CustomRigidGroup[] { grp, grp });
                 closedNodes.Add(grp);
-                baseNodes.Add(grp, baseRoot = new RigidNode(grp));
+                baseNodes.Add(grp, baseRoot = new RigidNode(Guid.NewGuid(), grp));
                 break; //Should only contain one grounded group, as they have all been merged together.
             }
         }
@@ -171,7 +171,7 @@ static class RigidBodyCleaner
                 {
                     if (!closedNodes.Add(jonConn)) //Moves on to next if the connected component is already in closedNodes.
                         continue;
-                    RigidNode rnode = new RigidNode(jonConn); //Makes a new rigid node for the connected component.
+                    RigidNode rnode = new RigidNode(Guid.NewGuid(), jonConn); //Makes a new rigid node for the connected component.
                     baseNodes.Add(jonConn, rnode);
 
                     //Find the actual joint between the two components.

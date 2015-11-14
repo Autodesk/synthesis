@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml;
 
 /// <summary>
 /// Possible types of skeletal joints.
@@ -17,7 +18,7 @@ public enum SkeletalJointType : byte
 /// <summary>
 /// Represents a moving joint between two nodes.
 /// </summary>
-public abstract class SkeletalJoint_Base : RWObject
+public abstract class SkeletalJoint_Base
 {
     /// <summary>
     /// Generic delegate for creating skeletal joints from a joint type.
@@ -77,36 +78,36 @@ public abstract class SkeletalJoint_Base : RWObject
     /// Writes the backing information and ID for this joint to the output stream.
     /// </summary>
     /// <param name="writer">Output stream</param>
-    public void WriteJoint(System.IO.BinaryWriter writer)
+    public void WriteBinaryJoint(System.IO.BinaryWriter writer)
     {
         writer.Write((byte) ((int) GetJointType()));
-        WriteJointInternal(writer);
+        WriteBinaryJointInternal(writer);
 
         writer.Write(cDriver != null);
         if (cDriver!=null){
-            cDriver.WriteData(writer);
+            cDriver.WriteBinaryData(writer);
         }
         writer.Write(attachedSensors.Count);
         for (int i = 0; i < attachedSensors.Count; i++)
         {
-            attachedSensors[i].WriteData(writer);
+            attachedSensors[i].WriteBinaryData(writer);
         }
     }
-    protected abstract void WriteJointInternal(System.IO.BinaryWriter writer);
+    protected abstract void WriteBinaryJointInternal(System.IO.BinaryWriter writer);
 
     /// <summary>
     /// Reads the backing information for this joint from the input stream.
     /// </summary>
     /// <param name="reader">Input stream</param>
-    public void ReadJoint(System.IO.BinaryReader reader)
+    public void ReadBinaryJoint(System.IO.BinaryReader reader)
     {
         // ID is already read
-        ReadJointInternal(reader);
+        ReadBinaryJointInternal(reader);
 
         if (reader.ReadBoolean())
         {
             cDriver = new JointDriver(JointDriverType.MOTOR);
-            cDriver.ReadData(reader);
+            cDriver.ReadBinaryData(reader);
         }
         else
         {
@@ -119,7 +120,7 @@ public abstract class SkeletalJoint_Base : RWObject
             attachedSensors.Add(RobotSensor.ReadSensorFully(reader));
         }
     }
-    protected abstract void ReadJointInternal(System.IO.BinaryReader reader);
+    protected abstract void ReadBinaryJointInternal(System.IO.BinaryReader reader);
 
     /// <summary>
     /// Identifies the type of a joint, creates an instance, and reads that joint from the given input stream.
@@ -130,7 +131,7 @@ public abstract class SkeletalJoint_Base : RWObject
     {
         SkeletalJointType type = (SkeletalJointType)((int)reader.ReadByte());
         SkeletalJoint_Base joint = JOINT_FACTORY(type);
-        joint.ReadJoint(reader);
+        joint.ReadBinaryJoint(reader);
         return joint;
     }
 
@@ -149,12 +150,12 @@ public abstract class SkeletalJoint_Base : RWObject
         return info;
     }
 
-    public void WriteData(System.IO.BinaryWriter writer)
+    public void WriteBinaryData(System.IO.BinaryWriter writer)
     {
-        WriteJoint(writer);
+        WriteBinaryJoint(writer);
     }
 
-    public void ReadData(System.IO.BinaryReader reader)
+    public void ReadBinaryData(System.IO.BinaryReader reader)
     {
         throw new NotImplementedException("Don't read a joint directly!");
     }

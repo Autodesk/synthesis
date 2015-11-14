@@ -1,6 +1,6 @@
 ﻿namespace FieldExporter.Components
 {
-    partial class CreatePhysicsGroupTabPage
+    partial class PropertySetsTabControl
     {
         /// <summary>
         /// Required designer variable.
@@ -30,11 +30,16 @@
         {
             this.SuspendLayout();
             // 
-            // CreatePhysicsGroupTabPage
+            // PropertySetsTabControl
             // 
+            this.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PropertySetsTabControl_Selecting);
+            this.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PropertySetsTabControl_Deselecting);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PropertySetsTabControl_MouseClick);
             this.ResumeLayout(false);
+
         }
 
         #endregion
+
     }
 }

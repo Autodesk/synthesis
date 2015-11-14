@@ -7,25 +7,25 @@ using System.Text;
 /// <summary>
 /// Interface for objects that can read/write binary data to files
 /// </summary>
-public interface RWObject
+public interface BinaryRWObject
 {
     /// <summary>
     /// Serializes this object to the given stream
     /// </summary>
     /// <param name="writer">Output stream</param>
-    void WriteData(BinaryWriter writer);
+    void WriteBinaryData(BinaryWriter writer);
 
     /// <summary>
     /// Deserializes this object from the given stream.
     /// </summary>
     /// <param name="reader">Input stream</param>
-    void ReadData(BinaryReader reader);
+    void ReadBinaryData(BinaryReader reader);
 }
 
 /// <summary>
-/// Extension functions for objects implementing the RWObject interface
+/// Extension functions for objects implementing the BinaryRWObject interface
 /// </summary>
-public static class RWObjectExtensions
+public static class BinaryRWObjectExtensions
 {
 
     /// <summary>
@@ -33,13 +33,13 @@ public static class RWObjectExtensions
     /// </summary>
     /// <param name="reader">Binary stream to read object from</param>
     /// <returns>The created object</returns>
-    public delegate RWObject ReadObjectFully(BinaryReader reader);
+    public delegate BinaryRWObject ReadObjectFully(BinaryReader reader);
 
     /// <summary>
     /// Writes this object to the given output path.
     /// </summary>
     /// <param name="path">Output path</param>
-    public static void WriteToFile(this RWObject obj, String path)
+    public static void WriteToFile(this BinaryRWObject obj, String path)
     {
         using(BinaryWriter writer = new BinaryWriter(new FileStream(path, FileMode.OpenOrCreate)))
         {
@@ -51,7 +51,7 @@ public static class RWObjectExtensions
     /// Reads this object from the given input path.
     /// </summary>
     /// <param name="path">Input path</param>
-    public static void ReadFromFile(this RWObject obj, String path, BXDIO.ProgressReporter progress = null)
+    public static void ReadFromFile(this BinaryRWObject obj, String path, BXDIO.ProgressReporter progress = null)
     {
         using (BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open)))
         {
@@ -69,7 +69,7 @@ public static class RWObjectExtensions
                 });
                 progressThread.Start();
             }
-            obj.ReadData(reader);
+            obj.ReadBinaryData(reader);
             if (progressThread != null)
             {
                 progressThread.Abort();
@@ -81,9 +81,9 @@ public static class RWObjectExtensions
     /// Serializes the object into this stream
     /// </summary>
     /// <param name="writer">Output stream</param>
-    public static void Write(this BinaryWriter writer, RWObject obj)
+    public static void Write(this BinaryWriter writer, BinaryRWObject obj)
     {
-        obj.WriteData(writer);
+        obj.WriteBinaryData(writer);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static class RWObjectExtensions
     /// </summary>
     /// <param name="reader">Input stream</param>
     /// <param name="readInternal">Optional delegate to create the object</param>
-    public static T ReadRWObject<T>(this BinaryReader reader, RWObjectExtensions.ReadObjectFully readInternal = null)
+    public static T ReadRWObject<T>(this BinaryReader reader, BinaryRWObjectExtensions.ReadObjectFully readInternal = null)
     {
         if (readInternal == null)
         {
@@ -105,8 +105,8 @@ public static class RWObjectExtensions
             {
                 readInternal = (BinaryReader rdr) =>
                 {
-                    RWObject ro = (RWObject) ctr.Invoke(new object[0]);
-                    ro.ReadData(rdr);
+                    BinaryRWObject ro = (BinaryRWObject) ctr.Invoke(new object[0]);
+                    ro.ReadBinaryData(rdr);
                     return ro;
                 };
             }
@@ -119,9 +119,9 @@ public static class RWObjectExtensions
     /// </summary>
     /// <param name="reader">Input stream</param>
     /// <param name="t">Read into</param>
-    public static T ReadRWInto<T>(this BinaryReader reader, T t) where T : RWObject
+    public static T ReadRWInto<T>(this BinaryReader reader, T t) where T : BinaryRWObject
     {
-        t.ReadData(reader);
+        t.ReadBinaryData(reader);
         return t;
     }
 }

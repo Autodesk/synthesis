@@ -105,8 +105,8 @@ public class Exporter
 
         foreach (RigidNode_Base node in nodes)
         {
-            node.modelFileName = ((RigidNode)node).group.ToString();
-            node.modelFullID = node.GetModelID();
+            node.ModelFileName = ((RigidNode)node).group.ToString();
+            node.ModelFullID = node.GetModelID();
         }
 
         return baseNode;
@@ -125,17 +125,17 @@ public class Exporter
         List<BXDAMesh> meshes = new List<BXDAMesh>();
         foreach (RigidNode_Base node in nodes)
         {
-            SynthesisGUI.Instance.ExporterSetOverallText("Exporting " + node.modelFileName);
+            SynthesisGUI.Instance.ExporterSetOverallText("Exporting " + node.ModelFileName);
 
-            if (node is RigidNode && node.GetModel() != null && node.modelFileName != null && node.GetModel() is CustomRigidGroup)
+            if (node is RigidNode && node.GetModel() != null && node.ModelFileName != null && node.GetModel() is CustomRigidGroup)
             {
-                Console.WriteLine("Exporting " + node.modelFileName);
+                Console.WriteLine("Exporting " + node.ModelFileName);
 
                 try
                 {
                     SynthesisGUI.Instance.ExporterReset();
                     CustomRigidGroup group = (CustomRigidGroup)node.GetModel();
-                    surfs.Reset();
+                    surfs.Reset(node.GUID);
                     Console.WriteLine("Exporting meshes...");
                     surfs.ExportAll(group, (long progress, long total) =>
                     {

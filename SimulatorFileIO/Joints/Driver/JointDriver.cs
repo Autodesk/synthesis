@@ -3,7 +3,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Generic class able to represent all types of joint drivers.
 /// </summary>
-public class JointDriver : RWObject, IComparable<JointDriver>
+public class JointDriver : BinaryRWObject, IComparable<JointDriver>
 {
     /// <summary>
     /// The type of this joint driver.
@@ -26,13 +26,18 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     /// <summary>
     /// Metadata information for this joint driver.
     /// </summary>
-    private Dictionary<System.Type, JointDriverMeta> metaInfo = new Dictionary<System.Type, JointDriverMeta>();
+    public Dictionary<System.Type, JointDriverMeta> MetaInfo
+    {
+        get;
+        private set;
+    }
 
     /// <summary>
     /// Creates as joint driver with no type.  This is mainly for IO
     /// </summary>
     public JointDriver()
     {
+        MetaInfo = new Dictionary<System.Type, JointDriverMeta>();
     }
 
     /// <summary>
@@ -40,6 +45,7 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     /// </summary>
     /// <param name="type">Driver type</param>
     public JointDriver(JointDriverType type)
+        : this()
     {
         this.type = type;
     }
@@ -52,13 +58,13 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     {
         try
         {
-            metaInfo.Add(metaDriver.GetType(), metaDriver);
+            MetaInfo.Add(metaDriver.GetType(), metaDriver);
         }
         catch
         {
             //Always throws SystemNullReferenceException here when you are exporting pneumatic
             //Go to JointDrivderMeta.cs Line 15 to patch
-            metaInfo[metaDriver.GetType()] = metaDriver;
+            MetaInfo[metaDriver.GetType()] = metaDriver;
         }
     }
 
@@ -72,9 +78,9 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     {
         JointDriverMeta val;
         System.Type type = typeof(T);
-        if (metaInfo.TryGetValue(type, out val))
+        if (MetaInfo.TryGetValue(type, out val))
         {
-            metaInfo.Remove(type);
+            MetaInfo.Remove(type);
             return (T) val;
         }
         return null;
@@ -89,7 +95,7 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     {
         JointDriverMeta val;
         System.Type type = typeof(T);
-        if (metaInfo.TryGetValue(type, out val))
+        if (MetaInfo.TryGetValue(type, out val))
         {
             return (T) val;
         }
@@ -104,7 +110,7 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     public JointDriverMeta GetInfo(System.Type type)
     {
         JointDriverMeta val;
-        if (metaInfo.TryGetValue(type, out val))
+        if (MetaInfo.TryGetValue(type, out val))
         {
             return val;
         }
@@ -113,9 +119,9 @@ public class JointDriver : RWObject, IComparable<JointDriver>
 
     public void CopyMetaInfo(JointDriver toCopy)
     {
-        foreach (KeyValuePair<System.Type, JointDriverMeta> pair in metaInfo)
+        foreach (KeyValuePair<System.Type, JointDriverMeta> pair in MetaInfo)
         {
-            toCopy.metaInfo.Add(pair.Key, pair.Value);
+            toCopy.MetaInfo.Add(pair.Key, pair.Value);
         }
     }
 
@@ -178,7 +184,7 @@ public class JointDriver : RWObject, IComparable<JointDriver>
         string info = System.Enum.GetName(typeof(JointDriverType), GetDriveType()).Replace('_', ' ').ToLowerInvariant();
         info += "\nPorts: " + type.GetPortType() + "(" + portA + (type.HasTwoPorts() ? "," + portB : "") + ")";
         info += "\nMeta: ";
-        foreach (KeyValuePair<System.Type, JointDriverMeta> meta in metaInfo)
+        foreach (KeyValuePair<System.Type, JointDriverMeta> meta in MetaInfo)
         {
             info += "\n\t" + meta.Value.ToString();
         }
@@ -198,7 +204,7 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     /// Writes the binary representation of this driver to the stream.
     /// </summary>
     /// <param name="writer">Output stream</param>
-    public void WriteData(System.IO.BinaryWriter writer)
+    public void WriteBinaryData(System.IO.BinaryWriter writer)
     {
         writer.Write((byte) ((int) GetDriveType()));
         writer.Write((short) portA);
@@ -206,8 +212,8 @@ public class JointDriver : RWObject, IComparable<JointDriver>
         writer.Write(lowerLimit);
         writer.Write(upperLimit);
         writer.Write(isCan);
-        writer.Write(metaInfo.Count); // Extension count
-        foreach (JointDriverMeta meta in metaInfo.Values)
+        writer.Write(MetaInfo.Count); // Extension count
+        foreach (JointDriverMeta meta in MetaInfo.Values)
         {
             meta.WriteData(writer);
         }
@@ -217,7 +223,7 @@ public class JointDriver : RWObject, IComparable<JointDriver>
     /// Reads the binary representation of this driver from the stream.
     /// </summary>
     /// <param name="reader">Input stream</param>
-    public void ReadData(System.IO.BinaryReader reader)
+    public void ReadBinaryData(System.IO.BinaryReader reader)
     {
         type = (JointDriverType) ((int) reader.ReadByte());
         portA = reader.ReadInt16();
@@ -226,7 +232,7 @@ public class JointDriver : RWObject, IComparable<JointDriver>
         upperLimit = reader.ReadSingle();
         isCan = reader.ReadBoolean();
         int extensions = reader.ReadInt32();
-        metaInfo.Clear();
+        MetaInfo.Clear();
         for (int i = 0; i < extensions; i++)
         {
             JointDriverMeta meta = JointDriverMeta.ReadDriverMeta(reader);

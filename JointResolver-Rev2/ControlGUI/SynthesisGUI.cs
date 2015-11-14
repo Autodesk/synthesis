@@ -51,9 +51,9 @@ public partial class SynthesisGUI : Form
         robotViewer1.LoadSettings(ViewerSettings);
         bxdaEditorPane1.Units = ViewerSettings.modelUnits;
 
-        RigidNode_Base.NODE_FACTORY = delegate()
+        RigidNode_Base.NODE_FACTORY = delegate(Guid guid)
         {
-            return new OGL_RigidNode();
+            return new OGL_RigidNode(guid);
         };
 
         fileNew.Click += new System.EventHandler(delegate(object sender, System.EventArgs e)
@@ -212,7 +212,7 @@ public partial class SynthesisGUI : Form
 
             GC.Collect();
         }
-        catch (System.Runtime.InteropServices.InvalidComObjectException ce)
+        catch (System.Runtime.InteropServices.InvalidComObjectException)
         {
         }
         catch (Exception e)
@@ -239,12 +239,24 @@ public partial class SynthesisGUI : Form
         {
             SkeletonBase = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
             Meshes = new List<BXDAMesh>();
-
+            
             var meshFiles = Directory.GetFiles(dirPath).Where(name => name.EndsWith(".bxda"));
+            
             foreach (string fileName in meshFiles)
             {
                 BXDAMesh mesh = new BXDAMesh();
                 mesh.ReadFromFile(fileName);
+
+                foreach (RigidNode_Base node in SkeletonBase.ListAllNodes())
+                {
+                    if (node.ModelFileName.Equals(fileName.Substring(fileName.LastIndexOf('\\') + 1)) &&
+                        !node.GUID.Equals(mesh.GUID))
+                    {
+                        MessageBox.Show(fileName + " has been modified.", "Could not load mesh.");
+                        return;
+                    }
+                }
+
                 Meshes.Add(mesh);
             }
         }
@@ -285,6 +297,19 @@ public partial class SynthesisGUI : Form
             {
                 Meshes[i].WriteToFile(dirPath + "\\node_" + i + ".bxda");
             }
+
+            /*
+             * The commented code below is for testing purposes.
+             * To determine if the reading/writing process runs
+             * without loss of data, compare the text of skeleton.bxdj
+             * and skeleton2.bxdj. If they are equal, no data was lost.
+             */
+
+            /** /
+            RigidNode_Base testRigidNode = BXDJSkeleton.ReadSkeleton(dirPath + "\\skeleton.bxdj");
+
+            BXDJSkeleton.WriteSkeleton(dirPath + "\\skeleton2.bxdj", testRigidNode);
+            /**/
         }
         catch (Exception e)
         {

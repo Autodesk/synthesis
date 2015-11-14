@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Represents a node inside the hierarchy representing how a robot moves.
@@ -8,50 +9,64 @@ public class RigidNode_Base
     /// <summary>
     /// Generic delegate for creating rigid node instances
     /// </summary>
-    public delegate RigidNode_Base RigidNodeFactory();
+    public delegate RigidNode_Base RigidNodeFactory(Guid guid);
 
     /// <summary>
-    /// By setting this to a custom value skeletons that are read using <see cref="BXDJSkeleton.ReadSkeleton(string)"/> can 
+    /// By setting this to a custom value skeletons that are read using <see cref="BXDJSkeleton.ReadBinarySkeleton(string)"/> can 
     /// be composed of a custom rigid node type.
     /// </summary>
-    public static RigidNodeFactory NODE_FACTORY = delegate()
+    public static RigidNodeFactory NODE_FACTORY = delegate(Guid guid)
     {
-        return new RigidNode_Base();
+        return new RigidNode_Base(guid);
     };
 
     /// <summary>
     /// How far down in the hierarchy this element is.  The higher it is the farther from the root node.
     /// </summary>
     protected int level;
+
     /// <summary>
     /// The node that represents the parent of this node.  If this is null then this is a root node.
     /// </summary>
     private RigidNode_Base parent;
+
     /// <summary>
     /// The joint that connects this node to its parent.
     /// </summary>
     private SkeletalJoint_Base parentConnection;
+
     /// <summary>
     /// The name of the file holding this node's model.
     /// </summary>
-    public string modelFileName
+    public string ModelFileName;
+
+    /// <summary>
+    /// The globally unique identifier.
+    /// </summary>
+    public Guid GUID
     {
         get;
-        set;
+        private set;
     }
+
     /// <summary>
     /// A very verbose identifier that represents the element this node is in the overall structure.
     /// </summary>
-    public string modelFullID
-    {
-        get;
-        set;
-    }
+    public string ModelFullID;
 
     /// <summary>
     /// A mapping between each child node of this node and the joint connection between the two.
     /// </summary>
-    public Dictionary<SkeletalJoint_Base, RigidNode_Base> children = new Dictionary<SkeletalJoint_Base, RigidNode_Base>();
+    public Dictionary<SkeletalJoint_Base, RigidNode_Base> Children = new Dictionary<SkeletalJoint_Base, RigidNode_Base>();
+
+    /// <summary>
+    /// Initializes a new instance of the RigidNode_Base class.
+    /// </summary>
+    /// <param name="guid"></param>
+    public RigidNode_Base(Guid guid)
+    {
+        GUID = guid;
+    }
 
     /// <summary>
     /// Adds the given node as a child of this node.
@@ -60,7 +75,7 @@ public class RigidNode_Base
     /// <param name="child">The child node</param>
     public void AddChild(SkeletalJoint_Base joint, RigidNode_Base child)
     {
-        children.Add(joint, child);
+        Children.Add(joint, child);
         child.parentConnection = joint;
         child.parent = this;
         child.level = this.level + 1;
@@ -102,21 +117,21 @@ public class RigidNode_Base
     /// <returns>The model identifier</returns>
     public virtual string GetModelID()
     {
-        return modelFullID;
+        return ModelFullID;
     }
 
     public override string ToString()
     {
         string result = new string('\t', level) + "Rigid Node" + System.Environment.NewLine;
-        result += new string('\t', level) + "ID: " + modelFullID + System.Environment.NewLine;
+        result += new string('\t', level) + "ID: " + ModelFullID + System.Environment.NewLine;
         if (parentConnection != null && parentConnection.cDriver != null)
         {
             result += new string('\t', level) + "Driver: " + ("\n" + parentConnection.cDriver.ToString()).Replace("\n", "\n" + new string('\t', level + 1));
         }
-        if (children.Count > 0)
+        if (Children.Count > 0)
         {
             result += new string('\t', level) + "Children: ";
-            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in children)
+            foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in Children)
             {
                 result += System.Environment.NewLine + new string('\t', level) + " - " + pair.Key.ToString();
                 result += System.Environment.NewLine + pair.Value.ToString();
@@ -144,7 +159,7 @@ public class RigidNode_Base
     public void ListAllNodes(List<RigidNode_Base> list)
     {
         list.Add(this);
-        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in children)
+        foreach (KeyValuePair<SkeletalJoint_Base, RigidNode_Base> pair in Children)
         {
             pair.Value.ListAllNodes(list);
         }

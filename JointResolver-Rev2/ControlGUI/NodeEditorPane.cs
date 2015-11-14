@@ -39,7 +39,7 @@ public partial class NodeEditorPane : UserControl
         if (listViewNodes.Items.Cast<ListViewItem>().FirstOrDefault(i => i.Tag != null && 
                                                                          ((RigidNode_Base)i.Tag).GetModelID() == node.GetModelID()) != null) return;
 
-        ListViewItem item = new ListViewItem(new string[] { (node.GetParent() != null)?node.GetParent().modelFileName:"N/A", node.modelFileName, 
+        ListViewItem item = new ListViewItem(new string[] { (node.GetParent() != null)?node.GetParent().ModelFileName:"N/A", node.ModelFileName, 
                                                              "False", "False", "False" });
 
         item.Tag = node;

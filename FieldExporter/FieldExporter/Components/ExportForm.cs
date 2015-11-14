@@ -14,6 +14,17 @@ namespace FieldExporter.Components
     public partial class ExportForm : UserControl
     {
         /// <summary>
+        /// Used for determining if the exporter is running.
+        /// </summary>
+        public bool IsExporting
+        {
+            get
+            {
+                return exporter.IsBusy;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the ExportForm class.
         /// </summary>
         /// <param name="parent"></param>
@@ -29,8 +40,12 @@ namespace FieldExporter.Components
         /// <param name="e"></param>
         private void browseButton_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog.ShowDialog();
-            FilePathTextBox.Text = folderBrowserDialog.SelectedPath;
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                filePathTextBox.Text = folderBrowserDialog.SelectedPath;
+                exportButton.Enabled = true;
+                statusLabel.Text = "Ready to export.";
+            }
         }
 
         /// <summary>
@@ -40,76 +55,153 @@ namespace FieldExporter.Components
         /// <param name="e"></param>
         private void exportButton_Click(object sender, EventArgs e)
         {
-            if (FilePathTextBox.Text.Length == 0)
+            if (exportButton.Text.Equals("Export") && !exporter.IsBusy)
             {
-                MessageBox.Show("Invalid Export Parameters.");
-                return;
+                exportButton.Text = "Cancel";
+                browseButton.Enabled = false;
+
+                Program.LockInventor();
+
+                exporter.RunWorkerAsync();
+            }
+            else if (exportButton.Text.Equals("Cancel") && exporter.IsBusy)
+            {
+                exporter.CancelAsync();
+            }
+        }
+
+        /// <summary>
+        /// Executes the actual exporting.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exporter_DoWork(object sender, DoWorkEventArgs e)
+        {
+            FieldDefinition fieldDefinition = FieldDefinition.Factory(Guid.NewGuid(), Program.ASSEMBLY_DOCUMENT.DisplayName);
+
+            foreach (PropertySet ps in Program.MAINWINDOW.GetPropertySetsTabControl().TranslateToPropertySets())
+            {
+                fieldDefinition.AddPropertySet(ps);
             }
 
-            Program.LockInventor();
-            //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = true;
+            SurfaceExporter surfaceExporter = new SurfaceExporter();
+            List<string> exportedMeshes = new List<string>();
+            List<string> exportedColliders = new List<string>();
+            StringBuilder pathBuilder = new StringBuilder();
 
-            exportButton.Enabled = false;
-            browseButton.Enabled = false;
+            int numOccurrences = Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences.Count;
+            int progressPercent = 0;
+            int currentOccurrenceID = 0;
 
-            Program.PROCESSWINDOW = new ProcessWindow(this, "Exporting...", "Exporting...",
-                0, Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences.Count,
-                new Action(() =>
+            foreach (ComponentOccurrence currentOccurrence in Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences)
+            {
+                if (exporter.CancellationPending)
                 {
-                    FieldDefinition fieldDefinition = new FieldDefinition("definition");
-                    SurfaceExporter exporter = new SurfaceExporter();
+                    e.Cancel = true;
+                    return;
+                }
 
-                    foreach (PhysicsGroup g in Program.MAINWINDOW.GetPhysicsGroupsTabControl().TranslateToPhysicsGroups())
+                progressPercent = (int)Math.Floor((currentOccurrenceID / (double)numOccurrences) * 100.0);
+                exporter.ReportProgress(progressPercent, "Exporting... " + progressPercent + "%");
+
+                if (currentOccurrence.Visible && currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocumentType == DocumentTypeEnum.kPartDocumentObject)
+                {
+                    FieldNode outputNode = new FieldNode(currentOccurrence.Name);
+
+                    outputNode.Position = Utilities.ToBXDVector(currentOccurrence.Transformation.Translation);
+                    outputNode.Rotation = Utilities.QuaternionFromMatrix(currentOccurrence.Transformation);
+
+                    if (!exportedMeshes.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                     {
-                        fieldDefinition.AddPhysicsGroup(g);
+                        surfaceExporter.Reset();
+                        surfaceExporter.Export(((PartDocument)currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocument).ComponentDefinition, false, true);
+
+                        BXDAMesh.BXDASubMesh outputMesh = surfaceExporter.GetOutput().meshes.First();
+
+                        exportedMeshes.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
+                        fieldDefinition.AddSubMesh(outputMesh);
                     }
 
-                    ComponentOccurrencesEnumerator componentOccurrences = Program.ASSEMBLY_DOCUMENT.ComponentDefinition.Occurrences.AllLeafOccurrences;
+                    outputNode.SubMeshID = exportedMeshes.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
 
-                    for (int i = 0; i < componentOccurrences.Count; i++)
+                    ComponentPropertiesTabPage componentProperties = Program.MAINWINDOW.GetPropertySetsTabControl().GetParentTabPage(currentOccurrence.Name);
+
+                    if (componentProperties != null)
                     {
-                        if (Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.CANCELLED))
-                            return;
+                        outputNode.PropertySetID = componentProperties.Name;
 
-                        Program.PROCESSWINDOW.SetProgress(i, "Exporting... " + (Math.Round((i / (float)componentOccurrences.Count) * 100.0f, 2)).ToString() + "%");
+                        PropertySet propertySet = fieldDefinition.GetPropertySets()[outputNode.PropertySetID];
 
-                        if (componentOccurrences[i + 1].Visible)
+                        if (propertySet.Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
                         {
-                            exporter.Reset();
-                            exporter.Export(componentOccurrences[i + 1], false, true); // Index starts at 1?
-
-                            BXDAMesh output = exporter.GetOutput();
-
-                            FieldNode outputNode = new FieldNode(componentOccurrences[i + 1].Name);
-
-                            ComponentPropertiesTabPage tabPage = Program.MAINWINDOW.GetPhysicsGroupsTabControl().GetParentTabPage(componentOccurrences[i + 1].Name);
-                            if (tabPage != null)
+                            if (!exportedColliders.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                             {
-                                outputNode.physicsGroupID = tabPage.Name;
+                                exportedColliders.Add(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
+                                fieldDefinition.AddCollisionMesh(ConvexHullCalculator.GetHull(fieldDefinition.GetSubMesh(outputNode.SubMeshID)));
                             }
 
-                            outputNode.AddSubMeshes(output);
-
-                            fieldDefinition.AddChild(outputNode);
+                            outputNode.CollisionMeshID = exportedColliders.IndexOf(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName);
                         }
                     }
 
-                    BXDFProperties.WriteProperties(FilePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
+                    pathBuilder.Clear();
 
-                    fieldDefinition.CreateMesh();
-                    fieldDefinition.GetMeshOutput().WriteToFile(FilePathTextBox.Text + "\\mesh.bxda");
-                }),
-                new Action(() =>
-                {
-                    MessageBox.Show(Program.PROCESSWINDOW.currentState.Equals(ProcessWindow.ProcessState.SUCCEEDED) ? "Export Successful :D" : "Export Failed :(");
-                    
-                    Program.UnlockInventor();
-                    //Program.INVENTOR_APPLICATION.UserInterfaceManager.UserInteractionDisabled = false;
-                    exportButton.Enabled = true;
-                    browseButton.Enabled = true;
-                }));
+                    foreach (ComponentOccurrence co in currentOccurrence.OccurrencePath)
+                    {
+                        pathBuilder.Append(co.Name + "/");
+                    }
 
-            Program.PROCESSWINDOW.StartProcess();
+                    pathBuilder.Length--;
+
+                    fieldDefinition.NodeGroup[pathBuilder.ToString()] = outputNode;
+                }
+
+                currentOccurrenceID++;
+            }
+
+            exporter.ReportProgress(100, "Export Successful!");
+
+            fieldDefinition.GetMeshOutput().WriteToFile(filePathTextBox.Text + "\\mesh.bxda");
+
+            BXDFProperties.WriteProperties(filePathTextBox.Text + "\\definition.bxdf", fieldDefinition);
+
+            // Use the commented code below for debugging.
+
+            /** /
+            string result;
+            FieldDefinition readDefinition = BXDFProperties.ReadProperties(filePathTextBox.Text + "\\definition.bxdf", out result);
+            MessageBox.Show(result);
+            /**/
+        }
+
+        /// <summary>
+        /// Updates the status label and progress bar when progress is made by the exporter.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exporter_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            statusLabel.Text = (string)e.UserState;
+            exportProgressBar.Value = e.ProgressPercentage;
+        }
+
+        /// <summary>
+        /// Resumes normality when the export process completes.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exporter_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Program.UnlockInventor();
+
+            if (e.Cancelled || e.Error != null)
+            {
+                statusLabel.Text = "Export Failed.";
+                exportProgressBar.Value = 0;
+            }
+
+            exportButton.Text = "Export";
+            browseButton.Enabled = true;
         }
     }
 }

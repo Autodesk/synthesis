@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-public class PhysicalProperties : RWObject
+public class PhysicalProperties : BinaryRWObject
 {
     public BXDVector3 centerOfMass = new BXDVector3();
     public float mass;
@@ -13,13 +13,13 @@ public class PhysicalProperties : RWObject
         this.centerOfMass.Multiply(1.0f / this.mass);
     }
 
-    public void WriteData(BinaryWriter writer)
+    public void WriteBinaryData(BinaryWriter writer)
     {
         writer.Write(centerOfMass);
         writer.Write(mass);
     }
 
-    public void ReadData(BinaryReader reader)
+    public void ReadBinaryData(BinaryReader reader)
     {
         centerOfMass = reader.ReadRWObject<BXDVector3>();
         mass = reader.ReadSingle();
