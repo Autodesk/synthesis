@@ -9,10 +9,13 @@ public partial class UnityRigidNode : RigidNode_Base
     /// Loads the mesh from the given path into this node's object.
     /// </summary>
     /// <param name="filePath">The file to open as a BXDA mesh</param>
-    public void CreateMesh(string filePath)
+    public bool CreateMesh(string filePath)
     {
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(filePath, null);
+
+		if (!mesh.GUID.Equals(GUID))
+			return false;
 
         // Create all submesh objects
         auxFunctions.ReadMeshSet(mesh.meshes, delegate(int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
@@ -81,5 +84,7 @@ public partial class UnityRigidNode : RigidNode_Base
         mesh = null;
         GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced);
         #endregion
+
+		return true;
     }
 }
