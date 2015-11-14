@@ -104,7 +104,10 @@ namespace FieldExporter.Components
                 progressPercent = (int)Math.Floor((currentOccurrenceID / (double)numOccurrences) * 100.0);
                 exporter.ReportProgress(progressPercent, "Exporting... " + progressPercent + "%");
 
-                if (currentOccurrence.Visible && currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocumentType == DocumentTypeEnum.kPartDocumentObject)
+                if (currentOccurrence.Visible &&
+                    currentOccurrence.ReferencedDocumentDescriptor != null &&
+                    currentOccurrence.ReferencedDocumentDescriptor.ReferencedDocumentType == DocumentTypeEnum.kPartDocumentObject &&
+                    currentOccurrence.SurfaceBodies.Count > 0)
                 {
                     FieldNode outputNode = new FieldNode(currentOccurrence.Name);
 
