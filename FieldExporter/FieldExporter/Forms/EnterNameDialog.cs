@@ -25,7 +25,6 @@ namespace FieldExporter.Forms
             InitializeComponent();
 
             heapAllocationKey = 0x0;
-            warningImage.Location = new Point(90, 40);
         }
 
         /// <summary>

@@ -83,6 +83,7 @@
             // folderBrowserDialog
             // 
             this.folderBrowserDialog.Description = "Select the file path by which to export the BXDF file.";
+            this.folderBrowserDialog.ShowNewFolderButton = false;
             // 
             // exportProgressBar
             // 

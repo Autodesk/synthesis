@@ -69,4 +69,18 @@ public class AssetProperties
             }
         }
     }
+    
+    /// <summary>
+    /// Used for determing if two AssetProperties are identical.
+    /// </summary>
+    /// <param name="props"></param>
+    /// <returns></returns>
+    public bool Equals(AssetProperties props)
+    {
+        return
+            props.color.Red == color.Red && props.color.Green == color.Green && props.color.Blue == color.Blue &&
+            transparency == props.transparency &&
+            translucency == props.translucency &&
+            props.specular == specular;
+    }
 }

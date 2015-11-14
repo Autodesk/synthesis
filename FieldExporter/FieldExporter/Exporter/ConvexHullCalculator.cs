@@ -12,6 +12,8 @@ using Inventor;
 using System.Collections;
 using System.Diagnostics;
 using ConvexLibraryWrapper;
+using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 /// <summary>
 /// Computes and simplifies convex hulls for BXDA meshes.
@@ -361,11 +363,8 @@ public class ConvexHullCalculator
         IVHACD decomposer = new IVHACD();
 
         ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
-        parameters.m_oclAcceleration = 1;
         parameters.m_depth = 1;
         parameters.m_concavity = 1;
-
-        decomposer.OCLInit(parameters);
 
         if (!decomposer.Compute(Array.ConvertAll<double, float>(subMesh.verts, (d) => (float)d),
             3, (uint)subMesh.verts.Length / 3, indices.ToArray(), 3, (uint)indices.Count / 3, parameters))
@@ -376,7 +375,6 @@ public class ConvexHullCalculator
         BXDAMesh.BXDASubMesh resultMesh = ExportSubMesh(Array.ConvertAll<double, float>(result.m_points, (d) => (float)d), result.m_nPoints,
             Array.ConvertAll<int, uint>(result.m_triangles, (i) => (uint)i), result.m_nTriangles);
 
-        decomposer.OCLRelease(parameters);
         decomposer.Cancel();
         decomposer.Clean();
         decomposer.Release();

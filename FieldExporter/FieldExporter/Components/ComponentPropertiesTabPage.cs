@@ -76,16 +76,13 @@ namespace FieldExporter.Components
 
             if (nameDialog.ShowDialog(this).Equals(DialogResult.OK))
             {
-                if (!Name.Equals(nameDialog.nameTextBox.Text))
+                if (parentControl.TabPages.ContainsKey(nameDialog.nameTextBox.Text) && !Name.ToLower().Equals(nameDialog.nameTextBox.Text.ToLower()))
                 {
-                    if (parentControl.TabPages.ContainsKey(nameDialog.nameTextBox.Text))
-                    {
-                        MessageBox.Show("Name is already taken.", "Invalid name.");
-                    }
-                    else
-                    {
-                        SetName(nameDialog.nameTextBox.Text);
-                    }
+                    MessageBox.Show("Name is already taken.", "Invalid name.");
+                }
+                else
+                {
+                    SetName(nameDialog.nameTextBox.Text);
                 }
             }
         }

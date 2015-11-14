@@ -170,6 +170,12 @@
     <Compile Include="Forms\CrashForm.Designer.cs">
       <DependentUpon>CrashForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\EnterFrictionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EnterFrictionDialog.Designer.cs">
+      <DependentUpon>EnterFrictionDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FieldSelectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -232,6 +238,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CrashForm.resx">
       <DependentUpon>CrashForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EnterFrictionDialog.resx">
+      <DependentUpon>EnterFrictionDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FieldSelectForm.resx">
       <DependentUpon>FieldSelectForm.cs</DependentUpon>

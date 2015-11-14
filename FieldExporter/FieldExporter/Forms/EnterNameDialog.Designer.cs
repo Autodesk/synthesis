@@ -95,7 +95,7 @@
             this.warningImage.Image = ((System.Drawing.Image)(resources.GetObject("warningImage.Image")));
             this.warningImage.ImageLocation = "";
             this.warningImage.InitialImage = null;
-            this.warningImage.Location = new System.Drawing.Point(-64, -64);
+            this.warningImage.Location = new System.Drawing.Point(86, 40);
             this.warningImage.Name = "warningImage";
             this.warningImage.Size = new System.Drawing.Size(64, 32);
             this.warningImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;

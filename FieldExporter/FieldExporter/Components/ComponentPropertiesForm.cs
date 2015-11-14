@@ -147,6 +147,14 @@ namespace FieldExporter.Controls
         }
 
         /// <summary>
+        /// Updates the friction label with the value in the friction track bar.
+        /// </summary>
+        private void UpdateFrictionLabel()
+        {
+            frictionLabel.Text = "Friction:\n" + frictionTrackBar.Value + "/100";
+        }
+
+        /// <summary>
         /// Enables select events when interaction events are activated.
         /// </summary>
         private void interactionEvents_OnActivate()
@@ -314,7 +322,7 @@ namespace FieldExporter.Controls
         /// <param name="e"></param>
         private void frictionTrackBar_Scroll(object sender, EventArgs e)
         {
-            frictionLabel.Text = "Friction:\n" + frictionTrackBar.Value + "/100";
+            UpdateFrictionLabel();
         }
 
         /// <summary>
@@ -332,6 +340,22 @@ namespace FieldExporter.Controls
             {
                 dynamicGroupBox.Enabled = false;
                 massNumericUpDown.Value = 0;
+            }
+        }
+
+        /// <summary>
+        /// Allows the user to enter an exact value for the friction.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void frictionLabel_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            EnterFrictionDialog frictionDialog = new EnterFrictionDialog(frictionTrackBar.Value);
+
+            if (frictionDialog.ShowDialog() == DialogResult.OK)
+            {
+                frictionTrackBar.Value = frictionDialog.Friction;
+                UpdateFrictionLabel();
             }
         }
     }

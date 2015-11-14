@@ -243,6 +243,7 @@ namespace FieldExporter.Controls
             this.frictionLabel.Size = new System.Drawing.Size(58, 34);
             this.frictionLabel.TabIndex = 3;
             this.frictionLabel.Text = "Friction:\r\n50/100";
+            this.frictionLabel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.frictionLabel_MouseDoubleClick);
             // 
             // meshPropertiesGroupBox
             // 

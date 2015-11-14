@@ -30,7 +30,7 @@
         {
             this.SuspendLayout();
             // 
-            // PhysicsGroupsTabControl
+            // PropertySetsTabControl
             // 
             this.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PropertySetsTabControl_Selecting);
             this.Deselecting += new System.Windows.Forms.TabControlCancelEventHandler(this.PropertySetsTabControl_Deselecting);
