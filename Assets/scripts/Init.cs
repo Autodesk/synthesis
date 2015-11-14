@@ -31,9 +31,9 @@ public class Init : MonoBehaviour
 	//sizes and places window and repositions it based on screen size
 	private Rect statsWindowRect;
 	private Rect helpWindowRect;
+	// robot stats for stats window
 	private GUIContent helpButtonContent;
 	private Rect helpButtonRect;
-	//robot stats for stats window
 	private float acceleration;
 	private float angvelo;
 	private float speed;
@@ -46,7 +46,6 @@ public class Init : MonoBehaviour
 	private bool showHelpWindow;
 	//for orienting the robot
 	private Quaternion rotation;
-	private bool oriented;
 	//start/stop button on the stats window timer
 	private string label;
 
@@ -80,12 +79,9 @@ public class Init : MonoBehaviour
 		label = "Stop";
     }
 
-	/// <summary>
-	/// Displays stats window.
-	/// </summary>
-	/// <param name="windowID">Window I.</param>
+	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
-
+		
 		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
 		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
 		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
@@ -93,7 +89,7 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
 		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
-
+		
 		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
 		{
 			time = 0;
@@ -102,8 +98,8 @@ public class Init : MonoBehaviour
 		if(GUI.Button (new Rect (120, 120, 80, 25), label))
 		{
 			time_stop = !time_stop;
-			
-			if(time_stop)
+
+			if (time_stop)
 				label = "Start";
 			else
 				label = "Stop";
@@ -147,6 +143,7 @@ public class Init : MonoBehaviour
 		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
 		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]", labelSkin);
 	}
+
 	/// <summary>
 	/// Opens windows to orient the robot
 	/// </summary>
@@ -174,27 +171,24 @@ public class Init : MonoBehaviour
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 		//The directional buttons lift the robot to avoid collison with objects, rotates it, and saves the applied rotation to a vector3
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
+			mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 			switch((int)o)
 			{
 			case 0:
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
 				mainNode.transform.Rotate(new Vector3(0, 0, 45));
-				oriented = true;
                 break;
-			case 1:	
+			case 1:
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate (new Vector3(0, 0, -45));
-				oriented = true;
+				mainNode.transform.Rotate(new Vector3(0, 0, -45));
 				break;
-			case 2:	
+			case 2:
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate(new Vector3( 45, 0, 0));
-				oriented = true;
+				mainNode.transform.Rotate(new Vector3(45, 0, 0));
 				break;
 			case 3:
 				mainNode.transform.position = new Vector3(mainNode.transform.position.x, 1, mainNode.transform.position.z);
-				mainNode.transform.Rotate(new Vector3( -45, 0, 0));
-				oriented = true;
+				mainNode.transform.Rotate(new Vector3(-45, 0, 0));
 				break;
 			case 4:
 				rotation = mainNode.transform.rotation;
@@ -475,15 +469,11 @@ public class Init : MonoBehaviour
 					}
 				}
             }
-			if(oriented)
-			{
-			//Resets robot to user saved orientation
+
 			mainNode.transform.rotation = rotation;
-				mainNode.rigidbody.inertiaTensorRotation = Quaternion.identity;
-			}
+
 			//makes sure robot spawns in the correct place
 			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
-
         }
 
 		foreach (GameObject o in totes)
@@ -514,21 +504,28 @@ public class Init : MonoBehaviour
             activeRobot.transform.parent = transform;
 
             List<RigidNode_Base> names = new List<RigidNode_Base>();
-            RigidNode_Base.NODE_FACTORY = delegate()
+            RigidNode_Base.NODE_FACTORY = delegate(Guid guid)
             {
-                return new UnityRigidNode();
+                return new UnityRigidNode(guid);
             };
 																																																																																																																																																																																																																																																																																																																					
             skeleton = BXDJSkeleton.ReadSkeleton(filePath + "skeleton.bxdj");
 			//Debug.Log(filePath + "skeleton.bxdj");
-			if( skeleton != null)
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
                 UnityRigidNode uNode = (UnityRigidNode) node;
 
                 uNode.CreateTransform(activeRobot.transform);
-                uNode.CreateMesh(filePath + uNode.modelFileName);
+
+                if (!uNode.CreateMesh(filePath + uNode.ModelFileName))
+				{
+					UserMessageManager.Dispatch(node.ModelFileName + " has been modified and cannot be loaded.", 6f);
+					skeleton = null;
+					UnityEngine.Object.Destroy(activeRobot);
+					return;
+				}
+
                 uNode.CreateJoint();
 
 				Debug.Log("Joint");
@@ -538,7 +535,6 @@ public class Init : MonoBehaviour
 
             {   // Add some mass to the base object
                 UnityRigidNode uNode = (UnityRigidNode) skeleton;
-				if(uNode != null)
                 uNode.unityObject.transform.rigidbody.mass += 20f * PHYSICS_MASS_MULTIPLIER; // Battery'
             }
 
@@ -556,23 +552,21 @@ public class Init : MonoBehaviour
 		HideGuiSidebar();
     }
 
-	/// <summary>
-	/// Loads a field from file into the simulator.
-	/// </summary>
 	private void TryLoadField()
 	{
 		activeField = new GameObject("Field");
-		
-		FieldDefinition_Base.FIELDDEFINITION_FACTORY = delegate()
+
+		FieldDefinition.Factory = delegate(Guid guid, string name)
 		{
-			return new UnityFieldDefinition();
+			return new UnityFieldDefinition(guid, name);
 		};
-		
+
 		Debug.Log (filePath);
-		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf");
+		string loadResult;
+		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf", out loadResult);
+		Debug.Log(loadResult);
 		field.CreateTransform(activeField.transform);
-		field.CreateMesh(filePath + "mesh.bxda");
-		fieldLoaded = true;
+		fieldLoaded = field.CreateMesh(filePath + "mesh.bxda");
 	}
 
     void Start()
@@ -636,11 +630,21 @@ public class Init : MonoBehaviour
 
 		if(reloadFieldInFrames >= 0 && reloadFieldInFrames-- == 0)
 		{
-			TryLoadField();
 			reloadFieldInFrames = -1;
-			reloadRobotInFrames = 2;
-			showStatWindow = true;
-			showHelpWindow = true;
+
+			TryLoadField();
+
+			if (fieldLoaded)
+			{
+				reloadRobotInFrames = 2;
+				showStatWindow = true;
+				showHelpWindow = true;
+			}
+			else
+			{
+				fieldBrowser.Active = true;
+				UserMessageManager.Dispatch("Incompatible Mesh!", 10f);
+			}
 		}
 
 		// Orient Robot
@@ -665,12 +669,11 @@ public class Init : MonoBehaviour
 			{
 				mainNode.rigidbody.isKinematic = true;
 			}
-			else 
+			else
 			{
 				mainNode.rigidbody.isKinematic = false;
 			}
 
-			if(skeleton != null)
 			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
 			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
 			foreach(RigidNode_Base node in nodes)
@@ -763,7 +766,6 @@ public class Init : MonoBehaviour
 				oldSpeed = speed;
 				if (!time_stop)
 					time += Time.deltaTime;
-
 			}
 		}
 	}

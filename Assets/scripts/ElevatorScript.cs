@@ -15,7 +15,7 @@ public class ElevatorScript : MonoBehaviour {
 	{
 		//TODO this is mostly placeholder stuff
 		Vector3 forceDirection = Vector3.up;
-		Vector3 force = forceDirection * currentTorque;
+		Vector3 force = forceDirection * currentTorque * 5;
 		int stageOffset = (int)eType;// 1 + ((int)eType)%2;
 		for (int i = 0; i < transform.parent.childCount; i++) 
 		{
@@ -27,5 +27,12 @@ public class ElevatorScript : MonoBehaviour {
 			}
 		}
 		rigidbody.AddForce (force*3+Physics.gravity*stageOffset, ForceMode.Acceleration);
+
+		if (rigidbody.velocity.magnitude > 5) {
+			rigidbody.velocity = rigidbody.velocity.normalized * 5;
+		}
+		else if (rigidbody.velocity.magnitude < 0.5f) {
+			rigidbody.velocity = rigidbody.velocity.normalized * 0;
+		}
 	}
 }
