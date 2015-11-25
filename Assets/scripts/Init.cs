@@ -391,15 +391,17 @@ public class Init : MonoBehaviour
     private void resetRobot()
     {	
         if (activeRobot != null && skeleton != null)
-        {
+		{
 			unityPacket.OutputStatePacket packet = null;
             var unityWheelData = new List<GameObject>();
 			var unityWheels = new List<UnityRigidNode>();
             // Invert the position of the root object
+			/**/
 			activeRobot.transform.localPosition = new Vector3(1f, 1f, -0.5f);
 			activeRobot.transform.rotation = Quaternion.identity;
 			activeRobot.transform.localRotation = Quaternion.identity;
 			mainNode.transform.rotation = Quaternion.identity;
+			/**/
             var nodes = skeleton.ListAllNodes();
             foreach (RigidNode_Base node in nodes)
             {
@@ -469,11 +471,12 @@ public class Init : MonoBehaviour
 					}
 				}
             }
-
 			mainNode.transform.rotation = rotation;
-
+			mainNode.rigidbody.inertiaTensorRotation = Quaternion.identity;
+			
 			//makes sure robot spawns in the correct place
 			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
+
         }
 
 		foreach (GameObject o in totes)
