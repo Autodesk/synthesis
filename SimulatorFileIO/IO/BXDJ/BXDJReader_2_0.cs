@@ -532,10 +532,12 @@ public partial class BXDJSkeleton
                     break;
                 case "LinearLowLimit":
                     // Assign a value to the linearLimitLow.
+                    linearJoint.hasLowerLimit = true;
                     linearJoint.linearLimitLow = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "LinearUpperLimit":
                     // Assign a value to the linearLimitHigh.
+                    linearJoint.hasUpperLimit = true;
                     linearJoint.linearLimitHigh = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "CurrentLinearPosition":
