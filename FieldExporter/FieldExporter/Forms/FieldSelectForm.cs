@@ -42,10 +42,6 @@ namespace FieldExporter.Forms
             {
                 assemblyListBox.Items.Add(doc.DisplayName);
             }
-            //for (int i = 0; i < Program.INVENTOR_APPLICATION.Documents.VisibleDocuments.Count; i++)
-            //{
-            //    assemblyListBox.Items.Add(Program.INVENTOR_APPLICATION.Documents.VisibleDocuments[i + 1].DisplayName); // Index starts at 1? What?
-            //}
         }
 
         /// <summary>
