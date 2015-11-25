@@ -38,10 +38,14 @@ namespace FieldExporter.Forms
         /// <param name="e"></param>
         private void FieldSelectForm_Load(object sender, EventArgs e)
         {
-            for (int i = 0; i < Program.INVENTOR_APPLICATION.Documents.VisibleDocuments.Count; i++)
+            foreach (Inventor.AssemblyDocument doc in Program.INVENTOR_APPLICATION.Documents.VisibleDocuments.OfType<Inventor.AssemblyDocument>())
             {
-                assemblyListBox.Items.Add(Program.INVENTOR_APPLICATION.Documents.VisibleDocuments[i + 1].DisplayName); // Index starts at 1? What?
+                assemblyListBox.Items.Add(doc.DisplayName);
             }
+            //for (int i = 0; i < Program.INVENTOR_APPLICATION.Documents.VisibleDocuments.Count; i++)
+            //{
+            //    assemblyListBox.Items.Add(Program.INVENTOR_APPLICATION.Documents.VisibleDocuments[i + 1].DisplayName); // Index starts at 1? What?
+            //}
         }
 
         /// <summary>

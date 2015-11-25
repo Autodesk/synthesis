@@ -109,12 +109,12 @@ static class Program
 
         if (fullDocumentName.Equals("undef"))
         {
-            if (INVENTOR_APPLICATION.Documents.VisibleDocuments.Count > 0)
+            if (INVENTOR_APPLICATION.Documents.VisibleDocuments.OfType<Inventor.AssemblyDocument>().Count() > 0)
             {
                 FieldSelectForm fieldSelector = new FieldSelectForm();
                 if (fieldSelector.ShowDialog() == DialogResult.OK)
                 {
-                    foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments)
+                    foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments.OfType<Inventor.AssemblyDocument>())
                     {
                         if (doc.DisplayName == fieldSelector.SelectedField)
                             ASSEMBLY_DOCUMENT = (Inventor.AssemblyDocument)doc;
@@ -137,7 +137,7 @@ static class Program
         }
         else
         {
-            foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments)
+            foreach (Inventor.Document doc in INVENTOR_APPLICATION.Documents.VisibleDocuments.OfType<Inventor.AssemblyDocument>())
             {
                 if (doc.FullDocumentName == fullDocumentName)
                     ASSEMBLY_DOCUMENT = (Inventor.AssemblyDocument)doc;
