@@ -87,3 +87,10 @@ FRC_Lib_Version.ini
 /Aarvark-GUI/dist/
 /Aarvark-GUI - Copy/build/
 /Aarvark-GUI - Copy/nbproject/private/
+
+# visual studio files
+.vs/
+*.VC*
+
+# temporary files for saving data about tests and comments for commits
+
