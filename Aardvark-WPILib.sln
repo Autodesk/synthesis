@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Aardvark-WPILib", "Aardvark-WPILib\Aardvark-WPILib.vcxproj", "{35D57FF3-6647-4B8C-AFB9-E680D60DE40E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FakeFPGA", "FakeFPGA\FakeFPGA.vcxproj", "{64B9921C-8B16-48DA-AECB-EFBCB1252CA8}"
