@@ -14,6 +14,7 @@
 *.la
 *.a
 *.lib
+
 # Compiled Object files
 *.slo
 *.lo
@@ -76,13 +77,11 @@ FRC_Lib_Version.ini
 .cproject
 .settings
 .csettings
-/Aarvark-GUI/dist/
-/Aarvark-GUI - Copy/build/
-/Aarvark-GUI - Copy/nbproject/private/
 
 # visual studio files
 .vs/
 *.VC*
+*.tlog
 
 # temporary files for saving data about tests and comments for commits
 tmp/*
