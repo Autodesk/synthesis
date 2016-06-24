@@ -60,6 +60,12 @@ ipch/
 *.vsp
 *.vspx
 
+#visual studio logs
+*.tlog
+*.db
+*.opendb
+
+
 # Eclipse project files
 .project
 .cproject
@@ -162,3 +168,5 @@ $RECYCLE.BIN/
 # Mac desktop service store files
 .DS_Store
 *.dll
+# temporary folder for use of notes and/or commit messages
+tmp/
