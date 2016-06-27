@@ -59,7 +59,7 @@
     <None Include="Shaders\shader.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
+    <ProjectReference Include="..\..\Aardvark-FileIO\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
     </ProjectReference>

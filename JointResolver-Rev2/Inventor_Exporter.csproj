@@ -170,6 +170,10 @@
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Aardvark-FileIO\SimulatorFileIO\SimulatorAPI.csproj">
+      <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
+      <Name>SimulatorAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj">
       <Project>{5664c026-f538-4745-a042-13927ce3259f}</Project>
       <Name>ConvexLibraryWrapper</Name>
@@ -181,10 +185,6 @@
     <ProjectReference Include="..\OGLViewer\OGLViewer.csproj">
       <Project>{a2c2d3bd-9d46-4ca3-8c03-20dac08d38a8}</Project>
       <Name>OGLViewer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
-      <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
-      <Name>SimulatorAPI</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

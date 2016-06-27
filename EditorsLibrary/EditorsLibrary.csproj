@@ -58,12 +58,6 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SimulatorFileIO\SimulatorAPI.csproj">
-      <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
-      <Name>SimulatorAPI</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="AboutDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -209,6 +203,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Aardvark-FileIO\SimulatorFileIO\SimulatorAPI.csproj">
+      <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
+      <Name>SimulatorAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
