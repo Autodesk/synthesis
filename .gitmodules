@@ -1,3 +1,6 @@
 [submodule "Aardvark-FileIO"]
 	path = Aardvark-FileIO
 	url = https://git.autodesk.com/BXD/Aardvark-FileIO
+[submodule "Aardvark-Libraries"]
+	path = Aardvark-Libraries
+	url = https://git.autodesk.com/BXD/Aardvark-Libraries.git
