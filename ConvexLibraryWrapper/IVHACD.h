@@ -1,11 +1,11 @@
 #pragma once
 
 #if _DEBUG
-#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Debug\\VHACD.lib")
-#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Debug\\CLEW.lib")
+#pragma comment(lib, "..\\VHACD\\Debug\\VHACD.lib")
+#pragma comment(lib, "..\\CLEW\\Debug\\CLEW.lib")
 #else
-#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Release\\VHACD.lib")
-#pragma comment(lib, "..\\JointResolver-Rev2\\bin\\Release\\CLEW.lib")
+#pragma comment(lib, "..\\VHACD\\Release\\VHACD.lib")
+#pragma comment(lib, "..\\CLEW\\Release\\CLEW.lib")
 #endif
 
 #include <public\VHACD.h>
