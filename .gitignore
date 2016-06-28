@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+
+#temp dir for notes or git comments
+tmp/
