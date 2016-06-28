@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 21.0-->
+  <ClassId>{d28a1fb6-2968-4db5-b222-c3e1afc20032}</ClassId>
+  <ClientId>{d28a1fb6-2968-4db5-b222-c3e1afc20032}</ClientId>
+  <DisplayName>InventorAddInButtonAttempt5</DisplayName>
+  <Description>InventorAddInButtonAttempt5</Description>
+  <Assembly>InventorAddInButtonAttempt5.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>20..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 21.0-->
+  <ClassId>{ad4dbc67-fc19-437d-b3a9-2d9dd594ffcb}</ClassId>
+  <ClientId>{ad4dbc67-fc19-437d-b3a9-2d9dd594ffcb}</ClientId>
+  <DisplayName>InventorAddInVBBrowserPanAttempt1</DisplayName>
+  <Description>InventorAddInVBBrowserPanAttempt1</Description>
+  <Assembly>InventorAddInVBBrowserPanAttempt1.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>20..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

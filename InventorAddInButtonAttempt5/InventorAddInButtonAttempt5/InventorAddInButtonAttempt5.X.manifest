@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="InventorAddInButtonAttempt5" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{d28a1fb6-2968-4db5-b222-c3e1afc20032}" progid="InventorAddInButtonAttempt5.StandardAddInServer" threadingModel="Both" name="InventorAddInButtonAttempt5.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="InventorAddInButtonAttempt5.dll" hashalg="SHA1"></file>
+
+</assembly>

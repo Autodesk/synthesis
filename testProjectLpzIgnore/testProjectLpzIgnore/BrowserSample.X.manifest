@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="BrowserSample" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{69fb36d0-465c-46ce-8869-35d5e1af37ca}" progid="BrowserSample.StandardAddInServer" threadingModel="Both" name="BrowserSample.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="BrowserSample.dll" hashalg="SHA1"></file>
+
+</assembly>

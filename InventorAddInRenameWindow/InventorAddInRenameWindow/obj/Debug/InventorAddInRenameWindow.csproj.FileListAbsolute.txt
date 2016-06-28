@@ -1,0 +1,7 @@
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInRenameWindow\InventorAddInRenameWindow\bin\Debug\InventorAddInRenameWindow.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInRenameWindow\InventorAddInRenameWindow\bin\Debug\InventorAddInRenameWindow.pdb
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInRenameWindow\InventorAddInRenameWindow\bin\Debug\autodesk.inventor.interop.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInRenameWindow\InventorAddInRenameWindow\bin\Debug\stdole.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInRenameWindow\InventorAddInRenameWindow\obj\Debug\InventorAddInRenameWindow.csprojResolveAssemblyReference.cache
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInRenameWindow\InventorAddInRenameWindow\obj\Debug\InventorAddInRenameWindow.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInRenameWindow\InventorAddInRenameWindow\obj\Debug\InventorAddInRenameWindow.pdb

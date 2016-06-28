@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 21.0-->
+  <ClassId>{e20e0524-5246-4a26-b351-fec86fd26140}</ClassId>
+  <ClientId>{e20e0524-5246-4a26-b351-fec86fd26140}</ClientId>
+  <DisplayName>InventorAddInNameTester</DisplayName>
+  <Description>InventorAddInNameTester</Description>
+  <Assembly>InventorAddInNameTester.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>20..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

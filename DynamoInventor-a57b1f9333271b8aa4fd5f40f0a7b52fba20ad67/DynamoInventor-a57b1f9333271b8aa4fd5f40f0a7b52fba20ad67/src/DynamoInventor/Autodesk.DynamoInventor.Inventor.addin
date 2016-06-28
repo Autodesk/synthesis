@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 18.0-->
+  <ClassId>{476f38a1-75f3-450b-a75a-6f030bf012a8}</ClassId>
+  <ClientId>{476f38a1-75f3-450b-a75a-6f030bf012a8}</ClientId>
+  <DisplayName>DynamoInventor</DisplayName>
+  <Description>DynamoInventor</Description>
+  <Assembly>DynamoInventor.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>17..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

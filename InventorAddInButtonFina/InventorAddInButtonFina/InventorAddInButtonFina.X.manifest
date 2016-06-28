@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="InventorAddInButtonFina" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{e4ad2804-fd46-49cb-81b9-56df0ad85e43}" progid="InventorAddInButtonFina.StandardAddInServer" threadingModel="Both" name="InventorAddInButtonFina.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="InventorAddInButtonFina.dll" hashalg="SHA1"></file>
+
+</assembly>

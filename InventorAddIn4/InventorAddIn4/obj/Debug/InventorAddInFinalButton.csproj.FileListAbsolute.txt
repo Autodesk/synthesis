@@ -1,0 +1,5 @@
+C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn4\InventorAddIn4\bin\Debug\InventorAddInFinalButton.dll
+C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn4\InventorAddIn4\bin\Debug\InventorAddInFinalButton.pdb
+C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn4\InventorAddIn4\bin\Debug\autodesk.inventor.interop.dll
+C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn4\InventorAddIn4\obj\Debug\InventorAddInFinalButton.dll
+C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn4\InventorAddIn4\obj\Debug\InventorAddInFinalButton.pdb

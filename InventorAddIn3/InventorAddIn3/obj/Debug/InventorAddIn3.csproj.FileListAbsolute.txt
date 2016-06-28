@@ -1,0 +1,7 @@
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn3\InventorAddIn3\bin\Debug\InventorAddIn3.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn3\InventorAddIn3\bin\Debug\InventorAddIn3.pdb
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn3\InventorAddIn3\bin\Debug\autodesk.inventor.interop.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn3\InventorAddIn3\bin\Debug\stdole.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn3\InventorAddIn3\obj\Debug\InventorAddIn3.csprojResolveAssemblyReference.cache
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn3\InventorAddIn3\obj\Debug\InventorAddIn3.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn3\InventorAddIn3\obj\Debug\InventorAddIn3.pdb

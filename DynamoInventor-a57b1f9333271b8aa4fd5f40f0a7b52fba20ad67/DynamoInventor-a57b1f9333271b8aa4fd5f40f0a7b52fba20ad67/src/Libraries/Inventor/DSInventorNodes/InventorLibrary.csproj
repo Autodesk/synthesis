@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(SolutionDir)Config/CS.props" />
+  </ImportGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9A328170-277E-4557-B236-0721F0B6A7F3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>InventorLibrary</RootNamespace>
+    <AssemblyName>InventorLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\..\Dynamo\bin\AnyCPU\Debug\Inventor_2015\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autodesk.Inventor.interop">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>$(INVENTORAPI)\Autodesk.Inventor.interop.dll</HintPath>
+    </Reference>
+    <Reference Include="DSNodeServices">
+      <HintPath>$(DYNAMOAPI)\DSNodeServices.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DynamoCore">
+      <HintPath>..\..\..\..\..\Dynamo\bin\AnyCPU\Debug\DynamoCore.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="DynamoUtilities">
+      <HintPath>$(DYNAMOAPI)\DynamoUtilities.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ProtoGeometry">
+      <HintPath>$(DYNAMOAPI)\ProtoGeometry.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ProtoInterface">
+      <HintPath>$(DYNAMOAPI)\ProtoInterface.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SimpleInjector, Version=2.5.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\SimpleInjector.2.5.0\lib\net40-client\SimpleInjector.dll</HintPath>
+    </Reference>
+    <Reference Include="SimpleInjector.Diagnostics, Version=2.5.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\SimpleInjector.2.5.0\lib\net40-client\SimpleInjector.Diagnostics.dll</HintPath>
+    </Reference>
+    <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="API\DocumentExtensions.cs" />
+    <Compile Include="API\EnumExtensions.cs" />
+    <Compile Include="API\InvApplication.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="API\InvAssemblyComponentDefinition.cs" />
+    <Compile Include="API\InvAssemblyComponentDefinitions.cs" />
+    <Compile Include="API\InvAssemblyWorkPointDef.cs" />
+    <Compile Include="API\InvAssets.cs" />
+    <Compile Include="API\InvAssetsEnumerator.cs" />
+    <Compile Include="API\InvAttributeManager.cs" />
+    <Compile Include="API\InvAttributeSets.cs" />
+    <Compile Include="API\InvCommandIDEnum.cs" />
+    <Compile Include="API\InvCommandTypesEnum.cs" />
+    <Compile Include="API\InvComponentDefinition.cs" />
+    <Compile Include="API\InvComponentDefinitions.cs" />
+    <Compile Include="API\InvComponentOccurrence.cs" />
+    <Compile Include="API\InvComponentOccurrences.cs" />
+    <Compile Include="API\InvDisabledCommandList.cs" />
+    <Compile Include="API\InvDisplaySettings.cs" />
+    <Compile Include="API\InvDocument.cs" />
+    <Compile Include="API\InvDocumentDescriptorsEnumerator.cs" />
+    <Compile Include="API\InvDocumentEvents.cs" />
+    <Compile Include="API\InvDocumentInterests.cs" />
+    <Compile Include="API\InvDocumentsEnumerator.cs" />
+    <Compile Include="API\InvDocumentSubType.cs" />
+    <Compile Include="API\InvDocumentTypeEnum.cs" />
+    <Compile Include="API\InvEnvironmentManager.cs" />
+    <Compile Include="API\InvFile.cs" />
+    <Compile Include="API\InvFileOwnershipEnum.cs" />
+    <Compile Include="API\InvHighlightSets.cs" />
+    <Compile Include="API\InvInventorVBAProject.cs" />
+    <Compile Include="API\InvLightingStyle.cs" />
+    <Compile Include="API\InvLightingStyles.cs" />
+    <Compile Include="API\InvMaterials.cs" />
+    <Compile Include="API\InvModelingSettings.cs" />
+    <Compile Include="API\InvObjectTypeEnum.cs" />
+    <Compile Include="API\InvObjectVisibility.cs" />
+    <Compile Include="API\InvPartComponentDefinition.cs" />
+    <Compile Include="API\InvPoint.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="API\InvPrintManager.cs" />
+    <Compile Include="API\InvPropertySets.cs" />
+    <Compile Include="API\InvReferencedFileDescriptors.cs" />
+    <Compile Include="API\InvReferencedOLEFileDescriptors.cs" />
+    <Compile Include="API\InvReferenceKeyManager.cs" />
+    <Compile Include="API\InvRenderStyles.cs" />
+    <Compile Include="API\InvSelectionPriorityEnum.cs" />
+    <Compile Include="API\InvSelectSet.cs" />
+    <Compile Include="API\InvSketchSettings.cs" />
+    <Compile Include="API\InvSoftwareVersion.cs" />
+    <Compile Include="API\InvThumbnailSaveOptionEnum.cs" />
+    <Compile Include="API\InvUnitsOfMeasure.cs" />
+    <Compile Include="API\InvViews.cs" />
+    <Compile Include="API\InvWorkPlane.cs" />
+    <Compile Include="API\InvWorkPlanes.cs" />
+    <Compile Include="API\InvWorkPoint.cs" />
+    <Compile Include="API\InvWorkPoints.cs" />
+    <Compile Include="API\Inv_DocPerformanceMonitor.cs" />
+    <Compile Include="API\InvAssemblyDocument.cs" />
+    <Compile Include="API\InvDocuments.cs" />
+    <Compile Include="API\InvPartDocument.cs" />
+    <Compile Include="GeometryConversion\ConversionExtensions.cs" />
+    <Compile Include="ModulePlacement\IModules.cs" />
+    <Compile Include="ModulePlacement\IPointsList.cs" />
+    <Compile Include="ModulePlacement\ModuleIoC.cs" />
+    <Compile Include="ModulePlacement\ModuleOldDelete.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ModulePlacement\Module.cs" />
+    <Compile Include="ModulePlacement\ModulePoints.cs" />
+    <Compile Include="ModulePlacement\Modules.cs" />
+    <Compile Include="ModulePlacement\ModuleUtilities.cs" />
+    <Compile Include="ModulePlacement\OccurrenceList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TempNodes\PointListForTest.cs" />
+    <Compile Include="ModulePlacement\UniqueModuleEvaluator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Work Geometry\InvWorkPoint.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InventorServices\InventorServices.csproj">
+      <Project>{8b38bbc0-9277-458f-8bb3-ee7b2e0e2b3f}</Project>
+      <Name>InventorServices %28Libraries\Inventor\InventorServices\InventorServices%29</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Autodesk.Inventor.interop.xml" />
+    <Content Include="InventorLibrary_DynamoCustomization.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

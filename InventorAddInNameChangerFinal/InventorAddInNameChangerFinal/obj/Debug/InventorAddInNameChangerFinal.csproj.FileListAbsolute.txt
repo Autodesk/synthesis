@@ -1,0 +1,6 @@
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInNameChangerFinal\InventorAddInNameChangerFinal\bin\Debug\InventorAddInNameChangerFinal.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInNameChangerFinal\InventorAddInNameChangerFinal\bin\Debug\InventorAddInNameChangerFinal.pdb
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInNameChangerFinal\InventorAddInNameChangerFinal\bin\Debug\autodesk.inventor.interop.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInNameChangerFinal\InventorAddInNameChangerFinal\bin\Debug\stdole.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInNameChangerFinal\InventorAddInNameChangerFinal\obj\Debug\InventorAddInNameChangerFinal.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInNameChangerFinal\InventorAddInNameChangerFinal\obj\Debug\InventorAddInNameChangerFinal.pdb

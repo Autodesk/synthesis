@@ -1,0 +1,7 @@
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInBrowserPaneAttempt1\InventorAddInBrowserPaneAttempt1\bin\Debug\InventorAddInBrowserPaneAttempt1.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInBrowserPaneAttempt1\InventorAddInBrowserPaneAttempt1\bin\Debug\InventorAddInBrowserPaneAttempt1.pdb
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInBrowserPaneAttempt1\InventorAddInBrowserPaneAttempt1\bin\Debug\autodesk.inventor.interop.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInBrowserPaneAttempt1\InventorAddInBrowserPaneAttempt1\bin\Debug\stdole.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInBrowserPaneAttempt1\InventorAddInBrowserPaneAttempt1\obj\Debug\InventorAddInBrowserPaneAttempt1.csprojResolveAssemblyReference.cache
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInBrowserPaneAttempt1\InventorAddInBrowserPaneAttempt1\obj\Debug\InventorAddInBrowserPaneAttempt1.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInBrowserPaneAttempt1\InventorAddInBrowserPaneAttempt1\obj\Debug\InventorAddInBrowserPaneAttempt1.pdb

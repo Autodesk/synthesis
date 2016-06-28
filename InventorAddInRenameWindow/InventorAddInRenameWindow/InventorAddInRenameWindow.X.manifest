@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="InventorAddInRenameWindow" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{52514eb2-8813-4ae9-bd9e-037163280708}" progid="InventorAddInRenameWindow.StandardAddInServer" threadingModel="Both" name="InventorAddInRenameWindow.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="InventorAddInRenameWindow.dll" hashalg="SHA1"></file>
+
+</assembly>

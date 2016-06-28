@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="InventorAddInBrowserPaneAttempt1" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{c84bad7b-800f-4a94-8782-f3723e3d5586}" progid="InventorAddInBrowserPaneAttempt1.StandardAddInServer" threadingModel="Both" name="InventorAddInBrowserPaneAttempt1.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="InventorAddInBrowserPaneAttempt1.dll" hashalg="SHA1"></file>
+
+</assembly>

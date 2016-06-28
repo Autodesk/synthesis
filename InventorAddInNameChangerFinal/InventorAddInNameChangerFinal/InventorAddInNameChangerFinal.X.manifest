@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="InventorAddInNameChangerFinal" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{aef6ce2a-781f-4eff-9e5c-f29abdc50725}" progid="InventorAddInNameChangerFinal.StandardAddInServer" threadingModel="Both" name="InventorAddInNameChangerFinal.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="InventorAddInNameChangerFinal.dll" hashalg="SHA1"></file>
+
+</assembly>

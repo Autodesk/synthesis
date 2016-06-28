@@ -1,0 +1,6 @@
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInTest\InventorAddInTest\bin\Debug\InventorAddInTest.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInTest\InventorAddInTest\bin\Debug\InventorAddInTest.pdb
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInTest\InventorAddInTest\bin\Debug\autodesk.inventor.interop.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInTest\InventorAddInTest\bin\Debug\stdole.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInTest\InventorAddInTest\obj\Debug\InventorAddInTest.dll
+c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddInTest\InventorAddInTest\obj\Debug\InventorAddInTest.pdb

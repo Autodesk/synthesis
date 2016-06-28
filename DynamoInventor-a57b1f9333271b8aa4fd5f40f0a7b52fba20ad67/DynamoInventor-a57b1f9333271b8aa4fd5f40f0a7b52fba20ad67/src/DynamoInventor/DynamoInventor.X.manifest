@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="DynamoInventor" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{476f38a1-75f3-450b-a75a-6f030bf012a8}" progid="DynamoInventor.StandardAddInServer" threadingModel="Both" name="DynamoInventor.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="DynamoInventor.dll" hashalg="SHA1"></file>
+
+</assembly>

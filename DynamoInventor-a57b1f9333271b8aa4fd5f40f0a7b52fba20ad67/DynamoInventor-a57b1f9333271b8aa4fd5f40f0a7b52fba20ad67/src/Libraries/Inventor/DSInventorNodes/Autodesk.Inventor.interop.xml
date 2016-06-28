@@ -1,0 +1,11 @@
+﻿<?xml version="1.0"?>
+<doc>
+  <assembly>
+    <name>Autodesk.Inventor.interop</name>
+  </assembly>
+  <namespaces>
+    <namespace name ="Inventor">
+      <category>InventorAPI</category>
+    </namespace>
+  </namespaces>
+</doc>
