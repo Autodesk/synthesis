@@ -1,0 +1,3 @@
+[submodule "allwpilib"]
+	path = allwpilib
+	url = https://usfirst.collab.net/gerrit/allwpilib
