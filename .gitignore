@@ -120,6 +120,8 @@ ClientBin/
 *.[Pp]ublish.xml
 *.pfx
 *.publishsettings
+*.db
+*.opendb
 
 # RIA/Silverlight projects
 Generated_Code/
@@ -158,3 +160,9 @@ $RECYCLE.BIN/
 
 *.dll
 *.exe
+
+#################
+## Unwanted folders
+#################
+
+Aardvark-Libraries/
