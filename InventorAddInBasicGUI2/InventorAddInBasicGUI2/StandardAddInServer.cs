@@ -5,14 +5,14 @@ using Microsoft.Win32;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace InventorAddInBasicGUI
+namespace InventorAddInBasicGUI2
 {
     /// <summary>
     /// This is the primary AddIn Server class that implements the ApplicationAddInServer interface
     /// that all Inventor AddIns are required to implement. The communication between Inventor and
     /// the AddIn is via the methods on this interface.
     /// </summary>
-    [GuidAttribute("6e67f9f7-82a6-42db-9f31-16eb9507bcb4")]
+    [GuidAttribute("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
     public class StandardAddInServer : Inventor.ApplicationAddInServer
     {
 
@@ -23,21 +23,24 @@ namespace InventorAddInBasicGUI
         //button of adding tree view browserpublic 
         Inventor.ButtonDefinition m_TreeViewBrowser;
         //button of adding ActiveX browserpublic 
-        Inventor.ButtonDefinition m_ActiveXBrowser;
         //button of starting or stopping BrowserEvents
         public Inventor.ButtonDefinition m_DoBrowserEvents;
+
+        RibbonPanel m_partSketchSlotRibbonPanel;
         //BrowserEvents
         public Inventor.BrowserPanesEvents m_BrowserEvents;
         // no driver, motor, servo, bumper pneumatics, relay pneumatics, worm screw, dual motor
+       
 
-        ComboBoxDefinition JointsComboBox;
+        //ComboBoxDefinition JointsComboBox;
 
-        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler Joints_OnSelectEventDelegate;
+        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler SlotWidthComboBox_OnSelectEventDelegate;
 
         //HighlightSet
         public Inventor.HighlightSet oHighlight;
         public string m_ClientId;
         public int i;
+        private ComboBoxDefinition JointsComboBox;
         public StandardAddInServer()
         {
         }
@@ -48,6 +51,10 @@ namespace InventorAddInBasicGUI
         {
             try
             {
+                GuidAttribute addInCLSID;
+                addInCLSID = (GuidAttribute)GuidAttribute.GetCustomAttribute(typeof(StandardAddInServer), typeof(GuidAttribute));
+                string addInCLSIDString;
+                addInCLSIDString = "{" + addInCLSID.Value + "}";
                 m_ClientId = " ";
                 i = 0;
                 // This method is called by Inventor when it loads the addin.
@@ -71,37 +78,42 @@ namespace InventorAddInBasicGUI
 
 
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
-
+                m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
 
 
                 // Get the assembly ribbon.
                 Inventor.Ribbon partRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
                 // Get the "Part" tab.
-                Inventor.RibbonTab partTab = partRibbon.RibbonTabs.Add("Robot Exportedasr", "BxD:RobotExporterasd", "{6e67f9f7-82a6-42db-9f31-16eb9507bcb4}");
-                Inventor.RibbonPanel partPanel = partTab.RibbonPanels.Add("Joxcints", "RobotExportvzzxer:Joints", "{6e67f9f7-82a6-42db-9f31-16eb9507bcb4}");
-                JointsComboBox = controlDefs.AddComboBoxDefinition("Joint chovbccices", "RobotExporter:JointvvzvsChoiceBox", CommandTypesEnum.kShapeEditCmdType, 100, "{6e67f9f7-82a6-42db-9f31-16eb9507bcb4}", "Slot width", "Slot width", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
-
-                JointsComboBox.AddItem("1 cm", 0);
-                JointsComboBox.AddItem("2 cm", 0);
-                JointsComboBox.AddItem("3 cm", 0);
-                JointsComboBox.AddItem("4 cm", 0);
-                JointsComboBox.AddItem("5 cm", 0);
+                Inventor.RibbonTab partTab = partRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+                Inventor.RibbonPanel partPanel = partTab.RibbonPanels.Add("Joints", "RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+               
+                JointsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Slot Width", "Autodesk:SimpleAddIn:SlotWidthCboBox", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Slot width", "Slot width", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+                
+                //add some initial items to the comboboxes
+                JointsComboBox.AddItem("No Driver", 0);
+                JointsComboBox.AddItem("Motor", 0);
+                JointsComboBox.AddItem("Servo", 0);
+                JointsComboBox.AddItem("Bumper Pneumatic", 0);
+                JointsComboBox.AddItem("Relay Pneumatic", 0);
+                JointsComboBox.AddItem("Worm Screw", 0);
+                JointsComboBox.AddItem("Dual Motor", 0);
                 JointsComboBox.ListIndex = 1;
                 JointsComboBox.ToolTipText = JointsComboBox.Text;
                 JointsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
 
-
-                /*stdole.IPictureDisp smallPicture1 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon1.ico").ToBitmap());
-                stdole.IPictureDisp largePicture1 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon1.ico").ToBitmap());
-                m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchycvbPane", "InventorAddInBrowserPaneAttempt5:HiebvcrarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, smallPicture1, largePicture1);
-                //m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);*/
-            } catch(Exception e)
+                SlotWidthComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(JointsComboBox_OnSelect);
+                JointsComboBox.OnSelect += SlotWidthComboBox_OnSelectEventDelegate;
+                partPanel.CommandControls.AddComboBox(JointsComboBox, "", false);
+                
+            } catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
+
         }
 
-
+      
         public void Deactivate()
         {
             // This method is called by Inventor when the AddIn is unloaded.
@@ -145,7 +157,10 @@ namespace InventorAddInBasicGUI
         /// </summary>
         /// <param name="Context"></param>
         /// <remarks></remarks>
-
+        private void JointsComboBox_OnSelect(NameValueMap context)
+        {
+            MessageBox.Show("asdasdasdasdasdasdasd");
+        }
         private void m_TreeViewBrowser_OnExecute(Inventor.NameValueMap Context)
         {
             try
@@ -164,7 +179,7 @@ namespace InventorAddInBasicGUI
 
                     ClientNodeResources oRscs = oPanes.ClientNodeResources;
 
-                    stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
+                    stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
 
                     ClientNodeResource oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
 
@@ -194,6 +209,54 @@ namespace InventorAddInBasicGUI
             }
         }
 
+        /// <summary>
+        /// when [ActiveXBrowser] button is clicked
+        /// </summary>
+        /// <param name="Context"></param>
+        /// <remarks></remarks>
+
+
+        
+        /// <summary>
+        /// when [DoBrowserEvents] button is clicked.
+        /// </summary>
+        /// <param name="Context"></param>
+        /// <remarks></remarks>
+        private void m_DoBrowserEvents_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                if (m_DoBrowserEvents.Pressed == false)
+                {
+                    MessageBox.Show("BrowserEvents Starts!");
+
+                    m_DoBrowserEvents.Pressed = true;
+
+                    m_BrowserEvents = m_inventorApplication.ActiveDocument.BrowserPanes.BrowserPanesEvents;
+
+                }
+                else
+                {
+                    MessageBox.Show("BrowserEvents Stops!");
+
+                    m_DoBrowserEvents.Pressed = false;
+
+                    m_BrowserEvents = null;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        /// <summary>
+        /// fire when custom node  is activated
+        /// </summary>
+        /// <param name="BrowserNodeDefinition"></param>
+        /// <param name="Context"></param>
+        /// <param name="HandlingCode"></param>
+        /// <remarks></remarks>
         private void m_BrowserEvents_OnBrowserNodeActivate(object BrowserNodeDefinition, Inventor.NameValueMap Context, ref Inventor.HandlingCodeEnum HandlingCode)
         {
             MessageBox.Show("OnBrowserNodeActivate");
@@ -298,3 +361,4 @@ namespace InventorAddInBasicGUI
 
 
 }
+

@@ -78,18 +78,18 @@ namespace InventorAddInBrowserPaneAttempt5
            
             ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
 
-            stdole.IPictureDisp smallPicture1 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon1.ico").ToBitmap());
-            stdole.IPictureDisp largePicture1 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon1.ico").ToBitmap());
+            stdole.IPictureDisp smallPicture1 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon1.ico").ToBitmap());
+            stdole.IPictureDisp largePicture1 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon1.ico").ToBitmap());
             m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId,null ,null, smallPicture1, largePicture1);
             m_TreeViewBrowser.OnExecute+= new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
 
-            stdole.IPictureDisp smallPicture2 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon2.ico").ToBitmap());
-            stdole.IPictureDisp largePicture2 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon2.ico").ToBitmap());
+            stdole.IPictureDisp smallPicture2 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon2.ico").ToBitmap());
+            stdole.IPictureDisp largePicture2 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon2.ico").ToBitmap());
             m_ActiveXBrowser = controlDefs.AddButtonDefinition("ActiveXPane", "InventorAddInBrowserPaneAttempt5:ActiveXPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null ,null, smallPicture2, largePicture2);
             m_ActiveXBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_ActiveXBrowser_OnExecute);
 
-            stdole.IPictureDisp smallPicture3 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon3.ico").ToBitmap());
-            stdole.IPictureDisp largePicture3 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon3.ico").ToBitmap());
+            stdole.IPictureDisp smallPicture3 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon3.ico").ToBitmap());
+            stdole.IPictureDisp largePicture3 = AxHostConverter.ImageToPictureDisp(new Icon(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\Icon3.ico").ToBitmap());
             m_DoBrowserEvents = controlDefs.AddButtonDefinition("DoBrowserEvents", "InventorAddInBrowserPaneAttempt5:DoBrowserEvents", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId,null ,null, smallPicture3, largePicture3);
             m_DoBrowserEvents.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_DoBrowserEvents_OnExecute);
 
@@ -205,7 +205,7 @@ namespace InventorAddInBrowserPaneAttempt5
 
                     ClientNodeResources oRscs = oPanes.ClientNodeResources;
 
-                    stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
+                    stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
 
                     ClientNodeResource oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
 
