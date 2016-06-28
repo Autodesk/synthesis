@@ -27,4 +27,4 @@ Written within Microsoft Viusal Studio 2015 Professional
 2. Open up Inventor
 3. Go to Tools>Add-ins to reach the add-in manager
 4. Enable the desired add-ins
-5, Restart Inventor
+5. Restart Inventor
