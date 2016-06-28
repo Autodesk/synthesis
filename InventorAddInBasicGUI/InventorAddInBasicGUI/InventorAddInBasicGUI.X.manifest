@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="InventorAddInBasicGUI" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{6e67f9f7-82a6-42db-9f31-16eb9507bcb4}" progid="InventorAddInBasicGUI.StandardAddInServer" threadingModel="Both" name="InventorAddInBasicGUI.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="InventorAddInBasicGUI.dll" hashalg="SHA1"></file>
+
+</assembly>

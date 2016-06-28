@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 17.0-->
+  <ClassId>{be3ab243-6c43-4dd7-9272-06685bda91af}</ClassId>
+  <ClientId>{be3ab243-6c43-4dd7-9272-06685bda91af}</ClientId>
+  <DisplayName>RibbonDemoAddin</DisplayName>
+  <Description>RibbonDemoAddin</Description>
+  <Assembly>RibbonDemoAddin.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>16..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

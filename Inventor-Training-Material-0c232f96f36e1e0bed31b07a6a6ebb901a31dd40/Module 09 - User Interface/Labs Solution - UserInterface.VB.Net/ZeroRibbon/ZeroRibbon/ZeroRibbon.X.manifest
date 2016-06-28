@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="ZeroRibbon" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{c7261520-f76a-4808-ab1d-9c4a23a31d68}" progid="ZeroRibbon.StandardAddInServer" threadingModel="Both" name="ZeroRibbon.ZeroRibbon.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="ZeroRibbon.dll" hashalg="SHA1"></file>
+
+</assembly>

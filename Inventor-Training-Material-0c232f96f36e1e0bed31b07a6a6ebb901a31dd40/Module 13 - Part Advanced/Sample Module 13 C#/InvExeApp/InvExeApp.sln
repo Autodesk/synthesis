@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvExeApp", "InvExeApp\InvExeApp.csproj", "{60B5EA9D-68A2-4653-B497-DE8C7B95AAB3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{60B5EA9D-68A2-4653-B497-DE8C7B95AAB3}.Debug|x86.ActiveCfg = Debug|x86
+		{60B5EA9D-68A2-4653-B497-DE8C7B95AAB3}.Debug|x86.Build.0 = Debug|x86
+		{60B5EA9D-68A2-4653-B497-DE8C7B95AAB3}.Release|x86.ActiveCfg = Release|x86
+		{60B5EA9D-68A2-4653-B497-DE8C7B95AAB3}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

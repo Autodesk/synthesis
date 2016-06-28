@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="AddInEvents" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{49d3dbd4-20c4-4c03-8027-49206f131596}" progid="AddInEvents.StandardAddInServer" threadingModel="Both" name="AddInEvents.AddInEvents.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="AddInEvents.dll" hashalg="SHA1"></file>
+
+</assembly>

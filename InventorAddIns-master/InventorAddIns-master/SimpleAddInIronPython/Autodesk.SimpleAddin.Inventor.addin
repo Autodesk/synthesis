@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+     <!-- Type attribute is same as Type registry key (Standard, Translator, Plugin (Server only) -->
+     <Addin Type="Standard">
+     <ClassId>{963308E2-D850-466D-A1C5-503A2E171552}</ClassId>
+     <ClientId>{963308E2-D850-466D-A1C5-503A2E171552}</ClientId>
+
+     <!-- Both of the following fields should be translated. NO OTHER FIELDS SHOULD BE TRANSLATED! -->
+     <DisplayName>SimpleAddIn</DisplayName>
+     <Description>SimpleAddIn</Description>
+
+     <!-- Assumes that SimpleAddIn.dll is underneath Inventor\bin -->
+     <Assembly>C:\Projects\InventorAPI\InventorAddIns\SimpleAddInIronPython\bin\Release\SimpleAddIn.dll</Assembly>
+
+     <SupportedSoftwareVersionGreaterThan>16..</SupportedSoftwareVersionGreaterThan>
+     <LoadOnStartUp>1</LoadOnStartUp>
+     <Hidden>0</Hidden>
+</Addin>

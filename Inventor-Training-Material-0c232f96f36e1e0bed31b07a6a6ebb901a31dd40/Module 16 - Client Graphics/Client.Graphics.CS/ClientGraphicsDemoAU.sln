@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientGraphicsDemoAU", "ClientGraphicsDemoAU\ClientGraphicsDemoAU.csproj", "{338DCCEB-4CFC-4DC1-A566-F4D533A681E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdnUtilityLib", "AdnUtilityLib\AdnUtilityLib.csproj", "{B8275FD7-C2FE-409A-8930-792DA72E0ABC}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "GraphicManagerTest", "GraphicManagerTest\GraphicManagerTest.vbproj", "{C38FE04D-3E47-4FC6-ACFC-C5FA350C739F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{338DCCEB-4CFC-4DC1-A566-F4D533A681E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{338DCCEB-4CFC-4DC1-A566-F4D533A681E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{338DCCEB-4CFC-4DC1-A566-F4D533A681E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{338DCCEB-4CFC-4DC1-A566-F4D533A681E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8275FD7-C2FE-409A-8930-792DA72E0ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8275FD7-C2FE-409A-8930-792DA72E0ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8275FD7-C2FE-409A-8930-792DA72E0ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8275FD7-C2FE-409A-8930-792DA72E0ABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C38FE04D-3E47-4FC6-ACFC-C5FA350C739F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C38FE04D-3E47-4FC6-ACFC-C5FA350C739F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C38FE04D-3E47-4FC6-ACFC-C5FA350C739F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C38FE04D-3E47-4FC6-ACFC-C5FA350C739F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

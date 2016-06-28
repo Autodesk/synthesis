@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 17.0-->
+  <ClassId>{49d3dbd4-20c4-4c03-8027-49206f131596}</ClassId>
+  <ClientId>{49d3dbd4-20c4-4c03-8027-49206f131596}</ClientId>
+  <DisplayName>AddInEvents</DisplayName>
+  <Description>AddInEvents</Description>
+  <Assembly>AddInEvents.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>16..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

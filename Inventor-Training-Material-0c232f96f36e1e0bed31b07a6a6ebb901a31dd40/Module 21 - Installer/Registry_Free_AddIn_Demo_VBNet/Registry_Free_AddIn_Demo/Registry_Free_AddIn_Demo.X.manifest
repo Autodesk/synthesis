@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="Registry_Free_AddIn_Demo" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{47678ce5-1036-4b2e-a22d-b7eee38e452d}" progid="Registry_Free_AddIn_Demo.StandardAddInServer" threadingModel="Both" name="Registry_Free_AddIn_Demo.Registry_Free_AddIn_Demo.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="Registry_Free_AddIn_Demo.dll" hashalg="SHA1"></file>
+
+</assembly>

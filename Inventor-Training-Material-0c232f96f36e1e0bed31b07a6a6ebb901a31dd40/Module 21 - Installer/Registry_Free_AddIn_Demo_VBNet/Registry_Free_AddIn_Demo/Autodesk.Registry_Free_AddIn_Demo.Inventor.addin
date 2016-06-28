@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 17.0-->
+  <ClassId>{47678ce5-1036-4b2e-a22d-b7eee38e452d}</ClassId>
+  <ClientId>{47678ce5-1036-4b2e-a22d-b7eee38e452d}</ClientId>
+  <DisplayName>Registry_Free_AddIn_Demo</DisplayName>
+  <Description>Registry_Free_AddIn_Demo</Description>
+  <Assembly>Registry_Free_AddIn_Demo.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>16..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>

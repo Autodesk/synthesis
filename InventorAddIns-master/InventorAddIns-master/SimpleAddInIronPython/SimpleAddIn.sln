@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.2.2.8818
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleAddIn", "SimpleAddIn.csproj", "{9D2CD486-6DD2-4F81-9E8A-8FFEEB7758FE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D2CD486-6DD2-4F81-9E8A-8FFEEB7758FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D2CD486-6DD2-4F81-9E8A-8FFEEB7758FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D2CD486-6DD2-4F81-9E8A-8FFEEB7758FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D2CD486-6DD2-4F81-9E8A-8FFEEB7758FE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+
+  <assemblyIdentity name="VBNetRibbonDemo" version="1.0.0.0"></assemblyIdentity>
+
+  <clrClass clsid="{be3ab243-6c43-4dd7-9272-06685bda91af}" progid="RibbonDemoAddin.StandardAddInServer" threadingModel="Both" name="RibbonDemoAddin.RibbonDemoAddin.StandardAddInServer" runtimeVersion=""></clrClass>
+
+  <file name="RibbonDemoAddin.dll" hashalg="SHA1"></file>
+
+</assembly>

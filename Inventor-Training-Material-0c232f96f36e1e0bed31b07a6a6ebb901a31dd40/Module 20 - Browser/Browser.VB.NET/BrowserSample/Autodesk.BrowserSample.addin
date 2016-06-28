@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 17.0-->
+  <ClassId>{ec113dad-f7a5-4a6a-a070-315e0fc39383}</ClassId>
+  <ClientId>{ec113dad-f7a5-4a6a-a070-315e0fc39383}</ClientId>
+  <DisplayName>BrowserSample</DisplayName>
+  <Description>BrowserSamplet</Description>
+  <Assembly>BrowserSample.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>16..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>
