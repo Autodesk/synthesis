@@ -14,7 +14,7 @@ git submodule update --init --recursive
 ```
 # Build
 
-Written within Microsoft Viusal Studios 2015 Professional
+Written within Microsoft Viusal Studio 2015 Professional
 
 ## Dependencies
 
