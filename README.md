@@ -18,7 +18,8 @@ Written within Microsoft Viusal Studio 2015 Professional
 
 ## Dependencies
 
-- Autodesk Inventor Professional 2017
+* Autodesk Inventor Professional 2013 - 2017
+    * Inventer Interop Utility inside References 
 
 ## Instructions
 1. Build the solution(s) you would like to use in Visual Studio
