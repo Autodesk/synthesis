@@ -22,6 +22,8 @@ Written within Microsoft Viusal Studio 2015 Professional
 
 ## Instructions
 1. Build the solution(s) you would like to use in Visual Studio
+    1. Open the "Build" tab
+    2. Press the "Build Solution" button
 2. Open up Inventor
 3. Go to Tools>Add-ins to reach the add-in manager
 4. Enable the desired add-ins
