@@ -26,9 +26,9 @@ public class ElevatorScript : MonoBehaviour {
 			{
 				rbody.useGravity = false;
 				rbody.drag = FORCE_MULTIPLIER;
-				rbody.AddForce(force+Physics.gravity*stageOffset, ForceMode.Acceleration);
+				rbody.AddRelativeForce(force+Physics.gravity*stageOffset, ForceMode.Acceleration);
 			}
 		}
-		rigidbody.AddForce (force+Physics.gravity*stageOffset, ForceMode.Acceleration);
+		rigidbody.AddRelativeForce (force+Physics.gravity*stageOffset, ForceMode.Acceleration);
 	}
 }
