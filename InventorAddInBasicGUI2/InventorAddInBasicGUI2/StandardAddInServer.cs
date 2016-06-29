@@ -19,28 +19,35 @@ namespace InventorAddInBasicGUI2
         // Inventor application object.
         private Inventor.Application m_inventorApplication;
 
+        int i;
 
         //button of adding tree view browserpublic 
         Inventor.ButtonDefinition m_TreeViewBrowser;
         //button of adding ActiveX browserpublic 
         //button of starting or stopping BrowserEvents
         public Inventor.ButtonDefinition m_DoBrowserEvents;
-
-        RibbonPanel m_partSketchSlotRibbonPanel;
         //BrowserEvents
         public Inventor.BrowserPanesEvents m_BrowserEvents;
         // no driver, motor, servo, bumper pneumatics, relay pneumatics, worm screw, dual motor
        
-
+        
         //ComboBoxDefinition JointsComboBox;
 
-        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler SlotWidthComboBox_OnSelectEventDelegate;
-
+        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler JointsComboBox_OnSelectEventDelegate;
+        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler PWMComboBox_OnSelectEventDelegate;
+        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler CANComboBox_OnSelectEventDelegate;
+        Form1 form;
         //HighlightSet
         public Inventor.HighlightSet oHighlight;
         public string m_ClientId;
-        public int i;
         private ComboBoxDefinition JointsComboBox;
+        private ComboBoxDefinition PWMComboBox;
+        private ComboBoxDefinition CANComboBox;
+
+        Inventor.Ribbon partRibbon;
+        Inventor.RibbonTab partTab;
+        Inventor.RibbonPanel partPanel;
+        String addInCLSIDString;
         public StandardAddInServer()
         {
         }
@@ -53,7 +60,6 @@ namespace InventorAddInBasicGUI2
             {
                 GuidAttribute addInCLSID;
                 addInCLSID = (GuidAttribute)GuidAttribute.GetCustomAttribute(typeof(StandardAddInServer), typeof(GuidAttribute));
-                string addInCLSIDString;
                 addInCLSIDString = "{" + addInCLSID.Value + "}";
                 m_ClientId = " ";
                 i = 0;
@@ -83,12 +89,12 @@ namespace InventorAddInBasicGUI2
 
 
                 // Get the assembly ribbon.
-                Inventor.Ribbon partRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
+                partRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
                 // Get the "Part" tab.
-                Inventor.RibbonTab partTab = partRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
-                Inventor.RibbonPanel partPanel = partTab.RibbonPanels.Add("Joints", "RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+                partTab = partRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+                partPanel = partTab.RibbonPanels.Add("Joints", "RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
                
-                JointsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Slot Width", "Autodesk:SimpleAddIn:SlotWidthCboBox", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Slot width", "Slot width", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+                JointsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Driver", "Autodesk:SimpleAddIn:Driver", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Driver", "Driver", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
                 
                 //add some initial items to the comboboxes
                 JointsComboBox.AddItem("No Driver", 0);
@@ -102,9 +108,13 @@ namespace InventorAddInBasicGUI2
                 JointsComboBox.ToolTipText = JointsComboBox.Text;
                 JointsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
 
-                SlotWidthComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(JointsComboBox_OnSelect);
-                JointsComboBox.OnSelect += SlotWidthComboBox_OnSelectEventDelegate;
-                partPanel.CommandControls.AddComboBox(JointsComboBox, "", false);
+                JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(JointsComboBox_OnSelect);
+                JointsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
+                partPanel.CommandControls.AddComboBox(JointsComboBox);
+                //partPanel.CommandControls.AddButton(m_TreeViewBrowser);
+
+                PWMComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("PWM", "Autodesk:PWM", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "PWM", "PWM", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+
                 
             } catch (Exception e)
             {
@@ -113,7 +123,7 @@ namespace InventorAddInBasicGUI2
 
         }
 
-      
+     
         public void Deactivate()
         {
             // This method is called by Inventor when the AddIn is unloaded.
@@ -157,9 +167,110 @@ namespace InventorAddInBasicGUI2
         /// </summary>
         /// <param name="Context"></param>
         /// <remarks></remarks>
+        ///  public void createPWMBox()
+       /* public void createPWMBox(){
+            try
+            {
+                PWMComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("PWM", "Autodesk:PWM", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "PWM", "PWM", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+
+                PWMComboBox.AddItem("0", 0);
+                PWMComboBox.AddItem("1", 0);
+                PWMComboBox.AddItem("2", 0);
+                PWMComboBox.AddItem("3", 0);
+                PWMComboBox.AddItem("4", 0);
+                PWMComboBox.AddItem("5", 0);
+                PWMComboBox.AddItem("6", 0);
+                PWMComboBox.AddItem("7", 0);
+                PWMComboBox.AddItem("8", 0);
+                PWMComboBox.AddItem("9", 0);
+                PWMComboBox.AddItem("10", 0);
+                PWMComboBox.AddItem("11", 0);
+                PWMComboBox.AddItem("12", 0);
+                PWMComboBox.AddItem("13", 0);
+                PWMComboBox.AddItem("14", 0);
+                PWMComboBox.AddItem("15", 0);
+                PWMComboBox.AddItem("16", 0);
+                PWMComboBox.AddItem("17", 0);
+                PWMComboBox.AddItem("18", 0);
+                PWMComboBox.AddItem("19", 0);
+                PWMComboBox.ListIndex = 1;
+                PWMComboBox.ToolTipText = JointsComboBox.Text;
+                PWMComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
+
+                PWMComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(PWMComboBox_OnSelect);
+                PWMComboBox.OnSelect += PWMComboBox_OnSelectEventDelegate;
+                partPanel.CommandControls.AddComboBox(PWMComboBox);
+                //MessageBox.Show(PWMComboBox.BuiltIn.ToString());
+                //PWMComboBox.Execute();
+            } catch(Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+        public void createCANBox()
+        {
+            CANComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("PWM", "Autodesk:PWM", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "PWM", "PWM", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+
+            CANComboBox.AddItem("0", 0);
+            CANComboBox.AddItem("1", 0);
+            CANComboBox.AddItem("2", 0);
+            CANComboBox.AddItem("3", 0);
+            CANComboBox.AddItem("4", 0);
+            CANComboBox.AddItem("5", 0);
+            CANComboBox.AddItem("6", 0);
+            CANComboBox.AddItem("7", 0);
+            CANComboBox.AddItem("8", 0);
+            CANComboBox.AddItem("9", 0);
+            CANComboBox.AddItem("10", 0);
+            CANComboBox.AddItem("11", 0);
+            CANComboBox.AddItem("12", 0);
+            CANComboBox.AddItem("13", 0);
+            CANComboBox.AddItem("14", 0);
+            CANComboBox.AddItem("15", 0);
+            CANComboBox.AddItem("16", 0);
+            CANComboBox.AddItem("17", 0);
+            CANComboBox.AddItem("18", 0);
+            CANComboBox.AddItem("19", 0);
+            CANComboBox.ListIndex = 1;
+            CANComboBox.ToolTipText = JointsComboBox.Text;
+            CANComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
+
+            CANComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(CANComboBox_OnSelect);
+            CANComboBox.OnSelect += CANComboBox_OnSelectEventDelegate;
+            partPanel.CommandControls.AddComboBox(CANComboBox, "", false);
+        }*/
+        /*private void PWMComboBox_OnSelect(NameValueMap context)
+        {
+
+        }
+        private void CANComboBox_OnSelect(NameValueMap context)
+        {
+
+        }*/
         private void JointsComboBox_OnSelect(NameValueMap context)
         {
-            MessageBox.Show("asdasdasdasdasdasdasd");
+            
+            // MessageBox.Show(partPanel.CommandControls.ToString());
+            if (JointsComboBox.Text.Equals("Motor")){
+                form = new Form1();
+                form.MotorChosen();
+                System.Windows.Forms.Application.Run(form);
+            } else if (JointsComboBox.Text.Equals("Servo")){
+                form = new Form1();
+                form.ServoChosen();
+                System.Windows.Forms.Application.Run(form);
+            } else if (JointsComboBox.Text.Equals("Bumper Pneumatic")){
+                form = new Form1();
+                form.BumperPneumaticChosen();
+                System.Windows.Forms.Application.Run(form);
+            } else if (JointsComboBox.Text.Equals("Relay Pneumatic")) {
+            
+            } else if(JointsComboBox.Text.Equals("Worm Screw")){
+            
+            } else if(JointsComboBox.Text.Equals("Dual Motor")){
+            
+            }
+
         }
         private void m_TreeViewBrowser_OnExecute(Inventor.NameValueMap Context)
         {
