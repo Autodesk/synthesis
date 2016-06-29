@@ -20,7 +20,7 @@ namespace Simulation_RD
         /// <summary>
         /// Bullet definition of the collision mesh
         /// </summary>
-        public RigidBody Body;
+        public RigidBody BulletObject;
 
         private void CreateMesh(string filePath)
         {
@@ -56,7 +56,7 @@ namespace Simulation_RD
                                 //Create a box shape
                                 PropertySet.BoxCollider colliderInfo = (PropertySet.BoxCollider)current.Collider;
                                 subShape = new BoxShape(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
-                                if (debug) Console.WriteLine("Created Box");
+                                //if (debug) Console.WriteLine("Created Box");
                                 break;
                             }
                         case PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE:
@@ -64,7 +64,7 @@ namespace Simulation_RD
                                 //Create a sphere shape
                                 PropertySet.SphereCollider colliderInfo = (PropertySet.SphereCollider)current.Collider;
                                 subShape = new SphereShape(colliderInfo.Scale);
-                                if (debug) Console.WriteLine("Created Sphere");
+                                //if (debug) Console.WriteLine("Created Sphere");
                                 break;
                             }
                         case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
@@ -78,30 +78,20 @@ namespace Simulation_RD
                                     if (colliderInfo.Convex)
                                     {
                                         subShape = new ConvexHullShape(vertices);
-                                        if (debug) Console.WriteLine("Created Convex Mesh");
+                                        //if (debug) Console.WriteLine("Created Convex Mesh");
                                     }
                                     else
                                     {
-                                        TriangleMesh tMesh = new TriangleMesh();
-                                        foreach(BXDAMesh.BXDASurface surf in mesh.colliders[node.CollisionMeshID].surfaces)
-                                        {
-                                            for(int i = 0; i < surf.indicies.Length; i += 3)
-                                            {
-                                                tMesh.AddTriangle(
-                                                    vertices[surf.indicies[i]],
-                                                    vertices[surf.indicies[i + 1]],
-                                                    vertices[surf.indicies[i + 2]]
-                                                    );
-                                            }
-                                        }
+                                        TriangleMesh tMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[node.CollisionMeshID], vertices);
                                         subShape = new BvhTriangleMeshShape(tMesh, false);
-                                        if (debug) Console.WriteLine("Created Concave Mesh");
+                                        //if (debug) Console.WriteLine("Created Concave Mesh");
                                     }
                                 }
                                 break;
                             }
                     }
-
+                    Console.WriteLine("Created " + node.NodeID);
+                    
                     if (null != subShape)
                     {
                         //set sub shape local position/rotation and add it to the compound shape
@@ -115,7 +105,7 @@ namespace Simulation_RD
 
             DefaultMotionState m = new DefaultMotionState();
             RigidBodyConstructionInfo rb = new RigidBodyConstructionInfo(mesh.physics.mass, m, shape);
-            Body = new RigidBody(rb);
+            BulletObject = new RigidBody(rb);
         }
 
         /// <summary>

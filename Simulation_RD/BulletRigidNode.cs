@@ -12,45 +12,58 @@ namespace Simulation_RD
     class BulletRigidNode : RigidNode_Base
     {
         /// <summary>
-        /// Defines collision mesh. Is not a <see cref="BulletSharp.RigidBody"/> because this might be a soft body
+        /// Defines collision mesh. Not explicitly a <see cref="BulletSharp.RigidBody"/> because this might be a soft body.
         /// </summary>
-        public CollisionObject BulletObject;
+        public RigidBody BulletObject;
 
         public BulletRigidNode(Guid guid) : base(guid) { }
 
-        public void CreateMesh(string FilePath)
+        /// <summary>
+        /// Creates a Rigid Body from a .bxda file
+        /// </summary>
+        /// <param name="FilePath"></param>
+        public void CreateRigidBody(string FilePath)
         {
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(FilePath);
 
+            //Rigid Body Construction
+            DefaultMotionState motion = new DefaultMotionState(Matrix4.CreateTranslation(0, 10, 0));
+            RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, GetShape(mesh));
+            BulletObject = new RigidBody(info);
+        }
+
+        /// <summary>
+        /// Creates a Soft body from a .bxda file [NOT YET PROPERLY IMPLEMENTED (I THINK)]
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="worldInfo"></param>
+        public void CreateSoftBody(string filePath, SoftBodyWorldInfo worldInfo)
+        {
+            BXDAMesh mesh = new BXDAMesh();
+            mesh.ReadFromFile(filePath);
+
+            //Soft body construction
+            //BulletObject = new SoftBody(worldInfo);
+            BulletObject.CollisionShape = GetShape(mesh);
+        }
+
+        private static CompoundShape GetShape(BXDAMesh mesh)
+        {
             CompoundShape shape = new CompoundShape();
 
-            for(int i = 0; i < mesh.colliders.Count; i++)
+            for (int i = 0; i < mesh.colliders.Count; i++)
             {
                 BXDAMesh.BXDASubMesh sub = mesh.colliders[i];
-
                 Vector3[] vertices = MeshUtilities.DataToVector(sub.verts);
-
-                TriangleMesh tmesh = new TriangleMesh();
-                
-                foreach(BXDAMesh.BXDASurface surf in sub.surfaces)
-                    for(int j = 0; j < surf.indicies.Length; j += 3)
-                    {
-                        tmesh.AddTriangle(
-                            vertices[surf.indicies[j]],
-                            vertices[surf.indicies[j + 1]],
-                            vertices[surf.indicies[j + 2]]
-                            );
-                    }
+                TriangleMesh tmesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[i], vertices);
 
                 //I don't believe there are any transformations necessary here.
                 shape.AddChildShape(Matrix4.Zero, new BvhTriangleMeshShape(tmesh, true));
                 Console.WriteLine("Successfully created and added sub shape");
             }
 
-            DefaultMotionState m = new DefaultMotionState();
-            RigidBodyConstructionInfo ci = new RigidBodyConstructionInfo(mesh.physics.mass, m, shape);
-            BulletObject = new RigidBody(ci);
+            return shape;
         }
     }
 }
