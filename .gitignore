@@ -32,7 +32,7 @@ tmp/
 
 # visual studio stuff
 *.tlog
-*.db
+*db
 *.vs/
 Debug/*
 Release/*
