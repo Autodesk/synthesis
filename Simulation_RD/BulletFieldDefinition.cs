@@ -13,7 +13,7 @@ namespace Simulation_RD
     /// </summary>
     class BulletFieldDefinition : FieldDefinition
     {
-        const bool debug = true;
+        const bool debug = false;
 
         private BulletFieldDefinition(Guid guid, string name) : base(guid, name) { }
 
@@ -90,7 +90,7 @@ namespace Simulation_RD
                                 break;
                             }
                     }
-                    Console.WriteLine("Created " + node.NodeID);
+                    if(debug) Console.WriteLine("Created " + node.NodeID);
                     
                     if (null != subShape)
                     {

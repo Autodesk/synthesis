@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using BulletSharp;
+using BulletSharp.SoftBody;
 using OpenTK;
-using OpenTK.Graphics.OpenGL;
 
 namespace Simulation_RD
 {
@@ -25,13 +21,13 @@ namespace Simulation_RD
             game.Run(60.0); //Starts the game at 60fps
             */
             BroadphaseInterface broadphase = new DbvtBroadphase();
-            DefaultCollisionConfiguration collisionConfig = new DefaultCollisionConfiguration();
+            SoftBodyRigidBodyCollisionConfiguration collisionConfig = new SoftBodyRigidBodyCollisionConfiguration();
             CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfig);
             GImpactCollisionAlgorithm.RegisterAlgorithm(dispatcher);
             SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
-            DiscreteDynamicsWorld world = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfig);
+            DiscreteDynamicsWorld world = new SoftRigidDynamicsWorld(dispatcher, broadphase, solver, collisionConfig);
             world.Gravity = new Vector3(0, -9.81f, 0);
-            
+
             //Field
             string fieldPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2015\";
             Console.WriteLine("[STARTING FIELD]");
@@ -51,7 +47,7 @@ namespace Simulation_RD
             {
                 BulletRigidNode bNode = (BulletRigidNode)nodes[i % nodes.Count];
                 bNode.CreateRigidBody(robotPath + bNode.ModelFileName);
-                btBodies.Add("Field Mesh" + i, field.BulletObject);
+                btBodies.Add("Field Mesh " + i, field.BulletObject);
                 if (i == 20)
                 {
                     bNode = (BulletRigidNode)nodes[0];
@@ -60,10 +56,10 @@ namespace Simulation_RD
                 }
             }
             Console.WriteLine("[DONE ROBOT]");
-            
+
             //btBodies.Add("Field Mesh", field.BulletObject);
 
-            foreach(var entry in btBodies)
+            foreach (var entry in btBodies)
             {
                 Console.WriteLine("Adding " + entry.Key);
                 world.AddRigidBody(entry.Value);

@@ -60,7 +60,7 @@ namespace Simulation_RD
 
                 //I don't believe there are any transformations necessary here.
                 shape.AddChildShape(Matrix4.Zero, new BvhTriangleMeshShape(tmesh, true));
-                Console.WriteLine("Successfully created and added sub shape");
+                //Console.WriteLine("Successfully created and added sub shape");
             }
 
             return shape;
