@@ -82,6 +82,7 @@ FRC_Lib_Version.ini
 .vs/
 *.VC*
 *.tlog
+*db
 
 # temporary files for saving data about tests and comments for commits
 tmp/*
