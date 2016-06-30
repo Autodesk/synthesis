@@ -29,3 +29,18 @@
 
 #temp dir for notes or git comments
 tmp/
+
+# visual studio stuff
+*.tlog
+*db
+*.vs/
+Debug/*
+Release/*
+
+# vim backup files
+*.swp
+*.swn
+*~
+
+#doxygen documentation files
+allDocs/
