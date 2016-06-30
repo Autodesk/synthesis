@@ -1,4 +1,13 @@
+/** 
+ * \file i2c.cpp
+ *  minimal implmentation of i2c protocol.
+ * the current implementation simply returns 0 or false or 
+ * nothing depending on function header.
+ * read functions do not change the buffers.
+ */
 #include "HAL/Digital.hpp"
+extern "C" {
+
 extern "C" {
 void i2CInitialize(uint8_t port, int32_t* status){}
 

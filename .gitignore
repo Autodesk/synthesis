@@ -41,3 +41,6 @@ Release/*
 *.swp
 *.swn
 *~
+
+#doxygen documentation files
+allDocs/

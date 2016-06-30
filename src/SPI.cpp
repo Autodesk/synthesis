@@ -1,4 +1,11 @@
 #include "HAL\Digital.hpp"
+/*! @file spi.cpp
+ *  minimal implmentation of spi protocol.
+ * 
+ * the current implementation simply returns 0 or false or 
+ * nothing depending on function header.
+ * read functions do not change the buffers.
+ */
 extern "C" {
 
 	void spiInitialize(uint8_t port, int32_t *status){}
