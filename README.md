@@ -13,6 +13,12 @@ if are looking to understanding the structure of code I
 recommend looking at Aardvark-WPILib\FakeFPGA\src\Emulator.cpp and 
 Aardvark-WPILib\Aardvark-WPILib\src
 
+###How to build
+install visual studio 2015.
+load the Aardvark-wpilib.sln on visual studio
+press ctrl+shift+b or build->build solution to compile all of the projects.
+the output files will be in new folder called Debug.
+
 ###warning
 this library is not up to date with current wpilip.
 it is not documenteted very well. tread lightly. 
