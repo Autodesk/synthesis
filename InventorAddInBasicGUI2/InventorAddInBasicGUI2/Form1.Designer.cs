@@ -34,7 +34,6 @@ namespace InventorAddInBasicGUI2
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmbJointDriver = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver = new System.Windows.Forms.GroupBox();
             this.grpDriveOptions = new System.Windows.Forms.GroupBox();
             this.rbPWM = new System.Windows.Forms.RadioButton();
@@ -85,20 +84,9 @@ namespace InventorAddInBasicGUI2
             ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).BeginInit();
             this.metaElevatorStages.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // cmbJointDriver
-            // 
-            this.cmbJointDriver.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbJointDriver.FormattingEnabled = true;
-            this.cmbJointDriver.Location = new System.Drawing.Point(15, 21);
-            this.cmbJointDriver.Name = "cmbJointDriver";
-            this.cmbJointDriver.Size = new System.Drawing.Size(287, 24);
-            this.cmbJointDriver.TabIndex = 0;
-            this.cmbJointDriver.SelectedIndexChanged += new System.EventHandler(this.cmbJointDriver_SelectedIndexChanged);
-            // 
+            //
             // grpChooseDriver
             // 
-            this.grpChooseDriver.Controls.Add(this.cmbJointDriver);
             this.grpChooseDriver.Location = new System.Drawing.Point(12, 12);
             this.grpChooseDriver.Name = "grpChooseDriver";
             this.grpChooseDriver.Size = new System.Drawing.Size(319, 56);
@@ -134,6 +122,7 @@ namespace InventorAddInBasicGUI2
             this.rbPWM.TabStop = true;
             this.rbPWM.Text = "PWM";
             this.rbPWM.UseVisualStyleBackColor = true;
+            this.rbPWM.Click += new System.EventHandler(this.btnPWM_Click);
             // 
             // rbCAN
             // 
@@ -145,6 +134,7 @@ namespace InventorAddInBasicGUI2
             this.rbCAN.TabStop = true;
             this.rbCAN.Text = "CAN";
             this.rbCAN.UseVisualStyleBackColor = true;
+            this.rbCAN.Click += new System.EventHandler(this.btnCAN_Click);
             // 
             // chkBoxDriveWheel
             // 
@@ -232,6 +222,7 @@ namespace InventorAddInBasicGUI2
             // 
             // txtPortA
             // 
+            //TODO change minimum back to 0 once 0 based pwm are added in the code
             this.txtPortA.Location = new System.Drawing.Point(14, 42);
             this.txtPortA.Minimum = new decimal(new int[] {
             1,
@@ -243,6 +234,11 @@ namespace InventorAddInBasicGUI2
             this.txtPortA.TabIndex = 1;
             this.txtPortA.Value = new decimal(new int[] {
             1,
+            0,
+            0,
+            0});
+            this.txtPortA.Maximum = new decimal(new int[] {
+            21,
             0,
             0,
             0});
@@ -269,6 +265,8 @@ namespace InventorAddInBasicGUI2
             this.cmbWheelType.Name = "cmbWheelType";
             this.cmbWheelType.Size = new System.Drawing.Size(120, 24);
             this.cmbWheelType.TabIndex = 7;
+            this.cmbWheelType.SelectedIndex = 0;
+            this.cmbWheelType.SelectedIndexChanged += new System.EventHandler(driveWheelChoice);
             // 
             // cmbPneumaticPressure
             // 
@@ -340,6 +338,7 @@ namespace InventorAddInBasicGUI2
             this.cmbFrictionLevel.Name = "cmbFrictionLevel";
             this.cmbFrictionLevel.Size = new System.Drawing.Size(120, 24);
             this.cmbFrictionLevel.TabIndex = 13;
+            this.cmbFrictionLevel.SelectedIndex = 1;
             // 
             // metaPneumatic
             // 
@@ -540,8 +539,7 @@ namespace InventorAddInBasicGUI2
         }
 
         #endregion
-
-        private System.Windows.Forms.ComboBox cmbJointDriver;
+        
         private System.Windows.Forms.GroupBox grpChooseDriver;
         private System.Windows.Forms.GroupBox grpDriveOptions;
         private System.Windows.Forms.NumericUpDown txtPortB;

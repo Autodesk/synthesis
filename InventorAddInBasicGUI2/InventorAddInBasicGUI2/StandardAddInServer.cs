@@ -4,6 +4,8 @@ using Inventor;
 using Microsoft.Win32;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace InventorAddInBasicGUI2
 {
@@ -23,30 +25,30 @@ namespace InventorAddInBasicGUI2
 
         //button of adding tree view browserpublic 
         Inventor.ButtonDefinition m_TreeViewBrowser;
+        Inventor.ButtonDefinition doCouThings;
         //button of adding ActiveX browserpublic 
         //button of starting or stopping BrowserEvents
-        public Inventor.ButtonDefinition m_DoBrowserEvents;
         //BrowserEvents
-        public Inventor.BrowserPanesEvents m_BrowserEvents;
         // no driver, motor, servo, bumper pneumatics, relay pneumatics, worm screw, dual motor
-       
-        
+
+
         //ComboBoxDefinition JointsComboBox;
 
         Inventor.ComboBoxDefinitionSink_OnSelectEventHandler JointsComboBox_OnSelectEventDelegate;
         Inventor.ComboBoxDefinitionSink_OnSelectEventHandler PWMComboBox_OnSelectEventDelegate;
         Inventor.ComboBoxDefinitionSink_OnSelectEventHandler CANComboBox_OnSelectEventDelegate;
         Form1 form;
+        EditLimits lims;
         //HighlightSet
         public Inventor.HighlightSet oHighlight;
         public string m_ClientId;
         private ComboBoxDefinition JointsComboBox;
-        private ComboBoxDefinition PWMComboBox;
-        private ComboBoxDefinition CANComboBox;
+        private ComboBoxDefinition LimitsComboBox;
 
         Inventor.Ribbon partRibbon;
         Inventor.RibbonTab partTab;
         Inventor.RibbonPanel partPanel;
+        Inventor.RibbonPanel partPanel2;
         String addInCLSIDString;
         public StandardAddInServer()
         {
@@ -86,16 +88,19 @@ namespace InventorAddInBasicGUI2
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
                 m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
-
+                doCouThings = controlDefs.AddButtonDefinition("Cou things", "InventorAddInBrowserPaneAttempt5:CouThings", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                doCouThings.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(CouThings_OnExecute);
 
                 // Get the assembly ribbon.
                 partRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
                 // Get the "Part" tab.
                 partTab = partRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
                 partPanel = partTab.RibbonPanels.Add("Joints", "RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
-               
+                partPanel2 = partTab.RibbonPanels.Add("Limits", "RobotExporter:Limits", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+
                 JointsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Driver", "Autodesk:SimpleAddIn:Driver", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Driver", "Driver", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
-                
+                LimitsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Has Limits", "Autodesk:SimpleAddIn:HasLimits", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Has Limits", "Has Limits", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+
                 //add some initial items to the comboboxes
                 JointsComboBox.AddItem("No Driver", 0);
                 JointsComboBox.AddItem("Motor", 0);
@@ -111,12 +116,21 @@ namespace InventorAddInBasicGUI2
                 JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(JointsComboBox_OnSelect);
                 JointsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
                 partPanel.CommandControls.AddComboBox(JointsComboBox);
+
+                LimitsComboBox.AddItem("No Limits", 0);
+                LimitsComboBox.AddItem("Limits", 0);
+                LimitsComboBox.ListIndex = 1;
+                LimitsComboBox.ToolTipText = JointsComboBox.Text;
+                LimitsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
+
+                JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
+                LimitsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
+                partPanel2.CommandControls.AddComboBox(LimitsComboBox);
                 //partPanel.CommandControls.AddButton(m_TreeViewBrowser);
+                partPanel.CommandControls.AddButton(doCouThings);
 
-                PWMComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("PWM", "Autodesk:PWM", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "PWM", "PWM", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
-
-                
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
@@ -161,92 +175,61 @@ namespace InventorAddInBasicGUI2
         }
 
         #endregion
+        public void CouThings_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                AssemblyDocument asmDoc = (AssemblyDocument)
+                         m_inventorApplication.ActiveDocument;
 
+                // Have two parts selected in the assembly.
+                /*ComponentOccurrence part1 = (ComponentOccurrence)
+                           m_inventorApplication.CommandManager.Pick
+              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter,
+                                                "Select part 1");
+
+                ComponentOccurrence part2 = (ComponentOccurrence)
+                    m_inventorApplication.CommandManager.Pick
+              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter,
+                                                "Select part 2");
+                MessageBox.Show(part1.Joints.ToString());*/
+                int i = 0;
+                ArrayList joints = new ArrayList();
+                foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
+                {
+                    joints.Add(j.AffectedOccurrenceOne);
+                    joints.Add(j.AffectedOccurrenceOne);
+                }
+                Boolean contains = false;
+                foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
+                {
+                    contains = false;
+                    foreach (ComponentOccurrence j in joints)
+                    {
+                        if ((j.Equals(c)))
+                        {
+                            contains = true;
+                        }
+                    }
+
+                    if (!contains)
+                    {
+                        c.Visible = false;
+                    }
+                }
+                MessageBox.Show(i.ToString());
+                //part2.Visible = false;
+            } catch(Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
         /// <summary>
         /// When [HierarchicalBrowser] button is clicked
         /// </summary>
         /// <param name="Context"></param>
         /// <remarks></remarks>
         ///  public void createPWMBox()
-       /* public void createPWMBox(){
-            try
-            {
-                PWMComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("PWM", "Autodesk:PWM", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "PWM", "PWM", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
-
-                PWMComboBox.AddItem("0", 0);
-                PWMComboBox.AddItem("1", 0);
-                PWMComboBox.AddItem("2", 0);
-                PWMComboBox.AddItem("3", 0);
-                PWMComboBox.AddItem("4", 0);
-                PWMComboBox.AddItem("5", 0);
-                PWMComboBox.AddItem("6", 0);
-                PWMComboBox.AddItem("7", 0);
-                PWMComboBox.AddItem("8", 0);
-                PWMComboBox.AddItem("9", 0);
-                PWMComboBox.AddItem("10", 0);
-                PWMComboBox.AddItem("11", 0);
-                PWMComboBox.AddItem("12", 0);
-                PWMComboBox.AddItem("13", 0);
-                PWMComboBox.AddItem("14", 0);
-                PWMComboBox.AddItem("15", 0);
-                PWMComboBox.AddItem("16", 0);
-                PWMComboBox.AddItem("17", 0);
-                PWMComboBox.AddItem("18", 0);
-                PWMComboBox.AddItem("19", 0);
-                PWMComboBox.ListIndex = 1;
-                PWMComboBox.ToolTipText = JointsComboBox.Text;
-                PWMComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
-
-                PWMComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(PWMComboBox_OnSelect);
-                PWMComboBox.OnSelect += PWMComboBox_OnSelectEventDelegate;
-                partPanel.CommandControls.AddComboBox(PWMComboBox);
-                //MessageBox.Show(PWMComboBox.BuiltIn.ToString());
-                //PWMComboBox.Execute();
-            } catch(Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
-        }
-        public void createCANBox()
-        {
-            CANComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("PWM", "Autodesk:PWM", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "PWM", "PWM", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
-
-            CANComboBox.AddItem("0", 0);
-            CANComboBox.AddItem("1", 0);
-            CANComboBox.AddItem("2", 0);
-            CANComboBox.AddItem("3", 0);
-            CANComboBox.AddItem("4", 0);
-            CANComboBox.AddItem("5", 0);
-            CANComboBox.AddItem("6", 0);
-            CANComboBox.AddItem("7", 0);
-            CANComboBox.AddItem("8", 0);
-            CANComboBox.AddItem("9", 0);
-            CANComboBox.AddItem("10", 0);
-            CANComboBox.AddItem("11", 0);
-            CANComboBox.AddItem("12", 0);
-            CANComboBox.AddItem("13", 0);
-            CANComboBox.AddItem("14", 0);
-            CANComboBox.AddItem("15", 0);
-            CANComboBox.AddItem("16", 0);
-            CANComboBox.AddItem("17", 0);
-            CANComboBox.AddItem("18", 0);
-            CANComboBox.AddItem("19", 0);
-            CANComboBox.ListIndex = 1;
-            CANComboBox.ToolTipText = JointsComboBox.Text;
-            CANComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
-
-            CANComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(CANComboBox_OnSelect);
-            CANComboBox.OnSelect += CANComboBox_OnSelectEventDelegate;
-            partPanel.CommandControls.AddComboBox(CANComboBox, "", false);
-        }*/
-        /*private void PWMComboBox_OnSelect(NameValueMap context)
-        {
-
-        }
-        private void CANComboBox_OnSelect(NameValueMap context)
-        {
-
-        }*/
         private void JointsComboBox_OnSelect(NameValueMap context)
         {
             
@@ -264,13 +247,26 @@ namespace InventorAddInBasicGUI2
                 form.BumperPneumaticChosen();
                 System.Windows.Forms.Application.Run(form);
             } else if (JointsComboBox.Text.Equals("Relay Pneumatic")) {
-            
+                form = new Form1();
+                form.RelayPneumaticChosen();
+                System.Windows.Forms.Application.Run(form);
             } else if(JointsComboBox.Text.Equals("Worm Screw")){
-            
+                form = new Form1();
+                form.WormScrewChosen();
+                System.Windows.Forms.Application.Run(form);
             } else if(JointsComboBox.Text.Equals("Dual Motor")){
-            
+                form = new Form1();
+                form.DualMotorChosen();
+                System.Windows.Forms.Application.Run(form);
             }
 
+        }
+        public void LimitsComboBox_OnSelect(Inventor.NameValueMap Context)
+        {
+            if (LimitsComboBox.Text.Equals("Limits")){
+                lims = new EditLimits();
+                System.Windows.Forms.Application.Run(lims);
+            }
         }
         private void m_TreeViewBrowser_OnExecute(Inventor.NameValueMap Context)
         {
@@ -312,47 +308,6 @@ namespace InventorAddInBasicGUI2
 
                     oPane.TopNode.AddChild(oNativeRootNode.BrowserNodeDefinition);
                     i++;
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
-        }
-
-        /// <summary>
-        /// when [ActiveXBrowser] button is clicked
-        /// </summary>
-        /// <param name="Context"></param>
-        /// <remarks></remarks>
-
-
-        
-        /// <summary>
-        /// when [DoBrowserEvents] button is clicked.
-        /// </summary>
-        /// <param name="Context"></param>
-        /// <remarks></remarks>
-        private void m_DoBrowserEvents_OnExecute(Inventor.NameValueMap Context)
-        {
-            try
-            {
-                if (m_DoBrowserEvents.Pressed == false)
-                {
-                    MessageBox.Show("BrowserEvents Starts!");
-
-                    m_DoBrowserEvents.Pressed = true;
-
-                    m_BrowserEvents = m_inventorApplication.ActiveDocument.BrowserPanes.BrowserPanesEvents;
-
-                }
-                else
-                {
-                    MessageBox.Show("BrowserEvents Stops!");
-
-                    m_DoBrowserEvents.Pressed = false;
-
-                    m_BrowserEvents = null;
                 }
             }
             catch (Exception e)

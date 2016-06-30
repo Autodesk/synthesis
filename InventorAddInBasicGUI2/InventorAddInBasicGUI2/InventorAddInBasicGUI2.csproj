@@ -99,6 +99,12 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EditLimits.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditLimits.Designer.cs">
+      <DependentUpon>EditLimits.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
