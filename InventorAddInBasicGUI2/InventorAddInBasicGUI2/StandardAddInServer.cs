@@ -22,10 +22,14 @@ namespace InventorAddInBasicGUI2
         private Inventor.Application m_inventorApplication;
 
         int i;
-
+        static System.Timers.Timer time;
         //button of adding tree view browserpublic 
         Inventor.ButtonDefinition m_TreeViewBrowser;
         Inventor.ButtonDefinition doCouThings;
+        Inventor.ButtonDefinition startExport;
+        Inventor.ButtonDefinition exportRobot;
+        Inventor.ButtonDefinition selectJoint;
+        static Boolean doubleClick;
         //button of adding ActiveX browserpublic 
         //button of starting or stopping BrowserEvents
         //BrowserEvents
@@ -33,10 +37,12 @@ namespace InventorAddInBasicGUI2
 
 
         //ComboBoxDefinition JointsComboBox;
+        Boolean inExportView;
 
         Inventor.ComboBoxDefinitionSink_OnSelectEventHandler JointsComboBox_OnSelectEventDelegate;
-        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler PWMComboBox_OnSelectEventDelegate;
-        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler CANComboBox_OnSelectEventDelegate;
+        Inventor.UserInputEventsSink_OnDoubleClickEventHandler doubleClick_OnSelectEventDelegate;
+
+        Inventor.UserInputEventsSink_OnSelectEventHandler click_OnSelectEventDelegate;
         Form1 form;
         EditLimits lims;
         //HighlightSet
@@ -49,7 +55,9 @@ namespace InventorAddInBasicGUI2
         Inventor.RibbonTab partTab;
         Inventor.RibbonPanel partPanel;
         Inventor.RibbonPanel partPanel2;
+        Inventor.RibbonPanel partPanel3;
         String addInCLSIDString;
+        UserInputEvents UIEvent;
         public StandardAddInServer()
         {
         }
@@ -65,6 +73,8 @@ namespace InventorAddInBasicGUI2
                 addInCLSIDString = "{" + addInCLSID.Value + "}";
                 m_ClientId = " ";
                 i = 0;
+                inExportView = false;
+                doubleClick = false;
                 // This method is called by Inventor when it loads the addin.
                 // The AddInSiteObject provides access to the Inventor Application object.
                 // The FirstTime flag indicates if the addin is loaded for the first time.
@@ -74,29 +84,32 @@ namespace InventorAddInBasicGUI2
                 // TODO: Add ApplicationAddInServer.Activate implementation.
                 // e.g. event initialization, command creation etc.
 
-                int largeIconSize = 0;
-                if (m_inventorApplication.UserInterfaceManager.InterfaceStyle == InterfaceStyleEnum.kRibbonInterface)
-                {
-                    largeIconSize = 32;
-                }
-                else
-                {
-                    largeIconSize = 24;
-                }
-
 
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
                 m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
-                doCouThings = controlDefs.AddButtonDefinition("Cou things", "InventorAddInBrowserPaneAttempt5:CouThings", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+
+                doCouThings = controlDefs.AddButtonDefinition("Cou things", "BxD:RobotExporter:CouThings", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 doCouThings.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(CouThings_OnExecute);
+
+                
+                startExport = controlDefs.AddButtonDefinition("Start Exporter", "BxD:RobotExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                
+                startExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
+
+                exportRobot = controlDefs.AddButtonDefinition("Export Robot", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                exportRobot.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(exportRobot_OnExecute);
+
+                selectJoint = controlDefs.AddButtonDefinition("Select Joint", "BxD:RobotExporter:SelectJoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                selectJoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(selectJoints_OnExecute);
 
                 // Get the assembly ribbon.
                 partRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
                 // Get the "Part" tab.
                 partTab = partRibbon.RibbonTabs.Add("Robot Exporter", "BxD:RobotExporter", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
-                partPanel = partTab.RibbonPanels.Add("Joints", "RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
-                partPanel2 = partTab.RibbonPanels.Add("Limits", "RobotExporter:Limits", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+                partPanel3 = partTab.RibbonPanels.Add("Exporter Control", "BxD:RobotExporter:ExporterControl", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+                partPanel = partTab.RibbonPanels.Add("Joints", "BxD:RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+                partPanel2 = partTab.RibbonPanels.Add("Limits", "BxD:RobotExporter:Limits", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
 
                 JointsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Driver", "Autodesk:SimpleAddIn:Driver", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Driver", "Driver", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
                 LimitsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Has Limits", "Autodesk:SimpleAddIn:HasLimits", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Has Limits", "Has Limits", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
@@ -123,12 +136,23 @@ namespace InventorAddInBasicGUI2
                 LimitsComboBox.ToolTipText = JointsComboBox.Text;
                 LimitsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
 
+                partPanel3.CommandControls.AddButton(startExport);
+                partPanel3.CommandControls.AddButton(exportRobot);
+                partPanel3.CommandControls.AddButton(selectJoint);
+
                 JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
                 LimitsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
                 partPanel2.CommandControls.AddComboBox(LimitsComboBox);
                 //partPanel.CommandControls.AddButton(m_TreeViewBrowser);
-                partPanel.CommandControls.AddButton(doCouThings);
+                //partPanel.CommandControls.AddButton(doCouThings);
 
+                UIEvent = m_inventorApplication.CommandManager.UserInputEvents;
+
+                doubleClick_OnSelectEventDelegate = new UserInputEventsSink_OnDoubleClickEventHandler(oUIEvents_OnDoubleClick);
+                UIEvent.OnDoubleClick += doubleClick_OnSelectEventDelegate;
+
+                click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);
+                UIEvent.OnSelect += click_OnSelectEventDelegate;
             }
             catch (Exception e)
             {
@@ -137,7 +161,7 @@ namespace InventorAddInBasicGUI2
 
         }
 
-     
+
         public void Deactivate()
         {
             // This method is called by Inventor when the AddIn is unloaded.
@@ -175,10 +199,181 @@ namespace InventorAddInBasicGUI2
         }
 
         #endregion
+
+        public void selectJoints_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                AssemblyDocument asmDoc = (AssemblyDocument)
+                         m_inventorApplication.ActiveDocument;
+                ComponentOccurrence joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
+                          (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a joint to edit");
+                ArrayList joints = new ArrayList();
+                foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
+                {
+                    joints.Add(j.AffectedOccurrenceOne);
+                    joints.Add(j.AffectedOccurrenceOne);
+                }
+                Boolean found = false;
+                foreach (ComponentOccurrence j in joints) {
+                    if ((j.Equals(joint))) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    MessageBox.Show("Warning, Not a Joint");
+                } else
+                {
+                    MessageBox.Show("That is a Joint");
+                }
+                //part2.Visible = false;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        public void startExport_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                inExportView = true;
+                //HighlightSet set;
+                //set = m_inventorApplication.ActiveDocument.CreateHighlightSet();
+                //set.AddItem(m_inventorApplication.TransientObjects.CreateColor(255, 0, 0, .8));
+                AssemblyDocument asmDoc = (AssemblyDocument) m_inventorApplication.ActiveDocument;
+                ArrayList joints = new ArrayList();
+                foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
+                {
+                    joints.Add(j.AffectedOccurrenceOne);
+                    joints.Add(j.AffectedOccurrenceOne);
+                }
+                Boolean contains = false;
+                foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
+                {
+                    contains = false;
+                    foreach (ComponentOccurrence j in joints)
+                    {
+
+                        if ((j.Equals(c)))
+                        {
+                            contains = true;
+                        }
+                    }
+                    if (!contains)
+                    {
+                        c.Visible = false;
+                        // c.OverrideOpacity = .05;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        private void oUIEvents_OnDoubleClick(ObjectsEnumerator SelectedEntities, SelectionDeviceEnum SelectionDevice, MouseButtonEnum Button, ShiftStateEnum ShiftKeys, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View, NameValueMap AdditionalInfo, out HandlingCodeEnum HandlingCode)
+
+        {
+            if (inExportView)
+            {
+                HandlingCode = HandlingCodeEnum.kEventHandled;
+                thing();
+            }
+            else
+            {
+                HandlingCode = HandlingCodeEnum.kEventNotHandled;
+            }
+            
+       }
+
+        public void thing()
+        {
+            if (doubleClick == false)
+            {
+                time = new System.Timers.Timer();
+                time.Interval = 500;
+
+                // Hook up the Elapsed event for the timer. 
+                time.Elapsed += OnTimedEvent;
+
+                // Have the timer fire repeated events (treu is the default)
+                time.AutoReset = false;
+
+                // Start the timer
+                time.Enabled = true;
+                doubleClick = true;
+            }
+            else
+            {
+                MessageBox.Show("jnnnnm");
+                time.Enabled = false;
+                time.Stop();
+                doubleClick = false;
+            }
+        }
+
+        private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+        {
+            if (doubleClick == false) {
+                time = new System.Timers.Timer();
+                time.Interval = 500;
+
+                // Hook up the Elapsed event for the timer. 
+                time.Elapsed += OnTimedEvent;
+
+                // Have the timer fire repeated events (treu is the default)
+                time.AutoReset = false;
+
+                // Start the timer
+                time.Enabled = true;
+                doubleClick = true;
+            } else
+            {
+                MessageBox.Show("jnnnnm");
+                time = new System.Timers.Timer();
+                time.Interval = 2000;
+
+                // Hook up the Elapsed event for the timer. 
+                time.Elapsed += OnTimedEvent;
+
+                // Have the timer fire repeated events (treu is the default)
+                time.AutoReset = false;
+
+                // Start the timer
+                time.Enabled = true;
+                doubleClick = true;
+            }
+        }
+
+        private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            time.Enabled = false;
+
+            doubleClick = false;
+        }
+
+        public void exportRobot_OnExecute(Inventor.NameValueMap Context)
+        {
+            inExportView = false;
+            //HighlightSet set;
+            //set = m_inventorApplication.ActiveDocument.CreateHighlightSet();
+            //set.AddItem(m_inventorApplication.TransientObjects.CreateColor(255, 0, 0, .8));
+            AssemblyDocument asmDoc = (AssemblyDocument) m_inventorApplication.ActiveDocument;
+            foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
+            {
+                c.Visible = true;
+            }
+        }
+
         public void CouThings_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
+                //set = m_inventorApplication.ActiveDocument.CreateHighlightSet();
+                //set.AddItem(m_inventorApplication.TransientObjects.CreateColor(255, 0, 0, .8));
                 AssemblyDocument asmDoc = (AssemblyDocument)
                          m_inventorApplication.ActiveDocument;
 
@@ -193,6 +388,10 @@ namespace InventorAddInBasicGUI2
               (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter,
                                                 "Select part 2");
                 MessageBox.Show(part1.Joints.ToString());*/
+                ComponentOccurrence joint = (ComponentOccurrence)
+                           m_inventorApplication.CommandManager.Pick
+              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter,
+                                                "Select a joint to edit");
                 int i = 0;
                 ArrayList joints = new ArrayList();
                 foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
@@ -206,6 +405,7 @@ namespace InventorAddInBasicGUI2
                     contains = false;
                     foreach (ComponentOccurrence j in joints)
                     {
+
                         if ((j.Equals(c)))
                         {
                             contains = true;
@@ -214,7 +414,7 @@ namespace InventorAddInBasicGUI2
 
                     if (!contains)
                     {
-                        c.Visible = false;
+                        c.Transparent = true;
                     }
                 }
                 MessageBox.Show(i.ToString());
@@ -230,6 +430,7 @@ namespace InventorAddInBasicGUI2
         /// <param name="Context"></param>
         /// <remarks></remarks>
         ///  public void createPWMBox()
+
         private void JointsComboBox_OnSelect(NameValueMap context)
         {
             
@@ -261,6 +462,7 @@ namespace InventorAddInBasicGUI2
             }
 
         }
+
         public void LimitsComboBox_OnSelect(Inventor.NameValueMap Context)
         {
             if (LimitsComboBox.Text.Equals("Limits")){
@@ -268,6 +470,7 @@ namespace InventorAddInBasicGUI2
                 System.Windows.Forms.Application.Run(lims);
             }
         }
+
         private void m_TreeViewBrowser_OnExecute(Inventor.NameValueMap Context)
         {
             try
@@ -427,4 +630,3 @@ namespace InventorAddInBasicGUI2
 
 
 }
-
