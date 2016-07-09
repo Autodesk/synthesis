@@ -18,46 +18,65 @@ namespace InventorAddInBasicGUI2
     public class StandardAddInServer : Inventor.ApplicationAddInServer
     {
 
-        // Inventor application object.
+        #region data
+
         private Inventor.Application m_inventorApplication;
 
-        int i;
+        Document oDoc;
+
+        BrowserPanes oPanes;
+
+        static Boolean doubleClick;
+        Boolean FirstTime;
+        Boolean inExportView;
+
         static System.Timers.Timer time;
-        //button of adding tree view browserpublic 
+
         Inventor.ButtonDefinition m_TreeViewBrowser;
         Inventor.ButtonDefinition doCouThings;
         Inventor.ButtonDefinition startExport;
         Inventor.ButtonDefinition exportRobot;
         Inventor.ButtonDefinition selectJoint;
-        static Boolean doubleClick;
-        //button of adding ActiveX browserpublic 
-        //button of starting or stopping BrowserEvents
-        //BrowserEvents
-        // no driver, motor, servo, bumper pneumatics, relay pneumatics, worm screw, dual motor
+        Inventor.ButtonDefinition cancelExport;
+        Inventor.ButtonDefinition selectJointInsideJoint;
+        Inventor.ButtonDefinition editDrivers;
 
-
-        //ComboBoxDefinition JointsComboBox;
-        Boolean inExportView;
+        Inventor.BrowserPane oPane;
 
         Inventor.ComboBoxDefinitionSink_OnSelectEventHandler JointsComboBox_OnSelectEventDelegate;
-        Inventor.UserInputEventsSink_OnDoubleClickEventHandler doubleClick_OnSelectEventDelegate;
-
         Inventor.UserInputEventsSink_OnSelectEventHandler click_OnSelectEventDelegate;
+
+        // Inventor.BrowserNode_OnSelectEventHandler hdsa;
+        // Inventor.UserInputEventsSink_OnDoubleClickEventHandler doubleClick_OnSelectEventDelegate;
+
         Form1 form;
+
         EditLimits lims;
+
         //HighlightSet
         public Inventor.HighlightSet oHighlight;
+
         public string m_ClientId;
+
         private ComboBoxDefinition JointsComboBox;
         private ComboBoxDefinition LimitsComboBox;
 
+        ArrayList joints;
+
         Inventor.Ribbon partRibbon;
+
         Inventor.RibbonTab partTab;
+
         Inventor.RibbonPanel partPanel;
         Inventor.RibbonPanel partPanel2;
         Inventor.RibbonPanel partPanel3;
+
         String addInCLSIDString;
+
         UserInputEvents UIEvent;
+
+        #endregion
+
         public StandardAddInServer()
         {
         }
@@ -72,9 +91,10 @@ namespace InventorAddInBasicGUI2
                 addInCLSID = (GuidAttribute)GuidAttribute.GetCustomAttribute(typeof(StandardAddInServer), typeof(GuidAttribute));
                 addInCLSIDString = "{" + addInCLSID.Value + "}";
                 m_ClientId = " ";
-                i = 0;
                 inExportView = false;
                 doubleClick = false;
+                FirstTime = true;
+                joints = new ArrayList();
                 // This method is called by Inventor when it loads the addin.
                 // The AddInSiteObject provides access to the Inventor Application object.
                 // The FirstTime flag indicates if the addin is loaded for the first time.
@@ -86,19 +106,26 @@ namespace InventorAddInBasicGUI2
 
 
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
-                m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
+                //m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                //m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
 
-                doCouThings = controlDefs.AddButtonDefinition("Cou things", "BxD:RobotExporter:CouThings", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                doCouThings.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(CouThings_OnExecute);
+                //doCouThings = controlDefs.AddButtonDefinition("Cou things", "BxD:RobotExporter:CouThings", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                //doCouThings.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(CouThings_OnExecute);
 
-                
+                editDrivers = controlDefs.AddButtonDefinition("Edit Drivers", "BxD:RobotExporter:EditDrivers", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                editDrivers.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditDrivers_OnExecute);
+
+                selectJointInsideJoint = controlDefs.AddButtonDefinition("Select a Joint Inside of a Joint", "BxD:RobotExporter:SelectaJointInsideofaJoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                selectJointInsideJoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(selectJointInsideJoint_OnExecute);
+
                 startExport = controlDefs.AddButtonDefinition("Start Exporter", "BxD:RobotExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                
                 startExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
 
                 exportRobot = controlDefs.AddButtonDefinition("Export Robot", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 exportRobot.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(exportRobot_OnExecute);
+
+                cancelExport = controlDefs.AddButtonDefinition("Cancel Export", "BxD:RobotExporter:CancelExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                cancelExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(cancelExport_OnExecute);
 
                 selectJoint = controlDefs.AddButtonDefinition("Select Joint", "BxD:RobotExporter:SelectJoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 selectJoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(selectJoints_OnExecute);
@@ -136,10 +163,12 @@ namespace InventorAddInBasicGUI2
                 LimitsComboBox.ToolTipText = JointsComboBox.Text;
                 LimitsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
 
+                partPanel3.CommandControls.AddButton(selectJointInsideJoint);
                 partPanel3.CommandControls.AddButton(startExport);
                 partPanel3.CommandControls.AddButton(exportRobot);
                 partPanel3.CommandControls.AddButton(selectJoint);
-
+                partPanel3.CommandControls.AddButton(cancelExport);
+                partPanel.CommandControls.AddButton(editDrivers);
                 JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
                 LimitsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
                 partPanel2.CommandControls.AddComboBox(LimitsComboBox);
@@ -148,11 +177,35 @@ namespace InventorAddInBasicGUI2
 
                 UIEvent = m_inventorApplication.CommandManager.UserInputEvents;
 
-                doubleClick_OnSelectEventDelegate = new UserInputEventsSink_OnDoubleClickEventHandler(oUIEvents_OnDoubleClick);
-                UIEvent.OnDoubleClick += doubleClick_OnSelectEventDelegate;
+               // doubleClick_OnSelectEventDelegate = new UserInputEventsSink_OnDoubleClickEventHandler(oUIEvents_OnDoubleClick);
+               // UIEvent.OnDoubleClick += doubleClick_OnSelectEventDelegate;
 
                 click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);
                 UIEvent.OnSelect += click_OnSelectEventDelegate;
+
+                JointsComboBox.Enabled = false;
+                LimitsComboBox.Enabled = false;
+                exportRobot.Enabled = false;
+                selectJoint.Enabled = false;
+                startExport.Enabled = true;
+                cancelExport.Enabled = false;
+                editDrivers.Enabled = false;
+                selectJointInsideJoint.Enabled = false;
+                
+                /*oDoc = m_inventorApplication.ActiveDocument;
+                oPanes = oDoc.BrowserPanes;
+                ClientNodeResources oRscs = oPanes.ClientNodeResources;
+                stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
+                ClientNodeResource oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
+                BrowserNodeDefinition oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);
+                Inventor.BrowserPane oPane = oPanes.AddTreeBrowserPane("My Pane", m_ClientId, oDef);
+                BrowserNodeDefinition oDef1 = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Node2", 5, oRsc);
+                BrowserNode oNode1 = oPane.TopNode.AddChild(oDef1);
+                BrowserNodeDefinition oDef2 = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Node3", 6, oRsc);
+                BrowserNode oNode2 = oPane.TopNode.AddChild(oDef2);
+                BrowserNode oNativeRootNode;
+                oNativeRootNode = oDoc.BrowserPanes["Model"].TopNode;
+                oPane.TopNode.AddChild(oNativeRootNode.BrowserNodeDefinition);*/
             }
             catch (Exception e)
             {
@@ -160,7 +213,6 @@ namespace InventorAddInBasicGUI2
             }
 
         }
-
 
         public void Deactivate()
         {
@@ -200,6 +252,28 @@ namespace InventorAddInBasicGUI2
 
         #endregion
 
+        public void selectJointInsideJoint_OnExecute(Inventor.NameValueMap Context)
+        {
+            AssemblyDocument asmDoc = (AssemblyDocument)
+                           m_inventorApplication.ActiveDocument;
+            ComponentOccurrence assembly = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
+                      (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a joint to edit");;
+            if (assembly.SubOccurrences.Count > 0)
+            {
+                foreach (ComponentOccurrence c in assembly.SubOccurrences)
+                {
+                    if(!(c.Joints.Count > 0))
+                    {
+                        c.Enabled = false;
+                       // c.OverrideOpacity = .15;
+                    }
+                }
+            } else
+            {
+                MessageBox.Show("that is not an assembly");
+            }
+        }
+
         public void selectJoints_OnExecute(Inventor.NameValueMap Context)
         {
             try
@@ -237,17 +311,57 @@ namespace InventorAddInBasicGUI2
         public void startExport_OnExecute(Inventor.NameValueMap Context)
         {
             try
+
             {
                 inExportView = true;
-                //HighlightSet set;
-                //set = m_inventorApplication.ActiveDocument.CreateHighlightSet();
-                //set.AddItem(m_inventorApplication.TransientObjects.CreateColor(255, 0, 0, .8));
-                AssemblyDocument asmDoc = (AssemblyDocument) m_inventorApplication.ActiveDocument;
-                ArrayList joints = new ArrayList();
-                foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
+                JointsComboBox.Enabled = true;
+                LimitsComboBox.Enabled = true;
+                exportRobot.Enabled = true;
+                selectJoint.Enabled = true;
+                startExport.Enabled = false;
+                cancelExport.Enabled = true;
+                editDrivers.Enabled = true;
+                selectJointInsideJoint.Enabled = true;
+                AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+
+                BrowserNode node1;
+                BrowserNode node2;
+                int i = 1;
+                if (FirstTime == true)
                 {
-                    joints.Add(j.AffectedOccurrenceOne);
-                    joints.Add(j.AffectedOccurrenceOne);
+                    oDoc = m_inventorApplication.ActiveDocument;
+                    oPanes = oDoc.BrowserPanes;
+                    ObjectCollection oOccurrenceNodes;
+                    oOccurrenceNodes = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                    ClientNodeResources oRscs = oPanes.ClientNodeResources;
+                    stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
+                    ClientNodeResource oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
+                    BrowserNodeDefinition oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);
+                    oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);
+                    FirstTime = false;
+                    ObjectCollection obj;
+                    BrowserNodeDefinition node3;
+                    foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
+                    {
+                        obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                        node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
+                        obj.Add(node1);
+                        node2 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceTwo);
+                        obj.Add(node2);
+                        oPane.AddBrowserFolder("Joint " + i, obj);
+                        //node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
+                        joints.Add(j.AffectedOccurrenceOne);
+                        joints.Add(j.AffectedOccurrenceTwo);
+                        i++;
+
+                        //oPane.TopNode.AddChild(node1.BrowserNodeDefinition);
+                    }
+
+                }
+                else
+                {
+                    oPane.Visible = true;
+                    oPane.Activate();
                 }
                 Boolean contains = false;
                 foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
@@ -263,10 +377,12 @@ namespace InventorAddInBasicGUI2
                     }
                     if (!contains)
                     {
-                        c.Visible = false;
-                        // c.OverrideOpacity = .05;
+                        c.Enabled = false;
+                        //     c.OverrideOpacity = .15;
                     }
+
                 }
+
             }
             catch (Exception e)
             {
@@ -274,21 +390,97 @@ namespace InventorAddInBasicGUI2
             }
         }
 
-        private void oUIEvents_OnDoubleClick(ObjectsEnumerator SelectedEntities, SelectionDeviceEnum SelectionDevice, MouseButtonEnum Button, ShiftStateEnum ShiftKeys, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View, NameValueMap AdditionalInfo, out HandlingCodeEnum HandlingCode)
-
+        //start export with normal nodes
+        /*public void startExport_OnExecute(Inventor.NameValueMap Context)
         {
-            if (inExportView)
-            {
-                HandlingCode = HandlingCodeEnum.kEventHandled;
-                thing();
-            }
-            else
-            {
-                HandlingCode = HandlingCodeEnum.kEventNotHandled;
-            }
-            
-       }
+            try
 
+            {
+                inExportView = true;
+                JointsComboBox.Enabled = true;
+                LimitsComboBox.Enabled = true;
+                exportRobot.Enabled = true;
+                selectJoint.Enabled = true;
+                startExport.Enabled = false;
+                cancelExport.Enabled = true;
+                selectJointInsideJoint.Enabled = true;
+                AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+
+                BrowserNode node1;
+                BrowserNode node2;
+                int i = 1;
+                if (FirstTime == true)
+                {
+                    oDoc = m_inventorApplication.ActiveDocument;
+                    oPanes = oDoc.BrowserPanes;
+                    ObjectCollection oOccurrenceNodes;
+                    oOccurrenceNodes = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                    ClientNodeResources oRscs = oPanes.ClientNodeResources;
+                    stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
+                    ClientNodeResource oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
+                    BrowserNodeDefinition oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);
+                    oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);
+                    FirstTime = false;
+                    ObjectCollection obj;
+                    BrowserNodeDefinition node3;
+                    foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
+                    {
+                        obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                         node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
+                        joints.Add(j.AffectedOccurrenceOne);
+                        joints.Add(j.AffectedOccurrenceTwo);
+                        i++;
+                        
+                        oPane.TopNode.AddChild(node1.BrowserNodeDefinition);
+                    }
+
+                } else
+                {
+                    oPane.Visible = true;
+                    oPane.Activate();
+                }
+                    Boolean contains = false;
+                    foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
+                    {
+                        contains = false;
+                        foreach (ComponentOccurrence j in joints)
+                        {
+
+                            if ((j.Equals(c)))
+                            {
+                                contains = true;
+                            }
+                        }
+                        if (!contains)
+                        {
+                            c.Enabled = false;
+                       //     c.OverrideOpacity = .15;
+                        }
+                    
+                }
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }*/
+
+        /*private void oUIEvents_OnDoubleClick(ObjectsEnumerator SelectedEntities, SelectionDeviceEnum SelectionDevice, MouseButtonEnum Button, ShiftStateEnum ShiftKeys, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View, NameValueMap AdditionalInfo, out HandlingCodeEnum HandlingCode)
+
+            {
+                if (inExportView)
+                {
+                    HandlingCode = HandlingCodeEnum.kEventHandled;
+                    thing();
+                }
+                else
+                {
+                    HandlingCode = HandlingCodeEnum.kEventNotHandled;
+                }
+
+           }
+           */
         public void thing()
         {
             if (doubleClick == false)
@@ -317,34 +509,73 @@ namespace InventorAddInBasicGUI2
 
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
-            if (doubleClick == false) {
-                time = new System.Timers.Timer();
-                time.Interval = 500;
+            /* if (doubleClick == false) {
+                 time = new System.Timers.Timer();
+                 time.Interval = 500;
 
-                // Hook up the Elapsed event for the timer. 
-                time.Elapsed += OnTimedEvent;
+                 // Hook up the Elapsed event for the timer. 
+                 time.Elapsed += OnTimedEvent;
 
-                // Have the timer fire repeated events (treu is the default)
-                time.AutoReset = false;
+                 // Have the timer fire repeated events (treu is the default)
+                 time.AutoReset = false;
 
-                // Start the timer
-                time.Enabled = true;
-                doubleClick = true;
-            } else
+                 // Start the timer
+                 time.Enabled = true;
+                 doubleClick = true;
+             } else
+             {
+                 MessageBox.Show("jnnnnm");
+                 time = new System.Timers.Timer();
+                 time.Interval = 2000;
+
+                 // Hook up the Elapsed event for the timer. 
+                 time.Elapsed += OnTimedEvent;
+
+                 // Have the timer fire repeated events (treu is the default)
+                 time.AutoReset = false;
+
+                 // Start the timer
+                 time.Enabled = true;
+                 doubleClick = true;
+             }*/
+            Boolean found;
+            NativeBrowserNodeDefinition brow;
+            if (SelectionDevice == SelectionDeviceEnum.kGraphicsWindowSelection && inExportView) {// && JustSelectedEntities.Count == 1)
+                    foreach (Object sel in JustSelectedEntities)
+                    {
+                        if (sel is ComponentOccurrence)
+                        {
+                            found = false;
+                            ComponentOccurrence comp = (ComponentOccurrence) sel;
+                            foreach (BrowserFolder n in oPane.TopNode.BrowserFolders)
+                            {
+                                foreach (BrowserNode m in n.BrowserNode.BrowserNodes)
+                                {
+                                    brow = (NativeBrowserNodeDefinition)m.BrowserNodeDefinition;
+                                    if (brow.NativeObject.Equals(sel))
+                                    {
+                                        //comp.Visible = false;
+                                        n.BrowserNode.DoSelect();
+                                        found = true;
+                                    }
+                                }
+                            }
+                        if (!found)
+                        {
+                            foreach (BrowserNode n in oPane.TopNode.BrowserNodes)
+                            {
+                                brow = (NativeBrowserNodeDefinition)n.BrowserNodeDefinition;
+                                if (brow.NativeObject.Equals(sel))
+                                {
+                                    n.DoSelect();
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if(SelectionDevice == SelectionDeviceEnum.kBrowserSelection && inExportView)
             {
-                MessageBox.Show("jnnnnm");
-                time = new System.Timers.Timer();
-                time.Interval = 2000;
 
-                // Hook up the Elapsed event for the timer. 
-                time.Elapsed += OnTimedEvent;
-
-                // Have the timer fire repeated events (treu is the default)
-                time.AutoReset = false;
-
-                // Start the timer
-                time.Enabled = true;
-                doubleClick = true;
             }
         }
 
@@ -364,8 +595,46 @@ namespace InventorAddInBasicGUI2
             AssemblyDocument asmDoc = (AssemblyDocument) m_inventorApplication.ActiveDocument;
             foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
             {
-                c.Visible = true;
+                c.Enabled = true;
+            //    c.OverrideOpacity = 1;
             }
+            JointsComboBox.Enabled = false;
+            LimitsComboBox.Enabled = false;
+            exportRobot.Enabled = false;
+            selectJoint.Enabled = false;
+            startExport.Enabled = true;
+            cancelExport.Enabled = false;
+            editDrivers.Enabled = false;
+            selectJointInsideJoint.Enabled = false;
+            oPane.Visible = false;
+        }
+
+        public void cancelExport_OnExecute(Inventor.NameValueMap Context)
+        {
+            inExportView = false;
+            //HighlightSet set;
+            //set = m_inventorApplication.ActiveDocument.CreateHighlightSet();
+            //set.AddItem(m_inventorApplication.TransientObjects.CreateColor(255, 0, 0, .8));
+            AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+            foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
+            {
+                c.Enabled = true;
+                //c.OverrideOpacity = 1;
+            }
+            JointsComboBox.Enabled = false;
+            LimitsComboBox.Enabled = false;
+            exportRobot.Enabled = false;
+            selectJoint.Enabled = false;
+            startExport.Enabled = true;
+            cancelExport.Enabled = false;
+            editDrivers.Enabled = false;
+            selectJointInsideJoint.Enabled = false;
+            oPane.Visible = false;
+        }
+
+        public void EditDrivers_OnExecute(Inventor.NameValueMap Context)
+        {
+
         }
 
         public void CouThings_OnExecute(Inventor.NameValueMap Context)
@@ -424,13 +693,7 @@ namespace InventorAddInBasicGUI2
                 MessageBox.Show(e.ToString());
             }
         }
-        /// <summary>
-        /// When [HierarchicalBrowser] button is clicked
-        /// </summary>
-        /// <param name="Context"></param>
-        /// <remarks></remarks>
-        ///  public void createPWMBox()
-
+        
         private void JointsComboBox_OnSelect(NameValueMap context)
         {
             
@@ -475,135 +738,26 @@ namespace InventorAddInBasicGUI2
         {
             try
             {
-                if (i == 0)
-                {
-                    Document oDoc = default(Document);
                     oDoc = m_inventorApplication.ActiveDocument;
-
-                    BrowserPanes oPanes = default(BrowserPanes);
                     oPanes = oDoc.BrowserPanes;
-
-                    //Create a standard Microsoft Windows IPictureDisp referencing an icon (.bmp) bitmap file.
-                    //Change the file referenced here as appropriate - here the code references test.bmp.
-                    //This is the icon that will be displayed at this node. Add the IPictureDisp to the client node resource.
-
                     ClientNodeResources oRscs = oPanes.ClientNodeResources;
-
                     stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
-
                     ClientNodeResource oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
-
                     BrowserNodeDefinition oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);
-
-                    //adding a new pane tab to the panes collection, define the top node the pane will contain.
                     Inventor.BrowserPane oPane = oPanes.AddTreeBrowserPane("My Pane", m_ClientId, oDef);
-
-                    //Add two child nodes to the tree, labeled Node 2 and Node 3.
                     BrowserNodeDefinition oDef1 = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Node2", 5, oRsc);
                     BrowserNode oNode1 = oPane.TopNode.AddChild(oDef1);
-
                     BrowserNodeDefinition oDef2 = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Node3", 6, oRsc);
                     BrowserNode oNode2 = oPane.TopNode.AddChild(oDef2);
-
-                    //Add the native node (from root)  of "Model" pane to the tree
-                    BrowserNode oNativeRootNode = default(BrowserNode);
-                    oNativeRootNode = oDoc.BrowserPanes["Model"].TopNode;
-
-                    oPane.TopNode.AddChild(oNativeRootNode.BrowserNodeDefinition);
-                    i++;
-                }
+                   // oNativeRootNode = oDoc.BrowserPanes["Model"].TopNode;
+                   // oPane.TopNode.AddChild(oNativeRootNode.BrowserNodeDefinition);
+                
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
         }
-
-        /// <summary>
-        /// fire when custom node  is activated
-        /// </summary>
-        /// <param name="BrowserNodeDefinition"></param>
-        /// <param name="Context"></param>
-        /// <param name="HandlingCode"></param>
-        /// <remarks></remarks>
-        private void m_BrowserEvents_OnBrowserNodeActivate(object BrowserNodeDefinition, Inventor.NameValueMap Context, ref Inventor.HandlingCodeEnum HandlingCode)
-        {
-            MessageBox.Show("OnBrowserNodeActivate");
-        }
-
-        /// <summary>
-        /// delete custom nodes
-        /// </summary>
-        /// <param name="BrowserNodeDefinition"></param>
-        /// <param name="BeforeOrAfter"></param>
-        /// <param name="Context"></param>
-        /// <param name="HandlingCode"></param>
-        /// <remarks></remarks>
-        private void m_BrowserEvents_OnBrowserNodeDeleteEntry(object BrowserNodeDefinition, Inventor.EventTimingEnum BeforeOrAfter, Inventor.NameValueMap Context, ref Inventor.HandlingCodeEnum HandlingCode)
-        {
-            MessageBox.Show("OnBrowserNodeDeleteEntry");
-            //do deletion by the client
-
-            if (BeforeOrAfter == EventTimingEnum.kAfter)
-            {
-                ClientBrowserNodeDefinition oBND = (ClientBrowserNodeDefinition)BrowserNodeDefinition;
-                oBND.Delete();
-
-            }
-        }
-
-
-        private void m_BrowserEvents_OnBrowserNodeGetDisplayObjects(object BrowserNodeDefinition, ref Inventor.ObjectCollection Objects, Inventor.NameValueMap Context, ref Inventor.HandlingCodeEnum HandlingCode)
-        {
-            PartDocument oPartDocument = m_inventorApplication.ActiveDocument as PartDocument;
-            PartComponentDefinition oPartDef = oPartDocument.ComponentDefinition;
-
-            if (oHighlight == null)
-            {
-                oHighlight = oPartDocument.CreateHighlightSet();
-            }
-            else
-            {
-                oHighlight.Clear();
-            }
-
-            Inventor.Color oColor = default(Inventor.Color);
-            oColor = m_inventorApplication.TransientObjects.CreateColor(128, 22, 22);
-
-            // Set the opacity
-            oColor.Opacity = 0.8;
-            oHighlight.Color = oColor;
-
-            if (BrowserNodeDefinition is ClientBrowserNodeDefinition)
-            {
-                ClientBrowserNodeDefinition oClientB = (ClientBrowserNodeDefinition)BrowserNodeDefinition;
-                //highlight all ExtrudeFeature
-                if (oClientB.Label == "Node2")
-                {
-
-                    foreach (ExtrudeFeature oExtrudeF in oPartDef.Features.ExtrudeFeatures)
-                    {
-                        oHighlight.AddItem(oExtrudeF);
-                    }
-                    //highlight all RevolveFeature
-                }
-                else if (oClientB.Label == "Node3")
-                {
-
-                    foreach (RevolveFeature oRevolveF in oPartDef.Features.RevolveFeatures)
-                    {
-                        oHighlight.AddItem(oRevolveF);
-                    }
-                }
-            }
-
-        }
-
-        private void m_BrowserEvents_OnBrowserNodeLabelEdit(object BrowserNodeDefinition, string NewLabel, Inventor.EventTimingEnum BeforeOrAfter, Inventor.NameValueMap Context, ref Inventor.HandlingCodeEnum HandlingCode)
-        {
-            MessageBox.Show("OnBrowserNodeLabelEdit");
-        }
-
     }
 
     //from http://blogs.msdn.com/b/andreww/archive/2007/07/30/converting-between-ipicturedisp-and-system-drawing-image.aspx
