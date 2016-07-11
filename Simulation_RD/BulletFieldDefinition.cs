@@ -20,14 +20,15 @@ namespace Simulation_RD
         /// <summary>
         /// Bullet definition of the collision mesh
         /// </summary>
-        public RigidBody BulletObject;
+        public List<RigidBody> Bodies;
 
         private void CreateMesh(string filePath)
         {
+            Bodies = new List<RigidBody>();
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(filePath);
 
-            CompoundShape shape = new CompoundShape();
+            //CompoundShape shape = new CompoundShape();
             
             foreach(FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
             {
@@ -82,8 +83,8 @@ namespace Simulation_RD
                                     }
                                     else
                                     {
-                                        TriangleMesh tMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[node.CollisionMeshID], vertices);
-                                        subShape = new BvhTriangleMeshShape(tMesh, false);
+                                        StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[node.CollisionMeshID], vertices);
+                                        subShape = new GImpactMeshShape(sMesh);
                                         //if (debug) Console.WriteLine("Created Concave Mesh");
                                     }
                                 }
@@ -97,15 +98,20 @@ namespace Simulation_RD
                         //set sub shape local position/rotation and add it to the compound shape
                         Vector3 Translation = new Vector3(node.Position.x, node.Position.y, node.Position.z);
                         Quaternion rotation = new Quaternion(node.Rotation.X, node.Rotation.Y, node.Rotation.Z, node.Rotation.W);
-                        shape.AddChildShape(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation), shape);
+                        //shape.AddChildShape(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation), shape);
+                        DefaultMotionState m = new DefaultMotionState(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation));
+                        RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(1, m, subShape);
+                        Bodies.Add(new RigidBody(rbci));
                     }
                     
                 }
             }
 
-            DefaultMotionState m = new DefaultMotionState();
-            RigidBodyConstructionInfo rb = new RigidBodyConstructionInfo(mesh.physics.mass, m, shape);
-            BulletObject = new RigidBody(rb);
+            //BXDVector3 com = mesh.physics.centerOfMass;
+            //Vector3 bulletCom = new Vector3(com.x, com.y, com.z);
+            //DefaultMotionState m = new DefaultMotionState(Matrix4.CreateTranslation(bulletCom));
+            //RigidBodyConstructionInfo rb = new RigidBodyConstructionInfo(mesh.physics.mass, m, shape);
+            //BulletObject = new RigidBody(rb);
         }
 
         /// <summary>

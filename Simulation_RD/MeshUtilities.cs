@@ -37,19 +37,14 @@ namespace Simulation_RD
         /// <param name="subMesh"></param>
         /// <param name="vertices"></param>
         /// <returns></returns>
-        public static TriangleMesh BulletShapeFromSubMesh(BXDAMesh.BXDASubMesh subMesh, Vector3[] vertices)
+        public static StridingMeshInterface BulletShapeFromSubMesh(BXDAMesh.BXDASubMesh subMesh, Vector3[] vertices)
         {
             TriangleMesh tMesh = new TriangleMesh();
             foreach (BXDAMesh.BXDASurface surf in subMesh.surfaces)
             {
-                for (int i = 0; i < surf.indicies.Length; i += 3)
-                {
-                    tMesh.AddTriangle(
-                        vertices[surf.indicies[i]],
-                        vertices[surf.indicies[i + 1]],
-                        vertices[surf.indicies[i + 2]]
-                        );
-                }
+                TriangleIndexVertexArray vertexArray = new TriangleIndexVertexArray(surf.indicies, vertices);
+                MultimaterialTriangleMeshShape m = new MultimaterialTriangleMeshShape(vertexArray, true);
+                
             }
             return tMesh;
         }

@@ -56,10 +56,10 @@ namespace Simulation_RD
             {
                 BXDAMesh.BXDASubMesh sub = mesh.colliders[i];
                 Vector3[] vertices = MeshUtilities.DataToVector(sub.verts);
-                TriangleMesh tmesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[i], vertices);
+                StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[i], vertices);
 
                 //I don't believe there are any transformations necessary here.
-                shape.AddChildShape(Matrix4.Zero, new BvhTriangleMeshShape(tmesh, true));
+                shape.AddChildShape(Matrix4.Zero, new GImpactMeshShape(sMesh));
                 //Console.WriteLine("Successfully created and added sub shape");
             }
 

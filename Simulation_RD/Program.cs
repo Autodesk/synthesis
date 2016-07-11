@@ -6,13 +6,19 @@ using OpenTK;
 
 namespace Simulation_RD
 {
+    //Issue: Stepping the world with both a field and robot object will cause a stack overflow exception.
+    //Just adding them will not cause an exception.
+    //Just stepping with either a field or a robot rigid body will work.
+    //I have no explanation for this
+    //Good luck
+
     class Program
     {
         static GameWindow game;
 
         static void Main(string[] args)
         {
-            Dictionary<string, RigidBody> btBodies = new Dictionary<string, RigidBody>();
+            List<RigidBody> btBodies = new List<RigidBody>();
             /*
             //GameWindow constructor does have options for arguments, but we're using default constructor for now.
             game = new GameWindow();
@@ -43,27 +49,29 @@ namespace Simulation_RD
             RigidNode_Base.NODE_FACTORY = delegate (Guid guid) { return new BulletRigidNode(guid); };
             RigidNode_Base skeleton = BXDJSkeleton.ReadSkeleton(robotPath + "skeleton.bxdj");
             List<RigidNode_Base> nodes = skeleton.ListAllNodes();
-            for(int i = 0; i < nodes.Count * 10; i++)
+            for(int i = 0; i < nodes.Count; i++)
             {
                 BulletRigidNode bNode = (BulletRigidNode)nodes[i % nodes.Count];
                 bNode.CreateRigidBody(robotPath + bNode.ModelFileName);
-                btBodies.Add("Field Mesh " + i, field.BulletObject);
-                if (i == 20)
-                {
-                    bNode = (BulletRigidNode)nodes[0];
-                    bNode.CreateRigidBody(robotPath + bNode.ModelFileName);
-                    btBodies.Add("Robot Mesh", bNode.BulletObject);
-                }
+                //btBodies.Add("Field Mesh " + i, field.BulletObject);
+                //if (i == 20)
+                //{
+                //    bNode = (BulletRigidNode)nodes[0];
+                //    bNode.CreateRigidBody(robotPath + bNode.ModelFileName);
+                    
+                //}
+                btBodies.Add(bNode.BulletObject);
             }
             Console.WriteLine("[DONE ROBOT]");
 
-            //btBodies.Add("Field Mesh", field.BulletObject);
+            field.Bodies.ForEach((b) => btBodies.Add(b));
 
             foreach (var entry in btBodies)
             {
-                Console.WriteLine("Adding " + entry.Key);
-                world.AddRigidBody(entry.Value);
-                world.StepSimulation(1.0f / 60.0f);                         
+                //Console.WriteLine("Adding " + entry.Key);
+                world.AddRigidBody(entry);
+                world.StepSimulation(1.0f / 60.0f);
+                Console.WriteLine("Adding/Stepping");
             }
 
             //for (int i = 0; i < 30; i++)
