@@ -315,10 +315,10 @@ public class Init : MonoBehaviour
 
 		if (fieldBrowser == null) {
 			fieldBrowser = new FileBrowser ("Load Field", false);
-			fieldBrowser.Active = true;
+			fieldBrowser.Active = false;
 			fieldBrowser.OnComplete += (object obj) => 
 			{
-				fieldBrowser.Active = true;
+				fieldBrowser.Active = false;
 				string fileLocation = (string) obj;
 				// If dir was selected...
 				if (File.Exists(fileLocation + "\\definition.bxdf"))
@@ -602,7 +602,9 @@ public class Init : MonoBehaviour
 
 		totes = new List<GameObject> ();
 
-		filePath = Application.dataPath + "\\resources\\FieldOutput\\";
+        filePath = PlayerPrefs.GetString("Field");
+        Debug.Log(filePath);
+        reloadFieldInFrames = 2;
 
         reloadRobotInFrames = -1;
     }
@@ -639,14 +641,15 @@ public class Init : MonoBehaviour
 
 			if (fieldLoaded)
 			{
-				reloadRobotInFrames = 2;
+                filePath = PlayerPrefs.GetString("Robot");
+                TryLoadRobot();
 				showStatWindow = true;
 				showHelpWindow = true;
 			}
 			else
 			{
-				fieldBrowser.Active = true;
-				UserMessageManager.Dispatch("Incompatible Mesh!", 10f);
+                UserMessageManager.Dispatch("Incompatible Mesh!", 10f);
+                Application.LoadLevel(0);
 			}
 		}
 
