@@ -26,7 +26,7 @@ class FileBrowser : OverlayWindow
 	/// </summary>
 	private string title;
 	
-	private bool _active;	
+	private bool _active;
 	
 	private bool _allowEsc;
 	
@@ -55,12 +55,15 @@ class FileBrowser : OverlayWindow
 	/// Internal reference to the last click time.
 	/// </summary>
 	private float lastClick = 0;
-
-    /// <summary>
-    /// Creating variables for the buttons.
-    /// </summary>
-    public Texture2D buttonImage;
-    
+	/// <summary>
+	/// Creating variables for the buttons.
+	/// </summary>
+	private Texture2D buttonImage;
+	private Texture2D buttonSelected;
+	private Font f;
+	private GUIStyle fileBrowserWindow;
+	private static GUIStyle fileBrowserButton;
+	private GUIStyle fileBrowserLabel;
 	
 	public FileBrowser(string windowTitle, bool allowEsc = true)
 	{
@@ -91,9 +94,24 @@ class FileBrowser : OverlayWindow
 		{
 			directoryLocation = Directory.GetParent(Application.dataPath).FullName;
 		}
-        buttonImage = Resources.Load("Images/buttontexture") as Texture2D;
-        GUI.skin.button.normal.background = (Texture2D)buttonImage;
-    }
+		buttonImage = Resources.Load("Images/buttontexture") as Texture2D;
+		buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+		f = Resources.Load ("Fonts/Gravity-Regular") as Font;
+		fileBrowserWindow = new GUIStyle (GUI.skin.window);
+		fileBrowserWindow.normal.background = buttonImage;
+		fileBrowserWindow.onNormal.background = buttonImage;
+		fileBrowserWindow.font = f;
+		fileBrowserButton = new GUIStyle (GUI.skin.button);
+		fileBrowserButton.font = f;
+		fileBrowserButton.normal.background = buttonImage;
+		fileBrowserButton.hover.background = buttonSelected;
+		fileBrowserButton.active.background = buttonSelected;
+		fileBrowserButton.onNormal.background = buttonSelected;
+		fileBrowserButton.onHover.background = buttonSelected;
+		fileBrowserButton.onActive.background = buttonSelected;
+		fileBrowserLabel = new GUIStyle (GUI.skin.label);
+		fileBrowserLabel.font = f;
+	}
 	
 	/// <summary>
 	/// Draws the given list as buttons, and returns whichever one was selected.
@@ -109,12 +127,14 @@ class FileBrowser : OverlayWindow
 		Color bg = GUI.backgroundColor;
 		foreach (T o in items)
 		{
+			
+			
 			string entry = stringify != null ? stringify(o) : o.ToString();
 			if (highlight != null && highlight.Equals(entry))
 			{
 				GUI.backgroundColor = new Color(1f, 0.25f, 0.25f, bg.a);
 			}
-			if (GUILayout.Button(entry))
+			if (GUILayout.Button(entry, fileBrowserButton))
 			{
 				selected = o;
 			}
@@ -131,7 +151,6 @@ class FileBrowser : OverlayWindow
 	{
 		DirectoryInfo directoryInfo;
 		DirectoryInfo directorySelection;
-		int contentWidth;
 		
 		// Get the directory info of the current location
 		{
@@ -150,12 +169,12 @@ class FileBrowser : OverlayWindow
 			}
 		}
 		
-		if (_allowEsc && GUI.Button(new Rect(335, 20, 80, 20), "Exit"))
+		if (_allowEsc && GUI.Button(new Rect(335, 5, 80, 20), "Exit", fileBrowserButton))
 		{
 			Active = false;
 		}
 		
-		if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 20, 200, 20), "Up one level"))
+		if (directoryInfo.Parent != null && GUI.Button(new Rect(440, 390, 110, 25), "Up one level", fileBrowserButton))
 		{
 			directoryInfo = directoryInfo.Parent;
 			directoryLocation = directoryInfo.FullName;
@@ -163,8 +182,8 @@ class FileBrowser : OverlayWindow
 		
 		
 		// Handle the directories list
-		GUILayout.BeginArea(new Rect(10, 40, 410, 300));
-		GUILayout.Label("Directories:");
+		GUILayout.BeginArea(new Rect(5, 5, 480, 300));
+		GUILayout.Label("Directories:", fileBrowserLabel);
 		directoryScroll = GUILayout.BeginScrollView(directoryScroll);
 		directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
 		                                {
@@ -180,16 +199,15 @@ class FileBrowser : OverlayWindow
 		}
 		
 		// The manual location box and the select button
-		GUILayout.BeginArea(new Rect(10, 350, 410, 20));
+		GUILayout.BeginArea(new Rect(10, 390, 480, 25));
 		GUILayout.BeginHorizontal();
 		const int labelLen = 50;
 		GUILayout.Label(directoryLocation.Length > labelLen ?
-		                directoryLocation.Substring(0, 5) + "..." +
-		                directoryLocation.Substring(directoryLocation.Length - labelLen + 8) : directoryLocation);
+		                directoryLocation.Substring(0, 5) + "..." + directoryLocation.Substring(directoryLocation.Length - labelLen + 8) : 
+		                directoryLocation);
 		
-		contentWidth = (int) GUI.skin.GetStyle("Button").CalcSize(new GUIContent("Select")).x;
 		bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
-		if (doubleClick || GUILayout.Button("Select", GUILayout.Width(contentWidth)))
+		if (doubleClick || GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(58)))
 		{
 			_active = false;
 			if (OnComplete != null)
@@ -210,8 +228,8 @@ class FileBrowser : OverlayWindow
 	{
 		if (_active)
 		{
-			windowRect = new Rect((Screen.width - 430) / 2, (Screen.height - 380) / 2, 430, 380);
-			GUI.Window(0, windowRect, FileBrowserWindow, title);
+			windowRect = new Rect((Screen.width - 500) / 2, (Screen.height - 420) / 2, 500, 420);
+			GUI.Window(0, windowRect, FileBrowserWindow, title, fileBrowserWindow);
 		}
 	}
 	
