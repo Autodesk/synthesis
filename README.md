@@ -2,8 +2,10 @@
 
 ##How to Setup:
 
-The project is done in Unity 4.6. It will not work in Unity 5 so make sure you have the proper version of Unity.
+The project is done in Unity 4.7.2. It will not work in Unity 5 so make sure you have the proper version of Unity.
 All scripts are done in C# and it is recommended you use Visual Studio 15.
+
+Unity 4.7.2 Download Link: http://download.unity3d.com/download_unity/UnitySetup-4.7.2.exe?_ga=1.24554099.89205971.1466521794
 
 - To open the project, select and open the 'Aardvark-Unity' project folder in Unity. It should be located wherever you cloned the repository.
 - To open the scene, click file -> open scene -> load 'Aardvark-Unity/Assets/Scene/Scene.unity'
