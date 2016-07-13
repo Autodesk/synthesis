@@ -55,3 +55,6 @@ Thumbs.db
 *.bxda
 *.bxdf
 *.stl
+
+#doxygen generated files
+codeDocs/*
