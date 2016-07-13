@@ -56,13 +56,28 @@ class FileBrowser : OverlayWindow
 	/// </summary>
 	private float lastClick = 0;
 	/// <summary>
-	/// Creating variables for the buttons.
+	/// Dedtault button texture.
 	/// </summary>
 	private Texture2D buttonImage;
+    /// <summary>
+	/// Selected button texture.
+	/// </summary>
 	private Texture2D buttonSelected;
+    /// <summary>
+	/// FileBrowser font, Gravity-Regular.
+	/// </summary>
 	private Font f;
+    /// <summary>
+	/// Custom GUIStyle for FileBrowser windows.
+	/// </summary>
 	private GUIStyle fileBrowserWindow;
+    /// <summary>
+	/// Custom GUIStyle for FileBrowser buttons.
+	/// </summary>
 	private static GUIStyle fileBrowserButton;
+    /// <summary>
+	/// Custom GUIStyle for FileBrowser labels.
+	/// </summary>s
 	private GUIStyle fileBrowserLabel;
 	
 	public FileBrowser(string windowTitle, bool allowEsc = true)
@@ -94,13 +109,19 @@ class FileBrowser : OverlayWindow
 		{
 			directoryLocation = Directory.GetParent(Application.dataPath).FullName;
 		}
+
+        //Loads textures and fonts
 		buttonImage = Resources.Load("Images/buttontexture") as Texture2D;
 		buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
 		f = Resources.Load ("Fonts/Gravity-Regular") as Font;
+        
+        //Custom style for windows
 		fileBrowserWindow = new GUIStyle (GUI.skin.window);
 		fileBrowserWindow.normal.background = buttonImage;
 		fileBrowserWindow.onNormal.background = buttonImage;
 		fileBrowserWindow.font = f;
+
+        //Custom style for buttons
 		fileBrowserButton = new GUIStyle (GUI.skin.button);
 		fileBrowserButton.font = f;
 		fileBrowserButton.normal.background = buttonImage;
@@ -109,6 +130,8 @@ class FileBrowser : OverlayWindow
 		fileBrowserButton.onNormal.background = buttonSelected;
 		fileBrowserButton.onHover.background = buttonSelected;
 		fileBrowserButton.onActive.background = buttonSelected;
+
+        //Custom style for labels
 		fileBrowserLabel = new GUIStyle (GUI.skin.label);
 		fileBrowserLabel.font = f;
 	}
@@ -169,12 +192,12 @@ class FileBrowser : OverlayWindow
 			}
 		}
 		
-		if (_allowEsc && GUI.Button(new Rect(335, 5, 80, 20), "Exit", fileBrowserButton))
+		if (_allowEsc && GUI.Button(new Rect(410, 10, 80, 20), "Exit", fileBrowserButton))
 		{
 			Active = false;
 		}
 		
-		if (directoryInfo.Parent != null && GUI.Button(new Rect(440, 390, 110, 25), "Up one level", fileBrowserButton))
+		if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 10, 110, 25), "Up one level", fileBrowserButton))
 		{
 			directoryInfo = directoryInfo.Parent;
 			directoryLocation = directoryInfo.FullName;
@@ -182,7 +205,7 @@ class FileBrowser : OverlayWindow
 		
 		
 		// Handle the directories list
-		GUILayout.BeginArea(new Rect(5, 5, 480, 300));
+		GUILayout.BeginArea(new Rect(10, 35, 480, 300));
 		GUILayout.Label("Directories:", fileBrowserLabel);
 		directoryScroll = GUILayout.BeginScrollView(directoryScroll);
 		directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
