@@ -31,3 +31,7 @@ ExportedObj/
 Icon?
 ehthumbs.db
 Thumbs.db
+
+## vim backup files
+*.sw*
+*~
