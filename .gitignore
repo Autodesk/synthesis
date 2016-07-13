@@ -4,7 +4,8 @@
 Temp/
 Obj/
 UnityGenerated/
-/Library/
+/Library/*
+*.meta
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -19,6 +20,19 @@ ExportedObj/
 *.user
 *.unityproj
 *.booproj
+*AssetDatabase*
+*.cache
+
+### compilied
+*tlog
+*.log
+*.pdb
+*.exe
+*.obj
+*.lib
+*.pdb
+*.dll
+*.mdb
 
 # ============ #
 # OS generated #
@@ -35,3 +49,9 @@ Thumbs.db
 ## vim backup files
 *.sw*
 *~
+
+#robot export files
+*.bxdj
+*.bxda
+*.bxdf
+*.stl
