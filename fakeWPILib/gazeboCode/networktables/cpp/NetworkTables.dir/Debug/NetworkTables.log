@@ -1,0 +1,4 @@
+﻿C:\Program Files (x86)\MSBuild\14.0\bin\Microsoft.Common.CurrentVersion.targets(1611,5): warning : The referenced project 'C:/Users/T_hics/Documents/GitHub/allwpilib/build/ZERO_CHECK.vcxproj' does not exist.
+  Building Custom Rule C:/Users/T_hics/Documents/GitHub/allwpilib/networktables/cpp/CMakeLists.txt
+  The system cannot find the path specified.
+C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppCommon.targets(171,5): error MSB6006: "cmd.exe" exited with code 3.
