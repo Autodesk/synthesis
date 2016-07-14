@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
 using BulletSharp;
 
@@ -22,9 +19,13 @@ namespace Simulation_RD
         /// </summary>
         public List<RigidBody> Bodies;
 
+        public List<Mesh> VisualMeshes;
+
         private void CreateMesh(string filePath)
         {
             Bodies = new List<RigidBody>();
+            VisualMeshes = new List<Mesh>();
+
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(filePath);
 
@@ -45,6 +46,7 @@ namespace Simulation_RD
                     }
                 }
                 */
+
 
                 if (GetPropertySets().ContainsKey(node.PropertySetID))
                 {
@@ -74,6 +76,7 @@ namespace Simulation_RD
                                 if(node.CollisionMeshID != -1)
                                 {
                                     PropertySet.MeshCollider colliderInfo = (PropertySet.MeshCollider)current.Collider;
+
                                     Vector3[] vertices = MeshUtilities.DataToVector(mesh.colliders[node.CollisionMeshID].verts);
 
                                     if (colliderInfo.Convex)
@@ -102,6 +105,11 @@ namespace Simulation_RD
                         DefaultMotionState m = new DefaultMotionState(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation));
                         RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(1, m, subShape);
                         Bodies.Add(new RigidBody(rbci));
+                        //rbci.Dispose();
+                        //m.Dispose();
+                        
+                        //if(node.CollisionMeshID != -1)
+                        VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID]));
                     }
                     
                 }
