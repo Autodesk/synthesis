@@ -16,10 +16,10 @@ namespace InventorAddInBasicGUI2
         {
             InitializeComponent();
         }
-        public void onSave(object sender, EventArgs e)
+        public void saveFile()
         {
-            // MessageBox.Show(openFileDialog1.FileName);
-            MessageBox.Show("sdaad");
+            saveFileDialog1.ShowDialog();
+            String pathToSave = saveFileDialog1.FileName;
         }
     }
 }

@@ -44,17 +44,17 @@ namespace InventorAddInBasicGUI2
         Inventor.BrowserPane oPane;
 
         Inventor.ComboBoxDefinitionSink_OnSelectEventHandler JointsComboBox_OnSelectEventDelegate;
+        Inventor.ComboBoxDefinitionSink_OnSelectEventHandler LimitsComboBox_OnSelectEventDelegate;
         Inventor.UserInputEventsSink_OnSelectEventHandler click_OnSelectEventDelegate;
-
-        // Inventor.BrowserNode_OnSelectEventHandler hdsa;
-        // Inventor.UserInputEventsSink_OnDoubleClickEventHandler doubleClick_OnSelectEventDelegate;
+        Inventor.UserInputEventsSink_OnUnSelectEventHandler click_OnUnSelectEventDelegate;
 
         Form1 form;
 
+        bool doWerk;
+
         EditLimits lims;
 
-        //HighlightSet
-        public Inventor.HighlightSet oHighlight;
+        UserControl1 control;
 
         public string m_ClientId;
 
@@ -63,9 +63,12 @@ namespace InventorAddInBasicGUI2
 
         ArrayList joints;
 
+        JointData selectedJointData;
+
         Inventor.Ribbon partRibbon;
 
         Inventor.RibbonTab partTab;
+        
 
         public static String pathToSaveTo;
 
@@ -77,6 +80,7 @@ namespace InventorAddInBasicGUI2
 
         UserInputEvents UIEvent;
 
+        ArrayList jointList;
         #endregion
 
         public StandardAddInServer()
@@ -96,7 +100,7 @@ namespace InventorAddInBasicGUI2
                 inExportView = false;
                 doubleClick = false;
                 FirstTime = true;
-                joints = new ArrayList();
+                control = new UserControl1();
                 // This method is called by Inventor when it loads the addin.
                 // The AddInSiteObject provides access to the Inventor Application object.
                 // The FirstTime flag indicates if the addin is loaded for the first time.
@@ -106,8 +110,12 @@ namespace InventorAddInBasicGUI2
                 // TODO: Add ApplicationAddInServer.Activate implementation.
                 // e.g. event initialization, command creation etc.
 
+
+                doWerk = true;
+
                 Rotating = true;
 
+                form = new Form1();
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
                 //m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 //m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
@@ -172,8 +180,8 @@ namespace InventorAddInBasicGUI2
                 partPanel3.CommandControls.AddButton(selectJoint);
                 partPanel3.CommandControls.AddButton(cancelExport);
                 partPanel.CommandControls.AddButton(editDrivers);
-                JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
-                LimitsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
+                LimitsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
+                LimitsComboBox.OnSelect += LimitsComboBox_OnSelectEventDelegate;
                 partPanel2.CommandControls.AddComboBox(LimitsComboBox);
                 //partPanel.CommandControls.AddButton(m_TreeViewBrowser);
                 //partPanel.CommandControls.AddButton(doCouThings);
@@ -184,7 +192,9 @@ namespace InventorAddInBasicGUI2
                 // UIEvent.OnDoubleClick += doubleClick_OnSelectEventDelegate;
 
                 click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);
+                click_OnUnSelectEventDelegate = new UserInputEventsSink_OnUnSelectEventHandler(oUIEvents_OnUnSelect);
                 UIEvent.OnSelect += click_OnSelectEventDelegate;
+                UIEvent.OnUnSelect += click_OnUnSelectEventDelegate;
 
                 JointsComboBox.Enabled = false;
                 LimitsComboBox.Enabled = false;
@@ -314,8 +324,9 @@ namespace InventorAddInBasicGUI2
         public void startExport_OnExecute(Inventor.NameValueMap Context)
         {
             try
-
             {
+
+                JointData assemblyJoint;
                 inExportView = true;
                 JointsComboBox.Enabled = true;
                 LimitsComboBox.Enabled = true;
@@ -327,6 +338,8 @@ namespace InventorAddInBasicGUI2
                 selectJointInsideJoint.Enabled = true;
                 AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
 
+                jointList = new ArrayList();
+                joints = new ArrayList();
                 BrowserNode node1;
                 BrowserNode node2;
                 int i = 1;
@@ -342,31 +355,33 @@ namespace InventorAddInBasicGUI2
                     BrowserNodeDefinition oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);
                     oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);
                     FirstTime = false;
-                    ObjectCollection obj;
-                    BrowserNode node3;
-                    foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
-                    {
-                        obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
-                        node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
-                        obj.Add(node1);
-                        node2 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceTwo);
-                        obj.Add(node2);
-                        node3 = oPane.GetBrowserNodeFromObject(j);
-                        obj.Add(node3);
-                        oPane.AddBrowserFolder("Joint " + i, obj);
-                        //node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
-                        joints.Add(j.AffectedOccurrenceOne);
-                        joints.Add(j.AffectedOccurrenceTwo);
-                        i++;
-
-                        //oPane.TopNode.AddChild(node1.BrowserNodeDefinition);
-                    }
-
+                    
                 }
                 else
                 {
                     oPane.Visible = true;
                     oPane.Activate();
+                }
+                ObjectCollection obj;
+                BrowserNode node3;
+                foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
+                {
+                    obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                    node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
+                    obj.Add(node1);
+                    node2 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceTwo);
+                    obj.Add(node2);
+                    node3 = oPane.GetBrowserNodeFromObject(j);
+                    obj.Add(node3);
+                    oPane.AddBrowserFolder("Joint " + i, obj);
+                    //node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
+                    joints.Add(j.AffectedOccurrenceOne);
+                    joints.Add(j.AffectedOccurrenceTwo);
+                    i++;
+                    assemblyJoint = new JointData(j);
+                    jointList.Add(assemblyJoint);
+
+                    //oPane.TopNode.AddChild(node1.BrowserNodeDefinition);
                 }
                 Boolean contains = false;
                 foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
@@ -486,7 +501,8 @@ namespace InventorAddInBasicGUI2
 
            }
            */
-        public void thing()
+
+        void thing()
         {
             if (doubleClick == false)
             {
@@ -588,21 +604,87 @@ namespace InventorAddInBasicGUI2
                         {
                             if (n.NativeObject is AssemblyJoint)
                             {
-                                if (((AssemblyJoint)n.NativeObject).Definition.JointType == AssemblyJointTypeEnum.kRotationalJointType) {
+                                if (((AssemblyJoint)n.NativeObject).Definition.JointType == AssemblyJointTypeEnum.kRotationalJointType)
+                                {
                                     JointTypeRotating();
-                                } else
+                                }
+                                else
                                 {
                                     JointTypeLinear();
                                 }
+                                foreach(JointData j in jointList)
+                                {
+                                    if (j.equals((AssemblyJoint)n.NativeObject))
+                                    {
+                                        selectedJointData = j;
+                                    }
+                                }
+                                switchSelectedJoint(selectedJointData.driver);
                             }
                         }
                     }
                 }
             }
         }
+        
+        private void oUIEvents_OnUnSelect(ObjectsEnumerator UnSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
+        {
+            //MessageBox.Show("hi");
+            //JointsComboBox.Clear();
+        }
+
+        private void switchSelectedJoint(DriveTypes driver)
+        {
+            doWerk = false;
+            if (Rotating)
+            {
+                if (driver == DriveTypes.Motor)
+                {
+                    JointsComboBox.ListIndex = 2;
+                } else if (driver == DriveTypes.Servo)
+                {
+                    JointsComboBox.ListIndex = 3;
+                } else if (driver == DriveTypes.BumperPnuematic)
+                {
+                    JointsComboBox.ListIndex = 4;
+                } else if (driver == DriveTypes.RelayPneumatic)
+                {
+                    JointsComboBox.ListIndex = 5;
+                } else if (driver == DriveTypes.WormScrew)
+                {
+                    JointsComboBox.ListIndex = 6;
+                } else if (driver == DriveTypes.DualMotor)
+                {
+                    JointsComboBox.ListIndex = 7;
+                } else
+                {
+                    JointsComboBox.ListIndex = 1;
+                }
+            } else
+            {
+                if (driver == DriveTypes.Elevator)
+                {
+                    JointsComboBox.ListIndex = 2;
+                } else if (driver == DriveTypes.BumperPnuematic)
+                {
+                    JointsComboBox.ListIndex = 3;
+                } else if (driver == DriveTypes.RelayPneumatic)
+                {
+                    JointsComboBox.ListIndex = 4;
+                } else if (driver == DriveTypes.WormScrew)
+                {
+                    JointsComboBox.ListIndex = 5;
+                } else
+                {
+                    JointsComboBox.ListIndex = 1;
+                }
+            }
+            doWerk = true;
+        }
 
         private void JointTypeRotating()
         {
+            doWerk = false;
             Rotating = true;
             JointsComboBox.Clear();
             JointsComboBox.AddItem("No Driver", 0);
@@ -615,13 +697,13 @@ namespace InventorAddInBasicGUI2
             JointsComboBox.ListIndex = 1;
             JointsComboBox.ToolTipText = JointsComboBox.Text;
             JointsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
-            JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(JointsComboBox_OnSelect);
-            JointsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
+            doWerk = true;
         }
 
         private void JointTypeLinear()
         {
-            Rotating = true;
+            doWerk = false;
+            Rotating = false;
             JointsComboBox.Clear();
             JointsComboBox.AddItem("No Driver", 0);
             JointsComboBox.AddItem("Elevator", 0);
@@ -631,8 +713,7 @@ namespace InventorAddInBasicGUI2
             JointsComboBox.ListIndex = 1;
             JointsComboBox.ToolTipText = JointsComboBox.Text;
             JointsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
-            JointsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(JointsComboBox_OnSelect);
-            JointsComboBox.OnSelect += JointsComboBox_OnSelectEventDelegate;
+            doWerk = true;
         }
 
         private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
@@ -645,6 +726,7 @@ namespace InventorAddInBasicGUI2
         public void exportRobot_OnExecute(Inventor.NameValueMap Context)
         {
             inExportView = false;
+            switchSelectedJoint(DriveTypes.NoDriver);
             //HighlightSet set;
             //set = m_inventorApplication.ActiveDocument.CreateHighlightSet();
             //set.AddItem(m_inventorApplication.TransientObjects.CreateColor(255, 0, 0, .8));
@@ -663,12 +745,16 @@ namespace InventorAddInBasicGUI2
             editDrivers.Enabled = false;
             selectJointInsideJoint.Enabled = false;
             oPane.Visible = false;
-            UserControl1 control = new UserControl1();
-            System.Windows.Forms.Application.Run(control);
+            control.saveFile();
+            foreach(BrowserNode folder in oPane.TopNode.BrowserNodes)
+            {
+                folder.Delete();
+            }
         }
-
+        
         public void cancelExport_OnExecute(Inventor.NameValueMap Context)
         {
+            switchSelectedJoint(DriveTypes.NoDriver);
             inExportView = false;
             //HighlightSet set;
             //set = m_inventorApplication.ActiveDocument.CreateHighlightSet();
@@ -688,11 +774,15 @@ namespace InventorAddInBasicGUI2
             editDrivers.Enabled = false;
             selectJointInsideJoint.Enabled = false;
             oPane.Visible = false;
+            foreach (BrowserNode folder in oPane.TopNode.BrowserNodes)
+            {
+                folder.Delete();
+            }
         }
 
         public void EditDrivers_OnExecute(Inventor.NameValueMap Context)
         {
-
+            JointsComboBox_OnSelect(Context);
         }
 
         public void CouThings_OnExecute(Inventor.NameValueMap Context)
@@ -751,74 +841,74 @@ namespace InventorAddInBasicGUI2
                 MessageBox.Show(e.ToString());
             }
         }
-        
+     
         private void JointsComboBox_OnSelect(NameValueMap context)
         {
-            if (Rotating)
+            if (doWerk)
             {
-                // MessageBox.Show(partPanel.CommandControls.ToString());
-                if (JointsComboBox.Text.Equals("Motor"))
+                if (Rotating)
                 {
-                    form = new Form1();
-                    form.MotorChosen();
-                    System.Windows.Forms.Application.Run(form);
+                    if (JointsComboBox.Text.Equals("Motor"))
+                    {
+                        selectedJointData.driver = DriveTypes.Motor;
+                        form.MotorChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Servo"))
+                    {
+                        selectedJointData.driver = DriveTypes.Servo;
+                        form.ServoChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Bumper Pneumatic"))
+                    {
+                        selectedJointData.driver = DriveTypes.BumperPnuematic;
+                        form.BumperPneumaticChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Relay Pneumatic"))
+                    {
+                        selectedJointData.driver = DriveTypes.RelayPneumatic;
+                        form.RelayPneumaticChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Worm Screw"))
+                    {
+                        selectedJointData.driver = DriveTypes.WormScrew;
+                        form.WormScrewChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Dual Motor"))
+                    {
+                        selectedJointData.driver = DriveTypes.DualMotor;
+                        form.DualMotorChosen();
+                        form.ShowDialog();
+                    } else
+                    {
+                        selectedJointData.driver = DriveTypes.NoDriver;
+                    }
                 }
-                else if (JointsComboBox.Text.Equals("Servo"))
+                else
                 {
-                    form = new Form1();
-                    form.ServoChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-                else if (JointsComboBox.Text.Equals("Bumper Pneumatic"))
-                {
-                    form = new Form1();
-                    form.BumperPneumaticChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-                else if (JointsComboBox.Text.Equals("Relay Pneumatic"))
-                {
-                    form = new Form1();
-                    form.RelayPneumaticChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-                else if (JointsComboBox.Text.Equals("Worm Screw"))
-                {
-                    form = new Form1();
-                    form.WormScrewChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-                else if (JointsComboBox.Text.Equals("Dual Motor"))
-                {
-                    form = new Form1();
-                    form.DualMotorChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-            } else
-            {
-                if (JointsComboBox.Text.Equals("Elevator"))
-                {
-                    form = new Form1();
-                    form.MotorChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-
-                else if (JointsComboBox.Text.Equals("Bumper Pneumatic"))
-                {
-                    form = new Form1();
-                    form.BumperPneumaticChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-                else if (JointsComboBox.Text.Equals("Relay Pneumatic"))
-                {
-                    form = new Form1();
-                    form.RelayPneumaticChosen();
-                    System.Windows.Forms.Application.Run(form);
-                }
-                else if (JointsComboBox.Text.Equals("Worm Screw"))
-                {
-                    form = new Form1();
-                    form.WormScrewChosen();
-                    System.Windows.Forms.Application.Run(form);
+                    if (JointsComboBox.Text.Equals("Elevator"))
+                    {
+                        selectedJointData.driver = DriveTypes.Elevator;
+                        form.ElevatorChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Bumper Pneumatic"))
+                    {
+                        selectedJointData.driver = DriveTypes.BumperPnuematic;
+                        form.BumperPneumaticChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Relay Pneumatic"))
+                    {
+                        selectedJointData.driver = DriveTypes.RelayPneumatic;
+                        form.RelayPneumaticChosen();
+                        form.ShowDialog();
+                    } else if (JointsComboBox.Text.Equals("Worm Screw"))
+                    {
+                        selectedJointData.driver = DriveTypes.WormScrew;
+                        form.WormScrewChosen();
+                        form.ShowDialog();
+                    } else
+                    {
+                        selectedJointData.driver = DriveTypes.NoDriver;
+                    }
                 }
             }
         }
@@ -850,6 +940,4 @@ namespace InventorAddInBasicGUI2
             return GetPictureFromIPicture(pictureDisp);
         }
     }
-
-
 }

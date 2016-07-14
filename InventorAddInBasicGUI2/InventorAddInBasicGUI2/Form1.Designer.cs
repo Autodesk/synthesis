@@ -111,6 +111,7 @@ namespace InventorAddInBasicGUI2
             this.grpDriveOptions.TabIndex = 2;
             this.grpDriveOptions.TabStop = false;
             this.grpDriveOptions.Text = "Joint Options";
+            this.grpChooseDriver.Hide();
             // 
             // rbPWM
             // 
@@ -281,6 +282,7 @@ namespace InventorAddInBasicGUI2
             this.cmbPneumaticPressure.Name = "cmbPneumaticPressure";
             this.cmbPneumaticPressure.Size = new System.Drawing.Size(120, 24);
             this.cmbPneumaticPressure.TabIndex = 6;
+            this.cmbPneumaticPressure.SelectedItem = "60 psi";
             // 
             // tabsMeta
             // 
@@ -374,6 +376,7 @@ namespace InventorAddInBasicGUI2
             this.cmbPneumaticDiameter.Name = "cmbPneumaticDiameter";
             this.cmbPneumaticDiameter.Size = new System.Drawing.Size(124, 24);
             this.cmbPneumaticDiameter.TabIndex = 12;
+            this.cmbPneumaticDiameter.SelectedItem = ".5 in";
             // 
             // lblDiameter
             // 
@@ -477,6 +480,7 @@ namespace InventorAddInBasicGUI2
             this.chkBoxHasBrake.TabIndex = 0;
             this.chkBoxHasBrake.Text = "Has Brake";
             this.chkBoxHasBrake.UseVisualStyleBackColor = true;
+            this.chkBoxHasBrake.Click += new System.EventHandler(btnPHasBrake_Click);
             // 
             // metaElevatorStages
             // 
@@ -535,7 +539,6 @@ namespace InventorAddInBasicGUI2
             ((System.ComponentModel.ISupportInitialize)(this.brakePortA)).EndInit();
             this.metaElevatorStages.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
 
         #endregion

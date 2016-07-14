@@ -1,4 +1,8 @@
-﻿namespace InventorAddInBasicGUI2
+﻿using System.ComponentModel;
+using stdole;
+using System.Windows.Forms;
+
+namespace InventorAddInBasicGUI2
 {
     partial class UserControl1
     {
@@ -26,20 +30,21 @@
         /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        public void InitializeComponent()
         {
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            openFileDialog1.ShowDialog();
-            openFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(onSave);
-            this.Close();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog(); saveFileDialog1.AddExtension = true;
+            this.saveFileDialog1.FileName = "untitled.robot";
+            this.saveFileDialog1.Filter = "ROBOT files (*.robot)|*.robot";
+            this.saveFileDialog1.DefaultExt = "robot";
+            this.saveFileDialog1.FileOk += new CancelEventHandler(saveFileDialog1_FileOk); 
         }
-
+        private void saveFileDialog1_FileOk(object sender,
+    System.ComponentModel.CancelEventArgs e)
+        {
+            MessageBox.Show("asdasasd");
+        }
         #endregion
 
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }

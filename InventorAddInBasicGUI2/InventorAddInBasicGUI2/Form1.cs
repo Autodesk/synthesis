@@ -13,16 +13,15 @@ namespace InventorAddInBasicGUI2
         //Write xml variables to be modified by the instacne of the button click
         //Change me later
 
+        public void clos()
+        {
 
+        }
         public Form1()
         {
             InitializeComponent();
         }
-        
-
-        //Click that looks for an active document and for specifically a ASSEMBLY and PART file
-       public void MotorChosen()
-            //TODO find some way to change the title of the box from CAN to PWM
+        public void MotorChosen()
         {
             grpChooseDriver.Hide();
             cmbFrictionLevel.Hide();
@@ -34,11 +33,8 @@ namespace InventorAddInBasicGUI2
             btnSave.Show();
             rbCAN.Show();
             rbPWM.Show();
-            rbPWM.Checked = true; txtPortA.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
+            rbPWM.Checked = true;
+            txtPortA.Maximum = new decimal(new int[] {21, 0, 0, 0});
             txtPortB.Hide();
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             tabsMeta.Location = new System.Drawing.Point(10, 95);
@@ -57,11 +53,8 @@ namespace InventorAddInBasicGUI2
             btnSave.Show();
             btnSave.Location = new System.Drawing.Point(9, 95);
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
-            rbCAN.Hide(); txtPortA.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
+            rbCAN.Hide();
+            txtPortA.Maximum = new decimal(new int[] { 21, 0, 0, 0});
             rbPWM.Hide();
             txtPortB.Hide();
             lblPort.Text = "PWM Port";
@@ -109,13 +102,10 @@ namespace InventorAddInBasicGUI2
             tabsMeta.TabPages.Clear();
             rbPWM.Show();
             chkBoxDriveWheel.Hide();
+            chkBoxDriveWheel.Hide();
             ClientSize = new System.Drawing.Size(340, 130);
             btnSave.Show();
-            txtPortA.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
+            txtPortA.Maximum = new decimal(new int[] { 21, 0, 0, 0});
             btnSave.Location = new System.Drawing.Point(9, 95);
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             rbCAN.Hide();
@@ -124,7 +114,6 @@ namespace InventorAddInBasicGUI2
             lblPort.Text = "PWM Port";
         }
         public void DualMotorChosen()
-        //TODO find some way to change the title of the box from CAN to PWM
         {
             grpChooseDriver.Hide();
             cmbFrictionLevel.Hide();
@@ -137,16 +126,8 @@ namespace InventorAddInBasicGUI2
             rbCAN.Show();
             rbPWM.Show();
             rbPWM.Checked = true;
-            txtPortA.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
-            txtPortB.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
+            txtPortA.Maximum = new decimal(new int[] { 21, 0, 0, 0});
+            txtPortB.Maximum = new decimal(new int[] { 21, 0, 0, 0});
             txtPortB.Show();
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             tabsMeta.Location = new System.Drawing.Point(10, 95);
@@ -154,35 +135,55 @@ namespace InventorAddInBasicGUI2
             ClientSize = new System.Drawing.Size(340, 225);
             lblPort.Text = "PWM Port";
         }
+        public void ElevatorChosen()
+        {
+            tabsMeta.Visible = true;
+            lblBrakePort.Enabled = false;
+            rbCAN.Hide();
+            chkBoxDriveWheel.Hide();
+            rbPWM.Hide();
+            txtPortB.Hide();
+            brakePortA.Enabled = false;
+            brakePortB.Enabled = false;
+            tabsMeta.TabPages.Clear();
+            chkBoxHasBrake.Show();
+            lblPort.Text = "PWM Port";
+            tabsMeta.TabPages.Add(metaElevatorBrake);
+            tabsMeta.TabPages.Add(metaElevatorStages);
+            tabsMeta.TabPages.Add(metaGearing);
+            if (cmbStages.SelectedIndex == -1)
+                cmbStages.SelectedIndex = 0;
+            ClientSize = new System.Drawing.Size(340, 225);
+            btnSave.Show();
+            btnSave.Location = new System.Drawing.Point(9, 190);
+            grpDriveOptions.Location = new System.Drawing.Point(10, 10);
+            tabsMeta.Location = new System.Drawing.Point(10, 95);
+        }
         public void btnPWM_Click(object sender, EventArgs e)
         {
             lblPort.Text = "PWM Port";
-            txtPortA.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
-            txtPortB.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
+            txtPortA.Maximum = new decimal(new int[] { 21, 0, 0, 0});
+            txtPortB.Maximum = new decimal(new int[] { 21, 0, 0, 0});
             txtPortB.Show();
 
+        }
+        public void btnPHasBrake_Click(object sender, EventArgs e)
+        {
+            if (chkBoxHasBrake.Checked == true)
+            {
+                brakePortB.Enabled = true;
+                brakePortA.Enabled = true;
+            } else
+            {
+                brakePortB.Enabled = false;
+                brakePortA.Enabled = false;
+            }
         }
         public void btnCAN_Click(object sender, EventArgs e)
         {
             lblPort.Text = "CAN Port";
-            txtPortA.Maximum = new decimal(new int[] {
-            101,
-            0,
-            0,
-            0});
-            txtPortB.Maximum = new decimal(new int[] {
-            101,
-            0,
-            0,
-            0});
+            txtPortA.Maximum = new decimal(new int[] { 101, 0, 0,0});
+            txtPortB.Maximum = new decimal(new int[] { 101, 0, 0, 0});
             txtPortB.Show();
         }
         public void driveWheelChoice(object sender, EventArgs e)
