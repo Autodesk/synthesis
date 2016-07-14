@@ -78,14 +78,16 @@ public class Init : MonoBehaviour
 	/// Custom GUIStyle for windows.
 	/// </summary>
 	private GUIStyle statsWindow;
+    private GUIStyle helpWindow;
     /// <summary>
 	/// Custom GUIStyle for buttons.
 	/// </summary>
-	private static GUIStyle statsButton;
+	private GUIStyle statsButton;
     /// <summary>
 	/// Custom GUIStyle for labels.
 	/// </summary>s
 	private GUIStyle statsLabel;
+    private GUIStyle helpLabel;
 
     public Init()
     {
@@ -107,18 +109,13 @@ public class Init : MonoBehaviour
 
 	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
-
-        //Loads textures and fonts
-        buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
-        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
-        gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
-        windowTexture = Resources.Load("Images/blueBackground") as Texture2D;
-
+        
         //Custom style for windows
         statsWindow = new GUIStyle(GUI.skin.window);
         statsWindow.normal.background = windowTexture;
         statsWindow.onNormal.background = windowTexture;
         statsWindow.font = gravityRegular;
+        statsWindow.fontSize = 13;
 
         //Custom style for buttons
         statsButton = new GUIStyle(GUI.skin.button);
@@ -129,10 +126,12 @@ public class Init : MonoBehaviour
         statsButton.onNormal.background = buttonSelected;
         statsButton.onHover.background = buttonSelected;
         statsButton.onActive.background = buttonSelected;
+        statsButton.fontSize = 13;
 
         //Custom style for labels
         statsLabel = new GUIStyle(GUI.skin.label);
         statsLabel.font = gravityRegular;
+        statsLabel.fontSize = 13;
 
         GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s", statsLabel);
 		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2 - " + Math.Round(acceleration * 3.28084, 1).ToString() + " ft/s^2", statsLabel);
@@ -162,7 +161,19 @@ public class Init : MonoBehaviour
 	/// <param name="windowID">Window I.</param>
 	public void HelpWindow(int windowID)
 	{
-		float topGap = 10;
+
+        //Custom style for windows
+        helpWindow = new GUIStyle(GUI.skin.window);
+        helpWindow.normal.background = windowTexture;
+        helpWindow.onNormal.background = windowTexture;
+        helpWindow.font = gravityRegular;
+
+        //Custom style for labels
+        helpLabel = new GUIStyle(GUI.skin.label);
+        helpLabel.font = gravityRegular;
+        helpLabel.fontSize = 24;
+
+        float topGap = 10;
 		float buttonGap = 20;
 		float buttonWidth = (helpWindowRect.width - (buttonGap * 3)) / 2.0f;
 		float buttonHeight = helpWindowRect.height - (buttonGap * 2) - topGap;
@@ -171,24 +182,24 @@ public class Init : MonoBehaviour
 		int heightGap = 45;
         int underlineGap = 4;
 
-        GUI.Label(new Rect(leftX, 1 * heightGap, 300, 50), "Action");
-		GUI.Label (new Rect (leftX, (1 * heightGap) + underlineGap, 300, 50), "_____");
-		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Menu:");
-		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:");
-		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:");
-		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:");
-		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Free Roam View:");
-		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "To Drive Robot:");
-		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Toggle stats window:");
-		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key");
-		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___");
-		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]");
-		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]");
-		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]");
-		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]");
-		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[F]");
-		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]");
-		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]");
+        GUI.Label(new Rect(leftX, 1 * heightGap, 300, 50), "Action", helpLabel);
+		GUI.Label (new Rect (leftX, (1 * heightGap) + underlineGap, 300, 50), "_____", helpLabel);
+		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Menu:", helpLabel);
+		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:", helpLabel);
+		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:", helpLabel);
+		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:", helpLabel);
+		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Free Roam View:", helpLabel);
+		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "To Drive Robot:", helpLabel);
+		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Toggle stats window:", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key", helpLabel);
+		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[F]", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]", helpLabel);
+		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]", helpLabel);
 	}
 
 	/// <summary>
@@ -282,7 +293,7 @@ public class Init : MonoBehaviour
 			float paddingX = (Screen.width - windowWidth) / 2.0f;
 			float paddingY = (Screen.height - windowHeight) / 2.0f;
 			helpWindowRect = new Rect (paddingX, paddingY, windowWidth, windowHeight);
-			GUI.Window (0, helpWindowRect, HelpWindow, "Help");
+			GUI.Window (0, helpWindowRect, HelpWindow, "Help", helpWindow);
 		}
 
         if (gui == null)
@@ -656,6 +667,12 @@ public class Init : MonoBehaviour
         reloadFieldInFrames = 2;
 
         reloadRobotInFrames = -1;
+
+        //Loads textures and fonts
+        buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
+        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+        gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        windowTexture = Resources.Load("Images/blueBackground") as Texture2D;
     }
 
     void OnEnable()
