@@ -37,13 +37,13 @@ public class DialogWindow : OverlayWindow
 	/// A list of the button labels.
 	/// </summary>
 	private readonly string[] labels;
-	
-	/// <summary>
-	/// Creates a dialog with the given title and buttons with their corresponding labels.
-	/// </summary>
-	/// <param name="title">The overlay title</param>
-	/// <param name="labels">The button labels</param> 
-	public DialogWindow(string title, params string[] labels)
+
+    /// <summary>
+    /// Creates a dialog with the given title and buttons with their corresponding labels.
+    /// </summary>
+    /// <param name="title">The overlay title</param>
+    /// <param name="labels">The button labels</param> 
+    public DialogWindow(string title, params string[] labels)
 	{
 		this.title = title;
 		this.labels = labels;
@@ -54,7 +54,7 @@ public class DialogWindow : OverlayWindow
 	/// </summary>
 	public void Render()
 	{
-		windowRect = new Rect ((Screen.width / 2 - (50 + labels.Length * 250) / 2), Screen.height / 2 - 100, 50 + labels.Length * 250, 200);
+        windowRect = new Rect ((Screen.width / 2 - (50 + labels.Length * 250) / 2), Screen.height / 2 - 100, 50 + labels.Length * 250, 200);
 
 		if (_active)
 		{

@@ -81,16 +81,13 @@ public class Init : MonoBehaviour
 
 	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
-		
-		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
-		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
-		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
-		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 1).ToString() + " ft/s^2");
+        GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s");
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2 - " + Math.Round(acceleration * 3.28084, 1).ToString() + " ft/s^2");
 		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
 		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
 		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
-		
-		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
+
+        if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
 		{
 			time = 0;
 		}
@@ -119,29 +116,26 @@ public class Init : MonoBehaviour
 		int leftX = 75;
 		int leftXOffset = 400;
 		int heightGap = 45;
-		int underlineGap = 4;
+        int underlineGap = 4;
 
-		GUIStyle labelSkin = new GUIStyle (GUI.skin.label);
-		labelSkin.fontSize = 24;
-	
-		GUI.Label (new Rect (leftX, 1 * heightGap, 300, 50), "Action", labelSkin);
-		GUI.Label (new Rect (leftX, (1 * heightGap) + underlineGap, 300, 50), "_____", labelSkin);
-		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Menu:", labelSkin);
-		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:", labelSkin);
-		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:", labelSkin);
-		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:", labelSkin);
-		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Free Roam View:", labelSkin);
-		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "To Drive Robot:", labelSkin);
-		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Toggle stats window:", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key", labelSkin);
-		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[F]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]", labelSkin);
+        GUI.Label(new Rect(leftX, 1 * heightGap, 300, 50), "Action");
+		GUI.Label (new Rect (leftX, (1 * heightGap) + underlineGap, 300, 50), "_____");
+		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Menu:");
+		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:");
+		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:");
+		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:");
+		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Free Roam View:");
+		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "To Drive Robot:");
+		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Toggle stats window:");
+		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key");
+		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___");
+		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]");
+		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]");
+		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]");
+		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]");
+		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[F]");
+		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]");
+		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]");
 	}
 
 	/// <summary>
@@ -221,14 +215,16 @@ public class Init : MonoBehaviour
 	[STAThread]
     void OnGUI()
     {
-		// Draws stats window on to GUI
-		if(showStatWindow)
-			GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+        // Draws stats window on to GUI
+        if (showStatWindow)
+        {
+            GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+        }
 
-		// Draws help window on to GUI
-		if (showHelpWindow)
+        // Draws help window on to GUI
+        if (showHelpWindow)
 		{
-			int windowWidth = 900;
+            int windowWidth = 900;
 			int windowHeight = 450;
 			float paddingX = (Screen.width - windowWidth) / 2.0f;
 			float paddingY = (Screen.height - windowHeight) / 2.0f;
@@ -357,7 +353,7 @@ public class Init : MonoBehaviour
 						gui.EscPressed();
 				},
 				""
-			);
+            );
 		
 			helpButtonRect = new Rect (Screen.width - 25, 0, 25, 25);
 			
