@@ -55,29 +55,30 @@ class FileBrowser : OverlayWindow
 	/// Internal reference to the last click time.
 	/// </summary>
 	private float lastClick = 0;
+
 	/// <summary>
 	/// Default textures.
 	/// </summary>
-	private Texture2D buttonImage;
-    private Texture2D windowImage;
+	private Texture2D buttonTexture;
+    private Texture2D windowTexture;
     /// <summary>
 	/// Selected button texture.
 	/// </summary>
 	private Texture2D buttonSelected;
     /// <summary>
-	/// FileBrowser font, Gravity-Regular.
+	/// Gravity-Regular font.
 	/// </summary>
 	private Font gravityRegular;
     /// <summary>
-	/// Custom GUIStyle for FileBrowser windows.
+	/// Custom GUIStyle for windows.
 	/// </summary>
 	private GUIStyle fileBrowserWindow;
     /// <summary>
-	/// Custom GUIStyle for FileBrowser buttons.
+	/// Custom GUIStyle for buttons.
 	/// </summary>
 	private static GUIStyle fileBrowserButton;
     /// <summary>
-	/// Custom GUIStyle for FileBrowser labels.
+	/// Custom GUIStyle for labels.
 	/// </summary>s
 	private GUIStyle fileBrowserLabel;
 	
@@ -112,21 +113,21 @@ class FileBrowser : OverlayWindow
 		}
 
         //Loads textures and fonts
-		buttonImage = Resources.Load("Images/greyBackground") as Texture2D;
+        buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
 		buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
         gravityRegular = Resources.Load ("Fonts/Gravity-Regular") as Font;
-        windowImage = Resources.Load("Images/greyBackground") as Texture2D;
+        windowTexture = Resources.Load("Images/greyBackground") as Texture2D;
         
         //Custom style for windows
 		fileBrowserWindow = new GUIStyle (GUI.skin.window);
-		fileBrowserWindow.normal.background = windowImage;
-		fileBrowserWindow.onNormal.background = windowImage;
+		fileBrowserWindow.normal.background = windowTexture;
+		fileBrowserWindow.onNormal.background = windowTexture;
 		fileBrowserWindow.font = gravityRegular;
 
         //Custom style for buttons
 		fileBrowserButton = new GUIStyle (GUI.skin.button);
 		fileBrowserButton.font = gravityRegular;
-		fileBrowserButton.normal.background = buttonImage;
+		fileBrowserButton.normal.background = buttonTexture;
 		fileBrowserButton.hover.background = buttonSelected;
 		fileBrowserButton.active.background = buttonSelected;
 		fileBrowserButton.onNormal.background = buttonSelected;
