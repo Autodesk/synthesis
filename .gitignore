@@ -5,8 +5,7 @@ Temp/
 Obj/
 UnityGenerated/
 /Library/*
-*.meta
-
+# dont get rid of meta files the include guid that cant change
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
@@ -58,3 +57,6 @@ Thumbs.db
 
 #doxygen generated files
 codeDocs/*
+
+#temporary files
+tmp/*
