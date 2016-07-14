@@ -56,9 +56,10 @@ class FileBrowser : OverlayWindow
 	/// </summary>
 	private float lastClick = 0;
 	/// <summary>
-	/// Dedtault button texture.
+	/// Default textures.
 	/// </summary>
 	private Texture2D buttonImage;
+    private Texture2D windowImage;
     /// <summary>
 	/// Selected button texture.
 	/// </summary>
@@ -66,7 +67,7 @@ class FileBrowser : OverlayWindow
     /// <summary>
 	/// FileBrowser font, Gravity-Regular.
 	/// </summary>
-	private Font f;
+	private Font gravityRegular;
     /// <summary>
 	/// Custom GUIStyle for FileBrowser windows.
 	/// </summary>
@@ -113,17 +114,18 @@ class FileBrowser : OverlayWindow
         //Loads textures and fonts
 		buttonImage = Resources.Load("Images/buttontexture") as Texture2D;
 		buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
-		f = Resources.Load ("Fonts/Gravity-Regular") as Font;
+        gravityRegular = Resources.Load ("Fonts/Gravity-Regular") as Font;
+        windowImage = Resources.Load("Images/greyWindow") as Texture2D;
         
         //Custom style for windows
 		fileBrowserWindow = new GUIStyle (GUI.skin.window);
-		fileBrowserWindow.normal.background = buttonImage;
-		fileBrowserWindow.onNormal.background = buttonImage;
-		fileBrowserWindow.font = f;
+		fileBrowserWindow.normal.background = windowImage;
+		fileBrowserWindow.onNormal.background = windowImage;
+		fileBrowserWindow.font = gravityRegular;
 
         //Custom style for buttons
 		fileBrowserButton = new GUIStyle (GUI.skin.button);
-		fileBrowserButton.font = f;
+		fileBrowserButton.font = gravityRegular;
 		fileBrowserButton.normal.background = buttonImage;
 		fileBrowserButton.hover.background = buttonSelected;
 		fileBrowserButton.active.background = buttonSelected;
@@ -133,7 +135,7 @@ class FileBrowser : OverlayWindow
 
         //Custom style for labels
 		fileBrowserLabel = new GUIStyle (GUI.skin.label);
-		fileBrowserLabel.font = f;
+		fileBrowserLabel.font = gravityRegular;
 	}
 	
 	/// <summary>
