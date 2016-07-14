@@ -61,6 +61,32 @@ public class Init : MonoBehaviour
 	private FileBrowser fieldBrowser = null;
 	private bool fieldLoaded = false;
 
+    /// <summary>
+	/// Default textures.
+	/// </summary>
+	private Texture2D buttonTexture;
+    private Texture2D windowTexture;
+    /// <summary>
+	/// Selected button texture.
+	/// </summary>
+	private Texture2D buttonSelected;
+    /// <summary>
+	/// Gravity-Regular font.
+	/// </summary>
+	private Font gravityRegular;
+    /// <summary>
+	/// Custom GUIStyle for windows.
+	/// </summary>
+	private GUIStyle statsWindow;
+    /// <summary>
+	/// Custom GUIStyle for buttons.
+	/// </summary>
+	private static GUIStyle statsButton;
+    /// <summary>
+	/// Custom GUIStyle for labels.
+	/// </summary>s
+	private GUIStyle statsLabel;
+
     public Init()
     {
 		udp = new unityPacket ();
@@ -81,18 +107,45 @@ public class Init : MonoBehaviour
 
 	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
-        GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s");
-		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2 - " + Math.Round(acceleration * 3.28084, 1).ToString() + " ft/s^2");
-		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
-		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
-		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
 
-        if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
+        //Loads textures and fonts
+        buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
+        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+        gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        windowTexture = Resources.Load("Images/blueBackground") as Texture2D;
+
+        //Custom style for windows
+        statsWindow = new GUIStyle(GUI.skin.window);
+        statsWindow.normal.background = windowTexture;
+        statsWindow.onNormal.background = windowTexture;
+        statsWindow.font = gravityRegular;
+
+        //Custom style for buttons
+        statsButton = new GUIStyle(GUI.skin.button);
+        statsButton.font = gravityRegular;
+        statsButton.normal.background = buttonTexture;
+        statsButton.hover.background = buttonSelected;
+        statsButton.active.background = buttonSelected;
+        statsButton.onNormal.background = buttonSelected;
+        statsButton.onHover.background = buttonSelected;
+        statsButton.onActive.background = buttonSelected;
+
+        //Custom style for labels
+        statsLabel = new GUIStyle(GUI.skin.label);
+        statsLabel.font = gravityRegular;
+
+        GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s", statsLabel);
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2 - " + Math.Round(acceleration * 3.28084, 1).ToString() + " ft/s^2", statsLabel);
+		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s", statsLabel);
+		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs", statsLabel);
+		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec", statsLabel);
+
+        if (GUI.Button (new Rect (210, 120, 80, 25), "Reset", statsButton)) 
 		{
 			time = 0;
 		}
 
-		if(GUI.Button (new Rect (120, 120, 80, 25), label))
+		if(GUI.Button (new Rect (120, 120, 80, 25), label, statsButton))
 		{
 			time_stop = !time_stop;
 
@@ -218,7 +271,7 @@ public class Init : MonoBehaviour
         // Draws stats window on to GUI
         if (showStatWindow)
         {
-            GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+            GUI.Window(0, statsWindowRect, StatsWindow, "Stats", statsWindow);
         }
 
         // Draws help window on to GUI
