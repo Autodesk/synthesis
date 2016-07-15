@@ -37,44 +37,37 @@ public class MainMenu : MonoBehaviour {
     private FileBrowser robotBrowser = null;
     private bool customroboton = true;
 
-    private bool showList = false;
-    private int listEntry = 0;
-    private GUIContent[] list;
-    private GUIStyle listStyle;
-    private bool picked;
-
-
     //The GUI rendering method. It uses a state machine to switch between the different menus.
     void OnGUI ()
     {
         switch (currentMenu)
-         {
-             case Menu.Main:
-                 RenderMain();
-                 break;
+        {
+            case Menu.Main:
+                RenderMain();
+                break;
 
-             case Menu.LoadField:
-                 RenderLoadField();
-                 break;
+            case Menu.LoadField:
+                RenderLoadField();
+                break;
 
-             case Menu.LoadRobot:
-                 RenderLoadRobot();
-                 break;
+            case Menu.LoadRobot:
+                RenderLoadRobot();
+                break;
 
-             case Menu.Graphics:
-                 RenderGraphics();
-                 break;
+            case Menu.Graphics:
+                RenderGraphics();
+                break;
 
-             case Menu.Input:
-                 RenderInput();
-                 break;
+            case Menu.Input:
+                RenderInput();
+                break;
 
-             case Menu.Custom:
-                 RenderCustom();
-                 break;
-         }
-         InitCustomField();
-         InitCustomRobot();
+            case Menu.Custom:
+                RenderCustom();
+                break;
+        }
+        InitCustomField();
+        InitCustomRobot();
     }
     #region Rendering
     //Method to render the Main GUI objects
@@ -84,8 +77,6 @@ public class MainMenu : MonoBehaviour {
         DefaultPanel.SetActive(false);
         LoadField.SetActive(false);
         LoadRobot.SetActive(false);
-        Graphics.SetActive(false);
-        Input.SetActive(false);
 
         //Updates the selected robot/field thumbnail and text
         GameObject.Find("FieldSelectText").GetComponent<Text>().text = selectedFieldName;
@@ -180,14 +171,9 @@ public class MainMenu : MonoBehaviour {
     }
 
     //Switches the current menu to the settings menu.
-    public void GraphicsButtonClicked()
+    public void SettingsButtonClicked()
     {
         currentMenu = Menu.Graphics;
-    }
-
-    public void InputButtonClicked()
-    {
-        currentMenu = Menu.Input;
     }
 
     //Makes the Start Button display different things depending on whether a robot/field is loaded or not.
