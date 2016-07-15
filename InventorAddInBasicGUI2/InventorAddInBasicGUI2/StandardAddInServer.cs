@@ -111,7 +111,7 @@ namespace InventorAddInBasicGUI2
                 // e.g. event initialization, command creation etc.
 
 
-                doWerk = true;
+                doWerk = false;
 
                 Rotating = true;
 
@@ -846,17 +846,25 @@ namespace InventorAddInBasicGUI2
         {
             if (doWerk)
             {
+                try
+                {
+                    form.readFromData(selectedJointData);
+                } catch(Exception e) { 
+                    MessageBox.Show(e.ToString());
+                }
                 if (Rotating)
                 {
                     if (JointsComboBox.Text.Equals("Motor"))
                     {
                         selectedJointData.driver = DriveTypes.Motor;
                         form.MotorChosen();
+                        form.readFromData(selectedJointData);
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Servo"))
                     {
                         selectedJointData.driver = DriveTypes.Servo;
                         form.ServoChosen();
+                        form.readFromData(selectedJointData);
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Bumper Pneumatic"))
                     {

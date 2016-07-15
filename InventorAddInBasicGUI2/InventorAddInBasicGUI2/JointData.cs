@@ -20,24 +20,52 @@ namespace InventorAddInBasicGUI2
     {
         private AssemblyJoint jointOfType;
         public DriveTypes driver;
-        public int port;
+        public WheelType wheel;
+        public FrictionLevel friction;
+        public InternalDiameter diameter;
+        public Pressure pressure;
+        public Stages  stages;
+        public double PWMport;
+        public double PWMport2;
+        public double CANport;
+        public double CANport2;
         public bool DriveWheel;
         public bool PWM;
-        public double InputGear;
-        public double OutputGear;
-        public int SolenoidPortA;
-        public int SolenoidPortB;
-        public int RelayPort;
-        public int PWMport2;
+        public double InputGear;//do
+        public double OutputGear;//do
+        public double SolenoidPortA;
+        public double SolenoidPortB;
+        public double RelayPort;
         public bool HasBrake;
-        public int BrakePortA;
-        public int BrakePortB;
-        public double upperLim;
-        public double lowerLim;
+        public int BrakePortA;//do
+        public int BrakePortB;//do
+        public double upperLim;//do
+        public double lowerLim;//do
         public JointData(AssemblyJoint joint)
         {
             jointOfType = joint;
-            driver = DriveTypes.NoDriver; 
+            driver = DriveTypes.NoDriver;
+            wheel = WheelType.NotAWheel;
+            friction = FrictionLevel.None;
+            diameter = InternalDiameter.PointFive;
+            pressure = Pressure.psi60;
+            stages = Stages.SingleStageElevator; 
+            PWMport = 1;
+            PWMport2 = 1;
+            CANport = 1;
+            CANport2 = 1;
+            DriveWheel = false;
+            PWM = true;
+            InputGear = 1;
+            OutputGear = 1;
+            SolenoidPortA = 1;
+            SolenoidPortB = 1;
+            RelayPort = 1;
+            HasBrake = false;
+            BrakePortA = 1;
+            BrakePortB = 1;
+            upperLim = 0;
+            lowerLim = 0;
         }
         public bool equals(AssemblyJoint j)
         {

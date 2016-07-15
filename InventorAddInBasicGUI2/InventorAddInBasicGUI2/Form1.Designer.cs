@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace InventorAddInBasicGUI2
 {
@@ -42,9 +43,14 @@ namespace InventorAddInBasicGUI2
             this.txtHighLimit = new System.Windows.Forms.NumericUpDown();
             this.lblLimits = new System.Windows.Forms.Label();
             this.txtLowLimit = new System.Windows.Forms.NumericUpDown();
-            this.txtPortB = new System.Windows.Forms.NumericUpDown();
+            this.Solenoid1txtPort = new System.Windows.Forms.NumericUpDown();
+            this.Solenoid2txtPort = new System.Windows.Forms.NumericUpDown();
+            this.PWM1txtPort = new System.Windows.Forms.NumericUpDown();
+            this.PWM2txtPort = new System.Windows.Forms.NumericUpDown();
+            this.CANtxtPort1 = new System.Windows.Forms.NumericUpDown();
+            this.CANtxtPort2 = new System.Windows.Forms.NumericUpDown();
+            this.RelaytxtPort = new System.Windows.Forms.NumericUpDown();
             this.lblPort = new System.Windows.Forms.Label();
-            this.txtPortA = new System.Windows.Forms.NumericUpDown();
             this.btnSave = new System.Windows.Forms.Button();
             this.cmbWheelType = new System.Windows.Forms.ComboBox();
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
@@ -73,8 +79,13 @@ namespace InventorAddInBasicGUI2
             this.grpDriveOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Solenoid1txtPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Solenoid2txtPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PWM1txtPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PWM2txtPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CANtxtPort1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CANtxtPort2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RelaytxtPort)).BeginInit();
             this.tabsMeta.SuspendLayout();
             this.metaWheel.SuspendLayout();
             this.metaPneumatic.SuspendLayout();
@@ -102,9 +113,14 @@ namespace InventorAddInBasicGUI2
             this.grpDriveOptions.Controls.Add(this.txtHighLimit);
             this.grpDriveOptions.Controls.Add(this.lblLimits);
             this.grpDriveOptions.Controls.Add(this.txtLowLimit);
-            this.grpDriveOptions.Controls.Add(this.txtPortB);
+            this.grpDriveOptions.Controls.Add(this.Solenoid1txtPort);
+            this.grpDriveOptions.Controls.Add(this.Solenoid2txtPort);
+            this.grpDriveOptions.Controls.Add(this.PWM1txtPort);
+            this.grpDriveOptions.Controls.Add(this.PWM2txtPort);
+            this.grpDriveOptions.Controls.Add(this.CANtxtPort1);
+            this.grpDriveOptions.Controls.Add(this.CANtxtPort2);
+            this.grpDriveOptions.Controls.Add(this.RelaytxtPort);
             this.grpDriveOptions.Controls.Add(this.lblPort);
-            this.grpDriveOptions.Controls.Add(this.txtPortA);
             this.grpDriveOptions.Location = new System.Drawing.Point(13, 75);
             this.grpDriveOptions.Name = "grpDriveOptions";
             this.grpDriveOptions.Size = new System.Drawing.Size(318, 72);
@@ -150,17 +166,9 @@ namespace InventorAddInBasicGUI2
             // txtHighLimit
             // 
             this.txtHighLimit.DecimalPlaces = 4;
-            this.txtHighLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.txtHighLimit.Increment = new decimal(new int[] { 1, 0, 0, 65536});
             this.txtHighLimit.Location = new System.Drawing.Point(140, 92);
-            this.txtHighLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
+            this.txtHighLimit.Minimum = new decimal(new int[] { 100, 0, 0, -2147483648});
             this.txtHighLimit.Name = "txtHighLimit";
             this.txtHighLimit.Size = new System.Drawing.Size(120, 22);
             this.txtHighLimit.TabIndex = 4;
@@ -179,39 +187,90 @@ namespace InventorAddInBasicGUI2
             // txtLowLimit
             // 
             this.txtLowLimit.DecimalPlaces = 4;
-            this.txtLowLimit.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.txtLowLimit.Increment = new decimal(new int[] { 1, 0, 0, 65536});
             this.txtLowLimit.Location = new System.Drawing.Point(14, 92);
-            this.txtLowLimit.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
+            this.txtLowLimit.Minimum = new decimal(new int[] { 100, 0, 0, -2147483648});
             this.txtLowLimit.Name = "txtLowLimit";
             this.txtLowLimit.Size = new System.Drawing.Size(120, 22);
             this.txtLowLimit.TabIndex = 3;
             this.txtLowLimit.Visible = false;
             // 
-            // txtPortB
+            // Solenoid1txtPort
             // 
-            this.txtPortB.Location = new System.Drawing.Point(140, 42);
-            this.txtPortB.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.txtPortB.Name = "txtPortB";
-            this.txtPortB.Size = new System.Drawing.Size(120, 22);
-            this.txtPortB.TabIndex = 2;
-            this.txtPortB.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.Solenoid1txtPort.Location = new System.Drawing.Point(2, 42);
+            this.Solenoid1txtPort.Minimum = new decimal(new int[] { 1, 0, 0, 0});
+            this.Solenoid1txtPort.Name = "SolenoidPort1";
+            this.Solenoid1txtPort.Size = new System.Drawing.Size(120, 22);
+            this.Solenoid1txtPort.TabIndex = 2;
+            this.Solenoid1txtPort.Value = new decimal(new int[] { 1, 0, 0, 0});
+            this.Solenoid1txtPort.ValueChanged += new System.EventHandler(Solenoid1Change);
             // 
+            // Solenoid2txtPort
+            // 
+            this.Solenoid2txtPort.Location = new System.Drawing.Point(123, 42);
+            this.Solenoid2txtPort.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.Solenoid2txtPort.Name = "SolenoidPort2";
+            this.Solenoid2txtPort.Size = new System.Drawing.Size(120, 22);
+            this.Solenoid2txtPort.TabIndex = 1;
+            this.Solenoid2txtPort.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            this.Solenoid2txtPort.Maximum = new decimal(new int[] { 21, 0, 0, 0 });
+            this.Solenoid2txtPort.ValueChanged += new System.EventHandler(Solenoid2Change);
+            // 
+            // PWM1txtPort
+            // 
+            this.PWM1txtPort.Location = new System.Drawing.Point(2, 42);
+            this.PWM1txtPort.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.PWM1txtPort.Maximum = new decimal(new int[] { 21, 0, 0, 0 });
+            this.PWM1txtPort.Name = "PWMPort1";
+            this.PWM1txtPort.Size = new System.Drawing.Size(120, 22);
+            this.PWM1txtPort.TabIndex = 2;
+            this.PWM1txtPort.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            this.PWM1txtPort.ValueChanged += new System.EventHandler(PWM1Change);
+            // 
+            // PWM2txtPort
+            // 
+            this.PWM2txtPort.Location = new System.Drawing.Point(123, 42);
+            this.PWM2txtPort.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.PWM2txtPort.Maximum = new decimal(new int[] { 21, 0, 0, 0 });
+            this.PWM2txtPort.Name = "PWMPort2";
+            this.PWM2txtPort.Size = new System.Drawing.Size(120, 22);
+            this.PWM2txtPort.TabIndex = 2;
+            this.PWM2txtPort.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            this.PWM2txtPort.ValueChanged += new System.EventHandler(PWM2Change);
+            // 
+            // CANtxtPort1
+            // 
+            this.CANtxtPort1.Location = new System.Drawing.Point(2, 42);
+            this.CANtxtPort1.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.CANtxtPort1.Maximum = new decimal(new int[] { 101, 0, 0, 0 });
+            this.CANtxtPort1.Name = "CANPort1";
+            this.CANtxtPort1.Size = new System.Drawing.Size(120, 22);
+            this.CANtxtPort1.TabIndex = 2;
+            this.CANtxtPort1.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            this.CANtxtPort1.ValueChanged += new System.EventHandler(CAN1Change);
+            // 
+            // CANtxtPort2
+            // 
+            this.CANtxtPort2.Location = new System.Drawing.Point(123, 42);
+            this.CANtxtPort2.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.CANtxtPort2.Maximum = new decimal(new int[] { 101, 0, 0, 0 });
+            this.CANtxtPort2.Name = "CANPort2";
+            this.CANtxtPort2.Size = new System.Drawing.Size(120, 22);
+            this.CANtxtPort2.TabIndex = 2;
+            this.CANtxtPort2.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            this.CANtxtPort2.ValueChanged += new System.EventHandler(CAN2Change);
+            // 
+            // RelaytxtPort
+            // 
+            this.RelaytxtPort.Location = new System.Drawing.Point(2, 42);
+            this.RelaytxtPort.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            this.RelaytxtPort.Maximum = new decimal(new int[] { 5, 0, 0, 0 });
+            this.RelaytxtPort.Name = "RelayPort";
+            this.RelaytxtPort.Size = new System.Drawing.Size(120, 22);
+            this.RelaytxtPort.TabIndex = 2;
+            this.RelaytxtPort.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            this.RelaytxtPort.ValueChanged += new System.EventHandler(RelayChanged);
+            //
             // lblPort
             // 
             this.lblPort.AutoSize = true;
@@ -220,29 +279,6 @@ namespace InventorAddInBasicGUI2
             this.lblPort.Size = new System.Drawing.Size(51, 17);
             this.lblPort.TabIndex = 1;
             this.lblPort.Text = "Port ID";
-            // 
-            // txtPortA
-            // 
-            //TODO change minimum back to 0 once 0 based pwm are added in the code
-            this.txtPortA.Location = new System.Drawing.Point(14, 42);
-            this.txtPortA.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.txtPortA.Name = "txtPortA";
-            this.txtPortA.Size = new System.Drawing.Size(120, 22);
-            this.txtPortA.TabIndex = 1;
-            this.txtPortA.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.txtPortA.Maximum = new decimal(new int[] {
-            21,
-            0,
-            0,
-            0});
             // 
             // btnSave
             // 
@@ -341,6 +377,7 @@ namespace InventorAddInBasicGUI2
             this.cmbFrictionLevel.Size = new System.Drawing.Size(120, 24);
             this.cmbFrictionLevel.TabIndex = 13;
             this.cmbFrictionLevel.SelectedIndex = 1;
+            this.cmbFrictionLevel.SelectedIndexChanged += new System.EventHandler(FrictionLevelChanged);
             // 
             // metaPneumatic
             // 
@@ -377,6 +414,7 @@ namespace InventorAddInBasicGUI2
             this.cmbPneumaticDiameter.Size = new System.Drawing.Size(124, 24);
             this.cmbPneumaticDiameter.TabIndex = 12;
             this.cmbPneumaticDiameter.SelectedItem = ".5 in";
+            this.cmbPneumaticDiameter.SelectedIndexChanged += new System.EventHandler(InternalDiameterChanged);
             // 
             // lblDiameter
             // 
@@ -480,7 +518,7 @@ namespace InventorAddInBasicGUI2
             this.chkBoxHasBrake.TabIndex = 0;
             this.chkBoxHasBrake.Text = "Has Brake";
             this.chkBoxHasBrake.UseVisualStyleBackColor = true;
-            this.chkBoxHasBrake.Click += new System.EventHandler(btnPHasBrake_Click);
+            this.chkBoxHasBrake.Click += new System.EventHandler(btnHasBrake_Click);
             // 
             // metaElevatorStages
             // 
@@ -501,11 +539,12 @@ namespace InventorAddInBasicGUI2
             "cascading stage one",
             "cascading stage two",
             "continuous stage one",
-            "continuos stage two"});
+            "continuous stage two"});
             this.cmbStages.Location = new System.Drawing.Point(39, 17);
             this.cmbStages.Name = "cmbStages";
             this.cmbStages.Size = new System.Drawing.Size(217, 24);
             this.cmbStages.TabIndex = 0;
+            this.cmbStages.SelectedIndexChanged += new System.EventHandler(StagesChanged);
             // 
             // Form1
             // 
@@ -524,8 +563,13 @@ namespace InventorAddInBasicGUI2
             this.grpDriveOptions.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtHighLimit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtLowLimit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortB)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtPortA)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Solenoid2txtPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Solenoid1txtPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PWM1txtPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PWM2txtPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CANtxtPort1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.CANtxtPort2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.RelaytxtPort)).EndInit();
             this.tabsMeta.ResumeLayout(false);
             this.metaWheel.ResumeLayout(false);
             this.metaWheel.PerformLayout();
@@ -545,9 +589,14 @@ namespace InventorAddInBasicGUI2
         
         private System.Windows.Forms.GroupBox grpChooseDriver;
         private System.Windows.Forms.GroupBox grpDriveOptions;
-        private System.Windows.Forms.NumericUpDown txtPortB;
+        private System.Windows.Forms.NumericUpDown Solenoid1txtPort;
+        private System.Windows.Forms.NumericUpDown Solenoid2txtPort;
+        private System.Windows.Forms.NumericUpDown PWM1txtPort;
+        private System.Windows.Forms.NumericUpDown PWM2txtPort;
+        private System.Windows.Forms.NumericUpDown CANtxtPort1;
+        private System.Windows.Forms.NumericUpDown CANtxtPort2;
+        private System.Windows.Forms.NumericUpDown RelaytxtPort;
         private System.Windows.Forms.Label lblPort;
-        private System.Windows.Forms.NumericUpDown txtPortA;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.ComboBox cmbWheelType;
         private System.Windows.Forms.ComboBox cmbPneumaticPressure;
