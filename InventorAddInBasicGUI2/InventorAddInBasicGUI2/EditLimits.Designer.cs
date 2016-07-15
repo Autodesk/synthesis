@@ -41,8 +41,7 @@ namespace InventorAddInBasicGUI2
             this.txtUpper = new System.Windows.Forms.TextBox();
             this.txtLower = new System.Windows.Forms.TextBox();
             this.tabDOF = new System.Windows.Forms.TabControl();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.btnOkay = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.SuspendLayout();
 
             this.SuspendLayout();
@@ -58,68 +57,60 @@ namespace InventorAddInBasicGUI2
        //     this.UseVisualStyleBackColor = true;
 
             lblUpper.AutoSize = true;
-            lblUpper.Location = new System.Drawing.Point(190, 28);
+            lblUpper.Location = new System.Drawing.Point(190, 15);
             lblUpper.Name = "lblUpper";
             lblUpper.Size = new System.Drawing.Size(50, 17);
             lblUpper.TabIndex = 4;
             lblUpper.Text = "Upper";
 
             lblLower.AutoSize = true;
-            lblLower.Location = new System.Drawing.Point(60, 28);
+            lblLower.Location = new System.Drawing.Point(60, 15);
             lblLower.Name = "lblLower";
             lblLower.Size = new System.Drawing.Size(50, 17);
             lblLower.TabIndex = 3;
             lblLower.Text = "Lower";
 
-            this.txtUpper.Location = new System.Drawing.Point(150, 48);
+            this.txtUpper.Location = new System.Drawing.Point(150, 35);
             this.txtUpper.Name = "txtUpper";
             this.txtUpper.Size = new System.Drawing.Size(120, 22);
             this.txtUpper.TabIndex = 1;
-          //  this.txtUpper.TextChanged += changedProps;
+            this.txtUpper.Text = "1";
+            this.txtUpper.TextChanged += new System.EventHandler(UpperLimitChanged);
 
-            this.txtLower.Location = new System.Drawing.Point(20, 48);
+            this.txtLower.Location = new System.Drawing.Point(20, 35);
             this.txtLower.Name = "txtLower";
             this.txtLower.Size = new System.Drawing.Size(120, 22);
             this.txtLower.TabIndex = 0;
-          //  this.txtLower.TextChanged += changedProps;
+            this.txtLower.Text = "1";
+            this.txtLower.TextChanged += new System.EventHandler(LowerLimitChanged);
+
             this.ResumeLayout(false);
-          //  this.PerformLayout();
+            this.PerformLayout();
             // 
             // tabDOF
             // 
-            this.tabDOF.Location = new System.Drawing.Point(13, 13);
+            this.tabDOF.Location = new System.Drawing.Point(13, 5);
             this.tabDOF.Name = "tabDOF";
             this.tabDOF.SelectedIndex = 0;
-            this.tabDOF.Size = new System.Drawing.Size(267, 106);
+            this.tabDOF.Size = new System.Drawing.Size(267, 60);
             this.tabDOF.TabIndex = 0;
             // 
-            // btnCancel
+            // btnSave
             // 
-            this.btnCancel.Location = new System.Drawing.Point(21, 125);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(121, 27);
-            this.btnCancel.TabIndex = 1;
-            this.btnCancel.Text = "Cancel";
-            this.btnCancel.UseVisualStyleBackColor = true;
-          //  this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
-            // btnOkay
-            // 
-            this.btnOkay.Location = new System.Drawing.Point(149, 126);
-            this.btnOkay.Name = "btnOkay";
-            this.btnOkay.Size = new System.Drawing.Size(124, 26);
-            this.btnOkay.TabIndex = 0;
-            this.btnOkay.Text = "OK";
-            this.btnOkay.UseVisualStyleBackColor = true;
-           // this.btnOkay.Click += new System.EventHandler(this.btnOkay_Click);
+            this.btnSave.Location = new System.Drawing.Point(21, 68);
+            this.btnSave.Name = "btnOkay";
+            this.btnSave.Size = new System.Drawing.Size(252, 26);
+            this.btnSave.TabIndex = 0;
+            this.btnSave.Text = "OK";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.SaveButtonPressed);
             // 
             // EditLimits
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 156);
-            this.Controls.Add(this.btnOkay);
-            this.Controls.Add(this.btnCancel);
+            this.ClientSize = new System.Drawing.Size(292, 102);
+            this.Controls.Add(this.btnSave);
             this.Controls.Add(this.tabDOF);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "EditLimits";
@@ -130,13 +121,10 @@ namespace InventorAddInBasicGUI2
         #endregion
 
         private System.Windows.Forms.TabControl tabDOF;
-        private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnOkay;
-        private System.Windows.Forms.CheckBox chkHasLimits;
+        private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.TextBox txtUpper;
         private System.Windows.Forms.TextBox txtLower;
         private System.Windows.Forms.Label lblUpper, lblLower;
-        private float cacheLower, cacheUpper;
         private class LimitPane<T> : System.Windows.Forms.TabPage
         {
            

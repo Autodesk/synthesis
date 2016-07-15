@@ -40,6 +40,7 @@ namespace InventorAddInBasicGUI2
         Inventor.ButtonDefinition cancelExport;
         Inventor.ButtonDefinition selectJointInsideJoint;
         Inventor.ButtonDefinition editDrivers;
+        Inventor.ButtonDefinition editLimits;
 
         Inventor.BrowserPane oPane;
 
@@ -116,6 +117,7 @@ namespace InventorAddInBasicGUI2
                 Rotating = true;
 
                 form = new Form1();
+                lims = new EditLimits();
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
                 //m_TreeViewBrowser = controlDefs.AddButtonDefinition("HierarchyPane", "InventorAddInBrowserPaneAttempt5:HierarchyPane", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 //m_TreeViewBrowser.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(m_TreeViewBrowser_OnExecute);
@@ -125,6 +127,9 @@ namespace InventorAddInBasicGUI2
 
                 editDrivers = controlDefs.AddButtonDefinition("Edit Drivers", "BxD:RobotExporter:EditDrivers", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 editDrivers.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditDrivers_OnExecute);
+
+                editLimits = controlDefs.AddButtonDefinition("Edit Limits", "BxD:RobotExporter:editLimits", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                editLimits.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditLimits_OnExecute);
 
                 selectJointInsideJoint = controlDefs.AddButtonDefinition("Select a Joint Inside of a Joint", "BxD:RobotExporter:SelectaJointInsideofaJoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 selectJointInsideJoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(selectJointInsideJoint_OnExecute);
@@ -183,6 +188,7 @@ namespace InventorAddInBasicGUI2
                 LimitsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
                 LimitsComboBox.OnSelect += LimitsComboBox_OnSelectEventDelegate;
                 partPanel2.CommandControls.AddComboBox(LimitsComboBox);
+                partPanel2.CommandControls.AddButton(editLimits);
                 //partPanel.CommandControls.AddButton(m_TreeViewBrowser);
                 //partPanel.CommandControls.AddButton(doCouThings);
 
@@ -203,6 +209,7 @@ namespace InventorAddInBasicGUI2
                 startExport.Enabled = true;
                 cancelExport.Enabled = false;
                 editDrivers.Enabled = false;
+                editLimits.Enabled = false;
                 selectJointInsideJoint.Enabled = false;
 
                 /*oDoc = m_inventorApplication.ActiveDocument;
@@ -335,6 +342,7 @@ namespace InventorAddInBasicGUI2
                 startExport.Enabled = false;
                 cancelExport.Enabled = true;
                 editDrivers.Enabled = true;
+                editLimits.Enabled = true;
                 selectJointInsideJoint.Enabled = true;
                 AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
 
@@ -620,6 +628,7 @@ namespace InventorAddInBasicGUI2
                                     }
                                 }
                                 switchSelectedJoint(selectedJointData.driver);
+                                switchSelectedLimit();
                             }
                         }
                     }
@@ -631,6 +640,20 @@ namespace InventorAddInBasicGUI2
         {
             //MessageBox.Show("hi");
             //JointsComboBox.Clear();
+        }
+
+        public void switchSelectedLimit()
+        {
+            doWerk = false;
+            if (selectedJointData.HasLimits)
+            {
+                LimitsComboBox.ListIndex = 2;
+            }
+            else
+            {
+                LimitsComboBox.ListIndex = 1;
+            }
+            doWerk = true;
         }
 
         private void switchSelectedJoint(DriveTypes driver)
@@ -743,6 +766,7 @@ namespace InventorAddInBasicGUI2
             startExport.Enabled = true;
             cancelExport.Enabled = false;
             editDrivers.Enabled = false;
+            editLimits.Enabled = false;
             selectJointInsideJoint.Enabled = false;
             oPane.Visible = false;
             control.saveFile();
@@ -783,6 +807,11 @@ namespace InventorAddInBasicGUI2
         public void EditDrivers_OnExecute(Inventor.NameValueMap Context)
         {
             JointsComboBox_OnSelect(Context);
+        }
+
+        public void EditLimits_OnExecute(Inventor.NameValueMap Context)
+        {
+            LimitsComboBox_OnSelect(Context);
         }
 
         public void CouThings_OnExecute(Inventor.NameValueMap Context)
@@ -923,9 +952,24 @@ namespace InventorAddInBasicGUI2
 
         public void LimitsComboBox_OnSelect(Inventor.NameValueMap Context)
         {
-            if (LimitsComboBox.Text.Equals("Limits")){
-                lims = new EditLimits();
-                System.Windows.Forms.Application.Run(lims);
+            if (doWerk)
+            {
+                try
+                {
+                    lims.readFromData(selectedJointData);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
+                }
+                if (LimitsComboBox.Text.Equals("Limits"))
+                {
+                    selectedJointData.HasLimits = true;
+                    lims.ShowDialog();
+                } else
+                {
+                    selectedJointData.HasLimits = false;
+                }
             }
         }
     }

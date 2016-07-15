@@ -288,6 +288,7 @@ namespace InventorAddInBasicGUI2
             this.btnSave.TabIndex = 11;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(SaveButtonPressed);
             // 
             // cmbWheelType
             // 
@@ -464,6 +465,7 @@ namespace InventorAddInBasicGUI2
             this.txtGearRationNum.Size = new System.Drawing.Size(120, 22);
             this.txtGearRationNum.TabIndex = 12;
             this.txtGearRationNum.Text = "1";
+            this.txtGearRationNum.TextChanged += new System.EventHandler(InputGearChanged);
             // 
             // txtGearRationDenom
             // 
@@ -472,6 +474,7 @@ namespace InventorAddInBasicGUI2
             this.txtGearRationDenom.Size = new System.Drawing.Size(120, 22);
             this.txtGearRationDenom.TabIndex = 13;
             this.txtGearRationDenom.Text = "1";
+            this.txtGearRationDenom.TextChanged += new System.EventHandler(OutputGearChanged);
             // 
             // metaElevatorBrake
             // 
@@ -492,6 +495,7 @@ namespace InventorAddInBasicGUI2
             this.brakePortB.Name = "brakePortB";
             this.brakePortB.Size = new System.Drawing.Size(120, 22);
             this.brakePortB.TabIndex = 3;
+            this.brakePortB.ValueChanged += new System.EventHandler(Brake2Changed);
             // 
             // brakePortA
             // 
@@ -499,6 +503,7 @@ namespace InventorAddInBasicGUI2
             this.brakePortA.Name = "brakePortA";
             this.brakePortA.Size = new System.Drawing.Size(120, 22);
             this.brakePortA.TabIndex = 2;
+            this.brakePortA.ValueChanged += new System.EventHandler(Brake1Changed);
             // 
             // lblBrakePort
             // 

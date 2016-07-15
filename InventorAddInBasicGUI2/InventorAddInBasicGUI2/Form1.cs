@@ -248,6 +248,10 @@ namespace InventorAddInBasicGUI2
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             tabsMeta.Location = new System.Drawing.Point(10, 95);
         }
+        public void SaveButtonPressed(object sender, EventArgs e)
+        {
+            this.Close();
+        }
         public void btnPWM_Click(object sender, EventArgs e)
         {
             lblPort.Text = "PWM Port";
@@ -388,15 +392,44 @@ namespace InventorAddInBasicGUI2
         {
             joint.CANport2 = (double)CANtxtPort2.Value;
         }
+        public void Brake1Changed(object sender, EventArgs e)
+        {
+            joint.BrakePortA = (double)brakePortA.Value;
+        }
+        public void Brake2Changed(object sender, EventArgs e)
+        {
+            joint.BrakePortB = (double)brakePortB.Value;
+        }
         public void RelayChanged(object sender, EventArgs e)
         {
             joint.RelayPort = (double)RelaytxtPort.Value;
         }
-        public void InputGear(object sender, EventArgs e)
+        public void InputGearChanged(object sender, EventArgs e)
         {
-          //  joint.InputGear = txtGearRationNum.Text.
-
-           // txtGearRationDenom.Text = j.OutputGear.ToString();
+            try
+            {
+                joint.InputGear = Convert.ToDouble(txtGearRationNum.Text);
+            }
+            catch
+            {
+                if (txtGearRationNum.Text.Length > 0)
+                {
+                    MessageBox.Show("warning, incorrect input");
+                }
+            }
+        }
+        public void OutputGearChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                joint.OutputGear = Convert.ToDouble(txtGearRationDenom.Text);
+            }
+            catch
+            {
+                if (txtGearRationDenom.Text.Length > 0) {
+                    MessageBox.Show("warning, incorrect input");
+                }
+            }
         }
         public void readFromData(JointData j)
         {
@@ -495,9 +528,9 @@ namespace InventorAddInBasicGUI2
             
             chkBoxHasBrake.Checked = j.HasBrake;
 
-            brakePortA.Value = j.BrakePortA;
+            brakePortA.Value = (decimal) j.BrakePortA;
 
-            brakePortB.Value = j.BrakePortB;
+            brakePortB.Value = (decimal) j.BrakePortB;
         }
     }
 }

@@ -31,16 +31,17 @@ namespace InventorAddInBasicGUI2
         public double CANport2;
         public bool DriveWheel;
         public bool PWM;
-        public double InputGear;//do
-        public double OutputGear;//do
+        public double InputGear;
+        public double OutputGear;
         public double SolenoidPortA;
         public double SolenoidPortB;
         public double RelayPort;
         public bool HasBrake;
-        public int BrakePortA;//do
-        public int BrakePortB;//do
+        public double BrakePortA;
+        public double BrakePortB;
         public double upperLim;//do
         public double lowerLim;//do
+        public bool HasLimits;
         public JointData(AssemblyJoint joint)
         {
             jointOfType = joint;
@@ -66,6 +67,7 @@ namespace InventorAddInBasicGUI2
             BrakePortB = 1;
             upperLim = 0;
             lowerLim = 0;
+            HasLimits = false;
         }
         public bool equals(AssemblyJoint j)
         {
