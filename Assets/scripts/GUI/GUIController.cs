@@ -330,4 +330,9 @@ class GUIController
 	{
 		return sidebarWidth;
 	}
+
+    public void ActivateWindow(OverlayWindow window)
+    {
+        window.Active = true;
+    }
 }
