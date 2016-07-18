@@ -8,14 +8,17 @@ public class InputButton : MonoBehaviour
     public int controlKey;
 
     private string buttonContent;
-    private GUIStyle buttonStyle;
     private bool active;
     private bool tick;
+
+    private GUIStyle buttonStyle;
 
     // Use this for initialization
     void Start()
     {
-        buttonStyle.normal.background = 
+        //Custom style for buttons
+        buttonStyle = new GUIStyle();
+        buttonStyle = MainMenu.buttonStyle;
     }
 
     // Update is called once per frame
@@ -26,10 +29,10 @@ public class InputButton : MonoBehaviour
 
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
         Rect rect = GetComponent<RectTransform>().rect;
-        if (GUI.Button(new Rect(p.x - rect.width / 2, Screen.height - p.y - rect.height / 2, rect.width, rect.height), buttonContent) && (!isEditing))
+        if (GUI.Button(new Rect(p.x - rect.width / 2, Screen.height - p.y - rect.height / 2, rect.width, rect.height), buttonContent, buttonStyle) && (!isEditing))
         {
             isEditing = true;
-            active = true;   
+            active = true;
         }
 
         if (active)

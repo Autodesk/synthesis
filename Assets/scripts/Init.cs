@@ -89,6 +89,11 @@ public class Init : MonoBehaviour
 	/// </summary>s
 	private GUIStyle statsLabel;
 
+    /// <summary>
+    /// Orient Robot Window
+    /// </summary>
+    private OverlayWindow oWindow;
+
     public Init()
     {
 		udp = new unityPacket ();
@@ -174,7 +179,7 @@ public class Init : MonoBehaviour
 		rects.Add (new Rect (230, 20, 50, 30));
 		rects.Add (new Rect (20, 20, 70, 30));
 
-		TextWindow oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
+		oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 		//The directional buttons lift the robot to avoid collison with objects, rotates it, and saves the applied rotation to a vector3
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
@@ -656,6 +661,9 @@ public class Init : MonoBehaviour
 		// Reset Robot
 		if (Input.GetKeyDown (Controls.ControlKey[(int)Controls.Control.ResetRobot]))
 			gui.DoAction ("Reset Robot");
+
+        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.RobotOrient]))
+            oWindow.Active = true;
 
 		// Show/Hide physics window
 		if (Input.GetKeyDown (Controls.ControlKey[(int)Controls.Control.Stats]))
