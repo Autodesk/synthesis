@@ -188,15 +188,15 @@ public class DriveJoints : MonoBehaviour
 		float[] can = dioModules [0].canValues;
 		if (Input.anyKey) {
 			pwm [0] +=
-				(Input.GetKey (KeyCode.UpArrow) ? speedArrowPWM : 0.0f) +
-				(Input.GetKey (KeyCode.DownArrow) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey (KeyCode.LeftArrow) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey (KeyCode.RightArrow) ? speedArrowPWM : 0.0f);
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Forward]) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Backward]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Left]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? speedArrowPWM : 0.0f);
 			pwm [1] +=
-				(Input.GetKey (KeyCode.UpArrow) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey (KeyCode.DownArrow) ? speedArrowPWM : 0.0f) +
-				(Input.GetKey (KeyCode.LeftArrow) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey (KeyCode.RightArrow) ? speedArrowPWM : 0.0f);
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Forward]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Backward]) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Left]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? speedArrowPWM : 0.0f);
 		}
 
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();

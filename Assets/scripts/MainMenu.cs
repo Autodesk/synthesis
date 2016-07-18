@@ -75,6 +75,7 @@ public class MainMenu : MonoBehaviour {
          }
          InitCustomField();
          InitCustomRobot();
+         UserMessageManager.Render();
     }
     #region Rendering
     //Method to render the Main GUI objects
@@ -366,8 +367,14 @@ public class MainMenu : MonoBehaviour {
             else currentimage = Sprite.Create(Extensions.LoadPNG(Application.dataPath + "\\Resources\\Images\\defaultrobot.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
         }
     }
-    
-#endregion
+
+    #endregion
+    #region Other Button Methods
+    public void InputDefaultPressed()
+    {
+        Controls.ResetDefaults();
+    }
+    #endregion
     void Start () {
         filepath = Directory.GetParent(Application.dataPath).FullName;
         fields = new ArrayList();
@@ -377,6 +384,8 @@ public class MainMenu : MonoBehaviour {
         selectedFieldName = "No Field Loaded!";
         customfieldon = false;
         customroboton = false;
+
+        Controls control = new Controls();
     }
 	
 	void Update () {
