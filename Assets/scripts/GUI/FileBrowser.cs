@@ -113,7 +113,7 @@ class FileBrowser : OverlayWindow
         }
 
         //Loads textures and fonts
-        buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
+        buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
         buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
         gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
         windowTexture = Resources.Load("Images/greyBackground") as Texture2D;
