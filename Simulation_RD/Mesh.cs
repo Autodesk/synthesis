@@ -46,13 +46,24 @@ namespace Simulation_RD
             setupMesh();
         }
 
-        public Mesh(BXDAMesh.BXDASubMesh mesh)
+        public Mesh(BXDAMesh.BXDASubMesh mesh, Vector3 position)
         {
             Vector3[] vertData = MeshUtilities.DataToVector(mesh.verts);
             Vector3[] normsData = MeshUtilities.DataToVector(mesh.norms);
             vertexData = mesh.verts;
+
+            //Translate objects
+            for(int i = 0; i < vertexData.Length;)
+            {
+                vertexData[i++] += position.X;
+                vertexData[i++] += position.Y;
+                vertexData[i++] += position.Z;
+            }
+
             for (int i = 0; i < vertData.Length; i++)
+            {
                 vertData[i] *= 0.001f;
+            }
 
             vertices = new List<Vertex>();
             //for(int i = 0; i < vertData.Length; i++)
@@ -69,6 +80,9 @@ namespace Simulation_RD
 
             indices = new List<int>();
             mesh.surfaces.ForEach((s) => indices = new List<int>(indices.Concat(s.indicies)));
+
+            IEnumerable<double> temp = vertexData.Zip(indices, (v, i) => vertexData[i]);
+            //vertexData = temp.ToArray();
 
             textures = new List<Texture>();
             setupMesh();

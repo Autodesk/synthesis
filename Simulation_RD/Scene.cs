@@ -16,6 +16,7 @@ namespace Simulation_RD
         int VBO;
         int shaderHandle;
         float lastTime;
+        PolygonMode drawMode = PolygonMode.Fill;
 
         //For angle rotationm (RMB)
         int aX = 0;
@@ -55,12 +56,12 @@ namespace Simulation_RD
             //int triLength = phys.f.triangles.Count;
 
             //BulletTriangle[] triangles = new BulletTriangle[triLength];
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             this.MouseDown += glControl1_MouseDown;
             this.MouseUp += glControl1_MouseUp;
             this.MouseMove += glControl1_MouseMove;
             this.MouseWheel += glControl1_MouseWheel;
+            this.KeyDown += glControl1_KeyDown;
 
             base.OnLoad(e);            
         }
@@ -74,7 +75,7 @@ namespace Simulation_RD
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            //phys.Update((float)e.Time);
+            phys.Update((float)e.Time);
 
             KeyboardState state = OpenTK.Input.Keyboard.GetState(0);
             if (state.IsKeyDown(Key.Escape) || state.IsKeyDown(Key.Q))
@@ -94,24 +95,25 @@ namespace Simulation_RD
                 fps = 0;
             }
 
+            GL.PolygonMode(MaterialFace.FrontAndBack, drawMode);
             GL.Viewport(0, 0, Width, Height);
 
             float aspect_ratio = Width / (float)Height;
-            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, aspect_ratio, 0.1f, 100);
+            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, aspect_ratio, 0.1f, 1000);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspective);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-            Matrix4 lookat = Matrix4.LookAt(new Vector3(0, 10, zoomFactor), Vector3.Zero, Vector3.UnitY);
+            Matrix4 lookat = Matrix4.LookAt(new Vector3(0, 0, zoomFactor), Vector3.Zero, Vector3.UnitY);
             GL.LoadMatrix(ref lookat);
-            GL.Translate(xShift, yShift, 0.0);
+            GL.Translate(-xShift, -yShift, 0.0);
             GL.Rotate(angleX, 0.0f, 1.0f, 0.0f);
             GL.Rotate(angleY, -1, 0, 0);
             
-            lastTime = (float)e.Time;
-
             //InitCube();
+
+            lastTime = (float)e.Time;
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -119,8 +121,9 @@ namespace Simulation_RD
             {
                 phys.f.VisualMeshes[i].Draw(phys.f.Bodies[i]);
             }
-            //phys.World.DebugDrawWorld();
+
             #region Old Stuff
+            //phys.World.DebugDrawWorld();
             //foreach (RigidBody body in phys.World.CollisionObjectArray)
             //{
             //    Matrix4 modelLookAt = body.MotionState.WorldTransform * lookat;
@@ -255,7 +258,7 @@ namespace Simulation_RD
                 aXPost = angleX;
                 aYPost = angleY;
             }
-            else if (e.Mouse.LeftButton == ButtonState.Released)
+            if (e.Mouse.LeftButton == ButtonState.Released)
             {
                 xPost = xShift;
                 yPost = yShift;
@@ -278,14 +281,23 @@ namespace Simulation_RD
 
         private void glControl1_MouseWheel(object sender, MouseEventArgs e)
         {
-            if (e.Mouse.Wheel > 0)
+            zoomFactor = e.Mouse.Wheel * 7;
+        }
+
+        private void glControl1_KeyDown(object sender, KeyboardKeyEventArgs e)
+        {
+            switch (e.Key)
             {
-                zoomFactor += 7f;
-            }
-            else
-            {
-                zoomFactor -= 7f;
+                case Key.Space:
+                    drawMode = ((drawMode - PolygonMode.Point) + 1) % 3 + PolygonMode.Point;
+                    break;
+                case Key.Escape:
+                    this.Close();
+                    break;
+                default:
+                    break;
             }
         }
+            
     }
 }

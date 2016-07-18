@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using OpenTK;
 using BulletSharp;
+using System.Linq;
 
 namespace Simulation_RD
 {
@@ -27,13 +29,24 @@ namespace Simulation_RD
             VisualMeshes = new List<Mesh>();
 
             BXDAMesh mesh = new BXDAMesh();
-            mesh.ReadFromFile(filePath);
+            //try
+            {
+                mesh.ReadFromFile(filePath);
+            }
+            //catch (UnauthorizedAccessException)
+            {
+                FileAttributes attr = (new FileInfo(filePath)).Attributes;
+                IEnumerable < string > attrs =
+                    from FileAttributes f in Enum.GetValues(typeof(FileAttributes))
+                    where (attr & f) > 0 select f.ToString();
+                List<string> attrsl = attrs.ToList();
+            }
 
             //CompoundShape shape = new CompoundShape();
             
             foreach(FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
             {
-                /* //Materials stuff. Ignore for now. Bullet materials are a mess.
+                /* //Materials stuff. Ignore for now. Bullet materials are a mess. Friction/Mass/Etc are done later
                 TriangleIndexVertexMaterialArray mats = new TriangleIndexVertexMaterialArray();
                 if(node.SubMeshID != -1)
                 {
@@ -103,15 +116,15 @@ namespace Simulation_RD
                         Quaternion rotation = new Quaternion(node.Rotation.X, node.Rotation.Y, node.Rotation.Z, node.Rotation.W);
                         //shape.AddChildShape(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation), shape);
                         DefaultMotionState m = new DefaultMotionState(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation));
-                        RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(1, m, subShape);
+                        RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape);
+                        rbci.Friction = current.Friction;
                         Bodies.Add(new RigidBody(rbci));
                         //rbci.Dispose();
                         //m.Dispose();
                         
                         //if(node.CollisionMeshID != -1)
-                        VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID]));
-                    }
-                    
+                        VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID], Translation));
+                    }                    
                 }
             }
 
