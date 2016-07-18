@@ -73,16 +73,46 @@ public class TextWindow : OverlayWindow
 	/// </summary>
 	public event Action<object> OnComplete;
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="TextWindow"/> class.
+    /// <summary>
+	/// Default textures.
 	/// </summary>
-	/// <param name="title">Title.</param>
-	/// <param name="rect">Rect.</param>
-	/// <param name="labelTitles">Label titles.</param>
-	/// <param name="labelRects">Label rects.</param>
-	/// <param name="buttonTitles">Button titles.</param>
-	/// <param name="buttonRects">Button rects.</param>
-	public TextWindow(string title, Rect rect, string[] labelTitles, Rect[] labelRects, string[] buttonTitles, Rect[] buttonRects)
+	private Texture2D buttonTexture;
+    private Texture2D greyWindowTexture;
+    private Texture2D darkGreyWindowTexture;
+    private Texture2D lightGreyWindowTexture;
+    private Texture2D transparentWindowTexture;
+    /// <summary>
+	/// Selected button texture.
+	/// </summary>
+	private Texture2D buttonSelected;
+    /// <summary>
+	/// Gravity-Regular font.
+	/// </summary>
+	private Font gravityRegular;
+    private Font russoOne;
+    /// <summary>
+	/// Custom GUIStyle for windows.
+	/// </summary>
+	private GUIStyle window;
+    /// <summary>
+    /// Custom GUIStyle for buttons.
+    /// </summary>
+    private GUIStyle button;
+    /// <summary>
+	/// Custom GUIStyle for labels.
+	/// </summary>s
+	private GUIStyle label;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextWindow"/> class.
+    /// </summary>
+    /// <param name="title">Title.</param>
+    /// <param name="rect">Rect.</param>
+    /// <param name="labelTitles">Label titles.</param>
+    /// <param name="labelRects">Label rects.</param>
+    /// <param name="buttonTitles">Button titles.</param>
+    /// <param name="buttonRects">Button rects.</param>
+    public TextWindow(string title, Rect rect, string[] labelTitles, Rect[] labelRects, string[] buttonTitles, Rect[] buttonRects)
 	{
 		this.title = title;
 		this.windowRect = rect;
@@ -102,8 +132,36 @@ public class TextWindow : OverlayWindow
 	/// </summary>
 	public void Render()
 	{
-		// Scale factor for when the user changes the window dimensions
-		xPosFactor = (Screen.width - initScreenWidth) / 2.0f;
+        //Loads textures and fonts
+        buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
+        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+        gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        greyWindowTexture = Resources.Load("Images/greyBackground") as Texture2D;
+
+        //Custom style for windows
+        window = new GUIStyle(GUI.skin.window);
+        window.normal.background = greyWindowTexture;
+        window.onNormal.background = greyWindowTexture;
+        window.font = gravityRegular;
+        window.fontSize = 16;
+        
+        //Custom style for buttons
+        button = new GUIStyle(GUI.skin.button);
+        button.normal.background = buttonTexture;
+        button.hover.background = buttonSelected;
+        button.active.background = buttonSelected;
+        button.onNormal.background = buttonSelected;
+        button.onHover.background = buttonSelected;
+        button.onActive.background = buttonSelected;
+        button.fontSize = 13;
+
+        //Custom style for labels
+        label = new GUIStyle(GUI.skin.label);
+        label.font = gravityRegular;
+        label.fontSize = 13;
+
+        // Scale factor for when the user changes the window dimensions
+        xPosFactor = (Screen.width - initScreenWidth) / 2.0f;
 		yPosFactor = (Screen.height - initScreenHeight) / 2.0f;
 		windowRect.x = (initWindowX + xPosFactor);
 		windowRect.y = initWindowY + yPosFactor;
@@ -112,18 +170,18 @@ public class TextWindow : OverlayWindow
 		{
 			GUI.Window
 			(
-				0, 
-				windowRect, 
+				0,
+				windowRect,
 				(int windowID) =>
 	           	{
 					// Display the labels
 					for(int i = 0; i < labelTitles.Length; i++)
-						GUI.Label(labelRects[i], labelTitles[i]);
+						GUI.Label(labelRects[i], labelTitles[i], label);
 
 					// Display the buttons
 					for(int i = 0; i < buttonTitles.Length; i++)
 					{
-						if(GUI.Button (buttonRects[i], buttonTitles[i]))
+						if(GUI.Button (buttonRects[i], buttonTitles[i], button))
 						{
 							//_active = false;
 
@@ -132,7 +190,8 @@ public class TextWindow : OverlayWindow
 						}
 					}
 				},
-				title
+				title,
+                window
           	);
 		}
 	}
