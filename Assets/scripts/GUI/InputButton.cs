@@ -15,7 +15,7 @@ public class InputButton : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        
+        buttonStyle.normal.background = 
     }
 
     // Update is called once per frame
@@ -38,12 +38,9 @@ public class InputButton : MonoBehaviour
             {
                 if (Input.GetKeyDown(vKey) && tick)
                 {
-                    if (Controls.SetControl(controlKey, vKey))
-                    {
-                        active = false;
-                        isEditing = false;
-                    }
-                    else UserMessageManager.Dispatch("Conflicts with another input!", 2f);
+                    if (!Controls.SetControl(controlKey, vKey)) UserMessageManager.Dispatch("Conflicts with another input!", 2f);
+                    active = false;
+                    isEditing = false;
                 }
             }
         }
