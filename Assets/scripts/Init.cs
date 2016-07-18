@@ -30,10 +30,7 @@ public class Init : MonoBehaviour
 	private GameObject mainNode;
 	//sizes and places window and repositions it based on screen size
 	private Rect statsWindowRect;
-	private Rect helpWindowRect;
 	// robot stats for stats window
-	private GUIContent helpButtonContent;
-	private Rect helpButtonRect;
 	private float acceleration;
 	private float angvelo;
 	private float speed;
@@ -43,7 +40,6 @@ public class Init : MonoBehaviour
 	private float oldSpeed;
 	//Display windows or not
 	private bool showStatWindow;
-	private bool showHelpWindow;
 	//for orienting the robot
 	private Quaternion rotation;
 	//start/stop button on the stats window timer
@@ -61,41 +57,90 @@ public class Init : MonoBehaviour
 	private FileBrowser fieldBrowser = null;
 	private bool fieldLoaded = false;
 
+    /// <summary>
+	/// Default textures.
+	/// </summary>
+	private Texture2D buttonTexture;
+    private Texture2D greyWindowTexture;
+    private Texture2D darkGreyWindowTexture;
+    private Texture2D lightGreyWindowTexture;
+    private Texture2D transparentWindowTexture;
+    /// <summary>
+	/// Selected button texture.
+	/// </summary>
+	private Texture2D buttonSelected;
+    /// <summary>
+	/// Gravity-Regular font.
+	/// </summary>
+	private Font gravityRegular;
+    private Font russoOne;
+    /// <summary>
+	/// Custom GUIStyle for windows.
+	/// </summary>
+	private GUIStyle statsWindow;
+    private GUIStyle menuWindow;
+    /// <summary>
+	/// Custom GUIStyle for buttons.
+	/// </summary>
+	private GUIStyle statsButton;
+    private GUIStyle menuButton;
+    /// <summary>
+	/// Custom GUIStyle for labels.
+	/// </summary>s
+	private GUIStyle statsLabel;
+
     public Init()
     {
 		udp = new unityPacket ();
 		Debug.Log (filePath);
 
 		statsWindowRect = new Rect (Screen.width - 320, 20, 300, 150);
-		helpWindowRect = new Rect (300, 100, 400, 150);
-		helpButtonRect = new Rect (Screen.width - 103, 0, 100, 25);
 		time_stop = false;
 
 		reloadRobotInFrames = -1;
 		reloadFieldInFrames = -1;
 		showStatWindow = false;
-		showHelpWindow = false;
 		rotation = Quaternion.identity;
 		label = "Stop";
     }
 
 	//displays stats like speed and acceleration
 	public void StatsWindow(int windowID) {
+        //Custom style for windows
+        statsWindow = new GUIStyle(GUI.skin.window);
+        statsWindow.normal.background = greyWindowTexture;
+        statsWindow.onNormal.background = greyWindowTexture;
+        statsWindow.font = gravityRegular;
+        statsWindow.fontSize = 13;
+
+        //Custom style for buttons
+        statsButton = new GUIStyle(GUI.skin.button);
+        statsButton.font = gravityRegular;
+        statsButton.normal.background = buttonTexture;
+        statsButton.hover.background = buttonSelected;
+        statsButton.active.background = buttonSelected;
+        statsButton.onNormal.background = buttonSelected;
+        statsButton.onHover.background = buttonSelected;
+        statsButton.onActive.background = buttonSelected;
+        statsButton.fontSize = 13;
+
+        //Custom style for labels
+        statsLabel = new GUIStyle(GUI.skin.label);
+        statsLabel.font = gravityRegular;
+        statsLabel.fontSize = 13;
+
+        GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s", statsLabel);
+		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2 - " + Math.Round(acceleration * 3.28084, 1).ToString() + " ft/s^2", statsLabel);
+		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s", statsLabel);
+		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs", statsLabel);
+		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec", statsLabel);
 		
-		GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s");
-		GUI.Label (new Rect (150, 20, 300, 50),Math.Round(speed*3.28084, 1).ToString() + " ft/s");
-		GUI.Label (new Rect (10, 40, 300, 50), "Acceleration: " + Math.Round(acceleration, 1).ToString() + " m/s^2");
-		GUI.Label (new Rect (175, 40, 300, 50),Math.Round(acceleration*3.28084, 1).ToString() + " ft/s^2");
-		GUI.Label (new Rect (10, 60, 300, 50), "Angular Velocity: " + Math.Round(angvelo, 1).ToString() + " rad/s");
-		GUI.Label (new Rect (10, 80, 300, 50), "Weight: " + weight.ToString() + " lbs");
-		GUI.Label (new Rect (10, 120, 300, 50), "Timer: " + Math.Round (time, 1).ToString() + " sec");
-		
-		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset")) 
+		if (GUI.Button (new Rect (210, 120, 80, 25), "Reset", statsButton)) 
 		{
 			time = 0;
 		}
 
-		if(GUI.Button (new Rect (120, 120, 80, 25), label))
+		if(GUI.Button (new Rect (120, 120, 80, 25), label, statsButton))
 		{
 			time_stop = !time_stop;
 
@@ -104,44 +149,6 @@ public class Init : MonoBehaviour
 			else
 				label = "Stop";
 		}
-	}
-
-	/// <summary>
-	/// Displays help windows.
-	/// </summary>
-	/// <param name="windowID">Window I.</param>
-	public void HelpWindow(int windowID)
-	{
-		float topGap = 10;
-		float buttonGap = 20;
-		float buttonWidth = (helpWindowRect.width - (buttonGap * 3)) / 2.0f;
-		float buttonHeight = helpWindowRect.height - (buttonGap * 2) - topGap;
-		int leftX = 75;
-		int leftXOffset = 400;
-		int heightGap = 45;
-		int underlineGap = 4;
-
-		GUIStyle labelSkin = new GUIStyle (GUI.skin.label);
-		labelSkin.fontSize = 24;
-	
-		GUI.Label (new Rect (leftX, 1 * heightGap, 300, 50), "Action", labelSkin);
-		GUI.Label (new Rect (leftX, (1 * heightGap) + underlineGap, 300, 50), "_____", labelSkin);
-		GUI.Label (new Rect (leftX, 2 * heightGap, 300, 50), "Menu:", labelSkin);
-		GUI.Label (new Rect (leftX, 3 * heightGap, 300, 50), "Reset Robot:", labelSkin);
-		GUI.Label (new Rect (leftX, 4 * heightGap, 300, 50), "Driverstation View:", labelSkin);
-		GUI.Label (new Rect (leftX, 5 * heightGap, 300, 50), "Orbit View:", labelSkin);
-		GUI.Label (new Rect (leftX, 6 * heightGap, 300, 50), "Free Roam View:", labelSkin);
-		GUI.Label (new Rect (leftX, 7 * heightGap, 300, 50), "To Drive Robot:", labelSkin);
-		GUI.Label (new Rect (leftX, 8 * heightGap, 300, 50), "Toggle stats window:", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 1 * heightGap, 300, 50), "Key", labelSkin);
-		GUI.Label (new Rect (leftXOffset, (1 * heightGap) + underlineGap, 300, 50), "___", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 2 * heightGap, 300, 50), "[ESC]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 3 * heightGap, 300, 50), "[R]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 4 * heightGap, 300, 50), "[D]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 5 * heightGap, 300, 50), "[O]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 6 * heightGap, 300, 50), "[F]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 7 * heightGap, 300, 50), "[Arrow Keys]", labelSkin);
-		GUI.Label (new Rect (leftXOffset, 8 * heightGap, 300, 50), "[S]", labelSkin);
 	}
 
 	/// <summary>
@@ -215,26 +222,30 @@ public class Init : MonoBehaviour
 	void ShowGuiSidebar()
 	{
 		dynamicCamera.DisableMoving();
-		showHelpWindow = false;
 	}
 
 	[STAThread]
     void OnGUI()
     {
-		// Draws stats window on to GUI
-		if(showStatWindow)
-			GUI.Window(0, statsWindowRect, StatsWindow, "Stats");
+        //Custom style for windows
+        menuWindow = new GUIStyle(GUI.skin.window);
+        menuWindow.normal.background = transparentWindowTexture;
+        menuWindow.onNormal.background = transparentWindowTexture;
+        menuWindow.font = gravityRegular;
 
-		// Draws help window on to GUI
-		if (showHelpWindow)
-		{
-			int windowWidth = 900;
-			int windowHeight = 450;
-			float paddingX = (Screen.width - windowWidth) / 2.0f;
-			float paddingY = (Screen.height - windowHeight) / 2.0f;
-			helpWindowRect = new Rect (paddingX, paddingY, windowWidth, windowHeight);
-			GUI.Window (0, helpWindowRect, HelpWindow, "Help");
-		}
+        //Custom style for buttons
+        menuButton = new GUIStyle(GUI.skin.button);
+        menuButton.font = gravityRegular;
+        menuButton.normal.background = buttonTexture;
+        menuButton.hover.background = buttonSelected;
+        menuButton.active.background = buttonSelected;
+        menuButton.onNormal.background = buttonSelected;
+        menuButton.onHover.background = buttonSelected;
+        menuButton.onActive.background = buttonSelected;
+
+        // Draws stats window on to GUI
+        if (showStatWindow)
+			GUI.Window(0, statsWindowRect, StatsWindow, "Stats", statsWindow);
 
         if (gui == null)
         {
@@ -339,11 +350,6 @@ public class Init : MonoBehaviour
 			};
 		}
 
-		if (showHelpWindow && Input.GetMouseButtonUp (0) && !auxFunctions.MouseInWindow (helpWindowRect) && !auxFunctions.MouseInWindow (helpButtonRect))
-			showHelpWindow = false;
-
-		gui.guiBackgroundVisible = showHelpWindow;
-
 		if (!fieldLoaded)
 			fieldBrowser.Render ();
 
@@ -353,24 +359,12 @@ public class Init : MonoBehaviour
 			GUI.Window (1, new Rect (0, 0, gui.GetSidebarWidth (), 25), 
             	(int windowID) =>
 				{
-					if (GUI.Button (new Rect (0, 0, gui.GetSidebarWidth (), 25), "Menu"))
+					if (GUI.Button (new Rect (0, 0, gui.GetSidebarWidth (), 25), "Menu", menuButton))
 						gui.EscPressed();
 				},
-				""
-			);
-		
-			helpButtonRect = new Rect (Screen.width - 25, 0, 25, 25);
-			
-			// The Help button on top right corner
-			GUI.Window (2, helpButtonRect, 
-            	(int windowID) =>
-			{
-				if (GUI.Button (new Rect (0, 0, 25, 25), helpButtonContent)) {	
-					showHelpWindow = !showHelpWindow;
-				}
-			},
-				""
-			);
+				"",
+                menuWindow
+            );
 
 			gui.Render ();
 		}
@@ -574,9 +568,6 @@ public class Init : MonoBehaviour
 
     void Start()
     {
-		helpButtonContent = new GUIContent ("");
-		helpButtonContent.image = Resources.Load ("Images/halp") as Texture2D;
-
         Physics.gravity = new Vector3(0, -9.8f, 0);
         Physics.solverIterationCount = 30;
 		Physics.minPenetrationForPenalty = 0.001f;
@@ -607,6 +598,16 @@ public class Init : MonoBehaviour
         reloadFieldInFrames = 2;
 
         reloadRobotInFrames = -1;
+
+        //Loads textures and fonts
+        buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
+        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+        gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        russoOne = Resources.Load("Fonts/Russo_One") as Font;
+        greyWindowTexture = Resources.Load("Images/greyBackground") as Texture2D;
+        darkGreyWindowTexture = Resources.Load("Images/darkGreyBackground") as Texture2D;
+        lightGreyWindowTexture = Resources.Load("Images/lightGreyBackground") as Texture2D;
+        transparentWindowTexture = Resources.Load("Images/transparentBackground") as Texture2D;
     }
 
     void OnEnable()
@@ -644,7 +645,6 @@ public class Init : MonoBehaviour
                 filePath = PlayerPrefs.GetString("Robot");
                 TryLoadRobot();
 				showStatWindow = true;
-				showHelpWindow = true;
 			}
 			else
 			{
