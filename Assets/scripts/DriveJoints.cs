@@ -197,7 +197,16 @@ public class DriveJoints : MonoBehaviour
 				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Backward]) ? speedArrowPWM : 0.0f) +
 				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Left]) ? -speedArrowPWM : 0.0f) +
 				(Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? speedArrowPWM : 0.0f);
-		}
+            if (pwm.Length > 2) pwm[2] +=
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? 1 : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -1 : 0.0f);
+            if (pwm.Length > 3) pwm[3] +=
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Plus]) ? -1 : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Neg]) ? 1 : 0.0f);
+            if (pwm.Length > 4) pwm[4] +=
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -1 : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Neg]) ? 1 : 0.0f);
+        }
 
 		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);

@@ -11,19 +11,42 @@ public class InputButton : MonoBehaviour
     private bool active;
     private bool tick;
 
-    private GUIStyle buttonStyle;
+    private Texture2D buttonTexture;
+    private Texture2D buttonSelected;
+    private Font gravityRegular;
 
     // Use this for initialization
     void Start()
     {
         //Custom style for buttons
-        buttonStyle = new GUIStyle();
-        buttonStyle = MainMenu.buttonStyle;
+        buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
+        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+        gravityRegular = Resources.Load("Fonts/Russo_One") as Font;
     }
 
     // Update is called once per frame
     void OnGUI()
     {
+        GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+        buttonStyle.font = gravityRegular;
+        buttonStyle.fontSize = 12;
+        if (active)
+        {
+            buttonStyle.normal.textColor = Color.cyan;
+            buttonStyle.hover.textColor = Color.cyan;
+        }
+        else
+        {
+            buttonStyle.normal.textColor = Color.white;
+            buttonStyle.hover.textColor = Color.white;
+        }
+        buttonStyle.normal.background = buttonTexture;
+        buttonStyle.hover.background = buttonSelected;
+        buttonStyle.active.background = buttonSelected;
+        buttonStyle.onNormal.background = buttonTexture;
+        buttonStyle.onHover.background = buttonSelected;
+        buttonStyle.onActive.background = buttonSelected;
+
         tick = !tick;
         buttonContent = Controls.ControlKey[controlKey].ToString();
 
