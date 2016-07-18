@@ -379,7 +379,7 @@ public class Init : MonoBehaviour
 		if (reloadRobotInFrames >= 0 || reloadFieldInFrames >= 0)
         {
             GUI.backgroundColor = new Color(1, 1, 1, 0.5f);
-            GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "Loading... Please Wait", gui.BlackBoxStyle);
+            GUI.Box(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 25), "Loading... Please Wait", gui.BlackBoxStyle);
         }
     }
 
@@ -605,7 +605,7 @@ public class Init : MonoBehaviour
         reloadRobotInFrames = -1;
 
         //Loads textures and fonts
-        buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
+        buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
         buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
         gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
         russoOne = Resources.Load("Fonts/Russo_One") as Font;

@@ -28,6 +28,28 @@ class GUIController
     private const float GUI_SIDEBAR_ENTRY_PADDING_Y = 10;
 	private const float GUI_SIDEBAR_PADDING_Y = 30;
 
+    /// <summary>
+	/// Default textures.
+	/// </summary>
+	private Texture2D buttonTexture;
+    private Texture2D greyWindowTexture;
+    private Texture2D darkGreyWindowTexture;
+    private Texture2D lightGreyWindowTexture;
+    private Texture2D transparentWindowTexture;
+    /// <summary>
+	/// Selected button texture.
+	/// </summary>
+	private Texture2D buttonSelected;
+    /// <summary>
+	/// Gravity-Regular font.
+	/// </summary>
+	private Font gravityRegular;
+    private Font russoOne;
+    /// <summary>
+	/// Custom GUIStyle for buttons.
+	/// </summary>
+    private GUIStyle btnStyle;
+
     // Objects to allow rendering of GUI boxes with black backgrounds.
     #region make it black
     private Texture2D _black;
@@ -195,9 +217,23 @@ class GUIController
         }
         #endregion
 
+        //Loads textures and fonts
+        buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
+        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
+        gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        russoOne = Resources.Load("Fonts/Russo_One") as Font;
+
         #region calculate width
-        GUIStyle btnStyle = new GUIStyle(GUI.skin.GetStyle("Button"));
-        btnStyle.fontSize *= 3;
+        btnStyle = new GUIStyle(GUI.skin.button);
+        btnStyle.font = gravityRegular;
+        btnStyle.fontSize = 16;
+        btnStyle.normal.background = buttonTexture;
+        btnStyle.hover.background = buttonSelected;
+        btnStyle.active.background = buttonSelected;
+        btnStyle.onNormal.background = buttonSelected;
+        btnStyle.onHover.background = buttonSelected;
+        btnStyle.onActive.background = buttonSelected;
+
         if (recalcWidth)
         {
             recalcWidth = false;
