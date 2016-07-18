@@ -97,7 +97,7 @@ namespace Simulation_RD
             //World.AddRigidBody(body_s);
             #endregion
 
-            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2014\");
+            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2013\");
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);
@@ -112,7 +112,7 @@ namespace Simulation_RD
         public virtual void Update(float elapsedTime)
         {
             World.StepSimulation(elapsedTime);
-            World.DebugDrawWorld();
+            //World.DebugDrawWorld();
         }
 
         public void ExitPhysics()
