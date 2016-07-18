@@ -4,7 +4,7 @@ using ExceptionHandling;
 
 public class Controls : MonoBehaviour
 {
-    public enum Control { Forward, Backward, Right, Left, ResetRobot, RobotOrient, CameraToggle, pwm3PLus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, Stats};
+    public enum Control { Forward, Backward, Right, Left, ResetRobot, RobotOrient, CameraToggle, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, Stats};
 
     public static KeyCode[] ControlKey = new KeyCode[14];
     public static KeyCode[] ControlKeyDefaults = new KeyCode[14];
@@ -23,7 +23,7 @@ public class Controls : MonoBehaviour
         ControlKeyDefaults[(int)Control.ResetRobot] = KeyCode.R;
         ControlKeyDefaults[(int)Control.RobotOrient] = KeyCode.O;
         ControlKeyDefaults[(int)Control.CameraToggle] = KeyCode.C;
-        ControlKeyDefaults[(int)Control.pwm3PLus] = KeyCode.Alpha1;
+        ControlKeyDefaults[(int)Control.pwm3Plus] = KeyCode.Alpha1;
         ControlKeyDefaults[(int)Control.pwm3Neg] = KeyCode.Alpha2;
         ControlKeyDefaults[(int)Control.pwm4Plus] = KeyCode.Alpha3;
         ControlKeyDefaults[(int)Control.pwm4Neg] = KeyCode.Alpha4;
@@ -36,7 +36,7 @@ public class Controls : MonoBehaviour
 
     public static void ResetDefaults()
     {
-        System.Array.Copy(ControlKeyDefaults, ControlKey, 9);
+        System.Array.Copy(ControlKeyDefaults, ControlKey, 14);
     }
 
     public static bool SetControl(int control, KeyCode key)

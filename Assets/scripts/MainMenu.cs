@@ -43,12 +43,6 @@ public class MainMenu : MonoBehaviour {
     private GUIStyle listStyle;
     private bool picked;
 
-    private Texture2D buttonTexture = Resources.Load("Images/greyBackground") as Texture2D;
-    private Texture2D buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
-    private Font gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
-
-    public static GUIStyle buttonStyle;
-
 
 
     //The GUI rendering method. It uses a state machine to switch between the different menus.
@@ -376,7 +370,7 @@ public class MainMenu : MonoBehaviour {
     }
 
     #endregion
-    #region Other Button Methods
+    #region Other Methods
     public void InputDefaultPressed()
     {
         Controls.ResetDefaults();
@@ -394,14 +388,7 @@ public class MainMenu : MonoBehaviour {
 
         Controls control = new Controls();
 
-        buttonStyle = new GUIStyle(GUI.skin.button);
-        buttonStyle.font = gravityRegular;
-        buttonStyle.normal.background = buttonTexture;
-        buttonStyle.hover.background = buttonSelected;
-        buttonStyle.active.background = buttonSelected;
-        buttonStyle.onNormal.background = buttonSelected;
-        buttonStyle.onHover.background = buttonSelected;
-        buttonStyle.onActive.background = buttonSelected;
+
     }
 	
 	void Update () {
