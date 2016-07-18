@@ -250,21 +250,15 @@ public class DynamicCamera : MonoBehaviour
 
 	void LateUpdate ()
 	{
-		if(movingEnabled)
-		{
-			// Will switch the camera state if certain keys are pressed.
-			if (Input.GetKey (KeyCode.D))
-			{
-				if (!cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
-			}
-			else if (Input.GetKey (KeyCode.O))
-			{
-				if (!cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
-			}
-			else if (Input.GetKey (KeyCode.F))
-			{
-				if (!cameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new FreeroamState(this));
-			}
+        if (movingEnabled)
+        {
+            // Rotates between camera states.
+            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+            {
+                if (cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
+                else if (cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
+                else SwitchCameraState(new DriverStationState(this));
+            }
 		}
 		
 		if (_cameraState != null) _cameraState.Update ();

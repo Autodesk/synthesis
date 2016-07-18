@@ -653,12 +653,12 @@ public class Init : MonoBehaviour
 			}
 		}
 
-		// Orient Robot
-		if (Input.GetKeyDown (KeyCode.R))
+		// Reset Robot
+		if (Input.GetKeyDown (Controls.ControlKey[(int)Controls.Control.ResetRobot]))
 			gui.DoAction ("Reset Robot");
 
 		// Show/Hide physics window
-		if (Input.GetKeyDown (KeyCode.S))
+		if (Input.GetKeyDown (Controls.ControlKey[(int)Controls.Control.Stats]))
 			showStatWindow = !showStatWindow;
     }
 

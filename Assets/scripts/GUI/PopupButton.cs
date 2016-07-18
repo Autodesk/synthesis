@@ -28,7 +28,6 @@ public class PopupButton : MonoBehaviour {
 	void OnGUI () {
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
         Rect rect = GetComponent<RectTransform>().rect;
-        Debug.Log (p.y);
         if (Popup.List(new Rect(p.x-rect.width/2, Screen.height-p.y-rect.height/2, rect.width, rect.height), ref showList, ref listEntry, list[listEntry], list, listStyle))
         {
             picked = true;
