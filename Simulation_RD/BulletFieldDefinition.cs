@@ -12,7 +12,7 @@ namespace Simulation_RD
     /// </summary>
     class BulletFieldDefinition : FieldDefinition
     {
-        const bool debug = false;
+        const bool debug = true;
 
         private BulletFieldDefinition(Guid guid, string name) : base(guid, name) { }
 
@@ -29,38 +29,10 @@ namespace Simulation_RD
             VisualMeshes = new List<Mesh>();
 
             BXDAMesh mesh = new BXDAMesh();
-            //try
-            {
-                mesh.ReadFromFile(filePath);
-            }
-            //catch (UnauthorizedAccessException)
-            {
-                FileAttributes attr = (new FileInfo(filePath)).Attributes;
-                IEnumerable < string > attrs =
-                    from FileAttributes f in Enum.GetValues(typeof(FileAttributes))
-                    where (attr & f) > 0 select f.ToString();
-                List<string> attrsl = attrs.ToList();
-            }
-
-            //CompoundShape shape = new CompoundShape();
-            
+            mesh.ReadFromFile(filePath);
+                        
             foreach(FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
-            {
-                /* //Materials stuff. Ignore for now. Bullet materials are a mess. Friction/Mass/Etc are done later
-                TriangleIndexVertexMaterialArray mats = new TriangleIndexVertexMaterialArray();
-                if(node.SubMeshID != -1)
-                {
-                    BXDAMesh.BXDASubMesh subMesh = mesh.meshes[node.SubMeshID];
-                    for(int i = 0; i < mats.Length; i++)
-                    {
-                        MaterialProperties m = new MaterialProperties();
-                        m.
-                        mats.AddMaterialProperties()
-                    }
-                }
-                */
-
-
+            {                
                 if (GetPropertySets().ContainsKey(node.PropertySetID))
                 {
                     PropertySet current = GetPropertySets()[node.PropertySetID];
@@ -72,7 +44,7 @@ namespace Simulation_RD
                                 //Create a box shape
                                 PropertySet.BoxCollider colliderInfo = (PropertySet.BoxCollider)current.Collider;
                                 subShape = new BoxShape(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
-                                //if (debug) Console.WriteLine("Created Box");
+                                if (debug) Console.WriteLine("Created Box");
                                 break;
                             }
                         case PropertySet.PropertySetCollider.PropertySetCollisionType.SPHERE:
@@ -80,7 +52,7 @@ namespace Simulation_RD
                                 //Create a sphere shape
                                 PropertySet.SphereCollider colliderInfo = (PropertySet.SphereCollider)current.Collider;
                                 subShape = new SphereShape(colliderInfo.Scale);
-                                //if (debug) Console.WriteLine("Created Sphere");
+                                if (debug) Console.WriteLine("Created Sphere");
                                 break;
                             }
                         case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
@@ -89,50 +61,45 @@ namespace Simulation_RD
                                 if(node.CollisionMeshID != -1)
                                 {
                                     PropertySet.MeshCollider colliderInfo = (PropertySet.MeshCollider)current.Collider;
-
+                                    
                                     Vector3[] vertices = MeshUtilities.DataToVector(mesh.colliders[node.CollisionMeshID].verts);
 
                                     if (colliderInfo.Convex)
                                     {
                                         subShape = new ConvexHullShape(vertices);
-                                        //if (debug) Console.WriteLine("Created Convex Mesh");
+                                        if (debug) Console.WriteLine("Created Convex Mesh");
                                     }
                                     else
                                     {
                                         StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[node.CollisionMeshID], vertices);
-                                        subShape = new GImpactMeshShape(sMesh);
-                                        //if (debug) Console.WriteLine("Created Concave Mesh");
+                                        subShape = new ConvexTriangleMeshShape(sMesh, true);
+                                        if (debug) Console.WriteLine("Created Concave Mesh");
                                     }
                                 }
                                 break;
                             }
+                        default:
+                            Console.WriteLine("wat is dis");
+                            break;
                     }
-                    if(debug) Console.WriteLine("Created " + node.NodeID);
                     
                     if (null != subShape)
                     {
                         //set sub shape local position/rotation and add it to the compound shape
                         Vector3 Translation = new Vector3(node.Position.x, node.Position.y, node.Position.z);
                         Quaternion rotation = new Quaternion(node.Rotation.X, node.Rotation.Y, node.Rotation.Z, node.Rotation.W);
-                        //shape.AddChildShape(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation), shape);
+                        
                         DefaultMotionState m = new DefaultMotionState(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation));
+                        
                         RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape);
                         rbci.Friction = current.Friction;
                         Bodies.Add(new RigidBody(rbci));
-                        //rbci.Dispose();
-                        //m.Dispose();
-                        
-                        //if(node.CollisionMeshID != -1)
-                        VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID], Translation));
+
+                        VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID], Translation));                        
+                        if(debug) Console.WriteLine("Created " + node.PropertySetID);
                     }                    
                 }
             }
-
-            //BXDVector3 com = mesh.physics.centerOfMass;
-            //Vector3 bulletCom = new Vector3(com.x, com.y, com.z);
-            //DefaultMotionState m = new DefaultMotionState(Matrix4.CreateTranslation(bulletCom));
-            //RigidBodyConstructionInfo rb = new RigidBodyConstructionInfo(mesh.physics.mass, m, shape);
-            //BulletObject = new RigidBody(rb);
         }
 
         /// <summary>
