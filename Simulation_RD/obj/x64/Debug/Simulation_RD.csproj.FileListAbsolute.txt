@@ -11,3 +11,6 @@ C:\Users\t_milfn\Documents\Research\Simulation_RD\bin\x64\Debug\SimulatorAPI.pdb
 C:\Users\t_milfn\Documents\Research\Simulation_RD\obj\x64\Debug\Simulation_RD.exe
 C:\Users\t_milfn\Documents\Research\Simulation_RD\obj\x64\Debug\Simulation_RD.pdb
 C:\Users\t_milfn\Documents\Research\Simulation_RD\obj\x64\Debug\Simulation_RD.csprojResolveAssemblyReference.cache
+C:\Users\t_hodgt\Git\Engine-Research\Simulation_RD\bin\x64\Debug\Simulation_RD.exe.config
+C:\Users\t_hodgt\Git\Engine-Research\Simulation_RD\obj\x64\Debug\Simulation_RD.exe
+C:\Users\t_hodgt\Git\Engine-Research\Simulation_RD\obj\x64\Debug\Simulation_RD.pdb
