@@ -384,7 +384,7 @@ namespace InventorAddInBasicGUI2
                 MessageBox.Show(e.ToString());
             }
         }
-
+        //starts the exporter
         public void startExport_OnExecute(Inventor.NameValueMap Context)
         {
             try
@@ -394,7 +394,7 @@ namespace InventorAddInBasicGUI2
                 JointsComboBox.Enabled = true;
                 LimitsComboBox.Enabled = true;
                 exportRobot.Enabled = true;
-                selectJoint.Enabled = true;
+                selectJoint.Enabled = true;//set buttons to proper state
                 startExport.Enabled = false;
                 cancelExport.Enabled = true;
                 editDrivers.Enabled = true;
@@ -417,7 +417,7 @@ namespace InventorAddInBasicGUI2
                      MessageBox.Show("noo");
                  }*/
                 try
-                {
+                {// if no browser pane previously created then create a new one
                     ClientNodeResources oRscs = oPanes.ClientNodeResources;
                     stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
                     oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
@@ -435,13 +435,13 @@ namespace InventorAddInBasicGUI2
 
                             oPane = pane;
                             oPane.Visible = true;
-                            oPane.Activate();
+                            oPane.Activate();// is there is already a pane then use that
                             found = true;
                         }
                     }
                     if (!found)
                     {
-                        oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);
+                        oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);// if the pane was created but the node wasnt then init a node 
                         oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);
                     }
                 }
@@ -464,27 +464,28 @@ namespace InventorAddInBasicGUI2
 
                      //oPane.TopNode.AddChild(node1.BrowserNodeDefinition);
                  }*/
+                 // look at all top level parts/ assembly
                 foreach (ComponentOccurrence c in ((AssemblyDocument)m_inventorApplication.ActiveDocument).ComponentDefinition.Occurrences)
                 {
                     foreach (AssemblyJoint j in c.Joints)
-                    {
+                    {// look at all joints inside of the main doc
                         bool found = false;
                         foreach(JointData d in jointList)
-                        {
+                        {// looks at all joints in the joint data to check for duplicates
                             if (d.equals(j))
                             {
                                 found = true;
                             }
                         }
                         if (!found)
-                        {
+                        {// if there isn't a duplicate then add part to browser folder
                             obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
                             node1 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceOne);
-                            obj.Add(node1);
+                            obj.Add(node1);// add the first affected part/ assembly
                             node2 = oPane.GetBrowserNodeFromObject(j.AffectedOccurrenceTwo);
-                            obj.Add(node2);
+                            obj.Add(node2);// add the second affected part/ assembly
                             node3 = oPane.GetBrowserNodeFromObject(j);
-                            obj.Add(node3);
+                            obj.Add(node3);// add the joint
                             //ComponentOccurrence assembly = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick(SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a joint to edit");
                             //BrowserNode node4 = oPane.GetBrowserNodeFromObject(assembly);
                             // obj.Add(node4);
@@ -494,11 +495,11 @@ namespace InventorAddInBasicGUI2
                             joints.Add(j.AffectedOccurrenceTwo);
                             i++;
                             assemblyJoint = new JointData(j);
-                            jointList.Add(assemblyJoint);
+                            jointList.Add(assemblyJoint);// add new joint data to the array
                         }
                     }
                     if (c.SubOccurrences.Count > 0)
-                    {
+                    {// if there are parts/ assemblies inside the assembly then look at it for joints
                         foreach (ComponentOccurrence v in c.SubOccurrences)
                         {
                             findSubOccurences(v);
@@ -507,18 +508,17 @@ namespace InventorAddInBasicGUI2
                 }
                 Boolean contains = false;
                 foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
-                {
+                {// loks at all parts/ assemblies in the main assembly
                     contains = false;
                     foreach (ComponentOccurrence j in joints)
                     {
-
                         if ((j.Equals(c)))
-                        {
+                        {// checks is the part/ assembly is in a joint
                             contains = true;
                         }
                     }
                     if (!contains)
-                    {
+                    {// if the assembly/ part isn't part of a joint then hide it
                         c.Enabled = false;
                         //     c.OverrideOpacity = .15;
                     }
@@ -538,7 +538,6 @@ namespace InventorAddInBasicGUI2
                 MessageBox.Show(e.ToString());
             }
         }
-
         //start export with normal nodes
         /*public void startExport_OnExecute(Inventor.NameValueMap Context)
         {
@@ -630,11 +629,11 @@ namespace InventorAddInBasicGUI2
 
            }
            */
-
-        void thing()
+        //reacts to double clicks
+        public void thing()
         {
             if (doubleClick == false)
-            {
+            {// if there is noo current double click then start a timer
                 time = new System.Timers.Timer();
                 time.Interval = 500;
 
@@ -649,14 +648,14 @@ namespace InventorAddInBasicGUI2
                 doubleClick = true;
             }
             else
-            {
+            { // if there is a double click active then do this
                 MessageBox.Show("jnnnnm");
                 time.Enabled = false;
                 time.Stop();
                 doubleClick = false;
             }
         }
-
+        
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
             /* if (doubleClick == false) {
@@ -756,7 +755,7 @@ namespace InventorAddInBasicGUI2
                 }
             }
         }
-        
+        // reacts to a deselect
         private void oUIEvents_OnUnSelect(ObjectsEnumerator UnSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
             //MessageBox.Show("hi");
@@ -825,11 +824,11 @@ namespace InventorAddInBasicGUI2
             }
             doWerk = true;
         }
-
+        // if the joint is rotating then set the proper combo box choices
         private void JointTypeRotating()
         {
-            doWerk = false;
-            Rotating = true;
+            doWerk = false; // tells the reactor method to ignore the selection changes
+            Rotating = true; // sets the type of joint to rotating
             JointsComboBox.Clear();
             JointsComboBox.AddItem("No Driver", 0);
             JointsComboBox.AddItem("Motor", 0);
@@ -841,13 +840,13 @@ namespace InventorAddInBasicGUI2
             JointsComboBox.ListIndex = 1;
             JointsComboBox.ToolTipText = JointsComboBox.Text;
             JointsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
-            doWerk = true;
+            doWerk = true;// reenables the combo box reactor method
         }
-
+        // if the joint is linear then set the proper combo box choices
         private void JointTypeLinear()
         {
-            doWerk = false;
-            Rotating = false;
+            doWerk = false; // tells the reactor method to ignore the selection changes
+            Rotating = false; // sets the type of joint to not rotating
             JointsComboBox.Clear();
             JointsComboBox.AddItem("No Driver", 0);
             JointsComboBox.AddItem("Elevator", 0);
@@ -857,16 +856,16 @@ namespace InventorAddInBasicGUI2
             JointsComboBox.ListIndex = 1;
             JointsComboBox.ToolTipText = JointsComboBox.Text;
             JointsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
-            doWerk = true;
+            doWerk = true; // reenables the combo box reactor method
         }
-
+        // when double click times out then set some variables
         private static void OnTimedEvent(Object source, System.Timers.ElapsedEventArgs e)
         {
             time.Enabled = false;
 
             doubleClick = false;
         }
-
+        //test button for doing experimental things
         public void test_OnExecute(Inventor.NameValueMap Context)
         {
             AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
@@ -874,6 +873,7 @@ namespace InventorAddInBasicGUI2
             jointList = new ArrayList();
             joints = new ArrayList();
             i = 1;
+            // inits the browser pane
             if (FirstTime == true)
             {
                 oDoc = m_inventorApplication.ActiveDocument;
@@ -887,6 +887,7 @@ namespace InventorAddInBasicGUI2
                 oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);
                 FirstTime = false;
             }
+            // gets a selected leaf node then adds the corrospoinding browser node to a folder
             ComponentOccurrence assembly = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
                       (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a joint to edit");
             oPane.GetBrowserNodeFromObject(assembly);
@@ -1036,17 +1037,17 @@ namespace InventorAddInBasicGUI2
                 MessageBox.Show(e.ToString());
             }
         }
-
+        // passes call to the joints combo box, allows for the windows form to be activated without reselecting in the combo box
         public void EditDrivers_OnExecute(Inventor.NameValueMap Context)
         {
             JointsComboBox_OnSelect(Context);
         }
-
+        // passes call to the limits combo box, allows for the windows form to be activated without reselecting in the combo box
         public void EditLimits_OnExecute(Inventor.NameValueMap Context)
         {
             LimitsComboBox_OnSelect(Context);
         }
-
+        // another test button
         public void CouThings_OnExecute(Inventor.NameValueMap Context)
         {
             try
@@ -1067,35 +1068,37 @@ namespace InventorAddInBasicGUI2
               (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter,
                                                 "Select part 2");
                 MessageBox.Show(part1.Joints.ToString());*/
+                // picks an assembly
                 ComponentOccurrence joint = (ComponentOccurrence)
                            m_inventorApplication.CommandManager.Pick
               (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter,
                                                 "Select a joint to edit");
                 ArrayList joints = new ArrayList();
+                // adds joint to jonit list
                 foreach (AssemblyJoint j in asmDoc.ComponentDefinition.Joints)
                 {
                     joints.Add(j.AffectedOccurrenceOne);
                     joints.Add(j.AffectedOccurrenceOne);
                 }
                 Boolean contains = false;
+                // looks at all parts/ assemblies in the main assembly
                 foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
                 {
                     contains = false;
                     foreach (ComponentOccurrence j in joints)
                     {
-
+                        // looks for part/ assembly in joints
                         if ((j.Equals(c)))
                         {
                             contains = true;
                         }
                     }
-
+                    // if not in the joints array then sets to invisible
                     if (!contains)
                     {
                         c.Transparent = true;
                     }
                 }
-                MessageBox.Show(i.ToString());
                 //part2.Visible = false;
             } catch(Exception e)
             {
@@ -1181,23 +1184,23 @@ namespace InventorAddInBasicGUI2
                 }
             }
         }
-
+        // reacts to the limits combobox being selected
         public void LimitsComboBox_OnSelect(Inventor.NameValueMap Context)
         {
             if (doWerk)
-            {
+            {// if the select event shuold be reacted to
                 try
                 {
-                    lims.readFromData(selectedJointData);
+                    lims.readFromData(selectedJointData);// add the correct data to the form
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.ToString());
                 }
-                if (LimitsComboBox.Text.Equals("Limits"))
+                if (LimitsComboBox.Text.Equals("Limits"))// if limits is selected then set the selected joint gets the correct data
                 {
                     selectedJointData.HasLimits = true;
-                    lims.ShowDialog();
+                    lims.ShowDialog();// show windows form
                 } else
                 {
                     selectedJointData.HasLimits = false;
