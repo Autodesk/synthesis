@@ -19,7 +19,7 @@ public class unityPacket
 			public UInt32 relayReverse;
 			public UInt32 digitalOutput;
 			public float[] pwmValues = new float[10];
-            public float[] canValues = new float[10];
+                        public float[] canValues = new float[10];
 		}
 		public class SolenoidModule
 		{
@@ -42,12 +42,6 @@ public class unityPacket
 				{
 					dio[i].pwmValues[j] = BitConverter.ToSingle(pack, offset + 12 + (4 * j));
 				}
-				//Debug.Log("PWM: " + BitConverter.ToString(pack));
-			
-                //for (int j = 0; j < dio[i].canValues.Length; j++)
-                //{
-                //    dio[i].canValues[j] = BitConverter.ToSingle(pack, offset + 12 + (4 * 10) + (4 * j));
-                //}
 			}
 			for (int i = 0; i < solenoid.Length; i++)
 			{
@@ -129,7 +123,6 @@ public class unityPacket
 			}
 			while (active)
 			{
-                //Debug.Log(server.Available);
 				if (server.Available <= 0)
 				{
 					Thread.Sleep(20);
@@ -137,14 +130,11 @@ public class unityPacket
 				}
                 
                 byte[] temp = server.Receive(ref ipEnd);
-                //Debug.LogError("Packet len: " + temp.Length);
 				serverMutex.WaitOne();
 				receiveBuffer = temp;
 				serverMutex.ReleaseMutex();
 			}
 				
-			//int portFromInvAPI = 18;
-			//packet.dio[(portFromInvAPI >> 4) & 0xF].pwmValues[portFromInvAPI & 0xF]
 		} catch (Exception ex)
 		{
 			Debug.Log(ex + ": " + ex.Message + ": " + ex.StackTrace.ToString());
