@@ -236,6 +236,12 @@ public class MainMenu : MonoBehaviour {
         }
     }
 
+    //Exits the program
+    public void Exit()
+    {
+        Application.Quit();
+    }
+
     #endregion
     #region LoadRobot and LoadField Button Methods
     //Switches the current menu to the settings menu.
