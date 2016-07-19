@@ -18,7 +18,7 @@ namespace InventorAddInBasicGUI2
     //this has got all dat dater
     public class JointData
     {
-        private AssemblyJoint jointOfType;
+        public AssemblyJoint jointOfType;
         public DriveTypes driver;
         public WheelType wheel;
         public FrictionLevel friction;
@@ -39,8 +39,8 @@ namespace InventorAddInBasicGUI2
         public bool HasBrake;
         public double BrakePortA;
         public double BrakePortB;
-        public double upperLim;//do
-        public double lowerLim;//do
+        public double upperLim;
+        public double lowerLim;
         public bool HasLimits;
         public JointData(AssemblyJoint joint)
         {

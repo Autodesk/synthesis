@@ -48,30 +48,15 @@
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.scaleUpDown.DecimalPlaces = 2;
-            this.scaleUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.scaleUpDown.Increment = new decimal(new int[] { 1, 0, 0, 65536});
             this.scaleUpDown.Location = new System.Drawing.Point(56, 3);
-            this.scaleUpDown.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.scaleUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.scaleUpDown.Maximum = new decimal(new int[] { 10, 0, 0, 0});
+            this.scaleUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 65536});
             this.scaleUpDown.Name = "scaleUpDown";
             this.scaleUpDown.Size = new System.Drawing.Size(244, 22);
             this.scaleUpDown.TabIndex = 1;
-            this.scaleUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.scaleUpDown.Value = new decimal(new int[] { 1, 0, 0, 0});
+            this.scaleUpDown.ValueChanged += new System.EventHandler(this.scaleChanged);
             // 
             // SphereColliderPropertiesForm
             // 

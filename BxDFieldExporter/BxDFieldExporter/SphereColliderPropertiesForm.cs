@@ -15,9 +15,19 @@ namespace BxDFieldExporter
         /// <summary>
         /// Initializes a new instance of the SphereColliderPropertiesForm class.
         /// </summary>
+        FieldDataType field;
         public SphereColliderPropertiesForm()
         {
             InitializeComponent();
+        }
+        public void scaleChanged(object sender, EventArgs e)
+        {
+            field.Scale = (double)scaleUpDown.Value;
+        }
+        public void readFromData(FieldDataType d)
+        {
+            field = d;
+            scaleUpDown.Value = (decimal)field.Scale;
         }
     }
 }

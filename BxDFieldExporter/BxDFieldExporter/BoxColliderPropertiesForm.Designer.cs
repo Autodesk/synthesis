@@ -59,33 +59,18 @@
             // 
             // zScaleUpDown
             // 
-            this.zScaleUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.zScaleUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | 
+                System.Windows.Forms.AnchorStyles.Right)));
             this.zScaleUpDown.DecimalPlaces = 2;
-            this.zScaleUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.zScaleUpDown.Increment = new decimal(new int[] { 1, 0, 0, 65536});
             this.zScaleUpDown.Location = new System.Drawing.Point(33, 74);
-            this.zScaleUpDown.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.zScaleUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.zScaleUpDown.Maximum = new decimal(new int[] { 10, 0, 0, 0});
+            this.zScaleUpDown.Minimum = new decimal(new int[] { 1,  0,  0,  65536});
             this.zScaleUpDown.Name = "zScaleUpDown";
             this.zScaleUpDown.Size = new System.Drawing.Size(261, 22);
             this.zScaleUpDown.TabIndex = 5;
-            this.zScaleUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.zScaleUpDown.Value = new decimal(new int[] { 1, 0, 0, 0});
+            this.zScaleUpDown.ValueChanged += new System.EventHandler(this.ZChanged);
             // 
             // zScaleLabel
             // 
@@ -98,33 +83,18 @@
             // 
             // yScaleUpDown
             // 
-            this.yScaleUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.yScaleUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | 
+                System.Windows.Forms.AnchorStyles.Right)));
             this.yScaleUpDown.DecimalPlaces = 2;
-            this.yScaleUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.yScaleUpDown.Increment = new decimal(new int[] { 1, 0, 0, 65536});
             this.yScaleUpDown.Location = new System.Drawing.Point(33, 46);
-            this.yScaleUpDown.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.yScaleUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.yScaleUpDown.Maximum = new decimal(new int[] { 10, 0, 0, 0});
+            this.yScaleUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 65536});
             this.yScaleUpDown.Name = "yScaleUpDown";
             this.yScaleUpDown.Size = new System.Drawing.Size(261, 22);
             this.yScaleUpDown.TabIndex = 3;
-            this.yScaleUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.yScaleUpDown.Value = new decimal(new int[] { 1, 0, 0, 0});
+            this.yScaleUpDown.ValueChanged += new System.EventHandler(this.YChanged);
             // 
             // yScaleLabel
             // 
@@ -140,30 +110,15 @@
             this.xScaleUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.xScaleUpDown.DecimalPlaces = 2;
-            this.xScaleUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.xScaleUpDown.Increment = new decimal(new int[] { 1, 0, 0, 65536});
             this.xScaleUpDown.Location = new System.Drawing.Point(33, 18);
-            this.xScaleUpDown.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.xScaleUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
+            this.xScaleUpDown.Maximum = new decimal(new int[] { 10, 0, 0, 0});
+            this.xScaleUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 65536});
             this.xScaleUpDown.Name = "xScaleUpDown";
             this.xScaleUpDown.Size = new System.Drawing.Size(261, 22);
             this.xScaleUpDown.TabIndex = 1;
-            this.xScaleUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.xScaleUpDown.Value = new decimal(new int[] { 1, 0, 0, 0});
+            this.xScaleUpDown.ValueChanged += new System.EventHandler(this.XChanged);
             // 
             // xScaleLabel
             // 

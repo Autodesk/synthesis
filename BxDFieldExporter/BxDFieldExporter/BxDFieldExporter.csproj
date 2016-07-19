@@ -116,6 +116,7 @@
     <Compile Include="EnterName.Designer.cs">
       <DependentUpon>EnterName.cs</DependentUpon>
     </Compile>
+    <Compile Include="FieldDataType.cs" />
     <Compile Include="MeshColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>

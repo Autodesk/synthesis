@@ -176,6 +176,7 @@ namespace BxDFieldExporter
             this.massNumericUpDown.Name = "massNumericUpDown";
             this.massNumericUpDown.Size = new System.Drawing.Size(183, 22);
             this.massNumericUpDown.TabIndex = 10;
+            this.massNumericUpDown.ValueChanged += new System.EventHandler(this.MassChanged);
             // 
             // massLabel
             // 
