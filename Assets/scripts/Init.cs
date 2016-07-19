@@ -240,7 +240,7 @@ public class Init : MonoBehaviour
 
         //Custom style for buttons
         menuButton = new GUIStyle(GUI.skin.button);
-        menuButton.font = gravityRegular;
+        menuButton.font = russoOne;
         menuButton.normal.background = buttonTexture;
         menuButton.hover.background = buttonSelected;
         menuButton.active.background = buttonSelected;
@@ -314,14 +314,6 @@ public class Init : MonoBehaviour
 					}
 				});
 
-
-			gui.AddWindow ("Quit to Desktop", new DialogWindow ("Quit to Desktop?", "Yes", "No"), (object o) =>
-			               {
-				if ((int) o == 0) {
-					Application.Quit();
-				}
-			});
-
             gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
             {
                 if ((int)o == 0)
@@ -329,6 +321,13 @@ public class Init : MonoBehaviour
                     Application.LoadLevel("MainMenu");
                 }
             });
+
+            gui.AddWindow ("Quit to Desktop", new DialogWindow ("Quit to Desktop?", "Yes", "No"), (object o) =>
+			               {
+				if ((int) o == 0) {
+					Application.Quit();
+				}
+			});
         }
 		
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
