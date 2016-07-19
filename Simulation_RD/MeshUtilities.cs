@@ -8,6 +8,9 @@ using OpenTK;
 
 namespace Simulation_RD
 {
+    /// <summary>
+    /// Provides some static functions for manipulation of triangle meshes
+    /// </summary>
     public static class MeshUtilities
     {
         /// <summary>
@@ -39,14 +42,9 @@ namespace Simulation_RD
         /// <returns></returns>
         public static StridingMeshInterface BulletShapeFromSubMesh(BXDAMesh.BXDASubMesh subMesh, Vector3[] vertices)
         {
-            TriangleMesh tMesh = new TriangleMesh();
-            foreach (BXDAMesh.BXDASurface surf in subMesh.surfaces)
-            {
-                TriangleIndexVertexArray vertexArray = new TriangleIndexVertexArray(surf.indicies, vertices);
-                MultimaterialTriangleMeshShape m = new MultimaterialTriangleMeshShape(vertexArray, true);
-                
-            }
-            return tMesh;
+            IEnumerable<int> indices = new List<int>();
+            subMesh.surfaces.ForEach((s) => indices = indices.Concat(s.indicies));
+            return new TriangleIndexVertexArray(indices.ToArray(), vertices);
         }
     }
 }

@@ -10,7 +10,6 @@ namespace Simulation_RD
     class Scene : GameWindow
     {
         Physics phys;
-        float angle = 0.0f;
         float frameTime;
         int fps;
         int VBO;
@@ -18,7 +17,7 @@ namespace Simulation_RD
         float lastTime;
         PolygonMode drawMode = PolygonMode.Fill;
 
-        //For angle rotationm (RMB)
+        //For angle rotation (RMB)
         int aX = 0;
         int aY = 0;
         double aXPost = 0;
@@ -53,9 +52,6 @@ namespace Simulation_RD
             GL.Enable(EnableCap.Lighting);
 
             shaderHandle = GL.CreateShader(ShaderType.VertexShader);
-            //int triLength = phys.f.triangles.Count;
-
-            //BulletTriangle[] triangles = new BulletTriangle[triLength];
 
             this.MouseDown += glControl1_MouseDown;
             this.MouseUp += glControl1_MouseUp;
@@ -63,6 +59,7 @@ namespace Simulation_RD
             this.MouseWheel += glControl1_MouseWheel;
             this.KeyDown += glControl1_KeyDown;
 
+            phys.World.DebugDrawer = new BulletDebugDrawer();
             base.OnLoad(e);            
         }
 
@@ -76,12 +73,6 @@ namespace Simulation_RD
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             phys.Update((float)e.Time);
-
-            KeyboardState state = OpenTK.Input.Keyboard.GetState(0);
-            if (state.IsKeyDown(Key.Escape) || state.IsKeyDown(Key.Q))
-            {
-                Exit();
-            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -105,13 +96,11 @@ namespace Simulation_RD
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-            Matrix4 lookat = Matrix4.LookAt(new Vector3(0, 0, zoomFactor), Vector3.Zero, Vector3.UnitY);
+            Matrix4 lookat = Matrix4.LookAt(new Vector3((float)xShift, (float)yShift, zoomFactor), new Vector3((float)xShift, (float)yShift, 0), Vector3.UnitY);
             GL.LoadMatrix(ref lookat);
-            GL.Translate(-xShift, -yShift, 0.0);
+            //GL.Translate(-xShift, -yShift, 0.0);
             GL.Rotate(angleX, 0.0f, 1.0f, 0.0f);
             GL.Rotate(angleY, -1, 0, 0);
-            
-            //InitCube();
 
             lastTime = (float)e.Time;
 
@@ -119,8 +108,10 @@ namespace Simulation_RD
 
             for (int i = 0; i < phys.f.VisualMeshes.Count; i++)
             {
-                phys.f.VisualMeshes[i].Draw(phys.f.Bodies[i]);
+                //phys.f.VisualMeshes[i].Draw(phys.f.Bodies[i]);
             }
+
+            phys.World.DebugDrawWorld();
 
             #region Old Stuff
             //phys.World.DebugDrawWorld();
@@ -298,6 +289,5 @@ namespace Simulation_RD
                     break;
             }
         }
-            
     }
 }
