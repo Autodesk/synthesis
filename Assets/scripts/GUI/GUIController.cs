@@ -225,7 +225,7 @@ class GUIController
 
         #region calculate width
         btnStyle = new GUIStyle(GUI.skin.button);
-        btnStyle.font = gravityRegular;
+        btnStyle.font = russoOne;
         btnStyle.fontSize = 16;
         btnStyle.normal.background = buttonTexture;
         btnStyle.hover.background = buttonSelected;
