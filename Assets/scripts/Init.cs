@@ -120,7 +120,7 @@ public class Init : MonoBehaviour
 
         //Custom style for buttons
         statsButton = new GUIStyle(GUI.skin.button);
-        statsButton.font = russoOne;
+        statsButton.font = gravityRegular;
         statsButton.normal.background = buttonTexture;
         statsButton.hover.background = buttonSelected;
         statsButton.active.background = buttonSelected;
@@ -131,7 +131,7 @@ public class Init : MonoBehaviour
 
         //Custom style for labels
         statsLabel = new GUIStyle(GUI.skin.label);
-        statsLabel.font = russoOne;
+        statsLabel.font = gravityRegular;
         statsLabel.fontSize = 13;
 
         GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s", statsLabel);
@@ -314,14 +314,6 @@ public class Init : MonoBehaviour
 					}
 				});
 
-
-			gui.AddWindow ("Quit to Desktop", new DialogWindow ("Quit to Desktop?", "Yes", "No"), (object o) =>
-			               {
-				if ((int) o == 0) {
-					Application.Quit();
-				}
-			});
-
             gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
             {
                 if ((int)o == 0)
@@ -329,6 +321,13 @@ public class Init : MonoBehaviour
                     Application.LoadLevel("MainMenu");
                 }
             });
+
+            gui.AddWindow ("Quit to Desktop", new DialogWindow ("Quit to Desktop?", "Yes", "No"), (object o) =>
+			               {
+				if ((int) o == 0) {
+					Application.Quit();
+				}
+			});
         }
 		
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())
