@@ -43,7 +43,7 @@ public class InputButton : MonoBehaviour
         buttonStyle.normal.background = buttonTexture;
         buttonStyle.hover.background = buttonSelected;
         buttonStyle.active.background = buttonSelected;
-        buttonStyle.onNormal.background = buttonTexture;
+        buttonStyle.onNormal.background = buttonSelected;
         buttonStyle.onHover.background = buttonSelected;
         buttonStyle.onActive.background = buttonSelected;
 

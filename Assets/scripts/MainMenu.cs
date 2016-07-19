@@ -105,6 +105,13 @@ public class MainMenu : MonoBehaviour {
         //Updates the preview thumbnail and text
         GameObject.Find("FieldText").GetComponent<Text>().text = currenttext;
         GameObject.Find("FieldImage").GetComponent<Image>().sprite = currentimage;
+
+        //If there is nothing found in the field folder, provide error message
+        if (fields.Count <= 0)
+        {
+            GameObject.Find("FieldNavigation").SetActive(false);
+        }
+        else GameObject.Find("FieldNavigation").SetActive(true);
     }
 
     //Method to render the LoadRobot GUI objects
@@ -117,6 +124,13 @@ public class MainMenu : MonoBehaviour {
         //Updates the preview thumbnail and text
         GameObject.Find("RobotText").GetComponent<Text>().text = currenttext;
         GameObject.Find("RobotImage").GetComponent<Image>().sprite = currentimage;
+
+        //If there is nothing found in the field folder, provide error message
+        if (robots.Count <= 0)
+        {
+            GameObject.Find("RobotNavigation").SetActive(false);
+        }
+        else GameObject.Find("RobotNavigation").SetActive(true);
     }
 
     //Method to render the Graphics Settings GUI objects
@@ -162,9 +176,8 @@ public class MainMenu : MonoBehaviour {
         string[] folders = System.IO.Directory.GetDirectories(filepath+"\\Fields");
         foreach (string field in folders)
         {
-            fields.Add(new DirectoryInfo(field).Name);
+            if (File.Exists(field+"\\definition.bxdf")) fields.Add(new DirectoryInfo(field).Name);
         }
-        
         UpdatePreview();
     }
 
@@ -176,7 +189,7 @@ public class MainMenu : MonoBehaviour {
         string[] folders = System.IO.Directory.GetDirectories(filepath + "\\Robots");
         foreach (string robot in folders)
         {
-            robots.Add(new DirectoryInfo(robot).Name);
+            if (File.Exists(robot + "\\skeleton.bxdj")) robots.Add(new DirectoryInfo(robot).Name);
         }
         UpdatePreview();
     }
