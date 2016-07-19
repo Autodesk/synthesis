@@ -27,7 +27,7 @@ namespace OpenTKbuild
         Vector3 Right;
         Vector3 WorldUp;
 
-        Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) //: Front (Vector3(0.0f, 0.0f, -1.0f), Movespeed, Sensitivity, Zoom)
+        public Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
         {
             this.Position = new Vector3(posX, posY, posZ);
             this.WorldUp = new Vector3(upX, upY, upZ);
@@ -41,7 +41,7 @@ namespace OpenTKbuild
             return Matrix4.LookAt(this.Position, this.Position + this.Front, this.Up);
         }
 
-        void ProcessKeyboard(Camera_Movement direction, float deltaTime)
+        public void ProcessKeyboard(Camera_Movement direction, float deltaTime)
         {
             float velocity = this.Movespeed * deltaTime;
             if (direction == Camera_Movement.forward)
@@ -54,7 +54,7 @@ namespace OpenTKbuild
                 this.Position += this.Right * velocity;
         }
 
-        void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true)
+        public void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true)
         {
             xoffset *= this.Sensitivity;
             yoffset *= this.Sensitivity;
@@ -73,7 +73,7 @@ namespace OpenTKbuild
             this.updateCameraVectors();
         }
 
-        void ProcessMouseScroll(float yoffset)
+        public void ProcessMouseScroll(float yoffset)
         {
             if (this.Zoom >= 1.0f && this.Zoom <= 45.0f)
                 this.Zoom -= yoffset;
@@ -83,7 +83,7 @@ namespace OpenTKbuild
                 this.Zoom = 45.0f;
         }
 
-        private void updateCameraVectors()
+        public void updateCameraVectors()
         {
             Vector3 front;
             front.X = (float)Math.Cos(Yaw) * (float)Math.Cos(Pitch);

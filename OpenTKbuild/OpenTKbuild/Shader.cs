@@ -6,13 +6,42 @@ namespace OpenTKbuild
     class Shader
     {
 
-        public int Program;
-
-        public Shader() : base()
-        {
-        }
+        public int ShaderProgram = 0;
+        public static int vertex, fragment, geometry;
 
         public Shader(string vertexPath, string fragmentPath)
+        {
+            string vCode = null, fCode = null;
+            try
+            {
+                vCode = System.IO.File.ReadAllText(vertexPath);
+                fCode = System.IO.File.ReadAllText(fragmentPath);
+            }
+            catch
+            {
+                System.Console.WriteLine("FILE NOT READ SUCCESSFULLY\n");
+            }
+
+            vertex = GL.CreateShader(ShaderType.VertexShader);
+            GL.CompileShader(vertex);
+
+            fragment = GL.CreateShader(ShaderType.FragmentShader);
+            GL.CompileShader(fragment);
+
+            compileShader(vertex, vCode);
+            compileShader(fragment, fCode);
+
+            ShaderProgram = GL.CreateProgram();
+            GL.AttachShader(ShaderProgram, vertex);
+            GL.AttachShader(ShaderProgram, fragment);
+            GL.LinkProgram(ShaderProgram);
+
+            string info;
+            GL.GetProgramInfoLog(ShaderProgram, out info);
+            System.Console.WriteLine(info);
+        }
+
+        public Shader(string vertexPath, string fragmentPath, string geometryPath)
         {
             #region OLD
             //string vertexCode = null, fragmentCode = null;
@@ -21,7 +50,7 @@ namespace OpenTKbuild
             //System.IO.FileStream fShaderFile = new System.IO.FileStream(fragmentPath, System.IO.FileMode.Open);
             #endregion
 
-            string vCode = null, fCode = null;
+            string vCode = null, fCode = null, gCode = null;
 
             try
             {
@@ -34,8 +63,10 @@ namespace OpenTKbuild
                 //vertexCode = vShaderRead.ToString();
                 //fragmentCode = fShaderRead.ToString();
                 #endregion
-                vCode = System.IO.File.ReadAllText(@"resources/Shaders/vertexShader.vs");
-                fCode = System.IO.File.ReadAllText(@"resources/Shaders/fragmentShader.frag");
+                vCode = System.IO.File.ReadAllText(vertexPath);
+                fCode = System.IO.File.ReadAllText(fragmentPath);
+                gCode = System.IO.File.ReadAllText(geometryPath);
+
             }
             catch
             {
@@ -60,7 +91,7 @@ namespace OpenTKbuild
             //}
             #endregion
 
-            int vertex, fragment;
+
 
             vertex = GL.CreateShader(ShaderType.VertexShader);
             GL.CompileShader(vertex);
@@ -68,10 +99,14 @@ namespace OpenTKbuild
             fragment = GL.CreateShader(ShaderType.FragmentShader);
             GL.CompileShader(fragment);
 
+            geometry = GL.CreateShader(ShaderType.GeometryShaderExt);
+            GL.CompileShader(geometry);
+
             compileShader(vertex, vCode);
             compileShader(fragment, fCode);
+            compileShader(geometry, gCode);
 
-            int ShaderProgram = GL.CreateProgram();
+            ShaderProgram = GL.CreateProgram();
             GL.AttachShader(ShaderProgram, vertex);
             GL.AttachShader(ShaderProgram, fragment);
             GL.LinkProgram(ShaderProgram);
@@ -79,6 +114,12 @@ namespace OpenTKbuild
             string info;
             GL.GetProgramInfoLog(ShaderProgram, out info);
             System.Console.WriteLine(info);
+
+            GL.ProgramParameter(ShaderProgram, Version32.GeometryInputType, (int)All.Lines);
+            GL.ProgramParameter(ShaderProgram, Version32.GeometryOutputType, (int)All.LineStrip);
+            int tmp;
+            GL.GetInteger((GetPName)ExtGeometryShader4.MaxGeometryOutputVerticesExt, out tmp);
+
 
             #region OLD
 
@@ -127,7 +168,7 @@ namespace OpenTKbuild
 
         public void Use()
         {
-            GL.UseProgram(Program);
+            GL.UseProgram(ShaderProgram);
         }
 
         private void compileShader(int shader, string source)
@@ -146,5 +187,16 @@ namespace OpenTKbuild
                 System.Console.WriteLine("CompileError : " + source);
             }
         }
+
+        public void cleanUp()
+        {
+            if (fragment != 0)
+                GL.DeleteShader(fragment);
+            if (vertex != 0)
+                GL.DeleteShader(vertex);
+            if (geometry != 0)
+                GL.DeleteShader(geometry);
+        }
+
     }
 }
