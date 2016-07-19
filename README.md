@@ -1,14 +1,13 @@
-###How to set up:
-Open Assets/scene/stablescene in unity
-####Make sure:
-*Init.cs should be attached to an empty GameObject
+# Aardvark-Unity
 
-In order to build the project properly, all shaders used in 
-runtime must also be present in the Unity scene. 
-Current shaders used in runtime: 
-* Diffuse
-* Specular
-* Transparent/Diffuse
-* Transparent/Specular
+##How to Setup:
 
-To keep these on build, attach them to any textured primitive.
+The project is done in Unity 4.7.2. It will not work in Unity 5 so make sure you have the proper version of Unity.
+All scripts are done in C# and it is recommended you use Visual Studio 15.
+
+Unity 4.7.2 Download Link: http://download.unity3d.com/download_unity/UnitySetup-4.7.2.exe?_ga=1.24554099.89205971.1466521794
+
+- To open the project, select and open the 'Aardvark-Unity' project folder in Unity. It should be located wherever you cloned the repository.
+- To open the scene, click file -> open scene -> load 'Aardvark-Unity/Assets/Scene/Scene.unity'
+
+In order to edit the scripts, you can edit the .cs files directly in your IDE of choice. (We use Visual Studio 15)
