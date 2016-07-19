@@ -69,10 +69,11 @@ class FileBrowser : OverlayWindow
 	/// Gravity-Regular font.
 	/// </summary>
 	private Font gravityRegular;
+    private Font russoOne;
     /// <summary>
-	/// Custom GUIStyle for windows.
-	/// </summary>
-	private GUIStyle fileBrowserWindow;
+    /// Custom GUIStyle for windows.
+    /// </summary>
+    private GUIStyle fileBrowserWindow;
     /// <summary>
 	/// Custom GUIStyle for buttons.
 	/// </summary>
@@ -116,17 +117,18 @@ class FileBrowser : OverlayWindow
         buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
         buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
         gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        russoOne = Resources.Load("Fonts/Russo_One") as Font;
         windowTexture = Resources.Load("Images/greyBackground") as Texture2D;
 
         //Custom style for windows
         fileBrowserWindow = new GUIStyle(GUI.skin.window);
         fileBrowserWindow.normal.background = windowTexture;
         fileBrowserWindow.onNormal.background = windowTexture;
-        fileBrowserWindow.font = gravityRegular;
+        fileBrowserWindow.font = russoOne;
 
         //Custom style for buttons
         fileBrowserButton = new GUIStyle(GUI.skin.button);
-        fileBrowserButton.font = gravityRegular;
+        fileBrowserButton.font = russoOne;
         fileBrowserButton.normal.background = buttonTexture;
         fileBrowserButton.hover.background = buttonSelected;
         fileBrowserButton.active.background = buttonSelected;
@@ -136,7 +138,7 @@ class FileBrowser : OverlayWindow
 
         //Custom style for labels
         fileBrowserLabel = new GUIStyle(GUI.skin.label);
-        fileBrowserLabel.font = gravityRegular;
+        fileBrowserLabel.font = russoOne;
     }
 
     /// <summary>
@@ -200,7 +202,7 @@ class FileBrowser : OverlayWindow
             Active = false;
         }
 
-        if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 10, 110, 25), "Up one level", fileBrowserButton))
+        if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 10, 120, 25), "Up one level", fileBrowserButton))
         {
             directoryInfo = directoryInfo.Parent;
             directoryLocation = directoryInfo.FullName;
@@ -233,7 +235,7 @@ class FileBrowser : OverlayWindow
                         directoryLocation);
 
         bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
-        if (doubleClick || GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(58)))
+        if (doubleClick || GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
         {
             _active = false;
             if (OnComplete != null)

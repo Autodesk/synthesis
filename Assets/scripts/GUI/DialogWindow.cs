@@ -84,14 +84,15 @@ public class DialogWindow : OverlayWindow
         buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
         buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
         gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        russoOne = Resources.Load("Fonts/Russo_One") as Font;
         greyWindowTexture = Resources.Load("Images/greyBackground") as Texture2D;
 
         //Custom style for windows
         window = new GUIStyle(GUI.skin.window);
         window.normal.background = greyWindowTexture;
         window.onNormal.background = greyWindowTexture;
-        window.font = gravityRegular;
-        window.fontSize = 16;
+        window.font = russoOne;
+        window.fontSize = 35;
 
         //Custom style for buttons
         button = new GUIStyle(GUI.skin.button);
@@ -101,7 +102,8 @@ public class DialogWindow : OverlayWindow
         button.onNormal.background = buttonSelected;
         button.onHover.background = buttonSelected;
         button.onActive.background = buttonSelected;
-        button.fontSize = 13;
+        button.font = russoOne;
+        button.fontSize = 20;
 
         windowRect = new Rect ((Screen.width / 2 - (50 + labels.Length * 250) / 2), Screen.height / 2 - 100, 50 + labels.Length * 250, 200);
 
@@ -111,7 +113,7 @@ public class DialogWindow : OverlayWindow
 			{
 				for (int i = 0; i < labels.Length; i++)
 				{
-					if (GUI.Button(new Rect(50 + i * 250, 50, 200, 100), labels[i], button))
+					if (GUI.Button(new Rect(50 + i * 250, 85, 200, 50), labels[i], button))
 					{
 						_active = false;
 						if (OnComplete != null)

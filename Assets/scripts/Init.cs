@@ -115,12 +115,12 @@ public class Init : MonoBehaviour
         statsWindow = new GUIStyle(GUI.skin.window);
         statsWindow.normal.background = greyWindowTexture;
         statsWindow.onNormal.background = greyWindowTexture;
-        statsWindow.font = gravityRegular;
-        statsWindow.fontSize = 13;
+        statsWindow.font = russoOne;
+        statsWindow.fontSize = 15;
 
         //Custom style for buttons
         statsButton = new GUIStyle(GUI.skin.button);
-        statsButton.font = gravityRegular;
+        statsButton.font = russoOne;
         statsButton.normal.background = buttonTexture;
         statsButton.hover.background = buttonSelected;
         statsButton.active.background = buttonSelected;
@@ -131,7 +131,7 @@ public class Init : MonoBehaviour
 
         //Custom style for labels
         statsLabel = new GUIStyle(GUI.skin.label);
-        statsLabel.font = gravityRegular;
+        statsLabel.font = russoOne;
         statsLabel.fontSize = 13;
 
         GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s", statsLabel);
@@ -171,15 +171,15 @@ public class Init : MonoBehaviour
 		titles.Add ("Default");
 		
 		List<Rect> rects = new List<Rect> ();
-		rects.Add (new Rect(50, 150, 75, 30));
-		rects.Add (new Rect(175, 150, 75, 30));
-		rects.Add (new Rect(112, 115, 75, 30));
-		rects.Add (new Rect(112, 185, 75, 30));
-		rects.Add (new Rect (95, 55, 110, 30));
-		rects.Add (new Rect (230, 20, 50, 30));
-		rects.Add (new Rect (20, 20, 70, 30));
+		rects.Add (new Rect(40, 200, 105, 35));
+		rects.Add (new Rect(245, 200, 105, 35));
+		rects.Add (new Rect(147, 155, 105, 35));
+		rects.Add (new Rect(147, 245, 105, 35));
+		rects.Add (new Rect (110, 95, 190, 35));
+		rects.Add (new Rect (270, 50, 90, 35));
+		rects.Add (new Rect (50, 50, 90, 35));
 
-		oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 300, 250),
+		oWindow = new TextWindow ("Orient Robot", new Rect ((Screen.width / 2) - 150, (Screen.height / 2) - 125, 400, 300),
 		                                     new string[0], new Rect[0], titles.ToArray (), rects.ToArray ());
 		//The directional buttons lift the robot to avoid collison with objects, rotates it, and saves the applied rotation to a vector3
 		gui.AddWindow("Orient Robot", oWindow, (object o)=>{
@@ -236,11 +236,11 @@ public class Init : MonoBehaviour
         menuWindow = new GUIStyle(GUI.skin.window);
         menuWindow.normal.background = transparentWindowTexture;
         menuWindow.onNormal.background = transparentWindowTexture;
-        menuWindow.font = gravityRegular;
+        menuWindow.font = russoOne;
 
         //Custom style for buttons
         menuButton = new GUIStyle(GUI.skin.button);
-        menuButton.font = gravityRegular;
+        menuButton.font = russoOne;
         menuButton.normal.background = buttonTexture;
         menuButton.hover.background = buttonSelected;
         menuButton.active.background = buttonSelected;
@@ -315,12 +315,20 @@ public class Init : MonoBehaviour
 				});
 
 
-			gui.AddWindow ("Quit Simulation", new DialogWindow ("Exit?", "Yes", "No"), (object o) =>
+			gui.AddWindow ("Quit to Desktop", new DialogWindow ("Quit to Desktop?", "Yes", "No"), (object o) =>
 			               {
 				if ((int) o == 0) {
 					Application.Quit();
 				}
 			});
+
+            gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
+            {
+                if ((int)o == 0)
+                {
+                    Application.LoadLevel("MainMenu");
+                }
+            });
         }
 		
 		if (Input.GetMouseButtonUp (0) && !gui.ClickedInsideWindow ())

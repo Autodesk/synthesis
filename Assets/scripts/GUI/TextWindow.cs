@@ -136,14 +136,15 @@ public class TextWindow : OverlayWindow
         buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
         buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
         gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
+        russoOne = Resources.Load("Fonts/Russo_One") as Font;
         greyWindowTexture = Resources.Load("Images/greyBackground") as Texture2D;
 
         //Custom style for windows
         window = new GUIStyle(GUI.skin.window);
         window.normal.background = greyWindowTexture;
         window.onNormal.background = greyWindowTexture;
-        window.font = gravityRegular;
-        window.fontSize = 16;
+        window.font = russoOne;
+        window.fontSize = 35;
         
         //Custom style for buttons
         button = new GUIStyle(GUI.skin.button);
@@ -153,12 +154,8 @@ public class TextWindow : OverlayWindow
         button.onNormal.background = buttonSelected;
         button.onHover.background = buttonSelected;
         button.onActive.background = buttonSelected;
-        button.fontSize = 13;
-
-        //Custom style for labels
-        label = new GUIStyle(GUI.skin.label);
-        label.font = gravityRegular;
-        label.fontSize = 13;
+        button.font = russoOne;
+        button.fontSize = 20;
 
         // Scale factor for when the user changes the window dimensions
         xPosFactor = (Screen.width - initScreenWidth) / 2.0f;
