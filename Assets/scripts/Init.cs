@@ -120,7 +120,7 @@ public class Init : MonoBehaviour
 
         //Custom style for buttons
         statsButton = new GUIStyle(GUI.skin.button);
-        statsButton.font = russoOne;
+        statsButton.font = gravityRegular;
         statsButton.normal.background = buttonTexture;
         statsButton.hover.background = buttonSelected;
         statsButton.active.background = buttonSelected;
@@ -131,7 +131,7 @@ public class Init : MonoBehaviour
 
         //Custom style for labels
         statsLabel = new GUIStyle(GUI.skin.label);
-        statsLabel.font = russoOne;
+        statsLabel.font = gravityRegular;
         statsLabel.fontSize = 13;
 
         GUI.Label (new Rect (10, 20, 300, 50), "Speed: " + Math.Round(speed, 1).ToString() + " m/s - " + Math.Round(speed * 3.28084, 1).ToString() + " ft/s", statsLabel);
@@ -240,7 +240,7 @@ public class Init : MonoBehaviour
 
         //Custom style for buttons
         menuButton = new GUIStyle(GUI.skin.button);
-        menuButton.font = russoOne;
+        menuButton.font = gravityRegular;
         menuButton.normal.background = buttonTexture;
         menuButton.hover.background = buttonSelected;
         menuButton.active.background = buttonSelected;
