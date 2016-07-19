@@ -4,8 +4,9 @@
 Temp/
 Obj/
 UnityGenerated/
-/Library/
 Library/
+Robots/
+Fields/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
