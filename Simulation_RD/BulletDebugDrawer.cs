@@ -42,36 +42,25 @@ namespace Simulation_RD
             E = new Vector3(max.X, max.Y, min.Z);
             F = new Vector3(min.X, max.Y, max.Z);
 
-            //Top
-            GL.Vertex3(min);
-            GL.Vertex3(A);
-            GL.Vertex3(B);
-            GL.Vertex3(C);
-            //Left
-            GL.Vertex3(min);
-            GL.Vertex3(C);
-            GL.Vertex3(F);
-            GL.Vertex3(D);
-            //Front
-            GL.Vertex3(B);
-            GL.Vertex3(C);
-            GL.Vertex3(F);
-            GL.Vertex3(max);
-            //Right
-            GL.Vertex3(A);
-            GL.Vertex3(B);
-            GL.Vertex3(max);
-            GL.Vertex3(E);
-            //Back
-            GL.Vertex3(min);
-            GL.Vertex3(A);
-            GL.Vertex3(E);
-            GL.Vertex3(D);
-            //Bot
-            GL.Vertex3(max);
-            GL.Vertex3(E);
-            GL.Vertex3(D);
-            GL.Vertex3(F);
+            Vector3[] Path =
+            {
+                min, A,
+                min, C,
+                min, D,
+                max, F,
+                max, E,
+                max, B,
+                A, B,
+                B, C,
+                C, F,
+                F, D,
+                D, E,
+                E, A,
+            };
+
+            foreach (Vector3 v in Path)
+                GL.Vertex3(v);
+
             GL.End();
 
             //Console.WriteLine("Drew AABB");
@@ -134,15 +123,15 @@ namespace Simulation_RD
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(1.0f, 0, 0);
             Vector3 A, B, C, D, E, F;
-            A = new Vector3(max.X, min.Y, min.Z) * trans.ExtractScale() + trans.ExtractTranslation();
-            B = new Vector3(max.X, min.Y, max.Z) * trans.ExtractScale() + trans.ExtractTranslation();
-            C = new Vector3(min.X, min.Y, max.Z) * trans.ExtractScale() + trans.ExtractTranslation();
-            D = new Vector3(min.X, max.Y, min.Z) * trans.ExtractScale() + trans.ExtractTranslation();
-            E = new Vector3(max.X, max.Y, min.Z) * trans.ExtractScale() + trans.ExtractTranslation();
-            F = new Vector3(min.X, max.Y, max.Z) * trans.ExtractScale() + trans.ExtractTranslation();
-            max += trans.ExtractTranslation();
-            min += trans.ExtractTranslation();
-            
+            A = Vector3.Transform(new Vector3(max.X, min.Y, min.Z), trans);
+            B = Vector3.Transform(new Vector3(max.X, min.Y, max.Z), trans);
+            C = Vector3.Transform(new Vector3(min.X, min.Y, max.Z), trans);
+            D = Vector3.Transform(new Vector3(min.X, max.Y, min.Z), trans);
+            E = Vector3.Transform(new Vector3(max.X, max.Y, min.Z), trans);
+            F = Vector3.Transform(new Vector3(min.X, max.Y, max.Z), trans);
+            min = Vector3.Transform(min, trans);
+            max = Vector3.Transform(max, trans);
+
             //Top
             GL.Vertex3(min);
             GL.Vertex3(A);
@@ -219,7 +208,6 @@ namespace Simulation_RD
 
         public void DrawSphere(ref Vector3 p, float radius, OpenTK.Graphics.Color4 color)
         {
-            //Fuck it
             Random r = new Random();
             Func<Vector3> rv = () => new Vector3((float)r.NextDouble() * radius, (float)r.NextDouble() * radius, (float)r.NextDouble() * radius);
 
@@ -234,7 +222,6 @@ namespace Simulation_RD
 
         public void DrawSphere(float radius, ref Matrix4 transform, OpenTK.Graphics.Color4 color)
         {
-            //Fuck it
             Random r = new Random();
             Func<Vector3> rv = () => new Vector3((float)r.NextDouble() * radius, (float)r.NextDouble() * radius, (float)r.NextDouble() * radius);
 
@@ -249,7 +236,6 @@ namespace Simulation_RD
 
         public void DrawSpherePatch(ref Vector3 center, ref Vector3 up, ref Vector3 axis, float radius, float minTh, float maxTh, float minPs, float maxPs, OpenTK.Graphics.Color4 color)
         {
-            //Fuck it
             Random r = new Random();
             Func<Vector3> rv = () => new Vector3((float)r.NextDouble() * radius, (float)r.NextDouble() * radius, (float)r.NextDouble() * radius);
 
@@ -264,7 +250,6 @@ namespace Simulation_RD
 
         public void DrawSpherePatch(ref Vector3 center, ref Vector3 up, ref Vector3 axis, float radius, float minTh, float maxTh, float minPs, float maxPs, OpenTK.Graphics.Color4 color, float stepDegrees)
         {
-            //Fuck it
             Random r = new Random();
             Func<Vector3> rv = () => new Vector3((float)r.NextDouble() * radius, (float)r.NextDouble() * radius, (float)r.NextDouble() * radius);
 
@@ -279,7 +264,6 @@ namespace Simulation_RD
 
         public void DrawSpherePatch(ref Vector3 center, ref Vector3 up, ref Vector3 axis, float radius, float minTh, float maxTh, float minPs, float maxPs, OpenTK.Graphics.Color4 color, float stepDegrees, bool drawCenter)
         {
-            //Fuck it
             Random r = new Random();
             Func<Vector3> rv = () => new Vector3((float)r.NextDouble() * radius, (float)r.NextDouble() * radius, (float)r.NextDouble() * radius);
 
