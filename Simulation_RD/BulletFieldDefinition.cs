@@ -12,7 +12,7 @@ namespace Simulation_RD
     /// </summary>
     class BulletFieldDefinition : FieldDefinition
     {
-        const bool debug = true;
+        const bool debug = false;
 
         private BulletFieldDefinition(Guid guid, string name) : base(guid, name) { }
 
@@ -30,8 +30,8 @@ namespace Simulation_RD
 
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(filePath);
-                        
-            foreach(FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
+
+            foreach (FieldNode node in NodeGroup.EnumerateAllLeafFieldNodes())
             {                
                 if (GetPropertySets().ContainsKey(node.PropertySetID))
                 {
@@ -42,8 +42,15 @@ namespace Simulation_RD
                         case PropertySet.PropertySetCollider.PropertySetCollisionType.BOX:
                             {
                                 //Create a box shape
+                                //This is a mess
+                                Vector3[] vertices = MeshUtilities.DataToVector(mesh.meshes[node.SubMeshID].verts);
+                                StridingMeshInterface temp = MeshUtilities.BulletShapeFromSubMesh(mesh.meshes[node.SubMeshID], vertices);
+                                Vector3 min, max;
+                                temp.CalculateAabbBruteForce(out min, out max);
+
                                 PropertySet.BoxCollider colliderInfo = (PropertySet.BoxCollider)current.Collider;
-                                subShape = new BoxShape(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
+                                Vector3 scale = new Vector3(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
+                                subShape = new BoxShape((max - min) * scale);
                                 if (debug) Console.WriteLine("Created Box");
                                 break;
                             }
@@ -78,9 +85,6 @@ namespace Simulation_RD
                                 }
                                 break;
                             }
-                        default:
-                            Console.WriteLine("wat is dis");
-                            break;
                     }
                     
                     if (null != subShape)
@@ -94,8 +98,7 @@ namespace Simulation_RD
                         RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape);
                         rbci.Friction = current.Friction;
                         Bodies.Add(new RigidBody(rbci));
-
-                        VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID], Translation));                        
+                     
                         if(debug) Console.WriteLine("Created " + node.PropertySetID);
                     }                    
                 }
