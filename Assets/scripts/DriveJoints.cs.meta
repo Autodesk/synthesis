@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 0ecf19e6c5ebbfd43a2f79e1e80b30e3
+=======
+guid: 990aa25c95ca8a14898e057f8a688cbb
+>>>>>>> refs/remotes/origin/master
 MonoImporter:
   serializedVersion: 2
   defaultReferences: []
