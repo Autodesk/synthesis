@@ -88,17 +88,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BulletDebugDrawer.cs" />
-    <Compile Include="Mesh.cs" />
-    <Compile Include="BulletRigidNode.cs" />
-    <Compile Include="BulletFieldDefinition.cs" />
+    <Compile Include="Graphics\Camera.cs" />
+    <Compile Include="Graphics\BulletDebugDrawer.cs" />
+    <Compile Include="Graphics\Mesh.cs" />
+    <Compile Include="BulletModels\BulletRigidNode.cs" />
+    <Compile Include="BulletModels\BulletFieldDefinition.cs" />
     <Compile Include="MeshUtilities.cs" />
-    <Compile Include="Model.cs" />
+    <Compile Include="Graphics\Model.cs" />
     <Compile Include="Physics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scene.cs" />
-    <Compile Include="Shader.cs" />
+    <Compile Include="Graphics\Shader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

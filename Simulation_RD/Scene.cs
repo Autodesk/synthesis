@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using BulletSharp;
+using Simulation_RD.Graphics;
 
 namespace Simulation_RD
 {
@@ -15,31 +17,31 @@ namespace Simulation_RD
         int VBO;
         int shaderHandle;
         float lastTime;
+
+        int mxPrev, myPrev;
+
         PolygonMode drawMode = PolygonMode.Fill;
 
-        //For angle rotation (RMB)
-        int aX = 0;
-        int aY = 0;
-        double aXPost = 0;
-        double aYPost = 0;
-        double angleX = 0;
-        double angleY = 0;
+        Dictionary<Key, Camera_Movement> CameraBindings;
 
-        //For Screen Reposition (LMB)
-        int x = 0;
-        int y = 0;
-        double xPost = 0;
-        double yPost = 0;
-        double xShift = 0;
-        double yShift = 0;
-
-        //For zooming
-        float zoomFactor;
+        Camera c;
 
         public Scene() : base(750, 750, new OpenTK.Graphics.GraphicsMode(), "RnD Synthesis Test")
         {
             VSync = VSyncMode.Off;
             phys = new Physics();
+            c = new Camera(100, 200, 100, 0, 1, 0, 0, -10);
+            c.Sensitivity = 0.01f;
+            CameraBindings = new Dictionary<Key, Camera_Movement>();
+            CameraBindings.Add(Key.Up, Camera_Movement.forward);
+            CameraBindings.Add(Key.Left, Camera_Movement.left);
+            CameraBindings.Add(Key.Down, Camera_Movement.backward);
+            CameraBindings.Add(Key.Right, Camera_Movement.right);
+
+            CameraBindings.Add(Key.W, Camera_Movement.forward);
+            CameraBindings.Add(Key.S, Camera_Movement.backward);
+            CameraBindings.Add(Key.A, Camera_Movement.left);
+            CameraBindings.Add(Key.D, Camera_Movement.right);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -52,9 +54,7 @@ namespace Simulation_RD
             GL.Enable(EnableCap.Lighting);
 
             shaderHandle = GL.CreateShader(ShaderType.VertexShader);
-
-            this.MouseDown += glControl1_MouseDown;
-            this.MouseUp += glControl1_MouseUp;
+            
             this.MouseMove += glControl1_MouseMove;
             this.MouseWheel += glControl1_MouseWheel;
             this.KeyDown += glControl1_KeyDown;
@@ -96,11 +96,8 @@ namespace Simulation_RD
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
-            Matrix4 lookat = Matrix4.LookAt(new Vector3((float)xShift, (float)yShift, zoomFactor), new Vector3((float)xShift, (float)yShift, 0), Vector3.UnitY);
+            Matrix4 lookat = c.GetViewMatrix();
             GL.LoadMatrix(ref lookat);
-            //GL.Translate(-xShift, -yShift, 0.0);
-            GL.Rotate(angleX, 0.0f, 1.0f, 0.0f);
-            GL.Rotate(angleY, -1, 0, 0);
 
             lastTime = (float)e.Time;
 
@@ -227,56 +224,25 @@ namespace Simulation_RD
             GL.DrawElements(PrimitiveType.Quads, 24, DrawElementsType.UnsignedByte, indices);
         }
         #endregion
-
-        private void glControl1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Mouse.RightButton == ButtonState.Pressed)
-            {
-                aX = e.X;
-                aY = e.Y;
-            }
-            else if (e.Mouse.LeftButton == ButtonState.Pressed)
-            {
-                x = e.X;
-                y = e.Y;
-            }
-        }
-
-        private void glControl1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Mouse.RightButton == ButtonState.Released)
-            {
-                aXPost = angleX;
-                aYPost = angleY;
-            }
-            if (e.Mouse.LeftButton == ButtonState.Released)
-            {
-                xPost = xShift;
-                yPost = yShift;
-            }
-        }
-
+        
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Mouse.RightButton == ButtonState.Pressed)
-            {
-                angleX = aXPost + (e.X - aX) * .5;
-                angleY = aYPost + (e.Y - aY) * .5;
-            }
-            else if (e.Mouse.LeftButton == ButtonState.Pressed)
-            {
-                xShift = xPost + (e.X - x) * .4;
-                yShift = yPost + (e.Y - y) * .4;
-            }
+            c.ProcessMouseMovement(e.X - mxPrev, -(e.Y - myPrev));
+
+            mxPrev = e.X;
+            myPrev = e.Y;
         }
 
         private void glControl1_MouseWheel(object sender, MouseEventArgs e)
         {
-            zoomFactor = e.Mouse.Wheel * 7;
+            c.ProcessMouseScroll(e.Mouse.WheelPrecise);
         }
 
         private void glControl1_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
+            if(CameraBindings.ContainsKey(e.Key))
+                c.ProcessKeyboard(CameraBindings[e.Key], 0.1f);
+
             switch (e.Key)
             {
                 case Key.Space:
