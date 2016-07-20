@@ -99,7 +99,7 @@ namespace Simulation_RD
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             //GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Vertex.SizeInBytes() * vertices.Count), vertices.ToArray(), BufferUsageHint.DynamicDraw);
-            GL.BufferData<double>(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(double) * vertexData.Length), vertexData, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(double) * vertexData.Length), vertexData, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Double, false, 0, 0);
             GL.EnableVertexAttribArray(0);
 

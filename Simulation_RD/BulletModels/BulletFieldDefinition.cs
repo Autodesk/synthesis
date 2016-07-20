@@ -42,8 +42,16 @@ namespace Simulation_RD
                         case PropertySet.PropertySetCollider.PropertySetCollisionType.BOX:
                             {
                                 //Create a box shape
+                                //This is a mess
+                                Vector3[] vertices = MeshUtilities.DataToVector(mesh.meshes[node.SubMeshID].verts);
+                                StridingMeshInterface temp = MeshUtilities.BulletShapeFromSubMesh(mesh.meshes[node.SubMeshID], vertices);
+                                Vector3 min, max;
+                                temp.CalculateAabbBruteForce(out min, out max);
+                                
                                 PropertySet.BoxCollider colliderInfo = (PropertySet.BoxCollider)current.Collider;
                                 subShape = new BoxShape(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
+                                Vector3 scale = new Vector3(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
+                                subShape = new BoxShape((max - min) * scale);
                                 if (debug) Console.WriteLine("Created Box");
                                 break;
                             }
@@ -78,9 +86,6 @@ namespace Simulation_RD
                                 }
                                 break;
                             }
-                        default:
-                            Console.WriteLine("wat is dis");
-                            break;
                     }
                     
                     if (null != subShape)
@@ -89,7 +94,7 @@ namespace Simulation_RD
                         Vector3 Translation = new Vector3(node.Position.x, node.Position.y, node.Position.z);
                         Quaternion rotation = new Quaternion(node.Rotation.X, node.Rotation.Y, node.Rotation.Z, node.Rotation.W);
                         
-                        DefaultMotionState m = new DefaultMotionState(Matrix4.CreateTranslation(Translation) * Matrix4.CreateFromQuaternion(rotation));
+                        DefaultMotionState m = new DefaultMotionState(Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(Translation));
                         
                         RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape);
                         rbci.Friction = current.Friction;
