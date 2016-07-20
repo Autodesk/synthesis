@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using System;
 
 namespace OpenTKbuild
@@ -15,11 +14,11 @@ namespace OpenTKbuild
     
     class Camera
     {
-        float Yaw = -90.0f;
-        float Pitch = 0.0f;
-        float Movespeed = 3.0f;
-        float Sensitivity = 0.25f;
-        float Zoom = 45.0f;
+        public float Yaw = -90.0f;
+        public float Pitch = 0.0f;
+        public float Movespeed = 3.0f;
+        public float Sensitivity = 0.25f;
+        public float Zoom = 45.0f;
 
         Vector3 Position;
         Vector3 Front;
@@ -36,7 +35,7 @@ namespace OpenTKbuild
             this.updateCameraVectors();
         }
 
-        Matrix4 GetViewMatrix()
+        public Matrix4 GetViewMatrix()
         {
             return Matrix4.LookAt(this.Position, this.Position + this.Front, this.Up);
         }

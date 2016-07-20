@@ -14,7 +14,7 @@ namespace Simulation_RD
         /// <summary>
         /// Defines collision mesh. Not explicitly a <see cref="BulletSharp.RigidBody"/> because this might be a soft body.
         /// </summary>
-        public RigidBody BulletObject;
+        public CollisionObject BulletObject;
 
         public BulletRigidNode(Guid guid) : base(guid) { }
 
@@ -34,7 +34,7 @@ namespace Simulation_RD
         }
 
         /// <summary>
-        /// Creates a Soft body from a .bxda file [NOT YET PROPERLY IMPLEMENTED (I THINK)]
+        /// Creates a Soft body from a .bxda file [NOT YET PROPERLY IMPLEMENTED]
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="worldInfo"></param>
@@ -45,7 +45,9 @@ namespace Simulation_RD
 
             //Soft body construction
             //BulletObject = new SoftBody(worldInfo);
-            BulletObject.CollisionShape = GetShape(mesh);
+            foreach(BXDAMesh.BXDASubMesh sub in mesh.colliders)
+            {
+            }
         }
 
         private static CompoundShape GetShape(BXDAMesh mesh)
@@ -56,11 +58,11 @@ namespace Simulation_RD
             {
                 BXDAMesh.BXDASubMesh sub = mesh.colliders[i];
                 Vector3[] vertices = MeshUtilities.DataToVector(sub.verts);
-                StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[i], vertices);
+                StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(sub, vertices);
 
                 //I don't believe there are any transformations necessary here.
                 shape.AddChildShape(Matrix4.Zero, new GImpactMeshShape(sMesh));
-                //Console.WriteLine("Successfully created and added sub shape");
+                //Console.WriteLine("Successfully created and added sub shape");                
             }
 
             return shape;

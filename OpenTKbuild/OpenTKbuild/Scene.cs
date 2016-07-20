@@ -9,8 +9,8 @@ namespace OpenTKbuild
     class Scene : GameWindow
     {
         //Shader paths
-        public string vShaderPath = @"resources/Shaders/vertexShader.vs", fShaderPath = @"resources/Shaders/fragmentshader.frag", gShaderPath = @"resources/Shaders/geometryShader.geo";
-        public string VSP_Lamp = @"resources/Shaders/VS_Lamp.vs", FSP_Lamp = @"resources/Shaders/FS_Lamp.frag";
+        public static string vShaderPath = @"resources/Shaders/vertexShader.vs", fShaderPath = @"resources/Shaders/fragmentshader.frag";
+        public static string VSP_Lamp = @"resources/Shaders/VS_Lamp.vs", FSP_Lamp = @"resources/Shaders/FS_Lamp.frag";
 
         //OpenTK variables
         static OpenTK.Graphics.GraphicsMode gMode = new OpenTK.Graphics.GraphicsMode(32, 34, 8, 4);
@@ -23,14 +23,23 @@ namespace OpenTKbuild
         float lastX = Scene.width  / 2;
         float lastY = Scene.height / 2;
         bool[] keys = new bool[1024];
-        
+
+        //Light variables
+        Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
+
+        Shader lightingShader = new Shader(vShaderPath, fShaderPath);
+        Shader lampShader = new Shader(VSP_Lamp, FSP_Lamp);
+
+        //Generating Buffers for the Light source and Objects
+        int VBO = GL.GenBuffer();
+        int containerVAO = GL.GenVertexArray();
+        int lightVAO = GL.GenVertexArray();
+
         public Scene() : base (width, height, gMode, "Synthesis R&D")
         {
             //Drawing variables
             GL.Viewport(0, 0, width, height);
             GL.Enable(EnableCap.DepthTest);
-            Shader lightingShader = new Shader(vShaderPath, fShaderPath);
-            Shader lampShader = new Shader(VSP_Lamp, FSP_Lamp);
 
             //vertices of each container
             float[] vertices =
@@ -93,10 +102,7 @@ namespace OpenTKbuild
                 new Vector3(-1.3f,  1.0f, -1.5f)
             };
 
-            //Generating Buffers for the Light source and Objects
-            int VBO = GL.GenBuffer();
-            int containerVAO = GL.GenVertexArray();
-            int lightVAO = GL.GenVertexArray();
+            
 
             //VBO
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
@@ -116,6 +122,8 @@ namespace OpenTKbuild
             GL.BindVertexArray(0);
         }
 
+
+
         protected override void OnLoad(EventArgs e)
         { 
             GL.ClearColor(Color.FromArgb(100, 100, 100, 255));
@@ -129,7 +137,51 @@ namespace OpenTKbuild
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            do_movement();
 
+            GL.ClearColor(Color.LightSkyBlue);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            lightingShader.Use();
+            int objectColorLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "ObjectColor");
+            int lightColorLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "LightColor");
+            GL.Uniform3(objectColorLoc, 1.0f, 0.5f, 0.31f);
+            GL.Uniform3(lightColorLoc, 1.0f, 0.5f, 1.0f);
+
+            Matrix4 view = new Matrix4();
+            view = camera.GetViewMatrix();
+            GL.MatrixMode(MatrixMode.Modelview);
+
+            float aspect_ratio = Width / (float)Height;
+            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView(camera.Zoom, aspect_ratio, 0.1f, 100);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadMatrix(ref projection);
+
+            int modelLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "model");
+            int viewLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "view");
+            int projLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "projection");
+
+            GL.UniformMatrix4(viewLoc, false, ref view);
+            GL.UniformMatrix4(projLoc, false, ref projection);
+
+            GL.BindVertexArray(containerVAO);
+            Matrix4 model = new Matrix4();
+            GL.UniformMatrix4(modelLoc, false, ref model);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            GL.BindVertexArray(0);
+
+            lampShader.Use();
+
+            modelLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "model");
+            viewLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "view");
+            projLoc = GL.GetUniformLocation(lightingShader.ShaderProgram, "projection");
+
+            GL.UniformMatrix4(viewLoc, false, ref view);
+            GL.UniformMatrix4(projLoc, false, ref projection);
+            model = new Matrix4();
+            model = Matrix4.CreateTranslation(ref model, out lightPos);
+
+            SwapBuffers();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
