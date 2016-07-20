@@ -43,6 +43,8 @@ public class MainMenu : MonoBehaviour {
     private GUIStyle listStyle;
     private bool picked;
 
+    public static GameObject InputConflict;
+
 
 
     //The GUI rendering method. It uses a state machine to switch between the different menus.
@@ -109,9 +111,9 @@ public class MainMenu : MonoBehaviour {
         //If there is nothing found in the field folder, provide error message
         if (fields.Count <= 0)
         {
-            GameObject.Find("FieldNavigation").SetActive(false);
+            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("FieldNavigation")) gameobject.SetActive(false);
         }
-        else GameObject.Find("FieldNavigation").SetActive(true);
+        else foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("FieldNavigation")) gameobject.SetActive(true);
     }
 
     //Method to render the LoadRobot GUI objects
@@ -125,12 +127,12 @@ public class MainMenu : MonoBehaviour {
         GameObject.Find("RobotText").GetComponent<Text>().text = currenttext;
         GameObject.Find("RobotImage").GetComponent<Image>().sprite = currentimage;
 
-        //If there is nothing found in the field folder, provide error message
+        //If there is nothing found in the robot folder, provide error message
         if (robots.Count <= 0)
         {
-            GameObject.Find("RobotNavigation").SetActive(false);
+            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("RobotNavigation")) gameobject.SetActive(false);
         }
-        else GameObject.Find("RobotNavigation").SetActive(true);
+        else foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("RobotNavigation")) gameobject.SetActive(true);
     }
 
     //Method to render the Graphics Settings GUI objects
@@ -405,9 +407,7 @@ public class MainMenu : MonoBehaviour {
         customfieldon = false;
         customroboton = false;
 
-        Controls control = new Controls();
-
-
+        InputConflict = GameObject.Find("InputConflict");
     }
 	
 	void Update () {

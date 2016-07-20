@@ -19,7 +19,6 @@ public class InputButton : MonoBehaviour
     void Start()
     {
         //Custom style for buttons
-        buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
         buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
         gravityRegular = Resources.Load("Fonts/Russo_One") as Font;
     }
@@ -43,16 +42,13 @@ public class InputButton : MonoBehaviour
         buttonStyle.normal.background = buttonTexture;
         buttonStyle.hover.background = buttonSelected;
         buttonStyle.active.background = buttonSelected;
-        buttonStyle.onNormal.background = buttonSelected;
-        buttonStyle.onHover.background = buttonSelected;
-        buttonStyle.onActive.background = buttonSelected;
 
         tick = !tick;
         buttonContent = Controls.ControlKey[controlKey].ToString();
 
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
         Rect rect = GetComponent<RectTransform>().rect;
-        if (GUI.Button(new Rect(p.x - rect.width / 2, Screen.height - p.y - rect.height / 2, rect.width, rect.height), buttonContent, buttonStyle) && (!isEditing))
+        if (GUI.Button(new Rect(p.x - rect.width / 2 - 0.5f, Screen.height - p.y - rect.height / 2 - 0.5f, rect.width - 0.5f, rect.height - 0.5f), buttonContent, buttonStyle) && (!isEditing))
         {
             isEditing = true;
             active = true;
@@ -64,9 +60,13 @@ public class InputButton : MonoBehaviour
             {
                 if (Input.GetKeyDown(vKey) && tick)
                 {
-                    if (!Controls.SetControl(controlKey, vKey)) UserMessageManager.Dispatch("Conflicts with another input!", 2f);
+                    Controls.SetControl(controlKey, vKey);
                     active = false;
                     isEditing = false;
+                    Controls.SaveControls();
+
+                    if (Controls.CheckConflict()) MainMenu.InputConflict.SetActive(true);
+                    else MainMenu.InputConflict.SetActive(false);
                 }
             }
         }
