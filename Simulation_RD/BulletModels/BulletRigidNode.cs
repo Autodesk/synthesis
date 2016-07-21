@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
@@ -12,9 +8,12 @@ namespace Simulation_RD
     class BulletRigidNode : RigidNode_Base
     {
         /// <summary>
-        /// Defines collision mesh. Not explicitly a <see cref="BulletSharp.RigidBody"/> because this might be a soft body.
+        /// Defines collision mesh.
         /// </summary>
         public CollisionObject BulletObject;
+        public Action Update;
+
+        public TypedConstraint joint;
 
         public BulletRigidNode(Guid guid) : base(guid) { }
 
@@ -34,7 +33,7 @@ namespace Simulation_RD
         }
 
         /// <summary>
-        /// Creates a Soft body from a .bxda file [NOT YET PROPERLY IMPLEMENTED]
+        /// Creates a Soft body from a .bxda file [NOT YET PROPERLY IMPLEMENTED?]
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="worldInfo"></param>
@@ -42,12 +41,54 @@ namespace Simulation_RD
         {
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(filePath);
-
+            
             //Soft body construction
             //BulletObject = new SoftBody(worldInfo);
             foreach(BXDAMesh.BXDASubMesh sub in mesh.colliders)
             {
+                SoftBody temp = SoftBodyHelpers.CreateFromConvexHull(worldInfo, MeshUtilities.DataToVector(sub.verts));
+                temp.WorldTransform += Matrix4.CreateTranslation(0, 10, 0);
+                BulletObject = temp;
             }
+        }
+
+        public void CreateJoint()
+        {
+            if (joint != null || GetSkeletalJoint() == null)
+            {
+                return;
+            }
+
+            switch (GetSkeletalJoint().GetJointType())
+            {
+                case SkeletalJointType.ROTATIONAL:
+                    RotationalJoint_Base nodeR = (RotationalJoint_Base)GetSkeletalJoint();
+                    CollisionObject parentObject = ((BulletRigidNode)GetParent()).BulletObject;
+
+                    HingeConstraint temp = new HingeConstraint(
+                        (RigidBody)BulletObject, 
+                        (RigidBody)parentObject, 
+                        nodeR.basePoint.Convert(), 
+                        nodeR.basePoint.Convert(),
+                        nodeR.axis.Convert(),
+                        nodeR.axis.Convert());
+
+                    joint = temp;
+                    if(nodeR.hasAngularLimit)
+                        temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
+
+                    Update = () => { temp.EnableMotor = true; temp.EnableAngularMotor(true, 100f, 100f); };
+
+                    Console.WriteLine("Rotational/Wheel joint made");
+                    break;
+                default:
+                    Console.WriteLine("Received joint of type {0}", GetSkeletalJoint().GetJointType());
+                    break;
+            }            
+        }
+
+        private void ConfigJoint(Vector3 position, Vector3 axis)
+        {
         }
 
         private static CompoundShape GetShape(BXDAMesh mesh)
@@ -61,7 +102,7 @@ namespace Simulation_RD
                 StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(sub, vertices);
 
                 //I don't believe there are any transformations necessary here.
-                shape.AddChildShape(Matrix4.Zero, new GImpactMeshShape(sMesh));
+                shape.AddChildShape(Matrix4.Identity, new ConvexTriangleMeshShape(sMesh));
                 //Console.WriteLine("Successfully created and added sub shape");                
             }
 
