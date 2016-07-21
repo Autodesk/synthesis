@@ -1,5 +1,0 @@
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\DemoCSharpActiveX\DemoCSharpActiveX\bin\Debug\DemoCSharpActiveX.dll
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\DemoCSharpActiveX\DemoCSharpActiveX\bin\Debug\DemoCSharpActiveX.pdb
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\DemoCSharpActiveX\DemoCSharpActiveX\obj\Debug\DemoCSharpActiveX.csprojResolveAssemblyReference.cache
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\DemoCSharpActiveX\DemoCSharpActiveX\obj\Debug\DemoCSharpActiveX.dll
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\DemoCSharpActiveX\DemoCSharpActiveX\obj\Debug\DemoCSharpActiveX.pdb

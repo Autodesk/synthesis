@@ -1,6 +1,0 @@
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn1\InventorAddIn1\bin\Debug\InventorAddIn1.dll
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn1\InventorAddIn1\bin\Debug\InventorAddIn1.pdb
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn1\InventorAddIn1\bin\Debug\autodesk.inventor.interop.dll
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn1\InventorAddIn1\obj\Debug\InventorAddIn1.dll
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn1\InventorAddIn1\obj\Debug\InventorAddIn1.pdb
-C:\Users\t_gracj\Documents\Visual Studio 2015\Projects\InventorAddIn1\InventorAddIn1\obj\Debug\InventorAddIn1.csprojResolveAssemblyReference.cache

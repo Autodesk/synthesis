@@ -1,5 +1,0 @@
-c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn4\InventorAddIn4\bin\Debug\InventorAddIn4.dll
-c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn4\InventorAddIn4\bin\Debug\InventorAddIn4.pdb
-c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn4\InventorAddIn4\bin\Debug\autodesk.inventor.interop.dll
-c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn4\InventorAddIn4\obj\Debug\InventorAddIn4.dll
-c:\users\t_gracj\documents\visual studio 2015\Projects\InventorAddIn4\InventorAddIn4\obj\Debug\InventorAddIn4.pdb
