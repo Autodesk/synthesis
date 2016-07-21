@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 
+/// <summary>
+/// The class that controls all of the Main Menu GUI. It is attached to the MainMenuCanvas gameobject in the MainMenu scene.
+/// </summary>
 public class MainMenu : MonoBehaviour {
 
     enum Menu { Main, LoadField, LoadRobot, Graphics, Input, Custom};
@@ -31,24 +34,18 @@ public class MainMenu : MonoBehaviour {
     private string selectedRobotName; //the selected robot name
     private Sprite selectedFieldImage; //the selected field image
 
-    private FileBrowser fieldBrowser = null;
-    private bool customfieldon = true;
+    private FileBrowser fieldBrowser = null; //Custom Field Browser
+    private bool customfieldon = true; // Is true when the custom field browser is active
 
-    private FileBrowser robotBrowser = null;
-    private bool customroboton = true;
+    private FileBrowser robotBrowser = null; //Custom Robot Browser
+    private bool customroboton = true; //Is true when the custom robot browser is active
 
-    private bool showList = false;
-    private int listEntry = 0;
-    private GUIContent[] list;
-    private GUIStyle listStyle;
-    private bool picked;
+    public static GameObject InputConflict; //The text GUI object that only is active when there is an input conflict.
 
-    public static GameObject InputConflict;
-
-    public static bool fullscreen = false;
-    public static int resolutionsetting = 0;
-    private int[] xresolution = new int[10];
-    private int[] yresolution = new int[10];
+    public static bool fullscreen = false; //True when fullscreen, false when windowed
+    public static int resolutionsetting = 0; //Resolution setting index 
+    private int[] xresolution = new int[10]; //The widths of the different resolution settings
+    private int[] yresolution = new int[10]; //The heights of the different resolution settings
 
 
 
@@ -167,11 +164,13 @@ public class MainMenu : MonoBehaviour {
         Input.SetActive(true);
     }
 
+    //Method to render the custom field/robot browsers
     void RenderCustom()
     {
         DefaultPanel.SetActive(true);
         LoadField.SetActive(false);
         LoadRobot.SetActive(false);
+        //If the field browser is no longer active, switch menu states accordingly.
         if (customfieldon && !fieldBrowser.Active)
         {
             customfieldon = false;
@@ -212,12 +211,13 @@ public class MainMenu : MonoBehaviour {
         UpdatePreview();
     }
 
-    //Switches the current menu to the settings menu.
+    //Switches the current menu to the graphics settings menu.
     public void GraphicsButtonClicked()
     {
         currentMenu = Menu.Graphics;
     }
 
+    //Switches the current menu to the input settings menu.
     public void InputButtonClicked()
     {
         currentMenu = Menu.Input;
@@ -236,6 +236,7 @@ public class MainMenu : MonoBehaviour {
         else GameObject.Find("StartButton").GetComponent<Image>().color = Color.green;
     }
 
+    //Resets start button text when it is no longer hovered over.
     public void StartButtonExit()
     {
         Text buttontext = GameObject.Find("ReadyText").GetComponent<Text>();
@@ -309,6 +310,7 @@ public class MainMenu : MonoBehaviour {
         currentMenu = Menu.Main;
     }
 
+    //Initializes the custom field browser
     public void InitCustomField()
     {
         if (fieldBrowser == null)
@@ -340,9 +342,10 @@ public class MainMenu : MonoBehaviour {
                 }
             };
         }
-        if (customfieldon) fieldBrowser.Render();
+        if (customfieldon) fieldBrowser.Render(); //Only renders the field browser when needed
     }
 
+    //Activates the custom field browser
     public void LoadCustomField()
     {
         if (!fieldBrowser.Active) fieldBrowser.Active = true;
@@ -350,6 +353,7 @@ public class MainMenu : MonoBehaviour {
         currentMenu = Menu.Custom;
     }
 
+    //Initializes the custom robot browser
     public void InitCustomRobot()
     {
         if (robotBrowser == null)
@@ -379,9 +383,10 @@ public class MainMenu : MonoBehaviour {
                 }
             };
         }
-        if (customroboton) robotBrowser.Render();
+        if (customroboton) robotBrowser.Render(); //Only renders the robot browser when needed
     }
 
+    //Activates the custom robot loader
     public void LoadCustomRobot()
     {
         if (!robotBrowser.Active) robotBrowser.Active = true;
@@ -389,7 +394,7 @@ public class MainMenu : MonoBehaviour {
         currentMenu = Menu.Custom;
     }
 
-    //Updates preview information.
+    //Updates preview information with thumbnail and title.
     void UpdatePreview()
     {
         if (currentMenu == Menu.LoadField)
@@ -408,17 +413,19 @@ public class MainMenu : MonoBehaviour {
 
     #endregion
     #region Other Methods
+    //Resets input defaults when button is pressed
     public void InputDefaultPressed()
     {
         Controls.ResetDefaults();
     }
-
+    //Applies graphics settings.
     public void ApplyGraphics()
     {
         Screen.SetResolution(xresolution[resolutionsetting], yresolution[resolutionsetting], fullscreen);
     }
     #endregion
     void Start () {
+        //Initializes the filepath and field/robot array lists.
         filepath = Directory.GetParent(Application.dataPath).FullName;
         fields = new ArrayList();
         robots = new ArrayList();
@@ -428,8 +435,9 @@ public class MainMenu : MonoBehaviour {
         customfieldon = false;
         customroboton = false;
 
-        InputConflict = GameObject.Find("InputConflict");
+        InputConflict = GameObject.Find("InputConflict"); //Sets the input conflict 
 
+        //Initializes the array of resolution settings
         xresolution[0] = 640;
         xresolution[1] = 800;
         xresolution[2] = 1024;
