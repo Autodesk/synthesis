@@ -43,6 +43,13 @@ public class MainMenu : MonoBehaviour {
     private GUIStyle listStyle;
     private bool picked;
 
+    public static GameObject InputConflict;
+
+    public static bool fullscreen = false;
+    public static int resolutionsetting = 0;
+    private int[] xresolution = new int[10];
+    private int[] yresolution = new int[10];
+
 
 
     //The GUI rendering method. It uses a state machine to switch between the different menus.
@@ -109,9 +116,14 @@ public class MainMenu : MonoBehaviour {
         //If there is nothing found in the field folder, provide error message
         if (fields.Count <= 0)
         {
-            GameObject.Find("FieldNavigation").SetActive(false);
+            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("FieldNavigation")) gameobject.SetActive(false);
+            GameObject.Find("NoFieldFound").SetActive(true);
         }
-        else GameObject.Find("FieldNavigation").SetActive(true);
+        else
+        {
+            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("FieldNavigation")) gameobject.SetActive(true);
+            GameObject.Find("NoFieldFound").SetActive(false);
+        }
     }
 
     //Method to render the LoadRobot GUI objects
@@ -125,12 +137,18 @@ public class MainMenu : MonoBehaviour {
         GameObject.Find("RobotText").GetComponent<Text>().text = currenttext;
         GameObject.Find("RobotImage").GetComponent<Image>().sprite = currentimage;
 
-        //If there is nothing found in the field folder, provide error message
+        //If there is nothing found in the robot folder, provide error message
         if (robots.Count <= 0)
         {
-            GameObject.Find("RobotNavigation").SetActive(false);
+            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("RobotNavigation")) gameobject.SetActive(false);
+            GameObject.Find("NoRobotFound").SetActive(true);
         }
-        else GameObject.Find("RobotNavigation").SetActive(true);
+        else
+        {
+            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("RobotNavigation")) gameobject.SetActive(true);
+            GameObject.Find("NoRobotFound").SetActive(false);
+        }
+
     }
 
     //Method to render the Graphics Settings GUI objects
@@ -394,6 +412,11 @@ public class MainMenu : MonoBehaviour {
     {
         Controls.ResetDefaults();
     }
+
+    public void ApplyGraphics()
+    {
+        Screen.SetResolution(xresolution[resolutionsetting], yresolution[resolutionsetting], fullscreen);
+    }
     #endregion
     void Start () {
         filepath = Directory.GetParent(Application.dataPath).FullName;
@@ -405,9 +428,29 @@ public class MainMenu : MonoBehaviour {
         customfieldon = false;
         customroboton = false;
 
-        Controls control = new Controls();
+        InputConflict = GameObject.Find("InputConflict");
 
+        xresolution[0] = 640;
+        xresolution[1] = 800;
+        xresolution[2] = 1024;
+        xresolution[3] = 1280;
+        xresolution[4] = 1280;
+        xresolution[5] = 1280;
+        xresolution[6] = 1400;
+        xresolution[7] = 1600;
+        xresolution[8] = 1680;
+        xresolution[9] = 1920;
 
+        yresolution[0] = 480;
+        yresolution[1] = 600;
+        yresolution[2] = 768;
+        yresolution[3] = 720;
+        yresolution[4] = 768;
+        yresolution[5] = 1024;
+        yresolution[6] = 900;
+        yresolution[7] = 900;
+        yresolution[8] = 1050;
+        yresolution[9] = 1080;
     }
 	
 	void Update () {
