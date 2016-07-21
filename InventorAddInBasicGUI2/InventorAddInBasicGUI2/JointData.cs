@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Collections;
+using InventorAddInBasicGUI2;
 
 namespace InventorAddInBasicGUI2
 {
@@ -18,7 +19,9 @@ namespace InventorAddInBasicGUI2
     //this has got all dat dater
     public class JointData
     {
-        public AssemblyJoint jointOfType;
+        //public AssemblyJoint jointOfType;
+        
+        public String RefKey;
         public DriveTypes driver;
         public WheelType wheel;
         public FrictionLevel friction;
@@ -42,9 +45,20 @@ namespace InventorAddInBasicGUI2
         public double upperLim;
         public double lowerLim;
         public bool HasLimits;
+        public bool Rotating;
         public JointData(AssemblyJoint joint)
-        {
-            jointOfType = joint;
+        {// set all the default values
+            //jointOfType = joint;
+            try
+            {
+                ReferenceKeyManager refKeyMgr = StandardAddInServer.m_inventorApplication.ActiveDocument.ReferenceKeyManager;
+                byte[] refKey = new byte[0];
+                joint.GetReferenceKey(ref refKey, 0);
+                RefKey = refKeyMgr.KeyToString(refKey);
+            } catch(Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
             driver = DriveTypes.NoDriver;
             wheel = WheelType.NotAWheel;
             friction = FrictionLevel.None;
@@ -65,19 +79,27 @@ namespace InventorAddInBasicGUI2
             HasBrake = false;
             BrakePortA = 1;
             BrakePortB = 1;
-            upperLim = 0;
-            lowerLim = 0;
+            if (joint.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType || joint.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+            {// if the assembly joint is linear
+                Rotating = false;
+            }
+            else
+            {// set the combo box choices to rotating
+                Rotating = true;
+            }
+           
             HasLimits = false;
         }
+        
         public bool equals(AssemblyJoint j)
         {
-            if (j.Equals(jointOfType))
-            {
+            //if (j.Equals(jointOfType))
+            //{
                 return true;
-            } else
-            {
+           // } else
+           // {
                 return false;
-            }
+           // }
         }
     }
 }

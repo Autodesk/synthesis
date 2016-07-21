@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace InventorAddInBasicGUI2
@@ -16,6 +9,7 @@ namespace InventorAddInBasicGUI2
         {
             InitializeComponent();
         }
+        // runs the save of the files
         public void saveFile()
         {
             saveFileDialog1.ShowDialog();
