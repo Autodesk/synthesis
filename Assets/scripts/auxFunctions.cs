@@ -3,10 +3,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Class that contains auxiliary functions that don't have a good location elsewhere or are general use.
+/// During development cycle some functions are put here temporarily between a final place is decided upon.
+/// 
+/// This class contains functions that help other classes and scripts.
+/// </summary>
 public class auxFunctions
 {
+    /// <summary>
+    /// Deals with the mesh of the robot as it is created.
+    /// </summary>
     public delegate void HandleMesh(int id, BXDAMesh.BXDASubMesh subMesh, Mesh mesh);
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="meshes"></param>
+    /// <param name="handleMesh"></param>
     public static void ReadMeshSet(List<BXDAMesh.BXDASubMesh> meshes, HandleMesh handleMesh)
     {
 		for (int j = 0; j < meshes.Count; j++)
@@ -45,6 +59,11 @@ public class auxFunctions
         }
     }
 	
+    /// <summary>
+    /// Rotates the robot so that it is always oriented parallel to the ground.
+    /// </summary>
+    /// <param name="wheelcolliders">A list containing references to the robot's WheelColliders used to determine the robot's orientation.</param>
+    /// <param name="parent">A refernce to the robot transform object</param>
     public static void OrientRobot(List<GameObject> wheelcolliders, Transform parent)
 	{
         Quaternion q = new Quaternion();
@@ -72,6 +91,12 @@ public class auxFunctions
         //TODO THROW WHEEL EXCEPTION
       
 	}
+    /// <summary>
+    /// Adds wheels to the robot and sets them up.
+    /// </summary>
+    /// <param name="wheelcolliders">A list containing references to the robot's WheelColliders used to determine the robot's orientation. </param>
+    /// <param name="parent">A reference to the robot transform object.</param>
+    /// <returns>true if successful in righting the robot</returns>
 	public static Boolean rightRobot(List<GameObject> wheelcolliders, Transform parent)
 	{
 		Quaternion q = new Quaternion ();
@@ -94,6 +119,10 @@ public class auxFunctions
 		}
 	}
 
+    /// <summary>
+    /// Debug method for collision.
+    /// </summary>
+    /// <param name="meshColliders">A list of the colliders that are to ignore collision.</param>
     public static void IgnoreCollisionDetection(List<Collider> meshColliders)
     {
         for(int i = 0; i < meshColliders.Count; i++)

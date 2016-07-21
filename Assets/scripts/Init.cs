@@ -4,6 +4,10 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Class that contains the main GUI and Physics update loops, as well as the entry points for loading functions.
+/// It is attached to the main GameObject which serves as the main 'controller' of Synthesis.
+/// </summary>
 public class Init : MonoBehaviour
 {
     // We will need these
@@ -46,10 +50,10 @@ public class Init : MonoBehaviour
 	private string label;
 
     /// <summary>
-    /// Frames before the robot gets reloaded, or -1 if no reload is queued.
+    /// Frames before the robot or field gets reloaded, or -1 if no reload is queued.
     /// </summary>
     /// <remarks>
-    /// This allows reloading the robot to be delayed until a "Loading" dialog can be drawn.
+    /// This allows reloading the robot or field to be delayed until a "Loading" dialog can be drawn.
     /// </remarks>
     private volatile int reloadRobotInFrames;
 	private volatile int reloadFieldInFrames;
@@ -94,6 +98,10 @@ public class Init : MonoBehaviour
     /// </summary>
     private OverlayWindow oWindow;
 
+
+    /// <summary>
+    /// Creates a unity packet object to start recieving packets and initializes miscelaneous variables.
+    /// </summary>
     public Init()
     {
 		udp = new unityPacket ();
@@ -109,7 +117,10 @@ public class Init : MonoBehaviour
 		label = "Stop";
     }
 
-	//displays stats like speed and acceleration
+	/// <summary>
+    /// Initializes a popup window that displays stats like speed and acceleration.
+    /// </summary>
+    /// <param name="windowID">A number to identify the specific instance of the window being drawn. </param>
 	public void StatsWindow(int windowID) {
         //Custom style for windows
         statsWindow = new GUIStyle(GUI.skin.window);
@@ -157,7 +168,7 @@ public class Init : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Opens windows to orient the robot
+	/// Opens the orient robot window in the main menu.
 	/// </summary>
 	public void ShowOrient()
 	{
@@ -218,17 +229,26 @@ public class Init : MonoBehaviour
 		});
 	}
 
+    /// <summary>
+    /// Hides the sidemenu.
+    /// </summary>
 	void HideGuiSidebar()
 	{
 		gui.guiVisible = false;
 		dynamicCamera.EnableMoving ();
 	}
 
+    /// <summary>
+    /// Shows the sidemenu.
+    /// </summary>
 	void ShowGuiSidebar()
 	{
 		dynamicCamera.DisableMoving();
 	}
 
+    /// <summary>
+    /// Draws the sidebar menu and contanis all other buttons and windows. All GUI elements are rendered from here.
+    /// </summary>
 	[STAThread]
     void OnGUI()
     {
@@ -561,6 +581,12 @@ public class Init : MonoBehaviour
 		HideGuiSidebar();
     }
 
+    /// <summary>
+    /// Loads a field from file into the simulator.
+    /// </summary>
+    /// <remarks>
+    /// This is now called automatically at the start of the simulation after selecting a field in the main menu.
+    /// </remarks>
 	private void TryLoadField()
 	{
 		activeField = new GameObject("Field");
@@ -578,6 +604,9 @@ public class Init : MonoBehaviour
 		fieldLoaded = field.CreateMesh(filePath + "mesh.bxda");
 	}
 
+    /// <summary>
+    /// Initializes all the scene objects and materials and sets some physics properties for the physics engine.
+    /// </summary>
     void Start()
     {
         Physics.gravity = new Vector3(0, -9.8f, 0);
@@ -622,16 +651,25 @@ public class Init : MonoBehaviour
         transparentWindowTexture = Resources.Load("Images/transparentBackground") as Texture2D;
     }
 
+    /// <summary>
+    /// Starts the udp packet stream for robot input
+    /// </summary>
     void OnEnable()
     {
         udp.Start();
     }
 
+    /// <summary>
+    /// Stops the udp packet stream for robot input
+    /// </summary>
     void OnDisable()
     {
         udp.Stop();
     }
 
+    /// <summary>
+    /// Handles loading the field and robot and responding to keyboard events for GUI related things
+    /// </summary>
     void Update()
     {
 		if (mainNode == null) {
@@ -686,6 +724,9 @@ public class Init : MonoBehaviour
 			showStatWindow = !showStatWindow;
     }
 
+    /// <summary>
+    /// Updates the joints based on input and physics, stats calculations, and writing back udp packet data for sensors.
+    /// </summary>
     void FixedUpdate()
     {
 		if (skeleton != null) 
