@@ -16,7 +16,7 @@ namespace Simulation_RD.Graphics
         public float Yaw = -90.0f;
         public float Pitch = 0.0f;
         public float Movespeed = 75f;
-        public float Sensitivity = 0.25f;
+        public float Sensitivity = 0.75f;
         public float Zoom = 45.0f;
 
         Vector3 Position;
@@ -62,10 +62,10 @@ namespace Simulation_RD.Graphics
 
             if (constrainPitch)
             {
-                if (this.Pitch > 89.0f)
-                    this.Pitch = 89.0f;
-                if (this.Pitch < -89.0f)
-                    this.Pitch = -89.0f;
+                if (this.Pitch > Math.PI / 2)
+                    this.Pitch = (float)Math.PI / 2;
+                if (this.Pitch < -Math.PI / 2)
+                    this.Pitch = -(float)Math.PI / 2;
             }
 
             this.updateCameraVectors();

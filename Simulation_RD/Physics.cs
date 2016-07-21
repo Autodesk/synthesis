@@ -1,17 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BulletSharp;
+using BulletSharp.SoftBody;
 using OpenTK;
 
 namespace Simulation_RD
 {
     class Physics
     {
-        public DiscreteDynamicsWorld World { get; set; }
+        public SoftRigidDynamicsWorld World { get; set; }
         CollisionDispatcher dispatcher;
         DbvtBroadphase broadphase;
         List<CollisionShape> collisionShapes = new List<CollisionShape>();
         CollisionConfiguration collisionConf;
         public BulletFieldDefinition f;
+        public BulletRigidNode Skeleton; //3spooky5me
+        private Action OnUpdate;
         
         public Physics()
         {            
@@ -19,16 +23,10 @@ namespace Simulation_RD
             dispatcher = new CollisionDispatcher(collisionConf);
 
             broadphase = new DbvtBroadphase();
-            World = new DiscreteDynamicsWorld(dispatcher, broadphase, null, collisionConf);
+            World = new SoftRigidDynamicsWorld(dispatcher, broadphase, null, collisionConf);
             
             World.Gravity = new Vector3(0, -10, 0);
 
-            //ground
-            //CollisionShape groundShape = new BoxShape(50, 50, 50);
-            //collisionShapes.Add(groundShape);
-
-            //CollisionObject groundObj = LocalCreateRigidBody(0, Matrix4.CreateTranslation(0, -50, 0), groundShape);
-            //groundObj.UserObject = "Ground";
 
             #region old stuff
             ////dynamic Rigid bodies
@@ -94,20 +92,37 @@ namespace Simulation_RD
             //World.AddRigidBody(body_s);
             #endregion
 
+            //Roobit
+            string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\Sample Robot\";
+            RigidNode_Base.NODE_FACTORY = (Guid guid) => new BulletRigidNode(guid);
+            Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(RobotPath + "skeleton.bxdj");
+            List<RigidNode_Base> nodes = Skeleton.ListAllNodes();
+            for(int i = 0; i < nodes.Count; i++)
+            {
+                BulletRigidNode bNode = (BulletRigidNode)nodes[i];
+                bNode.CreateRigidBody(RobotPath + bNode.ModelFileName);
+                bNode.CreateJoint();
+
+                if(bNode.joint != null)
+                    World.AddConstraint(bNode.joint);
+                World.AddCollisionObject(bNode.BulletObject);
+                collisionShapes.Add(bNode.BulletObject.CollisionShape);
+                OnUpdate += bNode.Update;
+            }
+
+            //Field
             f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2015\");
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);
                 collisionShapes.Add(b.CollisionShape);
             }
-
-            //rbInfo.Dispose();
-
         }
 
         public virtual void Update(float elapsedTime)
         {
             World.StepSimulation(elapsedTime);
+            OnUpdate?.Invoke();
         }
 
         public void ExitPhysics()

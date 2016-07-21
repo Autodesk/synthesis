@@ -30,7 +30,7 @@ namespace Simulation_RD
         {
             VSync = VSyncMode.Off;
             phys = new Physics();
-            c = new Camera(100, 200, 100, 0, 1, 0, 0, -10);
+            c = new Camera(100, 200, 100, 0, 1, 0, 0, 0);
             c.Sensitivity = 0.01f;
             CameraBindings = new Dictionary<Key, Camera_Movement>();
             CameraBindings.Add(Key.Up, Camera_Movement.forward);
@@ -90,7 +90,7 @@ namespace Simulation_RD
             GL.Viewport(0, 0, Width, Height);
 
             float aspect_ratio = Width / (float)Height;
-            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, aspect_ratio, 0.1f, 1000);
+            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver3, aspect_ratio, 0.1f, 100000);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref perspective);
 
@@ -227,7 +227,17 @@ namespace Simulation_RD
         
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
         {
-            c.ProcessMouseMovement(e.X - mxPrev, -(e.Y - myPrev));
+            if ((e.Mouse.LeftButton & ButtonState.Pressed) > 0)
+            {
+                float dy = e.Y - myPrev;
+                dy /= 10;
+                float dx = e.X - mxPrev;
+                dx /= 10;
+                float udy = Math.Abs(dy);
+                float udx = Math.Abs(dx);
+
+                c.ProcessMouseMovement((float)Math.Sqrt(udx * udx * udx) * -Math.Sign(dx), (float)Math.Sqrt(udy * udy * udy) * Math.Sign(dy));
+            }
 
             mxPrev = e.X;
             myPrev = e.Y;
