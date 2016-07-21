@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Pulled from http://wiki.unity3d.com/index.php?title=PopupList
+/// </summary>
+
 public class Popup
 {
     static int popupListHash = "PopupList".GetHashCode();
