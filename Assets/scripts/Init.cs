@@ -670,10 +670,19 @@ public class Init : MonoBehaviour
 			gui.DoAction ("Reset Robot");
 
         if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.RobotOrient]))
-            oWindow.Active = true;
+            if (!oWindow.Active)
+            {
+                gui.EscPressed();
+                oWindow.Active = true;
+            }
+            else
+            {
+                gui.EscPressed();
+                oWindow.Active = false;
+            }
 
-		// Show/Hide physics window
-		if (Input.GetKeyDown (Controls.ControlKey[(int)Controls.Control.Stats]))
+        // Show/Hide physics window
+        if (Input.GetKeyDown (Controls.ControlKey[(int)Controls.Control.Stats]))
 			showStatWindow = !showStatWindow;
     }
 
