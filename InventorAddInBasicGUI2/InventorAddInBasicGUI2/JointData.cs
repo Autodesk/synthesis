@@ -19,15 +19,16 @@ namespace InventorAddInBasicGUI2
     //this has got all dat dater
     public class JointData
     {
-        //public AssemblyJoint jointOfType;
-        
+        public AssemblyJoint jointOfType;
+        public String Name;
         public String RefKey;
-        public DriveTypes driver;
-        public WheelType wheel;
-        public FrictionLevel friction;
-        public InternalDiameter diameter;
-        public Pressure pressure;
-        public Stages  stages;
+        public byte[] key;
+        public DriveTypes Driver;
+        public WheelType Wheel;
+        public FrictionLevel Friction;
+        public InternalDiameter Diameter;
+        public Pressure Pressure;
+        public Stages  Stages;
         public double PWMport;
         public double PWMport2;
         public double CANport;
@@ -42,29 +43,31 @@ namespace InventorAddInBasicGUI2
         public bool HasBrake;
         public double BrakePortA;
         public double BrakePortB;
-        public double upperLim;
-        public double lowerLim;
+        public double UpperLim;
+        public double LowerLim;
         public bool HasLimits;
         public bool Rotating;
-        public JointData(AssemblyJoint joint)
+        public JointData(AssemblyJoint joint, String name)
         {// set all the default values
-            //jointOfType = joint;
+            Name = name;
+            jointOfType = joint;
             try
             {
                 ReferenceKeyManager refKeyMgr = StandardAddInServer.m_inventorApplication.ActiveDocument.ReferenceKeyManager;
                 byte[] refKey = new byte[0];
                 joint.GetReferenceKey(ref refKey, 0);
+                key = refKey;
                 RefKey = refKeyMgr.KeyToString(refKey);
             } catch(Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
-            driver = DriveTypes.NoDriver;
-            wheel = WheelType.NotAWheel;
-            friction = FrictionLevel.None;
-            diameter = InternalDiameter.PointFive;
-            pressure = Pressure.psi60;
-            stages = Stages.SingleStageElevator; 
+            Driver = DriveTypes.NoDriver;
+            Wheel = WheelType.NotAWheel;
+            Friction = FrictionLevel.None;
+            Diameter = InternalDiameter.PointFive;
+            Pressure = Pressure.psi60;
+            Stages = Stages.SingleStageElevator; 
             PWMport = 1;
             PWMport2 = 1;
             CANport = 1;
@@ -93,13 +96,13 @@ namespace InventorAddInBasicGUI2
         
         public bool equals(AssemblyJoint j)
         {
-            //if (j.Equals(jointOfType))
-            //{
+            if (j.Equals(jointOfType))
+            {
                 return true;
-           // } else
-           // {
+            } else
+            {
                 return false;
-           // }
+            }
         }
     }
 }

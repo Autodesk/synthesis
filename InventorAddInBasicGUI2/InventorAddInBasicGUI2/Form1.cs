@@ -48,7 +48,7 @@ namespace InventorAddInBasicGUI2
             chkBoxDriveWheel.Show();
             btnSave.Show();
             rbCAN.Show();
-            if (joint.wheel != WheelType.NotAWheel)
+            if (joint.Wheel != WheelType.NotAWheel)
             {
                 cmbFrictionLevel.Show();
             } else
@@ -195,7 +195,7 @@ namespace InventorAddInBasicGUI2
             btnSave.Show();
             rbCAN.Show();
             rbPWM.Show();
-            if (joint.wheel != WheelType.NotAWheel)
+            if (joint.Wheel != WheelType.NotAWheel)
             {
                 cmbFrictionLevel.Show();
             }
@@ -281,18 +281,18 @@ namespace InventorAddInBasicGUI2
 
             if (cmbWheelType.SelectedIndex == 1)
             {
-                joint.wheel = WheelType.Normal;
+                joint.Wheel = WheelType.Normal;
             } else if(cmbWheelType.SelectedIndex == 2)
             {
-                joint.wheel = WheelType.Omni;
+                joint.Wheel = WheelType.Omni;
             } else if (cmbWheelType.SelectedIndex == 3)
             {
-                joint.wheel = WheelType.Mecanum;
+                joint.Wheel = WheelType.Mecanum;
             } else
             {
-                joint.wheel = WheelType.NotAWheel;
+                joint.Wheel = WheelType.NotAWheel;
             }
-            if (joint.wheel != WheelType.NotAWheel)
+            if (joint.Wheel != WheelType.NotAWheel)
             {
                 cmbFrictionLevel.Show();
             }
@@ -305,66 +305,66 @@ namespace InventorAddInBasicGUI2
         {
             if (cmbFrictionLevel.SelectedIndex == 0)
             {
-                joint.friction = FrictionLevel.Low;
+                joint.Friction = FrictionLevel.Low;
             }
             else if (cmbFrictionLevel.SelectedIndex == 2)
             {
-                joint.friction = FrictionLevel.High;
+                joint.Friction = FrictionLevel.High;
             }
             else
             {
-                joint.friction = FrictionLevel.Medium;
+                joint.Friction = FrictionLevel.Medium;
             }
         }
         public void StagesChanged(object sender, EventArgs e)
         {
             if (cmbStages.SelectedIndex == 1)
             {
-                joint.stages = Stages.CascadingStageOne;
+                joint.Stages = Stages.CascadingStageOne;
             }
             else if (cmbStages.SelectedIndex == 2)
             {
-                joint.stages = Stages.CascadingStageTwo;
+                joint.Stages = Stages.CascadingStageTwo;
             }
             else if (cmbStages.SelectedIndex == 3)
             {
-                joint.stages = Stages.ContinuousStage1;
+                joint.Stages = Stages.ContinuousStage1;
             }
             else if (cmbStages.SelectedIndex == 4)
             {
-                joint.stages = Stages.ContinuousStage2;
+                joint.Stages = Stages.ContinuousStage2;
             }
             else
             {
-                joint.stages = Stages.SingleStageElevator;
+                joint.Stages = Stages.SingleStageElevator;
             }
         }
         public void InternalDiameterChanged(object sender, EventArgs e)
         {
             if (cmbPneumaticDiameter.SelectedItem .Equals("1 in"))
             {
-                 joint.diameter = InternalDiameter.One;
+                 joint.Diameter = InternalDiameter.One;
             }
             else if (cmbPneumaticDiameter.SelectedItem.Equals(".25 in"))
             {
-                 joint.diameter = InternalDiameter.PointTwoFive;
+                 joint.Diameter = InternalDiameter.PointTwoFive;
             }
             else
             {
-                joint.diameter = InternalDiameter.PointFive;
+                joint.Diameter = InternalDiameter.PointFive;
             }
         }
         public void PressureDiameterChanged(object sender, EventArgs e)
         {
             if (cmbPneumaticPressure.SelectedItem.Equals("10 psi"))
             {
-                joint.pressure = Pressure.psi10;
+                joint.Pressure = Pressure.psi10;
             } else if (cmbPneumaticPressure.SelectedItem.Equals("20 psi"))
             {
-                joint.pressure = Pressure.psi20;
+                joint.Pressure = Pressure.psi20;
             } else
             {
-                joint.pressure = Pressure.psi60;
+                joint.Pressure = Pressure.psi60;
             }
         }
         public void Solenoid1Change(object sender, EventArgs e)
@@ -434,15 +434,15 @@ namespace InventorAddInBasicGUI2
         public void readFromData(JointData j)
         {
             joint = j;
-            if (j.wheel == WheelType.Normal)
+            if (j.Wheel == WheelType.Normal)
             {
                 this.cmbWheelType.SelectedIndex = 1;
                 cmbFrictionLevel.Show();
-            } else if (j.wheel == WheelType.Omni)
+            } else if (j.Wheel == WheelType.Omni)
             {
                 this.cmbWheelType.SelectedIndex = 2;
                 cmbFrictionLevel.Show();
-            } else if (j.wheel == WheelType.Mecanum)
+            } else if (j.Wheel == WheelType.Mecanum)
             {
                 this.cmbWheelType.SelectedIndex = 3;
                 cmbFrictionLevel.Show();
@@ -452,11 +452,11 @@ namespace InventorAddInBasicGUI2
                 cmbFrictionLevel.Hide();
             }
 
-            if(j.friction == FrictionLevel.Low)
+            if(j.Friction == FrictionLevel.Low)
             {
                 this.cmbFrictionLevel.SelectedIndex = 0;
             } 
-            else if(j.friction == FrictionLevel.High)
+            else if(j.Friction == FrictionLevel.High)
             {
                 this.cmbFrictionLevel.SelectedIndex = 2;
             } else
@@ -464,10 +464,10 @@ namespace InventorAddInBasicGUI2
                 this.cmbFrictionLevel.SelectedIndex = 1;
             }
 
-            if(j.diameter == InternalDiameter.One)
+            if(j.Diameter == InternalDiameter.One)
             {
                 this.cmbPneumaticDiameter.SelectedItem = "1 in";
-            } else if(j.diameter == InternalDiameter.PointTwoFive)
+            } else if(j.Diameter == InternalDiameter.PointTwoFive)
             {
                 this.cmbPneumaticDiameter.SelectedItem = ".25 in";
             } else
@@ -475,10 +475,10 @@ namespace InventorAddInBasicGUI2
                 this.cmbPneumaticDiameter.SelectedItem = ".5 in";
             }
 
-            if(j.pressure == Pressure.psi10)
+            if(j.Pressure == Pressure.psi10)
             {
                 this.cmbPneumaticPressure.SelectedItem = "10 psi";
-            } else if(j.pressure == Pressure.psi20)
+            } else if(j.Pressure == Pressure.psi20)
             {
                 this.cmbPneumaticPressure.SelectedItem = "20 psi";
             } else
@@ -486,16 +486,16 @@ namespace InventorAddInBasicGUI2
                 this.cmbPneumaticPressure.SelectedItem = "60 psi";
             }
 
-            if(j.stages == Stages.CascadingStageOne)
+            if(j.Stages == Stages.CascadingStageOne)
             {
                 this.cmbStages.SelectedIndex = 1;
-            } else if (j.stages == Stages.CascadingStageTwo)
+            } else if (j.Stages == Stages.CascadingStageTwo)
             {
                 this.cmbStages.SelectedIndex = 2;
-            } else if(j.stages == Stages.ContinuousStage1)
+            } else if(j.Stages == Stages.ContinuousStage1)
             {
                 this.cmbStages.SelectedIndex = 3;
-            } else if (j.stages == Stages.ContinuousStage2)
+            } else if (j.Stages == Stages.ContinuousStage2)
             {
                 this.cmbStages.SelectedIndex = 4;
             } else

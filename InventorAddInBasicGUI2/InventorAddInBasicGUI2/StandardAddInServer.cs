@@ -30,6 +30,8 @@ namespace InventorAddInBasicGUI2
         Boolean FirstTime;
         Boolean inExportView;
 
+        int jointNumber;
+
         static System.Timers.Timer time;
 
         Boolean Rotating;
@@ -119,7 +121,8 @@ namespace InventorAddInBasicGUI2
                 m_inventorApplication = addInSiteObject.Application;
                 // TODO: Add ApplicationAddInServer.Activate implementation.
                 // e.g. event initialization, command creation etc.
-                
+
+                jointNumber = 0;
 
                 doWerk = false;
 
@@ -332,7 +335,6 @@ namespace InventorAddInBasicGUI2
                             brow = (NativeBrowserNodeDefinition)m.BrowserNodeDefinition;
                             if (brow.NativeObject.Equals(c))
                             {
-                        MessageBox.Show("fghj");
                                 n.BrowserNode.DoSelect();
                                 found = true;
                             }
@@ -481,10 +483,10 @@ namespace InventorAddInBasicGUI2
                         bool found = false;
                         foreach(JointData d in jointList)
                         {// looks at all joints in the joint data to check for duplicates
-                            //if (d.equals(j))
-                           // {
-                             //   found = true;
-                          //  }
+                            if (d.equals(j))
+                            {
+                                found = true;
+                            }
                         }
                         if (!found)
                         {// if there isn't a duplicate then add part to browser folder
@@ -503,7 +505,8 @@ namespace InventorAddInBasicGUI2
                             joints.Add(j.AffectedOccurrenceOne);
                             joints.Add(j.AffectedOccurrenceTwo);
                             i++;
-                            assemblyJoint = new JointData(j);
+                            assemblyJoint = new JointData(j, "Joint" + jointNumber);
+                            jointNumber++;
                             jointList.Add(assemblyJoint);// add new joint data to the array
                         }
                     }
@@ -760,7 +763,7 @@ namespace InventorAddInBasicGUI2
                                     JointTypeRotating();
                                 }
                                 
-                                SwitchSelectedJoint(selectedJointData.driver);// set selected joint type in the combo box to the correct one
+                                SwitchSelectedJoint(selectedJointData.Driver);// set selected joint type in the combo box to the correct one
                                 SwitchSelectedLimit(selectedJointData.HasLimits);// set selected limit choice in the combo box to the correct one
                             }
                         }
@@ -793,7 +796,7 @@ namespace InventorAddInBasicGUI2
         {//  gets passed the DriveType of the selected joints
             doWerk = false;// disable the combo box selection reactor
             if (Rotating)
-            {// if rotating read from driver and select proper choice
+            {// if rotating read from Driver and select proper choice
                 if (driver == DriveTypes.Motor)
                 {
                     JointsComboBox.ListIndex = 2;
@@ -817,7 +820,7 @@ namespace InventorAddInBasicGUI2
                     JointsComboBox.ListIndex = 1;
                 }
             } else
-            {// if linear read from driver and select proper choice
+            {// if linear read from Driver and select proper choice
                 if (driver == DriveTypes.Elevator)
                 {
                     JointsComboBox.ListIndex = 2;
@@ -878,57 +881,162 @@ namespace InventorAddInBasicGUI2
 
             doubleClick = false;
         }
-        //test button for doing experimental things
-        public void test_OnExecute(Inventor.NameValueMap Context)
+        
+        private void readSave()
         {
-            PropertySets sets;
-            PropertySet set = null;
-            sets = m_inventorApplication.ActiveDocument.PropertySets;
             try
             {
-                set = m_inventorApplication.ActiveDocument.PropertySets.Add("My Stusfsdf");
+                int NumJoints = 0;
+                PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;
+                PropertySet set = null;
+                object resultObj = null;
+                object context = null;
+                byte[] refObj;
+                foreach (PropertySet p in sets)
+                {
+                    if (p.DisplayName.Equals("Number of Joints"))
+                    {
+                        NumJoints = (int) p.ItemByPropId[2].Value; ;
+                    }
+                }
+                for (int i = 0; i < NumJoints; i++)
+                {
+                    foreach (PropertySet p in sets)
+                    {
+                        if (p.DisplayName.Equals("Joint" + i))
+                        {
+                            resultObj = null;
+                            context = null;
+                            refObj = new byte[0];
+                            m_inventorApplication.ActiveDocument.ReferenceKeyManager.StringToKey(((String)p.ItemByPropId[2].Value), ref refObj);
+                            //m_inventorApplication.ActiveDocument.ReferenceKeyManager.StringToKey(((JointData)jointList[1]).RefKey , refObj);
+                            if (m_inventorApplication.ActiveDocument.ReferenceKeyManager.
+                                    CanBindKeyToObject(refObj, 0, out resultObj, out context))
+                            {
+                                MessageBox.Show("yeas");
+                            }
+                        }
+                    }
+                }
             } catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        private void writeNumJoints()
+        {
+            PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;
+            PropertySet set = null;
+            try
+            {
+                set = sets.Add("Number of Joints");
+            }
+            catch (Exception e)
             {
                 foreach (PropertySet s in sets)
                 {
-                    if (s.DisplayName.Equals("My Stusfsdf")){
+                    if (s.DisplayName.Equals("Number of Joints"))
+                    {
                         set = s;
                     }
                 }
             }
             try
             {
-                
-                set.Add(((JointData)jointList[0]).RefKey, "RefKey");
-                set.Add(((JointData)jointList[0]).driver, "driver");
-                set.Add(((JointData)jointList[0]).wheel, "wheel");
-                set.Add(((JointData)jointList[0]).friction, "friction");
-                set.Add(((JointData)jointList[0]).diameter, "diameter");
-                set.Add(((JointData)jointList[0]).pressure, "pressure");
-                set.Add(((JointData)jointList[0]).stages, "stages");
-                set.Add(((JointData)jointList[0]).PWMport, "PWMport");
-                set.Add(((JointData)jointList[0]).PWMport2, "PWMport2");
-                set.Add(((JointData)jointList[0]).CANport, "CANport");
-                set.Add(((JointData)jointList[0]).CANport2, "CANport2");
-                set.Add(((JointData)jointList[0]).DriveWheel, "DriveWheel");
-                set.Add(((JointData)jointList[0]).PWM, "PWM");
-                set.Add(((JointData)jointList[0]).InputGear, "InputGear");
-                set.Add(((JointData)jointList[0]).OutputGear, "OutputGear");
-                set.Add(((JointData)jointList[0]).SolenoidPortA, "SolenoidPortA");
-                set.Add(((JointData)jointList[0]).SolenoidPortB, "SolenoidPortB");
-                set.Add(((JointData)jointList[0]).RelayPort, "RelayPort");
-                set.Add(((JointData)jointList[0]).HasBrake, "HasBrake");
-                set.Add(((JointData)jointList[0]).BrakePortA, "BrakePortA");
-                set.Add(((JointData)jointList[0]).BrakePortB, "BrakePortB");
-                set.Add(((JointData)jointList[0]).upperLim, "upperLim");
-                set.Add(((JointData)jointList[0]).lowerLim, "lowerLim");
-                set.Add(((JointData)jointList[0]).HasLimits, "HasLimits");
-                set.Add(((JointData)jointList[0]).Rotating, "Rotating");
-            } catch(Exception e)
-            {
-                MessageBox.Show(e.ToString());
+                set.Add(jointNumber, "Number of joints", 2);
             }
-            MessageBox.Show("hi");
+            catch (Exception e)
+            {
+                set.ItemByPropId[2].Value = jointNumber;
+            }
+        }
+
+        private void writeSave(JointData j)
+        {
+            PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;
+            PropertySet set = null;
+            try
+            {
+                set = sets.Add(j.Name);
+            }
+            catch (Exception e)
+            {
+                foreach (PropertySet s in sets)
+                {
+                    if (s.DisplayName.Equals(j.Name))
+                    {
+                        set = s;
+                    }
+                }
+            }
+            try
+            {
+                set.Add(j.RefKey, "RefKey", 2);
+                set.Add(j.Driver, "Driver", 3);
+                set.Add(j.Wheel, "Wheel", 4);
+                set.Add(j.Friction, "Friction", 5);
+                set.Add(j.Diameter, "Diameter", 6);
+                set.Add(j.Pressure, "Pressure", 7);
+                set.Add(j.Stages, "Stages", 8);
+                set.Add(j.PWMport, "PWMport", 9);
+                set.Add(j.PWMport2, "PWMport2", 10);
+                set.Add(j.CANport, "CANport", 11);
+                set.Add(j.CANport2, "CANport2", 12);
+                set.Add(j.DriveWheel, "DriveWheel", 13);
+                set.Add(j.PWM, "PWM", 14);
+                set.Add(j.InputGear, "InputGear", 15);
+                set.Add(j.OutputGear, "OutputGear", 16);
+                set.Add(j.SolenoidPortA, "SolenoidPortA", 17);
+                set.Add(j.SolenoidPortB, "SolenoidPortB", 18);
+                set.Add(j.RelayPort, "RelayPort", 19);
+                set.Add(j.HasBrake, "HasBrake", 20);
+                set.Add(j.BrakePortA, "BrakePortA", 21);
+                set.Add(j.BrakePortB, "BrakePortB", 22);
+                set.Add(j.UpperLim, "UpperLim", 23);
+                set.Add(j.LowerLim, "LowerLim", 24);
+                set.Add(j.HasLimits, "HasLimits", 25);
+                set.Add(j.Rotating, "Rotating", 26);
+            }
+            catch (Exception e)
+            {
+                set.ItemByPropId[2].Value = j.RefKey;
+                set.ItemByPropId[3].Value = j.Driver;
+                set.ItemByPropId[4].Value = j.Wheel;
+                set.ItemByPropId[5].Value = j.Friction;
+                set.ItemByPropId[6].Value = j.Diameter;
+                set.ItemByPropId[7].Value = j.Pressure;
+                set.ItemByPropId[8].Value = j.Stages;
+                set.ItemByPropId[9].Value = j.PWMport;
+                set.ItemByPropId[10].Value = j.PWMport2;
+                set.ItemByPropId[11].Value = j.CANport;
+                set.ItemByPropId[12].Value = j.CANport2;
+                set.ItemByPropId[13].Value = j.DriveWheel;
+                set.ItemByPropId[14].Value = j.PWM;
+                set.ItemByPropId[15].Value = j.InputGear;
+                set.ItemByPropId[16].Value = j.OutputGear;
+                set.ItemByPropId[17].Value = j.SolenoidPortA;
+                set.ItemByPropId[18].Value = j.SolenoidPortB;
+                set.ItemByPropId[19].Value = j.RelayPort;
+                set.ItemByPropId[20].Value = j.HasBrake;
+                set.ItemByPropId[21].Value = j.BrakePortA;
+                set.ItemByPropId[22].Value = j.BrakePortB;
+                set.ItemByPropId[23].Value = j.UpperLim;
+                set.ItemByPropId[24].Value = j.LowerLim;
+                set.ItemByPropId[25].Value = j.HasLimits;
+                set.ItemByPropId[26].Value = j.Rotating;
+            }
+        }
+        //test button for doing experimental things
+        public void test_OnExecute(Inventor.NameValueMap Context)
+        {
+            //writeSave(((JointData)jointList[0]));
+            foreach(JointData j in jointList)
+            {
+                writeSave(j);
+            }
+            writeNumJoints();
+            readSave();
         }
             /*AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
 
@@ -1052,7 +1160,7 @@ namespace InventorAddInBasicGUI2
                         joints.Add(j.AffectedOccurrenceOne);
                         joints.Add(j.AffectedOccurrenceTwo);// add affected parts to array
                         i++;
-                        assemblyJoint = new JointData(j);
+                        assemblyJoint = new JointData(j, "Joint" + jointNumber);
                         jointList.Add(assemblyJoint); // add jointdata from joint to array
                     }
                 }
@@ -1278,66 +1386,66 @@ namespace InventorAddInBasicGUI2
                 {
                     if (JointsComboBox.Text.Equals("Motor"))
                     {
-                        selectedJointData.driver = DriveTypes.Motor;
+                        selectedJointData.Driver = DriveTypes.Motor;
                         form.MotorChosen();
                         form.readFromData(selectedJointData);
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Servo"))
                     {
-                        selectedJointData.driver = DriveTypes.Servo;
+                        selectedJointData.Driver = DriveTypes.Servo;
                         form.ServoChosen();
                         form.readFromData(selectedJointData);
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Bumper Pneumatic"))
                     {
-                        selectedJointData.driver = DriveTypes.BumperPnuematic;
+                        selectedJointData.Driver = DriveTypes.BumperPnuematic;
                         form.BumperPneumaticChosen();
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Relay Pneumatic"))
                     {
-                        selectedJointData.driver = DriveTypes.RelayPneumatic;
+                        selectedJointData.Driver = DriveTypes.RelayPneumatic;
                         form.RelayPneumaticChosen();
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Worm Screw"))
                     {
-                        selectedJointData.driver = DriveTypes.WormScrew;
+                        selectedJointData.Driver = DriveTypes.WormScrew;
                         form.WormScrewChosen();
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Dual Motor"))
                     {
-                        selectedJointData.driver = DriveTypes.DualMotor;
+                        selectedJointData.Driver = DriveTypes.DualMotor;
                         form.DualMotorChosen();
                         form.ShowDialog();
                     } else
                     {
-                        selectedJointData.driver = DriveTypes.NoDriver;
+                        selectedJointData.Driver = DriveTypes.NoDriver;
                     }
                 }
                 else
                 {
                     if (JointsComboBox.Text.Equals("Elevator"))
                     {
-                        selectedJointData.driver = DriveTypes.Elevator;
+                        selectedJointData.Driver = DriveTypes.Elevator;
                         form.ElevatorChosen();
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Bumper Pneumatic"))
                     {
-                        selectedJointData.driver = DriveTypes.BumperPnuematic;
+                        selectedJointData.Driver = DriveTypes.BumperPnuematic;
                         form.BumperPneumaticChosen();
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Relay Pneumatic"))
                     {
-                        selectedJointData.driver = DriveTypes.RelayPneumatic;
+                        selectedJointData.Driver = DriveTypes.RelayPneumatic;
                         form.RelayPneumaticChosen();
                         form.ShowDialog();
                     } else if (JointsComboBox.Text.Equals("Worm Screw"))
                     {
-                        selectedJointData.driver = DriveTypes.WormScrew;
+                        selectedJointData.Driver = DriveTypes.WormScrew;
                         form.WormScrewChosen();
                         form.ShowDialog();
                     } else
                     {
-                        selectedJointData.driver = DriveTypes.NoDriver;
+                        selectedJointData.Driver = DriveTypes.NoDriver;
                     }
                 }
             }
@@ -1365,8 +1473,7 @@ namespace InventorAddInBasicGUI2
                 }
             }
         }
-
-
+        
         /*public void FlattenAssembly() {
             AssemblyDocument sourceAsmDoc;
             sourceAsmDoc = (_AssemblyDocument)m_inventorApplication.ActiveDocument;

@@ -20,7 +20,7 @@ namespace InventorAddInBasicGUI2
         {
             try
             {
-                joint.upperLim = Convert.ToDouble(txtUpper.Text);
+                joint.UpperLim = Convert.ToDouble(txtUpper.Text);
             }
             catch(Exception ex)
             {
@@ -40,7 +40,7 @@ namespace InventorAddInBasicGUI2
         {
             try
             {
-                joint.lowerLim = Convert.ToDouble(txtLower.Text);
+                joint.LowerLim = Convert.ToDouble(txtLower.Text);
             }
             catch(Exception ex)
             {
@@ -54,8 +54,8 @@ namespace InventorAddInBasicGUI2
         public void readFromData(JointData j)
         {
             joint = j;
-            txtLower.Text = j.lowerLim.ToString();
-            txtUpper.Text = j.upperLim.ToString();
+            txtLower.Text = j.LowerLim.ToString();
+            txtUpper.Text = j.UpperLim.ToString();
         }
     }
 }
