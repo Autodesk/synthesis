@@ -21,6 +21,7 @@ namespace Simulation_RD
         int VBO;
         int shaderHandle;
         float lastTime;
+        KeyboardKeyEventArgs cachedKeyboard = new KeyboardKeyEventArgs();
 
         int mxPrev, myPrev;
 
@@ -37,11 +38,6 @@ namespace Simulation_RD
             c = new Camera(100, 200, 100, 0, 1, 0, 0, 0);
             c.Sensitivity = 0.01f;
             CameraBindings = new Dictionary<Key, Camera_Movement>();
-            CameraBindings.Add(Key.Up, Camera_Movement.forward);
-            CameraBindings.Add(Key.Left, Camera_Movement.left);
-            CameraBindings.Add(Key.Down, Camera_Movement.backward);
-            CameraBindings.Add(Key.Right, Camera_Movement.right);
-
             CameraBindings.Add(Key.W, Camera_Movement.forward);
             CameraBindings.Add(Key.S, Camera_Movement.backward);
             CameraBindings.Add(Key.A, Camera_Movement.left);
@@ -67,6 +63,8 @@ namespace Simulation_RD
             this.MouseWheel += glControl1_MouseWheel;
             this.KeyDown += glControl1_KeyDown;
 
+            Action<EventHandler<KeyboardKeyEventArgs>> AddHandler = (handler) => KeyDown += handler;
+
             phys.World.DebugDrawer = new BulletDebugDrawer();
             base.OnLoad(e);            
         }
@@ -83,7 +81,11 @@ namespace Simulation_RD
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            phys.Update((float)e.Time);
+            if (CameraBindings.ContainsKey(cachedKeyboard.Key))
+                c.ProcessKeyboard(CameraBindings[cachedKeyboard.Key], (float)e.Time);
+
+            phys.Update((float)e.Time, cachedKeyboard);
+            cachedKeyboard = new KeyboardKeyEventArgs();
         }
 
         /// <summary>
@@ -281,9 +283,8 @@ namespace Simulation_RD
         /// <param name="e"></param>
         private void glControl1_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
-            if(CameraBindings.ContainsKey(e.Key))
-                c.ProcessKeyboard(CameraBindings[e.Key], 0.1f);
-
+            cachedKeyboard = e;
+            
             switch (e.Key)
             {
                 case Key.Space:

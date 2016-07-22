@@ -5,13 +5,16 @@ using OpenTK;
 
 namespace Simulation_RD.SimulationPhysics
 {
+    /// <summary>
+    /// Defines a robot joint
+    /// </summary>
     class BulletRigidNode : RigidNode_Base
     {
         /// <summary>
         /// Defines collision mesh.
         /// </summary>
         public CollisionObject BulletObject;
-        public Action Update;
+        public Action<float> Update;
 
         public TypedConstraint joint;
 
@@ -53,6 +56,9 @@ namespace Simulation_RD.SimulationPhysics
             }
         }
 
+        /// <summary>
+        /// Creates the joint data
+        /// </summary>
         public void CreateJoint()
         {
             if (joint != null || GetSkeletalJoint() == null)
@@ -78,7 +84,7 @@ namespace Simulation_RD.SimulationPhysics
                     if(nodeR.hasAngularLimit)
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
-                    Update = () => { temp.EnableMotor = true; temp.EnableAngularMotor(true, 10f, 10f); };
+                    Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 10f); };
 
                     Console.WriteLine("Rotational/Wheel joint made");
                     break;
@@ -86,10 +92,6 @@ namespace Simulation_RD.SimulationPhysics
                     Console.WriteLine("Received joint of type {0}", GetSkeletalJoint().GetJointType());
                     break;
             }            
-        }
-
-        private void ConfigJoint(Vector3 position, Vector3 axis)
-        {
         }
 
         private static CompoundShape GetShape(BXDAMesh mesh)
