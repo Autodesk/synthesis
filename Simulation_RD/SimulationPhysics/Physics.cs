@@ -4,8 +4,11 @@ using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
 
-namespace Simulation_RD
+namespace Simulation_RD.SimulationPhysics
 {
+    /// <summary>
+    /// Handles all of the Physics of the environment
+    /// </summary>
     class Physics
     {
         public SoftRigidDynamicsWorld World { get; set; }

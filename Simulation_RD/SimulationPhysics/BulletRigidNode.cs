@@ -3,7 +3,7 @@ using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
 
-namespace Simulation_RD
+namespace Simulation_RD.SimulationPhysics
 {
     class BulletRigidNode : RigidNode_Base
     {

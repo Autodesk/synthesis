@@ -4,8 +4,9 @@ using System.IO;
 using OpenTK;
 using BulletSharp;
 using System.Linq;
+using Simulation_RD.Graphics;
 
-namespace Simulation_RD
+namespace Simulation_RD.SimulationPhysics
 {
     /// <summary>
     /// Field mesh definition for the Bullet world

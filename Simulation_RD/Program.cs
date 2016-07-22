@@ -1,4 +1,6 @@
-﻿namespace Simulation_RD
+﻿using Simulation_RD.Graphics;
+
+namespace Simulation_RD
 {
     class Program
     {

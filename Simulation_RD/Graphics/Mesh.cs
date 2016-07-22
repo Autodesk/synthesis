@@ -6,8 +6,11 @@ using System.Linq;
 using Assimp;
 using BulletSharp;
 
-namespace Simulation_RD
+namespace Simulation_RD.Graphics
 {
+    /// <summary>
+    /// Describes a point on a mesh
+    /// </summary>
     struct Vertex
     {
         public Vector3 position;
@@ -20,6 +23,9 @@ namespace Simulation_RD
         }
     };
 
+    /// <summary>
+    /// I don't know, have toby explain this
+    /// </summary>
     public struct Texture
     {
         public int id;
@@ -27,6 +33,9 @@ namespace Simulation_RD
         public TextureSlot path;
     };
 
+    /// <summary>
+    /// Describes a visual mesh for drawing purposes. Not really done? idk. Toby is the one working on this.
+    /// </summary>
     class Mesh// : BXDAMesh //Takes a vertex array, an index array, and a texture coordinate array.
     {
         public List<Vertex> vertices;
@@ -156,7 +165,7 @@ namespace Simulation_RD
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
             GL.DrawArrays(OpenTK.Graphics.OpenGL.PrimitiveType.Triangles, 0, vertexData.Length / 9);
 
-            //Immediate Drawing, AKA NOT that buffered shit that doesn't work
+            //Immediate Drawing, AKA NOT that buffered method that doesn't work
             //GL.Begin(BeginMode.Triangles);
 
             //for(int i = 0; i < indices.Count; i++)

@@ -6,9 +6,13 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using BulletSharp;
 using Simulation_RD.Graphics;
+using Simulation_RD.SimulationPhysics;
 
 namespace Simulation_RD
 {
+    /// <summary>
+    /// Does all drawing and contains <see cref="Physics"/>
+    /// </summary>
     class Scene : GameWindow
     {
         Physics phys;
@@ -26,7 +30,7 @@ namespace Simulation_RD
 
         Camera c;
 
-        public Scene() : base(750, 750, new OpenTK.Graphics.GraphicsMode(), "RnD Synthesis Test")
+        public Scene() : base(1500, 768, new OpenTK.Graphics.GraphicsMode(), "RnD Synthesis Test")
         {
             VSync = VSyncMode.Off;
             phys = new Physics();
@@ -44,6 +48,10 @@ namespace Simulation_RD
             CameraBindings.Add(Key.D, Camera_Movement.right);
         }
 
+        /// <summary>
+        /// Sets up OpenGL, Controls, Physics
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnLoad(EventArgs e)
         {
             GL.Enable(EnableCap.DepthTest);
@@ -63,7 +71,10 @@ namespace Simulation_RD
             base.OnLoad(e);            
         }
 
-
+        /// <summary>
+        /// cleanup
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnUnload(EventArgs e)
         {
             phys.ExitPhysics();
@@ -75,6 +86,10 @@ namespace Simulation_RD
             phys.Update((float)e.Time);
         }
 
+        /// <summary>
+        /// draws stuff
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             frameTime += (float)e.Time;
@@ -108,6 +123,7 @@ namespace Simulation_RD
                 //phys.f.VisualMeshes[i].Draw(phys.f.Bodies[i]);
             }
 
+            //Comment this out when actual graphics work
             phys.World.DebugDrawWorld();
 
             #region Old Stuff
@@ -225,6 +241,11 @@ namespace Simulation_RD
         }
         #endregion
         
+        /// <summary>
+        /// Rotates camera based on mouse
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
         {
             if ((e.Mouse.LeftButton & ButtonState.Pressed) > 0)
@@ -243,11 +264,21 @@ namespace Simulation_RD
             myPrev = e.Y;
         }
 
+        /// <summary>
+        /// Should zoom camera but doesn't
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void glControl1_MouseWheel(object sender, MouseEventArgs e)
         {
             c.ProcessMouseScroll(e.Mouse.WheelPrecise);
         }
 
+        /// <summary>
+        /// Moves the camera in the world using the keyboard
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void glControl1_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
             if(CameraBindings.ContainsKey(e.Key))

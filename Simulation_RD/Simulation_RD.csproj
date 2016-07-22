@@ -89,14 +89,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BXDConversions.cs" />
+    <Compile Include="GameFeatures\Controls.cs" />
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\BulletDebugDrawer.cs" />
     <Compile Include="Graphics\Mesh.cs" />
-    <Compile Include="BulletModels\BulletRigidNode.cs" />
-    <Compile Include="BulletModels\BulletFieldDefinition.cs" />
+    <Compile Include="SimulationPhysics\BulletRigidNode.cs" />
+    <Compile Include="SimulationPhysics\BulletFieldDefinition.cs" />
     <Compile Include="MeshUtilities.cs" />
     <Compile Include="Graphics\Model.cs" />
-    <Compile Include="Physics.cs" />
+    <Compile Include="SimulationPhysics\Physics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scene.cs" />
