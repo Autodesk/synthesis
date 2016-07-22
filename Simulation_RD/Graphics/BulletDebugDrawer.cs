@@ -194,7 +194,7 @@ namespace Simulation_RD.Graphics
 
         public void DrawLine(ref Vector3 from, ref Vector3 to, OpenTK.Graphics.Color4 color)
         {
-            GL.Color3(1.0f, 1.0f, 0.0f);
+            GL.Color3(0, 1.0f, 0.0f);
             GL.Begin(PrimitiveType.Lines);
             GL.Vertex3(from);
             GL.Vertex3(to);

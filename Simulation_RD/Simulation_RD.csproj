@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="BXDConversions.cs" />
     <Compile Include="GameFeatures\Controls.cs" />
+    <Compile Include="GameFeatures\DriveJoints.cs" />
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\BulletDebugDrawer.cs" />
     <Compile Include="Graphics\Mesh.cs" />

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
+using OpenTK.Input;
+using Simulation_RD.GameFeatures;
 
 namespace Simulation_RD.SimulationPhysics
 {
@@ -20,7 +22,7 @@ namespace Simulation_RD.SimulationPhysics
         public BulletFieldDefinition f;
         public BulletRigidNode Skeleton; //3spooky5me
         private Action OnUpdate;
-        
+                
         public Physics()
         {            
             collisionConf = new SoftBodyRigidBodyCollisionConfiguration();
@@ -111,7 +113,6 @@ namespace Simulation_RD.SimulationPhysics
                     World.AddConstraint(bNode.joint);
                 World.AddCollisionObject(bNode.BulletObject);
                 collisionShapes.Add(bNode.BulletObject.CollisionShape);
-                OnUpdate += bNode.Update;
             }
 
             //Field
@@ -123,8 +124,9 @@ namespace Simulation_RD.SimulationPhysics
             }
         }
 
-        public virtual void Update(float elapsedTime)
+        public virtual void Update(float elapsedTime, KeyboardKeyEventArgs args)
         {
+            DriveJoints.UpdateAllMotors(Skeleton, args);
             World.StepSimulation(elapsedTime, 10);
             OnUpdate?.Invoke();
         }
