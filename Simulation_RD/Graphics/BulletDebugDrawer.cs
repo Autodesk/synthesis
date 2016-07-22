@@ -5,7 +5,7 @@ using System.Linq;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace Simulation_RD
+namespace Simulation_RD.Graphics
 {
     class BulletDebugDrawer : IDebugDraw
     {

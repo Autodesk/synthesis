@@ -11,6 +11,9 @@ namespace Simulation_RD.Graphics
         right
     };
     
+    /// <summary>
+    /// Controls camera movement and matrix calculations
+    /// </summary>
     class Camera
     {
         public float Yaw = -90.0f;
@@ -31,14 +34,23 @@ namespace Simulation_RD.Graphics
             this.WorldUp = new Vector3(upX, upY, upZ);
             this.Yaw = yaw;
             this.Pitch = pitch;
-            this.updateCameraVectors();
+            this.UpdateCameraVectors();
         }
 
+        /// <summary>
+        /// Gets the camera matrix. Uses values calculated from <see cref="UpdateCameraVectors"/>
+        /// </summary>
+        /// <returns></returns>
         public Matrix4 GetViewMatrix()
         {
             return Matrix4.LookAt(this.Position, this.Position + this.Front, this.Up);
         }
 
+        /// <summary>
+        /// Moves the camera in a direcion
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="deltaTime"></param>
         public void ProcessKeyboard(Camera_Movement direction, float deltaTime)
         {
             float velocity = this.Movespeed * deltaTime;
@@ -52,6 +64,12 @@ namespace Simulation_RD.Graphics
                 this.Position += this.Right * velocity;
         }
 
+        /// <summary>
+        /// Process angle changes from mouse movement
+        /// </summary>
+        /// <param name="xoffset"></param>
+        /// <param name="yoffset"></param>
+        /// <param name="constrainPitch">Stops the camera from rolling over</param>
         public void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true)
         {
             xoffset *= this.Sensitivity;
@@ -68,7 +86,7 @@ namespace Simulation_RD.Graphics
                     this.Pitch = -(float)Math.PI / 2;
             }
 
-            this.updateCameraVectors();
+            this.UpdateCameraVectors();
         }
 
         public void ProcessMouseScroll(float yoffset)
@@ -81,7 +99,10 @@ namespace Simulation_RD.Graphics
                 this.Zoom = 45.0f;
         }
 
-        public void updateCameraVectors()
+        /// <summary>
+        /// Recalculates all matrix stuff
+        /// </summary>
+        public void UpdateCameraVectors()
         {
             Vector3 front;
             front.X = (float)Math.Cos(Yaw) * (float)Math.Cos(Pitch);
@@ -90,7 +111,6 @@ namespace Simulation_RD.Graphics
             Front = front.Normalized();
             Right = Vector3.Cross(Front, WorldUp).Normalized();
             Up = Vector3.Cross(Right, Front).Normalized();
-
         }
     }
 }

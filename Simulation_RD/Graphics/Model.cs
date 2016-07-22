@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using Assimp;
 using System.Collections.Generic;
 
-namespace Simulation_RD
+namespace Simulation_RD.Graphics
 {
     class Model
     {
