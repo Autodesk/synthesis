@@ -13,21 +13,22 @@ namespace Simulation_RD
         DbvtBroadphase broadphase;
         List<CollisionShape> collisionShapes = new List<CollisionShape>();
         CollisionConfiguration collisionConf;
+        SoftBodySolver solver;
         public BulletFieldDefinition f;
         public BulletRigidNode Skeleton; //3spooky5me
         private Action OnUpdate;
         
         public Physics()
         {            
-            collisionConf = new DefaultCollisionConfiguration();
-            dispatcher = new CollisionDispatcher(collisionConf);
+            collisionConf = new SoftBodyRigidBodyCollisionConfiguration();
+            dispatcher = new CollisionDispatcher(new DefaultCollisionConfiguration());
+            solver = new DefaultSoftBodySolver();
 
             broadphase = new DbvtBroadphase();
-            World = new SoftRigidDynamicsWorld(dispatcher, broadphase, null, collisionConf);
+            World = new SoftRigidDynamicsWorld(dispatcher, broadphase, null, collisionConf, solver);
             
             World.Gravity = new Vector3(0, -10, 0);
-
-
+            
             #region old stuff
             ////dynamic Rigid bodies
             //const float mass = 1.0f;
@@ -121,7 +122,7 @@ namespace Simulation_RD
 
         public virtual void Update(float elapsedTime)
         {
-            World.StepSimulation(elapsedTime);
+            World.StepSimulation(elapsedTime, 10);
             OnUpdate?.Invoke();
         }
 
@@ -159,8 +160,5 @@ namespace Simulation_RD
             }
             collisionConf.Dispose();
         }
-
-        
-
     }
 }

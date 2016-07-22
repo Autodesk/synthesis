@@ -96,7 +96,7 @@ namespace Simulation_RD
                         
                         DefaultMotionState m = new DefaultMotionState(Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(Translation));
                         
-                        RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape);
+                        RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape, subShape.CalculateLocalInertia(current.Mass));
                         rbci.Friction = current.Friction;
                         Bodies.Add(new RigidBody(rbci));
 
