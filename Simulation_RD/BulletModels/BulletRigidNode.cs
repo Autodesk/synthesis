@@ -28,7 +28,8 @@ namespace Simulation_RD
 
             //Rigid Body Construction
             DefaultMotionState motion = new DefaultMotionState(Matrix4.CreateTranslation(0, 10, 0));
-            RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, GetShape(mesh));
+            CollisionShape shape = GetShape(mesh);
+            RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
             BulletObject = new RigidBody(info);
         }
 
@@ -77,7 +78,7 @@ namespace Simulation_RD
                     if(nodeR.hasAngularLimit)
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
-                    Update = () => { temp.EnableMotor = true; temp.EnableAngularMotor(true, 100f, 100f); };
+                    Update = () => { temp.EnableMotor = true; temp.EnableAngularMotor(true, 10f, 10f); };
 
                     Console.WriteLine("Rotational/Wheel joint made");
                     break;
