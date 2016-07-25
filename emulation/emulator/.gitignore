@@ -1,0 +1,11 @@
+# Directories
+linux
+qemu-*
+
+# Images
+*.img
+
+# Archives
+*.tar
+*.xz
+*.lzma
