@@ -22,7 +22,6 @@ namespace InventorAddInBasicGUI2
         public AssemblyJoint jointOfType;
         public String Name;
         public String RefKey;
-        public byte[] key;
         public DriveTypes Driver;
         public WheelType Wheel;
         public FrictionLevel Friction;
@@ -56,7 +55,6 @@ namespace InventorAddInBasicGUI2
                 ReferenceKeyManager refKeyMgr = StandardAddInServer.m_inventorApplication.ActiveDocument.ReferenceKeyManager;
                 byte[] refKey = new byte[0];
                 joint.GetReferenceKey(ref refKey, 0);
-                key = refKey;
                 RefKey = refKeyMgr.KeyToString(refKey);
             } catch(Exception e)
             {
