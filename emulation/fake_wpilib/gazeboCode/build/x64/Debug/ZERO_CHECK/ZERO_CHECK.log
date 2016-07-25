@@ -1,0 +1,22 @@
+﻿Build started 6/29/2015 8:19:39 AM.
+     1>Project "C:\Users\T_hics\Documents\GitHub\allwpilib\build\ZERO_CHECK.vcxproj" on node 2 (Build target(s)).
+     1>CustomBuild:
+         Checking Build System
+         CMake does not need to re-run because C:/Users/T_hics/Documents/GitHub/allwpilib/build/CMakeFiles/generate.stamp is up-to-date.
+         CMake does not need to re-run because C:/Users/T_hics/Documents/GitHub/allwpilib/build/hal/CMakeFiles/generate.stamp is up-to-date.
+         CMake does not need to re-run because C:/Users/T_hics/Documents/GitHub/allwpilib/build/networktables/cpp/CMakeFiles/generate.stamp is up-to-date.
+         CMake does not need to re-run because C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/CMakeFiles/generate.stamp is up-to-date.
+         CMake does not need to re-run because C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/wpilibC++/CMakeFiles/generate.stamp is up-to-date.
+         CMake does not need to re-run because C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/wpilibC++Devices/CMakeFiles/generate.stamp is up-to-date.
+         CMake is re-running because C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/wpilibC++IntegrationTests/CMakeFiles/generate.stamp is out-of-date.
+           the file 'C:/Users/T_hics/Documents/GitHub/allwpilib/wpilibc/wpilibC++IntegrationTests/CMakeLists.txt'
+           is newer than 'C:/Users/T_hics/Documents/GitHub/allwpilib/build/wpilibc/wpilibC++IntegrationTests/CMakeFiles/generate.stamp.depend'
+           result='-1'
+         -- Configuring done
+         -- Generating done
+         -- Build files have been written to: C:/Users/T_hics/Documents/GitHub/allwpilib/build
+     1>Done Building Project "C:\Users\T_hics\Documents\GitHub\allwpilib\build\ZERO_CHECK.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.18
