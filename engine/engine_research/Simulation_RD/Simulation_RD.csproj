@@ -60,7 +60,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="BulletSharp">
-      <HintPath>..\..\..\Desktop\BulletSharp\BulletSharp.dll</HintPath>
+      <HintPath>..\packages\Lib\BulletSharp.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -75,7 +75,7 @@
       <HintPath>..\..\..\..\..\Bullet_physics\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
-      <HintPath>..\..\..\Downloads\Aardvark-FileIO-master\Aardvark-FileIO-master\SimulatorFileIO\bin\Release\SimulatorAPI.dll</HintPath>
+      <HintPath>..\packages\Lib\SimulatorAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
