@@ -109,7 +109,7 @@ namespace Simulation_RD.SimulationPhysics
                 bNode.CreateRigidBody(RobotPath + bNode.ModelFileName);
                 bNode.CreateJoint();
 
-                if(bNode.joint != null)
+                if (bNode.joint != null)
                     World.AddConstraint(bNode.joint);
                 World.AddCollisionObject(bNode.BulletObject);
                 collisionShapes.Add(bNode.BulletObject.CollisionShape);
@@ -122,6 +122,8 @@ namespace Simulation_RD.SimulationPhysics
                 World.AddRigidBody(b);
                 collisionShapes.Add(b.CollisionShape);
             }
+
+            World.StepSimulation(0.1f, 10);
         }
 
         public virtual void Update(float elapsedTime, KeyboardKeyEventArgs args)

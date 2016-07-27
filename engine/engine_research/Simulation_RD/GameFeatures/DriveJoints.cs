@@ -45,8 +45,8 @@ namespace Simulation_RD.GameFeatures
                     BulletRigidNode bNode = (BulletRigidNode)node;
                     if (bNode?.GetSkeletalJoint()?.cDriver?.GetDriveType().IsMotor() ?? false)
                     {
-                        if(bNode.GetSkeletalJoint().cDriver.portA == i + 1)
-                            bNode.Update(pwm[i] * 10);
+                        if (bNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                            bNode.Update?.Invoke(pwm[i] * 10);
                     }
                 }
             }
