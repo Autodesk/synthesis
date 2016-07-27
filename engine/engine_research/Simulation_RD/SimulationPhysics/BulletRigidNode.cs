@@ -74,8 +74,7 @@ namespace Simulation_RD.SimulationPhysics
                     RotationalJoint_Base nodeR = (RotationalJoint_Base)GetSkeletalJoint();
                     CollisionObject parentObject = ((BulletRigidNode)GetParent()).BulletObject;
                     WheelDriverMeta wheel = GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
-
-
+                    
                     Matrix4 locA, locB;
                     locA = Matrix4.CreateFromQuaternion(new Quaternion(nodeR.axis.Convert(), nodeR.currentAngularPosition))
                         * Matrix4.CreateTranslation(nodeR.basePoint.Convert()); //- parentObject.WorldTransform.ExtractTranslation());
@@ -83,20 +82,33 @@ namespace Simulation_RD.SimulationPhysics
                     locB = locA * parentObject.WorldTransform * Matrix4.Invert(BulletObject.WorldTransform);
 
                     //HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locA, locB);
-                    HingeConstraint temp = new HingeConstraint(
+                    //HingeConstraint temp = new HingeConstraint(
+                    //    (RigidBody)BulletObject,
+                    //    (RigidBody)parentObject,
+                    //    nodeR.basePoint.Convert(),
+                    //    nodeR.basePoint.Convert(),
+                    //    nodeR.axis.Convert(),
+                    //    nodeR.axis.Convert()
+                    //    );
+
+                    Generic6DofConstraint temp = new Generic6DofConstraint(
                         (RigidBody)BulletObject,
                         (RigidBody)parentObject,
-                        wheel.center.Convert(),
-                        wheel.center.Convert(),
-                        nodeR.axis.Convert(),
-                        nodeR.axis.Convert()
+                        Matrix4.CreateTranslation(nodeR.basePoint.Convert()) * BulletObject.WorldTransform.Inverted(),
+                        Matrix4.CreateTranslation(nodeR.basePoint.Convert()) * parentObject.WorldTransform.Inverted(),
+                        true
                         );
+
+                    temp.LinearLowerLimit = Vector3.Zero;
+                    temp.LinearUpperLimit = Vector3.Zero;
+                    temp.AngularLowerLimit = Vector3.One;
+                    temp.AngularUpperLimit = Vector3.Zero;
 
                     joint = temp;
                     if (nodeR.hasAngularLimit)
-                        temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
+                        //temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
-                    Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 10f); };
+                    //Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 1f); };
 
                     Console.WriteLine("Rotational/Wheel joint made");
                     break;
