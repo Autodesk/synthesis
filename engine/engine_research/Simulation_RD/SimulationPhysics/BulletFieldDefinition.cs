@@ -96,11 +96,12 @@ namespace Simulation_RD.SimulationPhysics
                         Quaternion rotation = new Quaternion(node.Rotation.X, node.Rotation.Y, node.Rotation.Z, node.Rotation.W);
                         
                         DefaultMotionState m = new DefaultMotionState(Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(Translation));
+                        m.CenterOfMassOffset = Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert());
                         
                         RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape, subShape.CalculateLocalInertia(current.Mass));
                         rbci.Friction = current.Friction;
                         Bodies.Add(new RigidBody(rbci));
-
+                        
                         VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID], Translation));                        
                         if(debug) Console.WriteLine("Created " + node.PropertySetID);
                     }                    
