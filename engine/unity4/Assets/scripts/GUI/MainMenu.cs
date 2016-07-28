@@ -308,7 +308,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (fieldBrowser == null)
         {
-            fieldBrowser = new FileBrowser("Load Field Directory", true);
+            fieldBrowser = new FileBrowser("Choose Field Directory", true);
             fieldBrowser.Active = true;
             fieldBrowser.OnComplete += (object obj) =>
             {
@@ -345,7 +345,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (robotBrowser == null)
         {
-            robotBrowser = new FileBrowser("Load Field Directory", true);
+            robotBrowser = new FileBrowser("Choose Robot Directory", true);
             robotBrowser.Active = true;
             robotBrowser.OnComplete += (object obj) =>
             {
