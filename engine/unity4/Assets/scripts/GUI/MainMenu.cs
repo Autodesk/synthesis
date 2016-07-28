@@ -14,6 +14,7 @@ public class MainMenu : MonoBehaviour {
     public GameObject Graphics; //The Graphics GUI Objects
     public GameObject Input; //The Input GUI Objects
     public GameObject DefaultPanel; //A blank transparent panel
+    public custom_inputs InputManager; //The input manager
 
     private GameObject fieldSelectText;
     private GameObject robotSelectText;
@@ -318,6 +319,7 @@ public class MainMenu : MonoBehaviour {
                 DirectoryInfo directory = new DirectoryInfo(fileLocation);
                 if (directory != null && directory.Exists)
                 {
+                    Debug.Log(directory);
 					fieldDirectory = (directory.FullName);
                     currentMenu = Menu.LoadField;
                     customfieldon = false;
@@ -418,7 +420,7 @@ public class MainMenu : MonoBehaviour {
 
         if (fields.Count > 0)
         {
-            if (fieldindex >= fields.Count) fieldindex = fields.Count - 1;
+            if (fieldindex >= fields.Count) fieldindex = 0;
             UpdatePreview();
         }
     }
