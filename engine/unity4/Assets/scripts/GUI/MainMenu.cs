@@ -15,10 +15,25 @@ public class MainMenu : MonoBehaviour {
     public GameObject Input; //The Input GUI Objects
     public GameObject DefaultPanel; //A blank transparent panel
 
+    private GameObject fieldSelectText;
+    private GameObject robotSelectText;
+    private GameObject fieldSelectImage;
+
+    private GameObject fieldText;
+    private GameObject fieldImage;
+    private GameObject robotText;
+    private GameObject robotImage;
+
+    private GameObject startButton;
+    private GameObject readyText;
+
+    private GameObject[] robotNavigation;
+    private GameObject[] fieldNavigation;
+
+
     private ArrayList fields; //ArrayList of field folders to select
     private ArrayList robots; //ArrayList of robot folders to select
 
-    private string filepath; //The shortcut of the filepath where the exe should be located
     private int fieldindex; //The current index of field selection
     private int robotindex; //The current index of robot selection
 
@@ -33,9 +48,11 @@ public class MainMenu : MonoBehaviour {
 
     private FileBrowser fieldBrowser = null;
     private bool customfieldon = true;
+    private string fieldDirectory;
 
     private FileBrowser robotBrowser = null;
     private bool customroboton = true;
+    private string robotDirectory;
 
     private bool showList = false;
     private int listEntry = 0;
@@ -43,7 +60,7 @@ public class MainMenu : MonoBehaviour {
     private GUIStyle listStyle;
     private bool picked;
 
-    public static GameObject InputConflict;
+    public static GameObject inputConflict;
 
     public static bool fullscreen = false;
     public static int resolutionsetting = 0;
@@ -81,8 +98,8 @@ public class MainMenu : MonoBehaviour {
                  RenderCustom();
                  break;
          }
-         InitCustomField();
-         InitCustomRobot();
+         InitFieldBrowser();
+         InitRobotBrowser();
          UserMessageManager.Render();
     }
     #region Rendering
@@ -97,9 +114,9 @@ public class MainMenu : MonoBehaviour {
         Input.SetActive(false);
 
         //Updates the selected robot/field thumbnail and text
-        GameObject.Find("FieldSelectText").GetComponent<Text>().text = selectedFieldName;
-        GameObject.Find("RobotSelectText").GetComponent<Text>().text = selectedRobotName;
-        if (selectedFieldImage != null) GameObject.Find("FieldSelectImage").GetComponent<Image>().sprite = selectedFieldImage;
+        fieldSelectText.GetComponent<Text>().text = selectedFieldName;
+        robotSelectText.GetComponent<Text>().text = selectedRobotName;
+        if (selectedFieldImage != null) fieldSelectImage.GetComponent<Image>().sprite = selectedFieldImage;
     }
 
     //Method to render to LoadField GUI objects
@@ -109,21 +126,13 @@ public class MainMenu : MonoBehaviour {
         LoadField.SetActive(true);
         DefaultPanel.SetActive(false);
 
-        //Updates the preview thumbnail and text
-        GameObject.Find("FieldText").GetComponent<Text>().text = currenttext;
-        GameObject.Find("FieldImage").GetComponent<Image>().sprite = currentimage;
+        if (fields.Count > 0)
+        {
+            //Updates the preview thumbnail and text
+            fieldText.GetComponent<Text>().text = currenttext;
+            fieldImage.GetComponent<Image>().sprite = currentimage;
+        }
 
-        //If there is nothing found in the field folder, provide error message
-        if (fields.Count <= 0)
-        {
-            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("FieldNavigation")) gameobject.SetActive(false);
-            GameObject.Find("NoFieldFound").SetActive(true);
-        }
-        else
-        {
-            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("FieldNavigation")) gameobject.SetActive(true);
-            GameObject.Find("NoFieldFound").SetActive(false);
-        }
     }
 
     //Method to render the LoadRobot GUI objects
@@ -133,22 +142,12 @@ public class MainMenu : MonoBehaviour {
         LoadRobot.SetActive(true);
         DefaultPanel.SetActive(false);
 
-        //Updates the preview thumbnail and text
-        GameObject.Find("RobotText").GetComponent<Text>().text = currenttext;
-        GameObject.Find("RobotImage").GetComponent<Image>().sprite = currentimage;
-
-        //If there is nothing found in the robot folder, provide error message
-        if (robots.Count <= 0)
+        if (robots.Count > 0)
         {
-            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("RobotNavigation")) gameobject.SetActive(false);
-            GameObject.Find("NoRobotFound").SetActive(true);
+            //Updates the preview thumbnail and text
+            robotText.GetComponent<Text>().text = currenttext;
+            robotImage.GetComponent<Image>().sprite = currentimage;
         }
-        else
-        {
-            foreach (GameObject gameobject in GameObject.FindGameObjectsWithTag("RobotNavigation")) gameobject.SetActive(true);
-            GameObject.Find("NoRobotFound").SetActive(false);
-        }
-
     }
 
     //Method to render the Graphics Settings GUI objects
@@ -189,27 +188,15 @@ public class MainMenu : MonoBehaviour {
     //Loads the fields arraylist with the folder names and switches the current menu to the loadfield menu.
     public void LoadFieldButtonClicked()
     {
-        fields.Clear();
         currentMenu = Menu.LoadField;
-        string[] folders = System.IO.Directory.GetDirectories(filepath+"\\Fields");
-        foreach (string field in folders)
-        {
-            if (File.Exists(field+"\\definition.bxdf")) fields.Add(new DirectoryInfo(field).Name);
-        }
-        UpdatePreview();
+        UpdateFieldDirectory();
     }
 
     //Loads the robot arraylist with the folder names and switches the current menu to the loadrobot menu.
     public void LoadRobotButtonClicked()
     {
-        robots.Clear();
         currentMenu = Menu.LoadRobot;
-        string[] folders = System.IO.Directory.GetDirectories(filepath + "\\Robots");
-        foreach (string robot in folders)
-        {
-            if (File.Exists(robot + "\\skeleton.bxdj")) robots.Add(new DirectoryInfo(robot).Name);
-        }
-        UpdatePreview();
+        UpdateRobotDirectory();
     }
 
     //Switches the current menu to the settings menu.
@@ -228,17 +215,17 @@ public class MainMenu : MonoBehaviour {
     {
         if (selectedFieldName.Equals("No Field Loaded!") || selectedRobotName.Equals("No Robot Loaded!")) 
         {
-            GameObject.Find("StartButton").GetComponent<Image>().color = Color.red;
-            Text buttontext = GameObject.Find("ReadyText").GetComponent<Text>();
+            startButton.GetComponent<Image>().color = Color.red;
+            Text buttontext = readyText.GetComponent<Text>();
             buttontext.text = ( "Can't start without robot/field loaded!");
             buttontext.fontSize = 12;
         }
-        else GameObject.Find("StartButton").GetComponent<Image>().color = Color.green;
+        else startButton.GetComponent<Image>().color = Color.green;
     }
 
     public void StartButtonExit()
     {
-        Text buttontext = GameObject.Find("ReadyText").GetComponent<Text>();
+        Text buttontext = readyText.GetComponent<Text>();
         buttontext.text = ("START");
         buttontext.fontSize = 30;
     }
@@ -295,44 +282,48 @@ public class MainMenu : MonoBehaviour {
     //Selects the robot, records the filename, and switches to the main menu.
     public void SelectRobotButtonClicked()
     {
-        selectedRobot = (filepath + "//Robots//" + robots[robotindex] + "\\");
-        selectedRobotName = "Robot: " + currenttext;
-        currentMenu = Menu.Main;
+        if (robots.Count > 0)
+        {
+            selectedRobot = (robotDirectory + "\\" + robots[robotindex] + "\\");
+            selectedRobotName = "Robot: " + currenttext;
+            currentMenu = Menu.Main;
+        }
+        else UserMessageManager.Dispatch("No robot in directory!", 2);
     }
 
     //Selects the fields, records the filename, and switches to the main menu.
     public void SelectFieldButtonClicked()
     {
-        selectedField = (filepath + "//Fields//" + fields[fieldindex]+ "\\");
-        selectedFieldImage = currentimage;
-        selectedFieldName = "Field: " + currenttext;
-        currentMenu = Menu.Main;
+        if (fields.Count > 0)
+        {
+            selectedField = (fieldDirectory + "\\" + fields[fieldindex] + "\\");
+            selectedFieldImage = currentimage;
+            selectedFieldName = "Field: " + currenttext;
+            currentMenu = Menu.Main;
+        }
+        else UserMessageManager.Dispatch("No field in directory!",2);
     }
 
-    public void InitCustomField()
+    public void InitFieldBrowser()
     {
         if (fieldBrowser == null)
         {
-            fieldBrowser = new FileBrowser("Load Custom Field", true);
+            fieldBrowser = new FileBrowser("Load Field Directory", true);
             fieldBrowser.Active = true;
             fieldBrowser.OnComplete += (object obj) =>
             {
                 fieldBrowser.Active = true;
                 string fileLocation = (string)obj;
                 // If dir was selected...
-                if (File.Exists(fileLocation + "\\definition.bxdf"))
+                DirectoryInfo directory = new DirectoryInfo(fileLocation);
+                if (directory != null && directory.Exists)
                 {
-                    fileLocation += "\\definition.bxdf";
-                }
-                DirectoryInfo parent = Directory.GetParent(fileLocation);
-                if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\definition.bxdf"))
-                {
-					selectedField = (parent.FullName+"\\");
-                    if (File.Exists(parent.FullName + "\\thumbnail.png")) selectedFieldImage = Sprite.Create(Extensions.LoadPNG(parent.FullName + "\\thumbnail.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
-                    else currentimage = Sprite.Create(Extensions.LoadPNG(Application.dataPath + "\\Resources\\Images\\defaulfield.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
-                    selectedFieldName = "Field: " + parent.Name;
-                    currentMenu = Menu.Main;
+					fieldDirectory = (directory.FullName);
+                    currentMenu = Menu.LoadField;
                     customfieldon = false;
+                    PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
+                    PlayerPrefs.Save();
+                    UpdateFieldDirectory();
                 }
                 else
                 {
@@ -343,35 +334,33 @@ public class MainMenu : MonoBehaviour {
         if (customfieldon) fieldBrowser.Render();
     }
 
-    public void LoadCustomField()
+    public void LoadFieldDirectory()
     {
         if (!fieldBrowser.Active) fieldBrowser.Active = true;
         customfieldon = true;
         currentMenu = Menu.Custom;
     }
 
-    public void InitCustomRobot()
+    public void InitRobotBrowser()
     {
         if (robotBrowser == null)
         {
-            robotBrowser = new FileBrowser("Load Custom Robot", true);
+            robotBrowser = new FileBrowser("Load Field Directory", true);
             robotBrowser.Active = true;
             robotBrowser.OnComplete += (object obj) =>
             {
                 robotBrowser.Active = true;
                 string fileLocation = (string)obj;
                 // If dir was selected...
-                if (File.Exists(fileLocation + "\\skeleton.bxdj"))
+                DirectoryInfo directory = new DirectoryInfo(fileLocation);
+                if (directory != null && directory.Exists)
                 {
-                    fileLocation += "\\skeleton.bxdf";
-                }
-                DirectoryInfo parent = Directory.GetParent(fileLocation);
-                if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
-                {
-                    selectedRobot = (parent.FullName + "\\");
-                    selectedRobotName = "Robot: " + parent.Name;
-                    currentMenu = Menu.Main;
+                    robotDirectory = (directory.FullName);
+                    currentMenu = Menu.LoadRobot;
                     customroboton = false;
+                    PlayerPrefs.SetString("RobotDirectory", robotDirectory);
+                    PlayerPrefs.Save();
+                    UpdateRobotDirectory();
                 }
                 else
                 {
@@ -382,7 +371,7 @@ public class MainMenu : MonoBehaviour {
         if (customroboton) robotBrowser.Render();
     }
 
-    public void LoadCustomRobot()
+    public void LoadRobotDirectory()
     {
         if (!robotBrowser.Active) robotBrowser.Active = true;
         customroboton = true;
@@ -395,14 +384,70 @@ public class MainMenu : MonoBehaviour {
         if (currentMenu == Menu.LoadField)
         {
             currenttext = (string)fields[fieldindex];
-            if (File.Exists(filepath + "\\Fields\\" + fields[fieldindex] + "\\thumbnail.png")) currentimage = Sprite.Create(Extensions.LoadPNG(filepath + "\\Fields\\" + fields[fieldindex] + "\\thumbnail.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
+            if (File.Exists(fieldDirectory + "\\" + fields[fieldindex] + "\\thumbnail.png")) currentimage = Sprite.Create(Extensions.LoadPNG(fieldDirectory + "\\" + fields[fieldindex] + "\\thumbnail.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
             else currentimage = Sprite.Create(Extensions.LoadPNG(Application.dataPath + "\\Resources\\Images\\defaultfield.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
         }
         else
         {
             currenttext = (string)robots[robotindex];
-            if (File.Exists(filepath + "\\Robots\\" + robots[robotindex] + "\\thumbnail.png")) currentimage = Sprite.Create(Extensions.LoadPNG(filepath + "\\Robots\\" + robots[robotindex] + "\\thumbnail.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
+            if (File.Exists(robotDirectory + "\\" + robots[robotindex] + "\\thumbnail.png")) currentimage = Sprite.Create(Extensions.LoadPNG(robotDirectory + "\\" + robots[robotindex] + "\\thumbnail.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
             else currentimage = Sprite.Create(Extensions.LoadPNG(Application.dataPath + "\\Resources\\Images\\defaultrobot.png"), new Rect(0.0f, 0.0f, 1280.0f, 720.0f), new Vector2(0.5f, 0.5f), 1000);
+        }
+    }
+
+    void UpdateFieldDirectory()
+    {
+        fields.Clear();
+        string[] folders = System.IO.Directory.GetDirectories(fieldDirectory);
+        foreach (string field in folders)
+        {
+            if (File.Exists(field + "\\definition.bxdf")) fields.Add(new DirectoryInfo(field).Name);
+        }
+
+        LoadField.SetActive(true);
+        
+        //If there is nothing found in the field folder, provide error message
+        if (fields.Count <= 0)
+        {
+            foreach (GameObject gameobject in fieldNavigation) gameobject.SetActive(false);
+        }
+        else
+        {
+            foreach (GameObject gameobject in fieldNavigation) gameobject.SetActive(true);
+        }
+
+        if (fields.Count > 0)
+        {
+            if (fieldindex >= fields.Count) fieldindex = fields.Count - 1;
+            UpdatePreview();
+        }
+    }
+
+    void UpdateRobotDirectory()
+    {
+        robots.Clear();
+        currentMenu = Menu.LoadRobot;
+        string[] folders = System.IO.Directory.GetDirectories(robotDirectory);
+        foreach (string robot in folders)
+        {
+            if (File.Exists(robot + "\\skeleton.bxdj")) robots.Add(new DirectoryInfo(robot).Name);
+        }
+
+        LoadRobot.SetActive(true);
+        //If there is nothing found in the robot folder, provide error message
+        if (robots.Count <= 0)
+        {
+            foreach (GameObject gameobject in robotNavigation) gameobject.SetActive(false);
+        }
+        else
+        {
+            foreach (GameObject gameobject in robotNavigation) gameobject.SetActive(true);
+        }
+
+        if (robots.Count > 0)
+        {
+            if (robotindex >= robots.Count) robotindex = robots.Count - 1;
+            UpdatePreview();
         }
     }
 
@@ -419,16 +464,44 @@ public class MainMenu : MonoBehaviour {
     }
     #endregion
     void Start () {
-        filepath = Directory.GetParent(Application.dataPath).FullName;
+
+        //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
+        //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
+        Main.SetActive(true);
+        LoadField.SetActive(true);
+        LoadRobot.SetActive(true);
+
+        fieldSelectText = GameObject.Find("FieldSelectText");
+        robotSelectText = GameObject.Find("RobotSelectText");
+        fieldSelectImage = GameObject.Find("FieldSelectImage");
+
+        fieldText = GameObject.Find("FieldText");
+        fieldImage = GameObject.Find("FieldImage");
+        robotText = GameObject.Find("RobotText");
+        robotImage = GameObject.Find("RobotImage");
+
+        startButton = GameObject.Find("StartButton");
+        readyText = GameObject.Find("ReadyText");
+
+        robotNavigation = GameObject.FindGameObjectsWithTag("RobotNavigation");
+        fieldNavigation = GameObject.FindGameObjectsWithTag("FieldNavigation");
+
+        inputConflict = GameObject.Find("InputConflict");
+
         fields = new ArrayList();
         robots = new ArrayList();
 
-        selectedRobotName = "No Robot Loaded!";
-        selectedFieldName = "No Field Loaded!";
+        selectedRobot = PlayerPrefs.GetString("Robot", "No Robot Loaded!");
+        selectedField = PlayerPrefs.GetString("Field", "No Field Loaded!");
+
+        selectedRobotName = "Robot: " + new DirectoryInfo(selectedRobot).Name;
+        selectedFieldName = "Field: " + new DirectoryInfo(selectedField).Name;
+
+        robotDirectory = PlayerPrefs.GetString("RobotDirectory", Directory.GetParent(Application.dataPath).FullName + "//Robots");
+        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", Directory.GetParent(Application.dataPath).FullName + "//Fields");
         customfieldon = false;
         customroboton = false;
 
-        InputConflict = GameObject.Find("InputConflict");
 
         xresolution[0] = 640;
         xresolution[1] = 800;
