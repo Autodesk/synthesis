@@ -65,8 +65,8 @@ public class InputButton : MonoBehaviour
                     isEditing = false;
                     Controls.SaveControls();
 
-                    if (Controls.CheckConflict()) MainMenu.InputConflict.SetActive(true);
-                    else MainMenu.InputConflict.SetActive(false);
+                    if (Controls.CheckConflict()) MainMenu.inputConflict.SetActive(true);
+                    else MainMenu.inputConflict.SetActive(false);
                 }
             }
         }
