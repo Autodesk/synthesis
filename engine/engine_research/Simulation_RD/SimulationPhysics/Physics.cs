@@ -24,15 +24,17 @@ namespace Simulation_RD.SimulationPhysics
         private Action OnUpdate;
                 
         public Physics()
-        {            
+        {
+            DantzigSolver mlcp = new DantzigSolver();
             collisionConf = new SoftBodyRigidBodyCollisionConfiguration();
             dispatcher = new CollisionDispatcher(new DefaultCollisionConfiguration());
             solver = new DefaultSoftBodySolver();
+            ConstraintSolver cSolver = new MlcpSolver(mlcp);
 
             broadphase = new DbvtBroadphase();
-            World = new SoftRigidDynamicsWorld(dispatcher, broadphase, null, collisionConf, solver);
+            World = new SoftRigidDynamicsWorld(dispatcher, broadphase, cSolver, collisionConf, solver);
             
-            World.Gravity = new Vector3(0, -10, 0);
+            World.Gravity = new Vector3(0, -9.81f, 0);
             
             #region old stuff
             ////dynamic Rigid bodies
@@ -116,20 +118,21 @@ namespace Simulation_RD.SimulationPhysics
             }
 
             //Field
-            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2015\");
+            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2014\");
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);
                 collisionShapes.Add(b.CollisionShape);
             }
 
-            World.StepSimulation(0.1f, 10);
+            World.StepSimulation(0.1f, 100);
         }
 
         public virtual void Update(float elapsedTime, KeyboardKeyEventArgs args)
         {
             DriveJoints.UpdateAllMotors(Skeleton, args);
-            World.StepSimulation(elapsedTime, 10);
+            //World.StepSimulation(elapsedTime, 100);
+            World.StepSimulation(elapsedTime, 1000, 1f / 300f);
             OnUpdate?.Invoke();
         }
 
