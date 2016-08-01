@@ -186,7 +186,7 @@ class FileBrowser : OverlayWindow
             if ((fileSelection.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
             {
                 directoryInfo = new DirectoryInfo(directoryLocation);
-                if (directoryInfo.GetDirectories().Length == 0)
+                if (directoryInfo.GetDirectories().Length == 0 && title.Equals("Load Robot"))
                 {
                     directoryInfo = directoryInfo.Parent;
                 }
