@@ -5,12 +5,12 @@ The field exporter is an application used to convert an Autodesk Inventor Assemb
 ##Cloning the repository
 In order to properly clone this repository and its dependencies onto your local machine you need to execute the following commands:
 
-        git clone --recursive https://git.autodesk.com/BXD/Aardvark-Field-Exporter.git
+        git clone --recursive https://github.com/Autodesk/synthesis/edit/master/exporters/field_exporter
         
 OR
 
-       git clone https://git.autodesk.com/BXD/Aardvark-Field-Exporter.git
-       cd Aardvark-Field-Exporter
+       git clone https://github.com/Autodesk/synthesis/edit/master/exporters/field_exporter
+       cd field-exporter
        git submodule update --init --recursive
 
 ##Building the solution
