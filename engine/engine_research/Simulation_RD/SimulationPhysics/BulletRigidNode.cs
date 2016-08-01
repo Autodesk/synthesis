@@ -10,6 +10,8 @@ namespace Simulation_RD.SimulationPhysics
     /// </summary>
     class BulletRigidNode : RigidNode_Base
     {
+        private static int numHinge = 6;
+
         /// <summary>
         /// Defines collision mesh.
         /// </summary>
@@ -26,14 +28,27 @@ namespace Simulation_RD.SimulationPhysics
         /// <param name="FilePath"></param>
         public void CreateRigidBody(string FilePath)
         {
+            CollisionShape shape;
+            WheelDriverMeta wheel = null;
+            DefaultMotionState motion;
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(FilePath);
+            
+            //Is it a wheel?
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false) //Later
+            {
+                shape = new CylinderShapeX(wheel.width, wheel.radius, wheel.radius);
+                //motion = new DefaultMotionState(Matrix4.CreateTranslation(wheel.center.Convert()), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
+                motion = new DefaultMotionState(Matrix4.CreateTranslation(0, 10, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
+            }
 
             //Rigid Body Construction
-            DefaultMotionState motion = new DefaultMotionState(Matrix4.CreateTranslation(-10, 15, 0));
-            motion.CenterOfMassOffset = Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert());
-            CollisionShape shape = GetShape(mesh);
-            
+            else
+            {
+                motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 50, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
+                shape = GetShape(mesh);
+            }
+
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
             info.Friction = 5;
             info.RollingFriction = 5;
@@ -57,6 +72,7 @@ namespace Simulation_RD.SimulationPhysics
                 SoftBody temp = SoftBodyHelpers.CreateFromConvexHull(worldInfo, MeshUtilities.DataToVector(sub.verts));
                 temp.WorldTransform += Matrix4.CreateTranslation(0, 10, 0);
                 BulletObject = temp;
+                temp.Restitution = 0;
             }
         }
 
@@ -74,44 +90,30 @@ namespace Simulation_RD.SimulationPhysics
                     RotationalJoint_Base nodeR = (RotationalJoint_Base)GetSkeletalJoint();
                     CollisionObject parentObject = ((BulletRigidNode)GetParent()).BulletObject;
                     WheelDriverMeta wheel = GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
-                    
-                    Matrix4 locA, locB;
-                    locA = Matrix4.CreateFromQuaternion(new Quaternion(nodeR.axis.Convert(), nodeR.currentAngularPosition))
-                        * Matrix4.CreateTranslation(nodeR.basePoint.Convert()); //- parentObject.WorldTransform.ExtractTranslation());
 
-                    locB = locA * parentObject.WorldTransform * Matrix4.Invert(BulletObject.WorldTransform);
+                    //BasePoint is relative to JOINT!
+                    Matrix4 locJ, locP; //Local Joint Pivot, Local Parent Pivot
+                    locJ = /*Matrix4.CreateScale(BulletObject.WorldTransform.ExtractScale()) * Matrix4.CreateFromQuaternion(BulletObject.WorldTransform.ExtractRotation()) **/ Matrix4.CreateTranslation(nodeR.basePoint.Convert());
 
-                    //HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locA, locB);
-                    //HingeConstraint temp = new HingeConstraint(
-                    //    (RigidBody)BulletObject,
-                    //    (RigidBody)parentObject,
-                    //    nodeR.basePoint.Convert(),
-                    //    nodeR.basePoint.Convert(),
-                    //    nodeR.axis.Convert(),
-                    //    nodeR.axis.Convert()
-                    //    );
+                    locP = locJ  * BulletObject.WorldTransform.Inverted() * parentObject.WorldTransform;
 
-                    Generic6DofConstraint temp = new Generic6DofConstraint(
-                        (RigidBody)BulletObject,
-                        (RigidBody)parentObject,
-                        Matrix4.CreateTranslation(nodeR.basePoint.Convert()) * BulletObject.WorldTransform.Inverted(),
-                        Matrix4.CreateTranslation(nodeR.basePoint.Convert()) * parentObject.WorldTransform.Inverted(),
-                        true
-                        );
+                    HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
 
-                    temp.LinearLowerLimit = Vector3.Zero;
-                    temp.LinearUpperLimit = Vector3.Zero;
-                    temp.AngularLowerLimit = Vector3.One;
-                    temp.AngularUpperLimit = Vector3.Zero;
+                    FixedConstraint tempF = new FixedConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
 
-                    joint = temp;
+                    if (numHinge-- > 0)
+                        joint = temp;
+                    else
+                        joint = tempF;
+
                     if (nodeR.hasAngularLimit)
-                        //temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
+                        temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
-                    //Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 1f); };
+                    Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 1f); };
 
-                    Console.WriteLine("Rotational/Wheel joint made");
+                    Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
+                    
                 default:
                     Console.WriteLine("Received joint of type {0}", GetSkeletalJoint().GetJointType());
                     break;
