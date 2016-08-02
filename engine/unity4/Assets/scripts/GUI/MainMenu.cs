@@ -15,8 +15,6 @@ public class MainMenu : MonoBehaviour {
     public GameObject Input; //The Input GUI Objects
     public GameObject DefaultPanel; //A blank transparent panel
 
-    public custom_inputs InputManager;
-
     private GameObject fieldSelectText;
     private GameObject robotSelectText;
     private GameObject fieldSelectImage;
@@ -473,11 +471,12 @@ public class MainMenu : MonoBehaviour {
         Main.SetActive(true);
         LoadField.SetActive(true);
         LoadRobot.SetActive(true);
+        Input.SetActive(true);
 
         fieldSelectText = GameObject.Find("FieldSelectText");
         robotSelectText = GameObject.Find("RobotSelectText");
         fieldSelectImage = GameObject.Find("FieldSelectImage");
-
+        
         fieldText = GameObject.Find("FieldText");
         fieldImage = GameObject.Find("FieldImage");
         robotText = GameObject.Find("RobotText");
