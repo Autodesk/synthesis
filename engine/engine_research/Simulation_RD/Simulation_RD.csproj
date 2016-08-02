@@ -88,7 +88,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BXDConversions.cs" />
+    <Compile Include="Extensions\AuxFunctions.cs" />
+    <Compile Include="Extensions\BXDConversions.cs" />
     <Compile Include="GameFeatures\Controls.cs" />
     <Compile Include="GameFeatures\DriveJoints.cs" />
     <Compile Include="Graphics\Camera.cs" />
