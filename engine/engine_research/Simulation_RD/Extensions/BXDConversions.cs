@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BulletSharp;
 using OpenTK;
 
-namespace Simulation_RD
+namespace Simulation_RD.Extensions
 {
     public static class BXDConversions
     {

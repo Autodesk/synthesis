@@ -2,6 +2,7 @@
 using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
+using Simulation_RD.Extensions;
 
 namespace Simulation_RD.SimulationPhysics
 {
@@ -45,13 +46,13 @@ namespace Simulation_RD.SimulationPhysics
             //Rigid Body Construction
             else
             {
-                motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 50, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
+                //Current quick fix: scale by 1/4. Please find a better solution.
+                motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 500, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
                 shape = GetShape(mesh);
             }
-
+            mesh.physics.mass *= 5;
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
-            info.Friction = 5;
-            info.RollingFriction = 5;
+            
             BulletObject = new RigidBody(info);
         }
 
@@ -66,7 +67,6 @@ namespace Simulation_RD.SimulationPhysics
             mesh.ReadFromFile(filePath);
             
             //Soft body construction
-            //BulletObject = new SoftBody(worldInfo);
             foreach(BXDAMesh.BXDASubMesh sub in mesh.colliders)
             {
                 SoftBody temp = SoftBodyHelpers.CreateFromConvexHull(worldInfo, MeshUtilities.DataToVector(sub.verts));
@@ -81,7 +81,7 @@ namespace Simulation_RD.SimulationPhysics
         /// </summary>
         public void CreateJoint()
         {
-            if (joint != null || GetSkeletalJoint() == null)
+            if (joint != null || GetSkeletalJoint() == null) // can't have that
                 return;
             
             switch (GetSkeletalJoint().GetJointType())
@@ -91,25 +91,26 @@ namespace Simulation_RD.SimulationPhysics
                     CollisionObject parentObject = ((BulletRigidNode)GetParent()).BulletObject;
                     WheelDriverMeta wheel = GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
 
-                    //BasePoint is relative to JOINT!
+                    //BasePoint is relative to the child object
                     Matrix4 locJ, locP; //Local Joint Pivot, Local Parent Pivot
-                    locJ = /*Matrix4.CreateScale(BulletObject.WorldTransform.ExtractScale()) * Matrix4.CreateFromQuaternion(BulletObject.WorldTransform.ExtractRotation()) **/ Matrix4.CreateTranslation(nodeR.basePoint.Convert());
+                    locJ = Matrix4.CreateTranslation(nodeR.basePoint.Convert());
 
                     locP = locJ  * BulletObject.WorldTransform.Inverted() * parentObject.WorldTransform;
 
                     HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
-
+                    
                     FixedConstraint tempF = new FixedConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
 
-                    if (numHinge-- > 0)
+                    //if (numHinge-- > 0)
                         joint = temp;
-                    else
-                        joint = tempF;
-
+                   //else
+                        //joint = tempF;
+                        
                     if (nodeR.hasAngularLimit)
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
-                    Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 1f); };
+                    //also need to find a less screwy way to do this
+                    Update = (f) => { if (f == 0) return; temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 10f); };
 
                     Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
@@ -120,6 +121,11 @@ namespace Simulation_RD.SimulationPhysics
             }            
         }
 
+        /// <summary>
+        /// Turns a BXDA mesh into a CompoundShape
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         private static CompoundShape GetShape(BXDAMesh mesh)
         {
             CompoundShape shape = new CompoundShape();

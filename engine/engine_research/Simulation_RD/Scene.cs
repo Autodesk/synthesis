@@ -127,122 +127,10 @@ namespace Simulation_RD
 
             //Comment this out when actual graphics work
             phys.World.DebugDrawWorld();
-
-            #region Old Stuff
-            //phys.World.DebugDrawWorld();
-            //foreach (RigidBody body in phys.World.CollisionObjectArray)
-            //{
-            //    Matrix4 modelLookAt = body.MotionState.WorldTransform * lookat;
-            //    GL.LoadMatrix(ref modelLookAt);
-
-            //    if ("Ground".Equals(body.UserObject))
-            //    {
-            //        DrawCube(Color.DarkGray, 50.0f);
-            //        continue;
-            //    }
-            //    if (body.ActivationState == ActivationState.ActiveTag)
-            //        DrawCube2(Color.LightCyan);
-            //    else
-            //        DrawCube2(Color.White);
-            //}
-            #endregion
-
-            //UninitCube();
-
+                        
             SwapBuffers();
         }
-
-        #region Old Stuff
-        private void DrawCube(Color color, float size)
-        {
-            GL.Begin(PrimitiveType.Quads);
-
-            GL.Color3(color);
-            GL.Vertex3(-size, -size, -size);
-            GL.Vertex3(-size, size, -size);
-            GL.Vertex3(size, size, -size);
-            GL.Vertex3(size, -size, -size);
-
-            GL.Vertex3(-size, -size, -size);
-            GL.Vertex3(size, -size, -size);
-            GL.Vertex3(size, -size, size);
-            GL.Vertex3(-size, -size, size);
-
-            GL.Vertex3(-size, -size, -size);
-            GL.Vertex3(-size, -size, size);
-            GL.Vertex3(-size, size, size);
-            GL.Vertex3(-size, size, -size);
-
-            GL.Vertex3(-size, -size, size);
-            GL.Vertex3(size, -size, size);
-            GL.Vertex3(size, size, size);
-            GL.Vertex3(-size, size, size);
-
-            GL.Vertex3(-size, size, -size);
-            GL.Vertex3(-size, size, size);
-            GL.Vertex3(size, size, size);
-            GL.Vertex3(size, size, -size);
-
-            GL.Vertex3(size, -size, -size);
-            GL.Vertex3(size, size, -size);
-            GL.Vertex3(size, size, size);
-            GL.Vertex3(size, -size, size);
-
-            GL.End();
-        }
-
-        private void drawTriangles(BulletTriangle[] triangles)
-        {
-
-            GL.Begin(PrimitiveType.Triangles);
-
-            GL.Color3(Color.DeepPink);
-
-
-        }
-
-        float[] vertices = new float[] {1,1,1,  -1,1,1,  -1,-1,1,  1,-1,1,
-            1,1,1,  1,-1,1,  1,-1,-1,  1,1,-1,
-            1,1,1,  1,1,-1,  -1,1,-1,  -1,1,1,
-            -1,1,1,  -1,1,-1,  -1,-1,-1,  -1,-1,1,
-            -1,-1,-1,  1,-1,-1,  1,-1,1,  -1,-1,1,
-            1,-1,-1,  -1,-1,-1,  -1,1,-1,  1,1,-1};
-
-        float[] normals = new float[] {0,0,1,  0,0,1,  0,0,1,  0,0,1,
-            1,0,0,  1,0,0,  1,0,0, 1,0,0,
-            0,1,0,  0,1,0,  0,1,0, 0,1,0,
-            -1,0,0,  -1,0,0, -1,0,0,  -1,0,0,
-            0,-1,0,  0,-1,0,  0,-1,0,  0,-1,0,
-            0,0,-1,  0,0,-1,  0,0,-1,  0,0,-1};
-
-        byte[] indices = {0,1,2,3,
-            4,5,6,7,
-            8,9,10,11,
-            12,13,14,15,
-            16,17,18,19,
-            20,21,22,23};
-
-        void InitCube()
-        {
-            GL.EnableClientState(ArrayCap.NormalArray);
-            GL.EnableClientState(ArrayCap.VertexArray);
-            GL.NormalPointer(NormalPointerType.Float, 0, normals);
-            GL.VertexPointer(3, VertexPointerType.Float, 0, vertices);
-        }
-
-        void UninitCube()
-        {
-            GL.DisableClientState(ArrayCap.VertexArray);
-            GL.DisableClientState(ArrayCap.NormalArray);
-        }
-
-        void DrawCube2(Color color)
-        {
-            GL.Color3(color);
-            GL.DrawElements(PrimitiveType.Quads, 24, DrawElementsType.UnsignedByte, indices);
-        }
-        #endregion
-        
+  
         /// <summary>
         /// Rotates camera based on mouse
         /// </summary>
@@ -291,7 +179,7 @@ namespace Simulation_RD
                     drawMode = ((drawMode - PolygonMode.Point) + 1) % 3 + PolygonMode.Point;
                     break;
                 case Key.Escape:
-                    this.Close();
+                    Close();
                     break;
                 default:
                     break;
