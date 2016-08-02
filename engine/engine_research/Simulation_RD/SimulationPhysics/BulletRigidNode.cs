@@ -36,23 +36,24 @@ namespace Simulation_RD.SimulationPhysics
             mesh.ReadFromFile(FilePath);
             
             //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false) //Later
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null) //Later
             {
                 shape = new CylinderShapeX(wheel.width, wheel.radius, wheel.radius);
-                //motion = new DefaultMotionState(Matrix4.CreateTranslation(wheel.center.Convert()), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
-                motion = new DefaultMotionState(Matrix4.CreateTranslation(0, 10, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
             }
 
             //Rigid Body Construction
             else
             {
-                //Current quick fix: scale by 1/4. Please find a better solution.
-                motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 500, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
                 shape = GetShape(mesh);
             }
+
+            //Current quick fix: scale by 1/4. Please find a better solution.
+            motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 200, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
             mesh.physics.mass *= 5;
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
-            
+            info.Friction = 10;
+            info.RollingFriction = 10;
+
             BulletObject = new RigidBody(info);
         }
 
@@ -93,24 +94,18 @@ namespace Simulation_RD.SimulationPhysics
 
                     //BasePoint is relative to the child object
                     Matrix4 locJ, locP; //Local Joint Pivot, Local Parent Pivot
-                    locJ = Matrix4.CreateTranslation(nodeR.basePoint.Convert());
 
+                    locJ = Matrix4.CreateTranslation(nodeR.basePoint.Convert());
                     locP = locJ  * BulletObject.WorldTransform.Inverted() * parentObject.WorldTransform;
 
                     HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
-                    
-                    FixedConstraint tempF = new FixedConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
-
-                    //if (numHinge-- > 0)
-                        joint = temp;
-                   //else
-                        //joint = tempF;
+                    joint = temp;
                         
                     if (nodeR.hasAngularLimit)
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
                     //also need to find a less screwy way to do this
-                    Update = (f) => { if (f == 0) return; temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 10f); };
+                    Update = (f) => { if (f == 0) return; temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 2.5f); };
 
                     Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;

@@ -3,6 +3,9 @@ using System;
 
 namespace Simulation_RD.Graphics
 {
+    /// <summary>
+    /// All the different ways the camera can move
+    /// </summary>
     enum Camera_Movement
     {
         forward, 
@@ -28,6 +31,17 @@ namespace Simulation_RD.Graphics
         Vector3 Right;
         Vector3 WorldUp;
 
+        /// <summary>
+        /// Creates a camera at the explained position
+        /// </summary>
+        /// <param name="posX">X world location</param>
+        /// <param name="posY">Y world location</param>
+        /// <param name="posZ">Z world location</param>
+        /// <param name="upX">idk</param>
+        /// <param name="upY">idk</param>
+        /// <param name="upZ">idk</param>
+        /// <param name="yaw">rotation</param>
+        /// <param name="pitch">rotation</param>
         public Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
         {
             this.Position = new Vector3(posX, posY, posZ);
@@ -89,6 +103,10 @@ namespace Simulation_RD.Graphics
             this.UpdateCameraVectors();
         }
 
+        /// <summary>
+        /// zooms the camera (does not work?)
+        /// </summary>
+        /// <param name="yoffset"></param>
         public void ProcessMouseScroll(float yoffset)
         {
             if (this.Zoom >= 1.0f && this.Zoom <= 45.0f)

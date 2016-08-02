@@ -23,6 +23,9 @@ namespace Simulation_RD.SimulationPhysics
         /// </summary>
         public List<RigidBody> Bodies;
 
+        /// <summary>
+        /// More detailed meshes for drawing
+        /// </summary>
         public List<Mesh> VisualMeshes;
 
         private void CreateMesh(string filePath)
