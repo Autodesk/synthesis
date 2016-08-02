@@ -1,19 +1,22 @@
 ﻿using Inventor;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BxDFieldExporter
 {
     public enum ColliderType { Sphere, Box, Mesh };
     public class FieldDataType
     {
+        public ArrayList compOcc;
         public ColliderType colliderType;
-        BrowserFolder folder;
+        public BrowserNodeDefinition node;
         public double X;
         public double Y;
         public double Z;
@@ -21,9 +24,12 @@ namespace BxDFieldExporter
         public double Friction;
         public bool Dynamic;
         public double Mass;
-        public FieldDataType(BrowserFolder f)
+        public String Name;
+        public FieldDataType(BrowserNodeDefinition f)
         {
-            folder = f;
+            compOcc = new ArrayList();
+            Name = f.Label;
+            node = f;
             colliderType = ColliderType.Box;
             X = 1;
             Y = 1;
@@ -32,6 +38,7 @@ namespace BxDFieldExporter
             Friction = 50;
             Dynamic = false;
             Mass = 0;
+            
         }
         public void copyToNewType(FieldDataType f)
         {
@@ -44,9 +51,9 @@ namespace BxDFieldExporter
             f.Dynamic = this.Dynamic;
             f.Mass = this.Mass;
         }
-        public bool same(BrowserFolder f)
+        public bool same(BrowserNodeDefinition f)
         {
-            if (f.Equals(folder))
+            if (f.Label.Equals(node.Label))
             {
                 return true;
             } else

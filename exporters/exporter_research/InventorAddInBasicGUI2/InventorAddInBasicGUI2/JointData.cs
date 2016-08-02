@@ -102,5 +102,16 @@ namespace InventorAddInBasicGUI2
                 return false;
             }
         }
+        public bool same(BrowserNodeDefinition f)
+        {
+            if (f.Label.Equals(Name))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
