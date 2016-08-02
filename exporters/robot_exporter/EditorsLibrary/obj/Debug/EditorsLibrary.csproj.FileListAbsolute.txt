@@ -1,0 +1,17 @@
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.csprojResolveAssemblyReference.cache
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.csproj.ResolveComReference.cache
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.AboutDialog.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.BXDAEditorForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.BXDAEditorPane.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.EditLimits.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.EditSensorForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\DriveChooser.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.ExporterSettingsForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.JointEditorPane.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.JointGroupNameEditorForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.ParametersEditor.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.Properties.Resources.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.SensorListForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.RobotViewer.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.ViewerSettingsForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\EditorsLibrary\obj\Debug\EditorsLibrary.csproj.GenerateResource.Cache

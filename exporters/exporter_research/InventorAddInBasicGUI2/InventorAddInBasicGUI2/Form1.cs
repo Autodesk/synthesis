@@ -433,104 +433,121 @@ namespace InventorAddInBasicGUI2
         }
         public void readFromData(JointData j)
         {
-            joint = j;
-            if (j.Wheel == WheelType.Normal)
+            try
             {
-                this.cmbWheelType.SelectedIndex = 1;
-                cmbFrictionLevel.Show();
-            } else if (j.Wheel == WheelType.Omni)
+                joint = j;
+                if (j.Wheel == WheelType.Normal)
+                {
+                    this.cmbWheelType.SelectedIndex = 1;
+                    cmbFrictionLevel.Show();
+                }
+                else if (j.Wheel == WheelType.Omni)
+                {
+                    this.cmbWheelType.SelectedIndex = 2;
+                    cmbFrictionLevel.Show();
+                }
+                else if (j.Wheel == WheelType.Mecanum)
+                {
+                    this.cmbWheelType.SelectedIndex = 3;
+                    cmbFrictionLevel.Show();
+                }
+                else
+                {
+                    this.cmbWheelType.SelectedIndex = 0;
+                    cmbFrictionLevel.Hide();
+                }
+
+                if (j.Friction == FrictionLevel.Low)
+                {
+                    this.cmbFrictionLevel.SelectedIndex = 0;
+                }
+                else if (j.Friction == FrictionLevel.High)
+                {
+                    this.cmbFrictionLevel.SelectedIndex = 2;
+                }
+                else
+                {
+                    this.cmbFrictionLevel.SelectedIndex = 1;
+                }
+                if (j.Diameter == InternalDiameter.One)
+                {
+                    this.cmbPneumaticDiameter.SelectedItem = "1 in";
+                }
+                else if (j.Diameter == InternalDiameter.PointTwoFive)
+                {
+                    this.cmbPneumaticDiameter.SelectedItem = ".25 in";
+                }
+                else
+                {
+                    this.cmbPneumaticDiameter.SelectedItem = ".5 in";
+                }
+
+                if (j.Pressure == Pressure.psi10)
+                {
+                    this.cmbPneumaticPressure.SelectedItem = "10 psi";
+                }
+                else if (j.Pressure == Pressure.psi20)
+                {
+                    this.cmbPneumaticPressure.SelectedItem = "20 psi";
+                }
+                else
+                {
+                    this.cmbPneumaticPressure.SelectedItem = "60 psi";
+                }
+
+                if (j.Stages == Stages.CascadingStageOne)
+                {
+                    this.cmbStages.SelectedIndex = 1;
+                }
+                else if (j.Stages == Stages.CascadingStageTwo)
+                {
+                    this.cmbStages.SelectedIndex = 2;
+                }
+                else if (j.Stages == Stages.ContinuousStage1)
+                {
+                    this.cmbStages.SelectedIndex = 3;
+                }
+                else if (j.Stages == Stages.ContinuousStage2)
+                {
+                    this.cmbStages.SelectedIndex = 4;
+                }
+                else
+                {
+                    this.cmbStages.SelectedIndex = 0;
+                }
+
+                this.PWM1txtPort.Value = (decimal)j.PWMport;
+
+                this.PWM2txtPort.Value = (decimal)j.PWMport2;
+
+                this.CANtxtPort1.Value = (decimal)j.CANport;
+
+                this.CANtxtPort2.Value = (decimal)j.CANport2;
+
+                chkBoxDriveWheel.Checked = j.DriveWheel;
+
+                rbPWM.Checked = j.PWM;
+                rbCAN.Checked = !j.PWM;
+
+                txtGearRationNum.Text = j.InputGear.ToString();
+
+                txtGearRationDenom.Text = j.OutputGear.ToString();
+
+                Solenoid1txtPort.Value = (decimal)j.SolenoidPortA;
+
+                Solenoid2txtPort.Value = (decimal)j.SolenoidPortB;
+
+                RelaytxtPort.Value = (decimal)j.RelayPort;
+
+                chkBoxHasBrake.Checked = j.HasBrake;
+
+                brakePortA.Value = (decimal)j.BrakePortA;
+
+                brakePortB.Value = (decimal)j.BrakePortB;
+            }catch(Exception e)
             {
-                this.cmbWheelType.SelectedIndex = 2;
-                cmbFrictionLevel.Show();
-            } else if (j.Wheel == WheelType.Mecanum)
-            {
-                this.cmbWheelType.SelectedIndex = 3;
-                cmbFrictionLevel.Show();
-            } else
-            {
-                this.cmbWheelType.SelectedIndex = 0;
-                cmbFrictionLevel.Hide();
+                MessageBox.Show(e.ToString());
             }
-
-            if(j.Friction == FrictionLevel.Low)
-            {
-                this.cmbFrictionLevel.SelectedIndex = 0;
-            } 
-            else if(j.Friction == FrictionLevel.High)
-            {
-                this.cmbFrictionLevel.SelectedIndex = 2;
-            } else
-            {
-                this.cmbFrictionLevel.SelectedIndex = 1;
-            }
-
-            if(j.Diameter == InternalDiameter.One)
-            {
-                this.cmbPneumaticDiameter.SelectedItem = "1 in";
-            } else if(j.Diameter == InternalDiameter.PointTwoFive)
-            {
-                this.cmbPneumaticDiameter.SelectedItem = ".25 in";
-            } else
-            {
-                this.cmbPneumaticDiameter.SelectedItem = ".5 in";
-            }
-
-            if(j.Pressure == Pressure.psi10)
-            {
-                this.cmbPneumaticPressure.SelectedItem = "10 psi";
-            } else if(j.Pressure == Pressure.psi20)
-            {
-                this.cmbPneumaticPressure.SelectedItem = "20 psi";
-            } else
-            {
-                this.cmbPneumaticPressure.SelectedItem = "60 psi";
-            }
-
-            if(j.Stages == Stages.CascadingStageOne)
-            {
-                this.cmbStages.SelectedIndex = 1;
-            } else if (j.Stages == Stages.CascadingStageTwo)
-            {
-                this.cmbStages.SelectedIndex = 2;
-            } else if(j.Stages == Stages.ContinuousStage1)
-            {
-                this.cmbStages.SelectedIndex = 3;
-            } else if (j.Stages == Stages.ContinuousStage2)
-            {
-                this.cmbStages.SelectedIndex = 4;
-            } else
-            {
-                this.cmbStages.SelectedIndex = 0;
-            }
-
-            this.PWM1txtPort.Value = (decimal) j.PWMport;
-
-            this.PWM2txtPort.Value = (decimal) j.PWMport2;
-
-            this.CANtxtPort1.Value = (decimal) j.CANport;
-
-            this.CANtxtPort2.Value = (decimal) j.CANport2;
-            
-            chkBoxDriveWheel.Checked = j.DriveWheel;
-
-            rbPWM.Checked = j.PWM;
-            rbCAN.Checked = !j.PWM;
-
-            txtGearRationNum.Text = j.InputGear.ToString();
-
-            txtGearRationDenom.Text = j.OutputGear.ToString();
-
-            Solenoid1txtPort.Value = (decimal) j.SolenoidPortA;
-
-            Solenoid2txtPort.Value = (decimal) j.SolenoidPortB;
-
-            RelaytxtPort.Value = (decimal) j.RelayPort;
-            
-            chkBoxHasBrake.Checked = j.HasBrake;
-
-            brakePortA.Value = (decimal) j.BrakePortA;
-
-            brakePortB.Value = (decimal) j.BrakePortB;
         }
     }
 }
