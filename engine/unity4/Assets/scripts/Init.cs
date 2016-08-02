@@ -605,9 +605,9 @@ public class Init : MonoBehaviour
 		Light lightComponent = light.AddComponent<Light> ();
 		lightComponent.type = LightType.Spot;
 		lightComponent.intensity = 1.5f;
-		lightComponent.range = 30f;
+		lightComponent.range = 100f;
 		lightComponent.spotAngle = 135;
-		light.transform.position = new Vector3 (0f, 10f, 0f);
+		light.transform.position = new Vector3 (0f, 30f, 0f);
 		light.transform.Rotate (90f, 0f, 0f);
 
 		chuteMaterial = new PhysicMaterial("chuteMaterial");

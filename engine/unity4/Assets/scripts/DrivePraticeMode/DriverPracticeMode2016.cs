@@ -21,7 +21,7 @@ public partial class DriverPracticeMode : MonoBehaviour {
         interactors[3].collisionKeyword = "123";
 
         gameType = 2016;
-        holdingLimit = 1; //Rules only allow one ball to be held at a time.
+        holdingLimit = 4; //Rules only allow one ball to be held at a time.
         
     }
 
@@ -39,10 +39,21 @@ public partial class DriverPracticeMode : MonoBehaviour {
     public void InitSota2016()
     {
         interactorObjects = new GameObject[4];
-        interactorObjects[0] = GameObject.Find("node_7.bxda");
+        interactorObjects[0] = GameObject.Find("node_1.bxda");
         interactorObjects[1] = GameObject.Find("node_0.bxda"); //SOTAbots shoot from the center of their robot, so we just set the main rigidnode as the ball shooter interactor.
-        interactorObjects[2] = GameObject.Find("node_7.bxda");
-        interactorObjects[3] = GameObject.Find("node_8.bxda");
+        interactorObjects[2] = GameObject.Find("node_0.bxda");
+        interactorObjects[3] = GameObject.Find("node_0.bxda");
+
+        Init2016();
+    }
+
+    public void InitSimbotics2012()
+    {
+        interactorObjects = new GameObject[4];
+        interactorObjects[0] = GameObject.Find("node_1.bxda");
+        interactorObjects[1] = GameObject.Find("node_0.bxda"); //SOTAbots shoot from the center of their robot, so we just set the main rigidnode as the ball shooter interactor.
+        interactorObjects[2] = GameObject.Find("node_0.bxda");
+        interactorObjects[3] = GameObject.Find("node_0.bxda");
 
         Init2016();
     }
@@ -53,18 +64,24 @@ public partial class DriverPracticeMode : MonoBehaviour {
     /// </summary>
     private void IntakeBall2016()
     {
-        if (ObjectsHeld.Count == 0 && interactors[0].getDetected())
+        if (ObjectsHeld.Count < holdingLimit && interactors[0].getDetected())
         {
+            for (int i = 0; i < ObjectsHeld.Count; i++) if (ObjectsHeld[i].Equals(interactors[0].getObject())) return;
             //The code iterates through every single collider of the robot to ignore collisions with them and the ball.
             ObjectsHeld.Add(interactors[0].getObject());
+            GameObject newObject = interactors[0].getObject();
             GameObject child;
             for (int i = 0; i < transform.childCount; i++)
             {
                 for (int j = 0; j < transform.GetChild(i).childCount; j++)
                 {
                     child = transform.GetChild(i).GetChild(j).gameObject;
-                    if (child.name.Contains("ollider")) Physics.IgnoreCollision(child.collider, (ObjectsHeld[0]).collider, true);
+                    if (child.name.Contains("ollider")) Physics.IgnoreCollision(child.collider, newObject.collider, true);
                 }
+            }
+            for (int i = 0; i < ObjectsHeld.Count-1; i++)
+            {
+                Physics.IgnoreCollision(newObject.collider, ObjectsHeld[i].collider, true);
             }
         }
     }
@@ -76,9 +93,12 @@ public partial class DriverPracticeMode : MonoBehaviour {
     {
         if (ObjectsHeld.Count > 0)
         {
-            Vector3 offset = new Vector3(-0.28f, 0.1f, -0.5f);
-            ObjectsHeld[0].rigidbody.velocity = interactorObjects[1].rigidbody.velocity;
-            ObjectsHeld[0].rigidbody.position = interactorObjects[1].rigidbody.position + (interactorObjects[1].rigidbody.rotation * offset);
+            Vector3 offset = new Vector3(0f, 0.2f, 0.3f);
+            for (int i = 0; i < ObjectsHeld.Count; i++)
+            {
+                ObjectsHeld[i].rigidbody.velocity = interactorObjects[1].rigidbody.velocity;
+                ObjectsHeld[i].rigidbody.position = interactorObjects[1].rigidbody.position + (interactorObjects[1].rigidbody.rotation * offset);
+            }
         }
     }
 
@@ -98,19 +118,35 @@ public partial class DriverPracticeMode : MonoBehaviour {
     /// <summary>
     /// Runs every 'step' that the physics simulation runs in to 
     /// </summary>
-    void Update2016 () {
+    void FixedUpdate2016 () {
 
+        
+
+
+        HoldBall2016();
         //Rolling a ball in
         if (Input.GetKey(KeyCode.Space))
             IntakeBall2016();
 
-        HoldBall2016();
+        if (Input.GetKey(KeyCode.Q))
+        {
+            GameObject ball = (GameObject)Instantiate(GameObject.Find("GE-16180_1279"), Vector3.zero,Quaternion.identity);
+            ball.AddComponent<Rainbow>();
+        }
 
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            GameObject.Find("node_0.bxda").AddComponent<Rainbow>();
+            GameObject.Find("node_1.bxda").AddComponent<Rainbow>();
+        }
+    }
+
+    void Update2016()
+    {
         //Shooting a ball
-        if (Input.GetKey(KeyCode.RightShift))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             ShootBall2016();
         }
-        Debug.Log(ObjectsHeld.Count);
     }
 }

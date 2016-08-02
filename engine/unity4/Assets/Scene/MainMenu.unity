@@ -3518,6 +3518,7 @@ MonoBehaviour:
   Graphics: {fileID: 904857431}
   Input: {fileID: 863255458}
   DefaultPanel: {fileID: 1566764244}
+  InputManager: {fileID: 0}
 --- !u!114 &860403446
 MonoBehaviour:
   m_ObjectHideFlags: 0
