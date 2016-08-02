@@ -36,7 +36,7 @@ namespace Simulation_RD.SimulationPhysics
             mesh.ReadFromFile(FilePath);
             
             //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null) //Later
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false) //Later
             {
                 shape = new CylinderShapeX(wheel.width, wheel.radius, wheel.radius);
             }
@@ -48,7 +48,7 @@ namespace Simulation_RD.SimulationPhysics
             }
 
             //Current quick fix: scale by 1/4. Please find a better solution.
-            motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 200, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
+            motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 50, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
             mesh.physics.mass *= 5;
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
             info.Friction = 10;
@@ -105,7 +105,7 @@ namespace Simulation_RD.SimulationPhysics
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
                     //also need to find a less screwy way to do this
-                    Update = (f) => { if (f == 0) return; temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 2.5f); };
+                    Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 1000f); };
 
                     Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
