@@ -1,0 +1,8 @@
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\bin\Debug\Inventor_Exporter.exe.config
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\obj\Debug\Inventor_Exporter.csprojResolveAssemblyReference.cache
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\obj\Debug\NodeEditorPane.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\obj\Debug\SynthesisGUI.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\obj\Debug\ExporterForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\obj\Debug\InventorChooserPane.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\obj\Debug\EditorsLibrary.SensorListForm.resources
+C:\Users\t_hics\Documents\GitHub\synthesis\exporters\robot_exporter\JointResolver\obj\Debug\Inventor_Exporter.csproj.GenerateResource.Cache

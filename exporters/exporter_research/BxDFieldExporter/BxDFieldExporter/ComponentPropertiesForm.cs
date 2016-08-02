@@ -87,28 +87,36 @@ namespace BxDFieldExporter
         }
         public void readFromData(FieldDataType d)
         {
-            field = d;
-            if (field.colliderType == ColliderType.Sphere)
+            try
             {
-                colliderTypeCombobox.SelectedIndex = 1;
-            } else if (field.colliderType == ColliderType.Mesh)
+                field = d;
+                if (field.colliderType == ColliderType.Sphere)
+                {
+                    colliderTypeCombobox.SelectedIndex = 1;
+                }
+                else if (field.colliderType == ColliderType.Mesh)
+                {
+                    colliderTypeCombobox.SelectedIndex = 2;
+                }
+                else
+                {
+                    colliderTypeCombobox.SelectedIndex = 0;
+                }
+                if (field.Dynamic)
+                {
+                    dynamicGroupBox.Enabled = true;
+                }
+                else
+                {
+                    dynamicGroupBox.Enabled = false;
+                    massNumericUpDown.Value = 0;
+                }
+                frictionTrackBar.Value = (int)field.Friction;
+                massNumericUpDown.Value = (decimal)field.Mass;
+            }catch(Exception e)
             {
-                colliderTypeCombobox.SelectedIndex = 2;
-            } else
-            {
-                colliderTypeCombobox.SelectedIndex = 0;
+                MessageBox.Show(e.ToString());
             }
-            if (field.Dynamic)
-            {
-                dynamicGroupBox.Enabled = true;
-            }
-            else
-            {
-                dynamicGroupBox.Enabled = false;
-                massNumericUpDown.Value = 0;
-            }
-            frictionTrackBar.Value = (int) field.Friction;
-            massNumericUpDown.Value = (decimal)field.Mass;
         }
     }
 }

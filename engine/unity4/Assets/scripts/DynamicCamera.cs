@@ -126,7 +126,7 @@ public class DynamicCamera : MonoBehaviour
 				{
 					targetVector = auxFunctions.TotalCenterOfMass(robot);
 
-					if (Input.GetMouseButton(0))
+					if (Input.GetMouseButton(1))
 					{
 						cameraAngle = Mathf.Max(Mathf.Min (cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
 						panValue = -Input.GetAxis ("Mouse X") / 5f;
@@ -135,7 +135,7 @@ public class DynamicCamera : MonoBehaviour
 					{
 						panValue = 0f;
 
-						if (Input.GetMouseButton(1))
+						if (Input.GetMouseButton(0))
 						{
 							magnification = Mathf.Max (Mathf.Min (magnification - ((Input.GetAxis ("Mouse Y") / 5f) * magnification), 12f), 0.1f);
 						}
