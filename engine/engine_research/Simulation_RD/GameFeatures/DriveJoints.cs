@@ -18,7 +18,7 @@ namespace Simulation_RD.GameFeatures
         /// </summary>
         /// <param name="skeleton">robot</param>
         /// <param name="e">keyboard args</param>
-        public static void UpdateAllMotors(RigidNode_Base skeleton /*spooky*/, KeyboardKeyEventArgs e)
+        public static void UpdateAllMotors(RigidNode_Base skeleton, KeyboardKeyEventArgs e)
         {
             float[] pwm = new float[5];
 

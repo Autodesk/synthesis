@@ -14,6 +14,7 @@ namespace Simulation_RD.SimulationPhysics
     class Physics
     {
         public SoftRigidDynamicsWorld World { get; set; }
+        public KeyboardKeyEventArgs cachedArgs = new KeyboardKeyEventArgs();
         CollisionDispatcher dispatcher;
         DbvtBroadphase broadphase;
         List<CollisionShape> collisionShapes = new List<CollisionShape>();
@@ -23,6 +24,9 @@ namespace Simulation_RD.SimulationPhysics
         public BulletRigidNode Skeleton; //3spooky5me
         private Action OnUpdate;
                 
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public Physics()
         {
             DantzigSolver mlcp = new DantzigSolver();
@@ -35,70 +39,7 @@ namespace Simulation_RD.SimulationPhysics
             World = new SoftRigidDynamicsWorld(dispatcher, broadphase, cSolver, collisionConf, solver);
             
             World.Gravity = new Vector3(0, -9.81f, 0);
-            
-            #region old stuff
-            ////dynamic Rigid bodies
-            //const float mass = 1.0f;
-            //const float mass_s = 100.0f;
-
-            //CollisionShape collShape = new BoxShape(1);
-            //collisionShapes.Add(collShape);
-            //Vector3 localInertia = collShape.CalculateLocalInertia(mass);
-
-            //var rbInfo = new RigidBodyConstructionInfo(mass, null, collShape, localInertia);
-
-            //const float start_x = StartPosX - ArraySizeX / 2;
-            //const float start_y = StartPosY;
-            //const float start_z = StartPosZ - ArraySizeZ / 2;
-
-            //int x, y, z;
-            //for (y = 0; y < ArraySizeY; y++)
-            //{
-            //    for (x = 0; x < ArraySizeX; x++)
-            //    {
-            //        for (z = 0; z < ArraySizeZ; z++)
-            //        {
-            //            Matrix4 startTransform = Matrix4.CreateTranslation(
-            //                new Vector3(
-            //                    2 * x + start_x,
-            //                    2 * y + start_y,
-            //                    2 * z + start_z
-            //                    )
-            //                );
-
-            //            rbInfo.MotionState = new DefaultMotionState(startTransform);
-
-            //            RigidBody body = new RigidBody(rbInfo);
-
-            //            body.Translate(new Vector3(0, 18, 0));
-
-            //            World.AddRigidBody(body);
-            //        }
-            //    }
-            //}
-
-            //CollisionShape sphere = new SphereShape(3);
-            //collisionShapes.Add(sphere);
-            //Vector3 localInertia_s = sphere.CalculateLocalInertia(mass_s);
-
-            //var rbInfo_s = new RigidBodyConstructionInfo(mass_s, null, sphere, localInertia_s);
-
-            //Matrix4 startTransform_s = Matrix4.CreateTranslation(
-            //    new Vector3(
-            //        StartPosX + 2,
-            //        StartPosY,
-            //        StartPosZ + 2
-            //        )
-            //    );
-
-            //rbInfo_s.MotionState = new DefaultMotionState(startTransform_s);
-
-            //RigidBody body_s = new RigidBody(rbInfo_s);
-
-            //body_s.Translate(new Vector3(0, 70, 0));
-
-            //World.AddRigidBody(body_s);
-            #endregion
+            World.SetInternalTickCallback(new DynamicsWorld.InternalTickCallback((w, f) => DriveJoints.UpdateAllMotors(Skeleton, cachedArgs)));
 
             //Roobit
             string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\Sample Robot\";
@@ -112,13 +53,13 @@ namespace Simulation_RD.SimulationPhysics
                 bNode.CreateJoint();
 
                 if (bNode.joint != null)
-                    World.AddConstraint(bNode.joint);
+                    World.AddConstraint(bNode.joint, true);
                 World.AddCollisionObject(bNode.BulletObject);
                 collisionShapes.Add(bNode.BulletObject.CollisionShape);
             }
 
             //Field
-            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2014\");
+            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2010\");
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);
@@ -128,14 +69,24 @@ namespace Simulation_RD.SimulationPhysics
             World.StepSimulation(0.1f, 100);
         }
 
+        /// <summary>
+        /// Steps the world
+        /// </summary>
+        /// <param name="elapsedTime">elapsed time</param>
         public virtual void Update(float elapsedTime, KeyboardKeyEventArgs args)
         {
-            DriveJoints.UpdateAllMotors(Skeleton, args);
+            //DriveJoints.UpdateAllMotors(Skeleton, args);
+            cachedArgs = args;
+            if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key) { }
+                //ResetRobot();
             //World.StepSimulation(elapsedTime, 100);
             World.StepSimulation(elapsedTime, 1000, 1f / 300f);
             OnUpdate?.Invoke();
         }
 
+        /// <summary>
+        /// Disposes all of the objects and the world, essentially a destructor
+        /// </summary>
         public void ExitPhysics()
         {
             int i;
@@ -170,5 +121,34 @@ namespace Simulation_RD.SimulationPhysics
             }
             collisionConf.Dispose();
         }
+
+        /// <summary>
+        /// Tries to reset the robot
+        /// </summary>
+        public void ResetRobot()
+        {
+            if (Skeleton == null)
+                return;
+
+            List<BulletRigidNode> Wheels = new List<BulletRigidNode>();
+
+            foreach(RigidNode_Base node in Skeleton.ListAllNodes())
+            {
+                BulletRigidNode bNode = (BulletRigidNode)node;
+
+                if (bNode.BulletObject == null)
+                    continue;
+                
+                WheelDriverMeta wheel;
+                if ((wheel = bNode.GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null)
+                    Wheels.Add(bNode);
+
+                Extensions.AuxFunctions.OrientRobot(Wheels, Skeleton.BulletObject);
+                
+                bNode.BulletObject.WorldTransform = Matrix4.CreateTranslation(0, 10, 0);
+                bNode.BulletObject.InterpolationLinearVelocity = Vector3.Zero;
+                bNode.BulletObject.InterpolationAngularVelocity = Vector3.Zero;                
+            }
+        }        
     }
 }
