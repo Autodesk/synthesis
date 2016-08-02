@@ -59,7 +59,7 @@ namespace Simulation_RD.SimulationPhysics
             }
 
             //Field
-            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2010\");
+            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2014\");
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);

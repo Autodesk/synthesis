@@ -137,7 +137,7 @@ namespace Simulation_RD
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void glControl1_MouseMove(object sender, MouseEventArgs e)
-        {
+        {           
             if ((e.Mouse.LeftButton & ButtonState.Pressed) > 0)
             {
                 float dy = e.Y - myPrev;

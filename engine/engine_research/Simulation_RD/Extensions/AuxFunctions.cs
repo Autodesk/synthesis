@@ -9,6 +9,9 @@ using OpenTK;
 
 namespace Simulation_RD.Extensions
 {
+    /// <summary>
+    /// Extra Functions for manipulating the robot
+    /// </summary>
     class AuxFunctions
     {
         public static void OrientRobot(List<BulletRigidNode> wheels, CollisionObject parent)
