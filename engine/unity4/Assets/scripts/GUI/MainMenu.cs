@@ -318,6 +318,7 @@ public class MainMenu : MonoBehaviour {
                 DirectoryInfo directory = new DirectoryInfo(fileLocation);
                 if (directory != null && directory.Exists)
                 {
+                    Debug.Log(directory);
 					fieldDirectory = (directory.FullName);
                     currentMenu = Menu.LoadField;
                     customfieldon = false;
@@ -418,7 +419,7 @@ public class MainMenu : MonoBehaviour {
 
         if (fields.Count > 0)
         {
-            if (fieldindex >= fields.Count) fieldindex = fields.Count - 1;
+            if (fieldindex >= fields.Count) fieldindex = 0;
             UpdatePreview();
         }
     }

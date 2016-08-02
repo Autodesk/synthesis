@@ -57,7 +57,7 @@ public partial class DriverPracticeMode : MonoBehaviour {
     /// <summary>
     /// Waits .5 seconds before renabling collisions between the ball and the robot.
     /// </summary>
-    IEnumerator UnIgnoreCollision()
+    IEnumerator UnIgnoreCollision(GameObject unignoredObject)
     {
         yield return new WaitForSeconds(0.5f);
         GameObject child;
@@ -66,7 +66,7 @@ public partial class DriverPracticeMode : MonoBehaviour {
             for (int j = 0; j < transform.GetChild(i).childCount; j++)
             {
                 child = transform.GetChild(i).GetChild(j).gameObject;
-                if (child.name.Contains("ollider")) Physics.IgnoreCollision(child.collider, ObjectsHeld[0].collider,false);
+                if (child.name.Contains("ollider")) Physics.IgnoreCollision(child.collider, unignoredObject.collider,false);
             }
         }
     }

@@ -18,7 +18,7 @@ namespace Simulation_RD.GameFeatures
         /// </summary>
         /// <param name="skeleton">robot</param>
         /// <param name="e">keyboard args</param>
-        public static void UpdateAllMotors(RigidNode_Base skeleton /*spooky*/, KeyboardKeyEventArgs e)
+        public static void UpdateAllMotors(RigidNode_Base skeleton, KeyboardKeyEventArgs e)
         {
             float[] pwm = new float[5];
 
@@ -31,8 +31,8 @@ namespace Simulation_RD.GameFeatures
             pwm[1] =
                 e.Key == Controls.GameControls[Controls.Control.Forward] ? -1 : 0 +
                 e.Key == Controls.GameControls[Controls.Control.Backward] ? 1 : 0 +
-                e.Key == Controls.GameControls[Controls.Control.Left] ? 1 : 0 +
-                e.Key == Controls.GameControls[Controls.Control.Right] ? -1 : 0;
+                e.Key == Controls.GameControls[Controls.Control.Left] ? -1 : 0 +
+                e.Key == Controls.GameControls[Controls.Control.Right] ? 1 : 0;
 
             pwm[2] = pwm[3] = pwm[4] = 0;
 

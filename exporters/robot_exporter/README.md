@@ -1,4 +1,4 @@
-# Aardvark-Field-Exporter
+# Synthesis-Robot-Exporter
 
 The field exporter is an application used to convert an Autodesk Inventor Assembly file into a format that can be read and loaded by the Synthesis simulator.
 
@@ -10,7 +10,7 @@ In order to properly clone this repository and its dependencies onto your local 
 OR
 
        git clone https://github.com/Autodesk/synthesis
-       cd synthesis/exporters/field_exporter
+       cd synthesis/exporters/robot_exporter
        git submodule update --init --recursive
 
 ##Building the solution
