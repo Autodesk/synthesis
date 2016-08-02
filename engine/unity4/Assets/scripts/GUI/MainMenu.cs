@@ -15,6 +15,8 @@ public class MainMenu : MonoBehaviour {
     public GameObject Input; //The Input GUI Objects
     public GameObject DefaultPanel; //A blank transparent panel
 
+    public custom_inputs InputManager;
+
     private GameObject fieldSelectText;
     private GameObject robotSelectText;
     private GameObject fieldSelectImage;
