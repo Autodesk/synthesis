@@ -40,7 +40,7 @@ public partial class DriverPracticeMode : MonoBehaviour {
     {
         interactorObjects = new GameObject[4];
         interactorObjects[0] = GameObject.Find("node_7.bxda");
-        interactorObjects[1] = GameObject.Find("node_7.bxda"); //SOTAbots shoot from the center of their robot, so we just set the main rigidnode as the ball shooter interactor.
+        interactorObjects[1] = GameObject.Find("node_0.bxda"); //SOTAbots shoot from the center of their robot, so we just set the main rigidnode as the ball shooter interactor.
         interactorObjects[2] = GameObject.Find("node_7.bxda");
         interactorObjects[3] = GameObject.Find("node_8.bxda");
 
@@ -90,8 +90,8 @@ public partial class DriverPracticeMode : MonoBehaviour {
         if (ObjectsHeld.Count > 0)
         {
             ObjectsHeld[0].rigidbody.AddForce(interactorObjects[1].rigidbody.rotation * new Vector3(0, 0.22f, 0.15f));
+            StartCoroutine(UnIgnoreCollision(ObjectsHeld[0]));
             ObjectsHeld.RemoveAt(0);
-            StartCoroutine("UnIgnoreCollision");
         }
     }
     

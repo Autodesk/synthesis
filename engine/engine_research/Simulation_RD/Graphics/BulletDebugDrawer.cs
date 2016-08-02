@@ -190,6 +190,26 @@ namespace Simulation_RD.Graphics
         }
         public void DrawCylinder(float radius, float halfHeight, int upAxis, ref Matrix4 transform, OpenTK.Graphics.Color4 color)
         {
+            const int numCircles = 4;
+            const int numPoints = 16;
+            //TODO draw cylinders
+            GL.Color3(0, 1.0f, 0);
+            GL.Begin(PrimitiveType.Lines);
+            Vector3[] points = new Vector3[numCircles * numPoints];
+            for (int i = 0; i < numCircles; i++)
+                for (int j = 0; j < numPoints; j++)
+                {
+                    float theta = (float)(j * Math.PI * 2 / 16);
+                    float x = (float)Math.Cos(theta) * radius;
+                    float z = (float)Math.Sin(theta) * radius; //because Y is vertical?
+                    points[i * 16 + j] = new Vector3(x, i / numCircles * halfHeight * 2, z);
+                }
+
+            foreach(Vector3 v in points)
+            {
+                GL.Vertex3(Vector3.Transform(v, transform));
+            }
+            GL.End();
         }
 
         public void DrawLine(ref Vector3 from, ref Vector3 to, OpenTK.Graphics.Color4 color)
