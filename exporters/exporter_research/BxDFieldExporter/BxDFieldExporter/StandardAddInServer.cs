@@ -438,7 +438,6 @@ namespace BxDFieldExporter
                     {
                         object obje = StandardAddInServer.m_inventorApplication.ActiveDocument.ReferenceKeyManager.
                         BindKeyToObject(refKey, 0, out other);
-                        ((ComponentOccurrence)obje).Visible = false;
                     }
                 }
             }
@@ -482,10 +481,6 @@ namespace BxDFieldExporter
                         {
 
                             oPane = pane;
-                            foreach (BrowserFolder f in oPane.TopNode.BrowserFolders)
-                            {
-                                f.Delete();
-                            }
                             foreach (BrowserNode f in oPane.TopNode.BrowserNodes)
                             {
                                 f.Delete();
@@ -508,7 +503,7 @@ namespace BxDFieldExporter
             catch (Exception e)
             {
 
-                MessageBox.Show(e.StackTrace);
+                MessageBox.Show(e.ToString());
             }
         }
         /*public static void beginExporter_OnExecute(Inventor.NameValueMap Context)
@@ -535,16 +530,17 @@ namespace BxDFieldExporter
             try
             {
                 inExportView = false;
-                foreach(FieldDataType data in FieldTypes)
+                writeBrowserFolderNames();
+                foreach (FieldDataType data in FieldTypes)
                 {
                     writeSave(data);
                 }
-                writeBrowserFolderNames();
                 FieldTypes = new ArrayList();
                 foreach (BrowserNode folder in oPane.TopNode.BrowserNodes)
                 {
                     folder.Delete();
                 }
+                oPane.Visible = false;
                 addNewType.Enabled = false;
                 editType.Enabled = false;
                 addNewItem.Enabled = false;
@@ -617,6 +613,7 @@ namespace BxDFieldExporter
                                 field.Dynamic = (bool)set.ItemByPropId[8].Value;
                                 field.Mass = (double)set.ItemByPropId[9].Value;
                                 field.compOcc = lis;
+                                FieldTypes.Add(field);
                             }
                         }
                     }
@@ -633,9 +630,10 @@ namespace BxDFieldExporter
             String g = "";
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;
             PropertySet set = null;
-            foreach (BrowserFolder folder in oPane.TopNode.BrowserFolders)
+            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
             {
-                g += folder.Name + "¯\\_(:()_/¯";
+                g += node.BrowserNodeDefinition.Label;
+                g += "¯\\_(:()_/¯";
 
             }
             try
