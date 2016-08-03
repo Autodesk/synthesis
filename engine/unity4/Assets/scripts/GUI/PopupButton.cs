@@ -6,7 +6,7 @@ public class PopupButton : MonoBehaviour {
     public GUIContent[] list;
     public string setting;
 
-    private bool showList;
+    private bool showList = false;
     private int listEntry = 0;
     private GUIStyle listStyle;
     private GUIStyle buttonStyle;
@@ -34,7 +34,7 @@ public class PopupButton : MonoBehaviour {
         buttonStyle.font = Resources.Load("Fonts/Russo_One") as Font;
         buttonStyle.normal.textColor = Color.white;
         buttonStyle.alignment = TextAnchor.MiddleCenter;
-
+        
         boxStyle = new GUIStyle("box");
         boxStyle.normal.background = buttonBackground;
     }
