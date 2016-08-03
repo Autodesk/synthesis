@@ -124,7 +124,6 @@ public class MainMenu : MonoBehaviour {
                 currentMenu = Menu.Main;
 
                 Main.SetActive(true);
-                SplashScreen.SetActive(false);
                 LoadField.SetActive(false);
                 LoadRobot.SetActive(false);
                 Graphics.SetActive(false);
@@ -142,7 +141,6 @@ public class MainMenu : MonoBehaviour {
 
                 Main.SetActive(false);
                 LoadField.SetActive(true);
-                SplashScreen.SetActive(false);
 
                 UpdateFieldDirectory();
                 break;
@@ -152,7 +150,6 @@ public class MainMenu : MonoBehaviour {
 
                 Main.SetActive(false);
                 LoadRobot.SetActive(true);
-                SplashScreen.SetActive(false);
 
                 UpdateRobotDirectory();
                 break;
@@ -456,6 +453,15 @@ public class MainMenu : MonoBehaviour {
     public void ApplyGraphics()
     {
         Screen.SetResolution(xresolution[resolutionsetting], yresolution[resolutionsetting], fullscreen);
+        SplashScreen.SetActive(true);
+        StartCoroutine(HideSplashScreen(1));
+        SwitchState(Menu.Main);
+    }
+
+    IEnumerator HideSplashScreen(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        SplashScreen.SetActive(false);
     }
     #endregion
     void Start () {
@@ -466,6 +472,7 @@ public class MainMenu : MonoBehaviour {
         LoadField.SetActive(true);
         LoadRobot.SetActive(true);
         Input.SetActive(true);
+        
 
         fieldSelectText = GameObject.Find("FieldSelectText");
         robotSelectText = GameObject.Find("RobotSelectText");
@@ -521,6 +528,7 @@ public class MainMenu : MonoBehaviour {
         yresolution[7] = 900;
         yresolution[8] = 1050;
         yresolution[9] = 1080;
+
     }
 	
 	void Update () {
