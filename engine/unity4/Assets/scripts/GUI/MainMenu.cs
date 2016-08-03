@@ -13,7 +13,7 @@ public class MainMenu : MonoBehaviour {
     public GameObject LoadRobot; //The LoadRobot GUI Objects
     public GameObject Graphics; //The Graphics GUI Objects
     public GameObject Input; //The Input GUI Objects
-    public GameObject DefaultPanel; //A blank transparent panel
+    public GameObject SplashScreen; //A panel that shows up at the start while initializing everything.
 
     private GameObject fieldSelectText;
     private GameObject robotSelectText;
@@ -68,146 +68,144 @@ public class MainMenu : MonoBehaviour {
     private int[] yresolution = new int[10];
 
 
-
-    //The GUI rendering method. It uses a state machine to switch between the different menus.
+    /// <summary>
+    /// Runs every frame to update the GUI elements.
+    /// </summary>
     void OnGUI ()
     {
         switch (currentMenu)
          {
-             case Menu.Main:
-                 RenderMain();
-                 break;
-
              case Menu.LoadField:
-                 RenderLoadField();
-                 break;
+                //Updates the preview thumbnail and text
+                if (fields.Count > 0)
+                {
+                    fieldText.GetComponent<Text>().text = currenttext;
+                    fieldImage.GetComponent<Image>().sprite = currentimage;
+                }
+                break;
 
              case Menu.LoadRobot:
-                 RenderLoadRobot();
-                 break;
-
-             case Menu.Graphics:
-                 RenderGraphics();
-                 break;
-
-             case Menu.Input:
-                 RenderInput();
-                 break;
+                //Updates the preview thumbnail and text
+                if (robots.Count > 0)
+                {
+                    robotText.GetComponent<Text>().text = currenttext;
+                    robotImage.GetComponent<Image>().sprite = currentimage;
+                }
+                break;
 
              case Menu.Custom:
-                 RenderCustom();
-                 break;
+                //Switches back to the Load Field or Load Robot menu if the custom directory browser has been turned off
+                if (customfieldon && !fieldBrowser.Active)
+                {
+                    customfieldon = false;
+                    currentMenu = Menu.LoadField;
+                }
+                else if (customroboton && !robotBrowser.Active)
+                {
+                    customroboton = false;
+                    currentMenu = Menu.LoadRobot;
+                }
+                break;
          }
          InitFieldBrowser();
          InitRobotBrowser();
          UserMessageManager.Render();
     }
-    #region Rendering
-    //Method to render the Main GUI objects
-    void RenderMain()
+
+    /// <summary>
+    /// Switches between the different states of the menu to render different parts of the Main Menu GUI.
+    /// </summary>
+    /// <param name="menu">The menu to switch to</param>
+    void SwitchState(Menu menu)
     {
-        Main.SetActive(true);
-        DefaultPanel.SetActive(false);
-        LoadField.SetActive(false);
-        LoadRobot.SetActive(false);
-        Graphics.SetActive(false);
-        Input.SetActive(false);
-
-        //Updates the selected robot/field thumbnail and text
-        fieldSelectText.GetComponent<Text>().text = selectedFieldName;
-        robotSelectText.GetComponent<Text>().text = selectedRobotName;
-        if (selectedFieldImage != null) fieldSelectImage.GetComponent<Image>().sprite = selectedFieldImage;
-    }
-
-    //Method to render to LoadField GUI objects
-    void RenderLoadField()
-    {
-        Main.SetActive(false);
-        LoadField.SetActive(true);
-        DefaultPanel.SetActive(false);
-
-        if (fields.Count > 0)
+        switch (menu)
         {
-            //Updates the preview thumbnail and text
-            fieldText.GetComponent<Text>().text = currenttext;
-            fieldImage.GetComponent<Image>().sprite = currentimage;
-        }
+            case Menu.Main:
+                currentMenu = Menu.Main;
 
-    }
+                Main.SetActive(true);
+                SplashScreen.SetActive(false);
+                LoadField.SetActive(false);
+                LoadRobot.SetActive(false);
+                Graphics.SetActive(false);
+                Input.SetActive(false);
 
-    //Method to render the LoadRobot GUI objects
-    void RenderLoadRobot()
-    {
-        Main.SetActive(false);
-        LoadRobot.SetActive(true);
-        DefaultPanel.SetActive(false);
+                //Updates the selected robot/field thumbnail and text
+                fieldSelectText.GetComponent<Text>().text = selectedFieldName;
+                robotSelectText.GetComponent<Text>().text = selectedRobotName;
+                if (selectedFieldImage != null) fieldSelectImage.GetComponent<Image>().sprite = selectedFieldImage;
 
-        if (robots.Count > 0)
-        {
-            //Updates the preview thumbnail and text
-            robotText.GetComponent<Text>().text = currenttext;
-            robotImage.GetComponent<Image>().sprite = currentimage;
-        }
-    }
+                break;
 
-    //Method to render the Graphics Settings GUI objects
-    void RenderGraphics()
-    {
-        Main.SetActive(false);
-        Graphics.SetActive(true);
-        Input.SetActive(false);
-    }
+            case Menu.LoadField:
+                currentMenu = Menu.LoadField;
 
-    //Method to render the Input Settings GUI objects
-    void RenderInput()
-    {
-        Main.SetActive(false);
-        Graphics.SetActive(false);
-        Input.SetActive(true);
-    }
+                Main.SetActive(false);
+                LoadField.SetActive(true);
+                SplashScreen.SetActive(false);
 
-    void RenderCustom()
-    {
-        DefaultPanel.SetActive(true);
-        LoadField.SetActive(false);
-        LoadRobot.SetActive(false);
-        if (customfieldon && !fieldBrowser.Active)
-        {
-            customfieldon = false;
-            currentMenu = Menu.LoadField;
-        }
-        else if (customroboton && !robotBrowser.Active)
-        {
-            customroboton = false;
-            currentMenu = Menu.LoadRobot;
+                UpdateFieldDirectory();
+                break;
+
+            case Menu.LoadRobot:
+                currentMenu = Menu.LoadRobot;
+
+                Main.SetActive(false);
+                LoadRobot.SetActive(true);
+                SplashScreen.SetActive(false);
+
+                UpdateRobotDirectory();
+                break;
+
+            case Menu.Graphics:
+                currentMenu = Menu.Graphics;
+
+                Main.SetActive(false);
+                Graphics.SetActive(true);
+                Input.SetActive(false);
+                break;
+
+            case Menu.Input:
+                currentMenu = Menu.Input;
+
+                Main.SetActive(false);
+                Graphics.SetActive(false);
+                Input.SetActive(true);
+                break;
+
+            case Menu.Custom:
+                currentMenu = Menu.Custom;
+
+                SplashScreen.SetActive(true);
+                LoadField.SetActive(false);
+                LoadRobot.SetActive(false);
+                break;
+
         }
     }
 
-    #endregion
     #region Main Menu Button Methods
-    //Loads the fields arraylist with the folder names and switches the current menu to the loadfield menu.
+        //Loads the fields arraylist with the folder names and switches the current menu to the loadfield menu.
     public void LoadFieldButtonClicked()
     {
-        currentMenu = Menu.LoadField;
-        UpdateFieldDirectory();
+        SwitchState(Menu.LoadField);
     }
 
     //Loads the robot arraylist with the folder names and switches the current menu to the loadrobot menu.
     public void LoadRobotButtonClicked()
     {
-        currentMenu = Menu.LoadRobot;
-        UpdateRobotDirectory();
+        SwitchState(Menu.LoadRobot);
     }
 
     //Switches the current menu to the settings menu.
     public void GraphicsButtonClicked()
     {
-        currentMenu = Menu.Graphics;
+        SwitchState(Menu.Graphics);
     }
 
     public void InputButtonClicked()
     {
-        currentMenu = Menu.Input;
+        SwitchState(Menu.Input);
     }
 
     //Makes the Start Button display different things depending on whether a robot/field is loaded or not.
@@ -252,7 +250,7 @@ public class MainMenu : MonoBehaviour {
     //Switches the current menu to the settings menu.
     public void BackButtonClicked()
     {
-        currentMenu = Menu.Main;
+        SwitchState(Menu.Main);
     }
 
     //Shifts the previewing index to the right and updates preview info.
@@ -286,7 +284,7 @@ public class MainMenu : MonoBehaviour {
         {
             selectedRobot = (robotDirectory + "\\" + robots[robotindex] + "\\");
             selectedRobotName = "Robot: " + currenttext;
-            currentMenu = Menu.Main;
+            SwitchState(Menu.Main);
         }
         else UserMessageManager.Dispatch("No robot in directory!", 2);
     }
@@ -299,7 +297,7 @@ public class MainMenu : MonoBehaviour {
             selectedField = (fieldDirectory + "\\" + fields[fieldindex] + "\\");
             selectedFieldImage = currentimage;
             selectedFieldName = "Field: " + currenttext;
-            currentMenu = Menu.Main;
+            SwitchState(Menu.Main);
         }
         else UserMessageManager.Dispatch("No field in directory!",2);
     }
@@ -320,7 +318,7 @@ public class MainMenu : MonoBehaviour {
                 {
                     Debug.Log(directory);
 					fieldDirectory = (directory.FullName);
-                    currentMenu = Menu.LoadField;
+                    SwitchState(Menu.LoadField);
                     customfieldon = false;
                     PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
                     PlayerPrefs.Save();
@@ -339,7 +337,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (!fieldBrowser.Active) fieldBrowser.Active = true;
         customfieldon = true;
-        currentMenu = Menu.Custom;
+        SwitchState(Menu.Custom);
     }
 
     public void InitRobotBrowser()
@@ -357,7 +355,7 @@ public class MainMenu : MonoBehaviour {
                 if (directory != null && directory.Exists)
                 {
                     robotDirectory = (directory.FullName);
-                    currentMenu = Menu.LoadRobot;
+                    SwitchState(Menu.LoadRobot);
                     customroboton = false;
                     PlayerPrefs.SetString("RobotDirectory", robotDirectory);
                     PlayerPrefs.Save();
@@ -376,7 +374,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (!robotBrowser.Active) robotBrowser.Active = true;
         customroboton = true;
-        currentMenu = Menu.Custom;
+        SwitchState(Menu.Custom);
     }
 
     //Updates preview information.
@@ -404,8 +402,6 @@ public class MainMenu : MonoBehaviour {
         {
             if (File.Exists(field + "\\definition.bxdf")) fields.Add(new DirectoryInfo(field).Name);
         }
-
-        LoadField.SetActive(true);
         
         //If there is nothing found in the field folder, provide error message
         if (fields.Count <= 0)
@@ -427,14 +423,12 @@ public class MainMenu : MonoBehaviour {
     void UpdateRobotDirectory()
     {
         robots.Clear();
-        currentMenu = Menu.LoadRobot;
         string[] folders = System.IO.Directory.GetDirectories(robotDirectory);
         foreach (string robot in folders)
         {
             if (File.Exists(robot + "\\skeleton.bxdj")) robots.Add(new DirectoryInfo(robot).Name);
         }
 
-        LoadRobot.SetActive(true);
         //If there is nothing found in the robot folder, provide error message
         if (robots.Count <= 0)
         {
@@ -504,6 +498,7 @@ public class MainMenu : MonoBehaviour {
         customfieldon = false;
         customroboton = false;
 
+        SwitchState(Menu.Main);
 
         xresolution[0] = 640;
         xresolution[1] = 800;
