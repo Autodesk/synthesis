@@ -35,7 +35,7 @@ namespace InventorAddInBasicGUI2
             else
             {
                 CANtxtPort1.Show();
-                CANtxtPort2.Show();
+                CANtxtPort2.Hide();
                 PWM1txtPort.Hide();
                 PWM2txtPort.Hide();
                 lblPort.Text = "CAN Port";
@@ -256,6 +256,10 @@ namespace InventorAddInBasicGUI2
         {
             lblPort.Text = "PWM Port";
             joint.PWM = true;
+            CANtxtPort1.Hide();
+            CANtxtPort2.Hide();
+            PWM1txtPort.Show();
+            PWM2txtPort.Hide();
         }
         public void btnHasBrake_Click(object sender, EventArgs e)
         {
@@ -275,6 +279,10 @@ namespace InventorAddInBasicGUI2
         {
             lblPort.Text = "CAN Port";
             joint.PWM = false;
+            CANtxtPort1.Show();
+            CANtxtPort2.Hide();
+            PWM1txtPort.Hide();
+            PWM2txtPort.Hide();
         }
         public void driveWheelChoice(object sender, EventArgs e)
         {
@@ -528,7 +536,21 @@ namespace InventorAddInBasicGUI2
 
                 rbPWM.Checked = j.PWM;
                 rbCAN.Checked = !j.PWM;
-
+                if (j.PWM)
+                {
+                    lblPort.Text = "PWM Port";
+                    CANtxtPort1.Hide();
+                    CANtxtPort2.Hide();
+                    PWM1txtPort.Show();
+                    PWM2txtPort.Hide();
+                } else
+                {
+                    lblPort.Text = "CAN Port";
+                    CANtxtPort1.Show();
+                    CANtxtPort2.Hide();
+                    PWM1txtPort.Hide();
+                    PWM2txtPort.Hide();
+                }
                 txtGearRationNum.Text = j.InputGear.ToString();
 
                 txtGearRationDenom.Text = j.OutputGear.ToString();
