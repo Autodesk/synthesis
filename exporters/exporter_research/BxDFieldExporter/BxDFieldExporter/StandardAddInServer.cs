@@ -24,11 +24,14 @@ namespace BxDFieldExporter
         private static RibbonTab partTab;
         ClientNodeResource oRsc;
         static RibbonPanel partPanel;
-        static ButtonDefinition accessInnerAssemblies;
+        static RibbonPanel partPanel2;
         static ButtonDefinition beginExporter;
         static ButtonDefinition addNewType;
         static ButtonDefinition editType;
         static ButtonDefinition addNewItem;
+        static ButtonDefinition accessInnerAssemblies;
+        static ButtonDefinition removeSubAssembly;
+        static ButtonDefinition removeAssembly;
         static ButtonDefinition cancleExport;
         static ButtonDefinition exportField;
         static ArrayList FieldTypes;
@@ -76,6 +79,7 @@ namespace BxDFieldExporter
                 // Get the "Part" tab.
                 partTab = partRibbon.RibbonTabs.Add("Field Exporter", "BxD:FieldExporter", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 partPanel = partTab.RibbonPanels.Add("Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+                partPanel2 = partTab.RibbonPanels.Add("Model Control", "BxD:FieldExporter:ModelControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 // TODO: Add ApplicationAddInServer.Activate implementation.
                 // e.g. event initialization, command creation etc.
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;
@@ -85,25 +89,31 @@ namespace BxDFieldExporter
                 addNewType = controlDefs.AddButtonDefinition("Add new type", "InventorAddInBrowserPaneAttempt5:AddNewType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 addNewType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewType_OnExecute);
                 addNewItem = controlDefs.AddButtonDefinition("Add new assembly", "InventorAddInBrowserPaneAttempt5:AddNewItem", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                addNewItem.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewItem_OnExecute);
+                addNewItem.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssembly_OnExecute);
+                removeAssembly = controlDefs.AddButtonDefinition("Remove assembly from type", "InventorAddInBrowserPaneAttempt5:RemoveAssemblyFromType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                removeAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeAssembly_OnExecute);
+                removeSubAssembly = controlDefs.AddButtonDefinition("Remove subassembly from type", "InventorAddInBrowserPaneAttempt5:RemoveSubAssemblyFromType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                removeSubAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeSubAssembly_OnExecute);
                 editType = controlDefs.AddButtonDefinition("Edit type properties", "InventorAddInBrowserPaneAttempt5:EditTypeProperties", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 editType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(editTypeProperites_OnExecute);
-                cancleExport = controlDefs.AddButtonDefinition("Cancle export", "InventorAddInBrowserPaneAttempt5:cancleExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                cancleExport = controlDefs.AddButtonDefinition("Cancel export", "InventorAddInBrowserPaneAttempt5:cancleExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 cancleExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(cancleExporter_OnExecute);
                 exportField = controlDefs.AddButtonDefinition("Export field", "InventorAddInBrowserPaneAttempt5:exportField", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 exportField.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(exportField_OnExecute);
                 accessInnerAssemblies = controlDefs.AddButtonDefinition("Add new part in subassembly", "InventorAddInBrowserPaneAttempt5:AccessSubassembly", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                accessInnerAssemblies.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(test);
+                accessInnerAssemblies.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewSubAssembly_OnExecute);
 
                 form = new ComponentPropertiesForm();
 
                 partPanel.CommandControls.AddButton(beginExporter);
-                partPanel.CommandControls.AddButton(addNewType);
-                partPanel.CommandControls.AddButton(addNewItem);
-                partPanel.CommandControls.AddButton(accessInnerAssemblies);
-                partPanel.CommandControls.AddButton(editType);
                 partPanel.CommandControls.AddButton(cancleExport);
                 partPanel.CommandControls.AddButton(exportField);
+                partPanel2.CommandControls.AddButton(removeSubAssembly);
+                partPanel2.CommandControls.AddButton(removeAssembly);
+                partPanel2.CommandControls.AddButton(addNewType);
+                partPanel2.CommandControls.AddButton(addNewItem);
+                partPanel2.CommandControls.AddButton(accessInnerAssemblies);
+                partPanel2.CommandControls.AddButton(editType);
                 addNewType.Enabled = false;
                 editType.Enabled = false;
                 addNewItem.Enabled = false;
@@ -112,6 +122,8 @@ namespace BxDFieldExporter
                 exportField.Enabled = false;
                 addNewType.Enabled = false;
                 accessInnerAssemblies.Enabled = false;
+                removeAssembly.Enabled = false;
+                removeSubAssembly.Enabled = false;
                 UIEvent = m_inventorApplication.CommandManager.UserInputEvents;
                 click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);
                 UIEvent.OnSelect += click_OnSelectEventDelegate;
@@ -129,7 +141,18 @@ namespace BxDFieldExporter
 
             // TODO: Add ApplicationAddInServer.Deactivate implementation
 
+
             // Release objects.
+            try
+            {
+                writeBrowserFolderNames();
+                foreach (FieldDataType data in FieldTypes)
+                {
+                    writeSave(data);
+                }
+                m_inventorApplication.ActiveDocument.Save();
+            }
+            catch (Exception) { }
             m_inventorApplication = null;
 
             GC.Collect();
@@ -166,16 +189,23 @@ namespace BxDFieldExporter
             if (SelectionDevice == SelectionDeviceEnum.kGraphicsWindowSelection && inExportView)
             {
                 foreach (Object sel in JustSelectedEntities)
-                {
-                    if (sel is ComponentOccurrence) { 
-                        ComponentOccurrence comp = (ComponentOccurrence)sel;
-                        foreach (BrowserNode n in oPane.TopNode.BrowserNodes)
+                {//looks at all things selected
+                    if (sel is ComponentOccurrence)
+                    {// react only if sel is a part/ assembly// if the code didn't find sel inside of a browser node then look at nodes
+                        foreach (FieldDataType type in FieldTypes)
                         {
-                            brow = n.BrowserNodeDefinition;
-                            //if (brow.NativeObject.Equals(sel))
-                            //{
-                            //    n.DoSelect();
-                            //}
+                            foreach(ComponentOccurrence occ in type.compOcc) {
+                                if (((ComponentOccurrence)sel).Equals(occ))
+                                {
+                                    foreach(BrowserNode n in oPane.TopNode.BrowserNodes)
+                                    {
+                                        if (n.BrowserNodeDefinition.Equals(type.node))
+                                        {
+                                            n.DoSelect();
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -255,7 +285,6 @@ namespace BxDFieldExporter
             try
             {
                 Random rand = new Random();
-                double thi = rand.NextDouble();
                 int th = rand.Next();
                 ClientNodeResources oNodeRescs;
                 ClientNodeResource oRes = null;
@@ -279,71 +308,157 @@ namespace BxDFieldExporter
             return def;
         }
         
-        public void accessSubassemblies_OnExecute(Inventor.NameValueMap Context)
-        {
-            try
-            {
-               // ArrayList l = new ArrayList();
-            obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
-            AssemblyDocument asmDoc = (AssemblyDocument)
-                         m_inventorApplication.ActiveDocument;
-            ComponentOccurrence joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
-                      (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
-            foreach (BrowserFolder folder in oPane.TopNode.BrowserFolders)
-            {
-                name = folder.Name;
-                if (folder.BrowserNode.Selected)
-                {
-                    foreach (BrowserNode m in folder.BrowserNode.BrowserNodes)
-                    {
-                        obj.Add(m);
-                        //l.Add(m);
-                    }
-                    
-                        obj.Add(oPane.GetBrowserNodeFromObject(joint));
-                        //l.Add(oPane.GetBrowserNodeFromObject(joint));
-                    
-                    BrowserFolder selectedFolder = oPane.AddBrowserFolder(name, obj);
-                    //BrowserFolder selectedFolder = oPane.AddBrowserFolder(name, l);
-                  //  selectedType = (FieldDataType)FieldTypes[(FieldTypes.Add(new FieldDataType(selectedFolder)))];
-                    foreach (FieldDataType t in FieldTypes)
-                    {
-                      //  if (t.same(folder))
-                      //  {
-                            t.copyToNewType(selectedType);
-                      //  }
-                    }
-                    foreach (BrowserNode n in folder.BrowserNode.BrowserNodes)
-                    {
-                        n.Delete();
-                    }
-                    folder.Delete();
-                    foreach (FieldDataType t in FieldTypes)
-                    {
-                        //if (t.same(folder))
-                        //{
-                            FieldTypes.Remove(t);
-                        //}
-                    }
-                }
-            }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
-
-        }
-
-        public void addNewItem_OnExecute(Inventor.NameValueMap Context)
+        public void addNewAssembly_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
                 ComponentOccurrence joint;
                 bool selected = false;
-                foreach (BrowserNode folder in oPane.TopNode.BrowserNodes)
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
                 {
-                    if (folder.Selected)
+                    if (node.Selected)
+                    {
+                        selected = true;
+                    }
+                }
+                if (selected)
+                {
+                    obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                    AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
+                              (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                    {
+                        if (node.Selected)
+                        {
+                            foreach (FieldDataType t in FieldTypes)
+                            {
+                                if (t.same(node.BrowserNodeDefinition))
+                                {
+                                    t.compOcc.Add(joint);
+                                    node.Visible = false;
+                                    node.Visible = true;
+                                    node.DoSelect();
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a browser node to add a part to");
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+        public void removeAssembly_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                ComponentOccurrence joint;
+                bool selected = false;
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                {
+                    if (node.Selected)
+                    {
+                        selected = true;
+                    }
+                }
+                if (selected)
+                {
+                    obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                    AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
+                              (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                    {
+                        if (node.Selected)
+                        {
+                            foreach (FieldDataType t in FieldTypes)
+                            {
+                                if (t.same(node.BrowserNodeDefinition))
+                                {
+                                    t.compOcc.Remove(joint);
+                                    node.Visible = false;
+                                    node.Visible = true;
+                                    node.DoSelect();
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a browser node to add a part to");
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+        public void removeSubAssembly_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                ComponentOccurrence joint;
+                bool selected = false;
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                {
+                    if (node.Selected)
+                    {
+                        selected = true;
+                    }
+                }
+                if (selected)
+                {
+                    obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                    AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
+                              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                    {
+                        if (node.Selected)
+                        {
+                            foreach (FieldDataType t in FieldTypes)
+                            {
+                                if (t.same(node.BrowserNodeDefinition))
+                                {
+                                    t.compOcc.Remove(joint);
+                                    node.Visible = false;
+                                    node.Visible = true;
+                                    node.DoSelect();
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a browser node to add a part to");
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        public void addNewSubAssembly_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                ComponentOccurrence joint;
+                bool selected = false;
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                {
+                    if (node.Selected)
                     {
                         selected = true;
                     }
@@ -364,6 +479,9 @@ namespace BxDFieldExporter
                                 if (t.same(node.BrowserNodeDefinition))
                                 {
                                     t.compOcc.Add(joint);
+                                    node.Visible = false;
+                                    node.Visible = true;
+                                    node.DoSelect();
                                 }
                             }
                         }
@@ -371,7 +489,7 @@ namespace BxDFieldExporter
                 }
                 else
                 {
-                    MessageBox.Show("Please select a browser folder to add a part to");
+                    MessageBox.Show("Please select a browser node to add a part to");
                 }
             }
             catch (Exception)
@@ -455,6 +573,8 @@ namespace BxDFieldExporter
                 cancleExport.Enabled = true;
                 exportField.Enabled = true;
                 accessInnerAssemblies.Enabled = true;
+                removeAssembly.Enabled = true;
+                removeSubAssembly.Enabled = true;
                 AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;
                 BrowserNodeDefinition oDef;
                 oDoc = m_inventorApplication.ActiveDocument;
@@ -506,24 +626,6 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
-        /*public static void beginExporter_OnExecute(Inventor.NameValueMap Context)
-        {
-                inExportView = true;
-                addNewType.Enabled = true;
-                editType.Enabled = true;
-                addNewItem.Enabled = true;
-                beginExporter.Enabled = false;
-                cancleExport.Enabled = true;
-                exportField.Enabled = true;
-                accessInnerAssemblies.Enabled = true;
-                oDoc = m_inventorApplication.ActiveDocument;
-                oPanes = oDoc.BrowserPanes;
-                ClientNodeResources oRscs = oPanes.ClientNodeResources;
-                stdole.IPictureDisp clientNodeIcon = AxHostConverter.ImageToPictureDisp(new Bitmap(@"C:\Users\t_gracj\Desktop\git\Exporter-Research\InventorAddInBrowserPaneAttempt5\InventorAddInBrowserPaneAttempt5\Resources\test.bmp"));
-                ClientNodeResource oRsc = oRscs.Add(m_ClientId, 1, clientNodeIcon);
-                BrowserNodeDefinition oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);
-                oPane = oPanes.AddTreeBrowserPane("Object types", m_ClientId, oDef);
-        }*/
 
         public void cancleExporter_OnExecute(Inventor.NameValueMap Context)
         {
@@ -548,6 +650,8 @@ namespace BxDFieldExporter
                 cancleExport.Enabled = false;
                 exportField.Enabled = false;
                 accessInnerAssemblies.Enabled = false;
+                removeAssembly.Enabled = false;
+                removeSubAssembly.Enabled = false;
             }
             catch (Exception e)
             {
@@ -737,6 +841,8 @@ namespace BxDFieldExporter
             cancleExport.Enabled = false;
             exportField.Enabled = false;
             accessInnerAssemblies.Enabled = false;
+            removeAssembly.Enabled = false;
+            removeSubAssembly.Enabled = false;
         }
     }
     internal class AxHostConverter : AxHost
