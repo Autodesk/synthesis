@@ -5,6 +5,7 @@ using BulletSharp.SoftBody;
 using OpenTK;
 using OpenTK.Input;
 using Simulation_RD.GameFeatures;
+using Simulation_RD.Utility;
 
 namespace Simulation_RD.SimulationPhysics
 {
@@ -38,7 +39,7 @@ namespace Simulation_RD.SimulationPhysics
             broadphase = new DbvtBroadphase();
             World = new SoftRigidDynamicsWorld(dispatcher, broadphase, cSolver, collisionConf, solver);
             
-            //Actual scaling is unknown, this gravity may not be right
+            //Actual scaling is unknown, this gravity is probably not right
             World.Gravity = new Vector3(0, -98.1f, 0);
             World.SetInternalTickCallback(new DynamicsWorld.InternalTickCallback((w, f) => DriveJoints.UpdateAllMotors(Skeleton, cachedArgs)));
 
@@ -60,12 +61,14 @@ namespace Simulation_RD.SimulationPhysics
             }
 
             //Field
-            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2015\");
+            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2014\");
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);
                 collisionShapes.Add(b.CollisionShape);
             }
+
+            ResetRobot();
 
             World.StepSimulation(0.1f, 100);
         }
@@ -81,7 +84,9 @@ namespace Simulation_RD.SimulationPhysics
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
                 ResetRobot();
             //World.StepSimulation(elapsedTime, 100);
-            World.StepSimulation(elapsedTime, 1000, 1f / 300f);
+            //if(args.Key == Key.B)
+                World.StepSimulation(elapsedTime, 1000, 1f / 300f);
+
             OnUpdate?.Invoke();
         }
 
@@ -144,7 +149,7 @@ namespace Simulation_RD.SimulationPhysics
                 if ((wheel = bNode.GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null)
                     Wheels.Add(bNode);
 
-                Extensions.AuxFunctions.OrientRobot(Wheels, Skeleton.BulletObject);
+                AuxFunctions.OrientRobot(Wheels, Skeleton.BulletObject);
                 
                 bNode.BulletObject.WorldTransform = Matrix4.CreateTranslation(0, 10, 0);
                 bNode.BulletObject.InterpolationLinearVelocity = Vector3.Zero;

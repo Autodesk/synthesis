@@ -7,8 +7,6 @@ namespace Simulation_RD
     /// </summary>
     class Program
     {
-        //static GameWindow game;
-
         /// <summary>
         /// You know what this does
         /// </summary>
@@ -17,8 +15,10 @@ namespace Simulation_RD
         {
             Scene scene = new Scene();
 
+            //Other thing
             Shader shader = new Shader(@"\resources\vertexShader.vs\", @"\resources\fragmentShader.frag");
             
+            //Start game
             scene.Run();
         }
     }
