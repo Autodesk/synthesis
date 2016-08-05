@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace BxDFieldExporter
 {
+    // contains the sphere collider options for the component props form
     public partial class SphereColliderPropertiesForm : UserControl
     {
         /// <summary>
@@ -18,14 +19,15 @@ namespace BxDFieldExporter
         FieldDataType field;
         public SphereColliderPropertiesForm()
         {
-            InitializeComponent();
+            InitializeComponent();// inits and populates the form
         }
+        // this method reacts to changes in the fields so we can save the data
         public void scaleChanged(object sender, EventArgs e)
         {
             field.Scale = (double)scaleUpDown.Value;
         }
         public void readFromData(FieldDataType d)
-        {
+        {// reads from the data so user can see the same values from the last time they entered them
             field = d;
             scaleUpDown.Value = (decimal)field.Scale;
         }

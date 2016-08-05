@@ -246,7 +246,8 @@ public class DynamicCamera : MonoBehaviour
 	void Start ()
 	{
 		SwitchCameraState(new DriverStationState(this));
-	}
+        transform.GetComponent<Camera>().backgroundColor = new Color(0.4f, 0.6f, 0.8f);
+    }
 
 	void LateUpdate ()
 	{

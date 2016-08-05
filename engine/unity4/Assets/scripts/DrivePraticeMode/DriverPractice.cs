@@ -31,6 +31,7 @@ public partial class DriverPracticeMode : MonoBehaviour {
     {
         //If you have added driver practice mode support for a robot, then add another if statement to return true for that robot.
         if (robotname.Equals("2557-2016")) return true;
+        else if (robotname.Equals("Simbotics2012")) return true;
         else return false;
     }
 
@@ -42,7 +43,10 @@ public partial class DriverPracticeMode : MonoBehaviour {
         if (robotname.Equals("2557-2016"))
         {
             InitSota2016();
-            Init2016();
+        }
+        else if (robotname.Equals("Simbotics2012"))
+        {
+            InitSimbotics2012();
         }
     }
         
@@ -50,9 +54,14 @@ public partial class DriverPracticeMode : MonoBehaviour {
     /// Runs through all inputs for special controls like rolling a ball in and shooting.
     /// Also deals with all the 'cheating physics' parts of the mode.
     /// </summary>
-	void FixedUpdate () {
+	void Update () {
         if (gameType == 2016) Update2016();
 	}
+    
+    void FixedUpdate ()
+    {
+        if (gameType == 2016) FixedUpdate2016();
+    }
 
     /// <summary>
     /// Waits .5 seconds before renabling collisions between the ball and the robot.

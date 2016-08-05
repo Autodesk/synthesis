@@ -6,7 +6,7 @@ public class PopupButton : MonoBehaviour {
     public GUIContent[] list;
     public string setting;
 
-    private bool showList;
+    private bool showList = false;
     private int listEntry = 0;
     private GUIStyle listStyle;
     private GUIStyle buttonStyle;
@@ -34,15 +34,15 @@ public class PopupButton : MonoBehaviour {
         buttonStyle.font = Resources.Load("Fonts/Russo_One") as Font;
         buttonStyle.normal.textColor = Color.white;
         buttonStyle.alignment = TextAnchor.MiddleCenter;
-
+        
         boxStyle = new GUIStyle("box");
         boxStyle.normal.background = buttonBackground;
     }
 
 	void OnGUI () {
         if (setting.Equals("Screen Mode"))
-            if (!MainMenu.fullscreen) listEntry = 1;
-            else listEntry = 0;
+            if (!MainMenu.fullscreen) listEntry = 0;
+            else listEntry = 1;
         else if (setting.Equals("Resolution"))
             listEntry = MainMenu.resolutionsetting; 
 
@@ -53,8 +53,8 @@ public class PopupButton : MonoBehaviour {
             //This was a quick way to implement resolution settings. It might be 'bad code', but it works for the two settings we need.
             if (setting.Equals("Screen Mode"))
             {
-                if (listEntry == 0) MainMenu.fullscreen = true;
-                else MainMenu.fullscreen = false;
+                if (listEntry == 0) MainMenu.fullscreen = false;
+                else MainMenu.fullscreen = true;
             }
             else if (setting.Equals("Resolution"))
             {
