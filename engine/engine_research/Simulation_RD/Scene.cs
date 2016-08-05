@@ -15,6 +15,7 @@ namespace Simulation_RD
     /// </summary>
     class Scene : GameWindow
     {
+        bool pause = false;
         Physics phys;
         float frameTime;
         int fps;
@@ -31,6 +32,9 @@ namespace Simulation_RD
 
         Camera c;
 
+        /// <summary>
+        /// Instantiates all the members not given default values
+        /// </summary>
         public Scene() : base(1500, 768, new OpenTK.Graphics.GraphicsMode(), "RnD Synthesis Test")
         {
             VSync = VSyncMode.Off;
@@ -79,12 +83,21 @@ namespace Simulation_RD
             base.OnUnload(e);
         }
 
+        /// <summary>
+        /// Updates physics and other stuff
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            c.Movespeed = cachedKeyboard.Shift ? 75 : 750;
             if (CameraBindings.ContainsKey(cachedKeyboard.Key))
                 c.ProcessKeyboard(CameraBindings[cachedKeyboard.Key], (float)e.Time);
+            if (cachedKeyboard.Key == Key.B)
+                pause = !pause;
 
-            phys.Update((float)e.Time, cachedKeyboard);
+            if(!pause)
+                phys.Update((float)e.Time, cachedKeyboard);
+
             cachedKeyboard = new KeyboardKeyEventArgs();
         }
 
@@ -171,8 +184,8 @@ namespace Simulation_RD
         /// <param name="e"></param>
         private void glControl1_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
-            cachedKeyboard = e;
-            
+            cachedKeyboard = e;            
+                        
             switch (e.Key)
             {
                 case Key.Space:

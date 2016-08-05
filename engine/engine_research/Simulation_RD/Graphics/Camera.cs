@@ -4,7 +4,7 @@ using System;
 namespace Simulation_RD.Graphics
 {
     /// <summary>
-    /// All the different ways the camera can move
+    /// All the different ways the camera can translate
     /// </summary>
     enum Camera_Movement
     {
@@ -94,10 +94,10 @@ namespace Simulation_RD.Graphics
 
             if (constrainPitch)
             {
-                if (this.Pitch > Math.PI / 2)
-                    this.Pitch = (float)Math.PI / 2;
-                if (this.Pitch < -Math.PI / 2)
-                    this.Pitch = -(float)Math.PI / 2;
+                if (this.Pitch >= Math.PI / 2 - float.Epsilon)
+                    this.Pitch = (float)Math.PI / 2 - float.Epsilon;
+                if (this.Pitch < -Math.PI / 2 + float.Epsilon)
+                    this.Pitch = -(float)Math.PI / 2 + float.Epsilon;
             }
 
             this.UpdateCameraVectors();

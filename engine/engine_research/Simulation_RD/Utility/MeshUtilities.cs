@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BulletSharp;
 using OpenTK;
 
-namespace Simulation_RD
+namespace Simulation_RD.Utility
 {
     /// <summary>
     /// Provides some static functions for manipulation of triangle meshes
@@ -45,6 +42,16 @@ namespace Simulation_RD
             IEnumerable<int> indices = new List<int>();
             subMesh.surfaces.ForEach((s) => indices = indices.Concat(s.indicies));
             return new TriangleIndexVertexArray(indices.ToArray(), vertices);
+        }
+
+        /// <summary>
+        /// Gets the center vertex of a mesh's vertices
+        /// </summary>
+        /// <param name="mesh">find the center of this</param>
+        /// <returns>wow much center very middle</returns>
+        public static Vector3 MeshCenter(BXDAMesh mesh)
+        {
+            return mesh.colliders.ConvertAll(m => DataToVector(m.verts).Aggregate(Vector3.Add) / (m.verts.Length / 3)).Aggregate(Vector3.Add) / mesh.colliders.Count;
         }
     }
 }

@@ -88,8 +88,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions\AuxFunctions.cs" />
-    <Compile Include="Extensions\BXDConversions.cs" />
+    <Compile Include="Utility\AuxFunctions.cs" />
+    <Compile Include="Utility\BXDConversions.cs" />
     <Compile Include="GameFeatures\Controls.cs" />
     <Compile Include="GameFeatures\DriveJoints.cs" />
     <Compile Include="Graphics\Camera.cs" />
@@ -97,7 +97,7 @@
     <Compile Include="Graphics\Mesh.cs" />
     <Compile Include="SimulationPhysics\BulletRigidNode.cs" />
     <Compile Include="SimulationPhysics\BulletFieldDefinition.cs" />
-    <Compile Include="MeshUtilities.cs" />
+    <Compile Include="Utility\MeshUtilities.cs" />
     <Compile Include="Graphics\Model.cs" />
     <Compile Include="SimulationPhysics\Physics.cs" />
     <Compile Include="Program.cs" />
