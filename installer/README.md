@@ -13,7 +13,6 @@ You can find the compilier here: http://nsis.sourceforge.net/Download
 * Synthesis (Required)
 * Exporters (Optional)
 * Code (Optional)
-
 * README.rtf
 
 ####How to Build:
