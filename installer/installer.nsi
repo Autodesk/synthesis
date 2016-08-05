@@ -1,3 +1,5 @@
+!include MUI2.nsh
+
 Name "SynthesisInstaller"
 
 OutFile "SynthesisInstaller.exe"
@@ -41,11 +43,10 @@ Section "Synthesis (required)"
 SectionEnd
 
 Section "Exporter Plugin (optional)"
-
-  SectionIn RO
   
   ; Set output path to the installation directory.
-  SetOutPath $INSTDIR
+  SetOutPath $INSTDIR\Exporter
+  ;SetOutPath $APPDATA\Roaming\Autodesk\Inventor 2017\Addins
   
   ; Put file there
   ;File "example2.nsi"
@@ -64,11 +65,9 @@ Section "Exporter Plugin (optional)"
 SectionEnd
 
 Section "Code Emulator (optional)"
-
-  SectionIn RO
   
   ; Set output path to the installation directory.
-  SetOutPath $INSTDIR
+  SetOutPath $INSTDIR\SynthesisDrive
   
   ; Put file there
   ;File "example2.nsi"
