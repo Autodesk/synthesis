@@ -6,7 +6,7 @@ public class Settings : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         DontDestroyOnLoad(this);
-        Controls controls = new Controls();
+        gameObject.AddComponent<Controls>();
         Controls.ResetDefaults();
         Controls.LoadControls();
 	}

@@ -100,20 +100,17 @@ public class UnityFieldDefinition : FieldDefinition
 					unityCollider = unitySphereCollider;
 					break;
 				case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
-					if (node.CollisionMeshID != -1)
-					{
-						KeyValuePair<BXDAMesh.BXDASubMesh, Mesh> currentSubMesh = colliders[node.CollisionMeshID];
-						
-						BXDAMesh.BXDASubMesh sub = currentSubMesh.Key;
-						Mesh meshu = currentSubMesh.Value;
+                    PropertySet.MeshCollider psMeshCollider = (PropertySet.MeshCollider)psCollider;
 
-						MeshCollider unityMeshCollider = subObject.AddComponent<MeshCollider>();
-						unityMeshCollider.sharedMesh = meshu;
-						unityMeshCollider.convex = true;
+                    KeyValuePair<BXDAMesh.BXDASubMesh, Mesh> currentSubMesh =
+                        psMeshCollider.Convex ? colliders[node.CollisionMeshID] : submeshes[node.SubMeshID];
 
-						unityCollider = unityMeshCollider;
-					}
-					break;
+                    MeshCollider unityMeshCollider = subObject.AddComponent<MeshCollider>();
+                    unityMeshCollider.sharedMesh = currentSubMesh.Value;
+                    unityMeshCollider.convex = psMeshCollider.Convex;
+
+                    unityCollider = unityMeshCollider;
+                    break;
 				}
 
 				if (unityCollider != null)
