@@ -23,16 +23,19 @@ Section "Synthesis (required)"
   SetOutPath $INSTDIR
   
   ; Put file there
-  File "example2.nsi"
+  ;File "installer.nsi"
+  File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Synthesis\*"
+  File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Apache2.rtf"
+  File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
   
   ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\NSIS_Example2 "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM SOFTWARE\Synthesis "Install_Dir" "$INSTDIR"
   
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "DisplayName" "NSIS Example2"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "NoRepair" 1
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "Synthesis" "Autodesk Synthesis"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
 SectionEnd
@@ -45,16 +48,17 @@ Section "Exporter Plugin (optional)"
   SetOutPath $INSTDIR
   
   ; Put file there
-  File "example2.nsi"
+  ;File "example2.nsi"
+  File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
   
   ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\NSIS_Example2 "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM SOFTWARE\Synthesis "Install_Dir" "$INSTDIR"
   
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "DisplayName" "NSIS Example2"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "NoRepair" 1
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "Exporter" "Autodesk Synthesis"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
 SectionEnd
@@ -67,25 +71,37 @@ Section "Code Emulator (optional)"
   SetOutPath $INSTDIR
   
   ; Put file there
-  File "example2.nsi"
+  ;File "example2.nsi"
+  File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Code\*"
   
   ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\NSIS_Example2 "Install_Dir" "$INSTDIR"
+  WriteRegStr HKLM SOFTWARE\Synthesis "Install_Dir" "$INSTDIR"
   
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "DisplayName" "NSIS Example2"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Example2" "NoRepair" 1
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "Code Emulation" "Autodesk Synthesis"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
   WriteUninstaller "uninstall.exe"
   
-SectionEnd
-
-Section ""
-
-	SetOutPath $INSTDIR
-
-	File installer.nsi
-
 SectionEnd 
+
+Section "Uninstall"
+  
+  ; Remove registry keys
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis"
+  DeleteRegKey HKLM SOFTWARE\Synthesis
+
+  ; Remove files and uninstaller
+  Delete $INSTDIR\Synthesis.nsi
+  Delete $INSTDIR\uninstall.exe
+
+  ; Remove shortcuts, if any
+  Delete "$SMPROGRAMS\Synthesis\*.*"
+
+  ; Remove directories used
+  RMDir "$SMPROGRAMS\Synthesis"
+  RMDir "$INSTDIR"
+
+SectionEnd
 
