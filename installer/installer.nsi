@@ -1,6 +1,9 @@
 !include MUI2.nsh
+;!include LogicLib.nsh
 
 Name "SynthesisInstaller"
+
+Icon "C:\Users\t_hics\Desktop\LogoStuff\plantlogo(NoBack).ico"
 
 OutFile "SynthesisInstaller.exe"
 
@@ -10,12 +13,31 @@ InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 
 RequestExecutionLevel admin
 
+;Var INVDIR5
+;Var INVDIR6
+;Var INVDIR7
+;PageEx directory
+ ; DirVar $INVDIR5
+ ; DirVar $INVDIR6
+ ; DirVar $INVDIR7
+;PageExEnd
+
 Page components
-Page directory
 Page instfiles
 
 UninstPage uninstConfirm
 UninstPage instfiles
+
+Section
+ 
+    # read the value from the registry into the $0 register
+    ReadRegStr $0 HKLM "SOFTWARE\Autodesk\Inventor" CurrentVersion
+ 
+    # print the results in a popup message box
+    MessageBox MB_OK "version: $0"
+ 
+# default section end
+SectionEnd
 
 Section "Synthesis (required)"
 
@@ -30,37 +52,24 @@ Section "Synthesis (required)"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Apache2.rtf"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
   
-  ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\Synthesis "Install_Dir" "$INSTDIR"
-  
-  ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "Synthesis" "Autodesk Synthesis"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
-  WriteUninstaller "uninstall.exe"
-  
 SectionEnd
 
 Section "Exporter Plugin (optional)"
   
   ; Set output path to the installation directory.
-  SetOutPath $INSTDIR\Exporter
+  IfFileExists "$APPDATA\Roaming\Autodesk\ApplicationPlugins\SynthesisExporter" 0 +2
+  SetOutPath "$INSTDIR\Exporter"
+  File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
+  SetOutPath "$APPDATA\Roaming\Autodesk\Inventor 2016\Addins"
+  ;SetOutPath $EXPDIR
+
+  MessageBox MB_OK "Inventor is installed"
   ;SetOutPath $APPDATA\Roaming\Autodesk\Inventor 2017\Addins
   
   ; Put file there
   ;File "example2.nsi"
   File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
-  
-  ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\Synthesis "Install_Dir" "$INSTDIR"
-  
-  ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "Exporter" "Autodesk Synthesis"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
-  WriteUninstaller "uninstall.exe"
+ 
   
 SectionEnd
 
@@ -72,16 +81,6 @@ Section "Code Emulator (optional)"
   ; Put file there
   ;File "example2.nsi"
   File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Code\*"
-  
-  ; Write the installation path into the registry
-  WriteRegStr HKLM SOFTWARE\Synthesis "Install_Dir" "$INSTDIR"
-  
-  ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "Code Emulation" "Autodesk Synthesis"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "UninstallString" '"$INSTDIR\uninstall.exe"'
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
-  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
-  WriteUninstaller "uninstall.exe"
   
 SectionEnd 
 
@@ -102,5 +101,22 @@ Section "Uninstall"
   RMDir "$SMPROGRAMS\Synthesis"
   RMDir "$INSTDIR"
 
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
+
 SectionEnd
+
+Function .onInstSuccess
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                 "DisplayName" "Autodesk Synthesis -- Robot Simulator"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                 "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
+WriteUninstaller "uninstall.exe"
+
+    MessageBox MB_YESNO "Congrats, it worked. View readme?" IDNO NoReadme
+      Exec notepad.exe ; view readme or whatever, if you want.
+    NoReadme:
+FunctionEnd
 
