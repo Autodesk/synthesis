@@ -29,6 +29,7 @@ namespace BxDFieldExporter
         private static Ribbon partRibbon;// ribbon that corrosponds to the view of inventor, e.g. Assembly, Part
         private static RibbonTab partTab;// part tab that all the panels will be added to
         ClientNodeResource oRsc;// client resources that buttons will use
+        static Document nativeDoc;
         static RibbonPanel partPanel;
         static RibbonPanel partPanel2;// the ribbon panels that the buttons will be a part of
         static ButtonDefinition beginExporter;
@@ -182,58 +183,65 @@ namespace BxDFieldExporter
 
             try
             {
-                inExportView = true;
-                addNewType.Enabled = true;
-                editType.Enabled = true;
-                addNewItem.Enabled = true;
-                beginExporter.Enabled = false;// show the correct buttons
-                cancleExport.Enabled = true;
-                exportField.Enabled = true;
-                accessInnerAssemblies.Enabled = true;
-                removeAssembly.Enabled = true;
-                removeSubAssembly.Enabled = true;
-                AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;// get the active assembly document
-                BrowserNodeDefinition oDef; // create browsernodedef to use to add browser node to the pane
-                oDoc = m_inventorApplication.ActiveDocument;// get the active document in inventor
-                oPanes = oDoc.BrowserPanes;// get the browserpanes to add
-                oSet = oDoc.CreateHighlightSet();// create a highlightset to add the selected occcurences to
-                oSet.Color = m_inventorApplication.TransientObjects.CreateColor(125, 0, 255);
-                rand = new Random();// create new random num generator to generate internal ids
-                try
-                {// if no browser pane previously created then create a new one
-                    ClientNodeResources oRscs = oPanes.ClientNodeResources;
-                    oRsc = oRscs.Add(m_ClientId, 1, null);// creat new client node resources
-                    oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, null);// create the top node for the browser pane
-                    oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);// add a new tree browser
-                    oPane.Activate();// make the pane be shown to the user
-                }
-                catch (Exception)// we will assume that if the above method fails it is because there is already a browser node
+                if (!inExportView)
                 {
-                    bool found = false;
-                    foreach (BrowserPane pane in oPanes)// iterate over the panes in the document
+                    nativeDoc = m_inventorApplication.ActiveDocument;
+                    inExportView = true;
+                    addNewType.Enabled = true;
+                    editType.Enabled = true;
+                    addNewItem.Enabled = true;
+                    beginExporter.Enabled = false;// show the correct buttons
+                    cancleExport.Enabled = true;
+                    exportField.Enabled = true;
+                    accessInnerAssemblies.Enabled = true;
+                    removeAssembly.Enabled = true;
+                    removeSubAssembly.Enabled = true;
+                    AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;// get the active assembly document
+                    BrowserNodeDefinition oDef; // create browsernodedef to use to add browser node to the pane
+                    oDoc = m_inventorApplication.ActiveDocument;// get the active document in inventor
+                    oPanes = oDoc.BrowserPanes;// get the browserpanes to add
+                    oSet = oDoc.CreateHighlightSet();// create a highlightset to add the selected occcurences to
+                    oSet.Color = m_inventorApplication.TransientObjects.CreateColor(125, 0, 255);
+                    rand = new Random();// create new random num generator to generate internal ids
+                    try
+                    {// if no browser pane previously created then create a new one
+                        ClientNodeResources oRscs = oPanes.ClientNodeResources;
+                        oRsc = oRscs.Add(m_ClientId, 1, null);// creat new client node resources
+                        oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, null);// create the top node for the browser pane
+                        oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);// add a new tree browser
+                        oPane.Activate();// make the pane be shown to the user
+                    }
+                    catch (Exception)// we will assume that if the above method fails it is because there is already a browser node
                     {
-                        if (pane.Name.Equals("Select Joints"))// if the pane has the correct name then we assume it is what we are looking for
+                        bool found = false;
+                        foreach (BrowserPane pane in oPanes)// iterate over the panes in the document
                         {
-
-                            oPane = pane;// if we have found the correct node then use it
-                            foreach (BrowserNode f in oPane.TopNode.BrowserNodes)
+                            if (pane.Name.Equals("Select Joints"))// if the pane has the correct name then we assume it is what we are looking for
                             {
-                                f.Delete();// delete any residual browser nodes
-                            }
-                            oPane.Visible = true;// make the pane visible to the user
-                            oPane.Activate();// make the pane the shown one
-                            found = true;// tell the program we have found a previous top node
-                        }
-                    }
-                    if (!found)
-                    {
-                        oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);// if the pane was created but the node wasnt then init a node 
-                        oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);// add a top node to the tree browser
-                    }
 
+                                oPane = pane;// if we have found the correct node then use it
+                                foreach (BrowserNode f in oPane.TopNode.BrowserNodes)
+                                {
+                                    f.Delete();// delete any residual browser nodes
+                                }
+                                oPane.Visible = true;// make the pane visible to the user
+                                oPane.Activate();// make the pane the shown one
+                                found = true;// tell the program we have found a previous top node
+                            }
+                        }
+                        if (!found)
+                        {
+                            oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, oRsc);// if the pane was created but the node wasnt then init a node 
+                            oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);// add a top node to the tree browser
+                        }
+
+                    }
+                    readSave();// read the save so the user doesn't loose any previous work
+                    TimerWatch();// begin the timer watcher to detect deselect
+                } else
+                {
+                    MessageBox.Show("Please close out of the robot exporter in the other assembly");
                 }
-                readSave();// read the save so the user doesn't loose any previous work
-                TimerWatch();// begin the timer watcher to detect deselect
             }
             catch (Exception e)
             {
@@ -292,6 +300,7 @@ namespace BxDFieldExporter
             }
         }
         // starts a timer to react to events in the browser/ graphics interface
+        static bool rightDoc;
         private void TimerWatch()
         {
             try
@@ -301,6 +310,7 @@ namespace BxDFieldExporter
                 aTimer.Interval = 500;// set time timer reaction interval to 1/2 of a second, we do this to get regular checking without lagging out the computer
                 aTimer.AutoReset = true;// auto restarts the timer after the 1/2 second interval
                 aTimer.Enabled = true;// starts the timer
+                rightDoc = true;
             }
             catch (Exception e)
             {
@@ -337,6 +347,46 @@ namespace BxDFieldExporter
             {// if the program didn't find any selected node then assume that the user deselected 
                 oSet.Clear();// clear the set because the user doesn't have anything selected
             }
+            if (!m_inventorApplication.ActiveDocument.InternalName.Equals(nativeDoc.InternalName))
+            {
+                if (rightDoc)
+                {
+                    rightDoc = false;
+
+                    addNewType.Enabled = false;
+                    editType.Enabled = false;
+                    addNewItem.Enabled = false;
+                    beginExporter.Enabled = true;// sets the correct buttons states
+                    cancleExport.Enabled = false;
+                    exportField.Enabled = false;
+                    accessInnerAssemblies.Enabled = false;
+                    removeAssembly.Enabled = false;
+                    removeSubAssembly.Enabled = false;
+
+                    oPane.Visible = false;// Hide the browser pane
+                }
+            }
+            else
+            {
+                if (!rightDoc)
+                {
+                    rightDoc = true;
+
+                    addNewType.Enabled = true;
+                    editType.Enabled = true;
+                    addNewItem.Enabled = true;
+                    beginExporter.Enabled = false;// sets the correct buttons states
+                    cancleExport.Enabled = true;
+                    exportField.Enabled = true;
+                    accessInnerAssemblies.Enabled = true;
+                    removeAssembly.Enabled = true;
+                    removeSubAssembly.Enabled = true;
+
+                    oPane.Visible = true;// Hide the browser pane
+                    oPane.Activate();
+                }
+
+            }
         }
         // adds a new fielddatatype to the array and to the browser pane
         public static BrowserNodeDefinition addType(String name)
@@ -344,21 +394,35 @@ namespace BxDFieldExporter
             BrowserNodeDefinition def = null;// creates a browsernodedef to be used when creating a new browsernode, null so if adding the node fails the code doesn't freak out
             try
             {
-                int th = rand.Next();// get the next random number for the browser node's internal id
-                ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
-                ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
-                oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
-                try
-                {
-                    oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                bool same = false;// used to prevent duplicate type names because they will not save
+                foreach (FieldDataType type in FieldTypes)
+                {// look at all the fielddata types in data types
+                    if (type.Name.Equals(name))
+                    {// check to see if it is the same
+                        same = true;// if it is then tell the code
+                    }
                 }
-                catch (Exception)
-                {// if the method fails then assume that there is already a ClientNodeResource
-                    oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+                if (!same)
+                {// if there is no duplicate name then add the type
+                    int th = rand.Next();// get the next random number for the browser node's internal id
+                    ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
+                    ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
+                    oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
+                    try
+                    {
+                        oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                    }
+                    catch (Exception)
+                    {// if the method fails then assume that there is already a ClientNodeResource
+                        oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+                    }
+                    def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(name, th, oRes);// creates a new browser node def for the field data
+                    oPane.TopNode.AddChild(def);// add the browsernode to the topnode
+                    FieldTypes.Add(new FieldDataType(def));// add the new field data type to the array and use the browsernodedef to refence the object to the browser node
+                } else
+                {// if there is already something with the name
+                    MessageBox.Show("Please choose a name that hasn't already been used");// tell the user to use a different name
                 }
-                def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(name, th, oRes);// creates a new browser node def for the field data
-                oPane.TopNode.AddChild(def);// add the browsernode to the topnode
-                FieldTypes.Add(new FieldDataType(def));// add the new field data type to the array and use the browsernodedef to refence the object to the browser node
             }
             catch (Exception e)
             {
