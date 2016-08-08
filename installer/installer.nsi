@@ -1,7 +1,7 @@
 !include MUI2.nsh
 ;!include LogicLib.nsh
 
-Name "SynthesisInstaller"
+Name "Synthesis"
 
 Icon "C:\Users\t_hics\Desktop\LogoStuff\plantlogo(NoBack).ico"
 
@@ -12,15 +12,6 @@ InstallDir $PROGRAMFILES\Autodesk\Synthesis
 InstallDirRegKey HKLM "Software\Synthesis" "Install_Dir"
 
 RequestExecutionLevel admin
-
-;Var INVDIR5
-;Var INVDIR6
-;Var INVDIR7
-;PageEx directory
- ; DirVar $INVDIR5
- ; DirVar $INVDIR6
- ; DirVar $INVDIR7
-;PageExEnd
 
 Page components
 Page instfiles
@@ -51,16 +42,30 @@ Section "Synthesis (required)"
   File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Synthesis\*"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Apache2.rtf"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
+
+
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                 "DisplayName" "Autodesk Synthesis -- Robot Simulator"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                 "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+createShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
+
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
+WriteUninstaller "uninstall.exe"
   
 SectionEnd
 
 Section "Exporter Plugin (optional)"
-  
-  ; Set output path to the installation directory.
-  IfFileExists "$APPDATA\Roaming\Autodesk\ApplicationPlugins\SynthesisExporter" 0 +2
-  SetOutPath "$INSTDIR\Exporter"
   File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
-  SetOutPath "$APPDATA\Roaming\Autodesk\Inventor 2016\Addins"
+
+  ; Set output path to the installation directory.
+  IfFileExists "$APPDATA\Autodesk\ApplicationPlugins" 0 +4
+  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\Synthesis"
+  return
+
+  SetOutPath "$INSTDIR\Exporter"
+
   ;SetOutPath $EXPDIR
 
   MessageBox MB_OK "Inventor is installed"
@@ -68,7 +73,7 @@ Section "Exporter Plugin (optional)"
   
   ; Put file there
   ;File "example2.nsi"
-  File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
+  
  
   
 SectionEnd
@@ -89,32 +94,24 @@ Section "Uninstall"
   ; Remove registry keys
   DeleteRegKey HKLM SOFTWARE\Synthesis
 
+  RMDir /r /REBOOTOK $INSTDIR
+  RMDir /r /REBOOTOK $APPDATA\Autodesk\ApplicationPlugins\Synthesis
   ; Remove files and uninstaller
   Delete $INSTDIR\Synthesis.nsi
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\*
 
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\Synthesis\*.*"
+  Delete "$SMPROGRAMS\Synthesis.lnk"
 
   ; Remove directories used
-  RMDir "$INSTDIR"
+  RMDir $INSTDIR
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
 SectionEnd
 
 Function .onInstSuccess
-
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayName" "Autodesk Synthesis -- Robot Simulator"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
-WriteUninstaller "uninstall.exe"
-
     MessageBox MB_YESNO "Congrats, it worked. View readme?" IDNO NoReadme
       Exec notepad.exe ; view readme or whatever, if you want.
     NoReadme:
