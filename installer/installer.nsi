@@ -87,18 +87,17 @@ SectionEnd
 Section "Uninstall"
   
   ; Remove registry keys
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis"
   DeleteRegKey HKLM SOFTWARE\Synthesis
 
   ; Remove files and uninstaller
   Delete $INSTDIR\Synthesis.nsi
   Delete $INSTDIR\uninstall.exe
+  Delete $INSTDIR\*
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Synthesis\*.*"
 
   ; Remove directories used
-  RMDir "$SMPROGRAMS\Synthesis"
   RMDir "$INSTDIR"
 
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
@@ -106,6 +105,7 @@ Section "Uninstall"
 SectionEnd
 
 Function .onInstSuccess
+
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "DisplayName" "Autodesk Synthesis -- Robot Simulator"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
