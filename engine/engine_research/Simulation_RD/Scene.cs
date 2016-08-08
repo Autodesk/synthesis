@@ -22,6 +22,7 @@ namespace Simulation_RD
         int VBO;
         int shaderHandle;
         float lastTime;
+        float oldScroll;
         KeyboardKeyEventArgs cachedKeyboard = new KeyboardKeyEventArgs();
 
         int mxPrev, myPrev;
@@ -89,9 +90,10 @@ namespace Simulation_RD
         /// <param name="e"></param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            c.LookAtRobot(phys.Skeleton.BulletObject.WorldTransform.ExtractTranslation());
             c.Movespeed = cachedKeyboard.Shift ? 75 : 750;
             if (CameraBindings.ContainsKey(cachedKeyboard.Key))
-                c.ProcessKeyboard(CameraBindings[cachedKeyboard.Key], (float)e.Time);
+                ;// c.ProcessKeyboard(CameraBindings[cachedKeyboard.Key], (float)e.Time);
             if (cachedKeyboard.Key == Key.B)
                 pause = !pause;
 
@@ -174,7 +176,8 @@ namespace Simulation_RD
         /// <param name="e"></param>
         private void glControl1_MouseWheel(object sender, MouseEventArgs e)
         {
-            c.ProcessMouseScroll(e.Mouse.WheelPrecise);
+            c.ProcessMouseScroll(e.Mouse.WheelPrecise - oldScroll);
+            oldScroll = e.Mouse.WheelPrecise;
         }
 
         /// <summary>
