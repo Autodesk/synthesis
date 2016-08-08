@@ -47,6 +47,7 @@ namespace BxDFieldExporter
         private void OKButton_OnClick(object sender, EventArgs e)
         {
             name = nameTextBox.Text;
+            this.Close();
             this.Dispose(true);
             StandardAddInServer.addType(name);
         }
