@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
@@ -43,15 +44,49 @@ namespace Simulation_RD.SimulationPhysics
             World.Gravity = new Vector3(0, -98.1f, 0);
             World.SetInternalTickCallback(new DynamicsWorld.InternalTickCallback((w, f) => DriveJoints.UpdateAllMotors(Skeleton, cachedArgs)));
 
+            string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\";
+            FileSelector fs = new FileSelector(RobotPath);
+
+            FINDROBOT:
+            {
+                Console.WriteLine("Enter the associated number to move into that directory");
+                Console.WriteLine("Enter ! to select the current directory");
+                Console.WriteLine("Enter . to go up one level");
+                string cmd;
+                do
+                {
+                    int i = 0;
+                    foreach (string s in fs.Directories)
+                    {
+                        i++;
+                        Console.WriteLine(i + " " + s);
+                    }
+
+                    cmd = Console.ReadLine();
+                    if (cmd == ".")
+                        fs.MoveUp();
+                    else if (cmd != "!")
+                        fs.MoveInto(fs.Directories.ToArray()[int.Parse(cmd) - 1]);
+
+                } while (cmd != "!");
+            }
+
             //Roobit
-            string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\Sample Robot\";
             RigidNode_Base.NODE_FACTORY = (Guid guid) => new BulletRigidNode(guid);
-            Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(RobotPath + "skeleton.bxdj");
+            try
+            {
+                Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(fs.current + "\\" + "skeleton.bxdj");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Failed");
+                goto FINDROBOT;
+            }
             List<RigidNode_Base> nodes = Skeleton.ListAllNodes();
             for(int i = 0; i < nodes.Count; i++)
             {
                 BulletRigidNode bNode = (BulletRigidNode)nodes[i];
-                bNode.CreateRigidBody(RobotPath + bNode.ModelFileName);
+                bNode.CreateRigidBody(fs.current + "\\" + bNode.ModelFileName);
                 bNode.CreateJoint();
 
                 if (bNode.joint != null)

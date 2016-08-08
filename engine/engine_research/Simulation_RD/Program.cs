@@ -1,4 +1,5 @@
 ﻿using Simulation_RD.Graphics;
+using Simulation_RD.Scenes;
 
 namespace Simulation_RD
 {
@@ -13,7 +14,7 @@ namespace Simulation_RD
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            Scene scene = new Scene();
+            SimulationScene scene = new SimulationScene();
 
             //Other thing
             Shader shader = new Shader(@"\resources\vertexShader.vs\", @"\resources\fragmentShader.frag");
