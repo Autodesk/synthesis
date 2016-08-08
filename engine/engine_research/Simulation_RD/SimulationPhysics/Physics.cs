@@ -83,9 +83,8 @@ namespace Simulation_RD.SimulationPhysics
             cachedArgs = args;
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
                 ResetRobot();
-            //World.StepSimulation(elapsedTime, 100);
-            //if(args.Key == Key.B)
-                World.StepSimulation(elapsedTime, 1000, 1f / 300f);
+
+            World.StepSimulation(elapsedTime, 1000, 1f / 300f);
 
             OnUpdate?.Invoke();
         }
