@@ -134,6 +134,58 @@ namespace Simulation_RD.Graphics
         {
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(1.0f, 0, 0);
+            Vector3 A, B, C, D, E, F, nMin, nMax;
+            A = Vector3.Transform(new Vector3(max.X, min.Y, min.Z), trans);
+            B = Vector3.Transform(new Vector3(max.X, min.Y, max.Z), trans);
+            C = Vector3.Transform(new Vector3(min.X, min.Y, max.Z), trans);
+            D = Vector3.Transform(new Vector3(min.X, max.Y, min.Z), trans);
+            E = Vector3.Transform(new Vector3(max.X, max.Y, min.Z), trans);
+            F = Vector3.Transform(new Vector3(min.X, max.Y, max.Z), trans);
+            nMax = Vector3.Transform(max, trans);
+            nMin = Vector3.Transform(min, trans);
+            
+            //Top
+            GL.Vertex3(nMin);
+            GL.Vertex3(A);
+            GL.Vertex3(B);
+            GL.Vertex3(C);
+            //Left
+            GL.Vertex3(nMin);
+            GL.Vertex3(C);
+            GL.Vertex3(F);
+            GL.Vertex3(D);
+            //Front
+            GL.Vertex3(B);
+            GL.Vertex3(C);
+            GL.Vertex3(F);
+            GL.Vertex3(nMax);
+            //Right
+            GL.Vertex3(A);
+            GL.Vertex3(B);
+            GL.Vertex3(nMax);
+            GL.Vertex3(E);
+            //Back
+            GL.Vertex3(nMin);
+            GL.Vertex3(A);
+            GL.Vertex3(E);
+            GL.Vertex3(D);
+            //Bot
+            GL.Vertex3(nMax);
+            GL.Vertex3(E);
+            GL.Vertex3(D);
+            GL.Vertex3(F);
+            GL.End();
+
+            max += new Vector3(1, 1, 1);
+            min -= new Vector3(1, 1, 1);
+            DrawBox2(ref min, ref max, ref trans, color);
+            //Console.WriteLine("Drew Box");
+        }
+
+        public void DrawBox2(ref Vector3 min, ref Vector3 max, ref Matrix4 trans, OpenTK.Graphics.Color4 color)
+        {
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Color3(0, 0, 0);
             Vector3 A, B, C, D, E, F;
             A = Vector3.Transform(new Vector3(max.X, min.Y, min.Z), trans);
             B = Vector3.Transform(new Vector3(max.X, min.Y, max.Z), trans);
@@ -143,7 +195,7 @@ namespace Simulation_RD.Graphics
             F = Vector3.Transform(new Vector3(min.X, max.Y, max.Z), trans);
             max = Vector3.Transform(max, trans);
             min = Vector3.Transform(min, trans);
-            
+
             //Top
             GL.Vertex3(min);
             GL.Vertex3(A);
@@ -175,8 +227,6 @@ namespace Simulation_RD.Graphics
             GL.Vertex3(D);
             GL.Vertex3(F);
             GL.End();
-
-            //Console.WriteLine("Drew Box");
         }
 
         public void DrawCapsule(float radius, float halfHeight, int upAxis, ref Matrix4 transform, OpenTK.Graphics.Color4 color)

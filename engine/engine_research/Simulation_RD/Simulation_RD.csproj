@@ -88,6 +88,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameFeatures\FileSelector.cs" />
+    <Compile Include="Graphics\GUI\Button.cs" />
+    <Compile Include="Scenes\MenuScene.cs" />
     <Compile Include="Utility\AuxFunctions.cs" />
     <Compile Include="Utility\BXDConversions.cs" />
     <Compile Include="GameFeatures\Controls.cs" />
@@ -102,7 +105,7 @@
     <Compile Include="SimulationPhysics\Physics.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scene.cs" />
+    <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Graphics\Shader.cs" />
   </ItemGroup>
   <ItemGroup>
