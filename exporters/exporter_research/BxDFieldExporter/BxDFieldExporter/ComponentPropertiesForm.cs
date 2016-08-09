@@ -11,22 +11,24 @@ using Inventor;
 
 namespace BxDFieldExporter
 {
+    // form that allows the user to enter properties for the field types
     public partial class ComponentPropertiesForm : Form
     {
         FieldDataType field;
         public ComponentPropertiesForm()
         {
-            InitializeComponent();
+            InitializeComponent();// inits and populates the form
         }
+        // these methods react to changes in the fields so we can save the data
         private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Type selectedType = null;
+        {// changes the collider box based on the selection
+            Type selectedType = null;// make space for a form to add to the form
 
             switch (colliderTypeCombobox.SelectedIndex)
-            {
+            {// change selected form based on selection
                 case 0: // Box
                     field.colliderType = ColliderType.Box;
-                    selectedType = typeof(BoxColliderPropertiesForm);
+                    selectedType = typeof(BoxColliderPropertiesForm);// sets the type to the correct form
                     break;
                 case 1: // Sphere
                     field.colliderType = ColliderType.Sphere;
@@ -41,13 +43,13 @@ namespace BxDFieldExporter
             if (meshPropertiesTable.Controls.Count > 1)
             {
                 if (selectedType == null || meshPropertiesTable.Controls[1].GetType().Equals(selectedType))
-                    return;
+                    return;// clears the form so we don't get multiple forms
 
                 meshPropertiesTable.Controls.RemoveAt(1);
             }
             UserControl controller = ((UserControl)Activator.CreateInstance(selectedType));
             meshPropertiesTable.Controls.Add(controller, 0, 1);
-            if(field.colliderType == ColliderType.Sphere)
+            if(field.colliderType == ColliderType.Sphere)// read the data from the file into the form
             {
                 ((SphereColliderPropertiesForm)controller).readFromData(field);
             } else if(field.colliderType == ColliderType.Mesh)
@@ -86,7 +88,7 @@ namespace BxDFieldExporter
             }
         }
         public void readFromData(FieldDataType d)
-        {
+        {// reads from the data so user can see the same values from the last time they entered them
             try
             {
                 field = d;
@@ -120,4 +122,3 @@ namespace BxDFieldExporter
         }
     }
 }
-

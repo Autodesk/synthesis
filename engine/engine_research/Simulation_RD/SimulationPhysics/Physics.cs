@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
 using OpenTK.Input;
 using Simulation_RD.GameFeatures;
+using Simulation_RD.Utility;
 
 namespace Simulation_RD.SimulationPhysics
 {
@@ -38,19 +40,53 @@ namespace Simulation_RD.SimulationPhysics
             broadphase = new DbvtBroadphase();
             World = new SoftRigidDynamicsWorld(dispatcher, broadphase, cSolver, collisionConf, solver);
             
-            //Actual scaling is unknown, this gravity may not be right
+            //Actual scaling is unknown, this gravity is probably not right
             World.Gravity = new Vector3(0, -98.1f, 0);
             World.SetInternalTickCallback(new DynamicsWorld.InternalTickCallback((w, f) => DriveJoints.UpdateAllMotors(Skeleton, cachedArgs)));
 
+            string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\";
+            FileSelector fs = new FileSelector(RobotPath);
+
+            FINDROBOT:
+            {
+                Console.WriteLine("Enter the associated number to move into that directory");
+                Console.WriteLine("Enter ! to select the current directory");
+                Console.WriteLine("Enter . to go up one level");
+                string cmd;
+                do
+                {
+                    int i = 0;
+                    foreach (string s in fs.Directories)
+                    {
+                        i++;
+                        Console.WriteLine(i + " " + s);
+                    }
+
+                    cmd = Console.ReadLine();
+                    if (cmd == ".")
+                        fs.MoveUp();
+                    else if (cmd != "!")
+                        fs.MoveInto(fs.Directories.ToArray()[int.Parse(cmd) - 1]);
+
+                } while (cmd != "!");
+            }
+
             //Roobit
-            string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\Sample Robot\";
             RigidNode_Base.NODE_FACTORY = (Guid guid) => new BulletRigidNode(guid);
-            Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(RobotPath + "skeleton.bxdj");
+            try
+            {
+                Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(fs.current + "\\" + "skeleton.bxdj");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Failed");
+                goto FINDROBOT;
+            }
             List<RigidNode_Base> nodes = Skeleton.ListAllNodes();
             for(int i = 0; i < nodes.Count; i++)
             {
                 BulletRigidNode bNode = (BulletRigidNode)nodes[i];
-                bNode.CreateRigidBody(RobotPath + bNode.ModelFileName);
+                bNode.CreateRigidBody(fs.current + "\\" + bNode.ModelFileName);
                 bNode.CreateJoint();
 
                 if (bNode.joint != null)
@@ -60,12 +96,14 @@ namespace Simulation_RD.SimulationPhysics
             }
 
             //Field
-            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2015\");
+            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2014\");
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);
                 collisionShapes.Add(b.CollisionShape);
             }
+
+            ResetRobot();
 
             World.StepSimulation(0.1f, 100);
         }
@@ -80,8 +118,9 @@ namespace Simulation_RD.SimulationPhysics
             cachedArgs = args;
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
                 ResetRobot();
-            //World.StepSimulation(elapsedTime, 100);
+
             World.StepSimulation(elapsedTime, 1000, 1f / 300f);
+
             OnUpdate?.Invoke();
         }
 
@@ -144,7 +183,7 @@ namespace Simulation_RD.SimulationPhysics
                 if ((wheel = bNode.GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null)
                     Wheels.Add(bNode);
 
-                Extensions.AuxFunctions.OrientRobot(Wheels, Skeleton.BulletObject);
+                AuxFunctions.OrientRobot(Wheels, Skeleton.BulletObject);
                 
                 bNode.BulletObject.WorldTransform = Matrix4.CreateTranslation(0, 10, 0);
                 bNode.BulletObject.InterpolationLinearVelocity = Vector3.Zero;

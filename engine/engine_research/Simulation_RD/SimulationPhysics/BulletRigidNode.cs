@@ -2,23 +2,30 @@
 using BulletSharp;
 using BulletSharp.SoftBody;
 using OpenTK;
-using Simulation_RD.Extensions;
+using Simulation_RD.Utility;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Simulation_RD.SimulationPhysics
 {
     /// <summary>
-    /// Defines a robot joint
+    /// Defines a robot jointad connected body
     /// </summary>
     class BulletRigidNode : RigidNode_Base
     {
-        private static int numHinge = 6;
-
         /// <summary>
-        /// Defines collision mesh.
+        /// Defines Bullet collision object. Might be able to be a soft body in the future
         /// </summary>
         public CollisionObject BulletObject;
+
+        /// <summary>
+        /// makes joint do. A better method really should be found.
+        /// </summary>
         public Action<float> Update;
 
+        /// <summary>
+        /// Bullet Joint data
+        /// </summary>
         public TypedConstraint joint;
 
         public BulletRigidNode(Guid guid) : base(guid) { }
@@ -34,25 +41,26 @@ namespace Simulation_RD.SimulationPhysics
             DefaultMotionState motion;
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(FilePath);
-            
-            //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false) //Later
-            {
-                shape = new CylinderShapeX(wheel.width, wheel.radius, wheel.radius);
-            }
 
+            //Is it a wheel?
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && true) //now
+            {
+                shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);
+                Console.WriteLine(  MeshUtilities.MeshCenter(mesh) );
+            }
             //Rigid Body Construction
             else
             {
                 shape = GetShape(mesh);
             }
 
-            //Current quick fix: scale by 1/4. Please find a better solution.
-            motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(0, 50, 0), Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert()));
-            mesh.physics.mass *= 5;
+            //Current quick fix for wheels in the wrong position: scale by 1/4? Please find a better solution.
+            motion = new DefaultMotionState(Matrix4.CreateTranslation(0, 0, 0) /* * Matrix4.CreateScale(0.25f),*//* Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert())*/);
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
-            info.Friction = 10;
-            info.RollingFriction = 10;
+
+            //Temp
+            info.Friction = 100;
+            info.RollingFriction = 100;
 
             BulletObject = new RigidBody(info);
         }
@@ -66,15 +74,15 @@ namespace Simulation_RD.SimulationPhysics
         {
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(filePath);
-            
+            List<Vector3> verts = new List<Vector3>();
+
             //Soft body construction
             foreach(BXDAMesh.BXDASubMesh sub in mesh.colliders)
             {
-                SoftBody temp = SoftBodyHelpers.CreateFromConvexHull(worldInfo, MeshUtilities.DataToVector(sub.verts));
-                temp.WorldTransform += Matrix4.CreateTranslation(0, 10, 0);
-                BulletObject = temp;
-                temp.Restitution = 0;
+                verts = verts.Concat(MeshUtilities.DataToVector(sub.verts)).ToList();
             }
+            SoftBody temp = SoftBodyHelpers.CreateFromConvexHull(worldInfo, verts.ToArray());
+            BulletObject = temp;
         }
 
         /// <summary>
@@ -82,7 +90,7 @@ namespace Simulation_RD.SimulationPhysics
         /// </summary>
         public void CreateJoint()
         {
-            if (joint != null || GetSkeletalJoint() == null) // can't have that
+            if (joint != null || GetSkeletalJoint() == null)
                 return;
             
             switch (GetSkeletalJoint().GetJointType())
@@ -95,8 +103,8 @@ namespace Simulation_RD.SimulationPhysics
                     //BasePoint is relative to the child object
                     Matrix4 locJ, locP; //Local Joint Pivot, Local Parent Pivot
 
-                    locJ = Matrix4.CreateTranslation(nodeR.basePoint.Convert());
-                    locP = locJ  * BulletObject.WorldTransform.Inverted() * parentObject.WorldTransform;
+                    Console.WriteLine(nodeR.basePoint.Convert());
+                    GetFrames(nodeR.basePoint.Convert(), parentObject.WorldTransform, BulletObject.WorldTransform, out locP, out locJ);
 
                     HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
                     joint = temp;
@@ -105,11 +113,10 @@ namespace Simulation_RD.SimulationPhysics
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
                     //also need to find a less screwy way to do this
-                    Update = (f) => { temp.EnableMotor = true; temp.EnableAngularMotor(true, f, 1000f); };
+                    //Update = (f) => { ((RigidBody)BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
 
                     Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
-                    
                 default:
                     Console.WriteLine("Received joint of type {0}", GetSkeletalJoint().GetJointType());
                     break;
@@ -137,6 +144,20 @@ namespace Simulation_RD.SimulationPhysics
             }
 
             return shape;
+        }
+
+        /// <summary>
+        /// Gets the pivot/axis joint for each rigid body for a rotational joint
+        /// </summary>
+        /// <param name="jointPivot">pivot point relative to the joint (see <see cref="RotationalJoint_Base.basePoint"/>)</param>
+        /// <param name="jointTransform">world transform for the child object</param>
+        /// <param name="parentTransform">world transform for the parent object</param>
+        /// <param name="parentFrame">Matrix to be assigned to the joint's rotational frame</param>
+        /// <param name="jointFrame">Matrix to be assigned to the parent's rotational frame</param>
+        private static void GetFrames(Vector3 jointPivot, Matrix4 parentTransform, Matrix4 jointTransform, out Matrix4 parentFrame, out Matrix4 jointFrame)
+        {
+            parentFrame = Matrix4.CreateTranslation(jointPivot);
+            jointFrame = parentFrame * jointTransform * parentTransform.Inverted();
         }
     }
 }

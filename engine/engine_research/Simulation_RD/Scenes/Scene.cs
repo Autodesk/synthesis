@@ -8,19 +8,21 @@ using BulletSharp;
 using Simulation_RD.Graphics;
 using Simulation_RD.SimulationPhysics;
 
-namespace Simulation_RD
+namespace Simulation_RD.Scenes
 {
     /// <summary>
     /// Does all drawing and contains <see cref="Physics"/>
     /// </summary>
-    class Scene : GameWindow
+    class SimulationScene : GameWindow
     {
+        bool pause = false;
         Physics phys;
         float frameTime;
         int fps;
         int VBO;
         int shaderHandle;
         float lastTime;
+        float oldScroll;
         KeyboardKeyEventArgs cachedKeyboard = new KeyboardKeyEventArgs();
 
         int mxPrev, myPrev;
@@ -31,7 +33,10 @@ namespace Simulation_RD
 
         Camera c;
 
-        public Scene() : base(1500, 768, new OpenTK.Graphics.GraphicsMode(), "RnD Synthesis Test")
+        /// <summary>
+        /// Instantiates all the members not given default values
+        /// </summary>
+        public SimulationScene() : base(1500, 768, new OpenTK.Graphics.GraphicsMode(), "RnD Synthesis Test")
         {
             VSync = VSyncMode.Off;
             phys = new Physics();
@@ -41,7 +46,7 @@ namespace Simulation_RD
             CameraBindings.Add(Key.W, Camera_Movement.forward);
             CameraBindings.Add(Key.S, Camera_Movement.backward);
             CameraBindings.Add(Key.A, Camera_Movement.left);
-            CameraBindings.Add(Key.D, Camera_Movement.right);
+            CameraBindings.Add(Key.D, Camera_Movement.right);            
         }
 
         /// <summary>
@@ -63,7 +68,7 @@ namespace Simulation_RD
             this.MouseWheel += glControl1_MouseWheel;
             this.KeyDown += glControl1_KeyDown;
 
-            Action<EventHandler<KeyboardKeyEventArgs>> AddHandler = (handler) => KeyDown += handler;
+            //Action<EventHandler<KeyboardKeyEventArgs>> AddHandler = (handler) => KeyDown += handler;
 
             phys.World.DebugDrawer = new BulletDebugDrawer();
             base.OnLoad(e);            
@@ -79,12 +84,22 @@ namespace Simulation_RD
             base.OnUnload(e);
         }
 
+        /// <summary>
+        /// Updates physics and other stuff
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            c.LookAtRobot(phys.Skeleton.BulletObject.WorldTransform.ExtractTranslation());
+            c.Movespeed = cachedKeyboard.Shift ? 75 : 750;
             if (CameraBindings.ContainsKey(cachedKeyboard.Key))
-                c.ProcessKeyboard(CameraBindings[cachedKeyboard.Key], (float)e.Time);
+                ;// c.ProcessKeyboard(CameraBindings[cachedKeyboard.Key], (float)e.Time);
+            if (cachedKeyboard.Key == Key.B)
+                pause = !pause;
 
-            phys.Update((float)e.Time, cachedKeyboard);
+            if(!pause)
+                phys.Update((float)e.Time, cachedKeyboard);
+
             cachedKeyboard = new KeyboardKeyEventArgs();
         }
 
@@ -161,7 +176,8 @@ namespace Simulation_RD
         /// <param name="e"></param>
         private void glControl1_MouseWheel(object sender, MouseEventArgs e)
         {
-            c.ProcessMouseScroll(e.Mouse.WheelPrecise);
+            c.ProcessMouseScroll(e.Mouse.WheelPrecise - oldScroll);
+            oldScroll = e.Mouse.WheelPrecise;
         }
 
         /// <summary>
@@ -171,8 +187,8 @@ namespace Simulation_RD
         /// <param name="e"></param>
         private void glControl1_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
-            cachedKeyboard = e;
-            
+            cachedKeyboard = e;            
+                        
             switch (e.Key)
             {
                 case Key.Space:
