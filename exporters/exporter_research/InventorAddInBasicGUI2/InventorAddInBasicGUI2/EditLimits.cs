@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Inventor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,6 +57,17 @@ namespace InventorAddInBasicGUI2
             joint = j;
             txtLower.Text = j.LowerLim.ToString();
             txtUpper.Text = j.UpperLim.ToString();
+            if (joint.jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                    joint.jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+            {
+                this.lblTitle.Location = new System.Drawing.Point(75, 15);
+                this.lblTitle.Text = "Edit Linear Limits(mm)";
+            }
+            else
+            {
+                this.lblTitle.Location = new System.Drawing.Point(61, 15);
+                this.lblTitle.Text = "Edit Rotational Limits(Rad)";
+            }
         }
     }
 }
