@@ -90,7 +90,6 @@
   <ItemGroup>
     <Compile Include="GameFeatures\FileSelector.cs" />
     <Compile Include="Graphics\GUI\Button.cs" />
-    <Compile Include="Scenes\MenuScene.cs" />
     <Compile Include="Utility\AuxFunctions.cs" />
     <Compile Include="Utility\BXDConversions.cs" />
     <Compile Include="GameFeatures\Controls.cs" />
