@@ -3,7 +3,7 @@
 
 Name "Synthesis"
 
-Icon "C:\Users\t_hics\Desktop\LogoStuff\plantlogo(NoBack).ico"
+Icon "C:\Users\t_hics\Documents\GitHub\synthesis\installer\plantlogo(NoBack).ico"
 
 OutFile "SynthesisInstaller.exe"
 
@@ -20,12 +20,8 @@ UninstPage uninstConfirm
 UninstPage instfiles
 
 Section
- 
-    # read the value from the registry into the $0 register
-    ReadRegStr $0 HKLM "SOFTWARE\Autodesk\Inventor" CurrentVersion
- 
-    # print the results in a popup message box
-    MessageBox MB_OK "version: $0"
+
+;Where we can read registry data if we need it
  
 # default section end
 SectionEnd
@@ -45,7 +41,12 @@ Section "Synthesis (required)"
 
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayName" "Autodesk Synthesis -- Robot Simulator"
+                 "DisplayName" "Autodesk Synthesis" \
+                 "DisplayIcon" "C:\Users\t_hics\Documents\GitHub\synthesis\installer\plantlogo(NoBack).ico" \
+                 "Publisher" "Autodesk inc." \
+                 "Readme" "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf" \
+                 "URLInfoAbout" "BXD.Autodesk.com/tutorials" \
+                 ""
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
 createShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
@@ -57,24 +58,21 @@ WriteUninstaller "uninstall.exe"
 SectionEnd
 
 Section "Exporter Plugin (optional)"
-  File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
 
   ; Set output path to the installation directory.
-  IfFileExists "$APPDATA\Autodesk\ApplicationPlugins" 0 +4
-  SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\Synthesis"
-  return
+  IfFileExists "$APPDATA\Autodesk\ApplicationPlugins" +1 +5
+    ;MessageBox MB_OK "Inventor is installed"
+    SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\Synthesis"
+    File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
+  ;MessageBox MB_OK "Inventor is installed"
+    Goto +2
+    SetOutPath "$INSTDIR\Exporter"
+    File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
 
-  SetOutPath "$INSTDIR\Exporter"
 
-  ;SetOutPath $EXPDIR
 
-  MessageBox MB_OK "Inventor is installed"
-  ;SetOutPath $APPDATA\Roaming\Autodesk\Inventor 2017\Addins
-  
-  ; Put file there
-  ;File "example2.nsi"
-  
- 
+
+
   
 SectionEnd
 
