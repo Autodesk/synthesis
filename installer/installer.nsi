@@ -41,14 +41,26 @@ Section "Synthesis (required)"
 
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                 "DisplayName" "Autodesk Synthesis" \
-                 "DisplayIcon" "C:\Users\t_hics\Documents\GitHub\synthesis\installer\plantlogo(NoBack).ico" \
-                 "Publisher" "Autodesk inc." \
-                 "Readme" "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf" \
-                 "URLInfoAbout" "BXD.Autodesk.com/tutorials" \
-                 ""
+                "DisplayName" "Autodesk Synthesis" 
+
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                "DisplayIcon" "C:\Users\t_hics\Documents\GitHub\synthesis\installer\plantlogo(NoBack).ico"
+
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                "Publisher" "Autodesk" 
+
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                "Readme" "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
+
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                "URLInfoAbout" "BXD.Autodesk.com/tutorials" 
+
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
+                 "DisplayVersion" "3.0.1.0"
+
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+
 createShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\Synthesis.exe"
 
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
@@ -70,10 +82,6 @@ Section "Exporter Plugin (optional)"
     File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
 
 
-
-
-
-  
 SectionEnd
 
 Section "Code Emulator (optional)"
