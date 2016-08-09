@@ -7,9 +7,11 @@ using BulletUnity;
 
 public partial class RigidNode : RigidNode_Base
 {
-    private GameObject gameObject;
+    public GameObject MainObject;
+    private Transform root;
     private Component joint;
     private PhysicalProperties physicalProperties;
+    private Vector3 comOffset;
 
     public RigidNode(Guid guid)
         : base(guid)
@@ -18,9 +20,11 @@ public partial class RigidNode : RigidNode_Base
 
     public void CreateTransform(Transform root)
     {
-        gameObject = new GameObject();
-        gameObject.transform.parent = root;
-        gameObject.transform.localPosition = Vector3.zero;
-        gameObject.name = ModelFileName;
+        MainObject = new GameObject(ModelFileName);
+        MainObject.transform.parent = root;
+
+        this.root = root;
+
+        comOffset = Vector3.zero;
     }
 }
