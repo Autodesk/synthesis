@@ -4,11 +4,18 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using BulletUnity;
+using BulletSharp;
 
 public partial class RigidNode : RigidNode_Base
 {
     private const float CCD_MOTION_THRESHOLD = 5f;
     private const float CCD_SWEPT_SPHERE_RADIUS = 0.1f;
+
+    private enum AxisType
+    {
+        X,
+        Y
+    }
     
     public void CreateJoint()
     {
@@ -24,57 +31,87 @@ public partial class RigidNode : RigidNode_Base
 
                 RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
 
-                BHingedConstraint hc = (BHingedConstraint)(joint = ConfigJoint<BHingedConstraint>(rNode.basePoint.AsV3(), rNode.axis.AsV3()));
+                BHingedConstraint hc = (BHingedConstraint)(joint = ConfigJoint<BHingedConstraint>(rNode.basePoint.AsV3() - comOffset, rNode.axis.AsV3(), AxisType.X));
                 
+                hc.localConstraintAxisX = rNode.axis.AsV3().normalized;
+
                 if (hc.setLimit = rNode.hasAngularLimit)
                 {
                     hc.lowLimitAngleRadians = rNode.angularLimitLow;
                     hc.highLimitAngleRadians = rNode.angularLimitHigh;
                 }
 
-                // Create wheel?
                 hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
 
-                BRigidBody rigidBody = gameObject.GetComponent<BRigidBody>();
-
-                // 'tis a wheel, so it likely needs more mass...
-                //rigidBody.mass *= 50f;
+                if (this.HasDriverMeta<WheelDriverMeta>())
+                    ApplyJointMotors();
                 
-                // ... and continuous collision detection
-                rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
-                rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
+                break;
+            case SkeletalJointType.CYLINDRICAL:
+                
+                CylindricalJoint_Base cNode = (CylindricalJoint_Base)GetSkeletalJoint();
 
-                // TODO: Spinning wheels have gone to crap. Fix it.
+                B6DOFConstraint bc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(cNode.basePoint.AsV3() - comOffset, cNode.axis.AsV3(), AxisType.X));
 
+                bc.linearLimitLower = new Vector3(cNode.linearLimitStart * 0.01f, 0f, 0f);
+                bc.linearLimitUpper = new Vector3(cNode.linearLimitEnd * 0.01f, 0f, 0f);
+
+                bc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
+
+                break;
+            case SkeletalJointType.LINEAR:
+                
+                LinearJoint_Base lNode = (LinearJoint_Base)GetSkeletalJoint();
+
+                Vector3 axis = lNode.axis.AsV3().normalized;
+                // TODO: Figure out how to make a vertical slider?
+                BSliderConstraint sc = (BSliderConstraint)(joint = ConfigJoint<BSliderConstraint>(lNode.basePoint.AsV3() - comOffset, lNode.axis.AsV3(), AxisType.X));
+
+                //sc.localConstraintAxisX = new Vector3(0f, 1f, 0f);//lNode.axis.AsV3();
+                //sc.localConstraintAxisY = new Vector3(1f, 0f, 0f);//lNode.axis.AsV3();
+
+                if (axis.x < 0) axis.x *= -1f;
+                if (axis.y < 0) axis.y *= -1f;
+                if (axis.z < 0) axis.z *= -1f;
+
+                sc.localConstraintAxisX = axis;
+                sc.localConstraintAxisY = new Vector3(axis.y, axis.z, axis.x);
+
+                sc.lowerLinearLimit = lNode.linearLimitLow * 0.01f;
+                sc.upperLinearLimit = lNode.linearLimitHigh * 0.01f;
+
+                sc.lowerAngularLimitRadians = 0f;
+                sc.upperAngularLimitRadians = 0f;
+
+                sc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
+
+                bool b = this.HasDriverMeta<ElevatorDriverMeta>();
+
+                if (GetSkeletalJoint().cDriver != null)
+                {
+                    if (GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
+                    {
+                    }
+                }
+                
                 break;
         }
     }
 
-    private void OrientWheelNormals()
+    public T GetJoint<T>() where T : BTypedConstraint
     {
-        if (GetSkeletalJoint() is RotationalJoint_Base)
-        {
-            Vector3 com = ((RigidNode)GetParent()).physicalProperties.centerOfMass.AsV3();
-            RotationalJoint_Base rJoint = (RotationalJoint_Base)GetSkeletalJoint();
-            Vector3 diff = rJoint.basePoint.AsV3() - com;
-            double dot = Vector3.Dot(diff, rJoint.axis.AsV3());
-            if (dot > 0)
-                rJoint.axis = rJoint.axis.Multiply(-1f);
-        }
+        return (T)joint;
     }
 
-    private T ConfigJoint<T>(Vector3 position, Vector3 axis) where T : BTypedConstraint
+    private T ConfigJoint<T>(Vector3 position, Vector3 axis, AxisType axisType) where T : BTypedConstraint
     {
-        GameObject parent = ((RigidNode)GetParent()).gameObject;
+        GameObject parent = ((RigidNode)GetParent()).MainObject;
 
-        T joint = gameObject.AddComponent<T>();
+        T joint = MainObject.AddComponent<T>();
         joint.otherRigidBody = parent.GetComponent<BRigidBody>();
-        //joint.thisRigidBody = parent.GetComponent<BRigidBody>();
         joint.localConstraintPoint = position;
 
-        axis.Normalize();
-        joint.localConstraintAxisX = axis;
-        joint.debugDrawSize = 0.1f; // For debugging.
+        joint.debugDrawSize = 0.1f;
 
         return joint;
     }
