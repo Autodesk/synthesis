@@ -133,6 +133,9 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="EditLimits.resx">
+      <DependentUpon>EditLimits.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

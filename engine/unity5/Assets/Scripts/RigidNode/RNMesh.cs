@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using BulletUnity;
+using BulletSharp;
+
 public partial class RigidNode : RigidNode_Base
 {
     public bool CreateMesh(string filePath)
@@ -14,11 +16,13 @@ public partial class RigidNode : RigidNode_Base
         if (!mesh.GUID.Equals(GUID))
             return false;
 
+        List<GameObject> meshObjects = new List<GameObject>();
+
         AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
-            GameObject meshObject = new GameObject(gameObject.name + "_mesh" + id);
-            meshObject.transform.parent = gameObject.transform;
-            meshObject.transform.localPosition = Vector3.zero;
+            GameObject meshObject = new GameObject(MainObject.name + "_mesh");
+            meshObjects.Add(meshObject);
+
             meshObject.AddComponent<MeshFilter>().mesh = meshu;
             meshObject.AddComponent<MeshRenderer>();
 
@@ -27,27 +31,58 @@ public partial class RigidNode : RigidNode_Base
                 materials[i] = sub.surfaces[i].AsMaterial();
 
             meshObject.GetComponent<MeshRenderer>().materials = materials;
-            BulletUnity.Primitives.BConvexHull convexHull = gameObject.AddComponent<BulletUnity.Primitives.BConvexHull>();
-            convexHull.meshSettings.UserMesh = meshu;//AuxFunctions.GenerateCollisionMesh(meshu);
-            convexHull.BuildMesh(); // Doesn't work... oh wait there's two rigid bodies.
+
+            meshObject.transform.position = root.position;
+            meshObject.transform.rotation = root.rotation;
+
+            comOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
+
         });
+
+        Mesh[] colliders = new Mesh[mesh.colliders.Count];
 
         AuxFunctions.ReadMeshSet(mesh.colliders, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
-            //BulletUnity.Primitives.BConvexHull convexHull = gameObject.AddComponent<BulletUnity.Primitives.BConvexHull>();
-            //convexHull.meshSettings.UserMesh = AuxFunctions.GenerateCollisionMesh(meshu);
-            //convexHull.BuildMesh(); // Doesn't work... oh wait there's two rigid bodies.
-            //BConvexHullShape convexHull = gameObject.AddComponent<BConvexHullShape>();
-            //convexHull.HullMesh = meshu;
-            //convexHull.GetCollisionShape().Margin = 0f;// Main.COLLISION_MARGIN;
-            //gameObject.GetComponentInChildren<MeshFilter>().mesh = meshu; // For testing.
+            colliders[id] = meshu;
         });
+
+        MainObject.transform.position = root.position + comOffset;
+        MainObject.transform.rotation = root.rotation;
+
+        foreach (GameObject meshObject in meshObjects)
+            meshObject.transform.parent = MainObject.transform;
+
+        MainObject.AddComponent<BRigidBody>();
+
+        if (this.HasDriverMeta<WheelDriverMeta>())
+        {
+            CreateWheel();
+        }
+        else
+        {
+            BMultiHullShape hullShape = MainObject.AddComponent<BMultiHullShape>();
+
+            foreach (Mesh collider in colliders)
+            {
+                ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(collider.vertices, x => x.ToBullet()), collider.vertices.Length);
+                hull.Margin = 0f;
+                hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-comOffset.ToBullet()));
+            }
+        }
 
         physicalProperties = mesh.physics;
 
-        BRigidBody rigidBody = gameObject.GetComponent<BRigidBody>();//gameObject.AddComponent<BRigidBody>();
-        rigidBody.mass = 1f;
-        //rigidBody.mass = mesh.physics.mass;
+        BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
+        rigidBody.mass = mesh.physics.mass;
+        rigidBody.friction = 1f;
+
+        foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
+        {
+            rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+        }
+        
+        if (this.HasDriverMeta<WheelDriverMeta>())
+            UpdateWheelMass(); // 'tis a wheel, so needs more mass for joints to work correctly.
 
         #region Free mesh
         foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
