@@ -22,7 +22,37 @@ UninstPage instfiles
 Section
 
 ;Where we can read registry data if we need it
- 
+IfFileExists "$INSTDIR" +1 +25
+    MessageBox MB_YESNO "You appear to have synthesis installed, would you like to reinstall it?" IDYES true IDNO false
+      ; Remove registry keys
+      true:
+        DeleteRegKey HKLM SOFTWARE\Synthesis
+
+        RMDir /r /REBOOTOK $INSTDIR
+        RMDir /r /REBOOTOK $APPDATA\Autodesk\ApplicationPlugins\Synthesis
+        ; Remove files and uninstaller
+        Delete $INSTDIR\Synthesis.nsi
+        Delete $INSTDIR\uninstall.exe
+        Delete $INSTDIR\*
+
+        ; Remove shortcuts, if any
+        Delete "$SMPROGRAMS\Synthesis.lnk"
+
+        ; Remove directories used
+        RMDir $INSTDIR
+
+        DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
+
+        Goto next
+        
+      false:
+        Quit
+
+      next:
+      
+
+
+
 # default section end
 SectionEnd
 
@@ -81,7 +111,6 @@ Section "Exporter Plugin (optional)"
     SetOutPath "$INSTDIR\Exporter"
     File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
 
-
 SectionEnd
 
 Section "Code Emulator (optional)"
@@ -118,8 +147,8 @@ Section "Uninstall"
 SectionEnd
 
 Function .onInstSuccess
-    MessageBox MB_YESNO "Congrats, it worked. View readme?" IDNO NoReadme
-      Exec notepad.exe ; view readme or whatever, if you want.
+    MessageBox MB_YESNO "Thank you for installing Synthesis, would you like to view our Readme?" IDNO NoReadme
+      ExecShell "" "$instdir\readme.rtf"
     NoReadme:
 FunctionEnd
 
