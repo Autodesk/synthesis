@@ -47,12 +47,47 @@ public class AuxFunctions
         }
     }
 
+    public static void GetCombinedMesh(List<BXDAMesh.BXDASubMesh> meshes, HandleMesh handleMesh)
+    {
+        BXDAMesh.BXDASubMesh combinedMesh = new BXDAMesh.BXDASubMesh();
+        combinedMesh.verts = new double[0];
+        combinedMesh.norms = new double[0];
+        combinedMesh.surfaces = new List<BXDAMesh.BXDASurface>();
+
+        foreach (BXDAMesh.BXDASubMesh mesh in meshes)
+        {
+            double[] oldVertices = combinedMesh.verts;
+            double[] newVertices = new double[oldVertices.Length + mesh.verts.Length];
+            oldVertices.CopyTo(newVertices, 0);
+            mesh.verts.CopyTo(newVertices, oldVertices.Length);
+
+            combinedMesh.verts = newVertices;
+
+            double[] oldNorms = combinedMesh.verts;
+            double[] newNorms = new double[oldNorms.Length + mesh.norms.Length];
+            oldNorms.CopyTo(newNorms, 0);
+            mesh.norms.CopyTo(newNorms, oldNorms.Length);
+
+            combinedMesh.norms = newNorms;
+
+            combinedMesh.surfaces.AddRange(mesh.surfaces);
+        }
+
+        List<BXDAMesh.BXDASubMesh> combinedMeshes = new List<BXDAMesh.BXDASubMesh>();
+        combinedMeshes.Add(combinedMesh);
+
+        ReadMeshSet(combinedMeshes, delegate (int id, BXDAMesh.BXDASubMesh subMesh, Mesh mesh)
+        {
+            handleMesh(id, subMesh, mesh);
+        });
+    }
+
     /// <summary>
     /// Generates a convex hull collision mesh from the given original mesh.
     /// </summary>
     /// <param name="original"></param>
     /// <returns></returns>
-    public static Mesh GenerateCollisionMesh(Mesh original)
+    public static Mesh GenerateCollisionMesh(Mesh original, Vector3 offset = default(Vector3))
     {
         ConvexHullShape tempShape = new ConvexHullShape(Array.ConvertAll(original.vertices, x => x.ToBullet()), original.vertices.Length);
         tempShape.Margin = 0f;
@@ -64,7 +99,7 @@ public class AuxFunctions
 
         Vector3[] vertices = new Vector3[shapeHull.NumVertices];
         for (int i = 0; i < vertices.Length; i++)
-            vertices[i] = shapeHull.Vertices[i].ToUnity();
+            vertices[i] = shapeHull.Vertices[i].ToUnity() - offset;
 
         int[] triangles = new int[shapeHull.NumIndices];
         for (int i = 0; i < triangles.Length; i++)

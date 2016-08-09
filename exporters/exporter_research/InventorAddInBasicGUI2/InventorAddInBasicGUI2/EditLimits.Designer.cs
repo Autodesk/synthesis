@@ -35,70 +35,72 @@ namespace InventorAddInBasicGUI2
         /// </summary>
         private void InitializeComponent()
         {
-
-            lblUpper = new System.Windows.Forms.Label();
-            lblLower = new System.Windows.Forms.Label();
+            this.lblUpper = new System.Windows.Forms.Label();
+            this.lblLower = new System.Windows.Forms.Label();
+            this.lblTitle = new System.Windows.Forms.Label();
             this.txtUpper = new System.Windows.Forms.TextBox();
             this.txtLower = new System.Windows.Forms.TextBox();
             this.tabDOF = new System.Windows.Forms.TabControl();
             this.btnSave = new System.Windows.Forms.Button();
             this.SuspendLayout();
-
-            this.SuspendLayout();
-            this.Controls.Add(lblUpper);
-            this.Controls.Add(lblLower);
-            this.Controls.Add(this.txtUpper);
-            this.Controls.Add(this.txtLower);
-            this.Location = new System.Drawing.Point(4, 25);
-       //     this.Name = "tabDOF_" + dof.GetHashCode();
-            this.Size = new System.Drawing.Size(259, 77);
-            this.TabIndex = 0;
-       //     this.Text = label;
-       //     this.UseVisualStyleBackColor = true;
-
-            lblUpper.AutoSize = true;
-            lblUpper.Location = new System.Drawing.Point(190, 15);
-            lblUpper.Name = "lblUpper";
-            lblUpper.Size = new System.Drawing.Size(50, 17);
-            lblUpper.TabIndex = 4;
-            lblUpper.Text = "Upper";
-
-            lblLower.AutoSize = true;
-            lblLower.Location = new System.Drawing.Point(60, 15);
-            lblLower.Name = "lblLower";
-            lblLower.Size = new System.Drawing.Size(50, 17);
-            lblLower.TabIndex = 3;
-            lblLower.Text = "Lower";
-
-            this.txtUpper.Location = new System.Drawing.Point(150, 35);
+            // 
+            // lblUpper
+            // 
+            this.lblUpper.AutoSize = true;
+            this.lblUpper.Location = new System.Drawing.Point(190, 35);
+            this.lblUpper.Name = "lblUpper";
+            this.lblUpper.Size = new System.Drawing.Size(47, 17);
+            this.lblUpper.TabIndex = 4;
+            this.lblUpper.Text = "Upper";
+            // 
+            // lblLower
+            // 
+            this.lblLower.AutoSize = true;
+            this.lblLower.Location = new System.Drawing.Point(60, 35);
+            this.lblLower.Name = "lblLower";
+            this.lblLower.Size = new System.Drawing.Size(46, 17);
+            this.lblLower.TabIndex = 3;
+            this.lblLower.Text = "Lower";
+            // 
+            // txtUpper
+            // 
+            this.txtUpper.Location = new System.Drawing.Point(150, 60);
             this.txtUpper.Name = "txtUpper";
             this.txtUpper.Size = new System.Drawing.Size(120, 22);
             this.txtUpper.TabIndex = 1;
             this.txtUpper.Text = "1";
-            this.txtUpper.TextChanged += new System.EventHandler(UpperLimitChanged);
-
-            this.txtLower.Location = new System.Drawing.Point(20, 35);
+            this.txtUpper.TextChanged += new System.EventHandler(this.UpperLimitChanged);
+            // 
+            // txtLower
+            // 
+            this.txtLower.Location = new System.Drawing.Point(20, 60);
             this.txtLower.Name = "txtLower";
             this.txtLower.Size = new System.Drawing.Size(120, 22);
             this.txtLower.TabIndex = 0;
             this.txtLower.Text = "1";
-            this.txtLower.TextChanged += new System.EventHandler(LowerLimitChanged);
-
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            this.txtLower.TextChanged += new System.EventHandler(this.LowerLimitChanged);
             // 
             // tabDOF
             // 
             this.tabDOF.Location = new System.Drawing.Point(13, 5);
             this.tabDOF.Name = "tabDOF";
             this.tabDOF.SelectedIndex = 0;
-            this.tabDOF.Size = new System.Drawing.Size(267, 60);
+            this.tabDOF.Size = new System.Drawing.Size(265, 87);
             this.tabDOF.TabIndex = 0;
+            // 
+            // lblTitle
+            // 
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Location = new System.Drawing.Point(123, 15);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(47, 17);
+            this.lblTitle.TabIndex = 5;
+            this.lblTitle.Text = "Upper";
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(21, 68);
-            this.btnSave.Name = "btnOkay";
+            this.btnSave.Location = new System.Drawing.Point(20, 98);
+            this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(252, 26);
             this.btnSave.TabIndex = 0;
             this.btnSave.Text = "OK";
@@ -109,13 +111,20 @@ namespace InventorAddInBasicGUI2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 102);
+            this.ClientSize = new System.Drawing.Size(292, 136);
+            this.Controls.Add(this.lblUpper);
+            this.Controls.Add(this.lblLower);
+            this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.txtUpper);
+            this.Controls.Add(this.txtLower);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.tabDOF);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Location = new System.Drawing.Point(4, 25);
             this.Name = "EditLimits";
-            this.Text = "EditLimits";
+            this.Text = "Edit Limits";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
         #endregion
@@ -124,153 +133,7 @@ namespace InventorAddInBasicGUI2
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.TextBox txtUpper;
         private System.Windows.Forms.TextBox txtLower;
-        private System.Windows.Forms.Label lblUpper, lblLower;
-        private class LimitPane<T> : System.Windows.Forms.TabPage
-        {
-           
-            public LimitPane(T dof, string label)
-            {/*
-                this.dof = dof;
-                if (!(dof is AngularDOF) && !(dof is LinearDOF))
-                {
-                    throw new System.InvalidOperationException("Bad DOF Type: " + dof.GetType().Name);
-                }
-
-                lblUpper = new System.Windows.Forms.Label();
-                lblLower = new System.Windows.Forms.Label();
-                this.chkHasLimits = new System.Windows.Forms.CheckBox();
-                this.txtUpper = new System.Windows.Forms.TextBox();
-                this.txtLower = new System.Windows.Forms.TextBox();
-
-                this.SuspendLayout();
-                this.Controls.Add(lblUpper);
-                this.Controls.Add(lblLower);
-                this.Controls.Add(this.chkHasLimits);
-                this.Controls.Add(this.txtUpper);
-                this.Controls.Add(this.txtLower);
-                this.Location = new System.Drawing.Point(4, 25);
-                this.Name = "tabDOF_" + dof.GetHashCode();
-                this.Size = new System.Drawing.Size(259, 77);
-                this.TabIndex = 0;
-                this.Text = label;
-                this.UseVisualStyleBackColor = true;
-
-                lblUpper.AutoSize = true;
-                lblUpper.Location = new System.Drawing.Point(128, 28);
-                lblUpper.Name = "lblUpper";
-                lblUpper.Size = new System.Drawing.Size(47, 17);
-                lblUpper.TabIndex = 4;
-                lblUpper.Text = "Upper";
-
-                lblLower.AutoSize = true;
-                lblLower.Location = new System.Drawing.Point(3, 28);
-                lblLower.Name = "lblLower";
-                lblLower.Size = new System.Drawing.Size(46, 17);
-                lblLower.TabIndex = 3;
-                lblLower.Text = "Lower";
-
-                this.chkHasLimits.AutoSize = true;
-                this.chkHasLimits.Location = new System.Drawing.Point(4, 4);
-                this.chkHasLimits.Name = "chkHasLimits";
-                this.chkHasLimits.Size = new System.Drawing.Size(95, 21);
-                this.chkHasLimits.TabIndex = 2;
-                this.chkHasLimits.Text = "Has Limits";
-                this.chkHasLimits.UseVisualStyleBackColor = true;
-                this.chkHasLimits.CheckStateChanged += changedProps;
-
-                this.txtUpper.Location = new System.Drawing.Point(131, 48);
-                this.txtUpper.Name = "txtUpper";
-                this.txtUpper.Size = new System.Drawing.Size(125, 22);
-                this.txtUpper.TabIndex = 1;
-                this.txtUpper.TextChanged += changedProps;
-
-                this.txtLower.Location = new System.Drawing.Point(4, 48);
-                this.txtLower.Name = "txtLower";
-                this.txtLower.Size = new System.Drawing.Size(121, 22);
-                this.txtLower.TabIndex = 0;
-                this.txtLower.TextChanged += changedProps;
-                this.ResumeLayout(false);
-                this.PerformLayout();
-
-                loadProps();
-            }
-
-            void loadProps()
-            {
-                if (this.dof is AngularDOF)
-                {
-                    AngularDOF dof = (AngularDOF)this.dof;
-                    chkHasLimits.Checked = dof.hasAngularLimits();
-                    lblUpper.Visible = lblLower.Visible = txtUpper.Visible = txtLower.Visible = chkHasLimits.Checked;
-
-                    txtLower.Text = Convert.ToString(cacheLower = dof.lowerLimit);
-                    txtUpper.Text = Convert.ToString(cacheUpper = dof.upperLimit);
-                    lblLower.Text = "Lower (rad)";
-                    lblUpper.Text = "Upper (rad)";
-                }
-                else if (this.dof is LinearDOF)
-                {
-                    LinearDOF dof = (LinearDOF)this.dof;
-                    chkHasLimits.Checked = dof.hasUpperLinearLimit() || dof.hasLowerLinearLimit();
-                    lblUpper.Visible = lblLower.Visible = txtUpper.Visible = txtLower.Visible = chkHasLimits.Checked;
-
-                    txtLower.Text = Convert.ToString(cacheLower = dof.lowerLimit);
-                    txtUpper.Text = Convert.ToString(cacheUpper = dof.upperLimit);
-                    lblLower.Text = "Lower (cm)";
-                    lblUpper.Text = "Upper (cm)";
-                }
-            }
-
-            public void resetProps()
-            {
-                if (this.dof is AngularDOF)
-                {
-                    AngularDOF dof = (AngularDOF)this.dof;
-                    dof.lowerLimit = cacheLower;
-                    dof.upperLimit = cacheUpper;
-                }
-                else if (this.dof is LinearDOF)
-                {
-                    LinearDOF dof = (LinearDOF)this.dof;
-                    dof.lowerLimit = cacheLower;
-                    dof.upperLimit = cacheUpper;
-                }
-            }
-            void changedProps(object sender, System.EventArgs e)
-            {
-                changedProps(false);
-            }
-
-            public bool changedProps(bool report)
-            {
-                lblLower.Visible = txtLower.Visible = chkHasLimits.Checked;
-                lblUpper.Visible = txtUpper.Visible = chkHasLimits.Checked;
-
-                try
-                {
-                    if (this.dof is AngularDOF)
-                    {
-                        AngularDOF dof = (AngularDOF)this.dof;
-                        dof.lowerLimit = chkHasLimits.Checked ? Convert.ToSingle(txtLower.Text) : float.NegativeInfinity;
-                        dof.upperLimit = chkHasLimits.Checked ? Convert.ToSingle(txtUpper.Text) : float.PositiveInfinity;
-                    }
-                    else if (this.dof is LinearDOF)
-                    {
-                        LinearDOF dof = (LinearDOF)this.dof;
-                        dof.lowerLimit = chkHasLimits.Checked ? Convert.ToSingle(txtLower.Text) : float.NegativeInfinity;
-                        dof.upperLimit = chkHasLimits.Checked ? Convert.ToSingle(txtUpper.Text) : float.PositiveInfinity;
-                    }
-                    return true;
-                }
-                catch (FormatException)
-                {
-                    if (report)
-                    {
-                        System.Windows.Forms.MessageBox.Show("Invalid number format");
-                    }
-                    return false;
-                }*/
-            }
-        }
+        private System.Windows.Forms.Label lblUpper, lblLower, lblTitle;
+        
     }
 }
