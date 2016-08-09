@@ -7,7 +7,11 @@ using System.Collections.Generic;
 
 public class Main : MonoBehaviour
 {
-    public const float COLLISION_MARGIN = 0.025f;
+    private const bool ROBOT_BRAKING_ENABLED = true;
+    private const float ROBOT_TOP_SPEED = 150f;
+    private const float ROBOT_TURNING_SCALE = 0.25f;
+
+    private UnityPacket unityPacket;
 
     private DynamicCamera dynamicCamera;
 
@@ -17,20 +21,27 @@ public class Main : MonoBehaviour
     private GameObject robotObject;
     private RigidNode_Base rootNode;
 
+    List<GameObject> extraSpheres;
+
     private System.Random random;
 
     // Use this for initialization
     void Start ()
     {
+        unityPacket = new UnityPacket();
+        unityPacket.Start();
+
         BPhysicsWorld world = gameObject.AddComponent<BPhysicsWorld>();
         world.maxSubsteps = 1000;
-        world.DebugDrawMode = DebugDrawModes.DrawConstraintLimits | DebugDrawModes.DrawConstraints;
+        world.DebugDrawMode = DebugDrawModes.DrawConstraintLimits | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawWireframe;
         world.DoDebugDraw = true;
 
         Debug.Log(LoadField() ? "Load field success!" : "Load field failed.");
         Debug.Log(LoadRobot() ? "Load robot success!" : "Load robot failed.");
 
         dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
+
+        extraSpheres = new List<GameObject>();
 
         random = new System.Random();
 	}
@@ -41,22 +52,31 @@ public class Main : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             Vector3 spawnPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 5f);
-            GameObject newObject = (GameObject)Instantiate(GameObject.Find("YELLOW_TOTE:1"), Camera.main.ScreenToWorldPoint(spawnPoint), Quaternion.identity);
-            Material newMaterial = new Material(newObject.GetComponentInChildren<MeshRenderer>().sharedMaterial);
-            newMaterial.color = new Color((float)random.NextDouble(), (float)random.NextDouble(), (float)random.NextDouble());
-            newObject.GetComponentInChildren<MeshRenderer>().sharedMaterial = newMaterial;
+            GameObject newObject = (GameObject)Instantiate(GameObject.Find("GE-16180_1279"), Camera.main.ScreenToWorldPoint(spawnPoint), Quaternion.identity);
+            newObject.AddComponent<Rainbow>();
+            extraSpheres.Add(newObject);
         }
 	}
 
     void FixedUpdate()
     {
-        BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
-        GameObject g = rigidBody.gameObject;
+        if (rootNode != null)
+        {
+            UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
 
-        rigidBody.AddImpulse(new Vector3(
-            Input.GetKey(KeyCode.RightArrow) ? 1f : Input.GetKey(KeyCode.LeftArrow) ? -1f : 0f,
-            Input.GetKey(KeyCode.W) ? 5f : 0f,
-            Input.GetKey(KeyCode.UpArrow) ? 1f : Input.GetKey(KeyCode.DownArrow) ? -1f : 0f));
+            DriveJoints.UpdateAllMotors(rootNode, packet.dio);
+            
+        }
+
+        BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
+
+        if (Input.GetKey(KeyCode.R))
+        {
+            foreach (GameObject g in extraSpheres)
+                Destroy(g);
+
+            ResetRobot();
+        }
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
@@ -81,7 +101,7 @@ public class Main : MonoBehaviour
     bool LoadRobot()
     {
         robotObject = new GameObject("Robot");
-        robotObject.transform.position = new Vector3(0f, 2f, 0f);
+        robotObject.transform.position = new Vector3(0f, 1f, 0f);
 
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
@@ -92,9 +112,6 @@ public class Main : MonoBehaviour
         rootNode = BXDJSkeleton.ReadSkeleton("C:\\BXDJTest\\skeleton.bxdj");
         rootNode.ListAllNodes(nodes);
 
-        //for (int i = 0; i < 2; i++)
-        //{
-        //    RigidNode node = (RigidNode)nodes[i];
         foreach (RigidNode_Base n in nodes)
         {
             RigidNode node = (RigidNode)n;
@@ -107,9 +124,23 @@ public class Main : MonoBehaviour
                 return false;
             }
 
-            node.CreateJoint(); // WIP.
+            node.CreateJoint();
         }
 
-        return true; // Temp
+        return true;
+    }
+
+    void ResetRobot()
+    {
+        foreach (BRigidBody rb in robotObject.GetComponentsInChildren<BRigidBody>())
+        {
+            RigidBody r = (RigidBody)rb.GetCollisionObject();
+            r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+
+            BulletSharp.Math.Matrix newTransform = r.WorldTransform;
+            newTransform.Origin = (rb.transform.GetChild(0).GetComponent<MeshFilter>().mesh.bounds.center + new Vector3(0f, 1f, 0f)).ToBullet();
+            newTransform.Basis = BulletSharp.Math.Matrix.Identity;
+            r.WorldTransform = newTransform;
+        }
     }
 }
