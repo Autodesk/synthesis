@@ -134,6 +134,58 @@ namespace Simulation_RD.Graphics
         {
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(1.0f, 0, 0);
+            Vector3 A, B, C, D, E, F, nMin, nMax;
+            A = Vector3.Transform(new Vector3(max.X, min.Y, min.Z), trans);
+            B = Vector3.Transform(new Vector3(max.X, min.Y, max.Z), trans);
+            C = Vector3.Transform(new Vector3(min.X, min.Y, max.Z), trans);
+            D = Vector3.Transform(new Vector3(min.X, max.Y, min.Z), trans);
+            E = Vector3.Transform(new Vector3(max.X, max.Y, min.Z), trans);
+            F = Vector3.Transform(new Vector3(min.X, max.Y, max.Z), trans);
+            nMax = Vector3.Transform(max, trans);
+            nMin = Vector3.Transform(min, trans);
+            
+            //Top
+            GL.Vertex3(nMin);
+            GL.Vertex3(A);
+            GL.Vertex3(B);
+            GL.Vertex3(C);
+            //Left
+            GL.Vertex3(nMin);
+            GL.Vertex3(C);
+            GL.Vertex3(F);
+            GL.Vertex3(D);
+            //Front
+            GL.Vertex3(B);
+            GL.Vertex3(C);
+            GL.Vertex3(F);
+            GL.Vertex3(nMax);
+            //Right
+            GL.Vertex3(A);
+            GL.Vertex3(B);
+            GL.Vertex3(nMax);
+            GL.Vertex3(E);
+            //Back
+            GL.Vertex3(nMin);
+            GL.Vertex3(A);
+            GL.Vertex3(E);
+            GL.Vertex3(D);
+            //Bot
+            GL.Vertex3(nMax);
+            GL.Vertex3(E);
+            GL.Vertex3(D);
+            GL.Vertex3(F);
+            GL.End();
+
+            max += new Vector3(1, 1, 1);
+            min -= new Vector3(1, 1, 1);
+            DrawBox2(ref min, ref max, ref trans, color);
+            //Console.WriteLine("Drew Box");
+        }
+
+        public void DrawBox2(ref Vector3 min, ref Vector3 max, ref Matrix4 trans, OpenTK.Graphics.Color4 color)
+        {
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Color3(0, 0, 0);
             Vector3 A, B, C, D, E, F;
             A = Vector3.Transform(new Vector3(max.X, min.Y, min.Z), trans);
             B = Vector3.Transform(new Vector3(max.X, min.Y, max.Z), trans);
@@ -143,7 +195,7 @@ namespace Simulation_RD.Graphics
             F = Vector3.Transform(new Vector3(min.X, max.Y, max.Z), trans);
             max = Vector3.Transform(max, trans);
             min = Vector3.Transform(min, trans);
-            
+
             //Top
             GL.Vertex3(min);
             GL.Vertex3(A);
@@ -175,8 +227,6 @@ namespace Simulation_RD.Graphics
             GL.Vertex3(D);
             GL.Vertex3(F);
             GL.End();
-
-            //Console.WriteLine("Drew Box");
         }
 
         public void DrawCapsule(float radius, float halfHeight, int upAxis, ref Matrix4 transform, OpenTK.Graphics.Color4 color)
@@ -190,24 +240,31 @@ namespace Simulation_RD.Graphics
         }
         public void DrawCylinder(float radius, float halfHeight, int upAxis, ref Matrix4 transform, OpenTK.Graphics.Color4 color)
         {
-            const int numCircles = 4;
-            const int numPoints = 16;
-            //TODO draw cylinders
-            GL.Color3(0, 1.0f, 0);
-            GL.Begin(PrimitiveType.Lines);
-            Vector3[] points = new Vector3[numCircles * numPoints];
-            for (int i = 0; i < numCircles; i++)
-                for (int j = 0; j < numPoints; j++)
-                {
-                    float theta = (float)(j * Math.PI * 2 / 16);
-                    float x = (float)Math.Cos(theta) * radius;
-                    float z = (float)Math.Sin(theta) * radius; //because Y is vertical?
-                    points[i * 16 + j] = new Vector3(x, i / numCircles * halfHeight * 2, z);
-                }
+            Vector3 previousPos = Vector3.Transform(new Vector3(0, halfHeight, radius), transform);
+            Vector3 previousNPos = Vector3.Transform(new Vector3(0, -halfHeight, radius), transform);
 
-            foreach(Vector3 v in points)
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Color3(0f, 1f, 0f);
+            for (float a = 0; a <= Math.PI * 2; a += (float)Math.PI / 8)
             {
-                GL.Vertex3(Vector3.Transform(v, transform));
+                float z = (float)Math.Cos(a) * radius;
+                float x = (float)Math.Sin(a) * radius;
+
+                // positive
+                Vector3 pos = Vector3.Transform(new Vector3(x, halfHeight, z), transform);
+                GL.Vertex3(previousPos);
+                GL.Vertex3(pos);
+                previousPos = pos;
+
+                // negative
+                Vector3 npos = Vector3.Transform(new Vector3(x, -halfHeight, z), transform);
+                GL.Vertex3(previousNPos);
+                GL.Vertex3(npos);
+                previousNPos = npos;
+
+                // the sides
+                GL.Vertex3(pos);
+                GL.Vertex3(npos);
             }
             GL.End();
         }
@@ -242,10 +299,10 @@ namespace Simulation_RD.Graphics
             Random r = new Random();
             Func<Vector3> rv = () => new Vector3((float)r.NextDouble() * radius, (float)r.NextDouble() * radius, (float)r.NextDouble() * radius);
 
-            GL.Begin(PrimitiveType.Lines);
+            GL.Begin(PrimitiveType.LineLoop);
             GL.Color3(255, 0, 0);
             for (int i = 0; i < 30; i++)
-                GL.Vertex3(rv());
+                GL.Vertex3(rv() + p);
             GL.End();
 
             //Console.WriteLine("Drew Sphere");
@@ -256,7 +313,7 @@ namespace Simulation_RD.Graphics
             Random r = new Random();
             Func<Vector3> rv = () => new Vector3((float)r.NextDouble() * radius, (float)r.NextDouble() * radius, (float)r.NextDouble() * radius);
 
-            GL.Begin(PrimitiveType.Lines);
+            GL.Begin(PrimitiveType.LineLoop);
             GL.Color3(255, 0, 0);
             for (int i = 0; i < 30; i++)
                 GL.Vertex3(rv() * transform.ExtractScale() + transform.ExtractTranslation());

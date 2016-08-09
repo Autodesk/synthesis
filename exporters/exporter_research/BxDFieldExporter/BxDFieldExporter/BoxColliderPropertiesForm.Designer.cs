@@ -19,7 +19,7 @@
             }
             base.Dispose(disposing);
         }
-
+        // adds the fields to the form
         #region Component Designer generated code
 
         /// <summary> 

@@ -4,7 +4,7 @@ using System;
 namespace Simulation_RD.Graphics
 {
     /// <summary>
-    /// All the different ways the camera can move
+    /// All the different ways the camera can translate
     /// </summary>
     enum Camera_Movement
     {
@@ -94,13 +94,13 @@ namespace Simulation_RD.Graphics
 
             if (constrainPitch)
             {
-                if (this.Pitch > Math.PI / 2)
-                    this.Pitch = (float)Math.PI / 2;
-                if (this.Pitch < -Math.PI / 2)
-                    this.Pitch = -(float)Math.PI / 2;
+                if (this.Pitch >= Math.PI / 2 - float.Epsilon)
+                    this.Pitch = (float)Math.PI / 2 - float.Epsilon;
+                if (this.Pitch < -Math.PI / 2 + float.Epsilon)
+                    this.Pitch = -(float)Math.PI / 2 + float.Epsilon;
             }
 
-            this.UpdateCameraVectors();
+            //this.UpdateCameraVectors();
         }
 
         /// <summary>
@@ -127,6 +127,22 @@ namespace Simulation_RD.Graphics
             front.Y = (float)Math.Sin(Pitch);
             front.Z = (float)Math.Sin(Yaw) * (float)Math.Cos(Pitch);
             Front = front.Normalized();
+            Right = Vector3.Cross(Front, WorldUp).Normalized();
+            Up = Vector3.Cross(Right, Front).Normalized();
+        }
+
+        public void LookAtRobot(Vector3 robot)
+        {
+            Vector3 delta = Position - robot;
+            Vector3 front;
+            front.X = -(float)Math.Cos(-Yaw) * (float)Math.Cos(Pitch);
+            front.Y = -(float)Math.Sin(Pitch);
+            front.Z = -(float)Math.Sin(-Yaw) * (float)Math.Cos(Pitch);
+            front = front.Normalized();
+
+            Position = robot - (front * 25 * Zoom);
+
+            Front = front;
             Right = Vector3.Cross(Front, WorldUp).Normalized();
             Up = Vector3.Cross(Right, Front).Normalized();
         }
