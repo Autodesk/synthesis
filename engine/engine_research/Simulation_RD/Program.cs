@@ -14,7 +14,7 @@ namespace Simulation_RD
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            SimulationScene scene = new SimulationScene();
+            MenuScene scene = new MenuScene();
 
             //Other thing
             Shader shader = new Shader(@"\resources\vertexShader.vs\", @"\resources\fragmentShader.frag");
