@@ -16,7 +16,7 @@ namespace Simulation_RD.SimulationPhysics
         /// <summary>
         /// Defines Bullet collision object. Might be able to be a soft body in the future
         /// </summary>
-        public CollisionObject BulletObject;
+        public RigidBody BulletObject;
 
         /// <summary>
         /// makes joint do. A better method really should be found.
@@ -43,7 +43,7 @@ namespace Simulation_RD.SimulationPhysics
             mesh.ReadFromFile(FilePath);
 
             //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && true) //now
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false) //now
             {
                 shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);
                 Console.WriteLine(  MeshUtilities.MeshCenter(mesh) );
@@ -82,7 +82,7 @@ namespace Simulation_RD.SimulationPhysics
                 verts = verts.Concat(MeshUtilities.DataToVector(sub.verts)).ToList();
             }
             SoftBody temp = SoftBodyHelpers.CreateFromConvexHull(worldInfo, verts.ToArray());
-            BulletObject = temp;
+            //BulletObject = temp;
         }
 
         /// <summary>
