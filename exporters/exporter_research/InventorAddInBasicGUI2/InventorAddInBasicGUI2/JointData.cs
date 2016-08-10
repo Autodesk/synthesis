@@ -113,5 +113,30 @@ namespace InventorAddInBasicGUI2
                 return false;
             }
         }
+        public void copyTo(JointData joint)
+        {
+            joint.Driver = Driver;
+            joint.Wheel = Wheel;
+            joint.Friction = Friction;
+            joint.Diameter = Diameter;
+            joint.Pressure = Pressure;
+            joint.Stages = Stages;
+            joint.PWMport = PWMport;
+            joint.PWMport2 = PWMport2;
+            joint.CANport = CANport;
+            joint.CANport2 = CANport2;
+            joint.DriveWheel = DriveWheel;
+            joint.PWM = PWM;
+            joint.InputGear = InputGear;
+            joint.OutputGear = OutputGear;
+            joint.SolenoidPortA = SolenoidPortA;
+            joint.SolenoidPortB = SolenoidPortB;
+            joint.RelayPort = RelayPort;
+            joint.HasBrake = HasBrake;
+            joint.BrakePortA = BrakePortA;
+            joint.BrakePortB = BrakePortB;
+            joint.Rotating = Rotating;
+            joint.HasLimits = HasLimits;
+        }
     }
 }
