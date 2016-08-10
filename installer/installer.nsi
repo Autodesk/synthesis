@@ -5,7 +5,7 @@ Name "Synthesis"
 
 Icon "C:\Users\t_hics\Documents\GitHub\synthesis\installer\plantlogo(NoBack).ico"
 
-OutFile "SynthesisInstaller.exe"
+OutFile "Synthesis Installer.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -22,7 +22,7 @@ UninstPage instfiles
 Section
 
 ;Where we can read registry data if we need it
-IfFileExists "$INSTDIR" +1 +25
+IfFileExists "$INSTDIR" +1 +27
     MessageBox MB_YESNO "You appear to have synthesis installed, would you like to reinstall it?" IDYES true IDNO false
       ; Remove registry keys
       true:
@@ -37,7 +37,8 @@ IfFileExists "$INSTDIR" +1 +25
 
         ; Remove shortcuts, if any
         Delete "$SMPROGRAMS\Synthesis.lnk"
-
+        Delete "$DESKTOP\Synthesis.lnk"
+        Delete "$DESKTOP\BXD Synthesis.lnk"
         ; Remove directories used
         RMDir $INSTDIR
 
@@ -69,6 +70,7 @@ Section "Synthesis (required)"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Apache2.rtf"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
 
+CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis.exe" ""
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayName" "Autodesk Synthesis" 
@@ -138,7 +140,8 @@ Section "Uninstall"
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Synthesis.lnk"
-
+  Delete "$DESKTOP\Synthesis.lnk"
+  Delete "$DESKTOP\BXD Synthesis.lnk"
   ; Remove directories used
   RMDir $INSTDIR
 
