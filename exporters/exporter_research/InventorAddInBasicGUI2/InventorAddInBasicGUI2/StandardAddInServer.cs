@@ -31,7 +31,6 @@ namespace InventorAddInBasicGUI2
 
         BrowserPanes oPanes;
         
-        Boolean FirstTime;
         Boolean inExportView;
 
         int jointNumber;
@@ -87,8 +86,6 @@ namespace InventorAddInBasicGUI2
 
         Random rand;
         JointData assemblyJoint;
-        ObjectCollection obj;
-        BrowserNode node3;
         String addInCLSIDString;
 
         ClientNodeResource oRsc;
@@ -123,7 +120,6 @@ namespace InventorAddInBasicGUI2
                 addInCLSIDString = "{" + addInCLSID.Value + "}";
                 m_ClientId = "0c9a07ad-2768-4a62-950a-b5e33b88e4a3";
                 inExportView = false;
-                FirstTime = true;
                 control = new UserControl1();
                 m_inventorApplication = addInSiteObject.Application;
                 jointNumber = 1;
@@ -326,7 +322,6 @@ namespace InventorAddInBasicGUI2
                         oRsc = oRscs.Add(m_ClientId, 1, null);
                         oDef = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Top Node", 3, null);
                         oPane = oPanes.AddTreeBrowserPane("Select Joints", m_ClientId, oDef);
-                        FirstTime = false;
                         oPane.Activate();
                     }
                     catch (Exception e)
@@ -459,14 +454,16 @@ namespace InventorAddInBasicGUI2
         {
             try
             {
-                if (SelectionDevice == SelectionDeviceEnum.kGraphicsWindowSelection && inExportView)
-                {// if the selection is from the graphical interface and the exporter is active
-                    foreach (Object sel in JustSelectedEntities)
-                    {//looks at all things selected
-                        if (sel is ComponentOccurrence)
-                        {// react only if sel is a part/ assembly
-                            foreach (JointData joint in jointList)
-                            {// looks at all the groups of parts
+                if (JustSelectedEntities.Count == 1)
+                {
+                    if (SelectionDevice == SelectionDeviceEnum.kGraphicsWindowSelection && inExportView)
+                    {// if the selection is from the graphical interface and the exporter is active
+                        foreach (Object sel in JustSelectedEntities)
+                        {//looks at all things selected
+                            if (sel is ComponentOccurrence)
+                            {// react only if sel is a part/ assembly
+                                foreach (JointData joint in jointList)
+                                {// looks at all the groups of parts
                                     if (((ComponentOccurrence)sel).Equals(joint.jointOfType.AffectedOccurrenceOne)
                                             || ((ComponentOccurrence)sel).Equals(joint.jointOfType.AffectedOccurrenceTwo))
                                     {// if the occurence is contained by anyof the groups then react
@@ -478,29 +475,30 @@ namespace InventorAddInBasicGUI2
                                             }
                                         }
                                     }
+                                }
                             }
                         }
                     }
-                }
-                else if (SelectionDevice == SelectionDeviceEnum.kBrowserSelection && inExportView)
-                {// if the selection is from the browser and the exporter is active, cool feature is that browsernode.DoSelect() calls this so I do all the reactions in here
-                    foreach (Object sel in JustSelectedEntities)
-                    {//looks at all things selected
-                        if (sel is BrowserNodeDefinition)
-                        {// react only if sel is a browsernodedef
-                            foreach (JointData joint in jointList)
-                            {// looks at all the groups of parts
-                                if (joint.same(((BrowserNodeDefinition)sel)))
-                                {// if the browsernode is the same as a the joint's node
-                                    m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                    oSet.Clear();// clear the highlight set to add a new group to the set
-                                    selectedJointData = joint;// set the selected joint for the rest of the code to interact with
-                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
-                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
-                                    editDrivers.Enabled = true;
-                                    JointsComboBox.Enabled = true;
-                                    LimitsComboBox.Enabled = true;
-                                    editLimits.Enabled = true;
+                    else if (SelectionDevice == SelectionDeviceEnum.kBrowserSelection && inExportView)
+                    {// if the selection is from the browser and the exporter is active, cool feature is that browsernode.DoSelect() calls this so I do all the reactions in here
+                        foreach (Object sel in JustSelectedEntities)
+                        {//looks at all things selected
+                            if (sel is BrowserNodeDefinition)
+                            {// react only if sel is a browsernodedef
+                                foreach (JointData joint in jointList)
+                                {// looks at all the groups of parts
+                                    if (joint.same(((BrowserNodeDefinition)sel)))
+                                    {// if the browsernode is the same as a the joint's node
+                                        m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                        oSet.Clear();// clear the highlight set to add a new group to the set
+                                        selectedJointData = joint;// set the selected joint for the rest of the code to interact with
+                                        oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
+                                        oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
+                                        editDrivers.Enabled = true;
+                                        JointsComboBox.Enabled = true;
+                                        LimitsComboBox.Enabled = true;
+                                        editLimits.Enabled = true;
+                                    }
                                 }
                             }
                         }
@@ -508,7 +506,7 @@ namespace InventorAddInBasicGUI2
                 }
                 else
                 {
-                    /*ObjectCollection Obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
+                    ObjectCollection Obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
                     oSet.Clear();
                     if (inExportView)
                     {
@@ -523,6 +521,10 @@ namespace InventorAddInBasicGUI2
                                         selectedJointData = joint;
                                         oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
                                         oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
+                                        editDrivers.Enabled = true;
+                                        JointsComboBox.Enabled = true;
+                                        LimitsComboBox.Enabled = true;
+                                        editLimits.Enabled = true;
                                     }
                                 }
                             }
@@ -537,7 +539,12 @@ namespace InventorAddInBasicGUI2
                                             if (joint.same(node.BrowserNodeDefinition))
                                             {
                                                 Obj.Add(node.BrowserNodeDefinition);
-                                              //  Obj.Add(node.BrowserNodeDefinition);
+                                                oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
+                                                oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
+                                                editDrivers.Enabled = true;
+                                                JointsComboBox.Enabled = true;
+                                                LimitsComboBox.Enabled = true;
+                                                editLimits.Enabled = true;
                                             }
                                         }
                                     }
@@ -545,7 +552,8 @@ namespace InventorAddInBasicGUI2
                             }
                         }
                         m_inventorApplication.ActiveDocument.SelectSet.SelectMultiple(Obj);
-                    }*/
+                        //m_inventorApplication.ActiveDocument.SelectSet.SelectMultiple(Obj);
+                    }
                 }
             }catch(Exception e)
             {
@@ -1228,6 +1236,7 @@ namespace InventorAddInBasicGUI2
                                 selectedJointData.Driver = DriveTypes.NoDriver;
                             }
                         }
+                        MessageBox.Show("ji");
                     }
                     else
                     {
