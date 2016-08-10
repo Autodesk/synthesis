@@ -45,7 +45,7 @@ using System.Runtime.InteropServices;
 //       a key.
 //   (*) If the KeyFile and the KeyName values are both specified, the 
 //       following processing occurs:
-//       (1) If the KeyName can be found in the CSP, that key is used.
+//       (1) If the KeyName can be founrd in the CSP, that key is used.
 //       (2) If the KeyName does not exist and the KeyFile does exist, the key 
 //           in the KeyFile is installed into the CSP and used.
 //   (*) In order to create a KeyFile, you can use the sn.exe (Strong Name) utility.

@@ -53,7 +53,6 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class DriverStationState : CameraState
     {
-
         GameObject robot;
         Quaternion startRotation;
         Quaternion lookingRotation;
@@ -76,7 +75,7 @@ public class DynamicCamera : MonoBehaviour
         {
             if (robot != null && robot.transform.childCount > 0)
             {
-                lookingRotation = Quaternion.LookRotation(AuxFunctions.TotalCenterOfMass(robot) - mono.transform.position);
+                lookingRotation = Quaternion.LookRotation(robot.transform.GetChild(0).transform.position - mono.transform.position);
                 currentRotation = Quaternion.Lerp(startRotation, lookingRotation, 0.5f);
             }
             else
@@ -253,7 +252,7 @@ public class DynamicCamera : MonoBehaviour
         if (movingEnabled)
         {
             // Will switch the camera state if certain keys are pressed.
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.D))
             {
                 if (!cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
             }
