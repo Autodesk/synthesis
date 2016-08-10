@@ -249,6 +249,13 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
+        public void test(Inventor.NameValueMap Context)
+        {
+            AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+            WorkPoint joint = (WorkPoint)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                      (SelectionFilterEnum.kWorkPointFilter, "Select a part to remove");
+        }
         // reacts to a selection
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
@@ -459,6 +466,8 @@ namespace BxDFieldExporter
                                 if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
                                     t.compOcc.Add(joint);// add the occurence to the arraylist
+                                    m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                    node.DoSelect();
                                 }
                             }
                         }
@@ -505,6 +514,8 @@ namespace BxDFieldExporter
                                 {
                                     if (t.compOcc.Contains(joint)){// if the occurence is in the list the allow the remove
                                         t.compOcc.Remove(joint);// add the occurence to the arraylist
+                                        m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                        node.DoSelect();
                                         found = true;
                                     }
                                 }
@@ -558,6 +569,8 @@ namespace BxDFieldExporter
                                     if (t.compOcc.Contains(joint))// if the occurence is in the list the allow the remove
                                     {
                                         t.compOcc.Remove(joint);// add the occurence to the arraylist
+                                        m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                        node.DoSelect();
                                         found = true;
                                     }
                                 }
@@ -608,6 +621,8 @@ namespace BxDFieldExporter
                                 if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
                                     t.compOcc.Add(joint);// add the occurence to the arraylist
+                                    m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                    node.DoSelect();
                                 }
                             }
                         }

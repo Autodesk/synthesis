@@ -1,0 +1,10 @@
+*.exe
+*.dll
+*.lib
+*.a
+*.dmg
+*.cache
+*db*
+*build*
+*debug*
+

@@ -86,14 +86,10 @@ public class UnityFieldDefinition : FieldDefinition
             {
                 PropertySet currentPropertySet = GetPropertySets()[node.PropertySetID];
                 PropertySet.PropertySetCollider psCollider = currentPropertySet.Collider;
-
+                
                 BRigidBody rb = subObject.AddComponent<BRigidBody>();
                 rb.friction = currentPropertySet.Friction * FRICTION_SCALE;
                 rb.mass = currentPropertySet.Mass;
-
-                //((RigidBody)rb.GetCollisionObject()).MotionState =
-                //    new DefaultMotionState(rb.GetCollisionObject().WorldTransform,
-                //    new BulletSharp.Math.Matrix { Origin = new BulletSharp.Math.Vector3() });
 
                 switch (psCollider.CollisionType)
                 {
@@ -117,7 +113,7 @@ public class UnityFieldDefinition : FieldDefinition
                         PropertySet.SphereCollider psSphereCollider = (PropertySet.SphereCollider)psCollider;
                         SphereCollider dummySphereCollider = meshObject.AddComponent<SphereCollider>();
 
-                        subObject.transform.position = meshObject.transform.position;
+                        subObject.transform.position = meshObject.transform.TransformPoint(dummySphereCollider.center);
 
                         BSphereShape sphereShape = subObject.AddComponent<BSphereShape>();
                         sphereShape.Radius = dummySphereCollider.radius * psSphereCollider.Scale;
@@ -126,52 +122,37 @@ public class UnityFieldDefinition : FieldDefinition
 
                         break;
                     case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
-                        if (node.CollisionMeshID != -1)
+                        PropertySet.MeshCollider psMeshCollider = (PropertySet.MeshCollider)psCollider;
+
+                        if (psMeshCollider.Convex)
+                        {
+                            MeshCollider dummyMeshCollider = subObject.AddComponent<MeshCollider>();
+                            dummyMeshCollider.sharedMesh = meshObject.GetComponent<MeshFilter>().mesh;
+
+                            subObject.transform.position = meshObject.transform.TransformPoint(dummyMeshCollider.bounds.center);
+                            subObject.transform.rotation = meshObject.transform.rotation;
+
+                            BulletUnity.Primitives.BConvexHull convexHull = subObject.AddComponent<BulletUnity.Primitives.BConvexHull>();
+                            convexHull.meshSettings.UserMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center);
+                            convexHull.BuildMesh();
+
+                            UnityEngine.Object.Destroy(dummyMeshCollider);
+
+                            subObject.GetComponent<MeshRenderer>().enabled = false;
+                        }
+                        else
                         {
                             subObject.transform.position = meshObject.transform.position;
                             subObject.transform.rotation = meshObject.transform.rotation;
 
-                            BulletUnity.Primitives.BConvexHull convexHull = subObject.AddComponent<BulletUnity.Primitives.BConvexHull>();
-                            convexHull.meshSettings.UserMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh);
-                            convexHull.BuildMesh();
-                            
-                            // TODO: Add some sort of variant of this back?
-                            //RigidBody b = (RigidBody)rb.GetCollisionObject();
-                            //BulletSharp.Math.Matrix transform = b.MotionState.WorldTransform;//b.CenterOfMassTransform;
-                            //transform.Origin += new BulletSharp.Math.Vector3(0f, -1f, 0f);
-                            //b.MotionState.WorldTransform = transform;
-
-                            subObject.GetComponent<MeshRenderer>().enabled = false;
-
-                            // TODO: This statement seems to break things. If you can get to work, you could modify the center of mass.
-                            ((RigidBody)rb.GetCollisionObject()).MotionState =
-                                new DefaultMotionState(((RigidBody)rb.GetCollisionObject()).MotionState.WorldTransform);
-
-                            //BConvexHullShape hullShape = subObject.AddComponent<BConvexHullShape>();
-                            //hullShape.HullMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh);
-                            //hullShape.GetCollisionShape().Margin = Main.COLLISION_MARGIN;
-
-                            // TODO: Find a way to move the center of gravity. This is important. See examples (or BulletUnity.Primitives?)
-
-                            //BulletSharp.Math.Matrix transform = rb.GetCollisionObject().WorldTransform;
-                            //transform.Origin += new BulletSharp.Math.Vector3(0f, 1f, 0f);
-                            //rb.GetCollisionObject().WorldTransform = transform;
-
-                            //BCompoundShape compoundShape = subObject.AddComponent<BCompoundShape>();
-                            //BulletSharp.Math.Matrix otherTransform = new BulletSharp.Math.Matrix();
-                            //otherTransform.Origin += new BulletSharp.Math.Vector3(0f, -1f, 0f);
-                            //((CompoundShape)compoundShape.GetCollisionShape()).UpdateChildTransform(0, otherTransform); // u is here
-
-                            //UnityEngine.Object.Destroy(subObject.GetComponent<BBoxShape>()); // TODO: Continue center of mass stuff. I think you're getting close.
-
-                            // TODO: Find a way to implement embedded margins. See https://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=2358
-
-                            //meshObject.GetComponent<MeshFilter>().mesh = hullShape.HullMesh; // Use for visualizing the collision mesh.
+                            BBvhTriangleMeshShape meshShape = subObject.AddComponent<BBvhTriangleMeshShape>();
+                            meshShape.HullMesh = meshObject.GetComponent<MeshFilter>().mesh.GetScaledCopy(-1f, 1f, 1f);
+                            meshShape.GetCollisionShape().Margin = 0f;
                         }
+
+                        // TODO: Find a way to implement embedded margins. See https://www.bulletphysics.org/Bullet/phpBB3/viewtopic.php?f=9&t=2358
                         break;
                 }
-
-                // TODO: Adjust center of mass.
 
                 if (currentPropertySet.Mass == 0)
                     rb.collisionFlags = BulletSharp.CollisionFlags.StaticObject;
