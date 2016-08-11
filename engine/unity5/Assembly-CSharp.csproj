@@ -162,6 +162,17 @@
      <Compile Include="Assets\Scripts\DriveJoints.cs" />
      <Compile Include="Assets\Scripts\DynamicCamera.cs" />
      <Compile Include="Assets\Scripts\Fun\Rainbow.cs" />
+     <Compile Include="Assets\Scripts\GUI\Extensions.cs" />
+     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
+     <Compile Include="Assets\Scripts\GUI\InputButton.cs" />
+     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
+     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
+     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
+     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
+     <Compile Include="Assets\Scripts\GUI\Settings\Controls.cs" />
+     <Compile Include="Assets\Scripts\GUI\Settings\Serializer.cs" />
+     <Compile Include="Assets\Scripts\GUI\Settings\Settings.cs" />
+     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
      <Compile Include="Assets\Scripts\Main.cs" />
      <Compile Include="Assets\Scripts\MathfExt.cs" />
      <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
