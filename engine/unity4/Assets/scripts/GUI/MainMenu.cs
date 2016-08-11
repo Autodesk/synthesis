@@ -98,12 +98,12 @@ public class MainMenu : MonoBehaviour {
                 if (customfieldon && !fieldBrowser.Active)
                 {
                     customfieldon = false;
-                    currentMenu = Menu.LoadField;
+                    SwitchState(Menu.LoadField);
                 }
                 else if (customroboton && !robotBrowser.Active)
                 {
                     customroboton = false;
-                    currentMenu = Menu.LoadRobot;
+                    SwitchState(Menu.LoadRobot);
                 }
                 break;
          }
@@ -173,7 +173,6 @@ public class MainMenu : MonoBehaviour {
             case Menu.Custom:
                 currentMenu = Menu.Custom;
 
-                SplashScreen.SetActive(true);
                 LoadField.SetActive(false);
                 LoadRobot.SetActive(false);
                 break;
