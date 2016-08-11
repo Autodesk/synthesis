@@ -464,7 +464,6 @@ public class MainMenu : MonoBehaviour {
     }
     #endregion
     void Start () {
-        PlayerPrefs.DeleteAll();
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
         Main.SetActive(true);
