@@ -29,7 +29,7 @@ namespace FieldExporter.Components
         /// <returns></returns>
         PropertySet.PropertySetCollider ColliderPropertiesForm.GetCollider()
         {
-            return new PropertySet.MeshCollider(false);
+            return new PropertySet.MeshCollider(convexCheckBox.Checked);
         }
     }
 }
