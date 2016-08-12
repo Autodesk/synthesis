@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Xml;
 using System.Timers;
+using System.Threading;
+using System.Security.Permissions;
 
 namespace InventorAddInBasicGUI2
 {
@@ -500,6 +502,15 @@ namespace InventorAddInBasicGUI2
                                         JointsComboBox.Enabled = true;
                                         LimitsComboBox.Enabled = true;
                                         editLimits.Enabled = true;
+                                        if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                        {// if the assembly joint is linear
+                                            JointTypeLinear();
+                                        }
+                                        else
+                                        {// set the combo box choices to rotating
+                                            JointTypeRotating();
+                                        }
                                         SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
                                         SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                     }
@@ -549,6 +560,15 @@ namespace InventorAddInBasicGUI2
                                                 oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
                                                 oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
                                             }
+                                            if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                            {// if the assembly joint is linear
+                                                JointTypeLinear();
+                                            }
+                                            else
+                                            {// set the combo box choices to rotating
+                                                JointTypeRotating();
+                                            }
                                             SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
                                             SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                         }
@@ -562,6 +582,15 @@ namespace InventorAddInBasicGUI2
                                             JointsComboBox.Enabled = true;
                                             LimitsComboBox.Enabled = true;
                                             editLimits.Enabled = true;
+                                            if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                            {// if the assembly joint is linear
+                                                JointTypeLinear();
+                                            }
+                                            else
+                                            {// set the combo box choices to rotating
+                                                JointTypeRotating();
+                                            }
                                             SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
                                             SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                         }
@@ -606,6 +635,15 @@ namespace InventorAddInBasicGUI2
                                                         oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
                                                         oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
                                                     }
+                                                    if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                                    {// if the assembly joint is linear
+                                                        JointTypeLinear();
+                                                    }
+                                                    else
+                                                    {// set the combo box choices to rotating
+                                                        JointTypeRotating();
+                                                    }
                                                     SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
                                                     SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                                 }
@@ -619,6 +657,15 @@ namespace InventorAddInBasicGUI2
                                                     JointsComboBox.Enabled = true;
                                                     LimitsComboBox.Enabled = true;
                                                     editLimits.Enabled = true;
+                                                    if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                                    {// if the assembly joint is linear
+                                                        JointTypeLinear();
+                                                    }
+                                                    else
+                                                    {// set the combo box choices to rotating
+                                                        JointTypeRotating();
+                                                    }
                                                     SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
                                                     SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                                 }
@@ -793,40 +840,48 @@ namespace InventorAddInBasicGUI2
                                 {
                                     oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);
                                 }
-                                def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Joint " + n.ToString(), th, oRes);
-                               // ((BrowserFolder)def).AllowRename = false;
-                                oPane.TopNode.AddChild(def);
-                                joints.Add(((AssemblyJoint)obje).AffectedOccurrenceOne);
-                                joints.Add(((AssemblyJoint)obje).AffectedOccurrenceTwo);
-                                k++;
-                                j = new JointData(((AssemblyJoint)obje), ((String)p.ItemByPropId[27].Value));
-                                j.RefKey = (String)p.ItemByPropId[2].Value;
-                                j.Driver = (DriveTypes)p.ItemByPropId[3].Value;
-                                j.Wheel = (WheelType)p.ItemByPropId[4].Value;
-                                j.Friction = (FrictionLevel)p.ItemByPropId[5].Value;
-                                j.Diameter = (InternalDiameter)p.ItemByPropId[6].Value;
-                                j.Pressure = (Pressure)p.ItemByPropId[7].Value;
-                                j.Stages = (Stages)p.ItemByPropId[8].Value;
-                                j.PWMport = (double)p.ItemByPropId[9].Value;
-                                j.PWMport2 = (double)p.ItemByPropId[10].Value;
-                                j.CANport = (double)p.ItemByPropId[11].Value;
-                                j.CANport2 = (double)p.ItemByPropId[12].Value;
-                                j.DriveWheel = (bool)p.ItemByPropId[13].Value;
-                                j.PWM = (bool)p.ItemByPropId[14].Value;
-                                j.InputGear = (double)p.ItemByPropId[15].Value;
-                                j.OutputGear = (double)p.ItemByPropId[16].Value;
-                                j.SolenoidPortA = (double)p.ItemByPropId[17].Value;
-                                j.SolenoidPortB = (double)p.ItemByPropId[18].Value;
-                                j.RelayPort = (double)p.ItemByPropId[19].Value;
-                                j.HasBrake = (bool)p.ItemByPropId[20].Value;
-                                j.BrakePortA = (double)p.ItemByPropId[21].Value;
-                                j.BrakePortB = (double)p.ItemByPropId[22].Value;
-                                j.UpperLim = (double)p.ItemByPropId[23].Value;
-                                j.LowerLim = (double)p.ItemByPropId[24].Value;
-                                j.HasLimits = (bool)p.ItemByPropId[25].Value;
-                                j.Rotating = (bool)p.ItemByPropId[26].Value;
-                                jointList.Add(j);
-                                
+                                try
+                                {
+                                    def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition("Joint " + n.ToString(), th, oRes);
+                                    // ((BrowserFolder)def).AllowRename = false;
+                                    oPane.TopNode.AddChild(def);
+                                    joints.Add(((AssemblyJoint)obje).AffectedOccurrenceOne);
+                                    joints.Add(((AssemblyJoint)obje).AffectedOccurrenceTwo);
+                                    k++;
+                                    j = new JointData(((AssemblyJoint)obje), ((String)p.ItemByPropId[27].Value));
+                                    jointList.Add(j);
+                                    j.RefKey = (String)p.ItemByPropId[2].Value;
+                                    j.Driver = (DriveTypes)p.ItemByPropId[3].Value;
+                                    j.Wheel = (WheelType)p.ItemByPropId[4].Value;
+                                    j.Friction = (FrictionLevel)p.ItemByPropId[5].Value;
+                                    j.Diameter = (InternalDiameter)p.ItemByPropId[6].Value;
+                                    j.Pressure = (Pressure)p.ItemByPropId[7].Value;
+                                    j.Stages = (Stages)p.ItemByPropId[8].Value;
+                                    j.PWMport = (double)p.ItemByPropId[9].Value;
+                                    j.PWMport2 = (double)p.ItemByPropId[10].Value;
+                                    j.CANport = (double)p.ItemByPropId[11].Value;
+                                    j.CANport2 = (double)p.ItemByPropId[12].Value;
+                                    j.DriveWheel = (bool)p.ItemByPropId[13].Value;
+                                    j.PWM = (bool)p.ItemByPropId[14].Value;
+                                    j.InputGear = (double)p.ItemByPropId[15].Value;
+                                    j.OutputGear = (double)p.ItemByPropId[16].Value;
+                                    j.SolenoidPortA = (double)p.ItemByPropId[17].Value;
+                                    j.SolenoidPortB = (double)p.ItemByPropId[18].Value;
+                                    j.RelayPort = (double)p.ItemByPropId[19].Value;
+                                    j.HasBrake = (bool)p.ItemByPropId[20].Value;
+                                    j.BrakePortA = (double)p.ItemByPropId[21].Value;
+                                    j.BrakePortB = (double)p.ItemByPropId[22].Value;
+                                    j.UpperLim = (double)p.ItemByPropId[23].Value;
+                                    j.LowerLim = (double)p.ItemByPropId[24].Value;
+                                    j.HasLimits = (bool)p.ItemByPropId[25].Value;
+                                    j.Rotating = (bool)p.ItemByPropId[26].Value;
+                                    j.HasJointFriction = (bool)p.ItemByPropId[28].Value;
+                                    j.JointFrictionLevel = (double)p.ItemByPropId[29].Value;
+                                }
+                                catch (Exception)
+                                {
+
+                                }
                             } 
                         }
                     }
@@ -864,7 +919,7 @@ namespace InventorAddInBasicGUI2
                 set.ItemByPropId[2].Value = jointNumber;
             }
         }
-
+        
         private void writeSave(JointData j)
         {
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;
@@ -911,6 +966,8 @@ namespace InventorAddInBasicGUI2
                 set.Add(j.HasLimits, "HasLimits", 25);
                 set.Add(j.Rotating, "Rotating", 26);
                 set.Add(j.Name, "Name", 27);
+                set.Add(j.HasJointFriction, "HasJointFriction", 28);
+                set.Add(j.JointFrictionLevel, "JointFrictionLevel", 29);
             }
             catch (Exception e)
             {
@@ -940,18 +997,18 @@ namespace InventorAddInBasicGUI2
                 set.ItemByPropId[25].Value = j.HasLimits;
                 set.ItemByPropId[26].Value = j.Rotating;
                 set.ItemByPropId[27].Value = j.Name;
+                set.ItemByPropId[28].Value = j.HasJointFriction;
+                set.ItemByPropId[29].Value = j.JointFrictionLevel;
             }
         }
         //test button for doing experimental things
         public void test_OnExecute(Inventor.NameValueMap Context)
         {
-            foreach (BrowserNode n in oPane.TopNode.BrowserNodes)
-            {// looks at all the browser nodes in the top node
-                if (n.Selected)
-                {// if the browsernode is the same as the types node then react
-                    MessageBox.Show(n.BrowserNodeDefinition.Label);
-                }
-            }
+            ComponentOccurrence joint;
+            AssemblyDocument asmDoc = (AssemblyDocument)
+                m_inventorApplication.ActiveDocument;
+            joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick
+                (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select an assembly to add");
         }
         // looks at subcomponents for joints
         public void HideInside(ComponentOccurrence c)
@@ -1089,8 +1146,8 @@ namespace InventorAddInBasicGUI2
         static bool found;
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-
             found = false;
+            m_inventorApplication.CommandManager.StopActiveCommand();
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
             {// looks through all the nodes under the top node
                 if (node.Selected)

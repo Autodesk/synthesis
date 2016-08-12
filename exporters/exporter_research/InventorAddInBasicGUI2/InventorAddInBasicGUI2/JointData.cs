@@ -46,6 +46,8 @@ namespace InventorAddInBasicGUI2
         public double LowerLim;
         public bool HasLimits;
         public bool Rotating;
+        public double JointFrictionLevel;
+        public bool HasJointFriction;
         public JointData(AssemblyJoint joint, String name)
         {// set all the default values
             Name = name;
@@ -90,6 +92,8 @@ namespace InventorAddInBasicGUI2
             }
            
             HasLimits = false;
+            JointFrictionLevel = 0;
+            HasJointFriction = false;
         }
         
         public bool equals(AssemblyJoint j)
@@ -137,6 +141,8 @@ namespace InventorAddInBasicGUI2
             joint.BrakePortB = BrakePortB;
             joint.Rotating = Rotating;
             joint.HasLimits = HasLimits;
+            joint.HasJointFriction = HasJointFriction;
+            joint.JointFrictionLevel = JointFrictionLevel;
         }
     }
 }
