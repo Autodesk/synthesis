@@ -50,16 +50,9 @@ namespace Simulation_RD.SimulationPhysics
             RigidNode_Base.NODE_FACTORY = (Guid guid) => new BulletRigidNode(guid);
             string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\";
             Exception ex;
-            string dir;
+            string dir = RobotPath;
 
-            do
-            {
-                ex = null;
-                dir = GetDirectory(RobotPath);
-                try { Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(dir + "skeleton.bxdj"); }
-                catch (Exception e) { ex = e; }
-            } while (ex != null);
-            
+            GetFromDirectory(RobotPath, s => { Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(s + "skeleton.bxdj"); dir = s; });
             List<RigidNode_Base> nodes = Skeleton.ListAllNodes();
             for(int i = 0; i < nodes.Count; i++)
             {
@@ -75,13 +68,7 @@ namespace Simulation_RD.SimulationPhysics
 
             //Field
             string fieldPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\";
-            do
-            {
-                ex = null;
-                dir = GetDirectory(fieldPath);
-                try { f = BulletFieldDefinition.FromFile(dir); }
-                catch (Exception e) { ex = e; }
-            } while (ex != null);
+            GetFromDirectory(fieldPath, s => f = BulletFieldDefinition.FromFile(s));
 
             foreach (RigidBody b in f.Bodies)
             {
@@ -102,7 +89,6 @@ namespace Simulation_RD.SimulationPhysics
         {
             //DriveJoints.UpdateAllMotors(Skeleton, args);
             cachedArgs = args;
-            float angle = (Skeleton.BulletObject.WorldTransform.ExtractRotation() * new Quaternion(0, 1, 0, 1)).W + (float)Math.PI / 2;
 
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
                 ResetRobot();
@@ -179,35 +165,45 @@ namespace Simulation_RD.SimulationPhysics
             }
         }        
 
-        private string GetDirectory(string startDirectory)
+        private void GetFromDirectory(string startDirectory, Action<string> useDir)
         {
             FileSelector fs = new FileSelector(startDirectory);
             Console.WriteLine("Enter the associated number to move into that directory");
             Console.WriteLine("Enter ! to select the current directory");
             Console.WriteLine("Enter . to go up one level");
-            string cmd;
+
+            Exception ex;
+            string dir = "";
+            
             do
             {
-                int i = 0;
-                foreach (string s in fs.Directories)
+                string cmd;
+                do
                 {
-                    i++;
-                    Console.WriteLine(i + " " + s);
-                }
-
-                cmd = Console.ReadLine();
-                if (cmd == ".")
-                    fs.MoveUp();
-                else if (cmd != "!")
-                    try
+                    int i = 0;
+                    foreach (string s in fs.Directories)
                     {
-                        fs.MoveInto(fs.Directories.ToArray()[int.Parse(cmd) - 1]);
+                        i++;
+                        Console.WriteLine(i + " " + s);
                     }
-                    catch (IndexOutOfRangeException e) { Console.WriteLine("That directory does not exist"); }
 
-            } while (cmd != "!");
+                    cmd = Console.ReadLine();
+                    if (cmd == ".")
+                        fs.MoveUp();
+                    else if (cmd != "!")
+                        try
+                        {
+                            fs.MoveInto(fs.Directories.ToArray()[int.Parse(cmd) - 1]);
+                        }
+                        catch (Exception e) { Console.WriteLine("Invalid command"); }
 
-            return fs.current + "\\";
+                } while (cmd != "!");
+
+                dir = fs.current + "\\";
+                ex = null;
+                try { useDir(dir); }
+                catch (Exception e) { Console.WriteLine($"{e}\n{dir}"); ex = e; }
+            } while (ex != null);            
         }
     }
 }
