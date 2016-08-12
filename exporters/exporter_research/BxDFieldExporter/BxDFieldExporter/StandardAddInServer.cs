@@ -112,8 +112,8 @@ namespace BxDFieldExporter
                 accessInnerAssemblies.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewSubAssembly_OnExecute);
                 form = new ComponentPropertiesForm();// init the component form to enter data into
                 partPanel.CommandControls.AddButton(beginExporter);
-               // partPanel.CommandControls.AddButton(cancleExport);
-               // partPanel.CommandControls.AddButton(exportField);
+                partPanel.CommandControls.AddButton(cancleExport);
+                partPanel.CommandControls.AddButton(exportField);
                 partPanel2.CommandControls.AddButton(removeSubAssembly);
                 partPanel2.CommandControls.AddButton(removeAssembly);// add buttons to the part panels
                 partPanel2.CommandControls.AddButton(addNewType);
@@ -248,6 +248,24 @@ namespace BxDFieldExporter
                     }
                     readSave();// read the save so the user doesn't loose any previous work
                     TimerWatch();// begin the timer watcher to detect deselect
+
+                    AssemblyDocument oDocs;
+                    oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+                    AssemblyComponentDefinition oCompDef;
+                    oCompDef = oDocs.ComponentDefinition;
+                    TransientGeometry oTG;
+                    oTG = m_inventorApplication.TransientGeometry;
+                    WorkPoint oWorkPoint1;
+                    oWorkPoint1 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 0, 0));
+                    WorkPoint oWorkPoint2;
+                    oWorkPoint2 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(4, 0, 0));
+                    WorkPoint oWorkPoint3;
+                    oWorkPoint3 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 2, 0));
+                    UserCoordinateSystemDefinition oUCSDef;
+                    oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
+                    oUCSDef.SetByThreePoints(oWorkPoint1, oWorkPoint2, oWorkPoint3);
+                    UserCoordinateSystem oUCS;
+                    oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
                 } else
                 {
                     MessageBox.Show("Please close out of the robot exporter in the other assembly");
@@ -489,7 +507,7 @@ namespace BxDFieldExporter
                         AssemblyDocument asmDoc = (AssemblyDocument)
                                  m_inventorApplication.ActiveDocument;
                         joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
                         if(joint != null) { 
                             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                             {
@@ -547,7 +565,7 @@ namespace BxDFieldExporter
                         AssemblyDocument asmDoc = (AssemblyDocument)
                                      m_inventorApplication.ActiveDocument;
                         joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to remove");
                         if (joint != null)
                         {
                             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
@@ -613,7 +631,7 @@ namespace BxDFieldExporter
                         AssemblyDocument asmDoc = (AssemblyDocument)
                                      m_inventorApplication.ActiveDocument;
                         joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to remove");
                         if (joint != null)
                         {
                             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node

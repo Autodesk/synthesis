@@ -197,7 +197,7 @@ namespace InventorAddInBasicGUI2
                 partPanel3.CommandControls.AddButton(cancelExport);
                 partPanel3.CommandControls.AddButton(selectJointInsideJoint);
                 partPanel.CommandControls.AddButton(editDrivers);
-                partPanel3.CommandControls.AddButton(test);
+              //  partPanel3.CommandControls.AddButton(test);
                 LimitsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
                 LimitsComboBox.OnSelect += LimitsComboBox_OnSelectEventDelegate;
                 partPanel2.CommandControls.AddComboBox(LimitsComboBox);
@@ -457,6 +457,7 @@ namespace InventorAddInBasicGUI2
         {
             try
             {
+                if (inExportView) { 
                 if (JustSelectedEntities.Count == 1)
                 {
                     if (SelectionDevice == SelectionDeviceEnum.kGraphicsWindowSelection && inExportView)
@@ -523,153 +524,154 @@ namespace InventorAddInBasicGUI2
                 {
                     ObjectCollection Obj = m_inventorApplication.TransientObjects.CreateObjectCollection();
                     oSet.Clear();
-                    if (inExportView)
-                    {
-                        foreach (Object o in JustSelectedEntities)
+                        if (inExportView)
                         {
-                            if (o is BrowserNodeDefinition)
+                            foreach (Object o in JustSelectedEntities)
                             {
-                                foreach (JointData joint in jointList)
+                                if (o is BrowserNodeDefinition)
                                 {
-                                    if (joint.same(((BrowserNodeDefinition)o)))
+                                    foreach (JointData joint in jointList)
                                     {
-                                        if (selectedJoints.Count > 0)
+                                        if (joint.same(((BrowserNodeDefinition)o)))
                                         {
-                                            if (!selectedJoints.Contains(joint))
+                                            if (selectedJoints.Count > 0)
                                             {
-                                                if (((JointData)selectedJoints[0]).Rotating == joint.Rotating)
+                                                if (!selectedJoints.Contains(joint))
                                                 {
-                                                    Obj.Add((BrowserNodeDefinition)o);
-                                                    selectedJoints.Add(joint);
-                                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
-                                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
-                                                    editDrivers.Enabled = true;
-                                                    JointsComboBox.Enabled = true;
-                                                    LimitsComboBox.Enabled = true;
-                                                    editLimits.Enabled = true;
+                                                    if (((JointData)selectedJoints[0]).Rotating == joint.Rotating)
+                                                    {
+                                                        Obj.Add((BrowserNodeDefinition)o);
+                                                        selectedJoints.Add(joint);
+                                                        oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
+                                                        oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
+                                                        editDrivers.Enabled = true;
+                                                        JointsComboBox.Enabled = true;
+                                                        LimitsComboBox.Enabled = true;
+                                                        editLimits.Enabled = true;
+                                                    }
+                                                    else
+                                                    {
+                                                        m_inventorApplication.ActiveDocument.SelectSet.Remove(((BrowserNodeDefinition)o));
+                                                        MessageBox.Show("Error, the selected joint type is incorrect for the rest of the selected joints");
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    m_inventorApplication.ActiveDocument.SelectSet.Remove(((BrowserNodeDefinition)o));
-                                                    MessageBox.Show("Error, the selected joint type is incorrect for the rest of the selected joints");
+                                                    Obj.Add((BrowserNodeDefinition)o);
+                                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
+                                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
                                                 }
+                                                if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                                ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                                {// if the assembly joint is linear
+                                                    JointTypeLinear();
+                                                }
+                                                else
+                                                {// set the combo box choices to rotating
+                                                    JointTypeRotating();
+                                                }
+                                                SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
+                                                SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                             }
                                             else
                                             {
+                                                selectedJoints.Add(joint);
                                                 Obj.Add((BrowserNodeDefinition)o);
                                                 oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
                                                 oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
+                                                editDrivers.Enabled = true;
+                                                JointsComboBox.Enabled = true;
+                                                LimitsComboBox.Enabled = true;
+                                                editLimits.Enabled = true;
+                                                if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                                ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                                {// if the assembly joint is linear
+                                                    JointTypeLinear();
+                                                }
+                                                else
+                                                {// set the combo box choices to rotating
+                                                    JointTypeRotating();
+                                                }
+                                                SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
+                                                SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                             }
-                                            if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
-                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
-                                            {// if the assembly joint is linear
-                                                JointTypeLinear();
-                                            }
-                                            else
-                                            {// set the combo box choices to rotating
-                                                JointTypeRotating();
-                                            }
-                                            SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
-                                            SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
-                                        }
-                                        else
-                                        {
-                                            selectedJoints.Add(joint);
-                                            Obj.Add((BrowserNodeDefinition)o);
-                                            oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
-                                            oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
-                                            editDrivers.Enabled = true;
-                                            JointsComboBox.Enabled = true;
-                                            LimitsComboBox.Enabled = true;
-                                            editLimits.Enabled = true;
-                                            if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
-                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
-                                            {// if the assembly joint is linear
-                                                JointTypeLinear();
-                                            }
-                                            else
-                                            {// set the combo box choices to rotating
-                                                JointTypeRotating();
-                                            }
-                                            SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
-                                            SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                         }
                                     }
                                 }
-                            }
-                            else if (o is ComponentOccurrence)
-                            {
-                                foreach (JointData joint in jointList)
+                                else if (o is ComponentOccurrence)
                                 {
-                                    if ((o).Equals(joint.jointOfType.AffectedOccurrenceOne) || o.Equals(joint.jointOfType.AffectedOccurrenceTwo))
+                                    foreach (JointData joint in jointList)
                                     {
-                                        foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+                                        if ((o).Equals(joint.jointOfType.AffectedOccurrenceOne) || o.Equals(joint.jointOfType.AffectedOccurrenceTwo))
                                         {
-                                            if (joint.same(node.BrowserNodeDefinition))
+                                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
                                             {
-                                                if (selectedJoints.Count > 0)
+                                                if (joint.same(node.BrowserNodeDefinition))
                                                 {
-                                                    if (!selectedJoints.Contains(joint))
+                                                    if (selectedJoints.Count > 0)
                                                     {
-                                                        if (((JointData)selectedJoints[0]).Rotating == joint.Rotating)
+                                                        if (!selectedJoints.Contains(joint))
                                                         {
-                                                            Obj.Add(node.BrowserNodeDefinition);
-                                                            selectedJoints.Add(joint);
-                                                            oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
-                                                            oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
-                                                            editDrivers.Enabled = true;
-                                                            JointsComboBox.Enabled = true;
-                                                            LimitsComboBox.Enabled = true;
-                                                            editLimits.Enabled = true;
+                                                            if (((JointData)selectedJoints[0]).Rotating == joint.Rotating)
+                                                            {
+                                                                Obj.Add(node.BrowserNodeDefinition);
+                                                                selectedJoints.Add(joint);
+                                                                oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
+                                                                oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
+                                                                editDrivers.Enabled = true;
+                                                                JointsComboBox.Enabled = true;
+                                                                LimitsComboBox.Enabled = true;
+                                                                editLimits.Enabled = true;
+                                                            }
+                                                            else
+                                                            {
+                                                                m_inventorApplication.ActiveDocument.SelectSet.Remove(((ComponentOccurrence)o));
+                                                                MessageBox.Show("Error, the selected joint type is incorrect for the rest of the selected joints");
+
+                                                            }
                                                         }
                                                         else
                                                         {
-                                                            m_inventorApplication.ActiveDocument.SelectSet.Remove(((ComponentOccurrence)o));
-                                                            MessageBox.Show("Error, the selected joint type is incorrect for the rest of the selected joints");
-                                                            
+                                                            Obj.Add(node.BrowserNodeDefinition);
+                                                            oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
+                                                            oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
                                                         }
+                                                        if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                                ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                                        {// if the assembly joint is linear
+                                                            JointTypeLinear();
+                                                        }
+                                                        else
+                                                        {// set the combo box choices to rotating
+                                                            JointTypeRotating();
+                                                        }
+                                                        SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
+                                                        SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                                     }
                                                     else
                                                     {
+                                                        selectedJoints.Add(joint);
                                                         Obj.Add(node.BrowserNodeDefinition);
                                                         oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
                                                         oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
+                                                        editDrivers.Enabled = true;
+                                                        JointsComboBox.Enabled = true;
+                                                        LimitsComboBox.Enabled = true;
+                                                        editLimits.Enabled = true;
+                                                        if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
+                                                                ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
+                                                        {// if the assembly joint is linear
+                                                            JointTypeLinear();
+                                                        }
+                                                        else
+                                                        {// set the combo box choices to rotating
+                                                            JointTypeRotating();
+                                                        }
+                                                        SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
+                                                        SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
                                                     }
-                                                    if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
-                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
-                                                    {// if the assembly joint is linear
-                                                        JointTypeLinear();
-                                                    }
-                                                    else
-                                                    {// set the combo box choices to rotating
-                                                        JointTypeRotating();
-                                                    }
-                                                    SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
-                                                    SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
+
                                                 }
-                                                else
-                                                {
-                                                    selectedJoints.Add(joint);
-                                                    Obj.Add(node.BrowserNodeDefinition);
-                                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceOne);
-                                                    oSet.AddItem(joint.jointOfType.AffectedOccurrenceTwo);
-                                                    editDrivers.Enabled = true;
-                                                    JointsComboBox.Enabled = true;
-                                                    LimitsComboBox.Enabled = true;
-                                                    editLimits.Enabled = true;
-                                                    if (((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kCylindricalJointType ||
-                                                            ((JointData)selectedJoints[0]).jointOfType.Definition.JointType == AssemblyJointTypeEnum.kSlideJointType)
-                                                    {// if the assembly joint is linear
-                                                        JointTypeLinear();
-                                                    }
-                                                    else
-                                                    {// set the combo box choices to rotating
-                                                        JointTypeRotating();
-                                                    }
-                                                    SwitchSelectedJoint(((JointData)selectedJoints[0]).Driver);// set selected joint type in the combo box to the correct one
-                                                    SwitchSelectedLimit(((JointData)selectedJoints[0]).HasLimits);// set selected limit choice in the combo box to the correct one
-                                                }
-                                                
                                             }
                                         }
                                     }
@@ -1147,7 +1149,6 @@ namespace InventorAddInBasicGUI2
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             found = false;
-            m_inventorApplication.CommandManager.StopActiveCommand();
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
             {// looks through all the nodes under the top node
                 if (node.Selected)
