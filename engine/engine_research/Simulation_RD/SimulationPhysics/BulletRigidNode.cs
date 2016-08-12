@@ -113,7 +113,7 @@ namespace Simulation_RD.SimulationPhysics
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
                     //also need to find a less screwy way to do this
-                    //Update = (f) => { ((RigidBody)BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
+                    Update = (f) => { ((RigidBody)BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
 
                     Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
