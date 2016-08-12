@@ -123,6 +123,12 @@
     <Compile Include="MeshColliderPropertiesForm.Designer.cs">
       <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PictureDispConverter.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SphereColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -146,6 +152,20 @@
     <EmbeddedResource Include="ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="StartExporter.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\StartExporter.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="StartExporter64.bmp" />
+    <Content Include="StartExporter16.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

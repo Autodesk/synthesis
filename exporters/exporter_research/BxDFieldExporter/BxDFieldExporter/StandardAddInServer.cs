@@ -30,8 +30,11 @@ namespace BxDFieldExporter
         private static RibbonTab partTab;// part tab that all the panels will be added to
         ClientNodeResource oRsc;// client resources that buttons will use
         static Document nativeDoc;
+        static bool runOnce;
         static RibbonPanel partPanel;
         static RibbonPanel partPanel2;// the ribbon panels that the buttons will be a part of
+        static RibbonPanel partPanel3;
+        static RibbonPanel partPanel4;// the ribbon panels that the buttons will be a part of
         static ButtonDefinition beginExporter;
         static ButtonDefinition addNewType;
         static ButtonDefinition editType;
@@ -41,6 +44,8 @@ namespace BxDFieldExporter
         static ButtonDefinition removeAssembly;
         static ButtonDefinition cancleExport;
         static ButtonDefinition exportField;
+        KeyboardEvents keyEvents;
+        static bool done;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldTypes;// arraylist of all the field properties the user has set
         public static FieldDataType selectedType;// the current group that the user is editing
@@ -81,9 +86,13 @@ namespace BxDFieldExporter
                 partPanel2 = partTab.RibbonPanels.Add("Model Control", "BxD:FieldExporter:ModelControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 // TODO: Add ApplicationAddInServer.Activate implementation.
                 // e.g. event initialization, command creation etc.
+               // Icon beginExporterIcon = null;
+                //Icon beginExporterIcon = new Icon(this.GetType(), "StartExporter.ico");
+                stdole.IPictureDisp beginExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\StartExporter16.bmp"));
+                stdole.IPictureDisp beginExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\StartExporter64.bmp"));
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
                 FieldTypes = new ArrayList();// clear the field type array
-                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "InventorAddInBrowserPaneAttempt5:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "InventorAddInBrowserPaneAttempt5:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, beginExporterIconSmall, beginExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
                 beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
                 addNewType = controlDefs.AddButtonDefinition("Add new type", "InventorAddInBrowserPaneAttempt5:AddNewType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 addNewType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewType_OnExecute);
@@ -124,6 +133,7 @@ namespace BxDFieldExporter
                 UIEvent = m_inventorApplication.CommandManager.UserInputEvents;// get the application's userinput events object
                 click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);// make a new ui event reactor
                 UIEvent.OnSelect += click_OnSelectEventDelegate;// add the event reactor to the onselect reactor
+                
             } catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
@@ -238,6 +248,24 @@ namespace BxDFieldExporter
                     }
                     readSave();// read the save so the user doesn't loose any previous work
                     TimerWatch();// begin the timer watcher to detect deselect
+
+                    AssemblyDocument oDocs;
+                    oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+                    AssemblyComponentDefinition oCompDef;
+                    oCompDef = oDocs.ComponentDefinition;
+                    TransientGeometry oTG;
+                    oTG = m_inventorApplication.TransientGeometry;
+                    WorkPoint oWorkPoint1;
+                    oWorkPoint1 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 0, 0));
+                    WorkPoint oWorkPoint2;
+                    oWorkPoint2 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(4, 0, 0));
+                    WorkPoint oWorkPoint3;
+                    oWorkPoint3 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 2, 0));
+                    UserCoordinateSystemDefinition oUCSDef;
+                    oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
+                    oUCSDef.SetByThreePoints(oWorkPoint1, oWorkPoint2, oWorkPoint3);
+                    UserCoordinateSystem oUCS;
+                    oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
                 } else
                 {
                     MessageBox.Show("Please close out of the robot exporter in the other assembly");
@@ -324,10 +352,29 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
+        [DllImport("user32.dll")]
+        public static extern ushort GetKeyState(short nVirtKey);
+
+        public const ushort keyDownBit = 0x80;
+        public static bool IsKeyPressed(Keys key)
+        {
+            return ((GetKeyState((short)key) & keyDownBit) == keyDownBit);
+        }
         // reacts to the timer elapsed event, this allows us to select and unselect things as needed
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             found = false;
+            if (IsKeyPressed(Keys.ShiftKey) || IsKeyPressed(Keys.ControlKey))
+            {
+            } else
+            {
+                if (!runOnce)
+                {
+                    done = true;
+                    m_inventorApplication.CommandManager.StopActiveCommand();
+                    runOnce = true;
+                }
+            }
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
             {// looks through all the nodes under the top node
                 if (node.Selected)
@@ -442,7 +489,8 @@ namespace BxDFieldExporter
         {
             try
             {
-                ComponentOccurrence joint;
+                runOnce = true;
+                done = false;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -453,43 +501,53 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                              (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
-                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    while (!done)
                     {
-                        if (node.Selected)// find the selected node
-                        {
-                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                        ComponentOccurrence joint = null;
+                        AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
+                        if(joint != null) { 
+                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                             {
-                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                if (node.Selected)// find the selected node
                                 {
-                                    t.compOcc.Add(joint);// add the occurence to the arraylist
-                                    m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                    node.DoSelect();
+                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                                    {
+                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                        {
+                                            t.compOcc.Add(joint);// add the occurence to the arraylist
+                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                            node.DoSelect();
+                                        }
+                                    }
                                 }
                             }
                         }
+                        runOnce = false;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
                 }
+                runOnce = false;
             }
             catch (Exception)
             {
 
-            }  
+            }
+            runOnce = true;
+
         }
         // removes an assembly from the arraylist of the type
         public void removeAssembly_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
+                runOnce = true;
                 bool found = false;
-                ComponentOccurrence joint;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -500,37 +558,49 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                              (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to remove");
-                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    done = false;
+                    while (!done)
                     {
-                        if (node.Selected)// find the selected node
+                        ComponentOccurrence joint = null;
+                        AssemblyDocument asmDoc = (AssemblyDocument)
+                                     m_inventorApplication.ActiveDocument;
+                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to remove");
+                        if (joint != null)
                         {
-                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                             {
-                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                if (node.Selected)// find the selected node
                                 {
-                                    if (t.compOcc.Contains(joint)){// if the occurence is in the list the allow the remove
-                                        t.compOcc.Remove(joint);// add the occurence to the arraylist
-                                        m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                        node.DoSelect();
-                                        found = true;
+                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                                    {
+                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                        {
+                                            if (t.compOcc.Contains(joint))
+                                            {// if the occurence is in the list the allow the remove
+                                                t.compOcc.Remove(joint);// add the occurence to the arraylist
+                                                m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                                node.DoSelect();
+                                                found = true;
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                        if (!found)
+                        {
+                            MessageBox.Show("Warning, assembly not found in item group");// if the assembly wasn't found in the group then tell the user
+                        }
+                        runOnce = false;
+                        found = false;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please select a browser node to remove an assembly from");// if the user didn't select a browser node then tell them
                 }
-                if (!found)
-                {
-                    MessageBox.Show("Warning, assembly not found in item group");// if the assembly wasn't found in the group then tell the user
-                }
+                runOnce = true;
             }
             catch (Exception)
             {
@@ -542,8 +612,8 @@ namespace BxDFieldExporter
         {
             try
             {
+                runOnce = true;
                 bool found = false;
-                ComponentOccurrence joint;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -554,38 +624,49 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to remove");
-                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    done = false;
+                    while (!done)
                     {
-                        if (node.Selected)// find the selected node
+                        ComponentOccurrence joint = null;
+                        AssemblyDocument asmDoc = (AssemblyDocument)
+                                     m_inventorApplication.ActiveDocument;
+                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to remove");
+                        if (joint != null)
                         {
-                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                             {
-                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                if (node.Selected)// find the selected node
                                 {
-                                    if (t.compOcc.Contains(joint))// if the occurence is in the list the allow the remove
+                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
                                     {
-                                        t.compOcc.Remove(joint);// add the occurence to the arraylist
-                                        m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                        node.DoSelect();
-                                        found = true;
+                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                        {
+                                            if (t.compOcc.Contains(joint))// if the occurence is in the list the allow the remove
+                                            {
+                                                t.compOcc.Remove(joint);// add the occurence to the arraylist
+                                                m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                                node.DoSelect();
+                                                found = true;
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                        if (!found)
+                        {
+                            MessageBox.Show("Warning, part not found in item group");// if the part wasn't found in the group then tell the user
+                        }
+                        found = false;
+                        runOnce = false;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please select a browser node to remove a part from");// if the user didn't select a browser node then tell them
                 }
-                if (!found)
-                {
-                    MessageBox.Show("Warning, part not found in item group");// if the part wasn't found in the group then tell the user
-                }
+                runOnce = true;
             }
             catch (Exception)
             {
@@ -597,7 +678,8 @@ namespace BxDFieldExporter
         {
             try
             {
-                ComponentOccurrence joint;
+                runOnce = true;
+                done = false;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -608,23 +690,31 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
-                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    while (!done)
                     {
-                        if (node.Selected)// find the selected node
+                        ComponentOccurrence joint = null;
+                        AssemblyDocument asmDoc = (AssemblyDocument)
+                                     m_inventorApplication.ActiveDocument;
+                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
+                        if (joint != null)
                         {
-                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                             {
-                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                if (node.Selected)// find the selected node
                                 {
-                                    t.compOcc.Add(joint);// add the occurence to the arraylist
-                                    m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                    node.DoSelect();
+                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                                    {
+                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                                        {
+                                            t.compOcc.Add(joint);// add the occurence to the arraylist
+                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                            node.DoSelect();
+                                        }
+                                    }
                                 }
                             }
+                            runOnce = false;
                         }
                     }
                 }
@@ -632,6 +722,7 @@ namespace BxDFieldExporter
                 {
                     MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
                 }
+                runOnce = true;
             }
             catch (Exception)
             {
