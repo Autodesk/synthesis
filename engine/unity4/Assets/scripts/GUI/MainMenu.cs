@@ -98,12 +98,12 @@ public class MainMenu : MonoBehaviour {
                 if (customfieldon && !fieldBrowser.Active)
                 {
                     customfieldon = false;
-                    currentMenu = Menu.LoadField;
+                    SwitchState(Menu.LoadField);
                 }
                 else if (customroboton && !robotBrowser.Active)
                 {
                     customroboton = false;
-                    currentMenu = Menu.LoadRobot;
+                    SwitchState(Menu.LoadRobot);
                 }
                 break;
          }
@@ -173,7 +173,6 @@ public class MainMenu : MonoBehaviour {
             case Menu.Custom:
                 currentMenu = Menu.Custom;
 
-                SplashScreen.SetActive(true);
                 LoadField.SetActive(false);
                 LoadRobot.SetActive(false);
                 break;
@@ -465,7 +464,6 @@ public class MainMenu : MonoBehaviour {
     }
     #endregion
     void Start () {
-
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
         Main.SetActive(true);
@@ -500,8 +498,8 @@ public class MainMenu : MonoBehaviour {
         selectedRobotName = "Robot: " + new DirectoryInfo(selectedRobot).Name;
         selectedFieldName = "Field: " + new DirectoryInfo(selectedField).Name;
 
-        robotDirectory = PlayerPrefs.GetString("RobotDirectory", Directory.GetParent(Application.dataPath).FullName + "//Robots");
-        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", Directory.GetParent(Application.dataPath).FullName + "//Fields");
+        robotDirectory = PlayerPrefs.GetString("RobotDirectory", Directory.GetParent(Application.dataPath).FullName);
+        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", Directory.GetParent(Application.dataPath).FullName);
         customfieldon = false;
         customroboton = false;
 

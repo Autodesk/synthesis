@@ -9,10 +9,7 @@ namespace InventorAddInBasicGUI2
 {
     public partial class Form1 : Form
     {
-
-        //Write xml variables to be modified by the instacne of the button click
-        //Change me later
-
+        
         JointData joint;
 
         public Form1()
@@ -43,6 +40,7 @@ namespace InventorAddInBasicGUI2
             grpChooseDriver.Hide();
             tabsMeta.Visible = true;
             tabsMeta.TabPages.Clear();
+            tabsMeta.TabPages.Add(metaJointFriction);
             tabsMeta.TabPages.Add(metaWheel);
             tabsMeta.TabPages.Add(metaGearing);
             chkBoxDriveWheel.Show();
@@ -56,7 +54,7 @@ namespace InventorAddInBasicGUI2
                 cmbFrictionLevel.Hide();
             }
             rbPWM.Show();
-            
+
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             tabsMeta.Location = new System.Drawing.Point(10, 95);
             btnSave.Location = new System.Drawing.Point(9, 190);
@@ -66,16 +64,18 @@ namespace InventorAddInBasicGUI2
         {
 
             grpChooseDriver.Hide();
-            tabsMeta.Visible = false;
             tabsMeta.TabPages.Clear();
             rbPWM.Show();
             chkBoxDriveWheel.Hide();
-            ClientSize = new System.Drawing.Size(340, 130);
             btnSave.Show();
-            btnSave.Location = new System.Drawing.Point(9, 95);
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
+            tabsMeta.Location = new System.Drawing.Point(10, 95);
+            btnSave.Location = new System.Drawing.Point(9, 190);
+            ClientSize = new System.Drawing.Size(340, 225);
             rbCAN.Hide();
             rbPWM.Hide();
+            tabsMeta.Visible = true;
+            tabsMeta.TabPages.Add(metaJointFriction);
             lblPort.Text = "PWM Port";
             RelaytxtPort.Hide();
             Solenoid1txtPort.Hide();
@@ -90,14 +90,15 @@ namespace InventorAddInBasicGUI2
             grpChooseDriver.Hide();
             tabsMeta.Visible = true;
             tabsMeta.TabPages.Clear();
+            tabsMeta.TabPages.Add(metaJointFriction);
             tabsMeta.TabPages.Add(metaPneumatic);
             rbPWM.Hide();
             chkBoxDriveWheel.Hide();
-            ClientSize = new System.Drawing.Size(340, 225);
             btnSave.Show();
-            btnSave.Location = new System.Drawing.Point(9,190);
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             tabsMeta.Location = new System.Drawing.Point(10, 95);
+            btnSave.Location = new System.Drawing.Point(9, 190);
+            ClientSize = new System.Drawing.Size(340, 225);
             rbCAN.Hide();
             rbPWM.Hide();
             RelaytxtPort.Hide();
@@ -114,14 +115,15 @@ namespace InventorAddInBasicGUI2
             grpChooseDriver.Hide();
             tabsMeta.Visible = true;
             tabsMeta.TabPages.Clear();
+            tabsMeta.TabPages.Add(metaJointFriction);
             tabsMeta.TabPages.Add(metaPneumatic);
             rbPWM.Hide();
             chkBoxDriveWheel.Hide();
-            ClientSize = new System.Drawing.Size(340, 225);
             btnSave.Show();
-            btnSave.Location = new System.Drawing.Point(9, 190);
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             tabsMeta.Location = new System.Drawing.Point(10, 95);
+            btnSave.Location = new System.Drawing.Point(9, 190);
+            ClientSize = new System.Drawing.Size(340, 225);
             rbCAN.Hide();
             rbPWM.Hide();
             lblPort.Text = "Relay Port";
@@ -155,15 +157,17 @@ namespace InventorAddInBasicGUI2
                 lblPort.Text = "CAN Port";
             }
             grpChooseDriver.Hide();
-            tabsMeta.Visible = false;
             tabsMeta.TabPages.Clear();
+            tabsMeta.Visible = true;
+            tabsMeta.TabPages.Add(metaJointFriction);
             rbPWM.Show();
             rbCAN.Show();
             chkBoxDriveWheel.Hide();
-            ClientSize = new System.Drawing.Size(340, 130);
             btnSave.Show();
-            btnSave.Location = new System.Drawing.Point(9, 95);
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
+            tabsMeta.Location = new System.Drawing.Point(10, 95);
+            btnSave.Location = new System.Drawing.Point(9, 190);
+            ClientSize = new System.Drawing.Size(340, 225);
         }
         public void DualMotorChosen()
         {
@@ -187,8 +191,8 @@ namespace InventorAddInBasicGUI2
                 lblPort.Text = "CAN Port";
             }
             grpChooseDriver.Hide();
-            tabsMeta.Visible = true;
             tabsMeta.TabPages.Clear();
+            tabsMeta.TabPages.Add(metaJointFriction);
             tabsMeta.TabPages.Add(metaWheel);
             tabsMeta.TabPages.Add(metaGearing);
             chkBoxDriveWheel.Show();
@@ -229,7 +233,6 @@ namespace InventorAddInBasicGUI2
                 PWM2txtPort.Hide();
                 lblPort.Text = "CAN Port";
             }
-            tabsMeta.Visible = true;
             lblBrakePort.Enabled = false;
             rbCAN.Show();
             chkBoxDriveWheel.Hide();
@@ -238,15 +241,17 @@ namespace InventorAddInBasicGUI2
             brakePortA.Enabled = chkBoxHasBrake.Checked;
             brakePortB.Enabled = chkBoxHasBrake.Checked;
             tabsMeta.TabPages.Clear();
+            tabsMeta.Visible = true;
+            tabsMeta.TabPages.Add(metaJointFriction);
             chkBoxHasBrake.Show();
             tabsMeta.TabPages.Add(metaElevatorBrake);
             tabsMeta.TabPages.Add(metaElevatorStages);
             tabsMeta.TabPages.Add(metaGearing);
-            ClientSize = new System.Drawing.Size(340, 225);
             btnSave.Show();
-            btnSave.Location = new System.Drawing.Point(9, 190);
             grpDriveOptions.Location = new System.Drawing.Point(10, 10);
             tabsMeta.Location = new System.Drawing.Point(10, 95);
+            btnSave.Location = new System.Drawing.Point(9, 190);
+            ClientSize = new System.Drawing.Size(340, 225);
         }
         public void SaveButtonPressed(object sender, EventArgs e)
         {
@@ -426,6 +431,33 @@ namespace InventorAddInBasicGUI2
                 }
             }
         }
+        public void JointFrictionChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                joint.JointFrictionLevel = Convert.ToDouble(this.JointFrictionLevel.Text);
+            }
+            catch
+            {
+                if (txtGearRationNum.Text.Length > 0)
+                {
+                    MessageBox.Show("warning, incorrect input");
+                }
+            }
+        }
+        public void btnHasJointFriction_Click(object sender, EventArgs e)
+        {
+            if (chkBoxHasJointFriction.Checked == true)
+            {
+                JointFrictionLevel.Enabled = true;
+                joint.HasJointFriction = true;
+            }
+            else
+            {
+                JointFrictionLevel.Enabled = false;
+                joint.HasJointFriction = false;
+            }
+        }
         public void OutputGearChanged(object sender, EventArgs e)
         {
             try
@@ -566,6 +598,17 @@ namespace InventorAddInBasicGUI2
                 brakePortA.Value = (decimal)j.BrakePortA;
 
                 brakePortB.Value = (decimal)j.BrakePortB;
+
+                JointFrictionLevel.Value = (decimal)j.JointFrictionLevel;
+
+                chkBoxHasJointFriction.Checked = j.HasJointFriction;
+                if (j.HasJointFriction)
+                {
+                    JointFrictionLevel.Enabled = true;
+                } else
+                {
+                    JointFrictionLevel.Enabled = false;
+                }
             }catch(Exception e)
             {
                 MessageBox.Show(e.ToString());
