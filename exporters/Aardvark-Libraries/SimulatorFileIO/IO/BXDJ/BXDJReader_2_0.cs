@@ -475,6 +475,7 @@ public partial class BXDJSkeleton
                     break;
                 case "AngularLowLimit":
                     // Assign a value to the angularLimitLow.
+                    cylindricalJoint.hasAngularLimit = true;
                     cylindricalJoint.angularLimitLow = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "AngularHighLimit":
@@ -483,10 +484,12 @@ public partial class BXDJSkeleton
                     break;
                 case "LinearStartLimit":
                     // Assign a value to the linearLimitStart.
+                    cylindricalJoint.hasLinearStartLimit = true;
                     cylindricalJoint.linearLimitStart = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "LinearEndLimit":
                     // Assign a value to the linearLimitEnd.
+                    cylindricalJoint.hasLinearEndLimit = true;
                     cylindricalJoint.linearLimitEnd = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "CurrentLinearPosition":
@@ -612,6 +615,7 @@ public partial class BXDJSkeleton
                     break;
                 case "AngularLowLimit":
                     // Assign the current element value to angularLimitLow.
+                    rotationalJoint.hasAngularLimit = true;
                     rotationalJoint.angularLimitLow = float.Parse(reader.ReadElementContentAsString());
                     break;
                 case "AngularHighLimit":
@@ -624,7 +628,7 @@ public partial class BXDJSkeleton
                     break;
             }
         }
-        
+
         return rotationalJoint;
     }
 

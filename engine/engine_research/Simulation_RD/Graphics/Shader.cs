@@ -1,14 +1,21 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System;
 
 namespace Simulation_RD.Graphics
 {
+    /// <summary>
+    /// No idea what this does. Ask Toby to explain
+    /// </summary>
     class Shader
     {
         public int program;
 
+        /// <summary>
+        /// Should load a texture from a file, but I'm not sure if it works.
+        /// </summary>
+        /// <param name="file">File path</param>
+        /// <returns></returns>
         public static int LoadTexture(string file)
         {
             Bitmap bitmap = new Bitmap(file);
@@ -19,7 +26,7 @@ namespace Simulation_RD.Graphics
             GL.GenTextures(1, out tex);
             GL.BindTexture(TextureTarget.Texture2D, tex);
 
-            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height),
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
