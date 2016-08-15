@@ -87,7 +87,7 @@ namespace Simulation_RD.SimulationPhysics
         /// <param name="elapsedTime">elapsed time</param>
         public virtual void Update(float elapsedTime, KeyboardKeyEventArgs args)
         {
-            //DriveJoints.UpdateAllMotors(Skeleton, args);
+            DriveJoints.UpdateAllMotors(Skeleton, args);
             cachedArgs = args;
 
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
