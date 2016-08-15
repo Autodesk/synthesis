@@ -656,7 +656,7 @@ namespace TeamUtility.IO
 
 			if (playerWhoUsesInputConfig.HasValue && playerWhoUsesInputConfig.Value != playerID)
             {
-				Debug.LogErrorFormat("The input configuration named \'{0}\' is already being used by player {1}", name, playerWhoUsesInputConfig.Value.ToString());
+				//Debug.LogError("The input configuration named \'{0}\' is already being used by player {1}", name, playerWhoUsesInputConfig.Value.ToString());
                 return;
             }
 
