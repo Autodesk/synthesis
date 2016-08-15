@@ -24,7 +24,7 @@ namespace BxDFieldExporter
         public double Friction;
         public bool Dynamic;
         public double Mass;
-        public String Name;
+        public string Name;
         public FieldDataType(BrowserNodeDefinition f)
         {
             compOcc = new ArrayList();

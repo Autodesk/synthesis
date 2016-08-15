@@ -13,7 +13,7 @@ namespace BxDFieldExporter
 {
     public partial class EnterName : Form
     {
-        String name;
+        string name;
         /// <summary>
         /// Used for obtaining the encryped security key for allocating to the occupied memory owned by the CMOS.
         /// </summary>
