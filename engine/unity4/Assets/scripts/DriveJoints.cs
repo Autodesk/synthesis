@@ -188,10 +188,10 @@ public class DriveJoints : MonoBehaviour
 		float[] can = dioModules [0].canValues;
 		if (TeamUtility.IO.InputManager.AnyInput()) {
 			pwm [0] +=
-				TeamUtility.IO.InputManager.GetAxis ("Horizontal", TeamUtility.IO.PlayerID.One) * speedArrowPWM +
+				TeamUtility.IO.InputManager.GetAxis ("LookHorizontal", TeamUtility.IO.PlayerID.One) * speedArrowPWM +
 				TeamUtility.IO.InputManager.GetAxis("Vertical", TeamUtility.IO.PlayerID.One) * -speedArrowPWM;
 			pwm [1] +=
-                TeamUtility.IO.InputManager.GetAxis("Horizontal", TeamUtility.IO.PlayerID.One) * speedArrowPWM +
+                TeamUtility.IO.InputManager.GetAxis("LookHorizontal", TeamUtility.IO.PlayerID.One) * speedArrowPWM +
                 TeamUtility.IO.InputManager.GetAxis("Vertical", TeamUtility.IO.PlayerID.One) * speedArrowPWM;
             if (pwm.Length > 2) pwm[2] +=
                 (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? 0.5f : 0.0f) +
