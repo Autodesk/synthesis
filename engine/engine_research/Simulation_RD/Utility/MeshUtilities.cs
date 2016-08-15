@@ -41,14 +41,42 @@ namespace Simulation_RD.Utility
         {
             IEnumerable<int> indices = new List<int>();
             subMesh.surfaces.ForEach((s) => indices = indices.Concat(s.indicies));
-            return new TriangleIndexVertexArray(indices.ToArray(), vertices);
+            Vector3 center = MeshCenter(vertices);
+            return new TriangleIndexVertexArray(indices.ToArray(), (from Vector3 v in vertices select v - center).ToArray());
         }
 
         /// <summary>
-        /// Gets the center vertex of a mesh's vertices
+        /// Returns a bullet mesh centered around just the vertices used in the subMesh
+        /// </summary>
+        /// <param name="subMesh"></param>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static StridingMeshInterface CenteredBulletShapeFromMesh(BXDAMesh.BXDASubMesh subMesh, Vector3[] vertices)
+        {
+            IEnumerable<int> indices = new List<int>();
+            subMesh.surfaces.ForEach((s) => indices = indices.Concat(s.indicies));
+
+            IEnumerable<Vector3> usedVertices = from int i in indices select vertices[i];
+            Vector3 center = MeshCenter(usedVertices);
+
+            return new TriangleIndexVertexArray(indices.ToArray(), (from Vector3 v in usedVertices select v - center).ToArray());
+        }
+
+        /// <summary>
+        /// Gets the center vertex of some vertices
         /// </summary>
         /// <param name="mesh">find the center of this</param>
-        /// <returns>wow much center very middle</returns>
+        /// <returns></returns>
+        public static Vector3 MeshCenter(IEnumerable<Vector3> vertices)
+        {
+            return vertices.Aggregate(Vector3.Add) / vertices.Count();
+        }
+
+        /// <summary>
+        /// Gets the center of a mesh's vertices
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <returns></returns>
         public static Vector3 MeshCenter(BXDAMesh mesh)
         {
             return mesh.colliders.ConvertAll(m => DataToVector(m.verts).Aggregate(Vector3.Add) / (m.verts.Length / 3)).Aggregate(Vector3.Add) / mesh.colliders.Count;
