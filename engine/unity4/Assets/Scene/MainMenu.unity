@@ -6402,7 +6402,7 @@ MonoBehaviour:
   inputConfigurations:
   - name: KeyboardAndMouse
     axes:
-    - name: Horizontal
+    - name: MouseHorizontal
       description: 
       positive: 100
       negative: 97
@@ -6416,7 +6416,7 @@ MonoBehaviour:
       type: 2
       axis: 0
       joystick: 0
-    - name: Vertical
+    - name: MouseVertical
       description: 
       positive: 119
       negative: 115
@@ -6430,7 +6430,7 @@ MonoBehaviour:
       type: 2
       axis: 0
       joystick: 0
-    - name: LookHorizontal
+    - name: MouseLookHorizontal
       description: 
       positive: 0
       negative: 0
@@ -6444,7 +6444,7 @@ MonoBehaviour:
       type: 1
       axis: 0
       joystick: 0
-    - name: LookVertical
+    - name: MouseLookVertical
       description: 
       positive: 0
       negative: 0
@@ -6539,7 +6539,7 @@ MonoBehaviour:
       altNegative: 0
       deadZone: .200000003
       gravity: 0
-      sensitivity: 10
+      sensitivity: 1
       snap: 0
       invert: 0
       type: 3
@@ -6553,9 +6553,9 @@ MonoBehaviour:
       altNegative: 0
       deadZone: .200000003
       gravity: 0
-      sensitivity: 10
+      sensitivity: 1
       snap: 0
-      invert: 0
+      invert: 1
       type: 3
       axis: 1
       joystick: 0
@@ -6712,20 +6712,6 @@ MonoBehaviour:
       invert: 0
       type: 3
       axis: 8
-      joystick: 0
-    - name: New Axis
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
       joystick: 0
     isExpanded: 0
   - name: OSX_Gamepad
@@ -7098,265 +7084,10 @@ MonoBehaviour:
       axis: 2
       joystick: 0
     isExpanded: 0
-  - name: XBox_360_Windows
-    axes:
-    - name: Button A
-      description: 
-      positive: 330
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Button B
-      description: 
-      positive: 331
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Button X
-      description: 
-      positive: 332
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Button Y
-      description: 
-      positive: 333
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Left Bumper
-      description: 
-      positive: 334
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Right Bumper
-      description: 
-      positive: 335
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Back
-      description: 
-      positive: 336
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Start
-      description: 
-      positive: 337
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Left Stick Button
-      description: 
-      positive: 338
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Right Stick Button
-      description: 
-      positive: 339
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
-    - name: Left Stick Vertical
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 1
-      joystick: 0
-    - name: Left Stick Horizontal
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 0
-      joystick: 0
-    - name: Right Stick Vertical
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 4
-      joystick: 0
-    - name: Right Stick Horizontal
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 3
-      joystick: 0
-    - name: Left Trigger
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 8
-      joystick: 0
-    - name: Right Trigger
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 9
-      joystick: 0
-    - name: DPAD Vertical
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 6
-      joystick: 0
-    - name: DPAD Horizontal
-      description: 
-      positive: 0
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 1
-      sensitivity: 1
-      snap: 0
-      invert: 0
-      type: 3
-      axis: 5
-      joystick: 0
-    isExpanded: 0
-  playerOneDefault: XBox_360_Windows
-  playerTwoDefault: XBox_360_Windows
-  playerThreeDefault: XBox_360_Windows
-  playerFourDefault: XBox_360_Windows
+  playerOneDefault: KeyboardAndMouse
+  playerTwoDefault: 
+  playerThreeDefault: 
+  playerFourDefault: 
   dontDestroyOnLoad: 1
   ignoreTimescale: 0
 --- !u!4 &1285250775
