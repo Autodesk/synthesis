@@ -93,7 +93,7 @@ namespace Simulation_RD.SimulationPhysics
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
                 ResetRobot();
             
-            World.StepSimulation(elapsedTime, 1000, 1f / 300f);
+            World.StepSimulation(elapsedTime, 1000/*, 1f / 300f*/);
 
             OnUpdate?.Invoke();
         }
