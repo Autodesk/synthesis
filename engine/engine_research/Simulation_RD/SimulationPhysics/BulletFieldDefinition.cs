@@ -54,9 +54,7 @@ namespace Simulation_RD.SimulationPhysics
                                 temp.CalculateAabbBruteForce(out min, out max);
                                 
                                 PropertySet.BoxCollider colliderInfo = (PropertySet.BoxCollider)current.Collider;
-                                subShape = new BoxShape(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
-                                Vector3 scale = new Vector3(colliderInfo.Scale.x, colliderInfo.Scale.y, colliderInfo.Scale.z);
-                                subShape = new BoxShape((max - min) * scale);
+                                subShape = new BoxShape((max - min) * colliderInfo.Scale.Convert());
                                 if (debug) Console.WriteLine("Created Box");
                                 break;
                             }
@@ -96,15 +94,15 @@ namespace Simulation_RD.SimulationPhysics
                     if (null != subShape)
                     {
                         //set sub shape local position/rotation and add it to the compound shape
-                        Vector3 Translation = new Vector3(node.Position.x, node.Position.y, node.Position.z);
-                        Quaternion rotation = new Quaternion(node.Rotation.X, node.Rotation.Y, node.Rotation.Z, node.Rotation.W);
+                        Vector3 Translation = node.Position.Convert();
+                        Quaternion rotation = node.Rotation.Convert();
                         
-                        DefaultMotionState m = new DefaultMotionState(Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(Translation));
-                        m.CenterOfMassOffset = Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert());
+                        DefaultMotionState motion = new DefaultMotionState(Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(Translation));
+                        motion.CenterOfMassOffset = Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert());
                         
-                        RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(current.Mass, m, subShape, subShape.CalculateLocalInertia(current.Mass));
-                        rbci.Friction = current.Friction;
-                        Bodies.Add(new RigidBody(rbci));
+                        RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(current.Mass, motion, subShape, subShape.CalculateLocalInertia(current.Mass));
+                        info.Friction = current.Friction;
+                        Bodies.Add(new RigidBody(info));
                         
                         VisualMeshes.Add(new Mesh(mesh.meshes[node.SubMeshID], Translation));                        
                         if(debug) Console.WriteLine("Created " + node.PropertySetID);

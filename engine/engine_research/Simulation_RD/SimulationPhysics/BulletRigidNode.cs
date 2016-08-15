@@ -41,21 +41,24 @@ namespace Simulation_RD.SimulationPhysics
             DefaultMotionState motion;
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(FilePath);
+            Vector3 loc;
 
             //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false) //now
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && true) //now
             {
                 shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);
+                loc = MeshUtilities.MeshCenter(mesh);
                 Console.WriteLine(  MeshUtilities.MeshCenter(mesh) );
             }
             //Rigid Body Construction
             else
             {
                 shape = GetShape(mesh);
+                loc = Vector3.Zero;
             }
 
             //Current quick fix for wheels in the wrong position: scale by 1/4? Please find a better solution.
-            motion = new DefaultMotionState(Matrix4.CreateTranslation(0, 0, 0) /* * Matrix4.CreateScale(0.25f),*//* Matrix4.CreateTranslation(mesh.physics.centerOfMass.Convert())*/);
+            motion = new DefaultMotionState(Matrix4.CreateTranslation(loc));
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
 
             //Temp
