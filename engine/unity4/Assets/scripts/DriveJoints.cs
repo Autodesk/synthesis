@@ -186,17 +186,13 @@ public class DriveJoints : MonoBehaviour
 	{
 		float[] pwm = dioModules [0].pwmValues;
 		float[] can = dioModules [0].canValues;
-		if (Input.anyKey) {
+		if (TeamUtility.IO.InputManager.AnyInput()) {
 			pwm [0] +=
-				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Forward]) ? speedArrowPWM : 0.0f) +
-				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Backward]) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Left]) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? speedArrowPWM : 0.0f);
+				TeamUtility.IO.InputManager.GetAxis ("LookHorizontal", TeamUtility.IO.PlayerID.One) * speedArrowPWM +
+				TeamUtility.IO.InputManager.GetAxis("Vertical", TeamUtility.IO.PlayerID.One) * -speedArrowPWM;
 			pwm [1] +=
-				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Forward]) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Backward]) ? speedArrowPWM : 0.0f) +
-				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Left]) ? -speedArrowPWM : 0.0f) +
-				(Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? speedArrowPWM : 0.0f);
+                TeamUtility.IO.InputManager.GetAxis("LookHorizontal", TeamUtility.IO.PlayerID.One) * speedArrowPWM +
+                TeamUtility.IO.InputManager.GetAxis("Vertical", TeamUtility.IO.PlayerID.One) * speedArrowPWM;
             if (pwm.Length > 2) pwm[2] +=
                 (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? 0.5f : 0.0f) +
                 (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -0.5f : 0.0f);

@@ -30,11 +30,8 @@ namespace BxDFieldExporter
         private static RibbonTab partTab;// part tab that all the panels will be added to
         ClientNodeResource oRsc;// client resources that buttons will use
         static Document nativeDoc;
-        static bool runOnce;
         static RibbonPanel partPanel;
         static RibbonPanel partPanel2;// the ribbon panels that the buttons will be a part of
-        static RibbonPanel partPanel3;
-        static RibbonPanel partPanel4;// the ribbon panels that the buttons will be a part of
         static ButtonDefinition beginExporter;
         static ButtonDefinition addNewType;
         static ButtonDefinition editType;
@@ -44,8 +41,7 @@ namespace BxDFieldExporter
         static ButtonDefinition removeAssembly;
         static ButtonDefinition cancleExport;
         static ButtonDefinition exportField;
-        KeyboardEvents keyEvents;
-        static bool done;
+        private pathInput ExportForm;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldTypes;// arraylist of all the field properties the user has set
         public static FieldDataType selectedType;// the current group that the user is editing
@@ -60,7 +56,7 @@ namespace BxDFieldExporter
         Inventor.UserInputEventsSink_OnSelectEventHandler click_OnSelectEventDelegate;// handles the selection events
         static bool inExportView;// boolean to help in detecting wether or not to react to an event based on wether or not the application is exporting
         static ComponentPropertiesForm form;// form for inputting different properties of the group
-        static String m_ClientId;// string the is the id of the application
+        static string m_ClientId;// string the is the id of the application
         static FieldDataType currentSelected;// the current group that the user is editing, needed for the unselection stuff
         static bool found;// boolean to help in searching for objects and the corrosponding actions
         #endregion 
@@ -86,13 +82,9 @@ namespace BxDFieldExporter
                 partPanel2 = partTab.RibbonPanels.Add("Model Control", "BxD:FieldExporter:ModelControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 // TODO: Add ApplicationAddInServer.Activate implementation.
                 // e.g. event initialization, command creation etc.
-               // Icon beginExporterIcon = null;
-                //Icon beginExporterIcon = new Icon(this.GetType(), "StartExporter.ico");
-                stdole.IPictureDisp beginExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\StartExporter16.bmp"));
-                stdole.IPictureDisp beginExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\StartExporter64.bmp"));
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
                 FieldTypes = new ArrayList();// clear the field type array
-                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "InventorAddInBrowserPaneAttempt5:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, beginExporterIconSmall, beginExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
+                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "InventorAddInBrowserPaneAttempt5:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
                 addNewType = controlDefs.AddButtonDefinition("Add new type", "InventorAddInBrowserPaneAttempt5:AddNewType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 addNewType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewType_OnExecute);
@@ -133,7 +125,6 @@ namespace BxDFieldExporter
                 UIEvent = m_inventorApplication.CommandManager.UserInputEvents;// get the application's userinput events object
                 click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);// make a new ui event reactor
                 UIEvent.OnSelect += click_OnSelectEventDelegate;// add the event reactor to the onselect reactor
-                
             } catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
@@ -248,24 +239,6 @@ namespace BxDFieldExporter
                     }
                     readSave();// read the save so the user doesn't loose any previous work
                     TimerWatch();// begin the timer watcher to detect deselect
-
-                    AssemblyDocument oDocs;
-                    oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
-                    AssemblyComponentDefinition oCompDef;
-                    oCompDef = oDocs.ComponentDefinition;
-                    TransientGeometry oTG;
-                    oTG = m_inventorApplication.TransientGeometry;
-                    WorkPoint oWorkPoint1;
-                    oWorkPoint1 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 0, 0));
-                    WorkPoint oWorkPoint2;
-                    oWorkPoint2 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(4, 0, 0));
-                    WorkPoint oWorkPoint3;
-                    oWorkPoint3 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 2, 0));
-                    UserCoordinateSystemDefinition oUCSDef;
-                    oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
-                    oUCSDef.SetByThreePoints(oWorkPoint1, oWorkPoint2, oWorkPoint3);
-                    UserCoordinateSystem oUCS;
-                    oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
                 } else
                 {
                     MessageBox.Show("Please close out of the robot exporter in the other assembly");
@@ -276,13 +249,6 @@ namespace BxDFieldExporter
 
                 MessageBox.Show(e.ToString());
             }
-        }
-        public void test(Inventor.NameValueMap Context)
-        {
-            AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-            WorkPoint joint = (WorkPoint)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                      (SelectionFilterEnum.kWorkPointFilter, "Select a part to remove");
         }
         // reacts to a selection
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
@@ -352,29 +318,10 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
-        [DllImport("user32.dll")]
-        public static extern ushort GetKeyState(short nVirtKey);
-
-        public const ushort keyDownBit = 0x80;
-        public static bool IsKeyPressed(Keys key)
-        {
-            return ((GetKeyState((short)key) & keyDownBit) == keyDownBit);
-        }
         // reacts to the timer elapsed event, this allows us to select and unselect things as needed
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             found = false;
-            if (IsKeyPressed(Keys.ShiftKey) || IsKeyPressed(Keys.ControlKey))
-            {
-            } else
-            {
-                if (!runOnce)
-                {
-                    done = true;
-                    m_inventorApplication.CommandManager.StopActiveCommand();
-                    runOnce = true;
-                }
-            }
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
             {// looks through all the nodes under the top node
                 if (node.Selected)
@@ -443,7 +390,7 @@ namespace BxDFieldExporter
             }
         }
         // adds a new fielddatatype to the array and to the browser pane
-        public static BrowserNodeDefinition addType(String name)
+        public static BrowserNodeDefinition addType(string name)
         {
             BrowserNodeDefinition def = null;// creates a browsernodedef to be used when creating a new browsernode, null so if adding the node fails the code doesn't freak out
             try
@@ -489,8 +436,7 @@ namespace BxDFieldExporter
         {
             try
             {
-                runOnce = true;
-                done = false;
+                ComponentOccurrence joint;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -501,53 +447,41 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    while (!done)
-                    {
-                        ComponentOccurrence joint = null;
-                        AssemblyDocument asmDoc = (AssemblyDocument)
+                    AssemblyDocument asmDoc = (AssemblyDocument)
                                  m_inventorApplication.ActiveDocument;
-                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
-                        if(joint != null) { 
-                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                              (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    {
+                        if (node.Selected)// find the selected node
+                        {
+                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
                             {
-                                if (node.Selected)// find the selected node
+                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
-                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
-                                    {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
-                                        {
-                                            t.compOcc.Add(joint);// add the occurence to the arraylist
-                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                            node.DoSelect();
-                                        }
-                                    }
+                                    t.compOcc.Add(joint);// add the occurence to the arraylist
                                 }
                             }
                         }
-                        runOnce = false;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
                 }
-                runOnce = false;
             }
             catch (Exception)
             {
 
-            }
-            runOnce = true;
-
+            }  
         }
         // removes an assembly from the arraylist of the type
         public void removeAssembly_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
-                runOnce = true;
                 bool found = false;
+                ComponentOccurrence joint;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -558,49 +492,35 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    done = false;
-                    while (!done)
+                    AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                              (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to remove");
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                     {
-                        ComponentOccurrence joint = null;
-                        AssemblyDocument asmDoc = (AssemblyDocument)
-                                     m_inventorApplication.ActiveDocument;
-                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to remove");
-                        if (joint != null)
+                        if (node.Selected)// find the selected node
                         {
-                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
                             {
-                                if (node.Selected)// find the selected node
+                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
-                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
-                                    {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
-                                        {
-                                            if (t.compOcc.Contains(joint))
-                                            {// if the occurence is in the list the allow the remove
-                                                t.compOcc.Remove(joint);// add the occurence to the arraylist
-                                                m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                                node.DoSelect();
-                                                found = true;
-                                            }
-                                        }
+                                    if (t.compOcc.Contains(joint)){// if the occurence is in the list the allow the remove
+                                        t.compOcc.Remove(joint);// add the occurence to the arraylist
+                                        found = true;
                                     }
                                 }
                             }
                         }
-                        if (!found)
-                        {
-                            MessageBox.Show("Warning, assembly not found in item group");// if the assembly wasn't found in the group then tell the user
-                        }
-                        runOnce = false;
-                        found = false;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please select a browser node to remove an assembly from");// if the user didn't select a browser node then tell them
                 }
-                runOnce = true;
+                if (!found)
+                {
+                    MessageBox.Show("Warning, assembly not found in item group");// if the assembly wasn't found in the group then tell the user
+                }
             }
             catch (Exception)
             {
@@ -612,8 +532,8 @@ namespace BxDFieldExporter
         {
             try
             {
-                runOnce = true;
                 bool found = false;
+                ComponentOccurrence joint;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -624,49 +544,36 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    done = false;
-                    while (!done)
+                    AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to remove");
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                     {
-                        ComponentOccurrence joint = null;
-                        AssemblyDocument asmDoc = (AssemblyDocument)
-                                     m_inventorApplication.ActiveDocument;
-                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to remove");
-                        if (joint != null)
+                        if (node.Selected)// find the selected node
                         {
-                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
                             {
-                                if (node.Selected)// find the selected node
+                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
-                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                                    if (t.compOcc.Contains(joint))// if the occurence is in the list the allow the remove
                                     {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
-                                        {
-                                            if (t.compOcc.Contains(joint))// if the occurence is in the list the allow the remove
-                                            {
-                                                t.compOcc.Remove(joint);// add the occurence to the arraylist
-                                                m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                                node.DoSelect();
-                                                found = true;
-                                            }
-                                        }
+                                        t.compOcc.Remove(joint);// add the occurence to the arraylist
+                                        found = true;
                                     }
                                 }
                             }
                         }
-                        if (!found)
-                        {
-                            MessageBox.Show("Warning, part not found in item group");// if the part wasn't found in the group then tell the user
-                        }
-                        found = false;
-                        runOnce = false;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Please select a browser node to remove a part from");// if the user didn't select a browser node then tell them
                 }
-                runOnce = true;
+                if (!found)
+                {
+                    MessageBox.Show("Warning, part not found in item group");// if the part wasn't found in the group then tell the user
+                }
             }
             catch (Exception)
             {
@@ -678,8 +585,7 @@ namespace BxDFieldExporter
         {
             try
             {
-                runOnce = true;
-                done = false;
+                ComponentOccurrence joint;
                 bool selected = false;
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
                 {
@@ -690,31 +596,21 @@ namespace BxDFieldExporter
                 }
                 if (selected)// if there is a selected node then we can add a part to it
                 {
-                    while (!done)
+                    AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                    joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                              (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
                     {
-                        ComponentOccurrence joint = null;
-                        AssemblyDocument asmDoc = (AssemblyDocument)
-                                     m_inventorApplication.ActiveDocument;
-                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
-                        if (joint != null)
+                        if (node.Selected)// find the selected node
                         {
-                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                            foreach (FieldDataType t in FieldTypes)// look at all the field data types
                             {
-                                if (node.Selected)// find the selected node
+                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
-                                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
-                                    {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
-                                        {
-                                            t.compOcc.Add(joint);// add the occurence to the arraylist
-                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                            node.DoSelect();
-                                        }
-                                    }
+                                    t.compOcc.Add(joint);// add the occurence to the arraylist
                                 }
                             }
-                            runOnce = false;
                         }
                     }
                 }
@@ -722,7 +618,6 @@ namespace BxDFieldExporter
                 {
                     MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
                 }
-                runOnce = true;
             }
             catch (Exception)
             {
@@ -788,17 +683,17 @@ namespace BxDFieldExporter
                 other = null;
                 context = null;// clears the object because inventor needs it that way
                 resultObj = null;
-                String name = "";// make name that can store the names of the browser nodes
+                string name = "";// make name that can store the names of the browser nodes
                 Char[] arr = { '¯', '\\', '_', '(', ':', '(', ')', '_', '/', '¯' };// contains the limiter of the strings so we can read them
                 foreach (PropertySet s in sets)
                 {// looks at all the properties in the propertysets
                     if (s.DisplayName.Equals("Number of Folders"))
                     {// is the name is correct the assume it is what we are looking fos
-                        name = (String)s.ItemByPropId[2].Value;// reads the names for the field data type
+                        name = (string)s.ItemByPropId[2].Value;// reads the names for the field data type
                     }
                 }
-                String[] names = name.Split(arr);// set names equal to the string of datatype without its limits
-                foreach (String n in names)
+                string[] names = name.Split(arr);// set names equal to the string of datatype without its limits
+                foreach (string n in names)
                 {// looks at the strings in names, each one represents a potential data type
                     if (!n.Equals(""))
                     {// splitting the string creates empty string where the limiter was before, this deals with them
@@ -806,8 +701,8 @@ namespace BxDFieldExporter
                         {// looks at all the sets in the propertysets of the document
                             if (set.Name.Equals(n))
                             {// if the set name is the same as the name then we assume they are the same
-                                String[] keys = ((String)set.ItemByPropId[11].Value).Split(arr);// set names equal to the string of occurences refkeys without its limits
-                                foreach (String m in keys)
+                                string[] keys = ((string)set.ItemByPropId[11].Value).Split(arr);// set names equal to the string of occurences refkeys without its limits
+                                foreach (string m in keys)
                                 {// looks at the strings in names, each one represents a potential occurence
                                     if (!m.Equals(""))
                                     {// splitting the string creates empty string where the limiter was before, this deals with them
@@ -824,7 +719,7 @@ namespace BxDFieldExporter
                                         }
                                     }
                                 }
-                                BrowserNodeDefinition selectedFolder = addType(((String)set.ItemByPropId[10].Value));// create a new browsernodedef with the name from the old datatype
+                                BrowserNodeDefinition selectedFolder = addType(((string)set.ItemByPropId[10].Value));// create a new browsernodedef with the name from the old datatype
                                 FieldDataType field = new FieldDataType(selectedFolder);// create a new field with browser node that was just created as its corrosponding node
                                 field.colliderType = (ColliderType)set.ItemByPropId[2].Value;
                                 field.X = (double)set.ItemByPropId[3].Value;
@@ -849,7 +744,7 @@ namespace BxDFieldExporter
         // writes the name of the datatypes to a property set so we can read them later
         private void writeBrowserFolderNames()
         {
-            String g = "";// a string to add the names of the data types to, we do this so we can read the data at the start of the exporter
+            string g = "";// a string to add the names of the data types to, we do this so we can read the data at the start of the exporter
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;// the property sets of the document
             PropertySet set = null;// a set to add the data to 
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
@@ -899,7 +794,7 @@ namespace BxDFieldExporter
                     }
                 }
             }
-            String g = "";// string to store the ref key of the occurences of the data type
+            string g = "";// string to store the ref key of the occurences of the data type
             byte[] refKey = new byte[0];// create byte[] to hold the refkey of the object
             try
             {
@@ -945,6 +840,8 @@ namespace BxDFieldExporter
         public void exportField_OnExecute(Inventor.NameValueMap Context)
         {
             inExportView = false;// tell the event reactors to not react because we are no longer in export mode
+            ExportForm = new pathInput(FieldTypes, (AssemblyDocument)m_inventorApplication.ActiveDocument);
+            ExportForm.ShowDialog();
             writeBrowserFolderNames();// write the browser folder names to the property sets so we can read them next time the program is run
             foreach (FieldDataType data in FieldTypes)
             {// looks at all the groups in fieldtype

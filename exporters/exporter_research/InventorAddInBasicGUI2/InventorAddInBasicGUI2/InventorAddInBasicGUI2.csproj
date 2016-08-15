@@ -113,6 +113,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="PictureDispConverter.cs" />
     <Compile Include="StandardAddInServer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -146,6 +147,10 @@
   <ItemGroup>
     <Content Include="AddSlotOption.bmp" />
     <Content Include="AddSlotOption.ico" />
+    <Content Include="ExportRobot64.bmp" />
+    <Content Include="ExportRobot32.bmp" />
+    <Content Include="ExportRobot128.bmp" />
+    <Content Include="ExportRobot16.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
