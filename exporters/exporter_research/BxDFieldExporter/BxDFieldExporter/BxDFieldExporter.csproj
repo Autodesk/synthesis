@@ -30,7 +30,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2017\Bin\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -52,6 +52,7 @@
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -83,6 +84,7 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_21.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -117,18 +119,19 @@
       <DependentUpon>EnterName.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldDataType.cs" />
+    <Compile Include="FileReader.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MeshColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="MeshColliderPropertiesForm.Designer.cs">
       <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="PictureDispConverter.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+    <Compile Include="pathInput.cs">
+      <SubType>Form</SubType>
     </Compile>
+    <Compile Include="pathInput.Designer.cs" />
     <Compile Include="SphereColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -152,20 +155,10 @@
     <EmbeddedResource Include="ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    <EmbeddedResource Include="FileReader.resx">
+      <DependentUpon>FileReader.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="StartExporter.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\StartExporter.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="StartExporter64.bmp" />
-    <Content Include="StartExporter16.bmp" />
+    <EmbeddedResource Include="pathInput.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
