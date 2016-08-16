@@ -34,11 +34,21 @@ public class playerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown("r"))
+        if (playerNumber == 1)
         {
-            resetRobot();
+            if (TeamUtility.IO.InputManager.GetButtonDown("PlayerOneReset"))
+            {
+                resetRobot();
+            }
         }
-	}
+        if (playerNumber == 2)
+        {
+            if (TeamUtility.IO.InputManager.GetButtonDown("PlayerTwoReset"))
+            {
+                resetRobot();
+            }
+        }
+    }
 
     /// <summary>
     /// Repositions the robot so it is aligned at the center of the field, and resets all the

@@ -6584,7 +6584,21 @@ MonoBehaviour:
       type: 0
       axis: 0
       joystick: 0
-    isExpanded: 1
+    - name: PlayerOneReset
+      description: 
+      positive: 114
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1
+      sensitivity: 1
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    isExpanded: 0
   - name: Windows_Gamepad
     axes:
     - name: Horizontal
@@ -6671,20 +6685,6 @@ MonoBehaviour:
       type: 3
       axis: 1
       joystick: 0
-    - name: Jump
-      description: 
-      positive: 350
-      negative: 0
-      altPositive: 0
-      altNegative: 0
-      deadZone: 0
-      gravity: 0
-      sensitivity: 0
-      snap: 0
-      invert: 0
-      type: 0
-      axis: 0
-      joystick: 0
     - name: Submit
       description: 
       positive: 350
@@ -6768,6 +6768,20 @@ MonoBehaviour:
       invert: 0
       type: 3
       axis: 8
+      joystick: 0
+    - name: PlayerTwoReset
+      description: 
+      positive: 350
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1
+      sensitivity: 1
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
       joystick: 0
     isExpanded: 0
   - name: OSX_Gamepad
