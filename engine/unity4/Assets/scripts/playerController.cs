@@ -21,13 +21,15 @@ public class playerController : MonoBehaviour {
     private GameObject mainNode;
     private Quaternion rotation;
     public int playerNumber;
+    private DriverPracticeMode driverPracticeMode;
+    private bool driverPraticeOn = false;
 
     // Use this for initialization
     void Start () {
         GameObject go = GameObject.Find("Initi");
         other = (multiplayer_Init)go.GetComponent(typeof(multiplayer_Init));
         playerNumber = other.numPlayers;
-        TryLoadRobot();   
+        TryLoadRobot();
     }
 	
 	// Update is called once per frame
@@ -132,13 +134,6 @@ public class playerController : MonoBehaviour {
             mainNode.transform.position = new Vector3(-2f, 1f, -3f);
 
         }
-
-        /** foreach (GameObject o in totes)
-        {
-            GameObject.Destroy(o);
-        }
-
-        totes.Clear(); **/
     }
 
     /// <summary>
@@ -148,14 +143,8 @@ public class playerController : MonoBehaviour {
     {
         //resets rotation for new robot
         rotation = Quaternion.identity;
-        if (activeRobot != null)
-        {
-            //skeleton = null;
-            //UnityEngine.Object.Destroy(activeRobot);
-        }
         if (other.filePath != null) //&& skeleton == null)
         {
-            //Debug.Log (filePath);
             List<Collider> meshColliders = new List<Collider>();
             activeRobot = new GameObject("Robot" + playerNumber);
             activeRobot.transform.parent = transform;
@@ -167,7 +156,6 @@ public class playerController : MonoBehaviour {
             };
 
             skeleton = BXDJSkeleton.ReadSkeleton(other.filePath + "skeleton.bxdj");
-            //Debug.Log(filePath + "skeleton.bxdj");
             skeleton.ListAllNodes(names);
             foreach (RigidNode_Base node in names)
             {
@@ -185,8 +173,6 @@ public class playerController : MonoBehaviour {
 
                 uNode.CreateJoint();
 
-                //Debug.Log("Joint");
-
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
 
@@ -199,12 +185,12 @@ public class playerController : MonoBehaviour {
             mainNode = transform.GetChild(0).gameObject;
 
             string robotname = new DirectoryInfo(other.filePath).Name; //Retrieving the name of the robot folder from the filepath.
-            /** if (DriverPracticeMode.CheckRobot(robotname))
+            if (DriverPracticeMode.CheckRobot(robotname))
             {
                 driverPracticeMode = activeRobot.AddComponent<DriverPracticeMode>();
                 driverPracticeMode.Initialize(robotname);
                 driverPraticeOn = true;
-            } **/
+            }
 
             //Debug.Log ("HELLO AMIREKA: " + mainNode);
             auxFunctions.IgnoreCollisionDetection(meshColliders);
@@ -235,7 +221,7 @@ public class playerController : MonoBehaviour {
                 mainNode.rigidbody.isKinematic = false;
             } **/
 
-            DriveJoints.UpdateAllMotors(skeleton, packet.dio);
+            DriveJoints.UpdateAllMotors(skeleton, packet.dio, playerNumber);
             //TODO put this code in drivejoints, figure out nullreference problem with cDriver
             foreach (RigidNode_Base node in nodes)
             {

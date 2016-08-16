@@ -6406,25 +6406,25 @@ MonoBehaviour:
       description: 
       positive: 100
       negative: 97
-      altPositive: 0
-      altNegative: 0
+      altPositive: 275
+      altNegative: 276
       deadZone: 0
       gravity: 3
-      sensitivity: 3
+      sensitivity: 100
       snap: 1
       invert: 0
-      type: 2
+      type: 0
       axis: 0
       joystick: 0
     - name: MouseVertical
       description: 
       positive: 119
       negative: 115
-      altPositive: 0
-      altNegative: 0
+      altPositive: 273
+      altNegative: 274
       deadZone: 0
       gravity: 3
-      sensitivity: 3
+      sensitivity: 100
       snap: 1
       invert: 0
       type: 2
@@ -6528,7 +6528,63 @@ MonoBehaviour:
       type: 0
       axis: 0
       joystick: 0
-    isExpanded: 0
+    - name: W
+      description: 
+      positive: 119
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1
+      sensitivity: 1
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    - name: D
+      description: 
+      positive: 100
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1
+      sensitivity: 1
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    - name: S
+      description: 
+      positive: 115
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1
+      sensitivity: 1
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    - name: A
+      description: 
+      positive: 97
+      negative: 0
+      altPositive: 0
+      altNegative: 0
+      deadZone: 0
+      gravity: 1
+      sensitivity: 1
+      snap: 0
+      invert: 0
+      type: 0
+      axis: 0
+      joystick: 0
+    isExpanded: 1
   - name: Windows_Gamepad
     axes:
     - name: Horizontal
@@ -7085,7 +7141,7 @@ MonoBehaviour:
       joystick: 0
     isExpanded: 0
   playerOneDefault: KeyboardAndMouse
-  playerTwoDefault: 
+  playerTwoDefault: Windows_Gamepad
   playerThreeDefault: 
   playerFourDefault: 
   dontDestroyOnLoad: 1
@@ -9206,10 +9262,10 @@ MonoBehaviour:
   windowsJoystickConfiguration: Windows_Gamepad
   osxJoystickConfiguration: OSX_Gamepad
   linuxJoystickConfiguration: Linux_Gamepad
-  leftTriggerAxis: LeftTrigger
-  rightTriggerAxis: RightTrigger
-  dpadHorizontalAxis: DPADHorizontal
-  dpadVerticalAxis: DPADVertical
+  leftTriggerAxis: 
+  rightTriggerAxis: 
+  dpadHorizontalAxis: 
+  dpadVerticalAxis: 
 --- !u!4 &1739469036
 Transform:
   m_ObjectHideFlags: 0
