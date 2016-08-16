@@ -5,7 +5,7 @@ Name "Synthesis"
 
 Icon "C:\Users\t_hics\Documents\GitHub\synthesis\installer\plantlogo(NoBack).ico"
 
-OutFile "SynthesisInstaller.exe"
+OutFile "Synthesis Installer.exe"
 
 InstallDir $PROGRAMFILES\Autodesk\Synthesis
 
@@ -22,7 +22,7 @@ UninstPage instfiles
 Section
 
 ;Where we can read registry data if we need it
-IfFileExists "$INSTDIR" +1 +25
+IfFileExists "$INSTDIR" +1 +28
     MessageBox MB_YESNO "You appear to have synthesis installed, would you like to reinstall it?" IDYES true IDNO false
       ; Remove registry keys
       true:
@@ -34,10 +34,12 @@ IfFileExists "$INSTDIR" +1 +25
         Delete $INSTDIR\Synthesis.nsi
         Delete $INSTDIR\uninstall.exe
         Delete $INSTDIR\*
+        Delete $APPDATA\Autodesk\ApplicationPlugins\*
 
         ; Remove shortcuts, if any
         Delete "$SMPROGRAMS\Synthesis.lnk"
-
+        Delete "$DESKTOP\Synthesis.lnk"
+        Delete "$DESKTOP\BXD Synthesis.lnk"
         ; Remove directories used
         RMDir $INSTDIR
 
@@ -69,6 +71,7 @@ Section "Synthesis (required)"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Apache2.rtf"
   File "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
 
+CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\Synthesis.exe" ""
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayName" "Autodesk Synthesis" 
@@ -104,7 +107,7 @@ Section "Exporter Plugin (optional)"
   ; Set output path to the installation directory.
   IfFileExists "$APPDATA\Autodesk\ApplicationPlugins" +1 +5
     ;MessageBox MB_OK "Inventor is installed"
-    SetOutPath "$APPDATA\Autodesk\ApplicationPlugins\Synthesis"
+    SetOutPath "$APPDATA\Autodesk\ApplicationPlugins"
     File /r "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\Exporter\*"
   ;MessageBox MB_OK "Inventor is installed"
     Goto +2
@@ -135,10 +138,12 @@ Section "Uninstall"
   Delete $INSTDIR\Synthesis.nsi
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\*
+  Delete $APPDATA\Autodesk\ApplicationPlugins\*
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Synthesis.lnk"
-
+  Delete "$DESKTOP\Synthesis.lnk"
+  Delete "$DESKTOP\BXD Synthesis.lnk"
   ; Remove directories used
   RMDir $INSTDIR
 

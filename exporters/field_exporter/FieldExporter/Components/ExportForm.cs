@@ -135,7 +135,8 @@ namespace FieldExporter.Components
 
                         PropertySet propertySet = fieldDefinition.GetPropertySets()[outputNode.PropertySetID];
 
-                        if (propertySet.Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH)
+                        if (propertySet.Collider.CollisionType == PropertySet.PropertySetCollider.PropertySetCollisionType.MESH &&
+                            ((PropertySet.MeshCollider)propertySet.Collider).Convex)
                         {
                             if (!exportedColliders.Contains(currentOccurrence.ReferencedDocumentDescriptor.FullDocumentName))
                             {

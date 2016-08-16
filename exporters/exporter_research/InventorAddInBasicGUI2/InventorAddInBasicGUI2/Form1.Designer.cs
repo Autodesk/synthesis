@@ -56,6 +56,7 @@ namespace InventorAddInBasicGUI2
             this.cmbPneumaticPressure = new System.Windows.Forms.ComboBox();
             this.tabsMeta = new System.Windows.Forms.TabControl();
             this.metaWheel = new System.Windows.Forms.TabPage();
+            this.metaJointFriction = new System.Windows.Forms.TabPage();
             this.lblFriction = new System.Windows.Forms.Label();
             this.lblType = new System.Windows.Forms.Label();
             this.cmbFrictionLevel = new System.Windows.Forms.ComboBox();
@@ -71,8 +72,11 @@ namespace InventorAddInBasicGUI2
             this.metaElevatorBrake = new System.Windows.Forms.TabPage();
             this.brakePortB = new System.Windows.Forms.NumericUpDown();
             this.brakePortA = new System.Windows.Forms.NumericUpDown();
+            this.JointFrictionLevel = new System.Windows.Forms.NumericUpDown();
             this.lblBrakePort = new System.Windows.Forms.Label();
+            this.lblJointFriction = new System.Windows.Forms.Label();
             this.chkBoxHasBrake = new System.Windows.Forms.CheckBox();
+            this.chkBoxHasJointFriction = new System.Windows.Forms.CheckBox();
             this.metaElevatorStages = new System.Windows.Forms.TabPage();
             this.cmbStages = new System.Windows.Forms.ComboBox();
             this.grpChooseDriver.SuspendLayout();
@@ -88,6 +92,8 @@ namespace InventorAddInBasicGUI2
             ((System.ComponentModel.ISupportInitialize)(this.RelaytxtPort)).BeginInit();
             this.tabsMeta.SuspendLayout();
             this.metaWheel.SuspendLayout();
+            this.metaJointFriction.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.JointFrictionLevel)).BeginInit();
             this.metaPneumatic.SuspendLayout();
             this.metaGearing.SuspendLayout();
             this.metaElevatorBrake.SuspendLayout();
@@ -324,6 +330,7 @@ namespace InventorAddInBasicGUI2
             // tabsMeta
             // 
             this.tabsMeta.Controls.Add(this.metaWheel);
+            this.tabsMeta.Controls.Add(this.metaJointFriction);
             this.tabsMeta.Controls.Add(this.metaPneumatic);
             this.tabsMeta.Controls.Add(this.metaGearing);
             this.tabsMeta.Controls.Add(this.metaElevatorBrake);
@@ -346,6 +353,46 @@ namespace InventorAddInBasicGUI2
             this.metaWheel.TabIndex = 0;
             this.metaWheel.Text = "Wheel";
             this.metaWheel.UseVisualStyleBackColor = true;
+            // 
+            // lblJointFriction
+            // 
+            this.lblJointFriction.AutoSize = true;
+            this.lblJointFriction.Location = new System.Drawing.Point(10, 3);
+            this.lblJointFriction.Name = "lblJointFriction";
+            this.lblJointFriction.Size = new System.Drawing.Size(75, 17);
+            this.lblJointFriction.TabIndex = 1;
+            this.lblJointFriction.Text = "Joint Friction Level";
+            // 
+            // chkBoxHasJointFriction
+            // 
+            this.chkBoxHasJointFriction.AutoSize = true;
+            this.chkBoxHasJointFriction.Location = new System.Drawing.Point(160, 3);
+            this.chkBoxHasJointFriction.Name = "chkBoxHasJointFriction";
+            this.chkBoxHasJointFriction.Size = new System.Drawing.Size(96, 21);
+            this.chkBoxHasJointFriction.TabIndex = 10;
+            this.chkBoxHasJointFriction.Text = "Has Joint Limits";
+            this.chkBoxHasJointFriction.UseVisualStyleBackColor = true;
+            this.chkBoxHasJointFriction.Click += new System.EventHandler(btnHasJointFriction_Click);
+            // 
+            // JointFrictionLevel
+            // 
+            this.JointFrictionLevel.Location = new System.Drawing.Point(10, 27);
+            this.JointFrictionLevel.Name = "JointFrictionLevel";
+            this.JointFrictionLevel.Size = new System.Drawing.Size(120, 22);
+            this.JointFrictionLevel.TabIndex = 2;
+            this.JointFrictionLevel.ValueChanged += new System.EventHandler(JointFrictionChanged);
+            // 
+            // metaJointFriction
+            // 
+            this.metaJointFriction.Controls.Add(this.chkBoxHasJointFriction);
+            this.metaJointFriction.Controls.Add(this.lblJointFriction);
+            this.metaJointFriction.Controls.Add(this.JointFrictionLevel);
+            this.metaJointFriction.Location = new System.Drawing.Point(4, 25);
+            this.metaJointFriction.Name = "metaJointFriction";
+            this.metaJointFriction.Size = new System.Drawing.Size(310, 59);
+            this.metaJointFriction.TabIndex = 0;
+            this.metaJointFriction.Text = "Joint Friction";
+            this.metaJointFriction.UseVisualStyleBackColor = true;
             // 
             // lblFriction
             // 
@@ -578,6 +625,9 @@ namespace InventorAddInBasicGUI2
             this.tabsMeta.ResumeLayout(false);
             this.metaWheel.ResumeLayout(false);
             this.metaWheel.PerformLayout();
+            this.metaJointFriction.ResumeLayout(false);
+            this.metaJointFriction.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.JointFrictionLevel)).EndInit();
             this.metaPneumatic.ResumeLayout(false);
             this.metaPneumatic.PerformLayout();
             this.metaGearing.ResumeLayout(false);
@@ -608,6 +658,7 @@ namespace InventorAddInBasicGUI2
         private System.Windows.Forms.TabControl tabsMeta;
         private System.Windows.Forms.TabPage metaWheel;
         private System.Windows.Forms.TabPage metaPneumatic;
+        private System.Windows.Forms.TabPage metaJointFriction;
         private System.Windows.Forms.ComboBox cmbFrictionLevel;
         private System.Windows.Forms.ComboBox cmbPneumaticDiameter;
         private System.Windows.Forms.Label lblDiameter;
@@ -624,10 +675,13 @@ namespace InventorAddInBasicGUI2
         private System.Windows.Forms.Label lblType;
         private System.Windows.Forms.TabPage metaElevatorBrake;
         private System.Windows.Forms.CheckBox chkBoxHasBrake;
+        private System.Windows.Forms.CheckBox chkBoxHasJointFriction;
         private System.Windows.Forms.CheckBox chkBoxDriveWheel;
         private System.Windows.Forms.Label lblBrakePort;
+        private System.Windows.Forms.Label lblJointFriction;
         private System.Windows.Forms.NumericUpDown brakePortB;
         private System.Windows.Forms.NumericUpDown brakePortA;
+        private System.Windows.Forms.NumericUpDown JointFrictionLevel;
         private System.Windows.Forms.TabPage metaElevatorStages;
         private System.Windows.Forms.ComboBox cmbStages;
         private System.Windows.Forms.RadioButton rbPWM;

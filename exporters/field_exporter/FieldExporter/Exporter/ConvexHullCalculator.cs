@@ -363,6 +363,7 @@ public class ConvexHullCalculator
         IVHACD decomposer = new IVHACD();
 
         ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
+
         parameters.m_depth = 1;
         parameters.m_concavity = 1;
 

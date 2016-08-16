@@ -41,6 +41,7 @@ namespace BxDFieldExporter
         static ButtonDefinition removeAssembly;
         static ButtonDefinition cancleExport;
         static ButtonDefinition exportField;
+        private pathInput ExportForm;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldTypes;// arraylist of all the field properties the user has set
         public static FieldDataType selectedType;// the current group that the user is editing
@@ -55,7 +56,7 @@ namespace BxDFieldExporter
         Inventor.UserInputEventsSink_OnSelectEventHandler click_OnSelectEventDelegate;// handles the selection events
         static bool inExportView;// boolean to help in detecting wether or not to react to an event based on wether or not the application is exporting
         static ComponentPropertiesForm form;// form for inputting different properties of the group
-        static String m_ClientId;// string the is the id of the application
+        static string m_ClientId;// string the is the id of the application
         static FieldDataType currentSelected;// the current group that the user is editing, needed for the unselection stuff
         static bool found;// boolean to help in searching for objects and the corrosponding actions
         #endregion 
@@ -249,13 +250,6 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
-        public void test(Inventor.NameValueMap Context)
-        {
-            AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-            WorkPoint joint = (WorkPoint)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                      (SelectionFilterEnum.kWorkPointFilter, "Select a part to remove");
-        }
         // reacts to a selection
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
@@ -396,7 +390,7 @@ namespace BxDFieldExporter
             }
         }
         // adds a new fielddatatype to the array and to the browser pane
-        public static BrowserNodeDefinition addType(String name)
+        public static BrowserNodeDefinition addType(string name)
         {
             BrowserNodeDefinition def = null;// creates a browsernodedef to be used when creating a new browsernode, null so if adding the node fails the code doesn't freak out
             try
@@ -466,8 +460,6 @@ namespace BxDFieldExporter
                                 if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
                                     t.compOcc.Add(joint);// add the occurence to the arraylist
-                                    m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                    node.DoSelect();
                                 }
                             }
                         }
@@ -514,8 +506,6 @@ namespace BxDFieldExporter
                                 {
                                     if (t.compOcc.Contains(joint)){// if the occurence is in the list the allow the remove
                                         t.compOcc.Remove(joint);// add the occurence to the arraylist
-                                        m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                        node.DoSelect();
                                         found = true;
                                     }
                                 }
@@ -569,8 +559,6 @@ namespace BxDFieldExporter
                                     if (t.compOcc.Contains(joint))// if the occurence is in the list the allow the remove
                                     {
                                         t.compOcc.Remove(joint);// add the occurence to the arraylist
-                                        m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                        node.DoSelect();
                                         found = true;
                                     }
                                 }
@@ -621,8 +609,6 @@ namespace BxDFieldExporter
                                 if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
                                 {
                                     t.compOcc.Add(joint);// add the occurence to the arraylist
-                                    m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                    node.DoSelect();
                                 }
                             }
                         }
@@ -697,17 +683,17 @@ namespace BxDFieldExporter
                 other = null;
                 context = null;// clears the object because inventor needs it that way
                 resultObj = null;
-                String name = "";// make name that can store the names of the browser nodes
+                string name = "";// make name that can store the names of the browser nodes
                 Char[] arr = { '¯', '\\', '_', '(', ':', '(', ')', '_', '/', '¯' };// contains the limiter of the strings so we can read them
                 foreach (PropertySet s in sets)
                 {// looks at all the properties in the propertysets
                     if (s.DisplayName.Equals("Number of Folders"))
                     {// is the name is correct the assume it is what we are looking fos
-                        name = (String)s.ItemByPropId[2].Value;// reads the names for the field data type
+                        name = (string)s.ItemByPropId[2].Value;// reads the names for the field data type
                     }
                 }
-                String[] names = name.Split(arr);// set names equal to the string of datatype without its limits
-                foreach (String n in names)
+                string[] names = name.Split(arr);// set names equal to the string of datatype without its limits
+                foreach (string n in names)
                 {// looks at the strings in names, each one represents a potential data type
                     if (!n.Equals(""))
                     {// splitting the string creates empty string where the limiter was before, this deals with them
@@ -715,8 +701,8 @@ namespace BxDFieldExporter
                         {// looks at all the sets in the propertysets of the document
                             if (set.Name.Equals(n))
                             {// if the set name is the same as the name then we assume they are the same
-                                String[] keys = ((String)set.ItemByPropId[11].Value).Split(arr);// set names equal to the string of occurences refkeys without its limits
-                                foreach (String m in keys)
+                                string[] keys = ((string)set.ItemByPropId[11].Value).Split(arr);// set names equal to the string of occurences refkeys without its limits
+                                foreach (string m in keys)
                                 {// looks at the strings in names, each one represents a potential occurence
                                     if (!m.Equals(""))
                                     {// splitting the string creates empty string where the limiter was before, this deals with them
@@ -733,7 +719,7 @@ namespace BxDFieldExporter
                                         }
                                     }
                                 }
-                                BrowserNodeDefinition selectedFolder = addType(((String)set.ItemByPropId[10].Value));// create a new browsernodedef with the name from the old datatype
+                                BrowserNodeDefinition selectedFolder = addType(((string)set.ItemByPropId[10].Value));// create a new browsernodedef with the name from the old datatype
                                 FieldDataType field = new FieldDataType(selectedFolder);// create a new field with browser node that was just created as its corrosponding node
                                 field.colliderType = (ColliderType)set.ItemByPropId[2].Value;
                                 field.X = (double)set.ItemByPropId[3].Value;
@@ -758,7 +744,7 @@ namespace BxDFieldExporter
         // writes the name of the datatypes to a property set so we can read them later
         private void writeBrowserFolderNames()
         {
-            String g = "";// a string to add the names of the data types to, we do this so we can read the data at the start of the exporter
+            string g = "";// a string to add the names of the data types to, we do this so we can read the data at the start of the exporter
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;// the property sets of the document
             PropertySet set = null;// a set to add the data to 
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
@@ -808,7 +794,7 @@ namespace BxDFieldExporter
                     }
                 }
             }
-            String g = "";// string to store the ref key of the occurences of the data type
+            string g = "";// string to store the ref key of the occurences of the data type
             byte[] refKey = new byte[0];// create byte[] to hold the refkey of the object
             try
             {
@@ -854,6 +840,8 @@ namespace BxDFieldExporter
         public void exportField_OnExecute(Inventor.NameValueMap Context)
         {
             inExportView = false;// tell the event reactors to not react because we are no longer in export mode
+            ExportForm = new pathInput(FieldTypes, (AssemblyDocument)m_inventorApplication.ActiveDocument);
+            ExportForm.ShowDialog();
             writeBrowserFolderNames();// write the browser folder names to the property sets so we can read them next time the program is run
             foreach (FieldDataType data in FieldTypes)
             {// looks at all the groups in fieldtype
