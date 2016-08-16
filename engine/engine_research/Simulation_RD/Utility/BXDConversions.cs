@@ -16,5 +16,15 @@ namespace Simulation_RD.Utility
         {
             return new Vector3(val.x, val.y, val.z);
         }
+
+        /// <summary>
+        /// BXD Quaternion -> OpenGL Quaternion
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public static Quaternion Convert(this BXDQuaternion val)
+        {
+            return new Quaternion(val.X, val.Y, val.Z, val.W);
+        }
     }
 }

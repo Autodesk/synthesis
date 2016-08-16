@@ -36,8 +36,8 @@ public class Main : MonoBehaviour
         world.DebugDrawMode = DebugDrawModes.DrawConstraintLimits | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawWireframe;
         world.DoDebugDraw = true;
 
-        Debug.Log(LoadField() ? "Load field success!" : "Load field failed.");
-        Debug.Log(LoadRobot() ? "Load robot success!" : "Load robot failed.");
+        Debug.Log(LoadField(PlayerPrefs.GetString("Field")) ? "Load field success!" : "Load field failed.");
+        Debug.Log(LoadRobot(PlayerPrefs.GetString("Robot")) ? "Load robot success!" : "Load robot failed.");
 
         dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
 
@@ -82,7 +82,7 @@ public class Main : MonoBehaviour
             rigidBody.GetCollisionObject().Activate();
     }
 
-    bool LoadField()
+    bool LoadField(string directory)
     {
         fieldObject = new GameObject("Field");
 
@@ -92,13 +92,13 @@ public class Main : MonoBehaviour
         };
 
         string loadResult;
-        fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties("C:\\BXDFTest\\definition.bxdf", out loadResult);
+        fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
         Debug.Log(loadResult);
         fieldDefinition.CreateTransform(fieldObject.transform);
-        return fieldDefinition.CreateMesh("C:\\BXDFTest\\mesh.bxda");
+        return fieldDefinition.CreateMesh(directory + "\\mesh.bxda");
     }
 
-    bool LoadRobot()
+    bool LoadRobot(string directory)
     {
         robotObject = new GameObject("Robot");
         robotObject.transform.position = new Vector3(0f, 1f, 0f);
@@ -109,7 +109,7 @@ public class Main : MonoBehaviour
         };
 
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        rootNode = BXDJSkeleton.ReadSkeleton("C:\\BXDJTest\\skeleton.bxdj");
+        rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
         rootNode.ListAllNodes(nodes);
 
         foreach (RigidNode_Base n in nodes)
@@ -117,7 +117,7 @@ public class Main : MonoBehaviour
             RigidNode node = (RigidNode)n;
             node.CreateTransform(robotObject.transform);
 
-            if (!node.CreateMesh("C:\\BXDJTest\\" + node.ModelFileName))
+            if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
             {
                 Debug.Log("Robot not loaded!");
                 Destroy(robotObject);

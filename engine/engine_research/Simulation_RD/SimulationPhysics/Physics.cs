@@ -15,6 +15,8 @@ namespace Simulation_RD.SimulationPhysics
     /// </summary>
     class Physics
     {
+        float angle;
+
         public SoftRigidDynamicsWorld World { get; set; }
         public KeyboardKeyEventArgs cachedArgs = new KeyboardKeyEventArgs();
         CollisionDispatcher dispatcher;
@@ -39,54 +41,23 @@ namespace Simulation_RD.SimulationPhysics
 
             broadphase = new DbvtBroadphase();
             World = new SoftRigidDynamicsWorld(dispatcher, broadphase, cSolver, collisionConf, solver);
-            
+
             //Actual scaling is unknown, this gravity is probably not right
             World.Gravity = new Vector3(0, -98.1f, 0);
             World.SetInternalTickCallback(new DynamicsWorld.InternalTickCallback((w, f) => DriveJoints.UpdateAllMotors(Skeleton, cachedArgs)));
 
-            string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\";
-            FileSelector fs = new FileSelector(RobotPath);
-
-            FINDROBOT:
-            {
-                Console.WriteLine("Enter the associated number to move into that directory");
-                Console.WriteLine("Enter ! to select the current directory");
-                Console.WriteLine("Enter . to go up one level");
-                string cmd;
-                do
-                {
-                    int i = 0;
-                    foreach (string s in fs.Directories)
-                    {
-                        i++;
-                        Console.WriteLine(i + " " + s);
-                    }
-
-                    cmd = Console.ReadLine();
-                    if (cmd == ".")
-                        fs.MoveUp();
-                    else if (cmd != "!")
-                        fs.MoveInto(fs.Directories.ToArray()[int.Parse(cmd) - 1]);
-
-                } while (cmd != "!");
-            }
-
             //Roobit
             RigidNode_Base.NODE_FACTORY = (Guid guid) => new BulletRigidNode(guid);
-            try
-            {
-                Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(fs.current + "\\" + "skeleton.bxdj");
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Failed");
-                goto FINDROBOT;
-            }
+            string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\";
+            Exception ex;
+            string dir = RobotPath;
+
+            GetFromDirectory(RobotPath, s => { Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(s + "skeleton.bxdj"); dir = s; });
             List<RigidNode_Base> nodes = Skeleton.ListAllNodes();
             for(int i = 0; i < nodes.Count; i++)
             {
                 BulletRigidNode bNode = (BulletRigidNode)nodes[i];
-                bNode.CreateRigidBody(fs.current + "\\" + bNode.ModelFileName);
+                bNode.CreateRigidBody(dir + bNode.ModelFileName);
                 bNode.CreateJoint();
 
                 if (bNode.joint != null)
@@ -96,7 +67,9 @@ namespace Simulation_RD.SimulationPhysics
             }
 
             //Field
-            f = BulletFieldDefinition.FromFile(@"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\2014\");
+            string fieldPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Fields\";
+            GetFromDirectory(fieldPath, s => f = BulletFieldDefinition.FromFile(s));
+
             foreach (RigidBody b in f.Bodies)
             {
                 World.AddRigidBody(b);
@@ -114,12 +87,13 @@ namespace Simulation_RD.SimulationPhysics
         /// <param name="elapsedTime">elapsed time</param>
         public virtual void Update(float elapsedTime, KeyboardKeyEventArgs args)
         {
-            //DriveJoints.UpdateAllMotors(Skeleton, args);
+            DriveJoints.UpdateAllMotors(Skeleton, args);
             cachedArgs = args;
+
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
                 ResetRobot();
-
-            World.StepSimulation(elapsedTime, 1000, 1f / 300f);
+            
+            World.StepSimulation(elapsedTime, 1000/*, 1f / 300f*/);
 
             OnUpdate?.Invoke();
         }
@@ -190,5 +164,46 @@ namespace Simulation_RD.SimulationPhysics
                 bNode.BulletObject.InterpolationAngularVelocity = Vector3.Zero;                
             }
         }        
+
+        private void GetFromDirectory(string startDirectory, Action<string> useDir)
+        {
+            FileSelector fs = new FileSelector(startDirectory);
+            Console.WriteLine("Enter the associated number to move into that directory");
+            Console.WriteLine("Enter ! to select the current directory");
+            Console.WriteLine("Enter . to go up one level");
+
+            Exception ex;
+            string dir = "";
+            
+            do
+            {
+                string cmd;
+                do
+                {
+                    int i = 0;
+                    foreach (string s in fs.Directories)
+                    {
+                        i++;
+                        Console.WriteLine(i + " " + s);
+                    }
+
+                    cmd = Console.ReadLine();
+                    if (cmd == ".")
+                        fs.MoveUp();
+                    else if (cmd != "!")
+                        try
+                        {
+                            fs.MoveInto(fs.Directories.ToArray()[int.Parse(cmd) - 1]);
+                        }
+                        catch (Exception e) { Console.WriteLine("Invalid command"); }
+
+                } while (cmd != "!");
+
+                dir = fs.current + "\\";
+                ex = null;
+                try { useDir(dir); }
+                catch (Exception e) { Console.WriteLine($"{e}\n{dir}"); ex = e; }
+            } while (ex != null);            
+        }
     }
 }

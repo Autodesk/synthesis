@@ -27,10 +27,9 @@ namespace Simulation_RD.GameFeatures
 
         public void MoveUp()
         {
-            //IEnumerable<string> directoryParts = current.Split(new[] { '\\' });
-            MoveDirectory(new string(current.Reverse().SkipWhile(x => (x != '\\')).Reverse().ToArray()));
-            //directoryParts = directoryParts.Take(directoryParts.Count() - 1);
-            //MoveDirectory(string.Join("\\", directoryParts));
+            IEnumerable<string> directoryParts = current.Split(new[] { '\\' });
+            directoryParts = directoryParts.Take(directoryParts.Count() - 1);
+            MoveDirectory(string.Join("\\", directoryParts));
         }
 
         private void MoveDirectory(string dir)
