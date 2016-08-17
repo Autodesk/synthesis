@@ -716,7 +716,7 @@ public class Init : MonoBehaviour
 				mainNode.rigidbody.isKinematic = false;
 			}
 
-			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
+			DriveJoints.UpdateAllMotors (skeleton, packet.dio, 1);
 			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
 			foreach(RigidNode_Base node in nodes)
 			{
