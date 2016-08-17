@@ -109,14 +109,14 @@ namespace Simulation_RD.SimulationPhysics
                     Console.WriteLine(nodeR.basePoint.Convert());
                     GetFrames(nodeR.basePoint.Convert(), parentObject.WorldTransform, BulletObject.WorldTransform, out locP, out locJ);
 
-                    HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
+                    HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, /*(RigidBody)*/BulletObject, locP, locJ);
                     joint = temp;
                     
                     if (nodeR.hasAngularLimit)
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
                     //also need to find a less screwy way to do this
-                    Update = (f) => { ((RigidBody)BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
+                    Update = (f) => { (/*(RigidBody)*/BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
 
                     Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
