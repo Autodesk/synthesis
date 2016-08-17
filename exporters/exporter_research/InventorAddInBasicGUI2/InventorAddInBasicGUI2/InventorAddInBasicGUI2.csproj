@@ -18,7 +18,7 @@
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
-    <RootNamespace>InvAddIn</RootNamespace>
+    <RootNamespace>InventorAddInBasicGUI2</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
@@ -114,6 +114,11 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="PictureDispConverter.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
     <Compile Include="StandardAddInServer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -140,6 +145,10 @@
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControl1.resx">
       <DependentUpon>UserControl1.cs</DependentUpon>
     </EmbeddedResource>
@@ -147,10 +156,16 @@
   <ItemGroup>
     <Content Include="AddSlotOption.bmp" />
     <Content Include="AddSlotOption.ico" />
-    <Content Include="ExportRobot64.bmp" />
-    <Content Include="ExportRobot32.bmp" />
-    <Content Include="ExportRobot128.bmp" />
-    <Content Include="ExportRobot16.bmp" />
+    <Content Include="Images\EditDrivers16.bmp" />
+    <Content Include="Images\EditDrivers32.bmp" />
+    <Content Include="Images\EditLimits16.bmp" />
+    <Content Include="Images\EditLimits32.bmp" />
+    <Content Include="Images\ExportRobot16.bmp" />
+    <Content Include="Images\ExportRobot32.bmp" />
+    <Content Include="Images\SelectJointInsideJoint16.bmp" />
+    <Content Include="Images\SelectJointInsideJoint32.bmp" />
+    <Content Include="Images\StartRobotExporter16.bmp" />
+    <Content Include="Images\StartRobotExporter32.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

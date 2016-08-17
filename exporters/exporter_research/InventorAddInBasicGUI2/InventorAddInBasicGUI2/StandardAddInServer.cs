@@ -22,6 +22,8 @@ namespace InventorAddInBasicGUI2
 
 
         //TLDR exports the robot to the simulator
+
+
     [GuidAttribute("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
     public class StandardAddInServer : Inventor.ApplicationAddInServer
     {
@@ -402,13 +404,25 @@ namespace InventorAddInBasicGUI2
         {
             try
             {
-                stdole.IPictureDisp beginExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\InventorAddInBasicGUI2\\InventorAddInBasicGUI2\\ExportRobot16.bmp"));
-                stdole.IPictureDisp beginExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\InventorAddInBasicGUI2\\InventorAddInBasicGUI2\\ExportRobot32.bmp"));
+                stdole.IPictureDisp startExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.StartRobotExporter16));
+                stdole.IPictureDisp startExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.StartRobotExporter32));
+
+                stdole.IPictureDisp exportRobotIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.ExportRobot16));
+                stdole.IPictureDisp exportRobotIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.ExportRobot32));
+
+                stdole.IPictureDisp SelectJointInsideJointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.SelectJointInsideJoint16));
+                stdole.IPictureDisp SelectJointInsideJointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.SelectJointInsideJoint32));
+
+                stdole.IPictureDisp EditDriversIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.EditDrivers16));
+                stdole.IPictureDisp EditDriversIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.EditDrivers32));
+
+                stdole.IPictureDisp EditLimitsIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.EditLimits16));
+                stdole.IPictureDisp EditLimitsIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(InventorAddInBasicGUI2.Resource.EditLimits32));
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
 
                 // Create a new environment
-                oNewEnv = oEnvironments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, null, null);
+                oNewEnv = oEnvironments.Add("Robot Exporter", "BxD:RobotExporter:Environment", null, startExporterIconSmall, startExporterIconLarge);
 
                 // Get the ribbon associated with the assembly environment
                 Ribbon oAssemblyRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
@@ -424,19 +438,19 @@ namespace InventorAddInBasicGUI2
                 partPanel = oContextualTabOne.RibbonPanels.Add("Joints", "BxD:RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
                 partPanel2 = oContextualTabOne.RibbonPanels.Add("Limits", "BxD:RobotExporter:Limits", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
 
-                editDrivers = controlDefs.AddButtonDefinition("Edit Drivers", "BxD:RobotExporter:EditDrivers", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                editDrivers = controlDefs.AddButtonDefinition("Edit Drivers", "BxD:RobotExporter:EditDrivers", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, EditDriversIconSmall, EditDriversIconLarge);
                 editDrivers.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditDrivers_OnExecute);
 
-                editLimits = controlDefs.AddButtonDefinition("Edit Limits", "BxD:RobotExporter:editLimits", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                editLimits = controlDefs.AddButtonDefinition("Edit Limits", "BxD:RobotExporter:editLimits", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, EditLimitsIconSmall, EditLimitsIconLarge);
                 editLimits.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditLimits_OnExecute);
 
-                selectJointInsideJoint = controlDefs.AddButtonDefinition("Select a Joint Inside of a Joint", "BxD:RobotExporter:SelectaJointInsideofaJoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                selectJointInsideJoint = controlDefs.AddButtonDefinition("Select Joint Inside a Joint", "BxD:RobotExporter:SelectJointInsideaJoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, SelectJointInsideJointIconSmall, SelectJointInsideJointIconLarge);
                 selectJointInsideJoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(selectJointInsideJoint_OnExecute);
 
                 startExport = controlDefs.AddButtonDefinition("Start Exporter", "BxD:RobotExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 startExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
 
-                exportRobot = controlDefs.AddButtonDefinition("Export Robot", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, beginExporterIconSmall, beginExporterIconLarge);
+                exportRobot = controlDefs.AddButtonDefinition("Export Robot", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, exportRobotIconSmall, exportRobotIconLarge);
                 exportRobot.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(exportRobot_OnExecute);
 
                 cancelExport = controlDefs.AddButtonDefinition("Cancel Export", "BxD:RobotExporter:CancelExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
@@ -469,17 +483,14 @@ namespace InventorAddInBasicGUI2
                 LimitsComboBox.ListIndex = 1;
                 LimitsComboBox.ToolTipText = JointsComboBox.Text;
                 LimitsComboBox.DescriptionText = "Slot width: " + JointsComboBox.Text;
-
-                //partPanel3.CommandControls.AddButton(startExport);
+                
                 partPanel3.CommandControls.AddButton(exportRobot, true, true);
-                //partPanel3.CommandControls.AddButton(cancelExport);
-                partPanel3.CommandControls.AddButton(selectJointInsideJoint);
-                partPanel.CommandControls.AddButton(editDrivers);
-                //  partPanel3.CommandControls.AddButton(test);
+                partPanel3.CommandControls.AddButton(selectJointInsideJoint, true, true);
+                partPanel.CommandControls.AddButton(editDrivers, true, true);
                 LimitsComboBox_OnSelectEventDelegate = new ComboBoxDefinitionSink_OnSelectEventHandler(LimitsComboBox_OnSelect);
                 LimitsComboBox.OnSelect += LimitsComboBox_OnSelectEventDelegate;
                 partPanel2.CommandControls.AddComboBox(LimitsComboBox);
-                partPanel2.CommandControls.AddButton(editLimits);
+                partPanel2.CommandControls.AddButton(editLimits, true, true);
 
                 JointsComboBox.Enabled = false;
                 LimitsComboBox.Enabled = false;
