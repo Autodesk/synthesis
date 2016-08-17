@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 using BulletSharp;
 using OpenTK;
 
@@ -37,33 +38,42 @@ namespace Simulation_RD.Utility
         /// <param name="subMesh"></param>
         /// <param name="vertices"></param>
         /// <returns></returns>
-        public static StridingMeshInterface BulletShapeFromSubMesh(BXDAMesh.BXDASubMesh subMesh, Vector3[] vertices)
+        public static StridingMeshInterface BulletShapeFromSubMesh(BXDAMesh.BXDASubMesh subMesh)
         {
-            IEnumerable<int> indices = new List<int>();
-            subMesh.surfaces.ForEach((s) => indices = indices.Concat(s.indicies));
-            Vector3 center = MeshCenter(vertices);
-            return new TriangleIndexVertexArray(indices.ToArray(), (from Vector3 v in vertices select v - center).ToArray());
+            return new TriangleIndexVertexArray(subMesh.GetAllIndices().ToArray(), subMesh.GetVertexData());
         }
 
         /// <summary>
-        /// Returns a bullet mesh centered around just the vertices used in the subMesh
+        /// Returns a bullet mesh shape offset relative to its starting position
+        /// </summary>
+        /// <param name="subMesh"></param>
+        /// <param name="vertices"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        public static StridingMeshInterface BulletShapeFromSubMesh(BXDAMesh.BXDASubMesh subMesh, Vector3 offset)
+        {
+            Vector3[] vertices = subMesh.GetVertexData();
+            return new TriangleIndexVertexArray(subMesh.GetAllIndices().ToArray(), (from Vector3 v in vertices select v + offset).ToArray());
+        }
+
+        /// <summary>
+        /// Returns a bullet mesh centered around the origin
         /// </summary>
         /// <param name="subMesh"></param>
         /// <param name="vertices"></param>
         /// <returns></returns>
-        public static StridingMeshInterface CenteredBulletShapeFromMesh(BXDAMesh.BXDASubMesh subMesh, Vector3[] vertices)
+        public static StridingMeshInterface CenteredBulletShapeFromSubMesh(BXDAMesh.BXDASubMesh subMesh)
         {
-            IEnumerable<int> indices = new List<int>();
-            subMesh.surfaces.ForEach((s) => indices = indices.Concat(s.indicies));
+            IEnumerable<int> indices = subMesh.GetAllIndices();
+            Vector3[] vertices = subMesh.GetVertexData();
+            
+            Vector3 center = MeshCenter(from int i in indices select vertices[i]);
 
-            IEnumerable<Vector3> usedVertices = from int i in indices select vertices[i];
-            Vector3 center = MeshCenter(usedVertices);
-
-            return new TriangleIndexVertexArray(indices.ToArray(), (from Vector3 v in usedVertices select v - center).ToArray());
+            return BulletShapeFromSubMesh(subMesh, -center);
         }
 
         /// <summary>
-        /// Gets the center vertex of some vertices
+        /// Gets the center of some vertices
         /// </summary>
         /// <param name="mesh">find the center of this</param>
         /// <returns></returns>
@@ -79,7 +89,32 @@ namespace Simulation_RD.Utility
         /// <returns></returns>
         public static Vector3 MeshCenter(BXDAMesh mesh)
         {
-            return mesh.colliders.ConvertAll(m => DataToVector(m.verts).Aggregate(Vector3.Add) / (m.verts.Length / 3)).Aggregate(Vector3.Add) / mesh.colliders.Count;
+            IEnumerable<Vector3> verts = mesh.AllColliderVertices();
+            return verts.Aggregate(Vector3.Add) / verts.Count();
+        }
+
+        /// <summary>
+        /// Gets the center of a sub mesh that uses the given vertices
+        /// </summary>
+        /// <param name="subMesh"></param>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static Vector3 MeshCenter(BXDAMesh.BXDASubMesh subMesh)
+        {
+            IEnumerable<int> indices = subMesh.GetAllIndices();
+            Vector3[] vertices = subMesh.GetVertexData();
+            return (from int i in indices select vertices[i]).Aggregate(Vector3.Add) / indices.Count();
+        }
+
+        /// <summary>
+        /// Gets the center of a sub mesh relative to the entire BXDA mesh
+        /// </summary>
+        /// <param name="subMesh"></param>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static Vector3 MeshCenterRelative(BXDAMesh.BXDASubMesh subMesh, BXDAMesh mesh)
+        {
+            return MeshCenter(subMesh) - MeshCenter(mesh.AllColliderVertices());
         }
     }
 }

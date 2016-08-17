@@ -14,7 +14,7 @@ namespace Simulation_RD.SimulationPhysics
     class BulletRigidNode : RigidNode_Base
     {
         /// <summary>
-        /// Defines Bullet collision object. Might be able to be a soft body in the future
+        /// Defines the Bullet collision object. Might be able to be a soft body in the future
         /// </summary>
         public RigidBody BulletObject;
 
@@ -44,22 +44,21 @@ namespace Simulation_RD.SimulationPhysics
             Vector3 loc;
 
             //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && true) //now
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false)
             {
                 shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);
-                //loc = MeshUtilities.MeshCenter(mesh);
-                Console.WriteLine(  MeshUtilities.MeshCenter(mesh) );
+                loc = MeshUtilities.MeshCenter(mesh);
+                Console.WriteLine(MeshUtilities.MeshCenter(mesh));
             }
             //Rigid Body Construction
             else
             {
                 shape = GetShape(mesh);
-                //loc = MeshUtilities.MeshCenter(mesh);
+                loc = MeshUtilities.MeshCenter(mesh);
             }
-
-            //Current quick fix for wheels in the wrong position: scale by 1/4? Please find a better solution.
-            motion = new DefaultMotionState(Matrix4.CreateScale(0.25f) * Matrix4.CreateTranslation(Vector3.Zero));
-            RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass * 0.1f, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
+            
+            motion = new DefaultMotionState(Matrix4.CreateTranslation(loc));
+            RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass * 1f, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
 
             //Temp
             info.Friction = 100;
@@ -109,14 +108,14 @@ namespace Simulation_RD.SimulationPhysics
                     Console.WriteLine(nodeR.basePoint.Convert());
                     GetFrames(nodeR.basePoint.Convert(), parentObject.WorldTransform, BulletObject.WorldTransform, out locP, out locJ);
 
-                    HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, (RigidBody)BulletObject, locP, locJ);
+                    HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, /*(RigidBody)*/BulletObject, locP, locJ);
                     joint = temp;
                     
                     if (nodeR.hasAngularLimit)
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
                     //also need to find a less screwy way to do this
-                    Update = (f) => { ((RigidBody)BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
+                    Update = (f) => { (/*(RigidBody)*/BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
 
                     Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
@@ -134,15 +133,16 @@ namespace Simulation_RD.SimulationPhysics
         private static CompoundShape GetShape(BXDAMesh mesh)
         {
             CompoundShape shape = new CompoundShape();
+            Vector3[] meshVertices = mesh.AllColliderVertices().ToArray();
 
             for (int i = 0; i < mesh.colliders.Count; i++)
             {
                 BXDAMesh.BXDASubMesh sub = mesh.colliders[i];
-                Vector3[] vertices = MeshUtilities.DataToVector(sub.verts);
-                StridingMeshInterface sMesh = MeshUtilities.CenteredBulletShapeFromMesh(sub, vertices);
+                Vector3[] vertices = sub.GetVertexData();
+                StridingMeshInterface sMesh = MeshUtilities.CenteredBulletShapeFromSubMesh(sub);
 
-                //I don't believe there are any transformations necessary here.
-                shape.AddChildShape(Matrix4.Identity, new ConvexTriangleMeshShape(sMesh));
+                //Add the shape at a location relative to the compound shape such that the compound shape is centered at (0, 0) but child shapes are properly placed
+                shape.AddChildShape(Matrix4.CreateTranslation(MeshUtilities.MeshCenterRelative(sub, mesh)), new ConvexTriangleMeshShape(sMesh));
                 //Console.WriteLine("Successfully created and added sub shape");                
             }
 
@@ -152,7 +152,8 @@ namespace Simulation_RD.SimulationPhysics
         /// <summary>
         /// Gets the pivot/axis joint for each rigid body for a rotational joint
         /// </summary>
-        /// <param name="jointPivot">pivot point relative to the joint? parent? idk I think mackinnon said joint but pretty sure it's parent(see <see cref="RotationalJoint_Base.basePoint"/>)</param>
+        /// <param name="jointPivot">pivot point relative to the joint? parent? 
+        /// idk I think mackinnon said joint but pretty sure it's parent(see <see cref="RotationalJoint_Base.basePoint"/>)</param>
         /// <param name="jointTransform">world transform for the child object</param>
         /// <param name="parentTransform">world transform for the parent object</param>
         /// <param name="parentFrame">Matrix to be assigned to the joint's rotational frame</param>
@@ -160,8 +161,7 @@ namespace Simulation_RD.SimulationPhysics
         private static void GetFrames(Vector3 jointPivot, Matrix4 parentTransform, Matrix4 jointTransform, out Matrix4 parentFrame, out Matrix4 jointFrame)
         {
             parentFrame = Matrix4.CreateTranslation(jointPivot);
-            jointFrame = Matrix4.Zero;//parentFrame * jointTransform.Inverted() * parentTransform;
-            // ^ This will only work for some wheels, please fix
+            jointFrame = parentFrame * parentTransform * jointTransform.Inverted();
         }
     }
 }
