@@ -44,7 +44,7 @@ namespace Simulation_RD.SimulationPhysics
             Vector3 loc;
 
             //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false) //now
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false)
             {
                 shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);
                 loc = MeshUtilities.MeshCenter(mesh);
@@ -56,8 +56,7 @@ namespace Simulation_RD.SimulationPhysics
                 shape = GetShape(mesh);
                 loc = MeshUtilities.MeshCenter(mesh);
             }
-
-            //Current quick fix for wheels in the wrong position: scale by 1/4? Please find a better solution.
+            
             motion = new DefaultMotionState(Matrix4.CreateTranslation(loc));
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass * 1f, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
 
@@ -142,7 +141,7 @@ namespace Simulation_RD.SimulationPhysics
                 Vector3[] vertices = sub.GetVertexData();
                 StridingMeshInterface sMesh = MeshUtilities.CenteredBulletShapeFromSubMesh(sub);
 
-                //I don't believe there are any transformations necessary here.
+                //Add the shape at a location relative to the compound shape such that the compound shape is centered at (0, 0) but child shapes are properly placed
                 shape.AddChildShape(Matrix4.CreateTranslation(MeshUtilities.MeshCenterRelative(sub, mesh)), new ConvexTriangleMeshShape(sMesh));
                 //Console.WriteLine("Successfully created and added sub shape");                
             }
