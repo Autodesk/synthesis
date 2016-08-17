@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using OpenTK;
 using BulletSharp;
-using System.Linq;
 using Simulation_RD.Graphics;
 using Simulation_RD.Utility;
 
@@ -47,14 +45,14 @@ namespace Simulation_RD.SimulationPhysics
                         case PropertySet.PropertySetCollider.PropertySetCollisionType.BOX:
                             {
                                 //Create a box shape
-                                //This is a mess
+                                //This is a mess, though I was told that this is how it works
                                 Vector3[] vertices = MeshUtilities.DataToVector(mesh.meshes[node.SubMeshID].verts);
-                                StridingMeshInterface temp = MeshUtilities.BulletShapeFromSubMesh(mesh.meshes[node.SubMeshID], vertices);
+                                StridingMeshInterface temp = MeshUtilities.BulletShapeFromSubMesh(mesh.meshes[node.SubMeshID]);
                                 Vector3 min, max;
                                 temp.CalculateAabbBruteForce(out min, out max);
                                 
                                 PropertySet.BoxCollider colliderInfo = (PropertySet.BoxCollider)current.Collider;
-                                subShape = new BoxShape((max - min) * colliderInfo.Scale.Convert());
+                                subShape = new BoxShape((max - min) * colliderInfo.Scale.Convert() * 0.5f);
                                 if (debug) Console.WriteLine("Created Box");
                                 break;
                             }
@@ -82,7 +80,7 @@ namespace Simulation_RD.SimulationPhysics
                                     }
                                     else
                                     {
-                                        StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[node.CollisionMeshID], vertices);
+                                        StridingMeshInterface sMesh = MeshUtilities.BulletShapeFromSubMesh(mesh.colliders[node.CollisionMeshID]);
                                         subShape = new ConvexTriangleMeshShape(sMesh, true);
                                         if (debug) Console.WriteLine("Created Concave Mesh");
                                     }

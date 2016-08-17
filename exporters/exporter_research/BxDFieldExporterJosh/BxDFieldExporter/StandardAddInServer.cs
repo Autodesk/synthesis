@@ -7,6 +7,7 @@ using BxDFieldExporter;
 using System.Drawing;
 using System.Collections;
 using System.Timers;
+using System.Resources;
 namespace BxDFieldExporter
 {
     /// <summary>
@@ -14,7 +15,7 @@ namespace BxDFieldExporter
     /// that all Inventor AddIns are required to implement. The communication between Inventor and
     /// the AddIn is via the methods on this interface.
     /// </summary>
-    /// 
+
 
         //TLDR: exports the field
 
@@ -26,25 +27,25 @@ namespace BxDFieldExporter
         #region variables
         // Inventor application object.
         public static Inventor.Application m_inventorApplication;// the main inventor application
-        private static Ribbon partRibbon;// ribbon that corrosponds to the view of inventor, e.g. Assembly, Part
-        private static RibbonTab partTab;// part tab that all the panels will be added to
+        [DllImport("user32.dll")]
+        public static extern ushort GetKeyState(short key);
         ClientNodeResource oRsc;// client resources that buttons will use
         static Document nativeDoc;
         static bool runOnce;
-        static RibbonPanel partPanel;
-        static RibbonPanel partPanel2;// the ribbon panels that the buttons will be a part of
-        static RibbonPanel partPanel3;
-        static RibbonPanel partPanel4;// the ribbon panels that the buttons will be a part of
+        static RibbonPanel ExporterControl;
+        static RibbonPanel TypeControls;// the ribbon panels that the buttons will be a part of
+        static RibbonPanel AddItems;
+        static RibbonPanel RemoveItems;// the ribbon panels that the buttons will be a part of
         static ButtonDefinition beginExporter;
         static ButtonDefinition addNewType;
         static ButtonDefinition editType;
-        static ButtonDefinition addNewItem;
-        static ButtonDefinition accessInnerAssemblies;// contain the buttons that the user can interact with
+        static ButtonDefinition addAssembly;
+        static ButtonDefinition addPart;// contain the buttons that the user can interact with
         static ButtonDefinition removeSubAssembly;
         static ButtonDefinition removeAssembly;
-        static ButtonDefinition cancleExport;
+        static ButtonDefinition cancelExport;
         static ButtonDefinition exportField;
-        KeyboardEvents keyEvents;
+        static ButtonDefinition removeType;
         static bool done;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldTypes;// arraylist of all the field properties the user has set
@@ -155,11 +156,11 @@ namespace BxDFieldExporter
                     inExportView = true;
                     addNewType.Enabled = true;
                     editType.Enabled = true;
-                    addNewItem.Enabled = true;
+                    addAssembly.Enabled = true;
                     beginExporter.Enabled = false;// show the correct buttons
-                    cancleExport.Enabled = true;
+                    cancelExport.Enabled = true;
                     exportField.Enabled = true;
-                    accessInnerAssemblies.Enabled = true;
+                    addPart.Enabled = true;
                     removeAssembly.Enabled = true;
                     removeSubAssembly.Enabled = true;
                     AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;// get the active assembly document
@@ -202,6 +203,7 @@ namespace BxDFieldExporter
                         }
 
                     }
+                    oPane.Refresh();
                     readSave();// read the save so the user doesn't loose any previous work
                     TimerWatch();// begin the timer watcher to detect deselect
 
@@ -254,15 +256,34 @@ namespace BxDFieldExporter
         {
             try
             {
-                stdole.IPictureDisp beginExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\StartExporter16.bmp"));
-                stdole.IPictureDisp beginExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\StartExporter32.bmp"));
-                stdole.IPictureDisp exportFieldIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\ExportField16.bmp"));
-                stdole.IPictureDisp exportFieldIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap("C:\\Users\\t_gracj\\Desktop\\git\\synthesis\\exporters\\exporter_research\\BxDFieldExporter\\BxDFieldExporter\\ExportField32.bmp"));
+                stdole.IPictureDisp startExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.StartExporter16));
+                stdole.IPictureDisp startExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.StartExporter32));
+
+                stdole.IPictureDisp exportFieldIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField16));
+                stdole.IPictureDisp exportFieldIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField32));
+
+                stdole.IPictureDisp addNewTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewType16));
+                stdole.IPictureDisp addNewTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewType32));
+
+                stdole.IPictureDisp editTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.EditType16));
+                stdole.IPictureDisp editTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.EditType32));
+
+                stdole.IPictureDisp removeAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveAssembly16));
+                stdole.IPictureDisp removeAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveAssembly32));
+
+                stdole.IPictureDisp removeSubAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly16));
+                stdole.IPictureDisp removeSubAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly32));
+
+                stdole.IPictureDisp addPartIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart16));
+                stdole.IPictureDisp addPartIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart32));
+
+                stdole.IPictureDisp addAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly16));
+                stdole.IPictureDisp addAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly32));
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
                 
                 // Create a new environment
-                oNewEnv = oEnvironments.Add("Field Exporter", "BxD:FieldExporter:Environment", null, beginExporterIconSmall, beginExporterIconLarge);
+                oNewEnv = oEnvironments.Add("Field Exporter", "BxD:FieldExporter:Environment", null, startExporterIconSmall, startExporterIconLarge);
 
                 // Get the ribbon associated with the assembly environment
                 Ribbon oAssemblyRibbon = m_inventorApplication.UserInterfaceManager.Ribbons["Assembly"];
@@ -270,46 +291,58 @@ namespace BxDFieldExporter
                 // Create contextual tabs and panels within them
                 RibbonTab oContextualTabOne = oAssemblyRibbon.RibbonTabs.Add("Field Exporter", "BxD:FieldExporter:RibbonTab", "ClientId123", "", false, true);
                 
-                partPanel = oContextualTabOne.RibbonPanels.Add("Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels
-                partPanel2 = oContextualTabOne.RibbonPanels.Add("Model Control", "BxD:FieldExporter:ModelControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
-                
+                ExporterControl = oContextualTabOne.RibbonPanels.Add("Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels
+                TypeControls = oContextualTabOne.RibbonPanels.Add("Type Controls", "BxD:FieldExporter:TypeControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+                AddItems = oContextualTabOne.RibbonPanels.Add("Add Items", "BxD:FieldExporter:AddItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+                RemoveItems = oContextualTabOne.RibbonPanels.Add("Remove Items", "BxD:FieldExporter:RemoveItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
-                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, beginExporterIconSmall, beginExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
+                beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, startExporterIconSmall, startExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
                 beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
 
-                addNewType = controlDefs.AddButtonDefinition("Add new type", "BxD:FieldExporter:AddNewType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                addNewType = controlDefs.AddButtonDefinition(" Add New Type ", "BxD:FieldExporter:AddNewType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addNewTypeIconSmall, addNewTypeIconLarge);
                 addNewType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewType_OnExecute);
-                addNewItem = controlDefs.AddButtonDefinition("Add new assembly", "BxD:FieldExporter:AddNewItem", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                addNewItem.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssembly_OnExecute);
-                removeAssembly = controlDefs.AddButtonDefinition("Remove assembly from type", "BxD:FieldExporter:RemoveAssemblyFromType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+
+                addAssembly = controlDefs.AddButtonDefinition(" Add New Assembly ", "BxD:FieldExporter:AddNewItem", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addAssemblyIconSmall, addAssemblyIconLarge);
+                addAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssembly_OnExecute);
+
+                removeAssembly = controlDefs.AddButtonDefinition(" Remove Assembly ", "BxD:FieldExporter:RemoveAssembly", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeAssemblyIconSmall, removeAssemblyIconLarge);
                 removeAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeAssembly_OnExecute);
-                removeSubAssembly = controlDefs.AddButtonDefinition("Remove subassembly from type", "BxD:FieldExporter:RemoveSubAssemblyFromType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+
+                removeSubAssembly = controlDefs.AddButtonDefinition(" Remove Part ", "BxD:FieldExporter:RemovePart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeSubAssemblyIconSmall, removeSubAssemblyIconLarge);
                 removeSubAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeSubAssembly_OnExecute);
-                editType = controlDefs.AddButtonDefinition("Edit type properties", "BxD:FieldExporter:EditTypeProperties", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);// init the button
+
+                editType = controlDefs.AddButtonDefinition(" Edit Type Properties ", "BxD:FieldExporter:EditTypeProperties", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, editTypeIconSmall, editTypeIconLarge);// init the button
                 editType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(editTypeProperites_OnExecute);// add the reacting method to the button
-                cancleExport = controlDefs.AddButtonDefinition("Cancel export", "BxD:FieldExporter:cancleExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                cancleExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(cancleExporter_OnExecute);
-                exportField = controlDefs.AddButtonDefinition("Export field", "BxD:FieldExporter:exportField", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, exportFieldIconSmall, exportFieldIconLarge);
+
+                cancelExport = controlDefs.AddButtonDefinition("Cancel Export", "BxD:FieldExporter:CancelExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
+                cancelExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(cancleExporter_OnExecute);
+
+                exportField = controlDefs.AddButtonDefinition("Export Field", "BxD:FieldExporter:ExportField", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, exportFieldIconSmall, exportFieldIconLarge);
                 exportField.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(exportField_OnExecute);
-                accessInnerAssemblies = controlDefs.AddButtonDefinition("Add new part in subassembly", "BxD:FieldExporter:AccessSubassembly", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
-                accessInnerAssemblies.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewSubAssembly_OnExecute);
-                //partPanel.CommandControls.AddButton(beginExporter, true, true);
-                //partPanel.CommandControls.AddButton(cancleExport);
-                partPanel.CommandControls.AddButton(exportField, true, true);
-                partPanel2.CommandControls.AddButton(removeSubAssembly);
-                partPanel2.CommandControls.AddButton(removeAssembly);// add buttons to the part panels
-                partPanel2.CommandControls.AddButton(addNewType);
-                partPanel2.CommandControls.AddButton(addNewItem);
-                partPanel2.CommandControls.AddButton(accessInnerAssemblies);
-                partPanel2.CommandControls.AddButton(editType);
+
+                addPart = controlDefs.AddButtonDefinition(" Add New Part ", "BxD:FieldExporter:AddNewPart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
+                addPart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewSubAssembly_OnExecute);
+
+                removeType = controlDefs.AddButtonDefinition(" Remove Type ", "BxD:FieldExporter:RemoveType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
+                removeType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeType_OnExecute);
+
+                ExporterControl.CommandControls.AddButton(exportField, true, true);
+                TypeControls.CommandControls.AddButton(addNewType, true, true);
+                TypeControls.CommandControls.AddButton(removeType, true, true);
+                TypeControls.CommandControls.AddButton(editType, true, true);
+                AddItems.CommandControls.AddButton(addAssembly, true, true);
+                AddItems.CommandControls.AddButton(addPart, true, true);
+                RemoveItems.CommandControls.AddButton(removeAssembly, true, true);// add buttons to the part panels
+                RemoveItems.CommandControls.AddButton(removeSubAssembly, true, true);
                 addNewType.Enabled = false;
                 editType.Enabled = false;
-                addNewItem.Enabled = false;
+                addAssembly.Enabled = false;
                 beginExporter.Enabled = true;// set the correct button states for not being in export mode
-                cancleExport.Enabled = false;
+                cancelExport.Enabled = false;
                 exportField.Enabled = false;
                 addNewType.Enabled = false;
-                accessInnerAssemblies.Enabled = false;
+                addPart.Enabled = false;
                 removeAssembly.Enabled = false;
                 removeSubAssembly.Enabled = false;
                 UserInterfaceEvents UIEvents = m_inventorApplication.UserInterfaceManager.UserInterfaceEvents;
@@ -392,6 +425,11 @@ namespace BxDFieldExporter
                                 {// looks at the occurences in the selected type's part list
                                     oSet.AddItem(o);// show the user which parts are selected
                                 }
+                                editType.Enabled = true;
+                                addAssembly.Enabled = true;
+                                addPart.Enabled = true;
+                                removeAssembly.Enabled = true;
+                                removeSubAssembly.Enabled = true;
                             }
                         }
                     }
@@ -416,19 +454,15 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
-        [DllImport("user32.dll")]
-        public static extern ushort GetKeyState(short nVirtKey);
-
-        public const ushort keyDownBit = 0x80;
-        public static bool IsKeyPressed(Keys key)
+        public static bool checkKeyPressed(Keys key)
         {
-            return ((GetKeyState((short)key) & keyDownBit) == keyDownBit);
+            return ((GetKeyState((short)key) & 0x80) == 0x80);
         }
         // reacts to the timer elapsed event, this allows us to select and unselect things as needed
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             found = false;
-            if (IsKeyPressed(Keys.ShiftKey) || IsKeyPressed(Keys.ControlKey))
+            if (checkKeyPressed(Keys.ShiftKey) || checkKeyPressed(Keys.ControlKey))
             {
             } else
             {
@@ -464,6 +498,11 @@ namespace BxDFieldExporter
             if (!found)
             {// if the program didn't find any selected node then assume that the user deselected 
                 oSet.Clear();// clear the set because the user doesn't have anything selected
+                editType.Enabled = false;
+                addAssembly.Enabled = false;
+                addPart.Enabled = false;
+                removeAssembly.Enabled = false;
+                removeSubAssembly.Enabled = false;
             }
             if (!m_inventorApplication.ActiveDocument.InternalName.Equals(nativeDoc.InternalName))
             {
@@ -473,11 +512,11 @@ namespace BxDFieldExporter
 
                     addNewType.Enabled = false;
                     editType.Enabled = false;
-                    addNewItem.Enabled = false;
+                    addAssembly.Enabled = false;
                     beginExporter.Enabled = true;// sets the correct buttons states
-                    cancleExport.Enabled = false;
+                    cancelExport.Enabled = false;
                     exportField.Enabled = false;
-                    accessInnerAssemblies.Enabled = false;
+                    addPart.Enabled = false;
                     removeAssembly.Enabled = false;
                     removeSubAssembly.Enabled = false;
 
@@ -492,11 +531,11 @@ namespace BxDFieldExporter
 
                     addNewType.Enabled = true;
                     editType.Enabled = true;
-                    addNewItem.Enabled = true;
+                    addAssembly.Enabled = true;
                     beginExporter.Enabled = false;// sets the correct buttons states
-                    cancleExport.Enabled = true;
+                    cancelExport.Enabled = true;
                     exportField.Enabled = true;
-                    accessInnerAssemblies.Enabled = true;
+                    addPart.Enabled = true;
                     removeAssembly.Enabled = true;
                     removeSubAssembly.Enabled = true;
 
@@ -793,6 +832,41 @@ namespace BxDFieldExporter
 
             }       
         }
+        public void removeType_OnExecute(Inventor.NameValueMap Context)
+        {
+            ArrayList selectedNodes = new ArrayList();
+            String names = "";
+            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+            {// looks through all the nodes under the top node
+                if (node.Selected)
+                {// if the node is seleted
+                    selectedNodes.Add(node);
+                    names += node.BrowserNodeDefinition.Label + " ";
+                }
+            }
+            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete Type: " + "\n" + names, "Remove Type", MessageBoxButtons.OKCancel);
+            if (dialogResult == DialogResult.OK)
+            {
+                foreach (BrowserNode node in selectedNodes)
+                {
+                    foreach(FieldDataType f in FieldTypes)
+                    {
+                        if (f.same(node.BrowserNodeDefinition))
+                        {
+                            FieldTypes.Remove(f);
+                        }
+                    }
+                    foreach(BrowserNode node1 in oPane.TopNode.BrowserNodes)
+                    {
+                        if (node.Equals(node1))
+                        {
+                            node1.Delete();
+                            oPane.TopNode.Visible = false;
+                        }
+                    }
+                }
+            }
+        }
         // edits the properties of the type
         public static void editTypeProperites_OnExecute(Inventor.NameValueMap Context)
         {
@@ -828,11 +902,11 @@ namespace BxDFieldExporter
                 oPane.Visible = false;// hide the browser pane because we aren't exporting anymore
                 addNewType.Enabled = false;
                 editType.Enabled = false;
-                addNewItem.Enabled = false;
+                addAssembly.Enabled = false;
                 beginExporter.Enabled = true;// sets the correct buttons states
-                cancleExport.Enabled = false;
+                cancelExport.Enabled = false;
                 exportField.Enabled = false;
-                accessInnerAssemblies.Enabled = false;
+                addPart.Enabled = false;
                 removeAssembly.Enabled = false;
                 removeSubAssembly.Enabled = false;
             }
@@ -1022,11 +1096,11 @@ namespace BxDFieldExporter
             oPane.Visible = false;// hide the browser pane because we aren't exporting anymore
             addNewType.Enabled = false;
             editType.Enabled = false;
-            addNewItem.Enabled = false;
+            addAssembly.Enabled = false;
             beginExporter.Enabled = true;// sets the correct buttons states
-            cancleExport.Enabled = false;
+            cancelExport.Enabled = false;
             exportField.Enabled = false;
-            accessInnerAssemblies.Enabled = false;
+            addPart.Enabled = false;
             removeAssembly.Enabled = false;
             removeSubAssembly.Enabled = false;
         }

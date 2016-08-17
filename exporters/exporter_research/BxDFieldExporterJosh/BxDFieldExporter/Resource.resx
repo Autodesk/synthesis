@@ -117,4 +117,53 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AddAssembly16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\AddAssembly16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AddAssembly32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\AddAssembly32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AddNewPart16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\AddNewPart16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AddNewPart32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\AddNewPart32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AddNewType16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\AddNewType16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AddNewType32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\AddNewType32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EditType16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\EditType16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EditType32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\EditType32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExportField16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\ExportField16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ExportField32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\ExportField32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RemoveAssembly16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RemoveAssembly16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RemoveAssembly32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RemoveAssembly32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RemoveSubAssembly16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RemoveSubAssembly16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RemoveSubAssembly32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RemoveSubAssembly32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StartExporter16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\StartExporter16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="StartExporter32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\StartExporter32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
