@@ -18,7 +18,7 @@
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
     <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
-    <RootNamespace>InvAddIn</RootNamespace>
+    <RootNamespace>BxDFieldExporter</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <StartupObject>
     </StartupObject>
@@ -129,6 +129,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
     <Compile Include="SphereColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -154,22 +159,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="StartExporter.ico" />
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\StartExporter.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ExportField128.bmp" />
-    <Content Include="ExportField16.bmp" />
-    <Content Include="ExportField64.bmp" />
-    <Content Include="ExportField32.bmp" />
-    <Content Include="StartExporter32.bmp" />
-    <Content Include="StartExporter16.bmp" />
+    <Content Include="Images\AddAssembly32.bmp" />
+    <Content Include="Images\AddAssembly16.bmp" />
+    <Content Include="Images\AddNewPart32.bmp" />
+    <Content Include="Images\AddNewPart16.bmp" />
+    <Content Include="Images\ExportField32.bmp" />
+    <Content Include="Images\ExportField16.bmp" />
+    <Content Include="Images\AddNewType16.bmp" />
+    <Content Include="Images\AddNewType32.bmp" />
+    <Content Include="Images\EditType32.bmp" />
+    <Content Include="Images\EditType16.bmp" />
+    <Content Include="Images\RemoveAssembly32.bmp" />
+    <Content Include="Images\RemoveAssembly16.bmp" />
+    <Content Include="Images\RemoveSubAssembly16.bmp" />
+    <Content Include="Images\RemoveSubAssembly32.bmp" />
+    <Content Include="Images\StartExporter16.bmp" />
+    <Content Include="Images\StartExporter32.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

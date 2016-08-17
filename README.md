@@ -12,7 +12,7 @@ TODO
 #### Instructions
 TODO
 
-# Directory Structure
+## Directory Structure
 
 In order to achieve maximum user satisfaction we can insert all of the code into a single repository and
 then follow up with constant commits while using
