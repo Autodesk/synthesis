@@ -231,7 +231,7 @@ public class MainMenu : MonoBehaviour {
         {
             PlayerPrefs.SetString("Field", selectedField);
             PlayerPrefs.SetString("Robot", selectedRobot);
-            Application.LoadLevel("Local_multiplayer");
+            Application.LoadLevel("Scene");
         }
     }
 
