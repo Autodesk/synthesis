@@ -203,29 +203,29 @@ namespace BxDFieldExporter
                         }
 
                     }
+
                     oPane.Refresh();
                     readSave();// read the save so the user doesn't loose any previous work
                     TimerWatch();// begin the timer watcher to detect deselect
-
-
-                    /*AssemblyDocument oDocs;
-                    oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
-                    AssemblyComponentDefinition oCompDef;
-                    oCompDef = oDocs.ComponentDefinition;
-                    TransientGeometry oTG;
-                    oTG = m_inventorApplication.TransientGeometry;
-                    WorkPoint oWorkPoint1;
-                    oWorkPoint1 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 20, 2));
-                    WorkPoint oWorkPoint2;
-                    oWorkPoint2 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(4, 20, 0));
-                    WorkPoint oWorkPoint3;
-                    oWorkPoint3 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 20, 0));
-                    UserCoordinateSystemDefinition oUCSDef;
-                    oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
-                    oUCSDef.SetByThreePoints(oWorkPoint1, oWorkPoint3, oWorkPoint2);
-                    UserCoordinateSystem oUCS;
-                    oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);*/
-                }
+                    
+                        /*AssemblyDocument oDocs;
+                        oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+                        AssemblyComponentDefinition oCompDef;
+                        oCompDef = oDocs.ComponentDefinition;
+                        TransientGeometry oTG;
+                        oTG = m_inventorApplication.TransientGeometry;
+                        WorkPoint oWorkPoint1;
+                        oWorkPoint1 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 20, 2));
+                        WorkPoint oWorkPoint2;
+                        oWorkPoint2 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(4, 20, 0));
+                        WorkPoint oWorkPoint3;
+                        oWorkPoint3 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 20, 0));
+                        UserCoordinateSystemDefinition oUCSDef;
+                        oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
+                        oUCSDef.SetByThreePoints(oWorkPoint1, oWorkPoint3, oWorkPoint2);
+                        UserCoordinateSystem oUCS;
+                        oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);*/
+                    }
                 else
                 {
                     MessageBox.Show("Please close out of the robot exporter in the other assembly");
@@ -799,7 +799,7 @@ namespace BxDFieldExporter
                         AssemblyDocument asmDoc = (AssemblyDocument)
                                      m_inventorApplication.ActiveDocument;
                         joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to add");
+                                  (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
                         if (joint != null)
                         {
                             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
@@ -854,14 +854,7 @@ namespace BxDFieldExporter
                         if (f.same(node.BrowserNodeDefinition))
                         {
                             FieldTypes.Remove(f);
-                        }
-                    }
-                    foreach(BrowserNode node1 in oPane.TopNode.BrowserNodes)
-                    {
-                        if (node.Equals(node1))
-                        {
-                            node1.Delete();
-                            oPane.TopNode.Visible = false;
+                            node.Delete();
                         }
                     }
                 }
@@ -963,17 +956,25 @@ namespace BxDFieldExporter
                                     }
                                 }
                                 BrowserNodeDefinition selectedFolder = addType(((String)set.ItemByPropId[10].Value));// create a new browsernodedef with the name from the old datatype
-                                FieldDataType field = new FieldDataType(selectedFolder);// create a new field with browser node that was just created as its corrosponding node
-                                field.colliderType = (ColliderType)set.ItemByPropId[2].Value;
-                                field.X = (double)set.ItemByPropId[3].Value;
-                                field.Y = (double)set.ItemByPropId[4].Value;
-                                field.Z = (double)set.ItemByPropId[5].Value;
-                                field.Scale = (double)set.ItemByPropId[6].Value;// read the data from the properties into the fielddatatype
-                                field.Friction = (double)set.ItemByPropId[7].Value;
-                                field.Dynamic = (bool)set.ItemByPropId[8].Value;
-                                field.Mass = (double)set.ItemByPropId[9].Value;
-                                field.compOcc = lis;// set the occurences array to the found occurences
-                                FieldTypes.Add(field);// add the field to the datatypes array
+                                FieldDataType field = null;
+                                foreach (FieldDataType f in FieldTypes){
+                                    if (f.same(selectedFolder))
+                                    {
+                                        field = f;
+                                    }
+                                }
+                                if (field != null)
+                                {
+                                    field.colliderType = (ColliderType)set.ItemByPropId[2].Value;
+                                    field.X = (double)set.ItemByPropId[3].Value;
+                                    field.Y = (double)set.ItemByPropId[4].Value;
+                                    field.Z = (double)set.ItemByPropId[5].Value;
+                                    field.Scale = (double)set.ItemByPropId[6].Value;// read the data from the properties into the fielddatatype
+                                    field.Friction = (double)set.ItemByPropId[7].Value;
+                                    field.Dynamic = (bool)set.ItemByPropId[8].Value;
+                                    field.Mass = (double)set.ItemByPropId[9].Value;
+                                    field.compOcc = lis;// set the occurences array to the found occurences
+                                }
                             }
                         }
                     }
