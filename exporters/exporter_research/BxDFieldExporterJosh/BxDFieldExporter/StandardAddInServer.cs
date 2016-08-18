@@ -32,6 +32,7 @@ namespace BxDFieldExporter
         ClientNodeResource oRsc;// client resources that buttons will use
         static Document nativeDoc;
         static bool runOnce;
+        EnvironmentManager envMan;
         static RibbonPanel ExporterControl;
         static RibbonPanel TypeControls;// the ribbon panels that the buttons will be a part of
         static RibbonPanel AddItems;
@@ -153,6 +154,7 @@ namespace BxDFieldExporter
                 if (!inExportView)
                 {
                     nativeDoc = m_inventorApplication.ActiveDocument;
+                    envMan = ((AssemblyDocument)m_inventorApplication.ActiveDocument).EnvironmentManager;
                     inExportView = true;
                     addNewType.Enabled = true;
                     editType.Enabled = true;
@@ -1083,27 +1085,7 @@ namespace BxDFieldExporter
         // exports the field
         public void exportField_OnExecute(Inventor.NameValueMap Context)
         {
-            inExportView = false;// tell the event reactors to not react because we are no longer in export mode
-            writeBrowserFolderNames();// write the browser folder names to the property sets so we can read them next time the program is run
-            foreach (FieldDataType data in FieldTypes)
-            {// looks at all the groups in fieldtype
-                writeSave(data);// writes the saved data to the property set
-            }
-            FieldTypes = new ArrayList();// clear the arraylist of groups
-            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
-            {// looks at all the nodes under the top node
-                node.Delete();// deletes the nodes
-            }
-            oPane.Visible = false;// hide the browser pane because we aren't exporting anymore
-            addNewType.Enabled = false;
-            editType.Enabled = false;
-            addAssembly.Enabled = false;
-            beginExporter.Enabled = true;// sets the correct buttons states
-            cancelExport.Enabled = false;
-            exportField.Enabled = false;
-            addPart.Enabled = false;
-            removeAssembly.Enabled = false;
-            removeSubAssembly.Enabled = false;
+            envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
         }
     }
     //class that helps with images
