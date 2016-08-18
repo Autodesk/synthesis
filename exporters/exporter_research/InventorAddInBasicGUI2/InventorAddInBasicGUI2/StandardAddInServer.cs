@@ -42,6 +42,7 @@ namespace InventorAddInBasicGUI2
         
         Boolean Rotating;
 
+        EnvironmentManager envMan;
         static Inventor.ButtonDefinition startExport;
         static Inventor.ButtonDefinition exportRobot;
         static Inventor.ButtonDefinition cancelExport;
@@ -267,6 +268,7 @@ namespace InventorAddInBasicGUI2
                     LimitsComboBox.Enabled = false;
                     editDrivers.Enabled = false;
                     editLimits.Enabled = false;
+                    envMan = ((AssemblyDocument)m_inventorApplication.ActiveDocument).EnvironmentManager;
                     try
                     {// if no browser pane previously created then create a new one
                         ClientNodeResources oRscs = oPanes.ClientNodeResources;
@@ -1334,36 +1336,9 @@ namespace InventorAddInBasicGUI2
         // exports the robot
         public void exportRobot_OnExecute(Inventor.NameValueMap Context)
         {
-            control.saveFile();// save the file
-            inExportView = false; // exit the export view
-            SwitchSelectedJoint(DriveTypes.NoDriver);// select the proper combo box
-            AssemblyDocument asmDoc = (AssemblyDocument) m_inventorApplication.ActiveDocument;
-            foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
-            {
-                c.Enabled = true;// enable all parts/ assemblies in the doc
-            }
-            JointsComboBox.Enabled = false;
-            LimitsComboBox.Enabled = false;
-            exportRobot.Enabled = false;
-            startExport.Enabled = true;// change the button states to correct ones
-            cancelExport.Enabled = false;
-            editDrivers.Enabled = false;
-            editLimits.Enabled = false;
-            selectJointInsideJoint.Enabled = false;
-            oPane.Visible = false; // hide browser pane
-            //writeNumJoints();
-            foreach (JointData j in jointList)
-            {
-              //  writeSave(j);
-            }
-            jointList = new ArrayList(); // clear the jointList
-            foreach (BrowserNode folder in oPane.TopNode.BrowserNodes)
-            {
-                folder.Delete();// delete the folders
-            }
-            try
-            {
-                m_inventorApplication.ActiveDocument.Save();
+            try { 
+                control.saveFile();// save the file
+                envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
             } catch(Exception e)
             {
 
