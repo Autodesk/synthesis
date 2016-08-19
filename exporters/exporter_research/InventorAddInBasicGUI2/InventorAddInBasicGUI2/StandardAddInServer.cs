@@ -1346,7 +1346,7 @@ namespace InventorAddInBasicGUI2
         }
         // cancels the export
         static bool rightDoc;
-        // used from here http://stackoverflow.com/questions/12535722/what-is-the-best-way-to-implement-a-timer
+        
         private void TimerWatch()
         {
             try
