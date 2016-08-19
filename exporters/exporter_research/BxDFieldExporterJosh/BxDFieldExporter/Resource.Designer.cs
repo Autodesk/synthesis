@@ -123,6 +123,46 @@ namespace BxDFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AddSpawnLocation16 {
+            get {
+                object obj = ResourceManager.GetObject("AddSpawnLocation16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AddSpawnLocation32 {
+            get {
+                object obj = ResourceManager.GetObject("AddSpawnLocation32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ChangeSpawnLocation16 {
+            get {
+                object obj = ResourceManager.GetObject("ChangeSpawnLocation16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ChangeSpawnLocation32 {
+            get {
+                object obj = ResourceManager.GetObject("ChangeSpawnLocation32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap EditType16 {
             get {
                 object obj = ResourceManager.GetObject("EditType16", resourceCulture);
@@ -196,6 +236,26 @@ namespace BxDFieldExporter {
         internal static System.Drawing.Bitmap RemoveSubAssembly32 {
             get {
                 object obj = ResourceManager.GetObject("RemoveSubAssembly32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RemoveType16 {
+            get {
+                object obj = ResourceManager.GetObject("RemoveType16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RemoveType32 {
+            get {
+                object obj = ResourceManager.GetObject("RemoveType32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

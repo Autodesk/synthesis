@@ -35,8 +35,9 @@ namespace BxDFieldExporter
         EnvironmentManager envMan;
         static RibbonPanel ExporterControl;
         static RibbonPanel TypeControls;// the ribbon panels that the buttons will be a part of
+        static RibbonPanel SpawnControls;
         static RibbonPanel AddItems;
-        static RibbonPanel RemoveItems;// the ribbon panels that the buttons will be a part of
+        static RibbonPanel RemoveItems;
         static ButtonDefinition beginExporter;
         static ButtonDefinition addNewType;
         static ButtonDefinition editType;
@@ -47,9 +48,14 @@ namespace BxDFieldExporter
         static ButtonDefinition cancelExport;
         static ButtonDefinition exportField;
         static ButtonDefinition removeType;
+        static ButtonDefinition createNewRobotSpawnLocation;
+        static ButtonDefinition editSpawnLocation;
+        EditCoordinate coorForm;
+        int spawnLocationNumber;
         static bool done;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldTypes;// arraylist of all the field properties the user has set
+        static ArrayList SpawnPoints;
         public static FieldDataType selectedType;// the current group that the user is editing
         static BrowserPanes oPanes;// all the browser panes in the active doc
         object resultObj;
@@ -65,7 +71,7 @@ namespace BxDFieldExporter
         static bool inExportView;// boolean to help in detecting wether or not to react to an event based on wether or not the application is exporting
         static ComponentPropertiesForm form;// form for inputting different properties of the group
         static String m_ClientId;// string the is the id of the application
-        static FieldDataType currentSelected;// the current group that the user is editing, needed for the unselection stuff
+        static Object currentSelected;// the current group that the user is editing, needed for the unselection stuff
         static bool found;// boolean to help in searching for objects and the corrosponding actions
         #endregion 
         public StandardAddInServer()
@@ -91,7 +97,7 @@ namespace BxDFieldExporter
                 UIEvent = m_inventorApplication.CommandManager.UserInputEvents;// get the application's userinput events object
                 click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(oUIEvents_OnSelect);// make a new ui event reactor
                 UIEvent.OnSelect += click_OnSelectEventDelegate;// add the event reactor to the onselect reactor
-                
+                coorForm = new EditCoordinate();
             } catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
@@ -110,10 +116,10 @@ namespace BxDFieldExporter
             // Release objects.
             try
             {
-                writeBrowserFolderNames();
+                writeFieldTypeNames();
                 foreach (FieldDataType data in FieldTypes)
                 {
-                    writeSave(data);
+                    writeSaveFieldType(data);
                 }
                 m_inventorApplication.ActiveDocument.Save();
             }
@@ -153,6 +159,9 @@ namespace BxDFieldExporter
             {
                 if (!inExportView)
                 {
+
+                    SpawnPoints = new ArrayList();
+                    spawnLocationNumber = 1;
                     nativeDoc = m_inventorApplication.ActiveDocument;
                     envMan = ((AssemblyDocument)m_inventorApplication.ActiveDocument).EnvironmentManager;
                     inExportView = true;
@@ -207,27 +216,10 @@ namespace BxDFieldExporter
                     }
 
                     oPane.Refresh();
-                    readSave();// read the save so the user doesn't loose any previous work
+                    readSaveFieldData();// read the save so the user doesn't loose any previous work
                     TimerWatch();// begin the timer watcher to detect deselect
-                    
-                        /*AssemblyDocument oDocs;
-                        oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
-                        AssemblyComponentDefinition oCompDef;
-                        oCompDef = oDocs.ComponentDefinition;
-                        TransientGeometry oTG;
-                        oTG = m_inventorApplication.TransientGeometry;
-                        WorkPoint oWorkPoint1;
-                        oWorkPoint1 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 20, 2));
-                        WorkPoint oWorkPoint2;
-                        oWorkPoint2 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(4, 20, 0));
-                        WorkPoint oWorkPoint3;
-                        oWorkPoint3 = oCompDef.WorkPoints.AddFixed(oTG.CreatePoint(2, 20, 0));
-                        UserCoordinateSystemDefinition oUCSDef;
-                        oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
-                        oUCSDef.SetByThreePoints(oWorkPoint1, oWorkPoint3, oWorkPoint2);
-                        UserCoordinateSystem oUCS;
-                        oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);*/
-                    }
+
+                }
                 else
                 {
                     MessageBox.Show("Please close out of the robot exporter in the other assembly");
@@ -281,6 +273,15 @@ namespace BxDFieldExporter
 
                 stdole.IPictureDisp addAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly16));
                 stdole.IPictureDisp addAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddAssembly32));
+
+                stdole.IPictureDisp removeTypeIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType16));
+                stdole.IPictureDisp removeTypeIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType32));
+
+                stdole.IPictureDisp addSpawnLocationIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddSpawnLocation16));
+                stdole.IPictureDisp addSpawnLocationIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddSpawnLocation32));
+
+                stdole.IPictureDisp changeSpawnLocationLocationIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation16));
+                stdole.IPictureDisp changeSpawnLocationLocationIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation32));
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
                 
@@ -295,9 +296,10 @@ namespace BxDFieldExporter
                 
                 ExporterControl = oContextualTabOne.RibbonPanels.Add("Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels
                 TypeControls = oContextualTabOne.RibbonPanels.Add("Type Controls", "BxD:FieldExporter:TypeControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+                SpawnControls = oContextualTabOne.RibbonPanels.Add("Spawn Location Controls", "BxD:FieldExporter:SpawnLocationControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 AddItems = oContextualTabOne.RibbonPanels.Add("Add Items", "BxD:FieldExporter:AddItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 RemoveItems = oContextualTabOne.RibbonPanels.Add("Remove Items", "BxD:FieldExporter:RemoveItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
-
+                
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
                 beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, startExporterIconSmall, startExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
                 beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
@@ -307,6 +309,12 @@ namespace BxDFieldExporter
 
                 addAssembly = controlDefs.AddButtonDefinition(" Add New Assembly ", "BxD:FieldExporter:AddNewItem", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addAssemblyIconSmall, addAssemblyIconLarge);
                 addAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssembly_OnExecute);
+
+                createNewRobotSpawnLocation = controlDefs.AddButtonDefinition(" Add New Spawn Location ", "BxD:FieldExporter:AddNewSpawnLocation", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addSpawnLocationIconSmall, addSpawnLocationIconSmall);
+                createNewRobotSpawnLocation.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(createNewSpawnLocation_OnExecute);
+
+                editSpawnLocation = controlDefs.AddButtonDefinition(" Edit Spawn Location ", "BxD:FieldExporter:EditSpawnLocation", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, changeSpawnLocationLocationIconSmall, changeSpawnLocationLocationIconLarge);
+                editSpawnLocation.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(editSpawnLocation_OnExecute);
 
                 removeAssembly = controlDefs.AddButtonDefinition(" Remove Assembly ", "BxD:FieldExporter:RemoveAssembly", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeAssemblyIconSmall, removeAssemblyIconLarge);
                 removeAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeAssembly_OnExecute);
@@ -326,13 +334,15 @@ namespace BxDFieldExporter
                 addPart = controlDefs.AddButtonDefinition(" Add New Part ", "BxD:FieldExporter:AddNewPart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
                 addPart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewSubAssembly_OnExecute);
 
-                removeType = controlDefs.AddButtonDefinition(" Remove Type ", "BxD:FieldExporter:RemoveType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
+                removeType = controlDefs.AddButtonDefinition(" Remove Type ", "BxD:FieldExporter:RemoveType", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeTypeIconSmall, removeTypeIconLarge);
                 removeType.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeType_OnExecute);
 
                 ExporterControl.CommandControls.AddButton(exportField, true, true);
                 TypeControls.CommandControls.AddButton(addNewType, true, true);
                 TypeControls.CommandControls.AddButton(removeType, true, true);
                 TypeControls.CommandControls.AddButton(editType, true, true);
+                SpawnControls.CommandControls.AddButton(createNewRobotSpawnLocation, true, true);
+                SpawnControls.CommandControls.AddButton(editSpawnLocation, true, true);
                 AddItems.CommandControls.AddButton(addAssembly, true, true);
                 AddItems.CommandControls.AddButton(addPart, true, true);
                 RemoveItems.CommandControls.AddButton(removeAssembly, true, true);// add buttons to the part panels
@@ -399,13 +409,26 @@ namespace BxDFieldExporter
                             {// looks at all the occurences in the types items
                                 if (((ComponentOccurrence)sel).Equals(occ))
                                 {// if the occurence is contained by anyof the groups then react
-                                    foreach(BrowserNode n in oPane.TopNode.BrowserNodes)
+                                    foreach (BrowserNode n in oPane.TopNode.BrowserNodes)
                                     {// looks at all the browser nodes in the top node
                                         if (n.BrowserNodeDefinition.Equals(type.node))
                                         {// if the browsernode is the same as the types node then react
                                             n.DoSelect();// select the proper node
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                    else if (sel is UserCoordinateSystem)
+                    {
+                        foreach (UserCoordinateSystem ucs in ((AssemblyComponentDefinition)((AssemblyDocument)m_inventorApplication.ActiveDocument).ComponentDefinition).UserCoordinateSystems)
+                        {
+                            foreach (BrowserNode n in oPane.TopNode.BrowserNodes)
+                            {// looks at all the browser nodes in the top node
+                                if (n.BrowserNodeDefinition.Label.Equals(((UserCoordinateSystem)sel).Name))
+                                {// if the browsernode is the same as the types node then react
+                                    n.DoSelect();// select the proper node
                                 }
                             }
                         }
@@ -432,6 +455,12 @@ namespace BxDFieldExporter
                                 addPart.Enabled = true;
                                 removeAssembly.Enabled = true;
                                 removeSubAssembly.Enabled = true;
+                            }
+                        }
+                        foreach(UserCoordinateSystem ucs in SpawnPoints)
+                        {
+                            if (((BrowserNodeDefinition)sel).Label.Equals(ucs.Name)){
+                                oSet.AddItem(ucs);
                             }
                         }
                     }
@@ -492,6 +521,18 @@ namespace BxDFieldExporter
                                     oSet.AddItem(io);// add the occurence to the highlighted set
                                 }
                                 currentSelected = t;// change the selected datatype
+                            }
+                        }
+                    }
+                    foreach(UserCoordinateSystem ucs in SpawnPoints)
+                    {
+                        if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))
+                        {// if t is part of that browser node
+                            if (!currentSelected.Equals(ucs))
+                            {// is the selected node is no longer selected 
+                                found = true;// tell the program it found the node
+                                oSet.Clear();// clear the highlighted set in prep to add new occurrences
+                                currentSelected = ucs;// change the selected datatype
                             }
                         }
                     }
@@ -601,7 +642,13 @@ namespace BxDFieldExporter
                 {
                     if (node.Selected)
                     {
-                        selected = true;// if one node is selected then we can add the new sub assembly
+                        foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                        {
+                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+                            }
+                        }
                     }
                 }
                 if (selected)// if there is a selected node then we can add a part to it
@@ -658,7 +705,13 @@ namespace BxDFieldExporter
                 {
                     if (node.Selected)
                     {
-                        selected = true;// if one node is selected then we can add the new sub assembly
+                        foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                        {
+                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+                            }
+                        }
                     }
                 }
                 if (selected)// if there is a selected node then we can add a part to it
@@ -724,7 +777,13 @@ namespace BxDFieldExporter
                 {
                     if (node.Selected)
                     {
-                        selected = true;// if one node is selected then we can add the new sub assembly
+                        foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                        {
+                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+                            }
+                        }
                     }
                 }
                 if (selected)// if there is a selected node then we can add a part to it
@@ -736,7 +795,7 @@ namespace BxDFieldExporter
                         AssemblyDocument asmDoc = (AssemblyDocument)
                                      m_inventorApplication.ActiveDocument;
                         joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select a part to remove");
+                                  (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to remove");
                         if (joint != null)
                         {
                             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
@@ -790,7 +849,14 @@ namespace BxDFieldExporter
                 {
                     if (node.Selected)
                     {
-                        selected = true;// if one node is selected then we can add the new sub assembly
+                        foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                        {
+                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+
+                            }
+                        }
                     }
                 }
                 if (selected)// if there is a selected node then we can add a part to it
@@ -834,6 +900,7 @@ namespace BxDFieldExporter
 
             }       
         }
+
         public void removeType_OnExecute(Inventor.NameValueMap Context)
         {
             ArrayList selectedNodes = new ArrayList();
@@ -842,8 +909,14 @@ namespace BxDFieldExporter
             {// looks through all the nodes under the top node
                 if (node.Selected)
                 {// if the node is seleted
-                    selectedNodes.Add(node);
-                    names += node.BrowserNodeDefinition.Label + " ";
+                    foreach (FieldDataType t in FieldTypes)// look at all the field data types
+                    {
+                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataType is from that browsernode then run
+                        {
+                            selectedNodes.Add(node);
+                            names += node.BrowserNodeDefinition.Label + " ";
+                        }
+                    }
                 }
             }
             DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete Type: " + "\n" + names, "Remove Type", MessageBoxButtons.OKCancel);
@@ -861,6 +934,92 @@ namespace BxDFieldExporter
                     }
                 }
             }
+        }
+        
+        public void editSpawnLocation_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                bool selected = false;
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
+                {
+                    if (node.Selected)
+                    {
+                        foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data types
+                        {
+                            if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataType is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+                            }
+                        }
+                    }
+                }
+                if (selected)// if there is a selected node then we can add a part to it
+                {
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
+                    {
+                        if (node.Selected)
+                        {
+                            foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data types
+                            {
+                                if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataType is from that browsernode then run
+                                {
+                                    coorForm.readData(ucs);
+                                    coorForm.ShowDialog();
+                                }
+                            }
+                        }
+                    }
+                } else
+                {
+                    UserCoordinateSystem Choose = (UserCoordinateSystem)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                      (SelectionFilterEnum.kUserCoordinateSystemFilter, "Select a UCS to edit");
+                    coorForm.readData(Choose);
+                    coorForm.ShowDialog();
+                }
+            }catch(Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        public void createNewSpawnLocation_OnExecute(Inventor.NameValueMap Context)
+        {
+            AssemblyDocument oDocs;
+            oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+            AssemblyComponentDefinition oCompDef;
+            oCompDef = oDocs.ComponentDefinition;
+            TransientGeometry oTG;
+            oTG = m_inventorApplication.TransientGeometry;
+            Matrix oMatrix;
+            oMatrix = oTG.CreateMatrix();
+            Matrix oTranslationMatrix;
+            oTranslationMatrix = oTG.CreateMatrix();
+            oTranslationMatrix.SetTranslation(oTG.CreateVector(0, 50, 0));
+            oMatrix.TransformBy(oTranslationMatrix);
+            UserCoordinateSystemDefinition oUCSDef;
+            oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
+            oUCSDef.Transformation = oMatrix;
+            UserCoordinateSystem oUCS;
+            oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
+            oUCS.Name = "Spawn: " + spawnLocationNumber;
+            spawnLocationNumber++;
+            SpawnPoints.Add(oUCS);
+            BrowserNodeDefinition def;
+            int th = rand.Next();// get the next random number for the browser node's internal id
+            ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
+            ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
+            oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
+            try
+            {
+                oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+            }
+            catch (Exception)
+            {// if the method fails then assume that there is already a ClientNodeResource
+                oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+            }
+            def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(oUCS.Name, th, oRes);// creates a new browser node def for the field data
+            oPane.TopNode.AddChild(def);// add the browsernode to the topnode
         }
         // edits the properties of the type
         public static void editTypeProperites_OnExecute(Inventor.NameValueMap Context)
@@ -884,10 +1043,10 @@ namespace BxDFieldExporter
             try
             {
                 inExportView = false;// tell the event reactors to not react because we are no longer in export mode
-                writeBrowserFolderNames();// write the browser folder names to the property sets so we can read them next time the program is run
+                writeFieldTypeNames();// write the browser folder names to the property sets so we can read them next time the program is run
                 foreach (FieldDataType data in FieldTypes)
                 {// looks at all the groups in fieldtype
-                    writeSave(data);// writes the saved data to the property set
+                    writeSaveFieldType(data);// writes the saved data to the property set
                 }
                 FieldTypes = new ArrayList();// clear the arraylist of groups
                 foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
@@ -911,7 +1070,7 @@ namespace BxDFieldExporter
             }
         }
         // read the saved data
-        private void readSave()
+        private void readSaveFieldData()
         {
             try
             {
@@ -928,6 +1087,7 @@ namespace BxDFieldExporter
                     if (s.DisplayName.Equals("Number of Folders"))
                     {// is the name is correct the assume it is what we are looking fos
                         name = (String)s.ItemByPropId[2].Value;// reads the names for the field data type
+                        spawnLocationNumber = (int)s.ItemByPropId[3].Value;
                     }
                 }
                 String[] names = name.Split(arr);// set names equal to the string of datatype without its limits
@@ -981,6 +1141,31 @@ namespace BxDFieldExporter
                         }
                     }
                 }
+                for(int i = 0; i < spawnLocationNumber; i++)
+                {
+                    foreach(UserCoordinateSystem ucs in ((AssemblyComponentDefinition)((AssemblyDocument)m_inventorApplication.ActiveDocument).ComponentDefinition).UserCoordinateSystems)
+                    {
+                        if(ucs.Name.Equals("Spawn: " + i))
+                        {
+                            SpawnPoints.Add(ucs);
+                            BrowserNodeDefinition def;
+                            int th = rand.Next();// get the next random number for the browser node's internal id
+                            ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
+                            ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
+                            oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
+                            try
+                            {
+                                oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                            }
+                            catch (Exception)
+                            {// if the method fails then assume that there is already a ClientNodeResource
+                                oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+                            }
+                            def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(ucs.Name, th, oRes);// creates a new browser node def for the field data
+                            oPane.TopNode.AddChild(def);// add the browsernode to the topnode
+                        }
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -988,14 +1173,14 @@ namespace BxDFieldExporter
             }
         }
         // writes the name of the datatypes to a property set so we can read them later
-        private void writeBrowserFolderNames()
+        private void writeFieldTypeNames()
         {
             String g = "";// a string to add the names of the data types to, we do this so we can read the data at the start of the exporter
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;// the property sets of the document
             PropertySet set = null;// a set to add the data to 
-            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
+            foreach (FieldDataType type in FieldTypes)
             {// looks at all the browser node under the top node
-                g += node.BrowserNodeDefinition.Label;// add the name of the node to the string so when we read the datatypes we don't lose the name
+                g += type.Name;// add the name of the node to the string so when we read the datatypes we don't lose the name
                 g += "¯\\_(:()_/¯";// adds the limiter to the string so we can tell where one name ends and another begins
             }
             try
@@ -1020,9 +1205,17 @@ namespace BxDFieldExporter
             {// if that fails we assume that there is already that property so we write to it
                 set.ItemByPropId[2].Value = g;// write the value to the property
             }
+            try
+            {
+                set.Add(spawnLocationNumber, "Number of Spawn Locations", 3);// write the value to the property
+            }
+            catch (Exception)
+            {
+                set.ItemByPropId[3].Value = spawnLocationNumber;// write the value to the property
+            }
         }
         // writes the data types to the propery set
-        private void writeSave(FieldDataType f)
+        private void writeSaveFieldType(FieldDataType f)
         {
             PropertySets sets = m_inventorApplication.ActiveDocument.PropertySets;// the property sets of the document
             PropertySet set = null;// a set to add the data to 
