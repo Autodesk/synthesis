@@ -19,9 +19,10 @@ namespace Simulation_RD.Utility
         public static void OrientRobot(List<BulletRigidNode> wheels, CollisionObject parent)
         {
             List<CollisionObject> rbs = (from w in wheels select w.BulletObject).Concat(new[] { parent }).ToList();
+            Vector3 delta = new Vector3(0, 75, 0) - parent.WorldTransform.ExtractTranslation();
             rbs.ForEach(w => 
             {
-                w.WorldTransform *= Matrix4.CreateTranslation(new Vector3(0, 75, 0) - w.WorldTransform.ExtractTranslation());
+                w.WorldTransform *= Matrix4.CreateTranslation(delta);
                 w.InterpolationWorldTransform = Matrix4.Zero;
             });
         }        

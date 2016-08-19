@@ -37,7 +37,7 @@ namespace Simulation_RD.SimulationPhysics
             collisionConf = new SoftBodyRigidBodyCollisionConfiguration();
             dispatcher = new CollisionDispatcher(new DefaultCollisionConfiguration());
             solver = new DefaultSoftBodySolver();
-            ConstraintSolver cSolver = new MlcpSolver(mlcp);
+            ConstraintSolver cSolver = new MultiBodyConstraintSolver();
 
             broadphase = new DbvtBroadphase();
             World = new SoftRigidDynamicsWorld(dispatcher, broadphase, cSolver, collisionConf, solver);
@@ -49,7 +49,6 @@ namespace Simulation_RD.SimulationPhysics
             //Roobit
             RigidNode_Base.NODE_FACTORY = (Guid guid) => new BulletRigidNode(guid);
             string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\";
-            Exception ex;
             string dir = RobotPath;
 
             GetFromDirectory(RobotPath, s => { Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(s + "skeleton.bxdj"); dir = s; });
@@ -76,9 +75,7 @@ namespace Simulation_RD.SimulationPhysics
                 collisionShapes.Add(b.CollisionShape);
             }
 
-            ResetRobot();
-
-            World.StepSimulation(0.1f, 100);
+            //ResetRobot();            
         }
 
         /// <summary>

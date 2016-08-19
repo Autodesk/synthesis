@@ -15,7 +15,7 @@ namespace Simulation_RD.Scenes
     /// </summary>
     class SimulationScene : GameWindow
     {
-        bool pause = false;
+        bool pause = true;
         Physics phys;
         float frameTime;
         int fps;
