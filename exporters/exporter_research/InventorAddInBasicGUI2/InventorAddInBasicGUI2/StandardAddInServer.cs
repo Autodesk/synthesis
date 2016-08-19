@@ -42,6 +42,7 @@ namespace InventorAddInBasicGUI2
         
         Boolean Rotating;
 
+        EnvironmentManager envMan;
         static Inventor.ButtonDefinition startExport;
         static Inventor.ButtonDefinition exportRobot;
         static Inventor.ButtonDefinition cancelExport;
@@ -267,6 +268,7 @@ namespace InventorAddInBasicGUI2
                     LimitsComboBox.Enabled = false;
                     editDrivers.Enabled = false;
                     editLimits.Enabled = false;
+                    envMan = ((AssemblyDocument)m_inventorApplication.ActiveDocument).EnvironmentManager;
                     try
                     {// if no browser pane previously created then create a new one
                         ClientNodeResources oRscs = oPanes.ClientNodeResources;
@@ -1016,65 +1018,233 @@ namespace InventorAddInBasicGUI2
             }
             try
             {
-                set.Add(j.RefKey, "RefKey", 2);
-                set.Add(j.Driver, "Driver", 3);
-                set.Add(j.Wheel, "Wheel", 4);
-                set.Add(j.Friction, "Friction", 5);
-                set.Add(j.Diameter, "Diameter", 6);
-                set.Add(j.Pressure, "Pressure", 7);
-                set.Add(j.Stages, "Stages", 8);
-                set.Add(j.PWMport, "PWMport", 9);
-                set.Add(j.PWMport2, "PWMport2", 10);
-                set.Add(j.CANport, "CANport", 11);
-                set.Add(j.CANport2, "CANport2", 12);
-                set.Add(j.DriveWheel, "DriveWheel", 13);
-                set.Add(j.PWM, "PWM", 14);
-                set.Add(j.InputGear, "InputGear", 15);
-                set.Add(j.OutputGear, "OutputGear", 16);
-                set.Add(j.SolenoidPortA, "SolenoidPortA", 17);
-                set.Add(j.SolenoidPortB, "SolenoidPortB", 18);
-                set.Add(j.RelayPort, "RelayPort", 19);
-                set.Add(j.HasBrake, "HasBrake", 20);
-                set.Add(j.BrakePortA, "BrakePortA", 21);
-                set.Add(j.BrakePortB, "BrakePortB", 22);
-                set.Add(j.UpperLim, "UpperLim", 23);
-                set.Add(j.LowerLim, "LowerLim", 24);
-                set.Add(j.HasLimits, "HasLimits", 25);
-                set.Add(j.Rotating, "Rotating", 26);
-                set.Add(j.Name, "Name", 27);
-                set.Add(j.HasJointFriction, "HasJointFriction", 28);
-                set.Add(j.JointFrictionLevel, "JointFrictionLevel", 29);
+                try
+                {
+                    set.Add(j.RefKey, "RefKey", 2);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[2].Value = j.RefKey;
+                }
+                try
+                {
+                    set.Add(j.Driver, "Driver", 3);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[3].Value = j.Driver;
+                }
+                try
+                {
+                    set.Add(j.Wheel, "Wheel", 4);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[4].Value = j.Wheel;
+                }
+                try
+                {
+                    set.Add(j.Friction, "Friction", 5);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[5].Value = j.Friction;
+                }
+                try
+                {
+                    set.Add(j.Diameter, "Diameter", 6);
+                }
+                catch (Exception) { 
+                    set.ItemByPropId[6].Value = j.Diameter;
+                }
+                try
+                {
+                    set.Add(j.Pressure, "Pressure", 7);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[7].Value = j.Pressure;
+                }
+                try
+                {
+                    set.Add(j.Stages, "Stages", 8);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[8].Value = j.Stages;
+                }
+                try
+                {
+                    set.Add(j.PWMport, "PWMport", 9);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[9].Value = j.PWMport;
+                }
+                try
+                {
+                    set.Add(j.PWMport2, "PWMport2", 10);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[10].Value = j.PWMport2;
+                }
+                try
+                {
+                    set.Add(j.CANport, "CANport", 11);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[11].Value = j.CANport;
+                }
+                try
+                {
+                    set.Add(j.CANport2, "CANport2", 12);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[12].Value = j.CANport2;
+                }
+                try
+                {
+                    set.Add(j.DriveWheel, "DriveWheel", 13);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[13].Value = j.DriveWheel;
+                }
+                try
+                {
+                    set.Add(j.PWM, "PWM", 14);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[14].Value = j.PWM;
+                }
+                try
+                {
+                    set.Add(j.InputGear, "InputGear", 15);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[15].Value = j.InputGear;
+                }
+                try
+                {
+                    set.Add(j.OutputGear, "OutputGear", 16);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[16].Value = j.OutputGear;
+                }
+                try
+                {
+                    set.Add(j.SolenoidPortA, "SolenoidPortA", 17);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[17].Value = j.SolenoidPortA;
+                }
+                try
+                {
+                    set.Add(j.SolenoidPortB, "SolenoidPortB", 18);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[18].Value = j.SolenoidPortB;
+                }
+                try
+                {
+                    set.Add(j.RelayPort, "RelayPort", 19);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[19].Value = j.RelayPort;
+                }
+                try
+                {
+                    set.Add(j.HasBrake, "HasBrake", 20);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[20].Value = j.HasBrake;
+                }
+                try
+                {
+                    set.Add(j.BrakePortA, "BrakePortA", 21);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[21].Value = j.BrakePortA;
+                }
+                try
+                {
+                    set.Add(j.BrakePortB, "BrakePortB", 22);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[22].Value = j.BrakePortB;
+                }
+                try
+                {
+                    set.Add(j.UpperLim, "UpperLim", 23);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[23].Value = j.UpperLim;
+                }
+                try
+                {
+                    set.Add(j.LowerLim, "LowerLim", 24);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[24].Value = j.LowerLim;
+                }
+                try
+                {
+                    set.Add(j.HasLimits, "HasLimits", 25);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[25].Value = j.HasLimits;
+                }
+                try
+                {
+                    set.Add(j.Rotating, "Rotating", 26);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[26].Value = j.Rotating;
+                }
+                try
+                {
+                    set.Add(j.Name, "Name", 27);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[27].Value = j.Name;
+                }
+                try
+                {
+                    set.Add(j.HasJointFriction, "HasJointFriction", 28);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[28].Value = j.HasJointFriction;
+                }
+                try
+                {
+                    set.Add(j.JointFrictionLevel, "JointFrictionLevel", 29);
+                }
+                catch (Exception)
+                {
+                    set.ItemByPropId[29].Value = j.JointFrictionLevel;
+                }
             }
             catch (Exception e)
             {
-                set.ItemByPropId[2].Value = j.RefKey;
-                set.ItemByPropId[3].Value = j.Driver;
-                set.ItemByPropId[4].Value = j.Wheel;
-                set.ItemByPropId[5].Value = j.Friction;
-                set.ItemByPropId[6].Value = j.Diameter;
-                set.ItemByPropId[7].Value = j.Pressure;
-                set.ItemByPropId[8].Value = j.Stages;
-                set.ItemByPropId[9].Value = j.PWMport;
-                set.ItemByPropId[10].Value = j.PWMport2;
-                set.ItemByPropId[11].Value = j.CANport;
-                set.ItemByPropId[12].Value = j.CANport2;
-                set.ItemByPropId[13].Value = j.DriveWheel;
-                set.ItemByPropId[14].Value = j.PWM;
-                set.ItemByPropId[15].Value = j.InputGear;
-                set.ItemByPropId[16].Value = j.OutputGear;
-                set.ItemByPropId[17].Value = j.SolenoidPortA;
-                set.ItemByPropId[18].Value = j.SolenoidPortB;
-                set.ItemByPropId[19].Value = j.RelayPort;
-                set.ItemByPropId[20].Value = j.HasBrake;
-                set.ItemByPropId[21].Value = j.BrakePortA;
-                set.ItemByPropId[22].Value = j.BrakePortB;
-                set.ItemByPropId[23].Value = j.UpperLim;
-                set.ItemByPropId[24].Value = j.LowerLim;
-                set.ItemByPropId[25].Value = j.HasLimits;
-                set.ItemByPropId[26].Value = j.Rotating;
-                set.ItemByPropId[27].Value = j.Name;
-                set.ItemByPropId[28].Value = j.HasJointFriction;
-                set.ItemByPropId[29].Value = j.JointFrictionLevel;
+                MessageBox.Show(e.ToString());
             }
         }
         //test button for doing experimental things
@@ -1166,36 +1336,9 @@ namespace InventorAddInBasicGUI2
         // exports the robot
         public void exportRobot_OnExecute(Inventor.NameValueMap Context)
         {
-            control.saveFile();// save the file
-            inExportView = false; // exit the export view
-            SwitchSelectedJoint(DriveTypes.NoDriver);// select the proper combo box
-            AssemblyDocument asmDoc = (AssemblyDocument) m_inventorApplication.ActiveDocument;
-            foreach (ComponentOccurrence c in asmDoc.ComponentDefinition.Occurrences)
-            {
-                c.Enabled = true;// enable all parts/ assemblies in the doc
-            }
-            JointsComboBox.Enabled = false;
-            LimitsComboBox.Enabled = false;
-            exportRobot.Enabled = false;
-            startExport.Enabled = true;// change the button states to correct ones
-            cancelExport.Enabled = false;
-            editDrivers.Enabled = false;
-            editLimits.Enabled = false;
-            selectJointInsideJoint.Enabled = false;
-            oPane.Visible = false; // hide browser pane
-            //writeNumJoints();
-            foreach (JointData j in jointList)
-            {
-              //  writeSave(j);
-            }
-            jointList = new ArrayList(); // clear the jointList
-            foreach (BrowserNode folder in oPane.TopNode.BrowserNodes)
-            {
-                folder.Delete();// delete the folders
-            }
-            try
-            {
-                m_inventorApplication.ActiveDocument.Save();
+            try { 
+                control.saveFile();// save the file
+                envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
             } catch(Exception e)
             {
 
@@ -1203,7 +1346,7 @@ namespace InventorAddInBasicGUI2
         }
         // cancels the export
         static bool rightDoc;
-        // used from here http://stackoverflow.com/questions/12535722/what-is-the-best-way-to-implement-a-timer
+        
         private void TimerWatch()
         {
             try
