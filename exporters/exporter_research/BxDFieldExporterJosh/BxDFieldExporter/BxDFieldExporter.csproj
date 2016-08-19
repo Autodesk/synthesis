@@ -143,6 +143,12 @@
     <Compile Include="StandardAddInServer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="EditCoordinate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditCoordinate.Designer.cs">
+      <DependentUpon>EditCoordinate.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="BxDFieldExporter.X.manifest" />
@@ -162,6 +168,9 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="EditCoordinate.resx">
+      <DependentUpon>EditCoordinate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource.resx">
@@ -174,6 +183,10 @@
     <Content Include="Images\AddAssembly16.bmp" />
     <Content Include="Images\AddNewPart32.bmp" />
     <Content Include="Images\AddNewPart16.bmp" />
+    <Content Include="Images\AddSpawnLocation16.bmp" />
+    <Content Include="Images\AddSpawnLocation32.bmp" />
+    <Content Include="Images\ChangeSpawnLocation16.bmp" />
+    <Content Include="Images\ChangeSpawnLocation32.bmp" />
     <Content Include="Images\ExportField32.bmp" />
     <Content Include="Images\ExportField16.bmp" />
     <Content Include="Images\AddNewType16.bmp" />
@@ -184,6 +197,8 @@
     <Content Include="Images\RemoveAssembly16.bmp" />
     <Content Include="Images\RemoveSubAssembly16.bmp" />
     <Content Include="Images\RemoveSubAssembly32.bmp" />
+    <Content Include="Images\RemoveType32.bmp" />
+    <Content Include="Images\RemoveType16.bmp" />
     <Content Include="Images\StartExporter16.bmp" />
     <Content Include="Images\StartExporter32.bmp" />
   </ItemGroup>
