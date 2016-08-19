@@ -51,6 +51,7 @@ namespace BxDFieldExporter
         static ButtonDefinition createNewRobotSpawnLocation;
         static ButtonDefinition editSpawnLocation;
         EditCoordinate coorForm;
+        Inventor.Environment oNewEnv;
         int spawnLocationNumber;
         static bool done;
         static Random rand;// random number genator that can create internal ids
@@ -245,7 +246,7 @@ namespace BxDFieldExporter
             }
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
         }
-        Inventor.Environment oNewEnv;
+        
         public void AddParallelEnvironment()
         {
             try
@@ -985,41 +986,56 @@ namespace BxDFieldExporter
 
         public void createNewSpawnLocation_OnExecute(Inventor.NameValueMap Context)
         {
-            AssemblyDocument oDocs;
-            oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
-            AssemblyComponentDefinition oCompDef;
-            oCompDef = oDocs.ComponentDefinition;
-            TransientGeometry oTG;
-            oTG = m_inventorApplication.TransientGeometry;
-            Matrix oMatrix;
-            oMatrix = oTG.CreateMatrix();
-            Matrix oTranslationMatrix;
-            oTranslationMatrix = oTG.CreateMatrix();
-            oTranslationMatrix.SetTranslation(oTG.CreateVector(0, 50, 0));
-            oMatrix.TransformBy(oTranslationMatrix);
-            UserCoordinateSystemDefinition oUCSDef;
-            oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
-            oUCSDef.Transformation = oMatrix;
-            UserCoordinateSystem oUCS;
-            oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
-            oUCS.Name = "Spawn: " + spawnLocationNumber;
-            spawnLocationNumber++;
-            SpawnPoints.Add(oUCS);
-            BrowserNodeDefinition def;
-            int th = rand.Next();// get the next random number for the browser node's internal id
-            ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
-            ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
-            oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
             try
             {
-                oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                AssemblyDocument oDocs;
+                oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
+                AssemblyComponentDefinition oCompDef;
+                oCompDef = oDocs.ComponentDefinition;
+                TransientGeometry oTG;
+                oTG = m_inventorApplication.TransientGeometry;
+                Matrix oMatrix;
+                oMatrix = oTG.CreateMatrix();
+                Matrix oTranslationMatrix;
+                oTranslationMatrix = oTG.CreateMatrix();
+                oTranslationMatrix.SetTranslation(oTG.CreateVector(0, 50, 0));
+                oMatrix.TransformBy(oTranslationMatrix);
+                UserCoordinateSystemDefinition oUCSDef;
+                oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
+                oUCSDef.Transformation = oMatrix;
+                UserCoordinateSystem oUCS;
+                oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
+                try
+                {
+                    oUCS.Name = "Spawn: " + spawnLocationNumber;
+                }
+                catch (Exception)
+                {
+                    spawnLocationNumber++;
+                    oUCS.Name = "Spawn: " + spawnLocationNumber;
+                }
+                spawnLocationNumber++;
+                SpawnPoints.Add(oUCS);
+                BrowserNodeDefinition def;
+                int th = rand.Next();// get the next random number for the browser node's internal id
+                ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
+                ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
+                oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
+                try
+                {
+                    oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                }
+                catch (Exception)
+                {// if the method fails then assume that there is already a ClientNodeResource
+                    oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+                }
+                def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(oUCS.Name, th, oRes);// creates a new browser node def for the field data
+                oPane.TopNode.AddChild(def);// add the browsernode to the topnode
             }
-            catch (Exception)
-            {// if the method fails then assume that there is already a ClientNodeResource
-                oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
             }
-            def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(oUCS.Name, th, oRes);// creates a new browser node def for the field data
-            oPane.TopNode.AddChild(def);// add the browsernode to the topnode
         }
         // edits the properties of the type
         public static void editTypeProperites_OnExecute(Inventor.NameValueMap Context)
@@ -1141,7 +1157,7 @@ namespace BxDFieldExporter
                         }
                     }
                 }
-                for(int i = 0; i < spawnLocationNumber; i++)
+                for(int i = 0; i < spawnLocationNumber + 1; i++)
                 {
                     foreach(UserCoordinateSystem ucs in ((AssemblyComponentDefinition)((AssemblyDocument)m_inventorApplication.ActiveDocument).ComponentDefinition).UserCoordinateSystems)
                     {
