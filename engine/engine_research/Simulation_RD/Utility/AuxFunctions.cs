@@ -26,5 +26,18 @@ namespace Simulation_RD.Utility
                 w.InterpolationWorldTransform = Matrix4.Zero;
             });
         }        
+
+        /// <summary>
+        /// Calcus a rotation from one orientation to another
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public static Quaternion RotateTo(Vector3 from, Vector3 to)
+        {
+            Vector3 axis = Vector3.Cross(from, to);
+            float angle = Vector3.CalculateAngle(from, to);
+            return new Quaternion(axis, angle);
+        }
     }
 }
