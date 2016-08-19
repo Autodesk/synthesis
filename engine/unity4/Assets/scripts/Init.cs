@@ -541,7 +541,7 @@ public class Init : MonoBehaviour
 
                 uNode.CreateJoint();
 
-				Debug.Log("Joint");
+				//Debug.Log("Joint");
 
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
@@ -582,10 +582,10 @@ public class Init : MonoBehaviour
 			return new UnityFieldDefinition(guid, name);
 		};
 
-		Debug.Log (filePath);
+		//Debug.Log (filePath);
 		string loadResult;
 		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf", out loadResult);
-		Debug.Log(loadResult);
+		//Debug.Log(loadResult);
 		field.CreateTransform(activeField.transform);
 		fieldLoaded = field.CreateMesh(filePath + "mesh.bxda");
 	}
@@ -618,7 +618,7 @@ public class Init : MonoBehaviour
 		totes = new List<GameObject> ();
 
         filePath = PlayerPrefs.GetString("Field");
-        Debug.Log(filePath);
+        //Debug.Log(filePath);
         reloadFieldInFrames = 2;
 
         reloadRobotInFrames = -1;
