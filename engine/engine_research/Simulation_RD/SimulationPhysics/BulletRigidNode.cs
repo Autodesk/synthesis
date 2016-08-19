@@ -42,13 +42,35 @@ namespace Simulation_RD.SimulationPhysics
             BXDAMesh mesh = new BXDAMesh();
             mesh.ReadFromFile(FilePath);
             Vector3 loc;
+            Quaternion rot = Quaternion.Identity;
 
             //Is it a wheel?
-            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && false)
+            if ((wheel = GetSkeletalJoint()?.cDriver?.GetInfo<WheelDriverMeta>()) != null && true)
             {
-                shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);
+                //Align the cylinders
+                Vector3 min, max;
+                GetShape(mesh).GetAabb(Matrix4.Identity, out min, out max);
+                Vector3 extents = max - min;
+                Vector3 probablyWidth;
+                if(extents.X < extents.Y) //X or Z
+                {
+                    if (extents.X < extents.Z)
+                        shape = new CylinderShapeX(wheel.width, wheel.radius, wheel.radius);//probablyWidth = Vector3.UnitX; //X
+                    else
+                        shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);//probablyWidth = Vector3.UnitZ; //Z
+                }
+                else //Y or Z
+                {
+                    if (extents.Y < extents.Z)
+                        shape = new CylinderShape(wheel.radius, wheel.width, wheel.radius);//probablyWidth = Vector3.UnitY; //Y
+                    else
+                        shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);//probablyWidth = Vector3.UnitZ; //Z
+                }
+                //Console.WriteLine("Width is probably " + probablyWidth);
+                //rot = Quaternion.FromAxisAngle(Vector3.Cross(Vector3.UnitY, probablyWidth), (float)Math.PI / 2);
+
+                //shape = new CylinderShape(wheel.radius, wheel.width, wheel.radius);
                 loc = MeshUtilities.MeshCenter(mesh);
-                Console.WriteLine(MeshUtilities.MeshCenter(mesh));
             }
             //Rigid Body Construction
             else
@@ -57,12 +79,15 @@ namespace Simulation_RD.SimulationPhysics
                 loc = MeshUtilities.MeshCenter(mesh);
             }
             
-            motion = new DefaultMotionState(Matrix4.CreateTranslation(loc));
-            RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass * 1f, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
+            Console.WriteLine("Rotation is " + rot);
+            motion = new DefaultMotionState(/*Matrix4.CreateFromQuaternion(rot) **/ Matrix4.CreateTranslation(loc + new Vector3(0, 100, 0)));
+            RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
 
-            //Temp
+            //Temp?
             info.Friction = 100;
             info.RollingFriction = 100;
+            info.AngularDamping = 0.5f;
+            info.LinearDamping = 0.5f;
 
             BulletObject = new RigidBody(info);
         }
@@ -102,15 +127,20 @@ namespace Simulation_RD.SimulationPhysics
                     CollisionObject parentObject = ((BulletRigidNode)GetParent()).BulletObject;
                     WheelDriverMeta wheel = GetSkeletalJoint().cDriver.GetInfo<WheelDriverMeta>();
 
-                    //BasePoint is relative to the child object? parent? idk. see GetFrames (at the bottom of the file)
+                    Vector3 pivot = nodeR.basePoint.Convert();
+                    
                     Matrix4 locJ, locP; //Local Joint Pivot, Local Parent Pivot
 
-                    Console.WriteLine(nodeR.basePoint.Convert());
+                    BulletObject.WorldTransform = parentObject.WorldTransform * Matrix4.CreateTranslation(pivot);
+
+                    Console.WriteLine("Pivot at " + pivot);
                     GetFrames(nodeR.basePoint.Convert(), parentObject.WorldTransform, BulletObject.WorldTransform, out locP, out locJ);
 
-                    HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, /*(RigidBody)*/BulletObject, locP, locJ);
+                    //HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, /*(RigidBody)*/BulletObject, locP, locJ);
+                    HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, BulletObject, pivot, Vector3.Zero, nodeR.axis.Convert(), nodeR.axis.Convert());
                     joint = temp;
-                    
+                    temp.SetAxis(nodeR.axis.Convert());
+
                     if (nodeR.hasAngularLimit)
                         temp.SetLimit(nodeR.angularLimitLow, nodeR.angularLimitHigh);
 
@@ -152,8 +182,7 @@ namespace Simulation_RD.SimulationPhysics
         /// <summary>
         /// Gets the pivot/axis joint for each rigid body for a rotational joint
         /// </summary>
-        /// <param name="jointPivot">pivot point relative to the joint? parent? 
-        /// idk I think mackinnon said joint but pretty sure it's parent(see <see cref="RotationalJoint_Base.basePoint"/>)</param>
+        /// <param name="jointPivot">joint pivot for parent</param>
         /// <param name="jointTransform">world transform for the child object</param>
         /// <param name="parentTransform">world transform for the parent object</param>
         /// <param name="parentFrame">Matrix to be assigned to the joint's rotational frame</param>
