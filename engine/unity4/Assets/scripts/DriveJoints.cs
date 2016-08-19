@@ -201,14 +201,14 @@ public class DriveJoints : MonoBehaviour
                     (TeamUtility.IO.InputManager.GetButton("W", TeamUtility.IO.PlayerID.One) ? -speedArrowPWM : 0.0f) +
                     (TeamUtility.IO.InputManager.GetButton("S", TeamUtility.IO.PlayerID.One) ? speedArrowPWM : 0.0f); ;
                 if (pwm.Length > 2) pwm[2] +=
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? 0.5f : 0.0f) +
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -0.5f : 0.0f);
+                    (TeamUtility.IO.InputManager.GetButton("1", TeamUtility.IO.PlayerID.One) ? 0.5f : 0.0f) +
+                    (TeamUtility.IO.InputManager.GetButton("2", TeamUtility.IO.PlayerID.One) ? -0.5f : 0.0f);
                 if (pwm.Length > 3) pwm[3] +=
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Plus]) ? -0.5f : 0.0f) +
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Neg]) ? 0.5f : 0.0f);
+                    (TeamUtility.IO.InputManager.GetButton("3", TeamUtility.IO.PlayerID.One) ? -0.5f : 0.0f) +
+                    (TeamUtility.IO.InputManager.GetButton("4", TeamUtility.IO.PlayerID.One) ? 0.5f : 0.0f);
                 if (pwm.Length > 4) pwm[4] +=
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -0.5f : 0.0f) +
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Neg]) ? 0.5f : 0.0f);
+                    (TeamUtility.IO.InputManager.GetButton("5", TeamUtility.IO.PlayerID.One) ? -0.5f : 0.0f) +
+                    (TeamUtility.IO.InputManager.GetButton("6", TeamUtility.IO.PlayerID.One) ? 0.5f : 0.0f);
             }
         }
         if (playerID == 2)
