@@ -49,7 +49,7 @@ namespace BxDFieldExporter
             name = nameTextBox.Text;
             this.Close();
             this.Dispose(true);
-            StandardAddInServer.addType(name);
+            StandardAddInServer.addComponent(name);
         }
         private void CancleButton_OnClick(object sender, EventArgs e)
         {
