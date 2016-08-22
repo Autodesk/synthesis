@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace InventorAddInBasicGUI2
+namespace BxDRobotExporter
 {
     public partial class EditLimits : Form
     {

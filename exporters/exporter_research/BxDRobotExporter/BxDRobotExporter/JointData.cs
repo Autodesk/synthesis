@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Collections;
 using InventorAddInBasicGUI2;
 
-namespace InventorAddInBasicGUI2
+namespace BxDRobotExporter
 {
     public enum DriveTypes {  NoDriver, Motor, Servo, BumperPnuematic, RelayPneumatic, WormScrew, DualMotor, Elevator};
     public enum WheelType { NotAWheel, Normal, Omni, Mecanum};
