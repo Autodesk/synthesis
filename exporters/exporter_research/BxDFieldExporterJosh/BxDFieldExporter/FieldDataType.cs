@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace BxDFieldExporter
 {
     public enum ColliderType { Sphere, Box, Mesh };
-    public class FieldDataType
+    public class FieldDataComponent
     {
         public ArrayList compOcc;
         public ColliderType colliderType;
@@ -25,7 +25,7 @@ namespace BxDFieldExporter
         public bool Dynamic;
         public double Mass;
         public String Name;
-        public FieldDataType(BrowserNodeDefinition f)
+        public FieldDataComponent(BrowserNodeDefinition f)
         {
             compOcc = new ArrayList();
             Name = f.Label;
@@ -40,7 +40,7 @@ namespace BxDFieldExporter
             Mass = 0;
             
         }
-        public void copyToNewType(FieldDataType f)
+        public void copyToNewComponent(FieldDataComponent f)
         {
             f.colliderType = this.colliderType;
             f.X = this.X;

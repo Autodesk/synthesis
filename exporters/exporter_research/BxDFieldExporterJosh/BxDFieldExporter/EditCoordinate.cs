@@ -34,7 +34,7 @@ namespace BxDFieldExporter
             }
             catch (Exception)
             {
-                if (textBoxX.Text.Length > 0 && ! textBoxX.Text.Contains("-"))
+                if (textBoxX.Text.Length > 0 && ! textBoxX.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }
@@ -52,7 +52,7 @@ namespace BxDFieldExporter
             }
             catch (Exception)
             {
-                if (textBoxY.Text.Length > 0 && ! textBoxY.Text.Contains("-"))
+                if (textBoxY.Text.Length > 0 && ! textBoxY.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }
@@ -70,7 +70,7 @@ namespace BxDFieldExporter
             }
             catch (Exception)
             {
-                if (textBoxZ.Text.Length > 0 && ! textBoxZ.Text.Contains("-"))
+                if (textBoxZ.Text.Length > 0 && ! textBoxZ.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }

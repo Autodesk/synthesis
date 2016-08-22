@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace InventorAddInBasicGUI2
+namespace BxDRobotExporter
 {
     public partial class UserControl1 : Form
     {

@@ -14,7 +14,7 @@ namespace BxDFieldExporter
     // form that allows the user to enter properties for the field types
     public partial class ComponentPropertiesForm : Form
     {
-        FieldDataType field;
+        FieldDataComponent field;
         public ComponentPropertiesForm()
         {
             InitializeComponent();// inits and populates the form
@@ -87,7 +87,7 @@ namespace BxDFieldExporter
                 field.Dynamic = false;
             }
         }
-        public void readFromData(FieldDataType d)
+        public void readFromData(FieldDataComponent d)
         {// reads from the data so user can see the same values from the last time they entered them
             try
             {
