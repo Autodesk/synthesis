@@ -7,11 +7,12 @@ using BulletUnity;
 
 public partial class RigidNode : RigidNode_Base
 {
-    public GameObject MainObject;
+    public GameObject MainObject { get; private set; }
+    public Vector3 ComOffset { get; private set; }
+
     private Transform root;
     private Component joint;
     private PhysicalProperties physicalProperties;
-    private Vector3 comOffset;
 
     public RigidNode(Guid guid)
         : base(guid)
@@ -25,6 +26,6 @@ public partial class RigidNode : RigidNode_Base
 
         this.root = root;
 
-        comOffset = Vector3.zero;
+        ComOffset = Vector3.zero;
     }
 }
