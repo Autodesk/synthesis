@@ -35,7 +35,7 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
 
-            comOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
+            ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
 
         });
 
@@ -46,7 +46,7 @@ public partial class RigidNode : RigidNode_Base
             colliders[id] = meshu;
         });
 
-        MainObject.transform.position = root.position + comOffset;
+        MainObject.transform.position = root.position + ComOffset;
         MainObject.transform.rotation = root.rotation;
 
         foreach (GameObject meshObject in meshObjects)
@@ -66,7 +66,7 @@ public partial class RigidNode : RigidNode_Base
             {
                 ConvexHullShape hull = new ConvexHullShape(Array.ConvertAll(collider.vertices, x => x.ToBullet()), collider.vertices.Length);
                 hull.Margin = 0f;
-                hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-comOffset.ToBullet()));
+                hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
             }
         }
 

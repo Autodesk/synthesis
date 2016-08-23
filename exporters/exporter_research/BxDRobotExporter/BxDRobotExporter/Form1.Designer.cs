@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace InventorAddInBasicGUI2
+namespace BxDRobotExporter
 {
     partial class Form1
     {

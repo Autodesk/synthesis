@@ -2,7 +2,7 @@
 using stdole;
 using System.Windows.Forms;
 
-namespace InventorAddInBasicGUI2
+namespace BxDRobotExporter
 {
     partial class UserControl1
     {

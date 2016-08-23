@@ -357,7 +357,7 @@ public class Init : MonoBehaviour
 				{
 					this.filePath = parent.FullName + "\\";
 					fieldBrowser.Active = false;
-					reloadFieldInFrames = 2;
+                    reloadFieldInFrames = 2;
 				}
 				else
 				{
