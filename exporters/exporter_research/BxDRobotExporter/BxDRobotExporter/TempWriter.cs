@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Inventor;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using System.Drawing;
-
-using Microsoft.VisualBasic.Compatibility;
 
 namespace ExportProcess {
     public class TempWriter {

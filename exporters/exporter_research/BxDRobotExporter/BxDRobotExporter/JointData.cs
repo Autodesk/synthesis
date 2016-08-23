@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Inventor;
-using Microsoft.Win32;
-using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Collections;
-using InventorAddInBasicGUI2;
 
-namespace BxDRobotExporter
-{
+namespace BxDRobotExporter {
     public enum DriveTypes {  NoDriver, Motor, Servo, BumperPnuematic, RelayPneumatic, WormScrew, DualMotor, Elevator};
     public enum WheelType { NotAWheel, Normal, Omni, Mecanum};
     public enum FrictionLevel { None, High, Medium, Low };
