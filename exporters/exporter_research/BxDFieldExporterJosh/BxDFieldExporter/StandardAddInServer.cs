@@ -279,6 +279,9 @@ namespace BxDFieldExporter
                 stdole.IPictureDisp exportFieldIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField16));
                 stdole.IPictureDisp exportFieldIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField32));
 
+                stdole.IPictureDisp removeSpawnPointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSpawnLocation16));
+                stdole.IPictureDisp removeSpawnPointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSpawnLocation32));
+
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
                 
@@ -293,11 +296,14 @@ namespace BxDFieldExporter
                 
                 
                 ComponentControls = oContextualTabOne.RibbonPanels.Add("Component Controls", "BxD:FieldExporter:ComponentControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
-                SpawnControls = oContextualTabOne.RibbonPanels.Add("Spawn Location Controls", "BxD:FieldExporter:SpawnLocationControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 AddItems = oContextualTabOne.RibbonPanels.Add("Add Items", "BxD:FieldExporter:AddItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 RemoveItems = oContextualTabOne.RibbonPanels.Add("Remove Items", "BxD:FieldExporter:RemoveItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
-                ExporterControl = oContextualTabOne.RibbonPanels.Add("Robot Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}", "BxD:FieldExporter:SpawnLocationControls", false);// inits the part panels
-
+                SpawnControls = oContextualTabOne.RibbonPanels.Add("Spawn Location Controls", "BxD:FieldExporter:SpawnLocationControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
+                ExporterControl = oContextualTabOne.RibbonPanels.Add("Robot Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels
+                AddItems.Reposition("BxD:FieldExporter:ComponentControls", false);
+                RemoveItems.Reposition("BxD:FieldExporter:AddItems", false);
+                SpawnControls.Reposition("BxD:FieldExporter:RemoveItems", false);
+                ExporterControl.Reposition("BxD:FieldExporter:SpawnLocationControls", false);
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
                 beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, startExporterIconSmall, startExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
                 beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
@@ -335,7 +341,7 @@ namespace BxDFieldExporter
                 removeComponent = controlDefs.AddButtonDefinition(" Remove Component ", "BxD:FieldExporter:RemoveComponent", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeComponentIconSmall, removeComponentIconLarge);
                 removeComponent.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeComponent_OnExecute);
 
-                removeSpawnPoint = controlDefs.AddButtonDefinition(" Remove Spawn Point ", "BxD:FieldExporter:RemoveSpawnPoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeComponentIconSmall, removeComponentIconLarge);
+                removeSpawnPoint = controlDefs.AddButtonDefinition(" Remove Spawn Point ", "BxD:FieldExporter:RemoveSpawnPoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeSpawnPointIconSmall, removeSpawnPointIconLarge);
                 removeSpawnPoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeSpawn_OnExecute);
 
                 ComponentControls.CommandControls.AddButton(addNewComponent, true, true);
@@ -459,6 +465,8 @@ namespace BxDFieldExporter
                                 addPart.Enabled = true;
                                 removeAssembly.Enabled = true;
                                 removeSubAssembly.Enabled = true;
+                                editSpawnLocation.Enabled = false;
+                                removeSpawnPoint.Enabled = false;
                             }
                         }
                         foreach(UserCoordinateSystem ucs in SpawnPoints)
@@ -470,6 +478,8 @@ namespace BxDFieldExporter
                                 addPart.Enabled = false;
                                 removeAssembly.Enabled = false;
                                 removeSubAssembly.Enabled = false;
+                                editSpawnLocation.Enabled = true;
+                                removeSpawnPoint.Enabled = true;
                                 oSet.AddItem(ucs);
                             }
                         }
@@ -557,6 +567,8 @@ namespace BxDFieldExporter
                 addPart.Enabled = false;
                 removeAssembly.Enabled = false;
                 removeSubAssembly.Enabled = false;
+                editSpawnLocation.Enabled = false;
+                removeSpawnPoint.Enabled = false;
             }
             if (!m_inventorApplication.ActiveDocument.InternalName.Equals(nativeDoc.InternalName))
             {
@@ -574,6 +586,8 @@ namespace BxDFieldExporter
                     addPart.Enabled = false;
                     removeAssembly.Enabled = false;
                     removeSubAssembly.Enabled = false;
+                    editSpawnLocation.Enabled = false;
+                    removeSpawnPoint.Enabled = false;
 
                     oPane.Visible = false;// Hide the browser pane
                 }
