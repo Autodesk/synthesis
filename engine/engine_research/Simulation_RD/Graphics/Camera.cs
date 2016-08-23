@@ -32,7 +32,7 @@ namespace Simulation_RD.Graphics
         Vector3 WorldUp;
 
         /// <summary>
-        /// Creates a camera at the explained position
+        /// Creates a camera at the given position
         /// </summary>
         /// <param name="posX">X world location</param>
         /// <param name="posY">Y world location</param>
@@ -131,6 +131,10 @@ namespace Simulation_RD.Graphics
             Up = Vector3.Cross(Right, Front).Normalized();
         }
 
+        /// <summary>
+        /// Calculates matrix xtuff given a position (can be a robot) to look at
+        /// </summary>
+        /// <param name="robot"></param>
         public void LookAtRobot(Vector3 robot)
         {
             Vector3 delta = Position - robot;

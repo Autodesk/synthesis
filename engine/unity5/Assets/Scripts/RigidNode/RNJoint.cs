@@ -31,27 +31,30 @@ public partial class RigidNode : RigidNode_Base
 
                 RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
 
-                BHingedConstraint hc = (BHingedConstraint)(joint = ConfigJoint<BHingedConstraint>(rNode.basePoint.AsV3() - comOffset, rNode.axis.AsV3(), AxisType.X));
-                
-                hc.localConstraintAxisX = rNode.axis.AsV3().normalized;
+                BHingedConstraint hc = (BHingedConstraint)(joint = ConfigJoint<BHingedConstraint>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
+                Vector3 rAxis = rNode.axis.AsV3().normalized;
 
+                //if (rAxis.x < 0) rAxis.x *= -1f;
+                //if (rAxis.y < 0) rAxis.y *= -1f;
+                //if (rAxis.z < 0) rAxis.z *= -1f;
+
+                hc.localConstraintAxisX = rAxis;
+                hc.localConstraintAxisY = new Vector3(rAxis.y, rAxis.z, rAxis.x); // This is the closeset thing to working, so keep it until better solution found.
+                //hc.localConstraintAxisY = new Vector3(Math.Abs(rAxis.y), rAxis.x, rAxis.z); // So very close...
                 if (hc.setLimit = rNode.hasAngularLimit)
                 {
-                    hc.lowLimitAngleRadians = rNode.angularLimitLow;
-                    hc.highLimitAngleRadians = rNode.angularLimitHigh;
+                    hc.lowLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitHigh;
+                    hc.highLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitLow;
                 }
 
                 hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
-
-                if (this.HasDriverMeta<WheelDriverMeta>())
-                    ApplyJointMotors();
                 
                 break;
             case SkeletalJointType.CYLINDRICAL:
                 
                 CylindricalJoint_Base cNode = (CylindricalJoint_Base)GetSkeletalJoint();
 
-                B6DOFConstraint bc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(cNode.basePoint.AsV3() - comOffset, cNode.axis.AsV3(), AxisType.X));
+                B6DOFConstraint bc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(cNode.basePoint.AsV3() - ComOffset, cNode.axis.AsV3(), AxisType.X));
 
                 bc.linearLimitLower = new Vector3(cNode.linearLimitStart * 0.01f, 0f, 0f);
                 bc.linearLimitUpper = new Vector3(cNode.linearLimitEnd * 0.01f, 0f, 0f);
@@ -63,19 +66,16 @@ public partial class RigidNode : RigidNode_Base
                 
                 LinearJoint_Base lNode = (LinearJoint_Base)GetSkeletalJoint();
 
-                Vector3 axis = lNode.axis.AsV3().normalized;
+                Vector3 lAxis = lNode.axis.AsV3().normalized;
                 // TODO: Figure out how to make a vertical slider?
-                BSliderConstraint sc = (BSliderConstraint)(joint = ConfigJoint<BSliderConstraint>(lNode.basePoint.AsV3() - comOffset, lNode.axis.AsV3(), AxisType.X));
+                BSliderConstraint sc = (BSliderConstraint)(joint = ConfigJoint<BSliderConstraint>(lNode.basePoint.AsV3() - ComOffset, lNode.axis.AsV3(), AxisType.X));
 
-                //sc.localConstraintAxisX = new Vector3(0f, 1f, 0f);//lNode.axis.AsV3();
-                //sc.localConstraintAxisY = new Vector3(1f, 0f, 0f);//lNode.axis.AsV3();
+                if (lAxis.x < 0) lAxis.x *= -1f;
+                if (lAxis.y < 0) lAxis.y *= -1f;
+                if (lAxis.z < 0) lAxis.z *= -1f;
 
-                if (axis.x < 0) axis.x *= -1f;
-                if (axis.y < 0) axis.y *= -1f;
-                if (axis.z < 0) axis.z *= -1f;
-
-                sc.localConstraintAxisX = axis;
-                sc.localConstraintAxisY = new Vector3(axis.y, axis.z, axis.x);
+                sc.localConstraintAxisX = lAxis;
+                sc.localConstraintAxisY = new Vector3(lAxis.y, lAxis.z, lAxis.x);
 
                 sc.lowerLinearLimit = lNode.linearLimitLow * 0.01f;
                 sc.upperLinearLimit = lNode.linearLimitHigh * 0.01f;
@@ -91,6 +91,7 @@ public partial class RigidNode : RigidNode_Base
                 {
                     if (GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
                     {
+                        MainObject.GetComponent<BRigidBody>().mass *= 2f;
                     }
                 }
                 

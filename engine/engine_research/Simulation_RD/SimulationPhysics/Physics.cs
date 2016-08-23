@@ -37,7 +37,7 @@ namespace Simulation_RD.SimulationPhysics
             collisionConf = new SoftBodyRigidBodyCollisionConfiguration();
             dispatcher = new CollisionDispatcher(new DefaultCollisionConfiguration());
             solver = new DefaultSoftBodySolver();
-            ConstraintSolver cSolver = new MlcpSolver(mlcp);
+            ConstraintSolver cSolver = new MultiBodyConstraintSolver();
 
             broadphase = new DbvtBroadphase();
             World = new SoftRigidDynamicsWorld(dispatcher, broadphase, cSolver, collisionConf, solver);
@@ -49,7 +49,6 @@ namespace Simulation_RD.SimulationPhysics
             //Roobit
             RigidNode_Base.NODE_FACTORY = (Guid guid) => new BulletRigidNode(guid);
             string RobotPath = @"C:\Program Files (x86)\Autodesk\Synthesis\Synthesis\Robots\";
-            Exception ex;
             string dir = RobotPath;
 
             GetFromDirectory(RobotPath, s => { Skeleton = (BulletRigidNode)BXDJSkeleton.ReadSkeleton(s + "skeleton.bxdj"); dir = s; });
@@ -74,11 +73,7 @@ namespace Simulation_RD.SimulationPhysics
             {
                 World.AddRigidBody(b);
                 collisionShapes.Add(b.CollisionShape);
-            }
-
-            ResetRobot();
-
-            World.StepSimulation(0.1f, 100);
+            }            
         }
 
         /// <summary>
@@ -87,13 +82,13 @@ namespace Simulation_RD.SimulationPhysics
         /// <param name="elapsedTime">elapsed time</param>
         public virtual void Update(float elapsedTime, KeyboardKeyEventArgs args)
         {
-            //DriveJoints.UpdateAllMotors(Skeleton, args);
+            DriveJoints.UpdateAllMotors(Skeleton, args);
             cachedArgs = args;
 
             if (Controls.GameControls[Controls.Control.ResetRobot] == args.Key)
                 ResetRobot();
             
-            World.StepSimulation(elapsedTime, 1000, 1f / 300f);
+            World.StepSimulation(elapsedTime, 1000/*, 1f / 300f*/);
 
             OnUpdate?.Invoke();
         }

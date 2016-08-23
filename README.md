@@ -8,11 +8,17 @@ Each subsection of this repository has a `README.md` giving, among other things,
 
 ### Release builds
 #### Dependencies
-TODO
-#### Instructions
-TODO
+(these are updated on best effort basis)
+- [OpenTk](http://www.opentk.com/) 
+- [bulletSharp website](https://andrestraks.github.io/BulletSharp/)
+- [Unity4.7.2](https://unity3d.com/get-unity/download/archive)
+- [Unity5.3.5.f1](https://unity3d.com/get-unity/download/archive)
+- [WPILIB](https://github.com/wpilibsuite/allwpilib)
 
-# Directory Structure
+#### Instructions
+each project will have a readme inside of its directory. 
+go to the directory and read the readme for instructions on building the project. 
+## Directory Structure
 
 In order to achieve maximum user satisfaction we can insert all of the code into a single repository and
 then follow up with constant commits while using

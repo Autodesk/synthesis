@@ -357,7 +357,7 @@ public class Init : MonoBehaviour
 				{
 					this.filePath = parent.FullName + "\\";
 					fieldBrowser.Active = false;
-					reloadFieldInFrames = 2;
+                    reloadFieldInFrames = 2;
 				}
 				else
 				{
@@ -541,7 +541,7 @@ public class Init : MonoBehaviour
 
                 uNode.CreateJoint();
 
-				Debug.Log("Joint");
+				//Debug.Log("Joint");
 
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
@@ -582,10 +582,10 @@ public class Init : MonoBehaviour
 			return new UnityFieldDefinition(guid, name);
 		};
 
-		Debug.Log (filePath);
+		//Debug.Log (filePath);
 		string loadResult;
 		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf", out loadResult);
-		Debug.Log(loadResult);
+		//Debug.Log(loadResult);
 		field.CreateTransform(activeField.transform);
 		fieldLoaded = field.CreateMesh(filePath + "mesh.bxda");
 	}
@@ -618,7 +618,7 @@ public class Init : MonoBehaviour
 		totes = new List<GameObject> ();
 
         filePath = PlayerPrefs.GetString("Field");
-        Debug.Log(filePath);
+        //Debug.Log(filePath);
         reloadFieldInFrames = 2;
 
         reloadRobotInFrames = -1;
@@ -716,7 +716,7 @@ public class Init : MonoBehaviour
 				mainNode.rigidbody.isKinematic = false;
 			}
 
-			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
+			DriveJoints.UpdateAllMotors (skeleton, packet.dio, 1);
 			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
 			foreach(RigidNode_Base node in nodes)
 			{

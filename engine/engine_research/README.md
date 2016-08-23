@@ -18,3 +18,8 @@ All other DLLs should be included in the 'Lib' filder.
 ### How to build
 Include a reference to the dlls through the reference object in visual studio
 if nuget package is not found: Goto tools -> Nuget Package Management -> Search OpenTK (Download glcontrol and regular)
+
+If you cannot compile or find the libraries that you need to build then you can download a package from our website at http://bxd.autodesk.com/?page=Downloads. 
+
+Or
+You can download it directly at http://bxd.autodesk.com/Downloadables/R&DLib.zip

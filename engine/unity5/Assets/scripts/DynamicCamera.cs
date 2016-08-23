@@ -143,7 +143,8 @@ public class DynamicCamera : MonoBehaviour
                     rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
                     rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
 
-                    lagVector += (rotateVector - lagVector) * (lagResponsiveness * Time.deltaTime);
+                    lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+
                     mono.transform.position = lagVector;
                     mono.transform.LookAt(targetVector);
                 }
@@ -225,9 +226,9 @@ public class DynamicCamera : MonoBehaviour
 
                 zoomValue = Mathf.Max(Mathf.Min(zoomValue - Input.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
-                lagPosVector += (positionVector - lagPosVector) * (lagResponsiveness * Time.deltaTime);
-                lagRotVector += (rotationVector - lagRotVector) * (lagResponsiveness * Time.deltaTime);
-                lagZoom += (zoomValue - lagZoom) * (lagResponsiveness * Time.deltaTime);
+                lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
+                lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);
+                lagZoom = CalculateLagScalar(lagZoom, zoomValue, lagResponsiveness);
 
                 mono.transform.position = lagPosVector;
                 mono.transform.eulerAngles = lagRotVector;
@@ -294,5 +295,42 @@ public class DynamicCamera : MonoBehaviour
     public void DisableMoving()
     {
         movingEnabled = false;
+    }
+
+    /// <summary>
+    /// Calculates the appropriate lag vector from the given current vector, target vector, and responsiveness constant.
+    /// </summary>
+    /// <param name="lagVector"></param>
+    /// <param name="targetVector"></param>
+    /// <param name="lagResponsiveness"></param>
+    public static Vector3 CalculateLagVector(Vector3 lagVector, Vector3 targetVector, float lagResponsiveness)
+    {
+        Vector3 lagAmount = (targetVector - lagVector) * (lagResponsiveness * Time.deltaTime);
+
+        if (lagAmount.magnitude < (targetVector - lagVector).magnitude)
+            lagVector += lagAmount;
+        else
+            lagVector = targetVector;
+
+        return lagVector;
+    }
+
+    /// <summary>
+    /// Calculates the appropriate lag scalar from the given current scalar, target scalar, and responsiveness constant.
+    /// </summary>
+    /// <param name="lagScalar"></param>
+    /// <param name="targetScalar"></param>
+    /// <param name="lagResponsiveness"></param>
+    /// <returns></returns>
+    public static float CalculateLagScalar(float lagScalar, float targetScalar, float lagResponsiveness)
+    {
+        float lagAmount = (targetScalar - lagScalar) * (lagResponsiveness * Time.deltaTime);
+
+        if (Mathf.Abs(lagAmount) < Mathf.Abs(targetScalar - lagScalar))
+            lagScalar += lagAmount;
+        else
+            lagScalar = targetScalar;
+
+        return lagScalar;
     }
 }

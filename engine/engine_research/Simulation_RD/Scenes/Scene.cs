@@ -15,7 +15,7 @@ namespace Simulation_RD.Scenes
     /// </summary>
     class SimulationScene : GameWindow
     {
-        bool pause = false;
+        bool pause = true;
         Physics phys;
         float frameTime;
         int fps;
@@ -40,13 +40,17 @@ namespace Simulation_RD.Scenes
         {
             VSync = VSyncMode.Off;
             phys = new Physics();
+
+            //Camera Stuff
             c = new Camera(100, 200, 100, 0, 1, 0, 0, 0);
             c.Sensitivity = 0.01f;
             CameraBindings = new Dictionary<Key, Camera_Movement>();
             CameraBindings.Add(Key.W, Camera_Movement.forward);
             CameraBindings.Add(Key.S, Camera_Movement.backward);
             CameraBindings.Add(Key.A, Camera_Movement.left);
-            CameraBindings.Add(Key.D, Camera_Movement.right);            
+            CameraBindings.Add(Key.D, Camera_Movement.right);
+
+            Unload += (o, e) => phys.ExitPhysics();
         }
 
         /// <summary>
@@ -58,32 +62,23 @@ namespace Simulation_RD.Scenes
             GL.Enable(EnableCap.DepthTest);
             GL.ClearColor(Color.FromArgb(100, 100, 100, 255));
 
-            GL.Enable(EnableCap.ColorMaterial);
-            GL.Enable(EnableCap.Light0);
-            GL.Enable(EnableCap.Lighting);
+            //Lighting disabled so we can see better
+            //GL.Enable(EnableCap.ColorMaterial);
+            //GL.Enable(EnableCap.Light0);
+            //GL.Enable(EnableCap.Lighting);
 
-            shaderHandle = GL.CreateShader(ShaderType.VertexShader);
+            //shaderHandle = GL.CreateShader(ShaderType.VertexShader);
             
-            this.MouseMove += glControl1_MouseMove;
-            this.MouseWheel += glControl1_MouseWheel;
-            this.KeyDown += glControl1_KeyDown;
+            MouseMove += glControl_MouseMove;
+            MouseWheel += glControl_MouseWheel;
+            KeyDown += glControl_KeyDown;
 
             //Action<EventHandler<KeyboardKeyEventArgs>> AddHandler = (handler) => KeyDown += handler;
 
             phys.World.DebugDrawer = new BulletDebugDrawer();
             base.OnLoad(e);            
         }
-
-        /// <summary>
-        /// cleanup
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnUnload(EventArgs e)
-        {
-            phys.ExitPhysics();
-            base.OnUnload(e);
-        }
-
+        
         /// <summary>
         /// Updates physics and other stuff
         /// </summary>
@@ -151,7 +146,7 @@ namespace Simulation_RD.Scenes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void glControl1_MouseMove(object sender, MouseEventArgs e)
+        private void glControl_MouseMove(object sender, MouseEventArgs e)
         {           
             if ((e.Mouse.LeftButton & ButtonState.Pressed) > 0)
             {
@@ -162,6 +157,7 @@ namespace Simulation_RD.Scenes
                 float udy = Math.Abs(dy);
                 float udx = Math.Abs(dx);
 
+                //Apply a bit of a curve to this to make it feel more responsive
                 c.ProcessMouseMovement((float)Math.Sqrt(udx * udx * udx) * -Math.Sign(dx), (float)Math.Sqrt(udy * udy * udy) * Math.Sign(dy));
             }
 
@@ -174,7 +170,7 @@ namespace Simulation_RD.Scenes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void glControl1_MouseWheel(object sender, MouseEventArgs e)
+        private void glControl_MouseWheel(object sender, MouseEventArgs e)
         {
             c.ProcessMouseScroll(e.Mouse.WheelPrecise - oldScroll);
             oldScroll = e.Mouse.WheelPrecise;
@@ -185,7 +181,7 @@ namespace Simulation_RD.Scenes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void glControl1_KeyDown(object sender, KeyboardKeyEventArgs e)
+        private void glControl_KeyDown(object sender, KeyboardKeyEventArgs e)
         {
             cachedKeyboard = e;            
                         

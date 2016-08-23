@@ -29,10 +29,9 @@ public class BMultiHullShape : BCollisionShape
         }
     }
 
-    //TODO the gizmos do not draw correctly when collision shape is scaled
     public override void OnDrawGizmosSelected()
     {
-        // Not implemented.
+        // Unimplemented.
     }
 
     public override CollisionShape GetCollisionShape()
