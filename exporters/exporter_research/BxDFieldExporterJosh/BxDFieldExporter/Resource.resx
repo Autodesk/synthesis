@@ -166,6 +166,12 @@
   <data name="RemoveAssembly32" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Images\RemoveAssembly32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="RemoveSpawnLocation16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RemoveSpawnLocation16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RemoveSpawnLocation32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\RemoveSpawnLocation32.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="RemoveSubAssembly16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Images\RemoveSubAssembly16.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

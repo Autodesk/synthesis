@@ -441,7 +441,9 @@ namespace BxDRobotExporter
                 partPanel2 = oContextualTabOne.RibbonPanels.Add("Limits", "BxD:RobotExporter:Limits", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
                 partPanel3 = oContextualTabOne.RibbonPanels.Add("Exporter Control", "BxD:RobotExporter:ExporterControl", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}", "BxD:RobotExporter:Limits");
                 modelControls = oContextualTabOne.RibbonPanels.Add("Model Controls", "BxD:RobotExporter:ModelControls", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
-
+                partPanel.Reposition("BxD:RobotExporter:ModelControls", false);
+                partPanel2.Reposition("BxD:RobotExporter:Joints", false);
+                partPanel3.Reposition("BxD:RobotExporter:Limits", false);
                 editDrivers = controlDefs.AddButtonDefinition("Edit Drivers", "BxD:RobotExporter:EditDrivers", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, EditDriversIconSmall, EditDriversIconLarge);
                 editDrivers.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditDrivers_OnExecute);
 
