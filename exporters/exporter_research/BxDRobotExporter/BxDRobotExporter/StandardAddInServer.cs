@@ -10,6 +10,7 @@ using System.Xml;
 using System.Timers;
 using System.Threading;
 using System.Security.Permissions;
+using ExportProcess;
 
 namespace BxDRobotExporter {
     /// <summary>
@@ -1135,6 +1136,8 @@ namespace BxDRobotExporter {
             try {
                 control.saveFile();// save the file
                 envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
+                RobotSaver exporter = new RobotSaver(m_inventorApplication, jointList);
+                exporter.beginExport();
             }
             catch (Exception e) {
 

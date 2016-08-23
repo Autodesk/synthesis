@@ -1,4 +1,5 @@
-﻿using Inventor;
+﻿using BxDRobotExporter;
+using Inventor;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -10,7 +11,7 @@ namespace ExportProcess {
         private AssemblyDocument currentDocument;
         private Dictionary<string, STLData> STLDictionary;
         #endregion
-        public JointResolver(Inventor.Application passedApplication, Dictionary<string, STLData> STLDictionaryIn) {
+        public JointResolver(Inventor.Application passedApplication, Dictionary<string, STLData> STLDictionaryIn, List<JointData> jointDataList) {
             try {
                 currentApplication = passedApplication;
                 STLDictionary = STLDictionaryIn;
@@ -171,21 +172,29 @@ namespace ExportProcess {
 
             }
         }
+        private byte[] processJointAttributes(ushort typeID) {
+            List<byte> jointAttributeBytes = new List<byte>();
+            foreach (byte byteID in BitConverter.GetBytes((uint)0004)) {
+                jointAttributeBytes.Add(byteID);
+            }
+            
+            byte[] byteLength = BitConverter.GetBytes((uint)jointAttributeBytes.Count-4);
+            for (int length = 3; length < jointAttributeBytes.Count; length++) {
+                jointAttributeBytes.Insert(length, byteLength[length]);
+            }
+            return jointAttributeBytes.ToArray();
+        }
         private string NameFilter(string name) {
             //each line removes an invalid character from the file name 
-            name = name.Replace("*", "");
-            name = name.Replace(".", "");
-            name = name.Replace("\"", "");
-            name = name.Replace("/", "");
-            name = name.Replace("[", "");
-            name = name.Replace("]", "");
-            name = name.Replace(":", "");
-            name = name.Replace(";", "");
-            name = name.Replace("|", "");
-            name = name.Replace("=", "");
-            name = name.Replace(",", "");
             name = name.Replace("\\", "");
+            name = name.Replace("/", "");
+            name = name.Replace("*", "");
+            name = name.Replace("?", "");
+            name = name.Replace("\"", "");
+            name = name.Replace("<", "");
+            name = name.Replace(">", "");
+            name = name.Replace("|", "");
             return name;
         }
     }
-}
+} 

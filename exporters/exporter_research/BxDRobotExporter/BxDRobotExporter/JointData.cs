@@ -91,24 +91,12 @@ namespace BxDRobotExporter {
         
         public bool equals(AssemblyJoint j)
         {
-            if (j.Equals(jointOfType))
-            {
-                return true;
-            } else
-            {
-                return false;
-            }
+            return j.Equals(jointOfType);
         }
         public bool same(BrowserNodeDefinition f)
         {
-            if (f.Label.Equals(Name))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return f.Label.Equals(Name);
+            
         }
         public void copyTo(JointData joint)
         {

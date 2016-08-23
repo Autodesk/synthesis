@@ -4,6 +4,8 @@ using Inventor;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections;
+using BxDRobotExporter;
 
 namespace ExportProcess {
     public class RobotSaver {
@@ -13,11 +15,15 @@ namespace ExportProcess {
         private JointResolver jointResolver;
         private Inventor.Application currentApplication;
         private List<byte> fileData = new List<byte>();
+        private List<JointData> jointDataList = new List<JointData>();
         #endregion
-        public RobotSaver(Inventor.Application currentApplication) {
+        public RobotSaver(Inventor.Application currentApplication, ArrayList jDataList) {
+            foreach (JointData joint in jointDataList) {
+                jointDataList.Add(joint);
+            }
             tempReader = new TempReader((AssemblyDocument)currentApplication.ActiveDocument);
             tempWriter = new TempWriter(currentApplication, ((AssemblyDocument)currentApplication.ActiveDocument).Thumbnail);
-            jointResolver = new JointResolver(currentApplication, tempReader.getSTLDict());
+            jointResolver = new JointResolver(currentApplication, tempReader.getSTLDict(), jointDataList);
             this.currentApplication = currentApplication;
 
         }
