@@ -14,6 +14,11 @@ namespace Simulation_RD.SimulationPhysics
     class BulletRigidNode : RigidNode_Base
     {
         /// <summary>
+        /// Writes some stuff to the console
+        /// </summary>
+        private const bool debug = true;
+
+        /// <summary>
         /// Defines the Bullet collision object. Might be able to be a soft body in the future
         /// </summary>
         public RigidBody BulletObject;
@@ -51,25 +56,23 @@ namespace Simulation_RD.SimulationPhysics
                 Vector3 min, max;
                 GetShape(mesh).GetAabb(Matrix4.Identity, out min, out max);
                 Vector3 extents = max - min;
-                Vector3 probablyWidth;
+
+                //Find the thinnest dimension, that is probably wheat the cylinder should be aligned to
                 if(extents.X < extents.Y) //X or Z
                 {
                     if (extents.X < extents.Z)
-                        shape = new CylinderShapeX(wheel.width, wheel.radius, wheel.radius);//probablyWidth = Vector3.UnitX; //X
+                        shape = new CylinderShapeX(wheel.width, wheel.radius, wheel.radius); //X
                     else
-                        shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);//probablyWidth = Vector3.UnitZ; //Z
+                        shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width); //Z
                 }
                 else //Y or Z
                 {
                     if (extents.Y < extents.Z)
-                        shape = new CylinderShape(wheel.radius, wheel.width, wheel.radius);//probablyWidth = Vector3.UnitY; //Y
+                        shape = new CylinderShape(wheel.radius, wheel.width, wheel.radius); //Y
                     else
-                        shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width);//probablyWidth = Vector3.UnitZ; //Z
+                        shape = new CylinderShapeZ(wheel.radius, wheel.radius, wheel.width); //Z
                 }
-                //Console.WriteLine("Width is probably " + probablyWidth);
-                //rot = Quaternion.FromAxisAngle(Vector3.Cross(Vector3.UnitY, probablyWidth), (float)Math.PI / 2);
-
-                //shape = new CylinderShape(wheel.radius, wheel.width, wheel.radius);
+                
                 loc = MeshUtilities.MeshCenter(mesh);
             }
             //Rigid Body Construction
@@ -79,15 +82,16 @@ namespace Simulation_RD.SimulationPhysics
                 loc = MeshUtilities.MeshCenter(mesh);
             }
             
-            Console.WriteLine("Rotation is " + rot);
-            motion = new DefaultMotionState(/*Matrix4.CreateFromQuaternion(rot) **/ Matrix4.CreateTranslation(loc + new Vector3(0, 100, 0)));
+            if(debug) Console.WriteLine("Rotation is " + rot);
+
+            motion = new DefaultMotionState(Matrix4.CreateTranslation(loc + new Vector3(0, 100, 0)));
             RigidBodyConstructionInfo info = new RigidBodyConstructionInfo(mesh.physics.mass, motion, shape, shape.CalculateLocalInertia(mesh.physics.mass));
 
             //Temp?
             info.Friction = 100;
             info.RollingFriction = 100;
-            info.AngularDamping = 0.5f;
-            info.LinearDamping = 0.5f;
+            //info.AngularDamping = 0f;
+            //info.LinearDamping = 0.5f;
 
             BulletObject = new RigidBody(info);
         }
@@ -104,10 +108,8 @@ namespace Simulation_RD.SimulationPhysics
             List<Vector3> verts = new List<Vector3>();
 
             //Soft body construction
-            foreach(BXDAMesh.BXDASubMesh sub in mesh.colliders)
-            {
-                verts = verts.Concat(MeshUtilities.DataToVector(sub.verts)).ToList();
-            }
+            verts = mesh.AllColliderVertices().ToList();
+
             SoftBody temp = SoftBodyHelpers.CreateFromConvexHull(worldInfo, verts.ToArray());
             //BulletObject = temp;
         }
@@ -133,7 +135,8 @@ namespace Simulation_RD.SimulationPhysics
 
                     BulletObject.WorldTransform = parentObject.WorldTransform * Matrix4.CreateTranslation(pivot);
 
-                    Console.WriteLine("Pivot at " + pivot);
+                    if(debug) Console.WriteLine("Pivot at " + pivot);
+
                     GetFrames(nodeR.basePoint.Convert(), parentObject.WorldTransform, BulletObject.WorldTransform, out locP, out locJ);
 
                     //HingeConstraint temp = new HingeConstraint((RigidBody)parentObject, /*(RigidBody)*/BulletObject, locP, locJ);
@@ -147,16 +150,18 @@ namespace Simulation_RD.SimulationPhysics
                     //also need to find a less screwy way to do this
                     Update = (f) => { (/*(RigidBody)*/BulletObject).ApplyTorque(nodeR.axis.Convert() * f * 25); };
 
-                    Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
+                    if(debug)
+                        Console.WriteLine("{0} joint made", wheel == null ? "Rotational" : "Wheel");
                     break;
                 default:
-                    Console.WriteLine("Received joint of type {0}", GetSkeletalJoint().GetJointType());
+                    if(debug)
+                        Console.WriteLine("Received joint of type {0}", GetSkeletalJoint().GetJointType());
                     break;
             }            
         }
 
         /// <summary>
-        /// Turns a BXDA mesh into a CompoundShape
+        /// Turns a BXDA mesh into a CompoundShape centered around the origin
         /// </summary>
         /// <param name="mesh"></param>
         /// <returns></returns>
@@ -173,7 +178,7 @@ namespace Simulation_RD.SimulationPhysics
 
                 //Add the shape at a location relative to the compound shape such that the compound shape is centered at (0, 0) but child shapes are properly placed
                 shape.AddChildShape(Matrix4.CreateTranslation(MeshUtilities.MeshCenterRelative(sub, mesh)), new ConvexTriangleMeshShape(sMesh));
-                //Console.WriteLine("Successfully created and added sub shape");                
+                Console.WriteLine("Successfully created and added sub shape");                
             }
 
             return shape;

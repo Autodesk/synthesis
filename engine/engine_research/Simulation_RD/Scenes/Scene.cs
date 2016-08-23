@@ -62,6 +62,7 @@ namespace Simulation_RD.Scenes
             GL.Enable(EnableCap.DepthTest);
             GL.ClearColor(Color.FromArgb(100, 100, 100, 255));
 
+            //Lighting disabled so we can see better
             //GL.Enable(EnableCap.ColorMaterial);
             //GL.Enable(EnableCap.Light0);
             //GL.Enable(EnableCap.Lighting);
@@ -156,6 +157,7 @@ namespace Simulation_RD.Scenes
                 float udy = Math.Abs(dy);
                 float udx = Math.Abs(dx);
 
+                //Apply a bit of a curve to this to make it feel more responsive
                 c.ProcessMouseMovement((float)Math.Sqrt(udx * udx * udx) * -Math.Sign(dx), (float)Math.Sqrt(udy * udy * udy) * Math.Sign(dy));
             }
 

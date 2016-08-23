@@ -73,9 +73,7 @@ namespace Simulation_RD.SimulationPhysics
             {
                 World.AddRigidBody(b);
                 collisionShapes.Add(b.CollisionShape);
-            }
-
-            //ResetRobot();            
+            }            
         }
 
         /// <summary>

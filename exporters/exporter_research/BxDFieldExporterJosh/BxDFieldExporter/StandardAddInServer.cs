@@ -27,11 +27,11 @@ namespace BxDFieldExporter
         static Document nativeDoc;
         static bool runOnce;
         EnvironmentManager envMan;
-        static RibbonPanel ExporterControl;
         static RibbonPanel ComponentControls;// the ribbon panels that the buttons will be a part of
         static RibbonPanel SpawnControls;
         static RibbonPanel AddItems;
         static RibbonPanel RemoveItems;
+        static RibbonPanel ExporterControl;
         static ButtonDefinition beginExporter;
         static ButtonDefinition addNewComponent;
         static ButtonDefinition editComponent;
@@ -249,9 +249,6 @@ namespace BxDFieldExporter
                 stdole.IPictureDisp startExporterIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.StartExporter16));
                 stdole.IPictureDisp startExporterIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.StartExporter32));
 
-                stdole.IPictureDisp exportFieldIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField16));
-                stdole.IPictureDisp exportFieldIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField32));
-
                 stdole.IPictureDisp addNewComponentIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewType16));
                 stdole.IPictureDisp addNewComponentIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewType32));
 
@@ -278,6 +275,10 @@ namespace BxDFieldExporter
 
                 stdole.IPictureDisp changeSpawnLocationLocationIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation16));
                 stdole.IPictureDisp changeSpawnLocationLocationIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation32));
+
+                stdole.IPictureDisp exportFieldIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField16));
+                stdole.IPictureDisp exportFieldIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField32));
+
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
                 
@@ -295,7 +296,7 @@ namespace BxDFieldExporter
                 SpawnControls = oContextualTabOne.RibbonPanels.Add("Spawn Location Controls", "BxD:FieldExporter:SpawnLocationControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 AddItems = oContextualTabOne.RibbonPanels.Add("Add Items", "BxD:FieldExporter:AddItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 RemoveItems = oContextualTabOne.RibbonPanels.Add("Remove Items", "BxD:FieldExporter:RemoveItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
-                ExporterControl = oContextualTabOne.RibbonPanels.Add("Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels
+                ExporterControl = oContextualTabOne.RibbonPanels.Add("Robot Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}", "BxD:FieldExporter:SpawnLocationControls", false);// inits the part panels
 
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
                 beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, startExporterIconSmall, startExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
@@ -337,7 +338,6 @@ namespace BxDFieldExporter
                 removeSpawnPoint = controlDefs.AddButtonDefinition(" Remove Spawn Point ", "BxD:FieldExporter:RemoveSpawnPoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeComponentIconSmall, removeComponentIconLarge);
                 removeSpawnPoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeSpawn_OnExecute);
 
-                ExporterControl.CommandControls.AddButton(exportField, true, true);
                 ComponentControls.CommandControls.AddButton(addNewComponent, true, true);
                 ComponentControls.CommandControls.AddButton(removeComponent, true, true);
                 ComponentControls.CommandControls.AddButton(editComponent, true, true);
@@ -348,6 +348,7 @@ namespace BxDFieldExporter
                 AddItems.CommandControls.AddButton(addPart, true, true);
                 RemoveItems.CommandControls.AddButton(removeAssembly, true, true);// add buttons to the part panels
                 RemoveItems.CommandControls.AddButton(removeSubAssembly, true, true);
+                ExporterControl.CommandControls.AddButton(exportField, true, true);
                 addNewComponent.Enabled = false;
                 editComponent.Enabled = false;
                 removeComponent.Enabled = false;
