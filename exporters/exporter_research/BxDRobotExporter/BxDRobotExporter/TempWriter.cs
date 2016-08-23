@@ -79,18 +79,14 @@ namespace ExportProcess {
         }
         private string NameFilter(string name) {
             //each line removes an invalid character from the file name 
-            name = name.Replace("*", "");
-            name = name.Replace(".", "");
-            name = name.Replace("\"", "");
-            name = name.Replace("/", "");
-            name = name.Replace("[", "");
-            name = name.Replace("]", "");
-            name = name.Replace(":", "");
-            name = name.Replace(";", "");
-            name = name.Replace("|", "");
-            name = name.Replace("=", "");
-            name = name.Replace(",", "");
             name = name.Replace("\\", "");
+            name = name.Replace("/", "");
+            name = name.Replace("*", "");
+            name = name.Replace("?", "");
+            name = name.Replace("\"", "");
+            name = name.Replace("<", "");
+            name = name.Replace(">", "");
+            name = name.Replace("|", "");
             return name;
         }
     }
