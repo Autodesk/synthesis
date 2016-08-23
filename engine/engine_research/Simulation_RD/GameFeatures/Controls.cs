@@ -33,6 +33,9 @@ namespace Simulation_RD.GameFeatures
         /// </summary>
         public enum Control { Forward, Backward, Right, Left, ResetRobot, RobotOrient, CameraToggle, Pwm1Pos, Pwm1Neg, Pwm2Pos, Pwm2Neg, Pwm3Pos, Pwm3Neg, Pwm4Pos, Pwm4Neg, Pwm5Pos, Pwm5Neg, Stats }
 
+        /// <summary>
+        /// Data
+        /// </summary>
         private Dictionary<Control, Key> ControlKeys;
 
         /// <summary>

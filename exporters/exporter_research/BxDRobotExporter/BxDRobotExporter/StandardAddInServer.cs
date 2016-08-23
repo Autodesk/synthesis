@@ -89,6 +89,7 @@ namespace BxDRobotExporter
         Inventor.RibbonPanel partPanel;
         Inventor.RibbonPanel partPanel2;
         Inventor.RibbonPanel partPanel3;
+        Inventor.RibbonPanel modelControls;
 
         Random rand;
         JointData assemblyJoint;
@@ -368,7 +369,7 @@ namespace BxDRobotExporter
                         {// if there are parts/ assemblies inside the assembly then look at it for joints
                             foreach (ComponentOccurrence v in c.SubOccurrences)
                             {
-                                FindSubOccurences(v);
+                               // FindSubOccurences(v);
                             }
                         }
                     }
@@ -438,7 +439,8 @@ namespace BxDRobotExporter
                 
                 partPanel = oContextualTabOne.RibbonPanels.Add("Joints", "BxD:RobotExporter:Joints", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
                 partPanel2 = oContextualTabOne.RibbonPanels.Add("Limits", "BxD:RobotExporter:Limits", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
-                partPanel3 = oContextualTabOne.RibbonPanels.Add("Exporter Control", "BxD:RobotExporter:ExporterControl", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
+                partPanel3 = oContextualTabOne.RibbonPanels.Add("Exporter Control", "BxD:RobotExporter:ExporterControl", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}", "BxD:RobotExporter:Limits");
+                modelControls = oContextualTabOne.RibbonPanels.Add("Model Controls", "BxD:RobotExporter:ModelControls", "{55e5c0be-2fa4-4c95-a1f6-4782ea7a3258}");
 
                 editDrivers = controlDefs.AddButtonDefinition("Edit Drivers", "BxD:RobotExporter:EditDrivers", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, EditDriversIconSmall, EditDriversIconLarge);
                 editDrivers.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditDrivers_OnExecute);
@@ -492,7 +494,7 @@ namespace BxDRobotExporter
                 partPanel2.CommandControls.AddComboBox(LimitsComboBox);
                 partPanel2.CommandControls.AddButton(editLimits, true, true);
                 partPanel3.CommandControls.AddButton(exportRobot, true, true);
-                partPanel3.CommandControls.AddButton(selectJointInsideJoint, true, true);
+               // modelControls.CommandControls.AddButton(selectJointInsideJoint, true, true);
 
                 JointsComboBox.Enabled = false;
                 LimitsComboBox.Enabled = false;
