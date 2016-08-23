@@ -52,10 +52,4 @@ public partial class RigidNode : RigidNode_Base
         rigidBody.mass *= WHEEL_MASS_SCALE;
         rigidBody.GetCollisionObject().CollisionShape.CalculateLocalInertia(rigidBody.mass);
     }
-
-    private void ApplyJointMotors()
-    {
-        BHingedConstraint hingedConstraint = MainObject.GetComponent<BHingedConstraint>();
-        hingedConstraint.enableMotor = true;
-    }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Simulation_RD.Utility;
 
 namespace Simulation_RD.Graphics
 {
@@ -240,8 +241,11 @@ namespace Simulation_RD.Graphics
         }
         public void DrawCylinder(float radius, float halfHeight, int upAxis, ref Matrix4 transform, OpenTK.Graphics.Color4 color)
         {
-            Vector3 previousPos = Vector3.Transform(new Vector3(0, halfHeight, radius), transform);
-            Vector3 previousNPos = Vector3.Transform(new Vector3(0, -halfHeight, radius), transform);
+            Vector3 up = new[] { Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ }[upAxis]; //get on my level
+
+            Matrix4 transCopy = Matrix4.CreateFromQuaternion(AuxFunctions.RotateTo(Vector3.UnitY, up)) * transform;
+            Vector3 previousPos = Vector3.Transform(new Vector3(0, halfHeight, radius), transCopy);
+            Vector3 previousNPos = Vector3.Transform(new Vector3(0, -halfHeight, radius), transCopy);
 
             GL.Begin(PrimitiveType.LineLoop);
             GL.Color3(0f, 1f, 0f);
@@ -251,13 +255,13 @@ namespace Simulation_RD.Graphics
                 float x = (float)Math.Sin(a) * radius;
 
                 // positive
-                Vector3 pos = Vector3.Transform(new Vector3(x, halfHeight, z), transform);
+                Vector3 pos = Vector3.Transform(new Vector3(x, halfHeight, z), transCopy);
                 GL.Vertex3(previousPos);
                 GL.Vertex3(pos);
                 previousPos = pos;
 
                 // negative
-                Vector3 npos = Vector3.Transform(new Vector3(x, -halfHeight, z), transform);
+                Vector3 npos = Vector3.Transform(new Vector3(x, -halfHeight, z), transCopy);
                 GL.Vertex3(previousNPos);
                 GL.Vertex3(npos);
                 previousNPos = npos;

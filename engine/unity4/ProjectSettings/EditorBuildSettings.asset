@@ -9,3 +9,5 @@ EditorBuildSettings:
     path: Assets/Scene/MainMenu.unity
   - enabled: 1
     path: Assets/Scene/Scene.unity
+  - enabled: 1
+    path: Assets/Scene/Local_multiplayer.unity

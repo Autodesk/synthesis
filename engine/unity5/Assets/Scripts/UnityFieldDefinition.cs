@@ -124,7 +124,7 @@ public class UnityFieldDefinition : FieldDefinition
                     case PropertySet.PropertySetCollider.PropertySetCollisionType.MESH:
                         PropertySet.MeshCollider psMeshCollider = (PropertySet.MeshCollider)psCollider;
 
-                        if (psMeshCollider.Convex)
+                        if (psMeshCollider.Convex || currentPropertySet.Mass != 0)
                         {
                             MeshCollider dummyMeshCollider = subObject.AddComponent<MeshCollider>();
                             dummyMeshCollider.sharedMesh = meshObject.GetComponent<MeshFilter>().mesh;
@@ -132,13 +132,11 @@ public class UnityFieldDefinition : FieldDefinition
                             subObject.transform.position = meshObject.transform.TransformPoint(dummyMeshCollider.bounds.center);
                             subObject.transform.rotation = meshObject.transform.rotation;
 
-                            BulletUnity.Primitives.BConvexHull convexHull = subObject.AddComponent<BulletUnity.Primitives.BConvexHull>();
-                            convexHull.meshSettings.UserMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center);
-                            convexHull.BuildMesh();
+                            BConvexHullShape hullshape = subObject.AddComponent<BConvexHullShape>();
+                            hullshape.HullMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center);
+                            hullshape.GetCollisionShape().Margin = 0f;
 
                             UnityEngine.Object.Destroy(dummyMeshCollider);
-
-                            subObject.GetComponent<MeshRenderer>().enabled = false;
                         }
                         else
                         {

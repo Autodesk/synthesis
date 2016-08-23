@@ -26,8 +26,6 @@ public class multiplayer_Init : MonoBehaviour
     private volatile int reloadFieldInFrames;
     private FileBrowser fieldBrowser = null;
     private bool fieldLoaded = false;
-    private bool driverPraticeOn = false;
-    private DriverPracticeMode driverPracticeMode;
 
     #region GUI Stuf
     /// <summary>
