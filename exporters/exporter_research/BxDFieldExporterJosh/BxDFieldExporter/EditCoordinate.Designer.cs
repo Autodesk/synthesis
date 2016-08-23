@@ -43,7 +43,7 @@
             this.labelX.Name = "labelX";
             this.labelX.Size = new System.Drawing.Size(90, 17);
             this.labelX.TabIndex = 0;
-            this.labelX.Text = "X Coordinate";
+            this.labelX.Text = "X Coordinate(cm)";
             // 
             // labelY
             // 
@@ -52,7 +52,7 @@
             this.labelY.Name = "labelY";
             this.labelY.Size = new System.Drawing.Size(90, 17);
             this.labelY.TabIndex = 1;
-            this.labelY.Text = "Y Coordinate";
+            this.labelY.Text = "Y Coordinate(cm)";
             // 
             // labelZ
             // 
@@ -61,7 +61,7 @@
             this.labelZ.Name = "labelZ";
             this.labelZ.Size = new System.Drawing.Size(90, 17);
             this.labelZ.TabIndex = 2;
-            this.labelZ.Text = "Z Coordinate";
+            this.labelZ.Text = "Z Coordinate(cm)";
             // 
             // textBoxX
             // 

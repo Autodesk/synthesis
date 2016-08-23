@@ -17,7 +17,7 @@ namespace BxDFieldExporter
         /// Initailizes a new instance of the BoxColliderPropertiesFormClass.
         /// </summary>
         /// 
-        FieldDataType field;// fieldtype to write saves to
+        FieldDataComponent field;// fieldtype to write saves to
         public BoxColliderPropertiesForm()
         {
             InitializeComponent();// inits and populates the form
@@ -35,7 +35,7 @@ namespace BxDFieldExporter
         {
             field.Z = (double)zScaleUpDown.Value;
         }
-        public void readFromData(FieldDataType d)
+        public void readFromData(FieldDataComponent d)
         {// reads from the data so user can see the same values from the last time they entered them
             field = d;
             xScaleUpDown.Value = (decimal) field.X;

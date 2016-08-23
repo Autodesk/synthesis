@@ -10,11 +10,15 @@ public class DriveJoints : MonoBehaviour
 {
     private const float SPEED_ARROW_PWM = 0.5f;
     private const float WHEEL_MAX_SPEED = 300f;
-    private const float MAX_MOTOR_IMPULSE = 0.1f;
-    private const float MOTOR_COAST_FRICTION = 0.025f;
+    private const float WHEEL_MOTOR_IMPULSE = 0.1f;
+    private const float WHEEL_COAST_FRICTION = 0.025f;
 
-    private const float MAX_SLIDER_FORCE = 100f;
-    private const float MAX_SLIDER_SPEED = 5f;
+    private const float HINGE_MAX_SPEED = 4f;
+    private const float HINGE_MOTOR_IMPULSE = 10f;
+    private const float HINGE_COAST_FRICTION = 0.1f;
+
+    private const float MAX_SLIDER_FORCE = 1000f;
+    private const float MAX_SLIDER_SPEED = 2f;
 
     public static void SetSolenoid(RigidNode node, bool forward)
     {
@@ -86,15 +90,19 @@ public class DriveJoints : MonoBehaviour
             pwm[0] +=
                 (Input.GetKey(KeyCode.UpArrow) ? SPEED_ARROW_PWM : 0.0f) +
                 (Input.GetKey(KeyCode.DownArrow) ? -SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(KeyCode.LeftArrow) ? -SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(KeyCode.RightArrow) ? SPEED_ARROW_PWM : 0.0f);
+                (Input.GetKey(KeyCode.LeftArrow) ? SPEED_ARROW_PWM : 0.0f) +
+                (Input.GetKey(KeyCode.RightArrow) ? -SPEED_ARROW_PWM : 0.0f);
             pwm[1] +=
                 (Input.GetKey(KeyCode.UpArrow) ? -SPEED_ARROW_PWM : 0.0f) +
                 (Input.GetKey(KeyCode.DownArrow) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(KeyCode.LeftArrow) ? -SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(KeyCode.RightArrow) ? SPEED_ARROW_PWM : 0.0f);
+                (Input.GetKey(KeyCode.LeftArrow) ? SPEED_ARROW_PWM : 0.0f) +
+                (Input.GetKey(KeyCode.RightArrow) ? -SPEED_ARROW_PWM : 0.0f);
+
             pwm[2] += Input.GetKey(KeyCode.Alpha1) ? SPEED_ARROW_PWM : Input.GetKey(KeyCode.Alpha2) ? -SPEED_ARROW_PWM : 0f;
-            //pwm[3] += Input.GetKey(KeyCode.Alpha2) ? -1f : 0f;
+            pwm[3] += Input.GetKey(KeyCode.Alpha3) ? SPEED_ARROW_PWM : Input.GetKey(KeyCode.Alpha4) ? -SPEED_ARROW_PWM : 0f;
+            pwm[4] += Input.GetKey(KeyCode.Alpha5) ? SPEED_ARROW_PWM : Input.GetKey(KeyCode.Alpha6) ? -SPEED_ARROW_PWM : 0f;
+            pwm[5] += Input.GetKey(KeyCode.Alpha7) ? SPEED_ARROW_PWM : Input.GetKey(KeyCode.Alpha8) ? -SPEED_ARROW_PWM : 0f;
+            pwm[6] += Input.GetKey(KeyCode.Alpha9) ? SPEED_ARROW_PWM : Input.GetKey(KeyCode.Alpha0) ? -SPEED_ARROW_PWM : 0f;
         }
 
         List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
@@ -110,18 +118,33 @@ public class DriveJoints : MonoBehaviour
                 {
                     if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
                     {
-                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1 && rigidNode.HasDriverMeta<WheelDriverMeta>())
+                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
                         {
+                            float maxSpeed = 0f;
+                            float impulse = 0f;
+                            float friction = 0f;
+
+                            if (rigidNode.HasDriverMeta<WheelDriverMeta>())
+                            {
+                                maxSpeed = WHEEL_MAX_SPEED;
+                                impulse = WHEEL_MOTOR_IMPULSE;
+                                friction = WHEEL_COAST_FRICTION;
+                            }
+                            else
+                            {
+                                maxSpeed = HINGE_MAX_SPEED;
+                                impulse = HINGE_MOTOR_IMPULSE;
+                                friction = HINGE_COAST_FRICTION;
+                            }
+
                             BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
-                            hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? WHEEL_MAX_SPEED : pwm[i] < 0f ? -WHEEL_MAX_SPEED : 0f;
-                            hingedConstraint.maxMotorImpulse = pwm[i] == 0f ? MOTOR_COAST_FRICTION : Mathf.Abs(pwm[i] * MAX_MOTOR_IMPULSE);
+                            hingedConstraint.enableMotor = true;
+                            hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? maxSpeed : pwm[i] < 0f ? -maxSpeed : 0f;
+                            hingedConstraint.maxMotorImpulse = pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
                         }
                     }
                     else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
                     {
-                        string name = rigidNode.ModelFileName;
-                        bool b = rigidNode.HasDriverMeta<ElevatorDriverMeta>();
-
                         if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
                         {
                             BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
