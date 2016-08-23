@@ -223,6 +223,26 @@ namespace BxDFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap RemoveSpawnLocation16 {
+            get {
+                object obj = ResourceManager.GetObject("RemoveSpawnLocation16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RemoveSpawnLocation32 {
+            get {
+                object obj = ResourceManager.GetObject("RemoveSpawnLocation32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap RemoveSubAssembly16 {
             get {
                 object obj = ResourceManager.GetObject("RemoveSubAssembly16", resourceCulture);
