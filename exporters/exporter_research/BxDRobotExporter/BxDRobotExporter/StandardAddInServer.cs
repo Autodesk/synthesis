@@ -1,18 +1,13 @@
 using System;
 using System.Runtime.InteropServices;
 using Inventor;
-using Microsoft.Win32;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using System.Collections;
-using System.Xml;
 using System.Timers;
-using System.Threading;
-using System.Security.Permissions;
+using ExportProcess;
 
-namespace BxDRobotExporter
-{
+namespace BxDRobotExporter {
     /// <summary>
     /// This is the primary AddIn Server class that implements the ApplicationAddInServer interface
     /// that all Inventor AddIns are required to implement. The communication between Inventor and
@@ -20,7 +15,7 @@ namespace BxDRobotExporter
     /// </summary>
 
 
-        //TLDR exports the robot to the simulator
+    //TLDR exports the robot to the simulator
 
 
     [GuidAttribute("0c9a07ad-2768-4a62-950a-b5e33b88e4a3")]
@@ -1341,6 +1336,8 @@ namespace BxDRobotExporter
             try { 
                 control.saveFile();// save the file
                 envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
+                RobotSaver exporter = new RobotSaver(m_inventorApplication);
+                exporter.beginExport();
             } catch(Exception e)
             {
 
