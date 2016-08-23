@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using Inventor;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace BxDFieldExporter {
     public partial class pathInput {
@@ -16,42 +17,53 @@ namespace BxDFieldExporter {
         private List<string> IDList;
         private List<int> IDOccurances;
         private AssemblyJoints listOfJoints;
-        private AssemblyDocument CurrentProject;
+        private AssemblyDocument CurrentDocument;
         private bool writeFilesBreak = false;
-
+        private Inventor.Application CurrentApplication;
+        Document doc;
+        Dictionary<string, float[,]> transformations = new Dictionary<string, float[,]>();
         #endregion
 
-        private bool SetUpFileReader(List<FieldDataType> fieldTypes) {
+        //Called by pathInput to initalize state variables 
+        private bool SetUpFileReader() {
             try {
-                listOfJoints = CurrentProject.ComponentDefinition.Joints;
-                folderPath = "C:\\Users\\" + System.Environment.UserName + "\\AppData\\Roaming\\Autodesk\\Synthesis";
-
-                this.fieldTypes = fieldTypes;
-                destinationPath = folderPath + "\\Test.FIELD";
+                listOfJoints = CurrentDocument.ComponentDefinition.Joints;
+                folderPath = "C:\\Users\\" + System.Environment.UserName + "\\AppData\\Roaming\\Autodesk\\Synthesis\\";
+                destinationPath = folderPath + CurrentDocument.DisplayName + ".FIELD";
                 IDList = new List<string>();
                 IDOccurances = new List<int>();
                 if (System.IO.File.Exists(destinationPath)) System.IO.File.Delete(destinationPath);
-                if (Directory.Exists(folderPath)) return readFiles(Directory.GetFiles(folderPath));
-                else return (false);
+
+
+                Bitmap thumbnail = new Bitmap(AxHostConverter.PictureDispToImage(CurrentDocument.Thumbnail), new Size(256, 256));
+
+                thumbnail.Save(folderPath + "thumb.bmp");
+                foreach (ComponentOccurrence component in CurrentDocument.ComponentDefinition.Occurrences) {     //Xanders section of the export process
+                    Matrix transformationMatrix = component.Transformation;
+                    float[,] trans = new float[4, 4];
+                    for (int x = 0; x < 4; x++) {
+                        for (int y = 0; y < 4; y++) {
+                            trans[x, y] = (float)transformationMatrix.Cell[x, y];
+                        }
+                    }
+
+                    doc = (Document)component.Definition.Document;  //Saves the STLS into the directory
+                    string name = component.Name;
+                    
+                    transformations.Add(name, trans);
+
+                    doc.SaveAs(folderPath + name + ".stl", true);
+                }
+                if (Directory.Exists(folderPath)) return readSTLFiles(Directory.GetFiles(folderPath));
+                else return false;
             }
             catch (Exception e) {
-                MessageBox.Show("does it go all the way up?");
                 MessageBox.Show(e.Message);
                 return false;
             }
         }
-        #region .
-        /*
-         * |||||||||||||||
-         * |||||||||||||||  The man that
-         * |||||| O ||||||  was freed 
-         * ||||||\|/||||||  from access    
-         * |||||| | ||||||  bugs
-         * ||||||/ \||||||
-         */
-        #endregion
-        private bool readFiles(string[] fileList) {
-
+        //Handles the reading of the STLs on the 
+        private bool readSTLFiles(string[] fileList) {
             try {
                 writeFiles();//Writes header 
                 writeFiles(fileList.Length); //and amount of field elements
@@ -84,15 +96,18 @@ namespace BxDFieldExporter {
                     }
                 }
                 raiseProgress();
-                writeFiles(listOfJoints); //Writes joint data
+                NameValueMap nameMap = CurrentApplication.TransientObjects.CreateNameValueMap();
+                nameMap.Add("DoubleBearing", false);
+                RigidBodyResults jointsContainer = CurrentDocument.ComponentDefinition.RigidBodyAnalysis(nameMap);
+                RigidBodyJoints jointsList = jointsContainer.RigidBodyJoints;
+                writeFiles(jointsList); //Writes joint data
                 raiseProgress();
-                //  writeFiles(CurrentProject.ComponentDefinition.Occurrences);
+                writeFiles(CurrentDocument.ComponentDefinition.WorkPoints);
                 raiseProgress();
                 raiseProgress();
                 return !writeFilesBreak;
             }
             catch (Exception e) {
-                MessageBox.Show("Why");
                 MessageBox.Show(e.Message);
                 return false;
             }
@@ -102,12 +117,12 @@ namespace BxDFieldExporter {
         //Only to be used to write header
         private void writeFiles() {
             try {
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
                     //Translates to FLDB 1.0.0.0000
                     //FLDB 1.0.0.0000 = Field Binary Ver 1.0.0
-                    fileWrote.Write(Encoding.Default.GetBytes(FieldFormatVer));
+                    FileWriter.Write(Encoding.Default.GetBytes(FieldFormatVer));
                     for (int bytes = 45; bytes < 80; bytes++) {
-                        fileWrote.Write(20);//Fills rest of 80 byte header with blank space//
+                        FileWriter.Write(BitConverter.GetBytes(20));//Fills rest of 80 byte header with blank space//
                     }
                 }
             }
@@ -119,8 +134,8 @@ namespace BxDFieldExporter {
         //Used for both number of elements, and Int32 calls
         private void writeFiles(int elements) {
             try {
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                    fileWrote.Write(elements);
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                    FileWriter.Write(BitConverter.GetBytes(elements));
                 }
             }
             catch (Exception e) {
@@ -131,19 +146,19 @@ namespace BxDFieldExporter {
         private void writeFiles(FieldDataType fieldData) {
             try {
                 MarkWithZero();
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                    fileWrote.Write(Encoding.Default.GetBytes(fieldData.Name));
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                    FileWriter.Write(Encoding.Default.GetBytes(fieldData.Name));
                 }
                 MarkWithZero();
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                    fileWrote.Write(fieldData.compOcc.Count);
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                    FileWriter.Write(BitConverter.GetBytes(fieldData.compOcc.Count));
                     //Needs implementation of field elements within field type
-                    fileWrote.Write(fieldData.Dynamic);
-                    fileWrote.Write(fieldData.Mass);
-                    fileWrote.Write(fieldData.Friction);
-                    fileWrote.Write(((int)fieldData.colliderType == 0) ? true : false);
-                    fileWrote.Write(((int)fieldData.colliderType == 1) ? true : false);
-                    fileWrote.Write(((int)fieldData.colliderType == 2) ? true : false);
+                    FileWriter.Write(BitConverter.GetBytes(fieldData.Dynamic));
+                    FileWriter.Write(BitConverter.GetBytes(fieldData.Mass));
+                    FileWriter.Write(BitConverter.GetBytes(fieldData.Friction));
+                    FileWriter.Write(BitConverter.GetBytes(fieldData.colliderType == 0 ? true : false));
+                    FileWriter.Write(BitConverter.GetBytes(((int)fieldData.colliderType == 1) ? true : false));
+                    FileWriter.Write(BitConverter.GetBytes(((int)fieldData.colliderType == 2) ? true : false));
                 }
             }
             catch (Exception e) {
@@ -153,8 +168,8 @@ namespace BxDFieldExporter {
         }
         private void writeFiles(byte STLSection) {
             try {
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                    fileWrote.Write(STLSection);
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                    FileWriter.Write(BitConverter.GetBytes(STLSection));
                 }
             }
             catch (Exception e) {
@@ -164,8 +179,8 @@ namespace BxDFieldExporter {
         }
         private void writeFiles(string Id) {
             try {
-                MarkWithZero();
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
 
                     usedID = false;
                     foreach (string SavedID in IDList) {
@@ -186,11 +201,17 @@ namespace BxDFieldExporter {
                     }
                     byte[] IDBytes = Encoding.Default.GetBytes(Id);
                     foreach (byte IDSection in IDBytes) {
-                        fileWrote.Write(IDSection);
+                        FileWriter.Write(BitConverter.GetBytes(IDSection));
                     }
-                    fileWrote.Write(Encoding.Default.GetBytes(":+6" + IDOccurances[IDIndex].ToString()));
+                    FileWriter.Write(Encoding.Default.GetBytes(":+6" + IDOccurances[IDIndex].ToString()));
+                    float[,] translationSection = new float[4, 4];
+                    transformations.TryGetValue(Id, out translationSection);
+                    for (int x = 0; x < 4; x++) {
+                        for (int y = 0; y < 4; y++) {
+                            FileWriter.Write(BitConverter.GetBytes(translationSection[x, y]));
+                        }
+                    }
                 }
-                MarkWithZero();
             }
             catch (Exception e) {
                 MessageBox.Show(e.ToString());
@@ -200,8 +221,8 @@ namespace BxDFieldExporter {
 
         private void writeFiles(ushort STLSection) {
             try {
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                    fileWrote.Write(STLSection);
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                    FileWriter.Write(BitConverter.GetBytes(STLSection));
                 }
             }
             catch (Exception e) {
@@ -211,144 +232,145 @@ namespace BxDFieldExporter {
         }
         private void writeFiles(uint STLSection) {
             try {
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                    fileWrote.Write(STLSection);
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                    FileWriter.Write(BitConverter.GetBytes(STLSection));
                 }
             }
             catch (Exception e) {
-                MessageBox.Show("Wait what");
                 MessageBox.Show(e.ToString());
                 writeFilesBreak = true;
             }
         }
-        private void writeFiles(AssemblyJoints jointList) {
+        private void writeFiles(RigidBodyJoints jointsList) {
 
             try {
-                foreach (AssemblyJoint joint in jointList) {                    
-                    AssemblyJointDefinition jointData = joint.Definition;                    
-                    if (jointData.JointType.ToString().Equals("kRotationalJointType")) {
-                        if (!jointData.HasAngularPositionLimits) {
-                            MessageBox.Show("The joint between " + joint.OccurrenceOne.Name + " and " + joint.OccurrenceTwo.Name
-                                + "has no limits on its rotation.", "Unrestricted joint", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                object GeometryOne, GeometryTwo;
+                Line jointLine;
+                Circle jointCircle;
+                NameValueMap nameMap;
+                foreach (RigidBodyJoint rigidJoint in jointsList) {
+                    MessageBox.Show(rigidJoint.JointType.ToString());
+                    foreach (AssemblyJoint joint in rigidJoint.Joints) {
+
+                        AssemblyJointDefinition jointData = joint.Definition;
+                        if (jointData.JointType.ToString().Equals("kRotationalJointType")) {
+                            if (!jointData.HasAngularPositionLimits) {
+                                MessageBox.Show("The joint between " + joint.OccurrenceOne.Name + " and " + joint.OccurrenceTwo.Name
+                                    + "has no limits on its rotation.", "Unrestricted joint", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                writeFilesBreak = true;
+                                break;
+                            }
+
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                                FileWriter.Write(BitConverter.GetBytes(true));
+                            }
+                            MarkWithZero();
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                                FileWriter.Write(Encoding.Default.GetBytes(joint.OccurrenceOne.Name));
+                            }
+                            MarkWithZero();
+                            MarkWithZero();
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                                FileWriter.Write(Encoding.Default.GetBytes(joint.OccurrenceTwo.Name));
+                            }
+                            MarkWithZero();
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+
+                                rigidJoint.GetJointData(out GeometryOne, out GeometryTwo, out nameMap);
+
+                                jointCircle = (Circle)GeometryTwo;
+                                FileWriter.Write(BitConverter.GetBytes((jointCircle.Center.X)));
+                                FileWriter.Write(BitConverter.GetBytes((jointCircle.Center.Y)));
+                                FileWriter.Write(BitConverter.GetBytes((jointCircle.Center.Z)));
+
+                                FileWriter.Write(BitConverter.GetBytes((jointData.OriginTwo.Point.X)));
+                                FileWriter.Write(BitConverter.GetBytes((jointData.OriginTwo.Point.Y)));
+                                FileWriter.Write(BitConverter.GetBytes((jointData.OriginTwo.Point.Z)));
+                                ModelParameter positionData = (ModelParameter)jointData.AngularPosition;
+                                double relataivePosition = positionData._Value;
+                                positionData = (ModelParameter)jointData.AngularPositionEndLimit;
+                                FileWriter.Write(BitConverter.GetBytes(((float)(relataivePosition - positionData._Value))));
+                                positionData = (ModelParameter)jointData.AngularPositionEndLimit;
+                                FileWriter.Write(BitConverter.GetBytes(((float)(relataivePosition - positionData._Value))));
+                                FileWriter.Write(BitConverter.GetBytes((false)));
+                            }
+                        }
+                        else if (jointData.JointType.ToString().Equals("kSlideJointType")) {
+                            if (!jointData.HasLinearPositionEndLimit || !jointData.HasLinearPositionStartLimit) {
+                                MessageBox.Show("The joint between " + joint.OccurrenceOne.Name + " and " + joint.OccurrenceTwo.Name
+                                    + "has no limits on its movement.", "Unrestricted joint",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                writeFilesBreak = true;
+                                break;
+                            }
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                                FileWriter.Write(BitConverter.GetBytes((true)));
+                                FileWriter.Write(BitConverter.GetBytes((false)));
+                            }
+                            MarkWithZero();
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                                FileWriter.Write(Encoding.Default.GetBytes(joint.OccurrenceOne.Name));
+                            }
+                            MarkWithZero();
+                            MarkWithZero();
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                                FileWriter.Write(Encoding.Default.GetBytes(joint.OccurrenceTwo.Name));
+                            }
+                            MarkWithZero();
+                            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                                rigidJoint.GetJointData(out GeometryOne, out GeometryTwo, out nameMap);
+
+                                jointLine = (Line)GeometryTwo;
+                                FileWriter.Write(BitConverter.GetBytes((jointLine.RootPoint.X)));
+                                FileWriter.Write(BitConverter.GetBytes((jointLine.RootPoint.Y)));
+                                FileWriter.Write(BitConverter.GetBytes((jointLine.RootPoint.Z)));
+                                FileWriter.Write(BitConverter.GetBytes((jointData.OriginTwo.Point.X)));
+                                FileWriter.Write(BitConverter.GetBytes((jointData.OriginTwo.Point.Y))); //Writes the origins of the joints relative to the parent occurence
+                                FileWriter.Write(BitConverter.GetBytes((jointData.OriginTwo.Point.Z)));
+                                ModelParameter positionData = (ModelParameter)jointData.LinearPosition;
+                                double relataivePosition = positionData._Value;
+                                positionData = (ModelParameter)jointData.LinearPositionEndLimit;
+                                FileWriter.Write(BitConverter.GetBytes((float)((Math.Abs(relataivePosition) - Math.Abs(positionData._Value)))));
+                                positionData = (ModelParameter)jointData.LinearPositionStartLimit;
+                                FileWriter.Write(BitConverter.GetBytes((float)((Math.Abs(relataivePosition) - Math.Abs(positionData._Value)))));
+                            }
+                        }
+
+
+
+
+                        else {
+                            MessageBox.Show("Error: Only Rotational and Slide joints allowed.");
                             writeFilesBreak = true;
                             break;
                         }
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write(true);
-                        }
-                        MarkWithZero();
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write(Encoding.Default.GetBytes(joint.OccurrenceOne.Name));
-                        }
-                        MarkWithZero();
-                        MarkWithZero();
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write(Encoding.Default.GetBytes(joint.OccurrenceTwo.Name));
-                        }
-                        MarkWithZero();
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write((float)(joint.OccurrenceOne.Transformation.Translation.X + jointData.OriginOne.Point.X));
-                            fileWrote.Write((float)(joint.OccurrenceOne.Transformation.Translation.Y + jointData.OriginOne.Point.Y));
-                            fileWrote.Write((float)(joint.OccurrenceOne.Transformation.Translation.Z + jointData.OriginOne.Point.Z));
-                            ModelParameter positionData = (ModelParameter)jointData.AngularPosition;
-                            double relataivePosition = positionData._Value;
-                            positionData = (ModelParameter)jointData.AngularPositionEndLimit;
-                            fileWrote.Write((float)(relataivePosition - positionData._Value));
-                            positionData = (ModelParameter)jointData.AngularPositionEndLimit;
-                            fileWrote.Write((float)(relataivePosition - positionData._Value));
-                            fileWrote.Write(false);
-                        }
-                    }
-                    else if (jointData.JointType.ToString().Equals("kSlideJointType")) {
-                        MessageBox.Show("Seciton 1");
-                        if (!jointData.HasLinearPositionEndLimit || !jointData.HasLinearPositionStartLimit) {
-                            MessageBox.Show("The joint between " + joint.OccurrenceOne.Name + " and " + joint.OccurrenceTwo.Name
-                                + "has no limits on its movement.", "Unrestricted joint",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            writeFilesBreak = true;
-                            break;
-                        }
-                        MessageBox.Show("Seciton 2");
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write(true);
-                            fileWrote.Write(false);
-                        }
-                        MarkWithZero();
-                        MessageBox.Show("Seciton 3");
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write(Encoding.Default.GetBytes(joint.OccurrenceOne.Name));
-                        }
-                        MarkWithZero();
-                        MarkWithZero();
-                        MessageBox.Show("Seciton 4");
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write(Encoding.Default.GetBytes(joint.OccurrenceTwo.Name));
-                        }
-                        MarkWithZero();
-                        MessageBox.Show("Seciton 5");
-                        using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                            fileWrote.Write((float)(joint.OccurrenceOne.Transformation.Translation.X + jointData.OriginOne.Point.X));
-                            fileWrote.Write((float)(joint.OccurrenceOne.Transformation.Translation.Y + jointData.OriginOne.Point.Y));
-                            fileWrote.Write((float)(joint.OccurrenceOne.Transformation.Translation.Z + jointData.OriginOne.Point.Z));
-                            ModelParameter positionData = (ModelParameter)jointData.LinearPosition;
-                            double relataivePosition = positionData._Value;
-                            positionData = (ModelParameter)jointData.LinearPositionEndLimit;
-                            fileWrote.Write((float)((Math.Abs(relataivePosition) - Math.Abs(positionData._Value))));
-                            positionData = (ModelParameter)jointData.LinearPositionStartLimit;
-                            fileWrote.Write((float)((Math.Abs(relataivePosition) - Math.Abs(positionData._Value))));
-                            Point OccurenceOneOrigin;
-                            Point OccurenceTwoOrigin;
-                            MessageBox.Show("Seciton 6");
-                            foreach (WorkPoint OccurrenceOneJoint in joint.OccurrenceOne.Parent.WorkPoints) {
-                                if (OccurrenceOneJoint.Name.Equals("Center Point")) OccurenceOneOrigin = OccurrenceOneJoint.Point;
-                                MessageBox.Show(OccurrenceOneJoint.Name);
-                            }
-                            foreach (WorkPoint OccurrenceTwoJoint in joint.OccurrenceTwo.Parent.WorkPoints) { 
-                                if (OccurrenceTwoJoint.Name.Equals("Center Point")) OccurenceTwoOrigin = OccurrenceTwoJoint.Point;
-                                MessageBox.Show(OccurrenceTwoJoint.Name);
-                            }
-                           
-                         //   MessageBox.Show(joint.OccurrenceOne.Transformation.Translation.X.ToString() + "   " + jointData.OriginOne.Point.X.ToString());
-                          //  MessageBox.Show(joint.OccurrenceTwo.Transformation.Translation.X.ToString() + "   " + jointData.OriginTwo.Point.X.ToString());
-                            /*   MessageBox.Show("Part : " + joint.OccurrenceOne.Name);
-                               MessageBox.Show("Origin 1 X: " + (jointData.OriginOne.Point.X).ToString());
-                               MessageBox.Show("Origin 1 Y: " + (jointData.OriginOne.Point.Y).ToString());
-                               MessageBox.Show("Origin 1 Z: " + (jointData.OriginOne.Point.Z).ToString());
-
-                               MessageBox.Show("Part : " + joint.OccurrenceTwo.Name);
-                               MessageBox.Show("Origin 1 X: " + (jointData.OriginTwo.Point.X).ToString());
-                               MessageBox.Show("Origin 1 Y: " + (jointData.OriginTwo.Point.Y).ToString());
-                               MessageBox.Show("Origin 1 Z: " + (jointData.OriginTwo.Point.Z).ToString());
-
-
-                                     MessageBox.Show("Joint: " + joint.OccurrenceOne.Name + " " + joint.OccurrenceTwo.Name);
-                               MessageBox.Show("Origin 1 X: " + (jointData. + jointData.OriginOne.Point.X).ToString());
-                               MessageBox.Show("Origin 2 X: " + (OccurenceOneOrigin.X + jointData.OriginTwo.Point.X).ToString());
-                               MessageBox.Show("Origin 1 Y: " + (OccurenceOneOrigin.Y + jointData.OriginOne.Point.Y).ToString());
-                               MessageBox.Show("Origin 2 Y: " + (OccurenceOneOrigin.Y + jointData.OriginTwo.Point.Y).ToString());
-                               MessageBox.Show("Origin 1 Z: " + (OccurenceOneOrigin.Z + jointData.OriginOne.Point.Z).ToString());
-                               MessageBox.Show("Origin 2 Z: " + (OccurenceOneOrigin.Z + jointData.OriginTwo.Point.Z).ToString());
-                              */ // MessageBox.Show((OccurenceOneOrigin.X + jointData.OriginOne.Point.X).Equals(OccurenceTwoOrigin.X + jointData.OriginTwo.Point.X).ToString());*/
-                        }
-                    }
-                    else {
-                        MessageBox.Show("Error: Only Rotational and Slide joints allowed.");
-                        writeFilesBreak = true;
-                        break;
                     }
                 }
             }
-            catch (Exception e){
+            catch (Exception e) {
                 MessageBox.Show(e.Message);
                 writeFilesBreak = true;
             }
         }
+
+        private void writeFiles(WorkPoints workPointList) {
+            using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                foreach (WorkPoint spawn in workPointList) {
+                    if (spawn.Name.Equals("Start Location")) {
+                        FileWriter.Write(BitConverter.GetBytes((spawn.Point.X)));
+                        FileWriter.Write(BitConverter.GetBytes((spawn.Point.Y)));
+                        FileWriter.Write(BitConverter.GetBytes((spawn.Point.Z)));
+                    }
+                }
+            }
+        }
         #endregion
 
+        #region Text Formaters
         private void MarkWithZero() {
             try {
-                using (BinaryWriter fileWrote = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
-                    fileWrote.Write(Encoding.Default.GetBytes("00000000"));
+                using (BinaryWriter FileWriter = new BinaryWriter(System.IO.File.Open(destinationPath, FileMode.Append))) {
+                    FileWriter.Write(Encoding.Default.GetBytes("00000000"));
                 }
             }
             catch (Exception e) {
@@ -356,5 +378,21 @@ namespace BxDFieldExporter {
                 writeFilesBreak = true;
             }
         }
+
+        private String FilterOutIllegalChars(string filteredWord) {
+            filteredWord = filteredWord.Replace("*", "");
+            filteredWord = filteredWord.Replace(".", "");
+            filteredWord = filteredWord.Replace("\"", "");
+            filteredWord = filteredWord.Replace("/", "");
+            filteredWord = filteredWord.Replace("[", "");
+            filteredWord = filteredWord.Replace("]", "");
+            filteredWord = filteredWord.Replace(":", "");
+            filteredWord = filteredWord.Replace(";", "");
+            filteredWord = filteredWord.Replace("|", "");
+            filteredWord = filteredWord.Replace("=", "");
+            filteredWord = filteredWord.Replace(",", "");
+            return filteredWord;
+        }
+        #endregion
     }
 }
