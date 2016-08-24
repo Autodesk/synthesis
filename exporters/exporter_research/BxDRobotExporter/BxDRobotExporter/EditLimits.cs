@@ -1,13 +1,8 @@
 ﻿using Inventor;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BxDRobotExporter
-{
+namespace BxDRobotExporter {
     public partial class EditLimits : Form
     {
         JointData joint;

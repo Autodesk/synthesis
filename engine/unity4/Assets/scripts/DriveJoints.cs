@@ -182,58 +182,33 @@ public class DriveJoints : MonoBehaviour
 
 	// Drive All Motors Associated with a PWM port
 
-	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] dioModules, int playerID)
+	public static void UpdateAllMotors(RigidNode_Base skeleton, unityPacket.OutputStatePacket.DIOModule[] dioModules)
 	{
 		float[] pwm = dioModules [0].pwmValues;
 		float[] can = dioModules [0].canValues;
-        if (playerID == 1)
-        {
-            if (TeamUtility.IO.InputManager.AnyInput())
-            {
-                pwm[0] +=
-                    TeamUtility.IO.InputManager.GetButton("D", TeamUtility.IO.PlayerID.One) ? speedArrowPWM : 0.0f +
-                    (TeamUtility.IO.InputManager.GetButton("A", TeamUtility.IO.PlayerID.One) ? -speedArrowPWM : 0.0f) +
-                    (TeamUtility.IO.InputManager.GetButton("W", TeamUtility.IO.PlayerID.One) ? speedArrowPWM : 0.0f) +
-                    (TeamUtility.IO.InputManager.GetButton("S", TeamUtility.IO.PlayerID.One) ? -speedArrowPWM : 0.0f); ;
-                pwm[1] +=
-                    TeamUtility.IO.InputManager.GetButton("D", TeamUtility.IO.PlayerID.One) ? speedArrowPWM : 0.0f +
-                    (TeamUtility.IO.InputManager.GetButton("A", TeamUtility.IO.PlayerID.One) ? -speedArrowPWM : 0.0f) +
-                    (TeamUtility.IO.InputManager.GetButton("W", TeamUtility.IO.PlayerID.One) ? -speedArrowPWM : 0.0f) +
-                    (TeamUtility.IO.InputManager.GetButton("S", TeamUtility.IO.PlayerID.One) ? speedArrowPWM : 0.0f); ;
-                if (pwm.Length > 2) pwm[2] +=
-                    (TeamUtility.IO.InputManager.GetButton("1", TeamUtility.IO.PlayerID.One) ? 0.5f : 0.0f) +
-                    (TeamUtility.IO.InputManager.GetButton("2", TeamUtility.IO.PlayerID.One) ? -0.5f : 0.0f);
-                if (pwm.Length > 3) pwm[3] +=
-                    (TeamUtility.IO.InputManager.GetButton("3", TeamUtility.IO.PlayerID.One) ? -0.5f : 0.0f) +
-                    (TeamUtility.IO.InputManager.GetButton("4", TeamUtility.IO.PlayerID.One) ? 0.5f : 0.0f);
-                if (pwm.Length > 4) pwm[4] +=
-                    (TeamUtility.IO.InputManager.GetButton("5", TeamUtility.IO.PlayerID.One) ? -0.5f : 0.0f) +
-                    (TeamUtility.IO.InputManager.GetButton("6", TeamUtility.IO.PlayerID.One) ? 0.5f : 0.0f);
-            }
-        }
-        if (playerID == 2)
-        {
-            if (TeamUtility.IO.InputManager.AnyInput())
-            {
-                pwm[0] +=
-                    TeamUtility.IO.InputManager.GetAxis("LookHorizontal", TeamUtility.IO.PlayerID.Two) * speedArrowPWM +
-                    TeamUtility.IO.InputManager.GetAxis("Vertical", TeamUtility.IO.PlayerID.Two) * speedArrowPWM;
-                pwm[1] +=
-                    TeamUtility.IO.InputManager.GetAxis("LookHorizontal", TeamUtility.IO.PlayerID.Two) * speedArrowPWM +
-                    TeamUtility.IO.InputManager.GetAxis("Vertical", TeamUtility.IO.PlayerID.Two) * -speedArrowPWM;
-                if (pwm.Length > 2) pwm[2] +=
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? 0.5f : 0.0f) +
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -0.5f : 0.0f);
-                if (pwm.Length > 3) pwm[3] +=
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Plus]) ? -0.5f : 0.0f) +
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Neg]) ? 0.5f : 0.0f);
-                if (pwm.Length > 4) pwm[4] +=
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -0.5f : 0.0f) +
-                    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Neg]) ? 0.5f : 0.0f);
-            }
+		if (Input.anyKey) {
+			pwm [0] +=
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Forward]) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Backward]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Left]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? speedArrowPWM : 0.0f);
+			pwm [1] +=
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Forward]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Backward]) ? speedArrowPWM : 0.0f) +
+				(Input.GetKey (Controls.ControlKey[(int)Controls.Control.Left]) ? -speedArrowPWM : 0.0f) +
+				(Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? speedArrowPWM : 0.0f);
+            if (pwm.Length > 2) pwm[2] +=
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? 0.5f : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -0.5f : 0.0f);
+            if (pwm.Length > 3) pwm[3] +=
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Plus]) ? -0.5f : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Neg]) ? 0.5f : 0.0f);
+            if (pwm.Length > 4) pwm[4] +=
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -0.5f : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Neg]) ? 0.5f : 0.0f);
         }
 
-        List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
+		List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 		skeleton.ListAllNodes(listOfSubNodes);
 		foreach(RigidNode_Base node in listOfSubNodes)
 		{

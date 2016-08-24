@@ -6,18 +6,19 @@ using Inventor;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace BxDFieldExporter {
-    public partial class pathInput : Form {
+    public partial class pathInput : Form { 
         private System.Windows.Forms.ProgressBar progressBar1;
         private Button button1;
-        private List<FieldDataType> FieldTypes;
-        public pathInput(ArrayList ArrayListFieldTypes, AssemblyDocument CurrentProjectPassed) {
+            public pathInput(ArrayList ArrayListFieldTypes, Inventor.Application CurrentApplicationPassed) {
             InitializeComponent();
-            FieldTypes = new List<FieldDataType>();
-            CurrentProject = CurrentProjectPassed;
+            fieldTypes = new List<FieldDataType>();
+            CurrentApplication = CurrentApplicationPassed;
+            CurrentDocument = (AssemblyDocument)CurrentApplicationPassed.ActiveDocument;
             foreach (FieldDataType fieldType in ArrayListFieldTypes) {
-                FieldTypes.Add(fieldType);
+                fieldTypes.Add(fieldType);
             }
         }
         private void button1_Click(object sender, EventArgs e) {
@@ -33,13 +34,17 @@ namespace BxDFieldExporter {
         }
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e) {
-            e.Result = SetUpFileReader(FieldTypes);
+            e.Result = SetUpFileReader();
         }
         private void raiseProgress() {
             progressBar1.PerformStep();
+            //TODO: Make the progress bar load more fluidly
         }
         private void displaySuccess(bool result) {
-            
+            string[] paths = Directory.GetFiles(@"C:\\Users\\" + System.Environment.UserName + "\\AppData\\Roaming\\Autodesk\\Synthesis\\");
+            foreach (string path in paths) {
+                System.IO.File.Delete(path);
+            }
             if (result) {
                 MessageBox.Show("Conversion successful");
                 Close();

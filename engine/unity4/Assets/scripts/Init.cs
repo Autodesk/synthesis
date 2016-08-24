@@ -56,10 +56,6 @@ public class Init : MonoBehaviour
 
 	private FileBrowser fieldBrowser = null;
 	private bool fieldLoaded = false;
-    
-    //
-    private bool driverPraticeOn = false;
-    private DriverPracticeMode driverPracticeMode;
 
     /// <summary>
 	/// Default textures.
@@ -357,7 +353,7 @@ public class Init : MonoBehaviour
 				{
 					this.filePath = parent.FullName + "\\";
 					fieldBrowser.Active = false;
-                    reloadFieldInFrames = 2;
+					reloadFieldInFrames = 2;
 				}
 				else
 				{
@@ -541,7 +537,7 @@ public class Init : MonoBehaviour
 
                 uNode.CreateJoint();
 
-				//Debug.Log("Joint");
+				Debug.Log("Joint");
 
                 meshColliders.AddRange(uNode.unityObject.GetComponentsInChildren<Collider>());
             }
@@ -553,14 +549,6 @@ public class Init : MonoBehaviour
 
 			//finds main node of robot to use its rigidbody
 			mainNode = GameObject.Find ("node_0.bxda");
-
-            string robotname = new DirectoryInfo(filePath).Name; //Retrieving the name of the robot folder from the filepath.
-            if (DriverPracticeMode.CheckRobot(robotname))
-            {
-                driverPracticeMode = activeRobot.AddComponent<DriverPracticeMode>();
-                driverPracticeMode.Initialize(robotname);
-                driverPraticeOn = true;
-            }
 
 			//Debug.Log ("HELLO AMIREKA: " + mainNode);
             auxFunctions.IgnoreCollisionDetection(meshColliders);
@@ -582,10 +570,10 @@ public class Init : MonoBehaviour
 			return new UnityFieldDefinition(guid, name);
 		};
 
-		//Debug.Log (filePath);
+		Debug.Log (filePath);
 		string loadResult;
 		field = (UnityFieldDefinition)BXDFProperties.ReadProperties(filePath + "definition.bxdf", out loadResult);
-		//Debug.Log(loadResult);
+		Debug.Log(loadResult);
 		field.CreateTransform(activeField.transform);
 		fieldLoaded = field.CreateMesh(filePath + "mesh.bxda");
 	}
@@ -617,8 +605,8 @@ public class Init : MonoBehaviour
 
 		totes = new List<GameObject> ();
 
-        filePath = PlayerPrefs.GetString("Field");
-        //Debug.Log(filePath);
+        filePath = PlayerPrefs.GetString("simSelectedField");
+        Debug.Log(filePath);
         reloadFieldInFrames = 2;
 
         reloadRobotInFrames = -1;
@@ -666,7 +654,7 @@ public class Init : MonoBehaviour
 
 			if (fieldLoaded)
 			{
-                filePath = PlayerPrefs.GetString("Robot");
+                filePath = PlayerPrefs.GetString("simSelectedRobot");
                 TryLoadRobot();
 				showStatWindow = true;
 			}
@@ -716,7 +704,7 @@ public class Init : MonoBehaviour
 				mainNode.rigidbody.isKinematic = false;
 			}
 
-			DriveJoints.UpdateAllMotors (skeleton, packet.dio, 1);
+			DriveJoints.UpdateAllMotors (skeleton, packet.dio);
 			//TODO put this code in drivejoints, figure out nullreference problem with cDriver
 			foreach(RigidNode_Base node in nodes)
 			{

@@ -15,6 +15,8 @@ public class PopupButton : MonoBehaviour {
     private Texture2D buttonBackground;
     private Texture2D selectedBackground;
 
+    private Canvas canvas;
+
 	// Use this for initialization
 	void Start () {
         listStyle = new GUIStyle();
@@ -37,6 +39,8 @@ public class PopupButton : MonoBehaviour {
         
         boxStyle = new GUIStyle("box");
         boxStyle.normal.background = buttonBackground;
+
+        canvas = GameObject.Find("MainMenuCanvas").GetComponent<Canvas>();
     }
 
 	void OnGUI () {
@@ -44,11 +48,14 @@ public class PopupButton : MonoBehaviour {
             if (!MainMenu.fullscreen) listEntry = 0;
             else listEntry = 1;
         else if (setting.Equals("Resolution"))
-            listEntry = MainMenu.resolutionsetting; 
+            listEntry = MainMenu.resolutionsetting;
 
+        float scale = canvas.scaleFactor;
+
+        buttonStyle.fontSize = Mathf.RoundToInt(24 * scale);
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
         Rect rect = GetComponent<RectTransform>().rect;
-        if (Popup.List(new Rect(p.x-rect.width/2, Screen.height-p.y-rect.height/2, rect.width, rect.height), ref showList, ref listEntry, list[listEntry], list, buttonStyle, boxStyle, listStyle))
+        if (Popup.List(new Rect(p.x-rect.width/2*scale, Screen.height-p.y-rect.height/2*scale, rect.width*scale, rect.height*scale), ref showList, ref listEntry, list[listEntry], list, buttonStyle, boxStyle, listStyle))
         {
             //This was a quick way to implement resolution settings. It might be 'bad code', but it works for the two settings we need.
             if (setting.Equals("Screen Mode"))
