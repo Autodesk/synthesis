@@ -40,7 +40,8 @@ namespace BxDRobotExporter
         }
         private void saveFileDialog1_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            MessageBox.Show("asdasasd");
+            //MessageBox.Show("asdasasd");
+
         }
         #endregion
 

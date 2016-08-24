@@ -1,6 +1,7 @@
 ﻿using BxDRobotExporter;
 using Inventor;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -10,12 +11,14 @@ namespace ExportProcess {
         private Inventor.Application currentApplication;
         private AssemblyDocument currentDocument;
         private Dictionary<string, STLData> STLDictionary;
+        private List<JointData> jointDataList;
         #endregion
-        public JointResolver(Inventor.Application passedApplication, Dictionary<string, STLData> STLDictionaryIn, List<JointData> jointDataList) {
+        public JointResolver(Inventor.Application passedApplication, Dictionary<string, STLData> STLDictionaryIn, List<JointData> jDataList) {
             try {
                 currentApplication = passedApplication;
                 STLDictionary = STLDictionaryIn;
                 currentDocument = (AssemblyDocument)currentApplication.ActiveDocument;
+                jointDataList = jDataList;
             }
             catch (Exception e) {
                 MessageBox.Show(e.Message);
@@ -29,25 +32,32 @@ namespace ExportProcess {
                 nameMap.Add("DoubleBearing", false);
                 RigidBodyResults jointsContainer = currentDocument.ComponentDefinition.RigidBodyAnalysis(nameMap);
                 RigidBodyJoints jointList = jointsContainer.RigidBodyJoints;
+                JointData jointDataObject = null;
                 foreach (RigidBodyJoint joint in jointList) {
-                    foreach(byte byteID in BitConverter.GetBytes(0003)) {
-                        jointBytes.Add(byteID);
-                    }
-                    
-                    if (joint.JointType.Equals("kSlideJointType")) {
-                        foreach(byte byteJID in BitConverter.GetBytes((ushort)0000)) {
-                            jointBytes.Add(byteJID);
+                    foreach (AssemblyJoint assemblyJoint in joint.Joints) {
+                        foreach (byte byteID in BitConverter.GetBytes(0003)) {
+                            jointBytes.Add(byteID);
                         }
-                        foreach (byte jointSection in ProcessLinearJoint(joint)) {
-                            jointBytes.Add(jointSection);
+                        foreach (JointData jointData in jointDataList) {
+                            if (jointData.jointOfType.OccurrenceOne.Name.Equals(assemblyJoint.OccurrenceOne.Name) && jointData.jointOfType.OccurrenceTwo.Name.Equals(assemblyJoint.OccurrenceTwo.Name)) {
+                                jointDataObject = jointData;
+                            }
                         }
-                    }
-                    if (joint.JointType.Equals("kRotationalJointType")) {
-                        foreach (byte byteJID in BitConverter.GetBytes((ushort)0001)) {
-                            jointBytes.Add(byteJID);
+                        if (joint.JointType.Equals("kSlideJointType")) {
+                            foreach (byte byteJID in BitConverter.GetBytes((ushort)0000)) {
+                                jointBytes.Add(byteJID);
+                            }
+                            foreach (byte jointSection in ProcessLinearJoint(joint, jointDataObject)) {
+                                jointBytes.Add(jointSection);
+                            }
                         }
-                        foreach (byte jointSection in ProcessRotationalJoint(joint)) {
-                            jointBytes.Add(jointSection);
+                        if (joint.JointType.Equals("kRotationalJointType")) {
+                            foreach (byte byteJID in BitConverter.GetBytes((ushort)0001)) {
+                                jointBytes.Add(byteJID);
+                            }
+                            foreach (byte jointSection in ProcessRotationalJoint(joint, jointDataObject)) {
+                                jointBytes.Add(jointSection);
+                            }
                         }
                     }
                 }
@@ -60,26 +70,26 @@ namespace ExportProcess {
 
             }
         }
-        private byte[] ProcessRotationalJoint(RigidBodyJoint linearJoint) {
+        private byte[] ProcessRotationalJoint(RigidBodyJoint linearJoint, JointData jointDataObject) {
             try {
-                byte[] rotationalJointBytes = new byte[42];
+                ArrayList rotationalJointBytes = new ArrayList();
 
-                //Adds ID to signify that it's a linear joint
-                ushort ID = 1;
-                byte[] linearJointID = BitConverter.GetBytes(ID);
-                linearJointID.CopyTo(rotationalJointBytes, 0);
+                //Adds ID to signify that it's a rotational joint
+                ushort ID = 0;
+                byte[] rotationalJointID = BitConverter.GetBytes(ID);
+                rotationalJointBytes.Add(rotationalJointID);
 
                 foreach (AssemblyJoint joint in linearJoint.Joints) {
                     //Adds the ID of the parent STL to the output array
                     STLData parentSTL = new STLData();
                     STLDictionary.TryGetValue(NameFilter(joint.OccurrenceOne.Name), out parentSTL);
                     byte[] parentIDBytes = BitConverter.GetBytes((uint)(parentSTL.getID()));
-                    parentIDBytes.CopyTo(rotationalJointBytes, 2);
+                    rotationalJointBytes.Add(parentIDBytes);
                     //Adds the ID of the child STL to the output array
                     STLData childSTL = new STLData();
                     STLDictionary.TryGetValue(NameFilter(joint.OccurrenceTwo.Name), out childSTL);
                     byte[] childIDBytes = BitConverter.GetBytes((uint)(childSTL.getID()));
-                    childIDBytes.CopyTo(rotationalJointBytes, 6);
+                    rotationalJointBytes.Add(childIDBytes);
                     //Adds the vector parallel to the movement onto the array of bytes
                     object GeometryOne, GeometryTwo;
                     NameValueMap nameMap;
@@ -89,14 +99,14 @@ namespace ExportProcess {
                     BitConverter.GetBytes(vectorCircle.Center.X).CopyTo(vectorJointData, 0);
                     BitConverter.GetBytes(vectorCircle.Center.Y).CopyTo(vectorJointData, 4);
                     BitConverter.GetBytes(vectorCircle.Center.Z).CopyTo(vectorJointData, 8);
-                    vectorJointData.CopyTo(rotationalJointBytes, 10);
+                    rotationalJointBytes.Add(vectorJointData);
                     //Adds the point of connection relative to the parent part
                     byte[] transJointData = new byte[12];
                     AssemblyJointDefinition jointData = joint.Definition;
                     BitConverter.GetBytes(jointData.OriginTwo.Point.X).CopyTo(transJointData, 0);
                     BitConverter.GetBytes(jointData.OriginTwo.Point.Y).CopyTo(transJointData, 4);
                     BitConverter.GetBytes(jointData.OriginTwo.Point.Z).CopyTo(transJointData, 8);
-                    transJointData.CopyTo(rotationalJointBytes, 22);
+                    rotationalJointBytes.Add(transJointData);
                     //Adds the degrees of freedom 
                     byte[] freedomData = new byte[8];
                     ModelParameter positionData = (ModelParameter)jointData.AngularPosition;
@@ -105,9 +115,13 @@ namespace ExportProcess {
                     BitConverter.GetBytes((float)(Math.Abs(relataivePosition) - Math.Abs(positionData._Value))).CopyTo(freedomData, 0);
                     positionData = (ModelParameter)jointData.AngularPositionStartLimit;
                     BitConverter.GetBytes((float)(Math.Abs(relataivePosition) - Math.Abs(positionData._Value))).CopyTo(freedomData, 4);
-                    freedomData.CopyTo(rotationalJointBytes, 34);
+                    rotationalJointBytes.Add(freedomData);
+                    rotationalJointBytes.Add(processJointAttributes(jointDataObject));
                 }
-                return rotationalJointBytes;
+                object[] tempArray = rotationalJointBytes.ToArray();
+                byte[] returnedArray = new byte[tempArray.Length];
+                tempArray.CopyTo(returnedArray, 0);
+                return returnedArray;
             }
             catch (Exception e) {
                 //catches problems
@@ -116,26 +130,26 @@ namespace ExportProcess {
 
             }
         }
-        private byte[] ProcessLinearJoint(RigidBodyJoint linearJoint) {
+        private byte[] ProcessLinearJoint(RigidBodyJoint linearJoint, JointData jointDataObject) {
             try {
-                byte[] linearJointBytes = new byte[42];
+                ArrayList linearJointBytes = new ArrayList();
 
                 //Adds ID to signify that it's a linear joint
                 ushort ID = 1;
                 byte[] linearJointID = BitConverter.GetBytes(ID);
-                linearJointID.CopyTo(linearJointBytes, 0);
+                linearJointBytes.Add(linearJointID);
 
                 foreach (AssemblyJoint joint in linearJoint.Joints) {
                     //Adds the ID of the parent STL to the output array
                     STLData parentSTL = new STLData();
                     STLDictionary.TryGetValue(NameFilter(joint.OccurrenceOne.Name), out parentSTL);
                     byte[] parentIDBytes = BitConverter.GetBytes((uint)(parentSTL.getID()));
-                    parentIDBytes.CopyTo(linearJointBytes, 2);
+                    linearJointBytes.Add(parentIDBytes);
                     //Adds the ID of the child STL to the output array
                     STLData childSTL = new STLData();
                     STLDictionary.TryGetValue(NameFilter(joint.OccurrenceTwo.Name), out childSTL);
                     byte[] childIDBytes = BitConverter.GetBytes((uint)(childSTL.getID()));
-                    childIDBytes.CopyTo(linearJointBytes, 6);
+                    linearJointBytes.Add(childIDBytes);
                     //Adds the vector parallel to the movement onto the array of bytes
                     object GeometryOne, GeometryTwo;
                     NameValueMap nameMap;
@@ -145,14 +159,14 @@ namespace ExportProcess {
                     BitConverter.GetBytes(vectorLine.RootPoint.X).CopyTo(vectorJointData, 0);
                     BitConverter.GetBytes(vectorLine.RootPoint.Y).CopyTo(vectorJointData, 4);
                     BitConverter.GetBytes(vectorLine.RootPoint.Z).CopyTo(vectorJointData, 8);
-                    vectorJointData.CopyTo(linearJointBytes, 10);
+                    linearJointBytes.Add(vectorJointData);
                     //Adds the point of connection relative to the parent part
                     byte[] transJointData = new byte[12];
                     AssemblyJointDefinition jointData = joint.Definition;
                     BitConverter.GetBytes(jointData.OriginTwo.Point.X).CopyTo(transJointData, 0);
                     BitConverter.GetBytes(jointData.OriginTwo.Point.Y).CopyTo(transJointData, 4);
                     BitConverter.GetBytes(jointData.OriginTwo.Point.Z).CopyTo(transJointData, 8);
-                    transJointData.CopyTo(linearJointBytes, 22);
+                    linearJointBytes.Add(transJointData);
                     //Adds the degrees of freedom 
                     byte[] freedomData = new byte[8];
                     ModelParameter positionData = (ModelParameter)jointData.LinearPosition;
@@ -161,9 +175,13 @@ namespace ExportProcess {
                     BitConverter.GetBytes((float)(Math.Abs(relataivePosition) - Math.Abs(positionData._Value))).CopyTo(freedomData, 0);
                     positionData = (ModelParameter)jointData.LinearPositionStartLimit;
                     BitConverter.GetBytes((float)(Math.Abs(relataivePosition) - Math.Abs(positionData._Value))).CopyTo(freedomData, 4);
-                    freedomData.CopyTo(linearJointBytes, 34);
+                    linearJointBytes.Add(freedomData);
+                    linearJointBytes.Add(processJointAttributes(jointDataObject));
                 }
-                return linearJointBytes;
+                object[] tempArray = linearJointBytes.ToArray();
+                byte[] returnedArray = new byte[tempArray.Length];
+                tempArray.CopyTo(returnedArray, 0);
+                return returnedArray;
             }
             catch (Exception e) {
                 //catches problems
@@ -172,16 +190,208 @@ namespace ExportProcess {
 
             }
         }
-        private byte[] processJointAttributes(ushort typeID) {
+        private byte[] processJointAttributes(JointData jointData) {
             List<byte> jointAttributeBytes = new List<byte>();
             foreach (byte byteID in BitConverter.GetBytes((uint)0004)) {
                 jointAttributeBytes.Add(byteID);
             }
-            
-            byte[] byteLength = BitConverter.GetBytes((uint)jointAttributeBytes.Count-4);
-            for (int length = 3; length < jointAttributeBytes.Count; length++) {
-                jointAttributeBytes.Insert(length, byteLength[length]);
+            switch ((int)jointData.Driver) {
+                case 0:
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0000)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+
+                    break;
+                case 1:
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0001)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+                    foreach (byte PWMByte in BitConverter.GetBytes(jointData.PWM)) {
+                        jointAttributeBytes.Add(PWMByte);
+                    }
+                    if (jointData.PWM) {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.PWMport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                    }
+                    else {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.CANport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                    }
+                    foreach (byte fricBoolByte in BitConverter.GetBytes(jointData.HasJointFriction)) {
+                        jointAttributeBytes.Add(fricBoolByte);
+                    }
+                    if (jointData.HasJointFriction) {
+                        foreach (byte fricByte in BitConverter.GetBytes((UInt16)jointData.Friction)) {
+                            jointAttributeBytes.Add(fricByte);
+                        }
+                    }
+                    foreach (byte driveBoolByte in BitConverter.GetBytes(jointData.DriveWheel)) {
+                        jointAttributeBytes.Add(driveBoolByte);
+                    }
+
+                    foreach (byte driveByte in BitConverter.GetBytes((UInt16)jointData.Driver)) {
+                        jointAttributeBytes.Add(driveByte);
+                    }
+                    foreach (byte inGearByte in BitConverter.GetBytes((float)jointData.InputGear)) {
+                        jointAttributeBytes.Add(inGearByte);
+                    }
+                    foreach (byte outGearByte in BitConverter.GetBytes((float)jointData.OutputGear)) {
+                        jointAttributeBytes.Add(outGearByte);
+                    }
+
+                    break;
+                case 2:
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0002)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+                    foreach (byte Port1Byte in BitConverter.GetBytes(jointData.CANport)) {
+                        jointAttributeBytes.Add(Port1Byte);
+                    }
+                    foreach (byte fricBoolByte in BitConverter.GetBytes(jointData.HasJointFriction)) {
+                        jointAttributeBytes.Add(fricBoolByte);
+                    }
+                    if (jointData.HasJointFriction) {
+                        foreach (byte fricByte in BitConverter.GetBytes((UInt16)jointData.Friction)) {
+                            jointAttributeBytes.Add(fricByte);
+                        }
+                    }
+                    break;
+                case 3:
+                    foreach(byte Port1 in BitConverter.GetBytes((float)jointData.SolenoidPortA)) {
+                        jointAttributeBytes.Add(Port1);
+                    }
+                    foreach (byte Port2 in BitConverter.GetBytes((float)jointData.SolenoidPortB)) {
+                        jointAttributeBytes.Add(Port2);
+                    }
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0003)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+                    if (jointData.HasJointFriction) {
+                        foreach (byte fricByte in BitConverter.GetBytes((UInt16)jointData.Friction)) {
+                            jointAttributeBytes.Add(fricByte);
+                        }
+                    }
+                    break;
+                case 4:
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0004)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+                    if (jointData.HasJointFriction) {
+                        foreach (byte fricByte in BitConverter.GetBytes((UInt16)jointData.Friction)) {
+                            jointAttributeBytes.Add(fricByte);
+                        }
+                    }
+                    break;
+                case 5:
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0005)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+                    foreach (byte PWMByte in BitConverter.GetBytes(jointData.PWM)) {
+                        jointAttributeBytes.Add(PWMByte);
+                    }
+                    if (jointData.PWM) {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.PWMport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                    }
+                    else {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.CANport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                    }
+                    if (jointData.HasJointFriction) {
+                        foreach (byte fricByte in BitConverter.GetBytes((UInt16)jointData.Friction)) {
+                            jointAttributeBytes.Add(fricByte);
+                        }
+                    }
+                    break;
+                case 6:
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0006)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+                    foreach (byte PWMByte in BitConverter.GetBytes(jointData.PWM)) {
+                        jointAttributeBytes.Add(PWMByte);
+                    }
+                    if (jointData.PWM) {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.PWMport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                        foreach (byte Port2Byte in BitConverter.GetBytes(jointData.PWMport2)) {
+                            jointAttributeBytes.Add(Port2Byte);
+                        }
+                    }
+                    else {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.CANport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                        foreach (byte Port2Byte in BitConverter.GetBytes(jointData.CANport2)) {
+                            jointAttributeBytes.Add(Port2Byte);
+                        }
+                    }
+                    if (jointData.HasJointFriction) {
+                        foreach (byte fricByte in BitConverter.GetBytes((UInt16)jointData.Friction)) {
+                            jointAttributeBytes.Add(fricByte);
+                        }
+                    }
+                    foreach (byte driveBoolByte in BitConverter.GetBytes(jointData.DriveWheel)) {
+                        jointAttributeBytes.Add(driveBoolByte);
+                    }
+
+                    foreach (byte driveByte in BitConverter.GetBytes((UInt16)jointData.Driver)) {
+                        jointAttributeBytes.Add(driveByte);
+                    }
+
+                    foreach (byte inGearByte in BitConverter.GetBytes((float)jointData.InputGear)) {
+                        jointAttributeBytes.Add(inGearByte);
+                    }
+                    foreach (byte outGearByte in BitConverter.GetBytes((float)jointData.OutputGear)) {
+                        jointAttributeBytes.Add(outGearByte);
+                    }
+                    break;
+                case 7:
+                    foreach (byte IDByte in BitConverter.GetBytes((UInt16)0007)) {
+                        jointAttributeBytes.Add(IDByte);
+                    }
+                    foreach (byte PWMByte in BitConverter.GetBytes(jointData.PWM)) {
+                        jointAttributeBytes.Add(PWMByte);
+                    }
+                    if (jointData.PWM) {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.PWMport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                    }
+                    else {
+                        foreach (byte Port1Byte in BitConverter.GetBytes(jointData.CANport)) {
+                            jointAttributeBytes.Add(Port1Byte);
+                        }
+                    }
+                    if (jointData.HasJointFriction) {
+                        foreach (byte fricByte in BitConverter.GetBytes((UInt16)jointData.Friction)) {
+                            jointAttributeBytes.Add(fricByte);
+                        }
+                    }
+                    foreach(byte brakeBoolByte in BitConverter.GetBytes(jointData.HasBrake)) {
+                        jointAttributeBytes.Add(brakeBoolByte);
+                    }
+                    if (jointData.HasBrake) {
+                        foreach (byte brake1Byte in BitConverter.GetBytes((float)jointData.BrakePortA)) {
+                            jointAttributeBytes.Add(brake1Byte);
+                        }
+                        foreach (byte brake2Byte in BitConverter.GetBytes((float)jointData.BrakePortB)) {
+                            jointAttributeBytes.Add(brake2Byte);
+                        }
+                    }
+                    foreach (byte inGearByte in BitConverter.GetBytes((float)jointData.InputGear)) {
+                        jointAttributeBytes.Add(inGearByte);
+                    }
+                    foreach (byte outGearByte in BitConverter.GetBytes((float)jointData.OutputGear)) {
+                        jointAttributeBytes.Add(outGearByte);
+                    }
+                    break;
             }
+
             return jointAttributeBytes.ToArray();
         }
         private string NameFilter(string name) {
@@ -197,4 +407,4 @@ namespace ExportProcess {
             return name;
         }
     }
-} 
+}
