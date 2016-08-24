@@ -75,7 +75,7 @@ public class UnityFieldDefinition : FieldDefinition
 				PropertySet.PropertySetCollider psCollider = currentPropertySet.Collider;
 				Collider unityCollider = null;
 
-				//Debug.Log(psCollider == null);
+				Debug.Log(psCollider == null);
 
 				switch (psCollider.CollisionType)
 				{
