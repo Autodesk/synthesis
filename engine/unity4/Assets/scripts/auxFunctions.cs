@@ -143,6 +143,37 @@ public class auxFunctions
 		float mouseY = Screen.height - Input.mousePosition.y; // Convert mouse coordinates to unity window positions coordinates
 		return mouseX > window.x && mouseX < window.x + window.width && mouseY > window.y && mouseY < window.y + window.height;
 	}
+
+    public static GameObject FindObject(GameObject parent, string name)
+    {
+        Component[] trs = parent.GetComponentsInChildren(typeof(Transform), true);
+        foreach (Transform t in trs)
+        {
+            if (t.name == name)
+            {
+                return t.gameObject;
+            }
+        }
+        return new GameObject("COULDNOTFIND" + name);
+    }
+
+    public static GameObject FindObject(string name)
+    {
+        GameObject[] trs = GameObject.FindObjectsOfType<GameObject>();
+        foreach (GameObject t in trs)
+        {
+            if (t.name.Contains(name))
+            {
+                return t.gameObject;
+            }
+        }
+        return new GameObject("COULDNOTFIND" + name);
+    }
+
+    void Update()
+    {
+
+    }
 }
 
 

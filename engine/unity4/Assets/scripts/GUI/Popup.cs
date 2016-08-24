@@ -41,7 +41,7 @@ public class Popup
             {
                 if (listRect.Contains(Event.current.mousePosition))
                 {
-                    //This actually changes the list entry based on the mouse position. It's sort of a cheat, but Unity's built in GUI methods didn't work.
+                    //This actually changes the list entry based on the mouse positi    on. It's sort of a cheat, but Unity's built in GUI methods didn't work.
                     listEntry = Mathf.FloorToInt((Event.current.mousePosition.y - listRect.y) / listStyle.CalcHeight(listContent[0], 1.0f));
                     done = true;
                 }
