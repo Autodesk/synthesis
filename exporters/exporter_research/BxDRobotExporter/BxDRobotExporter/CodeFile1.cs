@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Inventor;
-using Microsoft.Win32;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Collections;
-using System.Xml;
-namespace InventorAddInBasicGUI2
-{
+namespace InventorAddInBasicGUI2 {
     /// <summary>
     /// This is the primary AddIn Server class that implements the ApplicationAddInServer interface
     /// that all Inventor AddIns are required to implement. The communication between Inventor and

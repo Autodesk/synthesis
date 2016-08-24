@@ -129,7 +129,7 @@ public class DynamicCamera : MonoBehaviour
 					if (Input.GetMouseButton(1))
 					{
 						cameraAngle = Mathf.Max(Mathf.Min (cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
-						panValue = -Input.GetAxis ("mouse_axis_0") / 5f;
+						panValue = -Input.GetAxis ("Mouse X") / 5f;
 					}
 					else
 					{
@@ -137,7 +137,7 @@ public class DynamicCamera : MonoBehaviour
 
 						if (Input.GetMouseButton(0))
 						{
-							magnification = Mathf.Max (Mathf.Min (magnification - ((Input.GetAxis ("mouse_axis_1") / 5f) * magnification), 12f), 0.1f);
+							magnification = Mathf.Max (Mathf.Min (magnification - ((Input.GetAxis ("Mouse Y") / 5f) * magnification), 12f), 0.1f);
 						}
 					}
 
@@ -199,7 +199,7 @@ public class DynamicCamera : MonoBehaviour
 			lagRotVector = rotationVector;
 			zoomValue = 60f;
 			lagZoom = zoomValue;
-			rotationSpeed = 1f;
+			rotationSpeed = 3f;
 			transformSpeed = 0.25f;
 			scrollWheelSensitivity = 40f;
 		}
@@ -210,21 +210,21 @@ public class DynamicCamera : MonoBehaviour
 			{
 				if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
 				{
-					positionVector += (Input.GetAxis("mouse_axis_1") * mono.transform.up) * transformSpeed;
-					positionVector += (Input.GetAxis("mouse_axis_0") * mono.transform.right) * transformSpeed;
+					positionVector += (Input.GetAxis("Mouse Y") * mono.transform.up) * transformSpeed;
+					positionVector += (Input.GetAxis("Mouse X") * mono.transform.right) * transformSpeed;
 				}
 				else if (Input.GetMouseButton(0))
 				{
-					rotationVector.y += Input.GetAxis ("mouse_axis_0") * rotationSpeed;
-					positionVector += (Input.GetAxis("mouse_axis_1") * mono.transform.forward) * transformSpeed;
+					rotationVector.y += Input.GetAxis ("Mouse X") * rotationSpeed;
+					positionVector += (Input.GetAxis("Mouse Y") * mono.transform.forward) * transformSpeed;
 				}
 				else if (Input.GetMouseButton(1))
 				{
-					rotationVector.x -= Input.GetAxis ("mouse_axis_1") * rotationSpeed;
-					rotationVector.y += Input.GetAxis ("mouse_axis_0") * rotationSpeed;
+					rotationVector.x -= Input.GetAxis ("Mouse Y") * rotationSpeed;
+					rotationVector.y += Input.GetAxis ("Mouse X") * rotationSpeed;
 				}
 
-				zoomValue = Mathf.Max (Mathf.Min(zoomValue - Input.GetAxis("mouse_axis_2") * scrollWheelSensitivity, 60.0f), 10.0f);
+				zoomValue = Mathf.Max (Mathf.Min(zoomValue - Input.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
 				lagPosVector += (positionVector - lagPosVector) * (lagResponsiveness * Time.deltaTime);
 				lagRotVector += (rotationVector - lagRotVector) * (lagResponsiveness * Time.deltaTime);

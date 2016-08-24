@@ -85,7 +85,7 @@ GameObject:
   - 4: {fileID: 212332279}
   - 114: {fileID: 212332280}
   m_Layer: 0
-  m_Name: Initi
+  m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

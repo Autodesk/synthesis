@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Inventor;
-using Microsoft.Win32;
-using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Collections;
-using InventorAddInBasicGUI2;
 
-namespace BxDRobotExporter
-{
+namespace BxDRobotExporter {
     public enum DriveTypes {  NoDriver, Motor, Servo, BumperPnuematic, RelayPneumatic, WormScrew, DualMotor, Elevator};
     public enum WheelType { NotAWheel, Normal, Omni, Mecanum};
     public enum FrictionLevel { None, High, Medium, Low };
@@ -98,24 +91,12 @@ namespace BxDRobotExporter
         
         public bool equals(AssemblyJoint j)
         {
-            if (j.Equals(jointOfType))
-            {
-                return true;
-            } else
-            {
-                return false;
-            }
+            return j.Equals(jointOfType);
         }
         public bool same(BrowserNodeDefinition f)
         {
-            if (f.Label.Equals(Name))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return f.Label.Equals(Name);
+            
         }
         public void copyTo(JointData joint)
         {

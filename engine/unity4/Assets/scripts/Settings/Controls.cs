@@ -4,9 +4,10 @@ using ExceptionHandling;
 
 public class Controls : MonoBehaviour
 {
-    public enum Control { Forward, Backward, Right, Left, ResetRobot, RobotOrient, CameraToggle, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, Stats};
+    public enum Control { Forward, Backward, Right, Left, ResetRobot, RobotOrient, CameraToggle, Stats, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, Pickup, Release, Spawn};
 
-    public static KeyCode[] ControlKey = new KeyCode[14];
+    public static KeyCode[] ControlKey = new KeyCode[17];
+    public static readonly string[] ControlName = { "Move Forward", "Move Backward", "Turn Right", "Turn Left", "Reset Robot", "Orient Robot", "Toggle Camera", "Show Stats Window", "PWM 3 Positive", "PWM 3 Negative", "PWM 4 Positive", "PWM 4 Negative", "PWM 5 Positive", "PWM 5 Negative", "Pickup Gamepiece (Driver Practice Mode)", "Release Gamepiece (Driver Practice Mode)", "Spawn Gamepiece (Driver Practice Mode)"};
 
     public static void ResetDefaults()
     {
@@ -17,13 +18,16 @@ public class Controls : MonoBehaviour
         ControlKey[(int)Control.ResetRobot] = KeyCode.R;
         ControlKey[(int)Control.RobotOrient] = KeyCode.O;
         ControlKey[(int)Control.CameraToggle] = KeyCode.C;
+        ControlKey[(int)Control.Stats] = KeyCode.S;
         ControlKey[(int)Control.pwm3Plus] = KeyCode.Alpha1;
         ControlKey[(int)Control.pwm3Neg] = KeyCode.Alpha2;
         ControlKey[(int)Control.pwm4Plus] = KeyCode.Alpha3;
         ControlKey[(int)Control.pwm4Neg] = KeyCode.Alpha4;
         ControlKey[(int)Control.pwm5Plus] = KeyCode.Alpha5;
         ControlKey[(int)Control.pwm5Neg] = KeyCode.Alpha6;
-        ControlKey[(int)Control.Stats] = KeyCode.S;
+        ControlKey[(int)Control.Pickup] = KeyCode.Space;
+        ControlKey[(int)Control.Release] = KeyCode.RightShift;
+        ControlKey[(int)Control.Spawn] = KeyCode.Q;
     }
 
     public static void LoadControls()

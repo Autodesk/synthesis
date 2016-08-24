@@ -48,6 +48,11 @@ class FileBrowser : OverlayWindow
     }
 
     /// <summary>
+    /// Default Directory Path
+    /// </summary>
+    private string directoryPath = new DirectoryInfo(Application.dataPath).FullName;
+
+    /// <summary>
     /// Internal reference to scroll position.
     /// </summary>
     private Vector2 directoryScroll;
@@ -85,33 +90,21 @@ class FileBrowser : OverlayWindow
 
     public FileBrowser(string windowTitle, bool allowEsc = true)
     {
+        Init(windowTitle, Directory.GetParent(Application.dataPath).FullName, allowEsc);
+    }
+
+    public FileBrowser(string windowTitle, string defaultDirectory, bool allowEsc = true)
+    {
+        if (Directory.Exists(defaultDirectory)) directoryPath = defaultDirectory;
+        Init(windowTitle, defaultDirectory, allowEsc);
+    }
+
+    void Init(string windowTitle, string defaultDirectory, bool allowEsc = true)
+    {
         title = windowTitle;
         _allowEsc = allowEsc;
 
-        string exampleDir = Application.dataPath + "\\..\\examples\\default-robot-chassis\\synthesis-output";
-        // If we have a last-used directory.
-        /** /
-        if (BXDSettings.Instance.LastSkeletonDirectory != null && Directory.Exists(BXDSettings.Instance.LastSkeletonDirectory))
-        {
-            directoryLocation = BXDSettings.Instance.LastSkeletonDirectory;
-        }
-        else if (Directory.Exists(exampleDir))  // Otherwise try the example directory
-        {
-            directoryLocation = (new DirectoryInfo(exampleDir)).FullName;
-        }
-        else // Otherwise the application data directory
-        {
-            directoryLocation = Directory.GetParent(Application.dataPath).FullName;
-        }
-        /**/
-        if (Directory.Exists(exampleDir))  // Try the example directory
-        {
-            directoryLocation = (new DirectoryInfo(exampleDir)).FullName;
-        }
-        else // Otherwise the application data directory
-        {
-            directoryLocation = Directory.GetParent(Application.dataPath).FullName;
-        }
+        directoryLocation = defaultDirectory;
 
         //Loads textures and fonts
         buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
