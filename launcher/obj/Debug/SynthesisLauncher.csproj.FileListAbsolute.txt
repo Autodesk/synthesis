@@ -1,0 +1,26 @@
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\bin\Debug\SynthesisLauncher.exe.config
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\bin\Debug\SynthesisLauncher.exe
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\bin\Debug\SynthesisLauncher.pdb
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\bin\Debug\en\SynthesisLauncher.resources.dll
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\SynthesisLauncher.csprojResolveAssemblyReference.cache
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\SynthesisLauncher.LaunchForm.resources
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\SynthesisLauncher.Properties.Resources.resources
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\SynthesisLauncher.LaunchForm.en.resources
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\SynthesisLauncher.csproj.GenerateResource.Cache
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\en\SynthesisLauncher.resources.dll
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\SynthesisLauncher.exe
+c:\users\t_hics\documents\visual studio 2015\Projects\SynthesisLauncher\SynthesisLauncher\obj\Debug\SynthesisLauncher.pdb
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\bin\Debug\SynthesisLauncher.exe.config
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\obj\Debug\SynthesisLauncher.exe
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\obj\Debug\SynthesisLauncher.pdb
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\bin\Debug\SynthesisLauncher.exe
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\bin\Debug\SynthesisLauncher.pdb
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\bin\Debug\en\SynthesisLauncher.resources.dll
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\obj\Debug\SynthesisLauncher.csprojResolveAssemblyReference.cache
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\obj\Debug\SynthesisLauncher.LaunchForm.resources
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\obj\Debug\SynthesisLauncher.LaunchForm.en.resources
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\obj\Debug\SynthesisLauncher.csproj.GenerateResource.Cache
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\obj\Debug\en\SynthesisLauncher.resources.dll
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\bin\Debug\HtmlAgilityPack.dll
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\t_hics\Documents\GitHub\aardvark-Launcher\SynthesisLauncher\bin\Debug\HtmlAgilityPack.xml

@@ -1,0 +1,250 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BXDJ Version="2.0.0">
+  <Node GUID="fde5a9e9-4a1d-4d07-bafd-ae18bada7a8d">
+    <ParentID>-1</ParentID>
+    <ModelFileName>node_0.bxda</ModelFileName>
+    <ModelID>#35 12t double hub sprocket .5 hex 217-2658_101-_-.5 hex .25 spacer 217-3259_46-_-.5 hex .25 spacer 217-3259_50-_-120amp circuit breaker_105-_-1x1 27.5inch wcd100_14-_-1x1 27.5inch wcd100_9-_-1x1 2inch l bracket_69-_-1x1 2inch l bracket_70-_-1x1 2inch l bracket2_71-_-1x1 2inch l bracket2_72-_-1x1 batt mount_62-_-1x1 batt mount_63-_-1x1 batt mount_75-_-1x1 batt mount_76-_-1x1 batt mount2_73-_-1x1 batt mount2_74-_-2x1 2.5inch support_58-_-2x1 23.5inch wcd100_1-_-2x1 23.5inch wcd100_4-_-2x1 25.5inch slide100_2-_-2x1 25.5inch slide100_3-_-2x1 3.5inch wcd100_10-_-2x1 3.5inch wcd100_11-_-2x1 3.5inch wcd100_12-_-2x1 3.5inch wcd100_13-_-2x1 3.5inch wcd100_5-_-2x1 3.5inch wcd100_6-_-2x1 3.5inch wcd100_7-_-2x1 3.5inch wcd100_8-_-2x1 dspt_52-_-2x1 dsptt_53-_-2x1 dsptt2_64-_-3018t230_3018t23_54-_-3018t230_3018t23_55-_-3018t230_3018t23_56-_-3018t230_3018t23_57-_-air tank board_88-_-battery_61-_-breaker cover_106-_-cable windup assem_102-_-caliper_110-_-clippard air tank, 574 ml_81-_-clippard air tank, 574 ml_89-_-clippard air tank, 574 ml_90-_-clippard bracket_82-_-clippard bracket_83-_-clippard bracket_84-_-clippard bracket_85-_-clippard bracket_86-_-clippard bracket_87-_-disc brake thing_108-_-elevator assem_100-_-flanged bearing 0.5inch hex_45-_-flanged bearing 0.5inch hex_49-_-gearbox test_42-_-gearbox test_43-_-idk what to call this board_94-_-new side plates_111-_-new side plates_112-_-omni w_44-_-omni w_51-_-omni w2_47-_-omni w2_48-_-pdb board_93-_-pnuematic board_95-_-roborio board_92-_-signal light_107-_-srx board_91-_-support 1x1_109-_-universal gusset 2014_103-_-universal gusset 2014_104-_-universal gusset 2014_15-_-universal gusset 2014_16-_-universal gusset 2014_17-_-universal gusset 2014_18-_-universal gusset 2014_19-_-universal gusset 2014_20-_-universal gusset 2014_21-_-universal gusset 2014_22-_-universal gusset 2014_23-_-universal gusset 2014_24-_-universal gusset 2014_25-_-universal gusset 2014_26-_-universal gusset 2014_59-_-universal gusset 2014_60-_-universal gusset 2014_65-_-universal gusset 2014_66-_-universal gusset 2014_67-_-universal gusset 2014_68-_-universal gusset 2014_77-_-universal gusset 2014_78-_-universal gusset 2014_79-_-universal gusset 2014_80-_-universal gusset 2014_96-_-universal gusset 2014_97-_-universal gusset 2014_98-_-universal gusset 2014_99-_-wcd100 pillar_27-_-wcd100 pillar_28-_-wcd100 pillar_29-_-wcd100 pillar_30-_-wcd100 pillar_31-_-wcd100 pillar_32-_-wcd100 pillar_33-_-wcd100 pillar_34-_-wcd100 pillar_35-_-wcd100 pillar_36-_-wcd100 pillar_37-_-wcd100 pillar_38-_-wcd100 pillar_39-_-wcd100 pillar_40-_-wcd100 pillar_41-_-</ModelID>
+  </Node>
+  <Node GUID="e0b560bb-01d4-4c06-843e-24fd153d00c4">
+    <ParentID>0</ParentID>
+    <ModelFileName>node_1.bxda</ModelFileName>
+    <ModelID>stage 1 assem:1-_-</ModelID>
+    <LinearJoint>
+      <BXDVector3 VectorID="BasePoint">
+        <X>53.6480</X>
+        <Y>154.0361</Y>
+        <Z>-13.6330</Z>
+      </BXDVector3>
+      <BXDVector3 VectorID="Axis">
+        <X>0.0000</X>
+        <Y>1.0000</Y>
+        <Z>0.0000</Z>
+      </BXDVector3>
+      <LinearLowLimit>-10.1600</LinearLowLimit>
+      <LinearUpperLimit>76.2000</LinearUpperLimit>
+      <CurrentLinearPosition>33.0200</CurrentLinearPosition>
+    </LinearJoint>
+    <JointDriver>
+      <DriveType>ELEVATOR</DriveType>
+      <PortA>3</PortA>
+      <PortB>1</PortB>
+      <LowerLimit>-100.0000</LowerLimit>
+      <UpperLimit>-100.0000</UpperLimit>
+      <SignalType>PWM</SignalType>
+      <ElevatorDriverMeta DriverMetaID="2">
+        <ElevatorType>NOT_MULTI</ElevatorType>
+      </ElevatorDriverMeta>
+    </JointDriver>
+  </Node>
+  <Node GUID="5d2128b2-ca9a-487e-af19-d0978ff0ef60">
+    <ParentID>1</ParentID>
+    <ModelFileName>node_2.bxda</ModelFileName>
+    <ModelID>claw assem rev2_113-_-elevator carriage assem:1-_-</ModelID>
+    <LinearJoint>
+      <BXDVector3 VectorID="BasePoint">
+        <X>53.6480</X>
+        <Y>82.9161</Y>
+        <Z>-16.1730</Z>
+      </BXDVector3>
+      <BXDVector3 VectorID="Axis">
+        <X>0.0000</X>
+        <Y>-1.0000</Y>
+        <Z>0.0000</Z>
+      </BXDVector3>
+      <LinearLowLimit>-76.2000</LinearLowLimit>
+      <LinearUpperLimit>0.0000</LinearUpperLimit>
+      <CurrentLinearPosition>-38.1000</CurrentLinearPosition>
+    </LinearJoint>
+    <JointDriver>
+      <DriveType>ELEVATOR</DriveType>
+      <PortA>3</PortA>
+      <PortB>1</PortB>
+      <LowerLimit>-100.0000</LowerLimit>
+      <UpperLimit>-100.0000</UpperLimit>
+      <SignalType>PWM</SignalType>
+      <ElevatorDriverMeta DriverMetaID="2">
+        <ElevatorType>NOT_MULTI</ElevatorType>
+      </ElevatorDriverMeta>
+    </JointDriver>
+  </Node>
+  <Node GUID="045c0320-cdff-4703-923d-d93616b42be1">
+    <ParentID>0</ParentID>
+    <ModelFileName>node_3.bxda</ModelFileName>
+    <ModelID>omni 4inch:1-_-</ModelID>
+    <RotationalJoint>
+      <BXDVector3 VectorID="BasePoint">
+        <X>99.7922</X>
+        <Y>33.3861</Y>
+        <Z>-63.8123</Z>
+      </BXDVector3>
+      <BXDVector3 VectorID="Axis">
+        <X>0.0000</X>
+        <Y>0.0000</Y>
+        <Z>1.0000</Z>
+      </BXDVector3>
+      <CurrentAngularPosition>0.0000</CurrentAngularPosition>
+    </RotationalJoint>
+    <JointDriver>
+      <DriveType>MOTOR</DriveType>
+      <PortA>1</PortA>
+      <PortB>1</PortB>
+      <LowerLimit>-100.0000</LowerLimit>
+      <UpperLimit>-100.0000</UpperLimit>
+      <SignalType>PWM</SignalType>
+      <WheelDriverMeta DriverMetaID="0">
+        <WheelType>MECANUM</WheelType>
+        <WheelRadius>5.1009</WheelRadius>
+        <WheelWidth>1.7467</WheelWidth>
+        <BXDVector3 VectorID="WheelCenter">
+          <X>99.7747</X>
+          <Y>33.3355</Y>
+          <Z>-62.4446</Z>
+        </BXDVector3>
+        <ForwardAsympSlip>1.5000</ForwardAsympSlip>
+        <ForwardAsympValue>5.0000</ForwardAsympValue>
+        <ForwardExtremeSlip>1.0000</ForwardExtremeSlip>
+        <ForwardExtremeValue>7.0000</ForwardExtremeValue>
+        <SideAsympSlip>1.5000</SideAsympSlip>
+        <SideAsympValue>5.0000</SideAsympValue>
+        <SideExtremeSlip>1.0000</SideExtremeSlip>
+        <SideExtremeValue>7.0000</SideExtremeValue>
+        <IsDriveWheel>false</IsDriveWheel>
+      </WheelDriverMeta>
+    </JointDriver>
+  </Node>
+  <Node GUID="2716b4ec-e1ac-499e-b888-53003298d710">
+    <ParentID>0</ParentID>
+    <ModelFileName>node_4.bxda</ModelFileName>
+    <ModelID>omni 4inch:2-_-</ModelID>
+    <RotationalJoint>
+      <BXDVector3 VectorID="BasePoint">
+        <X>99.7922</X>
+        <Y>33.3861</Y>
+        <Z>2.8913</Z>
+      </BXDVector3>
+      <BXDVector3 VectorID="Axis">
+        <X>0.0000</X>
+        <Y>0.0000</Y>
+        <Z>-1.0000</Z>
+      </BXDVector3>
+      <CurrentAngularPosition>2.9622</CurrentAngularPosition>
+    </RotationalJoint>
+    <JointDriver>
+      <DriveType>MOTOR</DriveType>
+      <PortA>2</PortA>
+      <PortB>1</PortB>
+      <LowerLimit>-100.0000</LowerLimit>
+      <UpperLimit>-100.0000</UpperLimit>
+      <SignalType>PWM</SignalType>
+      <WheelDriverMeta DriverMetaID="0">
+        <WheelType>MECANUM</WheelType>
+        <WheelRadius>5.0778</WheelRadius>
+        <WheelWidth>1.7431</WheelWidth>
+        <BXDVector3 VectorID="WheelCenter">
+          <X>99.7994</X>
+          <Y>33.3729</Y>
+          <Z>1.6011</Z>
+        </BXDVector3>
+        <ForwardAsympSlip>1.5000</ForwardAsympSlip>
+        <ForwardAsympValue>5.0000</ForwardAsympValue>
+        <ForwardExtremeSlip>1.0000</ForwardExtremeSlip>
+        <ForwardExtremeValue>7.0000</ForwardExtremeValue>
+        <SideAsympSlip>1.5000</SideAsympSlip>
+        <SideAsympValue>5.0000</SideAsympValue>
+        <SideExtremeSlip>1.0000</SideExtremeSlip>
+        <SideExtremeValue>7.0000</SideExtremeValue>
+        <IsDriveWheel>false</IsDriveWheel>
+      </WheelDriverMeta>
+    </JointDriver>
+  </Node>
+  <Node GUID="b47adeb6-42d4-4f7a-8508-14752d6fe72b">
+    <ParentID>0</ParentID>
+    <ModelFileName>node_5.bxda</ModelFileName>
+    <ModelID>omni 4inch:3-_-</ModelID>
+    <RotationalJoint>
+      <BXDVector3 VectorID="BasePoint">
+        <X>46.4522</X>
+        <Y>33.3861</Y>
+        <Z>2.8913</Z>
+      </BXDVector3>
+      <BXDVector3 VectorID="Axis">
+        <X>0.0000</X>
+        <Y>0.0000</Y>
+        <Z>-1.0000</Z>
+      </BXDVector3>
+      <CurrentAngularPosition>-1.5145</CurrentAngularPosition>
+    </RotationalJoint>
+    <JointDriver>
+      <DriveType>MOTOR</DriveType>
+      <PortA>2</PortA>
+      <PortB>1</PortB>
+      <LowerLimit>-100.0000</LowerLimit>
+      <UpperLimit>-100.0000</UpperLimit>
+      <SignalType>PWM</SignalType>
+      <WheelDriverMeta DriverMetaID="0">
+        <WheelType>MECANUM</WheelType>
+        <WheelRadius>5.0778</WheelRadius>
+        <WheelWidth>1.7431</WheelWidth>
+        <BXDVector3 VectorID="WheelCenter">
+          <X>99.7994</X>
+          <Y>33.3729</Y>
+          <Z>1.6011</Z>
+        </BXDVector3>
+        <ForwardAsympSlip>1.5000</ForwardAsympSlip>
+        <ForwardAsympValue>5.0000</ForwardAsympValue>
+        <ForwardExtremeSlip>1.0000</ForwardExtremeSlip>
+        <ForwardExtremeValue>7.0000</ForwardExtremeValue>
+        <SideAsympSlip>1.5000</SideAsympSlip>
+        <SideAsympValue>5.0000</SideAsympValue>
+        <SideExtremeSlip>1.0000</SideExtremeSlip>
+        <SideExtremeValue>7.0000</SideExtremeValue>
+        <IsDriveWheel>false</IsDriveWheel>
+      </WheelDriverMeta>
+    </JointDriver>
+  </Node>
+  <Node GUID="58ffd7b8-5bb2-4d42-9ff0-19dc5d24c670">
+    <ParentID>0</ParentID>
+    <ModelFileName>node_6.bxda</ModelFileName>
+    <ModelID>omni 4inch:4-_-</ModelID>
+    <RotationalJoint>
+      <BXDVector3 VectorID="BasePoint">
+        <X>46.4522</X>
+        <Y>33.3861</Y>
+        <Z>-61.2580</Z>
+      </BXDVector3>
+      <BXDVector3 VectorID="Axis">
+        <X>0.0000</X>
+        <Y>0.0000</Y>
+        <Z>-1.0000</Z>
+      </BXDVector3>
+      <CurrentAngularPosition>0.0000</CurrentAngularPosition>
+    </RotationalJoint>
+    <JointDriver>
+      <DriveType>MOTOR</DriveType>
+      <PortA>1</PortA>
+      <PortB>1</PortB>
+      <LowerLimit>-100.0000</LowerLimit>
+      <UpperLimit>-100.0000</UpperLimit>
+      <SignalType>PWM</SignalType>
+      <WheelDriverMeta DriverMetaID="0">
+        <WheelType>MECANUM</WheelType>
+        <WheelRadius>5.1009</WheelRadius>
+        <WheelWidth>1.7467</WheelWidth>
+        <BXDVector3 VectorID="WheelCenter">
+          <X>99.7747</X>
+          <Y>33.3355</Y>
+          <Z>-62.4446</Z>
+        </BXDVector3>
+        <ForwardAsympSlip>1.5000</ForwardAsympSlip>
+        <ForwardAsympValue>5.0000</ForwardAsympValue>
+        <ForwardExtremeSlip>1.0000</ForwardExtremeSlip>
+        <ForwardExtremeValue>7.0000</ForwardExtremeValue>
+        <SideAsympSlip>1.5000</SideAsympSlip>
+        <SideAsympValue>5.0000</SideAsympValue>
+        <SideExtremeSlip>1.0000</SideExtremeSlip>
+        <SideExtremeValue>7.0000</SideExtremeValue>
+        <IsDriveWheel>false</IsDriveWheel>
+      </WheelDriverMeta>
+    </JointDriver>
+  </Node>
+</BXDJ>
