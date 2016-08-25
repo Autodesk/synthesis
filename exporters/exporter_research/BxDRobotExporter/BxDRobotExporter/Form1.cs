@@ -386,7 +386,7 @@ namespace BxDRobotExporter {
                 joint.InputGear = Convert.ToDouble(txtGearRationNum.Text);
             }
             catch {
-                if (txtGearRationNum.Text.Length > 0) {
+                if (txtGearRationNum.Text.Length > 0 && !txtGearRationNum.Text.Equals("-")) {
                     MessageBox.Show("warning, incorrect input");
                 }
             }
@@ -396,7 +396,7 @@ namespace BxDRobotExporter {
                 joint.JointFrictionLevel = Convert.ToDouble(this.JointFrictionLevel.Text);
             }
             catch {
-                if (txtGearRationNum.Text.Length > 0) {
+                if (txtGearRationNum.Text.Length > 0 && !txtGearRationNum.Text.Equals("-")) {
                     MessageBox.Show("warning, incorrect input");
                 }
             }
@@ -416,7 +416,7 @@ namespace BxDRobotExporter {
                 joint.OutputGear = Convert.ToDouble(txtGearRationDenom.Text);
             }
             catch {
-                if (txtGearRationDenom.Text.Length > 0) {
+                if (txtGearRationDenom.Text.Length > 0 && !txtGearRationDenom.Text.Equals("-")) {
                     MessageBox.Show("warning, incorrect input");
                 }
             }

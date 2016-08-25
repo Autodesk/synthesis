@@ -52,6 +52,8 @@ namespace BxDRobotExporter
             this.lblUpper.Size = new System.Drawing.Size(47, 17);
             this.lblUpper.TabIndex = 4;
             this.lblUpper.Text = "Upper";
+            this.lblUpper.BackColor = System.Drawing.Color.White;
+
             // 
             // lblLower
             // 
@@ -61,6 +63,7 @@ namespace BxDRobotExporter
             this.lblLower.Size = new System.Drawing.Size(46, 17);
             this.lblLower.TabIndex = 3;
             this.lblLower.Text = "Lower";
+            this.lblLower.BackColor = System.Drawing.Color.White;
             // 
             // txtUpper
             // 
@@ -96,6 +99,7 @@ namespace BxDRobotExporter
             this.lblTitle.Size = new System.Drawing.Size(47, 17);
             this.lblTitle.TabIndex = 5;
             this.lblTitle.Text = "Upper";
+            this.lblTitle.BackColor = System.Drawing.Color.White;
             // 
             // btnSave
             // 

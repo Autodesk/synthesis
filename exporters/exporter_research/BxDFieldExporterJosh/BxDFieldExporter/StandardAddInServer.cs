@@ -7,6 +7,7 @@ using BxDFieldExporter;
 using System.Drawing;
 using System.Collections;
 using System.Timers;
+using System.Threading;
 using System.Resources;
 namespace BxDFieldExporter
 {
@@ -68,7 +69,7 @@ namespace BxDFieldExporter
         static ComponentPropertiesForm form;// form for inputting different properties of the component
         static String m_ClientId;// string the is the id of the application
         static Object currentSelected;// the current component that the user is editing, needed for the unselection stuff
-        static bool found;// boolean to help in searching for objects and the corrosponding actions
+        static bool foundThing;// boolean to help in searching for objects and the corrosponding actions
         #endregion 
         public StandardAddInServer()
         {
@@ -154,7 +155,8 @@ namespace BxDFieldExporter
             {
                 if (!inExportView)
                 {
-
+                    currentSelected = null;
+                    doingWork = false;
                     SpawnPoints = new ArrayList();
                     spawnLocationNumber = 1;
                     nativeDoc = m_inventorApplication.ActiveDocument;
@@ -394,7 +396,7 @@ namespace BxDFieldExporter
                 MessageBox.Show(e.ToString());
             }
         }
-        
+        static bool doingWork;
         public void test(Inventor.NameValueMap Context)
         {
             AssemblyDocument asmDoc = (AssemblyDocument)
@@ -403,6 +405,7 @@ namespace BxDFieldExporter
                       (SelectionFilterEnum.kWorkPointFilter, "Select a part to remove");
         }
         // reacts to a selection
+        ElapsedEventHandler handler;
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
             oSet.Clear();// clear the highlight set to add a new component to the set
@@ -444,59 +447,19 @@ namespace BxDFieldExporter
                     }
                 }
             }
-            else if (SelectionDevice == SelectionDeviceEnum.kBrowserSelection && inExportView)
-            {// if the selection is from the browser and the exporter is active, cool feature is that browsernode.DoSelect() calls this so I do all the reactions in here
-                foreach (Object sel in JustSelectedEntities)
-                {//looks at all things selected
-                    if (sel is BrowserNodeDefinition)
-                    {// react only if sel is a browsernodedef
-                        foreach (FieldDataComponent f in FieldComponents)
-                        {// looks at all the components of parts
-                            if (f.same(((BrowserNodeDefinition)sel)))
-                            {// if the browsernode is the same as a the Component's node
-                                selectedComponent = f;// set the selected Component for the rest of the code to interact with
-                                foreach (ComponentOccurrence o in selectedComponent.compOcc)
-                                {// looks at the occurences in the selected Component's part list
-                                    oSet.AddItem(o);// show the user which parts are selected
-                                }
-                                editComponent.Enabled = true;
-                                removeComponent.Enabled = true;
-                                addAssembly.Enabled = true;
-                                addPart.Enabled = true;
-                                removeAssembly.Enabled = true;
-                                removeSubAssembly.Enabled = true;
-                                editSpawnLocation.Enabled = false;
-                                removeSpawnPoint.Enabled = false;
-                            }
-                        }
-                        foreach(UserCoordinateSystem ucs in SpawnPoints)
-                        {
-                            if (((BrowserNodeDefinition)sel).Label.Equals(ucs.Name)){
-                                editComponent.Enabled = false;
-                                removeComponent.Enabled = false;
-                                addAssembly.Enabled = false;
-                                addPart.Enabled = false;
-                                removeAssembly.Enabled = false;
-                                removeSubAssembly.Enabled = false;
-                                editSpawnLocation.Enabled = true;
-                                removeSpawnPoint.Enabled = true;
-                                oSet.AddItem(ucs);
-                            }
-                        }
-                    }
-                }
-            }
         }
         // starts a timer to react to events in the browser/ graphics interface
         static bool rightDoc;
+        static System.Timers.Timer aTimer;
         private void TimerWatch()
         {
             try
             {
-                System.Timers.Timer aTimer = new System.Timers.Timer();// creates a new timer
-                aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);// handles an elasped time event
-                aTimer.Interval = 250;// set time timer reaction interval to 1/4 of a second, we do this to get regular checking without lagging out the computer
-                aTimer.AutoReset = true;// auto restarts the timer after the 1/4 second interval
+                aTimer = new System.Timers.Timer();// creates a new timer
+                handler = new ElapsedEventHandler(OnTimedEvent);// handles an elasped time event
+                aTimer.Elapsed += handler;
+                aTimer.Interval = 150;// set time timer reaction interval to 1/5 of a second, we do this to get regular checking without lagging out the computer
+                aTimer.AutoReset = true;// auto restarts the timer after the 1/5 second interval
                 aTimer.Enabled = true;// starts the timer
                 rightDoc = true;
             }
@@ -512,8 +475,10 @@ namespace BxDFieldExporter
         // reacts to the timer elapsed event, this allows us to select and unselect things as needed
         private static void OnTimedEvent(object source, ElapsedEventArgs e)
         {
-            found = false;
-            if (checkKeyPressed(Keys.ShiftKey) || checkKeyPressed(Keys.ControlKey))
+            aTimer.Stop();
+            doingWork = true;
+            foundThing = false;
+            if ((checkKeyPressed(Keys.ShiftKey) || checkKeyPressed(Keys.ControlKey)))
             {
             } else
             {
@@ -524,6 +489,11 @@ namespace BxDFieldExporter
                     runOnce = true;
                 }
             }
+            if (checkKeyPressed(Keys.Escape)){
+                done = true;
+                m_inventorApplication.CommandManager.StopActiveCommand();
+                runOnce = true;
+            }
             foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
             {// looks through all the nodes under the top node
                 if (node.Selected)
@@ -532,33 +502,52 @@ namespace BxDFieldExporter
                     {// looks at all the components in the fieldComponents
                         if (t.same(node.BrowserNodeDefinition))
                         {// if t is part of that browser node
-                            if(!currentSelected.Equals(t))
+                            foundThing = true;// tell the program it found the node
+                            if (! t.Equals(currentSelected))
                             {// is the selected node is no longer selected 
-                                found = true;// tell the program it found the node
+                                selectedComponent = t;// set the selected Component for the rest of the code to interact with
                                 oSet.Clear();// clear the highlighted set in prep to add new occurrences
                                 foreach (ComponentOccurrence io in t.compOcc)
                                 {// looks at the occurences that are part of the component
                                     oSet.AddItem(io);// add the occurence to the highlighted set
                                 }
+                                editComponent.Enabled = true;
+                                removeComponent.Enabled = true;
+                                addAssembly.Enabled = true;
+                                addPart.Enabled = true;
+                                removeAssembly.Enabled = true;
+                                removeSubAssembly.Enabled = true;
+                                editSpawnLocation.Enabled = false;
+                                removeSpawnPoint.Enabled = false;
                                 currentSelected = t;// change the selected dataComponent
                             }
                         }
                     }
-                    foreach(UserCoordinateSystem ucs in SpawnPoints)
+                    foreach (UserCoordinateSystem ucs in SpawnPoints)
                     {
                         if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))
                         {// if t is part of that browser node
-                            if (!currentSelected.Equals(ucs))
-                            {// is the selected node is no longer selected 
-                                found = true;// tell the program it found the node
-                                oSet.Clear();// clear the highlighted set in prep to add new occurrences
+                            foundThing = true;
+                            if (! ucs.Equals(currentSelected))
+                            {// is the selected node is no longer selected
+                                oSet.Clear();
+                                oSet.AddItem(ucs);
+                                editComponent.Enabled = false;
+                                removeComponent.Enabled = false;
+                                addAssembly.Enabled = false;
+                                addPart.Enabled = false;
+                                removeAssembly.Enabled = false;
+                                removeSubAssembly.Enabled = false;
+                                editSpawnLocation.Enabled = true;
+                                removeSpawnPoint.Enabled = true;
                                 currentSelected = ucs;// change the selected dataComponent
                             }
                         }
                     }
                 }
             }
-            if (!found)
+
+            if (!foundThing)
             {// if the program didn't find any selected node then assume that the user deselected 
                 oSet.Clear();// clear the set because the user doesn't have anything selected
                 editComponent.Enabled = false;
@@ -569,51 +558,10 @@ namespace BxDFieldExporter
                 removeSubAssembly.Enabled = false;
                 editSpawnLocation.Enabled = false;
                 removeSpawnPoint.Enabled = false;
-            }
-            if (!m_inventorApplication.ActiveDocument.InternalName.Equals(nativeDoc.InternalName))
-            {
-                if (rightDoc)
-                {
-                    rightDoc = false;
-
-                    addNewComponent.Enabled = false;
-                    editComponent.Enabled = false;
-                    removeComponent.Enabled = false;
-                    addAssembly.Enabled = false;
-                    beginExporter.Enabled = true;// sets the correct buttons states
-                    cancelExport.Enabled = false;
-                    exportField.Enabled = false;
-                    addPart.Enabled = false;
-                    removeAssembly.Enabled = false;
-                    removeSubAssembly.Enabled = false;
-                    editSpawnLocation.Enabled = false;
-                    removeSpawnPoint.Enabled = false;
-
-                    oPane.Visible = false;// Hide the browser pane
-                }
-            }
-            else
-            {
-                if (!rightDoc)
-                {
-                    rightDoc = true;
-
-                    addNewComponent.Enabled = true;
-                    removeComponent.Enabled = true;
-                    editComponent.Enabled = true;
-                    addAssembly.Enabled = true;
-                    beginExporter.Enabled = false;// sets the correct buttons states
-                    cancelExport.Enabled = true;
-                    exportField.Enabled = true;
-                    addPart.Enabled = true;
-                    removeAssembly.Enabled = true;
-                    removeSubAssembly.Enabled = true;
-
-                    oPane.Visible = true;// Hide the browser pane
-                    oPane.Activate();
-                }
-
-            }
+                currentSelected = null;
+             }
+            doingWork = false;
+            aTimer.Start();
         }
         // adds a new fielddataComponent to the array and to the browser pane
         public static BrowserNodeDefinition addComponent(String name)
@@ -773,7 +721,7 @@ namespace BxDFieldExporter
                                 }
                             }
                         }
-                        if (!found)
+                        if (!found && joint != null)
                         {
                             MessageBox.Show("Warning, assembly not found in item component");// if the assembly wasn't found in the component then tell the user
                         }
@@ -845,7 +793,7 @@ namespace BxDFieldExporter
                                 }
                             }
                         }
-                        if (!found)
+                        if (!found && joint != null)
                         {
                             MessageBox.Show("Warning, part not found in item component");// if the part wasn't found in the component then tell the user
                         }

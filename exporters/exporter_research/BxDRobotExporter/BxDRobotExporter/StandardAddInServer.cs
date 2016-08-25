@@ -1361,11 +1361,15 @@ namespace BxDRobotExporter {
         // reacts to the limits combobox being selected
         public void LimitsComboBox_OnSelect(Inventor.NameValueMap Context) {
             if (doWerk) {// if the select event shuold be reacted to
-                if (!(selectedJointData == null)) {
-                    try {
-                        lims.readFromData(selectedJointData);// add the correct data to the form
+                if (selectedJoints.Count > 0)
+                {
+                    selectedJointData = (JointData)selectedJoints[0];
+                    try
+                    {
+                        lims.readFromData(selectedJointData);
                     }
-                    catch (Exception e) {
+                    catch (Exception e)
+                    {
                         MessageBox.Show(e.ToString());
                     }
                     if (LimitsComboBox.Text.Equals("Limits"))// if limits is selected then set the selected joint gets the correct data

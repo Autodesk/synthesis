@@ -20,7 +20,7 @@ namespace BxDRobotExporter {
             }
             catch(Exception ex)
             {
-                if (txtUpper.Text.Length > 0)
+                if (txtUpper.Text.Length > 0 && !txtUpper.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }
@@ -40,7 +40,7 @@ namespace BxDRobotExporter {
             }
             catch(Exception ex)
             {
-                if (txtLower.Text.Length > 0)
+                if (txtLower.Text.Length > 0 && !txtLower.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }
