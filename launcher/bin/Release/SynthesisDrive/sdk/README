@@ -1,0 +1,34 @@
+WPILIE QUICKSTART GUIDE
+
+IMPORTANT: This needs to be compiled with a windows version of MinGW-w64.
+           Use the link http://win-builds.org/doku.php to download the
+           compiler. This version of MinGW supports the standard threading
+           library found in the C++11 standard. Previous versions, including
+           the 32 bit version, does not.
+
+To compile robot code with MinGW, link the following libraries 
+and use the following build options (ensure this order):
+Note: Despite using the 64 bit compiler (MinGW-w64), compile the
+      source in 32 bits by not including the -w64 option.
+
+- (Debug) -----------------------
+
+   - [C++ Compiler] -
+    Aardvark-WPILie32d
+    Aardvark-GoldenGate32d
+    Ws2_32
+    -std=c++11 -fpermissive
+
+  - [C++ Linker] -
+    -static
+	
+- (Release) ---------------------
+
+  - [C++ Compiler] -
+    Aardvark-WPILie32
+    Aardvark-GoldenGate32
+    Ws2_32
+    -std=c++11 -fpermissive -O3
+
+  - [C++ Linker] -
+    -static
