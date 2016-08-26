@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Inventor;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using System.Drawing;
-
-using Microsoft.VisualBasic.Compatibility;
+using BxDFieldExporter;
+using System.Collections.Generic;
+using System.Collections;
+using System.IO;
 
 namespace ExportProcess {
     public class TempWriter {
@@ -17,9 +14,13 @@ namespace ExportProcess {
         private Inventor.Application currentApplication;
         private AssemblyDocument currentDocument;
         private stdole.IPictureDisp thumbnailDisp;
+        private List<FieldDataComponent> fieldDataComponents;
         #endregion
-        public TempWriter(Inventor.Application currentApplication, stdole.IPictureDisp thumbnail) {
+        public TempWriter(Inventor.Application currentApplication, stdole.IPictureDisp thumbnail, ArrayList fieldDataComponents) {
             //The path to the temp directory where temp folders will be saved
+            foreach (FieldDataComponent fieldComponent in fieldDataComponents) {
+                this.fieldDataComponents.Add(fieldComponent);
+            }
             path = "C:\\Users\\" + System.Environment.UserName + "\\AppData\\Roaming\\Autodesk\\Synthesis\\";
             //the active document
             currentDocument = (AssemblyDocument)currentApplication.ActiveDocument;
@@ -41,6 +42,23 @@ namespace ExportProcess {
                     tempDoc = (Document)component.Definition.Document;
                     //Saves the tempDoc to the temporary directory
                     translatorSave(currentApplication, tempDoc, NameFilter(component.Name));
+                    foreach (FieldDataComponent fieldComponent in fieldDataComponents) {
+                        foreach (ComponentOccurrence checkedComponent in fieldComponent.compOcc) {
+                            if (component.Equals(checkedComponent)) {
+                                byte[] stlIn = System.IO.File.ReadAllBytes(path + NameFilter(component.Name) + ".stl");
+                                List<byte> tempStl = new List<byte>();
+                                foreach (byte stlByte in stlIn) {
+                                    tempStl.Add(stlByte);
+                                }
+                                foreach(byte fieldIDByte in BitConverter.GetBytes(fieldComponent.ID)) {
+                                    tempStl.Add(fieldIDByte);
+                                }
+                                using(BinaryWriter stlOut = new BinaryWriter(new FileStream(path + NameFilter(component.Name) + ".stl", FileMode.Create))) {
+                                    foreach (byte stlByteOut in tempStl) stlOut.Write(stlByteOut);
+                                }
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception e) {
@@ -86,18 +104,14 @@ namespace ExportProcess {
         }
         private string NameFilter(string name) {
             //each line removes an invalid character from the file name 
-            name = name.Replace("*", "");
-            name = name.Replace(".", "");
-            name = name.Replace("\"", "");
-            name = name.Replace("/", "");
-            name = name.Replace("[", "");
-            name = name.Replace("]", "");
-            name = name.Replace(":", "");
-            name = name.Replace(";", "");
-            name = name.Replace("|", "");
-            name = name.Replace("=", "");
-            name = name.Replace(",", "");
             name = name.Replace("\\", "");
+            name = name.Replace("/", "");
+            name = name.Replace("*", "");
+            name = name.Replace("?", "");
+            name = name.Replace("\"", "");
+            name = name.Replace("<", "");
+            name = name.Replace(">", "");
+            name = name.Replace("|", "");
             return name;
         }
     }

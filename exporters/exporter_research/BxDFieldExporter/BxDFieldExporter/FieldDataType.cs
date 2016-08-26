@@ -1,19 +1,10 @@
 ﻿using Inventor;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace BxDFieldExporter
-{
+namespace BxDFieldExporter {
     public enum ColliderType { Sphere, Box, Mesh };
-    public class FieldDataType
-    {
+    public class FieldDataComponent {
         public ArrayList compOcc;
         public ColliderType colliderType;
         public BrowserNodeDefinition node;
@@ -23,10 +14,10 @@ namespace BxDFieldExporter
         public double Scale;
         public double Friction;
         public bool Dynamic;
+        public uint ID;
         public double Mass;
-        public string Name;
-        public FieldDataType(BrowserNodeDefinition f)
-        {
+        public String Name;
+        public FieldDataComponent(BrowserNodeDefinition f, uint ID) {
             compOcc = new ArrayList();
             Name = f.Label;
             node = f;
@@ -38,26 +29,24 @@ namespace BxDFieldExporter
             Friction = 50;
             Dynamic = false;
             Mass = 0;
-            
+            this.ID = ID;
         }
-        public void copyToNewType(FieldDataType f)
-        {
-            f.colliderType = this.colliderType;
-            f.X = this.X;
-            f.Y = this.Y;
-            f.Z = this.Z;
-            f.Scale = this.Scale;
-            f.Friction = this.Friction;
-            f.Dynamic = this.Dynamic;
-            f.Mass = this.Mass;
+        public void copyToNewComponent(FieldDataComponent f) {
+            f.colliderType = colliderType;
+            f.X = X;
+            f.Y = Y;
+            f.Z = Z;
+            f.Scale = Scale;
+            f.Friction = Friction;
+            f.Dynamic = Dynamic;
+            f.Mass = Mass;
+            f.ID = ID;
         }
-        public bool same(BrowserNodeDefinition f)
-        {
-            if (f.Label.Equals(node.Label))
-            {
+        public bool same(BrowserNodeDefinition f) {
+            if (f.Label.Equals(node.Label)) {
                 return true;
-            } else
-            {
+            }
+            else {
                 return false;
             }
         }

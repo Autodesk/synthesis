@@ -117,6 +117,10 @@
     <Compile Include="ComponentPropertiesForm.Designer.cs">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EditCoordinate.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditCoordinate.Designer.cs" />
     <Compile Include="EnterName.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,9 +128,7 @@
       <DependentUpon>EnterName.cs</DependentUpon>
     </Compile>
     <Compile Include="FieldDataType.cs" />
-    <Compile Include="FileReader.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FieldSaver.cs" />
     <Compile Include="JointResolver.cs" />
     <Compile Include="MeshColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
@@ -134,11 +136,8 @@
     <Compile Include="MeshColliderPropertiesForm.Designer.cs">
       <DependentUpon>MeshColliderPropertiesForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="pathInput.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="pathInput.Designer.cs" />
-    <Compile Include="RobotSaver.cs" />
+    <Compile Include="PictureDispConverter.cs" />
+    <Compile Include="Resource.Designer.cs" />
     <Compile Include="SphereColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -165,10 +164,8 @@
     <EmbeddedResource Include="ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FileReader.resx">
-      <DependentUpon>FileReader.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="pathInput.resx" />
+    <EmbeddedResource Include="EditCoordinate.resx" />
+    <EmbeddedResource Include="Resource.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
