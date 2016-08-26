@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using Inventor;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections;
+using BxDFieldExporter;
 
 namespace ExportProcess {
-    public class RobotSaver {
+    public class FieldSaver {
         #region State Variables
         private TempReader tempReader;
         private TempWriter tempWriter;
         private JointResolver jointResolver;
         private Inventor.Application currentApplication;
         private List<byte> fileData = new List<byte>();
+
         #endregion
-        public RobotSaver(Inventor.Application currentApplication) {
-            tempReader = new TempReader((AssemblyDocument)currentApplication.ActiveDocument);
-            tempWriter = new TempWriter(currentApplication, ((AssemblyDocument)currentApplication.ActiveDocument).Thumbnail);
+        public FieldSaver(Inventor.Application currentApplication, ArrayList fieldDataList) {
+            tempReader = new TempReader((AssemblyDocument)currentApplication.ActiveDocument, fieldDataList);
+            tempWriter = new TempWriter(currentApplication, ((AssemblyDocument)currentApplication.ActiveDocument).Thumbnail, fieldDataList);
             jointResolver = new JointResolver(currentApplication, tempReader.getSTLDict());
             this.currentApplication = currentApplication;
-
+           
         }
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             MessageBox.Show("Conversion " + (((bool)e.Result) ? "successful." : "failed."));
