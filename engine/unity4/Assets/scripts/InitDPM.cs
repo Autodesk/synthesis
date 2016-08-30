@@ -263,28 +263,6 @@ public class InitDPM : MonoBehaviour
             gui.hideGuiCallback = HideGuiSidebar;
             gui.showGuiCallback = ShowGuiSidebar;
 
-            gui.AddWindow("Load Robot", new FileBrowser("Load Robot"), (object o) =>
-            {
-                string fileLocation = (string)o;
-                // If dir was selected...
-                if (File.Exists(fileLocation + "\\skeleton.bxdj"))
-                {
-                    fileLocation += "\\skeleton.bxdj";
-                }
-                DirectoryInfo parent = Directory.GetParent(fileLocation);
-                if (parent != null && parent.Exists && File.Exists(parent.FullName + "\\skeleton.bxdj"))
-                {
-                    this.filePath = parent.FullName + "\\";
-                    reloadRobotInFrames = 2;
-                }
-                else
-                {
-                    UserMessageManager.Dispatch("Invalid selection!", 10f);
-                }
-
-                dynamicCamera.EnableMoving();
-            });
-
             gui.AddAction("Reset Robot", () =>
             {
                 resetRobot();
@@ -490,6 +468,9 @@ public class InitDPM : MonoBehaviour
 
             //makes sure robot spawns in the correct place
             mainNode.transform.position = new Vector3(-2f, 1f, -3f);
+
+            mainNode.rigidbody.isKinematic = true;
+            StartCoroutine(FinishReset());
 
         }
 
@@ -816,5 +797,13 @@ public class InitDPM : MonoBehaviour
                     time += Time.deltaTime;
             }
         }
+    }
+    /// <summary>
+    /// Waits .1 seconds before making robot move again.
+    /// </summary>
+    IEnumerator FinishReset()
+    {
+        yield return new WaitForSeconds(0.3f);
+        mainNode.rigidbody.isKinematic = false;
     }
 }

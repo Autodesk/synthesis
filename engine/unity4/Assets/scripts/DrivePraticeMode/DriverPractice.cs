@@ -52,11 +52,15 @@ public partial class DriverPracticeMode : MonoBehaviour {
         interactors = new List<Interactor>();
         vectors = new List<Vector3>();
         gamepieces = new List<string>();
+        StreamReader reader;
+        string line;
+        int counter;
+        gamepieces.Add("gamepiece");
         if (File.Exists(PlayerPrefs.GetString("dpmSelectedRobot") + "\\dpmConfiguration.txt"))
         {
-            StreamReader reader = new StreamReader(PlayerPrefs.GetString("dpmSelectedRobot") + "\\dpmConfiguration.txt");
-            string line = "";
-            int counter = 0;
+            reader = new StreamReader(PlayerPrefs.GetString("dpmSelectedRobot") + "\\dpmConfiguration.txt");
+            line = "";
+            counter = 0;
 
             while ((line = reader.ReadLine()) != null)
             {
@@ -74,29 +78,36 @@ public partial class DriverPracticeMode : MonoBehaviour {
                     if (line.Equals("#Gamepieces")) counter++;
                     else vectors.Add(RobotConfiguration.DeserializeVector3Array(line));
                 }
-                else if (counter == 3)
+            }
+            reader.Close();
+        }
+
+        line = "";
+        counter = 0;
+        reader = new StreamReader(PlayerPrefs.GetString("dpmSelectedField") + "\\driverpracticemode.txt");
+
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (line.Equals("#Gamepieces")) counter++;
+            else if (counter == 1)
+            {
+                if (line.Equals("#HoldingLimit")) counter++;
+                else
                 {
-                    gamepieces.Add(line);
+                    gamepieces[0] = line;
                 }
             }
-            reader.Close();
-
-            for (int i = 0; i < interactorObjects.Count; i++)
+            else if (counter == 2)
             {
-                interactors.Add(interactorObjects[i].AddComponent<Interactor>());
-                interactors[i].collisionKeyword = gamepieces[0];
+                holdingLimit = Mathf.RoundToInt(float.Parse(line));
             }
+        }
+        reader.Close();
 
-            line = "";
-            counter = 0;
-            reader = new StreamReader(PlayerPrefs.GetString("dpmSelectedField") + "\\driverpracticemode.txt");
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                if (line.Equals("#Holdinglimit")) counter++;
-                if (counter == 1) holdingLimit = Mathf.RoundToInt(float.Parse(line));
-            }
-            reader.Close();
+        for (int i = 0; i < interactorObjects.Count; i++)
+        {
+            interactors.Add(interactorObjects[i].AddComponent<Interactor>());
+            interactors[i].collisionKeyword = gamepieces[0];
         }
 
 
@@ -104,8 +115,6 @@ public partial class DriverPracticeMode : MonoBehaviour {
         if (isConfiguring)
         {
             robotConfig = GameObject.Find("RobotConfiguration").GetComponent<RobotConfiguration>();
-            gamepieces.Clear();
-            gamepieces.Add("gamepiece");
             UpdateConfiguration();
         }
     }

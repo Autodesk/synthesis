@@ -264,6 +264,28 @@ public class RobotConfiguration : MonoBehaviour
         }
     }
 
+    private void TryLoadField()
+    {
+        activeField = new GameObject("Field");
+
+        FieldDefinition.Factory = delegate (Guid guid, string name)
+        {
+            return new UnityFieldDefinition(guid, name);
+        };
+        try
+        {
+            string loadResult;
+            UnityFieldDefinition field = (UnityFieldDefinition)BXDFProperties.ReadProperties(Application.dataPath + "//resources//ConfigurationEnvironment//definition.bxdf", out loadResult);
+            Debug.Log(loadResult);
+            field.CreateTransform(activeField.transform);
+            bool fieldLoaded = field.CreateMesh(Application.dataPath + "//resources//ConfigurationEnvironment//mesh.bxda");
+        }
+        catch
+        {
+            Debug.Log("Field loading failed!");
+        }
+    }
+
     void Start()
     {
         editingVectorPanel = auxFunctions.FindObject(GameObject.Find("Canvas"), "VectorPopup");
@@ -364,6 +386,9 @@ public class RobotConfiguration : MonoBehaviour
                 nodeSave.Add("node_0.bxda");
             }
         }
+        TryLoadField();
+        filePath = PlayerPrefs.GetString("dpmSelectedRobot");
+        TryLoadRobot();
     }
 
     void OnEnable()
@@ -388,8 +413,6 @@ public class RobotConfiguration : MonoBehaviour
         if (reloadRobotInFrames >= 0 && reloadRobotInFrames-- == 0)
         {
             reloadRobotInFrames = -1;
-            filePath = PlayerPrefs.GetString("dpmSelectedRobot");
-            TryLoadRobot();
         }
 
         // Reset Robot
@@ -564,7 +587,7 @@ public class RobotConfiguration : MonoBehaviour
     }
     public void SpawnGamepiece()
     {
-        GameObject.Instantiate(GameObject.Find("gamepiece"),Vector3.zero,Quaternion.identity);
+        GameObject.Instantiate(auxFunctions.FindObject(gamepieces[0]), new Vector3(0, 3, 0), Quaternion.identity);
     }
 
     public void Save()

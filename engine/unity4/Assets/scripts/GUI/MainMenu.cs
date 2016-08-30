@@ -5,15 +5,15 @@ using System.IO;
 
 public class MainMenu : MonoBehaviour {
 
-    enum Tab { Main, Sim, Options, FieldDir, RobotDir};
-    Tab currentTab = Tab.Main;
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir};
+    public static Tab currentTab = Tab.Main;
 
     public GameObject homeTab;
     public GameObject simTab;
     public GameObject optionsTab;
 
-    enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
-    Sim currentSim = Sim.Selection;
+    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
+    public static Sim currentSim = Sim.Selection;
     Sim lastSim;
 
     private GameObject selectionPanel; //The Mode Selection Tab GUI Objects
@@ -69,8 +69,8 @@ public class MainMenu : MonoBehaviour {
 
     public static GameObject inputConflict;
 
-    public static bool fullscreen = false;
-    public static int resolutionsetting = 0;
+    public static bool fullscreen;
+    public static int resolutionsetting;
     private int[] xresolution = new int[10];
     private int[] yresolution = new int[10];
 
@@ -101,29 +101,38 @@ public class MainMenu : MonoBehaviour {
 
     public void SwitchTabHome()
     {
-        currentTab = Tab.Main;
+        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir)
+        {
+            currentTab = Tab.Main;
 
-        simTab.SetActive(false);
-        optionsTab.SetActive(false);
-        homeTab.SetActive(true);
+            simTab.SetActive(false);
+            optionsTab.SetActive(false);
+            homeTab.SetActive(true);
+        }
     }
 
     public void SwitchTabSim()
     {
-        currentTab = Tab.Sim;
+        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir)
+        {
+            currentTab = Tab.Sim;
 
-        homeTab.SetActive(false);
-        optionsTab.SetActive(false);
-        simTab.SetActive(true);
+            homeTab.SetActive(false);
+            optionsTab.SetActive(false);
+            simTab.SetActive(true);
+        }
     }
 
     public void SwitchTabOptions()
     {
-        currentTab = Tab.Options;
+        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir)
+        {
+            currentTab = Tab.Options;
 
-        homeTab.SetActive(false);
-        simTab.SetActive(false);
-        optionsTab.SetActive(true);
+            homeTab.SetActive(false);
+            simTab.SetActive(false);
+            optionsTab.SetActive(true);
+        }
     }
 
     public void SwitchSimSelection()
@@ -256,30 +265,34 @@ public class MainMenu : MonoBehaviour {
 
     public void SwitchDPMConfiguration()
     {
-        currentSim = Sim.DPMConfiguration;
-
-        driverPracticeMode.SetActive(false);
-        dpmConfiguration.SetActive(true);
-
-        string line = "";
-        int counter = 0;
-        StreamReader reader = new StreamReader(PlayerPrefs.GetString("dpmSelectedRobot") + "\\dpmConfiguration.txt");
-
-        string fieldName = "";
-        while ((line = reader.ReadLine()) != null)
+        if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))
         {
-            if (line.Equals("#Field")) counter++;
-            else if (counter == 1)
+            currentSim = Sim.DPMConfiguration;
+
+            driverPracticeMode.SetActive(false);
+            dpmConfiguration.SetActive(true);
+
+            string line = "";
+            int counter = 0;
+            StreamReader reader = new StreamReader(PlayerPrefs.GetString("dpmSelectedRobot") + "\\dpmConfiguration.txt");
+
+            string fieldName = "";
+            while ((line = reader.ReadLine()) != null)
             {
-                fieldName = line;
-                break;
+                if (line.Equals("#Field")) counter++;
+                else if (counter == 1)
+                {
+                    fieldName = line;
+                    break;
+                }
             }
+
+            if (File.Exists(dpmSelectedRobot + "\\dpmConfiguration.txt")) configurationText.GetComponent<Text>().text = "Robot Status: <color=#008000ff>Configured For " + fieldName + "</color>";
+            else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
+
+            reader.Close();
         }
-
-        if (File.Exists(dpmSelectedRobot + "\\dpmConfiguration.txt")) configurationText.GetComponent<Text>().text = "Robot Status: <color=#008000ff>Configured For " + fieldName + "</color>";
-        else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
-
-        reader.Close();
+        else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
 
     public void SwitchGraphics()
@@ -378,7 +391,9 @@ public class MainMenu : MonoBehaviour {
     //Exits the program
     public void Exit()
     {
-        Application.Quit();
+        if (!Application.isEditor) {
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
     }
 
     #endregion
@@ -424,6 +439,7 @@ public class MainMenu : MonoBehaviour {
                 {
                     Debug.Log(directory);
                     fieldDirectory = (directory.FullName);
+                    currentTab = Tab.Sim;
                     SwitchTabSim();
                     customfieldon = false;
                     PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
@@ -459,6 +475,7 @@ public class MainMenu : MonoBehaviour {
                 if (directory != null && directory.Exists)
                 {
                     robotDirectory = (directory.FullName);
+                    currentTab = Tab.Sim;
                     SwitchTabSim();
                     customroboton = false;
                     PlayerPrefs.SetString("RobotDirectory", robotDirectory);
@@ -489,9 +506,9 @@ public class MainMenu : MonoBehaviour {
     public void ApplyGraphics()
     {
         Screen.SetResolution(xresolution[resolutionsetting], yresolution[resolutionsetting], fullscreen);
-        //SplashScreen.SetActive(true);
-        //StartCoroutine(HideSplashScreen(1));
-        //SwitchTab(Tab.Main);
+        splashScreen.SetActive(true);
+        StartCoroutine(HideSplashScreen(1));
+        SwitchTabHome();
     }
 
     IEnumerator HideSplashScreen(float seconds)
@@ -519,6 +536,10 @@ public class MainMenu : MonoBehaviour {
     public void OpenFieldExportTutorial()
     {
         Application.OpenURL("http://bxd.autodesk.com/?page=tutorialFieldExporter");
+    }
+    public void OpenRobotConfigurationTutorial()
+    {
+        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
     }
     public void ResetControls()
     {
@@ -592,13 +613,13 @@ public class MainMenu : MonoBehaviour {
     #endregion
     void Start () {
         FindAllGameObjects();
-        InitResolutionArrays();
+        InitGraphicsSettings();
         fields = new ArrayList();
         robots = new ArrayList();
 
-        robotDirectory = PlayerPrefs.GetString("RobotDirectory", Directory.GetParent(Application.dataPath).FullName + "//Robots");
+        robotDirectory = PlayerPrefs.GetString("RobotDirectory",(Application.dataPath) + "//Robots");
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = Directory.GetParent(Application.dataPath).FullName; //If the robot directory no longer exists, set it to the default application path.
-        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", Directory.GetParent(Application.dataPath).FullName + "//Fields");
+        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Application.dataPath) + "//Fields");
         fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : robotDirectory = Directory.GetParent(Application.dataPath).FullName; //if the field directory no longer exists, set it to the default application path.
 
         simSelectedField = PlayerPrefs.GetString("simSelectedField");
@@ -613,13 +634,31 @@ public class MainMenu : MonoBehaviour {
         canvas = GetComponent<Canvas>();
 
 
+
         customfieldon = false;
         customroboton = false;
 
-
-
-        SwitchTabHome();
-        SwitchSimSelection();
+        if (currentSim != Sim.Selection)
+        {
+            if (currentSim == Sim.DPMConfiguration)
+            {
+                SwitchTabSim();
+                SwitchSimSelection();
+                SwitchDriverPractice();
+                SwitchDPMConfiguration();
+            }
+            else if (currentSim == Sim.DefaultSimulator)
+            {
+                SwitchTabSim();
+                SwitchSimSelection();
+                SwitchSimDefault();
+            }
+        }
+        else
+        {
+            SwitchTabHome();
+            SwitchSimSelection();
+        }
         
     }
 	 void FindAllGameObjects()
@@ -637,6 +676,7 @@ public class MainMenu : MonoBehaviour {
         dpmLoadRobot = auxFunctions.FindObject(gameObject, "DPMLoadRobot");
         multiplayerLoadField = auxFunctions.FindObject(gameObject, "MultiplayerLoadField");
         multiplayerLoadRobot = auxFunctions.FindObject(gameObject, "MultiplayerLoadRobot");
+        splashScreen = auxFunctions.FindObject(gameObject, "LoadSplash");
 
         graphics = auxFunctions.FindObject(gameObject, "Graphics");
         input = auxFunctions.FindObject(gameObject, "Input");
@@ -651,7 +691,7 @@ public class MainMenu : MonoBehaviour {
         inputConflict = auxFunctions.FindObject(gameObject, "InputConflict");
     }
 
-    void InitResolutionArrays()
+    void InitGraphicsSettings()
     {
         xresolution[0] = 640;
         xresolution[1] = 800;
@@ -674,5 +714,22 @@ public class MainMenu : MonoBehaviour {
         yresolution[7] = 900;
         yresolution[8] = 1050;
         yresolution[9] = 1080;
+
+        fullscreen = Screen.fullScreen;
+        int width = Screen.currentResolution.width;
+        int height = Screen.currentResolution.height;
+        if (width == xresolution[0] && height == yresolution[0]) resolutionsetting = 0;
+        else if (width == xresolution[1] && height == yresolution[1]) resolutionsetting = 1;
+        else if (width == xresolution[2] && height == yresolution[2]) resolutionsetting = 2;
+        else if (width == xresolution[3] && height == yresolution[3]) resolutionsetting = 3;
+        else if (width == xresolution[4] && height == yresolution[4]) resolutionsetting = 4;
+        else if (width == xresolution[5] && height == yresolution[5]) resolutionsetting = 5;
+        else if (width == xresolution[6] && height == yresolution[6]) resolutionsetting = 6;
+        else if (width == xresolution[7] && height == yresolution[7]) resolutionsetting = 7;
+        else if (width == xresolution[8] && height == yresolution[8]) resolutionsetting = 8;
+        else if (width == xresolution[9] && height == yresolution[9]) resolutionsetting = 9;
+        else resolutionsetting = 2;
+
+        ApplyGraphics();
     }
 }
