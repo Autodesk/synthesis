@@ -1808,8 +1808,8 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 631, y: -137}
-  m_SizeDelta: {x: 1015, y: 71}
+  m_AnchoredPosition: {x: 631, y: -141}
+  m_SizeDelta: {x: 1015, y: 105}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &215204578
 MonoBehaviour:
@@ -1831,7 +1831,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
@@ -5547,8 +5547,8 @@ RectTransform:
   - {fileID: 2050626374}
   - {fileID: 733606799}
   - {fileID: 1921058178}
-  - {fileID: 1566764245}
   - {fileID: 1964832718}
+  - {fileID: 1566764245}
   m_Father: {fileID: 509596249}
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}
@@ -8289,7 +8289,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 860403445}
-        m_MethodName: OpenTutorials
+        m_MethodName: OpenRobotConfigurationTutorial
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9195,7 +9195,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1419386578
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10183,7 +10183,7 @@ RectTransform:
   - {fileID: 143995658}
   - {fileID: 1865866542}
   m_Father: {fileID: 860403444}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: .098695755, y: .334884644}
@@ -10362,7 +10362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1650489785
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11733,7 +11733,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 16
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -11743,9 +11743,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: The original Synthesis. This mode closely mimics real liffe physics so that
+  m_Text: The original Synthesis. This mode closely mimics real life physics so that
     teams can test the designs of their robot and its interaction with field elements.
-    Use this mode if you want to test your designs
+    Use this mode if you want to test your designs.
 --- !u!222 &1880098183
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12331,7 +12331,7 @@ RectTransform:
   - {fileID: 1422844972}
   - {fileID: 560133502}
   m_Father: {fileID: 860403444}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: .0986843109, y: -28.4500008}
@@ -12931,7 +12931,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 16
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10

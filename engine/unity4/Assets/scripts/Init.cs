@@ -293,7 +293,7 @@ public class Init : MonoBehaviour
             }
 
 			gui.AddWindow ("Switch View", new DialogWindow("Switch View",
-			    "Driver Station [D]", "Orbit Robot [R]", "Freeroam [F]"), (object o) =>
+			    "Driver Station", "Orbit Robot", "Freeroam"), (object o) =>
 			    {
 					HideGuiSidebar();
 
@@ -479,9 +479,12 @@ public class Init : MonoBehaviour
             }
 			mainNode.transform.rotation = rotation;
 			mainNode.rigidbody.inertiaTensorRotation = Quaternion.identity;
-			
-			//makes sure robot spawns in the correct place
-			mainNode.transform.position = new Vector3(-2f, 1f, -3f);
+
+            //makes sure robot spawns in the correct place
+            mainNode.transform.position = new Vector3(-2f, 1f, -3f);
+
+            mainNode.rigidbody.isKinematic = true;
+            StartCoroutine(FinishReset());
 
         }
 
@@ -799,4 +802,12 @@ public class Init : MonoBehaviour
 			}
 		}
 	}
+    /// <summary>
+    /// Waits .1 seconds before making robot move again.
+    /// </summary>
+    IEnumerator FinishReset()
+    {
+        yield return new WaitForSeconds(0.3f);
+        mainNode.rigidbody.isKinematic = false;
+    }
 }
