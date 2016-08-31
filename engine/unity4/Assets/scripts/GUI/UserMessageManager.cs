@@ -89,7 +89,7 @@ public class UserMessageManager
                 GUI.color = fg;
                 GUI.backgroundColor = bg;
                 GUIContent content = new GUIContent(msg.message);
-                Vector2 size = GUI.skin.GetStyle("Button").CalcSize(content)*scale;
+                Vector2 size = GUI.skin.GetStyle("Button").CalcSize(content);
                 if (GUI.Button(new Rect((WIDTH - size.x) / 2f, HEIGHT - y - size.y, size.x, size.y), content))
                 {
                     msg.ttl = -1;

@@ -85,11 +85,27 @@ public class MainMenu : MonoBehaviour {
         switch (currentTab)
          {
             case Tab.FieldDir:
-                if (!customfieldon || !fieldBrowser.Active) SwitchTabSim();
+                if (customfieldon && !fieldBrowser.Active)
+                {
+                    currentTab = Tab.Sim;
+
+                    homeTab.SetActive(false);
+                    optionsTab.SetActive(false);
+                    simTab.SetActive(true);
+                    customfieldon = false;
+                }
                 break;
 
             case Tab.RobotDir:
-                if (!customroboton || !robotBrowser.Active) SwitchTabSim();
+                if (customroboton && !robotBrowser.Active)
+                {
+                    currentTab = Tab.Sim;
+
+                    homeTab.SetActive(false);
+                    optionsTab.SetActive(false);
+                    simTab.SetActive(true);
+                    customroboton = false;
+                    }
                 break;
          }
          InitFieldBrowser();
@@ -109,6 +125,7 @@ public class MainMenu : MonoBehaviour {
             optionsTab.SetActive(false);
             homeTab.SetActive(true);
         }
+        else UserMessageManager.Dispatch("You must select a directory or exit first!",3);
     }
 
     public void SwitchTabSim()
@@ -121,6 +138,7 @@ public class MainMenu : MonoBehaviour {
             optionsTab.SetActive(false);
             simTab.SetActive(true);
         }
+        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
     public void SwitchTabOptions()
@@ -133,6 +151,7 @@ public class MainMenu : MonoBehaviour {
             simTab.SetActive(false);
             optionsTab.SetActive(true);
         }
+        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
     public void SwitchSimSelection()
@@ -272,25 +291,28 @@ public class MainMenu : MonoBehaviour {
             driverPracticeMode.SetActive(false);
             dpmConfiguration.SetActive(true);
 
-            string line = "";
-            int counter = 0;
-            StreamReader reader = new StreamReader(PlayerPrefs.GetString("dpmSelectedRobot") + "\\dpmConfiguration.txt");
-
-            string fieldName = "";
-            while ((line = reader.ReadLine()) != null)
+            if (File.Exists(dpmSelectedRobot + "\\dpmConfiguration.txt"))
             {
-                if (line.Equals("#Field")) counter++;
-                else if (counter == 1)
-                {
-                    fieldName = line;
-                    break;
-                }
-            }
+                string line = "";
+                int counter = 0;
+                StreamReader reader = new StreamReader(dpmSelectedRobot + "\\dpmConfiguration.txt");
 
-            if (File.Exists(dpmSelectedRobot + "\\dpmConfiguration.txt")) configurationText.GetComponent<Text>().text = "Robot Status: <color=#008000ff>Configured For " + fieldName + "</color>";
+                string fieldName = "";
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Equals("#Field")) counter++;
+                    else if (counter == 1)
+                    {
+                        fieldName = line;
+                        break;
+                    }
+                }
+                reader.Close();
+                configurationText.GetComponent<Text>().text = "Robot Status: <color=#008000ff>Configured For " + fieldName + "</color>";
+            }
             else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
 
-            reader.Close();
+  
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
@@ -456,8 +478,12 @@ public class MainMenu : MonoBehaviour {
 
     public void LoadFieldDirectory()
     {
-        if (!fieldBrowser.Active) fieldBrowser.Active = true;
+        if (!fieldBrowser.Active)
+        {
+            fieldBrowser.Active = true;
+        }
         customfieldon = true;
+        currentTab = Tab.FieldDir;
     }
 
     public void InitRobotBrowser()
@@ -492,8 +518,12 @@ public class MainMenu : MonoBehaviour {
 
     public void LoadRobotDirectory()
     {
-        if (!robotBrowser.Active) robotBrowser.Active = true;
+        if (!robotBrowser.Active)
+        {
+            robotBrowser.Active = true;
+        }
         customroboton = true;
+        currentTab = Tab.RobotDir;
     }
 
     #endregion
@@ -612,7 +642,9 @@ public class MainMenu : MonoBehaviour {
     }
     #endregion
     void Start () {
+        
         FindAllGameObjects();
+        splashScreen.SetActive(true);
         InitGraphicsSettings();
         fields = new ArrayList();
         robots = new ArrayList();
@@ -637,7 +669,7 @@ public class MainMenu : MonoBehaviour {
 
         customfieldon = false;
         customroboton = false;
-
+        ApplyGraphics();
         if (currentSim != Sim.Selection)
         {
             if (currentSim == Sim.DPMConfiguration)
@@ -659,6 +691,7 @@ public class MainMenu : MonoBehaviour {
             SwitchTabHome();
             SwitchSimSelection();
         }
+        
         
     }
 	 void FindAllGameObjects()
@@ -729,7 +762,5 @@ public class MainMenu : MonoBehaviour {
         else if (width == xresolution[8] && height == yresolution[8]) resolutionsetting = 8;
         else if (width == xresolution[9] && height == yresolution[9]) resolutionsetting = 9;
         else resolutionsetting = 2;
-
-        ApplyGraphics();
     }
 }
