@@ -17,7 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.3.5f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -191,8 +192,10 @@
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
     <Compile Include="Assets\Scripts\Fun\Rainbow.cs" />
+    <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Extensions.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
+    <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
     <Compile Include="Assets\Scripts\GUI\InputButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
@@ -201,9 +204,11 @@
     <Compile Include="Assets\Scripts\GUI\Settings\Controls.cs" />
     <Compile Include="Assets\Scripts\GUI\Settings\Serializer.cs" />
     <Compile Include="Assets\Scripts\GUI\Settings\Settings.cs" />
+    <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
+    <Compile Include="Assets\Scripts\MouseListener.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />

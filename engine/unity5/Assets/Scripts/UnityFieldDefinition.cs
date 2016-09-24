@@ -106,6 +106,7 @@ public class UnityFieldDefinition : FieldDefinition
                             dummyBoxCollider.size.y * 0.5f * psBoxCollider.Scale.y,
                             dummyBoxCollider.size.z * 0.5f * psBoxCollider.Scale.z);
 
+                        //meshObject.AddComponent<MouseListener>();
                         UnityEngine.Object.Destroy(dummyBoxCollider);
 
                         break;
@@ -118,6 +119,7 @@ public class UnityFieldDefinition : FieldDefinition
                         BSphereShape sphereShape = subObject.AddComponent<BSphereShape>();
                         sphereShape.Radius = dummySphereCollider.radius * psSphereCollider.Scale;
 
+                        //meshObject.AddComponent<MouseListener>();
                         UnityEngine.Object.Destroy(dummySphereCollider);
 
                         break;
@@ -136,6 +138,7 @@ public class UnityFieldDefinition : FieldDefinition
                             hullshape.HullMesh = AuxFunctions.GenerateCollisionMesh(meshObject.GetComponent<MeshFilter>().mesh, dummyMeshCollider.sharedMesh.bounds.center);
                             hullshape.GetCollisionShape().Margin = 0f;
 
+                            //subObject.AddComponent<MouseListener>();
                             UnityEngine.Object.Destroy(dummyMeshCollider);
                         }
                         else
