@@ -35,7 +35,7 @@ public partial class RigidNode : RigidNode_Base
         BSphereShape sphereShape = MainObject.AddComponent<BSphereShape>();
         sphereShape.Radius = wheel.radius * 0.01f;
 
-        // Old cylinder method... collision not as smoth.
+        // Old cylinder method... collision not as smooth.
         ////BCylinderShapeZ cylinderShape = MainObject.AddComponent<BCylinderShapeZ>();
         //BCylinderShapeX cylinderShape = MainObject.AddComponent<BCylinderShapeX>();
         //cylinderShape.HalfExtent = new Vector3(wheel.radius * 1.5f, wheel.width, wheel.width) * 0.01f;
