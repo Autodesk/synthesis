@@ -1,0 +1,3 @@
+[submodule "emulation/fake_HAL/allwpilib"]
+	path = emulation/fake_HAL/allwpilib
+	url = https://github.com/wpilibsuite/allwpilib
