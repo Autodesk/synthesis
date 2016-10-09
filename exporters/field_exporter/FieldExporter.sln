@@ -1,17 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FieldExporter", "FieldExporter\FieldExporter.csproj", "{0AD89B02-EBED-4BB3-8DC3-C4CB59268C1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "Aardvark-Libraries\SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulatorAPI", "..\Aardvark-Libraries\SimulatorFileIO\SimulatorAPI.csproj", "{52DC911D-AD5D-4D01-9FC1-22AAADA97740}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexLibraryWrapper", "Aardvark-Libraries\ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj", "{5664C026-F538-4745-A042-13927CE3259F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvexLibraryWrapper", "..\Aardvark-Libraries\ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj", "{5664C026-F538-4745-A042-13927CE3259F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLEW", "Aardvark-Libraries\CLEW\CLEW.vcxproj", "{CAC8B4CC-70F1-438C-95AC-B996E658DDEB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CLEW", "..\Aardvark-Libraries\CLEW\CLEW.vcxproj", "{CAC8B4CC-70F1-438C-95AC-B996E658DDEB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VHACD", "Aardvark-Libraries\VHACD\VHACD.vcxproj", "{41A5DDC9-6BA3-446B-B1C0-5515F20D6EC1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VHACD", "..\Aardvark-Libraries\VHACD\VHACD.vcxproj", "{41A5DDC9-6BA3-446B-B1C0-5515F20D6EC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

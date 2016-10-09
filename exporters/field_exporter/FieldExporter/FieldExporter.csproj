@@ -296,11 +296,11 @@
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Aardvark-Libraries\ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj">
+    <ProjectReference Include="..\..\Aardvark-Libraries\ConvexLibraryWrapper\ConvexLibraryWrapper.vcxproj">
       <Project>{5664c026-f538-4745-a042-13927ce3259f}</Project>
       <Name>ConvexLibraryWrapper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Aardvark-Libraries\SimulatorFileIO\SimulatorAPI.csproj">
+    <ProjectReference Include="..\..\Aardvark-Libraries\SimulatorFileIO\SimulatorAPI.csproj">
       <Project>{52dc911d-ad5d-4d01-9fc1-22aaada97740}</Project>
       <Name>SimulatorAPI</Name>
     </ProjectReference>
