@@ -13,6 +13,8 @@ public class UserMessageManager
     private const int WIDTH = 400;
     private const int HEIGHT = 400;
 
+    public static float scale = 1;
+
     /// <summary>
     /// Object representing a timed message.
     /// </summary>
@@ -76,6 +78,7 @@ public class UserMessageManager
             GUILayout.BeginArea(new Rect((Screen.width / 2) - (WIDTH / 2), Screen.height - HEIGHT - 10, WIDTH, HEIGHT));
             float deltaTime = Time.deltaTime;
             float y = 0;
+
             foreach (UserMessage msg in messages)
             {
                 msg.ttl -= deltaTime;
