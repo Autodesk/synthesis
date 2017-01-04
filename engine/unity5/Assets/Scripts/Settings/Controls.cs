@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 public class Controls : MonoBehaviour
 {
-    public enum Control { Forward, Backward, Right, Left, ResetRobot, RobotOrient, CameraToggle, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, Stats};
+    public enum Control { Forward, Backward, Right, Left, ResetRobot, CameraToggle, pwm2Plus, pwm2Neg, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, pwm6Plus, pwm6Neg, Pickup, Release, Spawn};
 
-    public static KeyCode[] ControlKey = new KeyCode[14];
+    public static KeyCode[] ControlKey = new KeyCode[17];
+    public static readonly string[] ControlName = { "Move Forward", "Move Backward", "Turn Right", "Turn Left", "Reset Robot", "Toggle Camera", "PWM 2 Positive", "PWM 2 Negative", "PWM 3 Positive", "PWM 3 Negative", "PWM 4 Positive", "PWM 4 Negative", "PWM 5 Positive", "PWM 5 Negative", "PWM 6 Positive", "PWM 6 Negative"};
 
     public static void ResetDefaults()
     {
@@ -14,15 +15,17 @@ public class Controls : MonoBehaviour
         ControlKey[(int)Control.Right] = KeyCode.RightArrow;
         ControlKey[(int)Control.Left] = KeyCode.LeftArrow;
         ControlKey[(int)Control.ResetRobot] = KeyCode.R;
-        ControlKey[(int)Control.RobotOrient] = KeyCode.O;
         ControlKey[(int)Control.CameraToggle] = KeyCode.C;
-        ControlKey[(int)Control.pwm3Plus] = KeyCode.Alpha1;
-        ControlKey[(int)Control.pwm3Neg] = KeyCode.Alpha2;
-        ControlKey[(int)Control.pwm4Plus] = KeyCode.Alpha3;
-        ControlKey[(int)Control.pwm4Neg] = KeyCode.Alpha4;
-        ControlKey[(int)Control.pwm5Plus] = KeyCode.Alpha5;
-        ControlKey[(int)Control.pwm5Neg] = KeyCode.Alpha6;
-        ControlKey[(int)Control.Stats] = KeyCode.S;
+        ControlKey[(int)Control.pwm2Plus] = KeyCode.Alpha1;
+        ControlKey[(int)Control.pwm2Neg] = KeyCode.Alpha2;
+        ControlKey[(int)Control.pwm3Plus] = KeyCode.Alpha3;
+        ControlKey[(int)Control.pwm3Neg] = KeyCode.Alpha4;
+        ControlKey[(int)Control.pwm4Plus] = KeyCode.Alpha5;
+        ControlKey[(int)Control.pwm4Neg] = KeyCode.Alpha6;
+        ControlKey[(int)Control.pwm5Plus] = KeyCode.Alpha7;
+        ControlKey[(int)Control.pwm5Neg] = KeyCode.Alpha8;
+        ControlKey[(int)Control.pwm6Plus] = KeyCode.Alpha9;
+        ControlKey[(int)Control.pwm6Neg] = KeyCode.Alpha0;
     }
 
     public static void LoadControls()

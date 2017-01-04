@@ -215,8 +215,8 @@ public class Main : MonoBehaviour
         unityPacket = new UnityPacket();
         unityPacket.Start();
 
-        Debug.Log(LoadField(PlayerPrefs.GetString("Field")) ? "Load field success!" : "Load field failed.");
-        Debug.Log(LoadRobot(PlayerPrefs.GetString("Robot")) ? "Load robot success!" : "Load robot failed.");
+        Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
+        Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
         
         dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
 
@@ -239,16 +239,16 @@ public class Main : MonoBehaviour
 	// Update is called once per frame
 	void Update()
     {
-        if (Input.GetKey(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
 
-        if (Input.GetKey(KeyCode.Space))
+       /* if (Input.GetKey(KeyCode.Space))
         {
             Vector3 spawnPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 5f);
             GameObject newObject = (GameObject)Instantiate(GameObject.Find("Ball:1"), Camera.main.ScreenToWorldPoint(spawnPoint), Quaternion.identity);
             newObject.AddComponent<Rainbow>();
             extraElements.Add(newObject);
-        }
+        }*/
 	}
 
     void FixedUpdate()
@@ -265,7 +265,7 @@ public class Main : MonoBehaviour
 
         BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
 
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]))
         {
             if (!resetting)
             {

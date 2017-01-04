@@ -252,18 +252,12 @@ public class DynamicCamera : MonoBehaviour
     {
         if (movingEnabled)
         {
-            // Will switch the camera state if certain keys are pressed.
-            if (Input.GetKey(KeyCode.D))
+            // Will switch the camera state with the camera toggle button
+            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
             {
-                if (!cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
-            }
-            else if (Input.GetKey(KeyCode.O))
-            {
-                if (!cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
-            }
-            else if (Input.GetKey(KeyCode.F))
-            {
-                if (!cameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new FreeroamState(this));
+                if (cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
+                else if (cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
+                else if (cameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
             }
         }
 
