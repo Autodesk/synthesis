@@ -264,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
+    <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />

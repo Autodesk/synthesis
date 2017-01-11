@@ -56,4 +56,9 @@ public class BMultiHullShape : BCollisionShape
         hullShapes.Remove(hullShape);
         compoundShape.RemoveChildShape(hullShape);
     }
+
+    public override CollisionShape CopyCollisionShape()
+    {
+        return null;
+    }
 }
