@@ -5805,7 +5805,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchSimSelection
+        m_MethodName: SwitchSimDefault
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7877,7 +7877,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: MAIN SIMULATOR
+  m_Text: SYNTHESIS
 --- !u!222 &1098930452
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -10709,7 +10709,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1504822840
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13213,7 +13213,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1933523903
 RectTransform:
   m_ObjectHideFlags: 0
