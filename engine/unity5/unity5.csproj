@@ -121,16 +121,20 @@
     <Compile Include="Assets\BulletUnity\Examples\Scenes\BulletSharpDemos\BulletSharpDemos\VehicleDemo\VehicleDemo.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\CharacterController\MoveCharacterController.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\CollisionCallbacks\CustomCollisionCallbackScript.cs" />
+    <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\BallThrowTest.cs" />
+    <Compile Include="Assets\BulletUnity\Examples\Scenes\RealtimeSimWithOfflinePrediction\OfflineBallSimulation.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\BunnyRainTest.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ExtendedFlycam.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RBRainTest.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\RopeSticksArray.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\ShootBox.cs" />
+    <Compile Include="Assets\BulletUnity\Examples\Scenes\SoftBody\TestTeleportJump.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scenes\Triggers\ExampleTriggerCallback.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scripts\AddForcesAndTorques.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scripts\MoveKinematicObject.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scripts\SetAngularAndLinearVelocity.cs" />
     <Compile Include="Assets\BulletUnity\Examples\Scripts\SimpleOfflineSimulation.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\BCamera.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\BCharacterController.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacks.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\BCollisionCallbacksDefault.cs" />
@@ -178,6 +182,7 @@
     <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\PPMeshFactory.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\ProceduralMeshes\ProceduralPrimitives.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBody.cs" />
+    <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyPartOnSkinnedMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
@@ -222,6 +227,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
+    <None Include="Assets\BulletUnity\Documentation\README-UniversalWindowsPlatform.txt" />
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
