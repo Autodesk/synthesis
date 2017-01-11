@@ -47,6 +47,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.buildLabel = new System.Windows.Forms.Label();
+            this.synthesisBulletButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,7 +66,6 @@
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             resources.ApplyResources(this.fileToolStripMenuItem, "fileToolStripMenuItem");
-            this.fileToolStripMenuItem.Click += new System.EventHandler(this.fileToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
@@ -169,10 +169,18 @@
             this.buildLabel.BackColor = System.Drawing.Color.Transparent;
             this.buildLabel.Name = "buildLabel";
             // 
+            // synthesisBulletButton
+            // 
+            resources.ApplyResources(this.synthesisBulletButton, "synthesisBulletButton");
+            this.synthesisBulletButton.Name = "synthesisBulletButton";
+            this.synthesisBulletButton.UseVisualStyleBackColor = true;
+            this.synthesisBulletButton.Click += new System.EventHandler(this.synthesisBulletButton_Click);
+            // 
             // LaunchForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.synthesisBulletButton);
             this.Controls.Add(this.buildLabel);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
@@ -215,6 +223,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label buildLabel;
+        private System.Windows.Forms.Button synthesisBulletButton;
     }
 }
 
