@@ -121,24 +121,6 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>181, 26</value>
-  </data>
-  <data name="closeToolStripMenuItem.Text" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>44, 24</value>
-  </data>
-  <data name="fileToolStripMenuItem.Text" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="tutorialsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>78, 24</value>
-  </data>
-  <data name="tutorialsToolStripMenuItem.Text" xml:space="preserve">
-    <value>Tutorials</value>
-  </data>
   <data name="menuStrip1.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
@@ -162,7 +144,25 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>10</value>
+  </data>
+  <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>44, 24</value>
+  </data>
+  <data name="fileToolStripMenuItem.Text" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="closeToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>120, 26</value>
+  </data>
+  <data name="closeToolStripMenuItem.Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="tutorialsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>78, 24</value>
+  </data>
+  <data name="tutorialsToolStripMenuItem.Text" xml:space="preserve">
+    <value>Tutorials</value>
   </data>
   <data name="robotExportToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>172, 26</value>
@@ -199,10 +199,10 @@
     <value>Flat</value>
   </data>
   <data name="synthesisButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>101, 66</value>
+    <value>89, 66</value>
   </data>
   <data name="synthesisButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 76</value>
+    <value>209, 76</value>
   </data>
   <data name="synthesisButton.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -220,13 +220,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;synthesisButton.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>9</value>
   </data>
   <data name="fExporterButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
   <data name="fExporterButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 192</value>
+    <value>14, 276</value>
   </data>
   <data name="fExporterButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 76</value>
@@ -247,7 +247,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;fExporterButton.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>8</value>
   </data>
   <data name="rExporterButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -256,7 +256,7 @@
     <value>NoControl</value>
   </data>
   <data name="rExporterButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>197, 192</value>
+    <value>197, 276</value>
   </data>
   <data name="rExporterButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 76</value>
@@ -277,7 +277,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;rExporterButton.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>7</value>
   </data>
   <data name="codeViewerButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -286,7 +286,7 @@
     <value>NoControl</value>
   </data>
   <data name="codeViewerButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>101, 324</value>
+    <value>101, 408</value>
   </data>
   <data name="codeViewerButton.Size" type="System.Drawing.Size, System.Drawing">
     <value>177, 76</value>
@@ -307,22 +307,25 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;codeViewerButton.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>6</value>
   </data>
   <data name="liveUpdater.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="liveUpdater.Location" type="System.Drawing.Point, System.Drawing">
-    <value>11, 450</value>
+    <value>12, 496</value>
   </data>
   <data name="liveUpdater.MaximumSize" type="System.Drawing.Size, System.Drawing">
     <value>500, 300</value>
   </data>
   <data name="liveUpdater.Size" type="System.Drawing.Size, System.Drawing">
-    <value>0, 17</value>
+    <value>68, 17</value>
   </data>
   <data name="liveUpdater.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
+  </data>
+  <data name="liveUpdater.Text" xml:space="preserve">
+    <value>Changes:</value>
   </data>
   <data name="&gt;&gt;liveUpdater.Name" xml:space="preserve">
     <value>liveUpdater</value>
@@ -334,7 +337,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;liveUpdater.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="label3.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -364,7 +367,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="label4.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -373,7 +376,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>142, 164</value>
+    <value>142, 248</value>
   </data>
   <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 25</value>
@@ -394,7 +397,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label4.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="label5.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -403,7 +406,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>155, 296</value>
+    <value>155, 380</value>
   </data>
   <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
     <value>66, 25</value>
@@ -424,13 +427,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label5.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="buildLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="buildLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>335, 545</value>
+    <value>335, 584</value>
   </data>
   <data name="buildLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>39, 17</value>
@@ -451,6 +454,36 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buildLabel.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="synthesisBulletButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
+    <value>Flat</value>
+  </data>
+  <data name="synthesisBulletButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="synthesisBulletButton.Location" type="System.Drawing.Point, System.Drawing">
+    <value>89, 148</value>
+  </data>
+  <data name="synthesisBulletButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>209, 76</value>
+  </data>
+  <data name="synthesisBulletButton.TabIndex" type="System.Int32, mscorlib">
+    <value>14</value>
+  </data>
+  <data name="synthesisBulletButton.Text" xml:space="preserve">
+    <value>Synthesis (Bullet Physics)</value>
+  </data>
+  <data name="&gt;&gt;synthesisBulletButton.Name" xml:space="preserve">
+    <value>synthesisBulletButton</value>
+  </data>
+  <data name="&gt;&gt;synthesisBulletButton.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;synthesisBulletButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;synthesisBulletButton.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -460,7 +493,7 @@
     <value>8, 16</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>386, 571</value>
+    <value>386, 610</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
