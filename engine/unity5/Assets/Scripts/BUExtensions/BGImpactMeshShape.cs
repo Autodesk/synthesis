@@ -71,8 +71,8 @@ public class BGImpactMeshShape : BCollisionShape
         return collisionShapePtr;
     }
 
-    public override CollisionShape CopyCollisionShape()
-    {
-        return null;
-    }
+    //public override CollisionShape CopyCollisionShape()
+    //{
+    //    return null;
+    //}
 }
