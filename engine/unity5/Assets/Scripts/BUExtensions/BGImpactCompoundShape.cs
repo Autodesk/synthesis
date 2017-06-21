@@ -46,8 +46,8 @@ public class BGImpactCompoundShape : BCollisionShape
         collisionShape.AddChildShape(offset, shape);
     }
 
-    //public override CollisionShape CopyCollisionShape()
-    //{
-    //    return collisionShape;
-    //}
+    public override CollisionShape CopyCollisionShape()
+    {
+        return collisionShape;
+    }
 }
