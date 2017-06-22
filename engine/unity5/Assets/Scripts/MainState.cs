@@ -7,8 +7,10 @@ using System.Collections.Generic;
 using BulletSharp.SoftBody;
 using UnityEngine.SceneManagement;
 using System.IO;
+using Assets.Scripts.FEA;
+using Assets.Scripts.FSM;
 
-public class Main : MonoBehaviour
+public class MainState : SimState
 {
     const float RESET_VELOCITY = 0.05f;
 
@@ -48,15 +50,14 @@ public class Main : MonoBehaviour
 
     bool resetting;
 
-    void Awake()
+    public override void Awake()
     {
         GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
         BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
-        BPhysicsWorld.Get().DoDebugDraw = true;
+        BPhysicsWorld.Get().DoDebugDraw = false;
     }
 
-    [STAThread]
-    void OnGUI()
+    public override void OnGUI()
     {
         if (gui == null)
         {
@@ -134,7 +135,7 @@ public class Main : MonoBehaviour
             "",
             menuWindow
         );
-
+        
         gui.Render();
     }
 
@@ -209,8 +210,7 @@ public class Main : MonoBehaviour
         dynamicCamera.DisableMoving();
     }
 
-    // Use this for initialization
-    void Start()
+    public override void Start()
     {
         unityPacket = new UnityPacket();
         unityPacket.Start();
@@ -235,23 +235,14 @@ public class Main : MonoBehaviour
 
         resetting = false;
     }
-	
-	// Update is called once per frame
-	void Update()
+
+    public override void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
-
-       /* if (Input.GetKey(KeyCode.Space))
-        {
-            Vector3 spawnPoint = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 5f);
-            GameObject newObject = (GameObject)Instantiate(GameObject.Find("Ball:1"), Camera.main.ScreenToWorldPoint(spawnPoint), Quaternion.identity);
-            newObject.AddComponent<Rainbow>();
-            extraElements.Add(newObject);
-        }*/
 	}
 
-    void FixedUpdate()
+    public override void FixedUpdate()
     {
         if (Input.GetKey(KeyCode.M))
             SceneManager.LoadScene("MainMenu");
@@ -270,7 +261,7 @@ public class Main : MonoBehaviour
             if (!resetting)
             {
                 foreach (GameObject g in extraElements)
-                    Destroy(g);
+                    UnityEngine.Object.Destroy(g);
 
                 BeginReset();
             }
@@ -330,11 +321,16 @@ public class Main : MonoBehaviour
             if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
             {
                 Debug.Log("Robot not loaded!");
-                Destroy(robotObject);
+                UnityEngine.Object.Destroy(robotObject);
                 return false;
             }
 
             node.CreateJoint();
+
+            node.MainObject.AddComponent<Tracker>();
+
+            Tracker t = node.MainObject.GetComponent<Tracker>();
+            Debug.Log(t);
         }
 
         return true;
