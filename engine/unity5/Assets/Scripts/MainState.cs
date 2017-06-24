@@ -212,6 +212,14 @@ public class MainState : SimState
 
     public override void Start()
     {
+        FixedQueue<int> queue = new FixedQueue<int>(100);
+
+        for (int i = 0; i < 150; i++)
+            queue.Add(i);
+
+        for (int i = 0; i < queue.Length; i++)
+            Debug.Log(queue[i]);
+
         unityPacket = new UnityPacket();
         unityPacket.Start();
 
@@ -274,13 +282,16 @@ public class MainState : SimState
             if (!transposition.Equals(Vector3.zero))
                 TransposeRobot(transposition);
         }
-        else if (oWindow != null && !oWindow.Active)
+        else if (oWindow != null && !oWindow.Active && resetting)
         {
             EndReset();
         }
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
+
+        if (Input.GetKey(KeyCode.A))
+            StateMachine.Instance.PushState(new ReplayState());
     }
 
     bool LoadField(string directory)
@@ -327,7 +338,7 @@ public class MainState : SimState
 
             node.CreateJoint();
 
-            node.MainObject.AddComponent<Tracker>();
+            node.MainObject.AddComponent<Tracker>().Trace = true;
 
             Tracker t = node.MainObject.GetComponent<Tracker>();
             Debug.Log(t);
@@ -339,6 +350,12 @@ public class MainState : SimState
     void BeginReset(bool resetTransform = true)
     {
         resetting = true;
+
+        foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
+        {
+            t.Tracking = false;
+            t.Clear();
+        }
 
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -364,6 +381,12 @@ public class MainState : SimState
         {
             RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+        }
+
+        foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
+        {
+            t.Clear();
+            t.Tracking = true;
         }
 
         resetting = false;

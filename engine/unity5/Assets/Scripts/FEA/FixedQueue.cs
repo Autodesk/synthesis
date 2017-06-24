@@ -63,7 +63,7 @@ namespace Assets.Scripts.FEA
                         + values.Length + ".");
 
                 int realIndex = marker - 1 - index;
-                return realIndex < 0 ? values[(values.Length - 1) + realIndex] : values[realIndex];
+                return realIndex < 0 ? values[(values.Length) + realIndex] : values[realIndex];
             }
         }
 
@@ -89,6 +89,18 @@ namespace Assets.Scripts.FEA
         }
 
         /// <summary>
+        /// Clears the FixedQueue with the given value.
+        /// </summary>
+        /// <param name="value"></param>
+        public void Clear(T value)
+        {
+            marker = 0;
+
+            for (int i = 0; i < values.Length; i++)
+                values[i] = value;
+        }
+
+        /// <summary>
         /// Adds a new element to the front of the FixedQueue.
         /// </summary>
         /// <param name="value"></param>
@@ -106,7 +118,7 @@ namespace Assets.Scripts.FEA
         /// <returns></returns>
         public IEnumerator<T> GetEnumerator()
         {
-            for (int i = (marker == 0 ? values.Length - 1 : marker - 1); i >= 0; i--)
+            for (int i = marker - 1; i >= 0; i--)
                 yield return values[i];
 
             for (int i = values.Length - 1; i >= marker; i--)

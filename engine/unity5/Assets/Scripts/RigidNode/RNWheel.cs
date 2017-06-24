@@ -28,20 +28,16 @@ public partial class RigidNode : RigidNode_Base
 
     private void CreateWheel()
     {
-        BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
-        rigidBody.friction = WHEEL_FRICTION;
-
         WheelDriverMeta wheel = this.GetDriverMeta<WheelDriverMeta>();
         BSphereShape sphereShape = MainObject.AddComponent<BSphereShape>();
         sphereShape.Radius = wheel.radius * 0.01f;
+    }
 
-        // Old cylinder method... collision not as smooth.
-        ////BCylinderShapeZ cylinderShape = MainObject.AddComponent<BCylinderShapeZ>();
-        //BCylinderShapeX cylinderShape = MainObject.AddComponent<BCylinderShapeX>();
-        //cylinderShape.HalfExtent = new Vector3(wheel.radius * 1.5f, wheel.width, wheel.width) * 0.01f;
-        //cylinderShape.GetCollisionShape().Margin = wheel.radius * 0.005f; // hopefully change later?
+    private void UpdateWheelRigidBody()
+    {
+        BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
+        rigidBody.friction = WHEEL_FRICTION;
 
-        // ... and continuous collision detection
         rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
         rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
     }
