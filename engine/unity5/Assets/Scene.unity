@@ -430,7 +430,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _debugDrawMode: 0
   _doDebugDraw: 1
-  m_worldType: 3
+  m_worldType: 1
   m_collisionType: 0
   m_broadphaseType: 0
   m_axis3SweepBroadphaseMin: {x: -1000, y: -1000, z: -1000}
