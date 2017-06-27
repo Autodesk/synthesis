@@ -52,7 +52,7 @@ public partial class RigidNode : RigidNode_Base
         foreach (GameObject meshObject in meshObjects)
             meshObject.transform.parent = MainObject.transform;
 
-        MainObject.AddComponent<BRigidBody>();
+        //MainObject.AddComponent<BRigidBody>();
 
         if (this.HasDriverMeta<WheelDriverMeta>())
         {
@@ -72,9 +72,12 @@ public partial class RigidNode : RigidNode_Base
 
         physicalProperties = mesh.physics;
 
-        BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
+        BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
         rigidBody.mass = mesh.physics.mass;
         rigidBody.friction = 1f;
+
+        if (this.HasDriverMeta<WheelDriverMeta>())
+            UpdateWheelRigidBody();
 
         foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
         {
