@@ -159,7 +159,7 @@ public class MainMenu : MonoBehaviour {
     }
 
     /// <summary>
-    /// Switch to the options tab and its respective UI elements.
+    /// Switches to the options tab and its respective UI elements.
     /// </summary>
     public void SwitchTabOptions()
     {
@@ -175,7 +175,7 @@ public class MainMenu : MonoBehaviour {
     }
 
     /// <summary>
-    ///
+    /// Switches to the selection menu within the simulation tab and activates its respective UI elements.
     /// </summary>
     public void SwitchSimSelection()
     {
@@ -196,6 +196,9 @@ public class MainMenu : MonoBehaviour {
 
     }
 
+    /// <summary>
+    /// Switches to the default simulator menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
     public void SwitchSimDefault()
     {
         currentSim = Sim.DefaultSimulator;
@@ -209,6 +212,9 @@ public class MainMenu : MonoBehaviour {
         simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
     }
 
+    /// <summary>
+    /// Switches to the driver practice menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
     public void SwitchDriverPractice()
     {
         currentSim = Sim.DriverPracticeMode;
@@ -223,6 +229,9 @@ public class MainMenu : MonoBehaviour {
         dpmFieldSelectText.GetComponent<Text>().text = dpmSelectedFieldName;
     }
 
+    /// <summary>
+    /// Switches to the multiplayer menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
     public void SwitchMultiplayer()
     {
         currentSim = Sim.Multiplayer;
@@ -233,6 +242,9 @@ public class MainMenu : MonoBehaviour {
         localMultiplayer.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load robot menu for the default simulator and activates its respective UI elements.
+    /// </summary>
     public void SwitchSimLoadRobot()
     {
         currentSim = Sim.SimLoadRobot;
@@ -241,6 +253,9 @@ public class MainMenu : MonoBehaviour {
         simLoadRobot.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load field menu for the default simulator and activates its respective UI elements.
+    /// </summary>
     public void SwitchSimLoadField()
     {
         currentSim = Sim.SimLoadField;
@@ -249,6 +264,9 @@ public class MainMenu : MonoBehaviour {
         simLoadField.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load robot menu for the driver practice mode and activates its respective UI elements.
+    /// </summary>
     public void SwitchDPMLoadRobot()
     {
         currentSim = Sim.DPMLoadRobot;
@@ -257,28 +275,15 @@ public class MainMenu : MonoBehaviour {
         dpmLoadRobot.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load field menu for the driver practice mode and activates its respective UI elements.
+    /// </summary>
     public void SwitchDPMLoadField()
     {
         currentSim = Sim.DPMLoadField;
 
         driverPracticeMode.SetActive(false);
         dpmLoadField.SetActive(true);
-    }
-
-    public void SwitchMultiplayerLoadRobot()
-    {
-        currentSim = Sim.MultiplayerLoadRobot;
-
-        localMultiplayer.SetActive(false);
-        multiplayerLoadRobot.SetActive(true);
-    }
-
-    public void SwitchMultiplayerLoadField()
-    {
-        currentSim = Sim.SimLoadField;
-
-        localMultiplayer.SetActive(false);
-        multiplayerLoadField.SetActive(true);
     }
 
     public void SwitchFieldDir()
