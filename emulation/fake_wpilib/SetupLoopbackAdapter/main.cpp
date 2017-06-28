@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
         else {
             std::cout << "Usage: SetupLoopbackAdapter.exe \"<adapter name>\" <team number>" << std::endl;
             pause();
-			return 0;
+			return -1;
 		}
 	}
     else {
@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 	if (teamNumber.length() > 4) {
         std::cout << "Invalid team number, exiting." << std::endl;
         pause();
-        return 0;
+        return -1;
 	}
 
     std::cout << "\n\nIf the program fails, ensure that you are running it as an admin and have installed the loopback adapter. Starting the installation process." << std::endl << std::endl;
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 	default:
         std::cout << "Invalid team number, exiting." << std::endl;
         pause();
-        return 0;
+        return -1;
 	}
 
 	// examples:
@@ -67,8 +67,14 @@ int main(int argc, char** argv) {
     std::string command1 = std::string("netsh interface ipv4 set address \"").append(adapterName).append("\" static 10.").append(ip1).append(".").append(ip2).append(".2 255.255.255.0 none");
     std::string command2 = std::string("netsh interface ipv4 add address \"").append(adapterName).append("\" 10.").append(ip1).append(".").append(ip2).append(".5 255.255.255.0");
 
-	system(command1.c_str());
-	system(command2.c_str());
+	if(system(command1.c_str()) != 0) {
+        pause();
+        return -1;
+    }
+	if(system(command2.c_str()) != 0) {
+        pause();
+        return -1;
+    }
 
     std::cout << "Installation completed, if there are no errors it completed successfully." << std::endl;
     pause();
