@@ -2,7 +2,7 @@
 
 call properties.bat
 
-qemu-2.6.0-win64\qemu-system-arm.exe^
+qemu-%QEMU_VERSION%-win64\qemu-system-arm.exe^
  -machine xilinx-zynq-a9^
  -cpu cortex-a9^
  -m %RAM_SIZE%^
