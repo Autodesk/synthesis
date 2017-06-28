@@ -12,7 +12,12 @@ namespace Assets.Scripts.FEA
     {
         private RigidBody rigidBody;
 
-        private FixedQueue<StateDescriptor> statesQueue;
+        private float updateTime;
+
+        /// <summary>
+        /// The collection of states stored by the Tracker.
+        /// </summary>
+        public FixedQueue<KeyValuePair<float, StateDescriptor>> States { get; set; }
 
         /// <summary>
         /// The number of seconds the tracker keeps any given state.
@@ -43,45 +48,18 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Returns a StateDescriptor based on the current frame.
         /// </summary>
-        private StateDescriptor State
+        private KeyValuePair<float, StateDescriptor> State
         {
             get
             {
-                return new StateDescriptor
+                return new KeyValuePair<float, StateDescriptor>(updateTime, new StateDescriptor
                 {
                     Position = rigidBody.WorldTransform.Origin,
                     Rotation = rigidBody.WorldTransform.Basis,
                     LinearVelocity = rigidBody.LinearVelocity,
                     AngularVelocity = rigidBody.AngularVelocity
-                };
+                });
             }
-        }
-
-        /// <summary>
-        /// Returns the StateDescriptor at the given index.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public StateDescriptor GetState(int index)
-        {
-            return statesQueue[index];
-        }
-
-        /// <summary>
-        /// Removes any information in the states queue until the given index.
-        /// </summary>
-        /// <param name="index"></param>
-        public void PopTo(int index)
-        {
-            StateDescriptor[] oldDescriptions = new StateDescriptor[Length - index];
-
-            for (int i = 0; i < oldDescriptions.Length; i++)
-                oldDescriptions[i] = statesQueue[statesQueue.Length - 1 - i];
-
-            statesQueue.Clear(oldDescriptions[0]);
-
-            for (int i = 0; i < oldDescriptions.Length; i++)
-                statesQueue.Add(oldDescriptions[i]);
         }
 
         /// <summary>
@@ -89,7 +67,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public void Clear()
         {
-            statesQueue.Clear(State);
+            States.Clear(State);
         }
 
         /// <summary>
@@ -97,10 +75,19 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void Start()
         {
-            Tracking = true;
-
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();
-            statesQueue = new FixedQueue<StateDescriptor>(Length, State);
+            updateTime = 0f;
+
+            Tracking = true;
+            States = new FixedQueue<KeyValuePair<float, StateDescriptor>>(Length, State);
+        }
+
+        /// <summary>
+        /// Updates the total time.
+        /// </summary>
+        void Update()
+        {
+            updateTime += Time.deltaTime;
         }
 
         /// <summary>
@@ -109,7 +96,7 @@ namespace Assets.Scripts.FEA
         void FixedUpdate()
         {
             if (Tracking)
-                statesQueue.Add(State);
+                States.Add(State);
 
             if (!Trace)
                 return;
@@ -117,12 +104,13 @@ namespace Assets.Scripts.FEA
             Vector3 lastPoint = Vector3.zero;
             int i = 0;
 
-            foreach (StateDescriptor state in statesQueue)
+            foreach (StateDescriptor state in States.Select((x) => x.Value))
             {
                 if (lastPoint != Vector3.zero)
                 {
-                    float age = (float)i / statesQueue.Length;
-                    Debug.DrawLine(lastPoint, state.Position.ToUnity(), new Color(1.0f, age * 0.5f, 0.0f, 1.0f - age * 0.5f));
+                    float age = (float)i / States.Length;
+                    Debug.DrawLine(lastPoint, state.Position.ToUnity(), new Color(age * 0.5f,
+                        1.0f, age * 0.5f, 1.0f - age * 0.5f));
                 }
 
                 lastPoint = state.Position.ToUnity();

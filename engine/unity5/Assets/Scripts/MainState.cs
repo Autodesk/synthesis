@@ -212,14 +212,6 @@ public class MainState : SimState
 
     public override void Start()
     {
-        FixedQueue<int> queue = new FixedQueue<int>(100);
-
-        for (int i = 0; i < 150; i++)
-            queue.Add(i);
-
-        for (int i = 0; i < queue.Length; i++)
-            Debug.Log(queue[i]);
-
         unityPacket = new UnityPacket();
         unityPacket.Start();
 
@@ -246,6 +238,9 @@ public class MainState : SimState
 
     public override void Update()
     {
+        if (Input.GetKey(KeyCode.Alpha0))
+            UnityEngine.Object.Instantiate(GameObject.Find("Ball:1"), new Vector3(0, 10, 0), Quaternion.identity);
+
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
 	}
@@ -290,7 +285,7 @@ public class MainState : SimState
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
 
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.Space))
             StateMachine.Instance.PushState(new ReplayState());
     }
 
