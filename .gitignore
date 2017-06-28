@@ -1,3 +1,5 @@
 .vs
 [Dd]ebug
 [Rr]elease
+*.sou
+*.vxcproj.user
