@@ -52,8 +52,6 @@ public partial class RigidNode : RigidNode_Base
         foreach (GameObject meshObject in meshObjects)
             meshObject.transform.parent = MainObject.transform;
 
-        //MainObject.AddComponent<BRigidBody>();
-
         if (this.HasDriverMeta<WheelDriverMeta>())
         {
             CreateWheel();
