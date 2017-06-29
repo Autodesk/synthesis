@@ -344,6 +344,9 @@ public class MainState : SimState
             Debug.Log(t);
         }
 
+        //Delet this
+        robotObject.AddComponent<DriverPractice>();
+
         return true;
     }
 
