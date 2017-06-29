@@ -243,9 +243,47 @@ public class DynamicCamera : MonoBehaviour
 
     }
 
+    //This state locates directly above the field and looks straight down on the field in order for robot positioning
+    public class OverviewState : CameraState
+    {
+        Vector3 positionVector;
+        Vector3 rotationVector;
+        Vector3 fieldVector;
+        Vector3 targetVector;
+        GameObject field;
+        GameObject target;
+
+        public OverviewState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+            field = GameObject.Find("Field");
+            fieldVector = field.transform.position;
+            target = GameObject.Find("Robot");
+            targetVector = target.transform.position;
+        }
+
+        public override void Init()
+        {
+            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
+            mono.transform.position = positionVector;
+            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+        public override void Update()
+        {
+            targetVector = target.transform.position;
+            mono.transform.position = targetVector + new Vector3(0f, 9f, 0f);
+        }
+        
+        public override void End()
+        {
+
+        }
+    }
+
     void Start()
     {
-        SwitchCameraState(new DriverStationState(this));
+        SwitchCameraState(new OrbitState(this));
     }
 
     void LateUpdate()

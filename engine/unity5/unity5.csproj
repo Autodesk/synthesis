@@ -18,7 +18,7 @@
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
     <RootNamespace></RootNamespace>
-    <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
+    <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -210,6 +210,13 @@
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
+    <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
+    <Compile Include="Assets\Scripts\FEA\ReplayState.cs" />
+    <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
+    <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
+    <Compile Include="Assets\Scripts\FSM\SimState.cs" />
+    <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
+    <Compile Include="Assets\Scripts\FSM\StateMachineEditor.cs" />
     <Compile Include="Assets\Scripts\Fun\Rainbow.cs" />
     <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Extensions.cs" />
@@ -225,7 +232,7 @@
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\Main.cs" />
+    <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MouseListener.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
@@ -247,6 +254,7 @@
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
+    <None Include="Assets\PowerUps Vol 1 Free\Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
