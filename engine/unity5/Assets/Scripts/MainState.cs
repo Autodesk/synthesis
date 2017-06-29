@@ -25,11 +25,8 @@ public class MainState : SimState
     private RigidNode_Base rootNode;
 
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
-    private Vector3 robotStartRotation = new Vector3(0f, 0f, 0f);
 
-    //Should probably use BulletSharpMatrix to do this
     private Vector3 preResetPosition = new Vector3(0f, 1f, 0f);
-    private Vector3 preResetRotation = new Vector3(0f, 0f, 0f);
 
     //A flag to indicate whether the prereset transform is recorded (used to find the related transform)
     private bool preResetTransformSet = false;
@@ -204,7 +201,7 @@ public class MainState : SimState
                 case 4:
                     robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                     EndReset();
-                    BeginReset();
+                    //BeginReset();
                     break;
                 case 5:
                     BeginReset(false);
@@ -214,7 +211,6 @@ public class MainState : SimState
                 case 6:
                     robotStartOrientation = BulletSharp.Math.Matrix.Identity;
                     robotStartPosition = new Vector3(0f, 1f, 0f);
-                    robotStartRotation = new Vector3(0f, 0f, 0f);
                     EndReset();
                     BeginReset();
                     break;
@@ -307,14 +303,10 @@ public class MainState : SimState
         //End reset when user hit enter key
         else if (oWindow != null && !oWindow.Active && resetting && !beginReset && Input.GetKey(KeyCode.Return))
         {
-            //Calculate offset
+            robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+            //Calculate offset and add to the start position
             Vector3 positionOffset = robotObject.transform.GetChild(0).transform.position - preResetPosition;
-            Vector3 rotationOffset = Quaternion.ToEulerAngles(robotObject.transform.GetChild(0).transform.rotation) 
-                - preResetRotation;
-            
-            //Record the new spawnpoint
             robotStartPosition += positionOffset;
-            robotStartRotation += rotationOffset;
             
             EndReset();
 
@@ -381,7 +373,7 @@ public class MainState : SimState
             Debug.Log(t);
         }
 
-        RotateRobot(robotStartRotation);
+        RotateRobot(robotStartOrientation);
 
         return true;
     }
@@ -411,8 +403,7 @@ public class MainState : SimState
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
             r.WorldTransform = newTransform;
         }
-
-        RotateRobot(robotStartRotation);
+        
         RotateRobot(robotStartOrientation);
 
 
@@ -423,8 +414,8 @@ public class MainState : SimState
         //Record the original transform
         if (!preResetTransformSet)
         {
+            //Use the index 0 child because the robot remains at the same position in the world when running
             preResetPosition = robotObject.transform.GetChild(0).transform.position;
-            preResetRotation = Quaternion.ToEulerAngles(robotObject.transform.GetChild(0).transform.rotation);
             preResetTransformSet = true;
         }
 
