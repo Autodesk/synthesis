@@ -27,14 +27,13 @@ public class MainState : SimState
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private Vector3 robotStartRotation = new Vector3(0f, 0f, 0f);
 
-    //For custom spawn point
-    private Vector3 temporaryRobotPosition = new Vector3(0f, 1f, 0f);
-    private Vector3 temporaryRobotRotation = new Vector3(0f, 0f, 0f);
-    private bool spawnPointSet = false;
-    private float positionSpeed = 0.1f;
-    private float rotationSpeed = 0.5f;
-    private GameObject positionIndicator;
+    //Should probably use BulletSharpMatrix to do this
+    private Vector3 preResetPosition = new Vector3(0f, 1f, 0f);
+    private Vector3 preResetRotation = new Vector3(0f, 0f, 0f);
 
+    //A flag to indicate whether the prereset transform is recorded (used to find the related transform)
+    private bool preResetTransformSet = false;
+    
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
     private List<GameObject> extraElements;
@@ -58,7 +57,9 @@ public class MainState : SimState
 
     private System.Random random;
 
-    bool resetting;
+    //Indicate different state (begin reset, resetting, end reset)
+    private bool resetting;
+    private bool beginReset;
 
     public override void Awake()
     {
@@ -99,7 +100,8 @@ public class MainState : SimState
 
             CreateOrientWindow();
 
-            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Overview"), (object o) =>
+            //Added a satelite view directly above the robot
+            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Satelite"), (object o) =>
                 {
                     HideGUI();
 
@@ -117,8 +119,7 @@ public class MainState : SimState
                             break;
 
                         case 3:
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
-                            //dynamicCamera.EnableMoving();
+                            dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
                             break;
 
                     }
@@ -202,13 +203,18 @@ public class MainState : SimState
                     break;
                 case 4:
                     robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+                    EndReset();
+                    BeginReset();
                     break;
                 case 5:
+                    BeginReset(false);
                     oWindow.Active = false;
                     EndReset();
                     break;
                 case 6:
                     robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+                    robotStartPosition = new Vector3(0f, 1f, 0f);
+                    robotStartRotation = new Vector3(0f, 0f, 0f);
                     EndReset();
                     BeginReset();
                     break;
@@ -242,13 +248,7 @@ public class MainState : SimState
 
         Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
         Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
-
-        /*
-        positionIndicator = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        positionIndicator.transform.position = robotStartPosition;
-        positionIndicator.transform.rotation = Quaternion.Euler(robotStartRotation);
-        */
-
+        
         dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
 
         extraElements = new List<GameObject>();
@@ -264,46 +264,13 @@ public class MainState : SimState
         lightGreyWindowTexture = Resources.Load("Images/lightGreyBackground") as Texture2D;
         transparentWindowTexture = Resources.Load("Images/transparentBackground") as Texture2D;
 
+        //Start simulator by prompting user to customize spawn point
         resetting = false;
-        //BeginReset();
-
+        beginReset = true;
     }
 
     public override void Update()
     {
-        /*
-        //The user moves the indicator using the arrow keys, the spawn point is set when user hits space, 
-        //and the indicator is destroyed
-
-        if (!spawnPointSet)
-        {
-
-            if (Input.GetMouseButton(1))
-            {
-                Vector3 offset = new Vector3(0f, Input.GetAxis("Horizontal"), 0f);
-                temporaryRobotRotation += offset * rotationSpeed;
-                positionIndicator.transform.rotation = Quaternion.Euler(temporaryRobotRotation);
-            }
-            else
-            {
-                Vector3 offset = new Vector3(Input.GetAxis("Vertical"), 0f, -Input.GetAxis("Horizontal"));
-                temporaryRobotPosition += offset * positionSpeed;
-                positionIndicator.transform.position = temporaryRobotPosition;
-            }
-            
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                spawnPointSet = true;
-                robotStartPosition = temporaryRobotPosition;
-                robotStartRotation = temporaryRobotRotation;
-                UnityEngine.Object.Destroy(positionIndicator);
-                Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
-                dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
-            }
-        }
-        */
-
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
     }
@@ -321,48 +288,45 @@ public class MainState : SimState
         }
 
         BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
-
-        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]))
+        
+        //Reset key only toggles the state to begin reset
+        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !resetting)
         {
-            if (!resetting)
-            {
-                foreach (GameObject g in extraElements)
-                    UnityEngine.Object.Destroy(g);
-
-                BeginReset();
-            }
-
+            beginReset = true;
+            preResetTransformSet = false;
         }
-        else if (oWindow != null && !oWindow.Active && resetting && Input.GetKey(KeyCode.Return))
+
+        if (beginReset)
         {
+            foreach (GameObject g in extraElements)
+                UnityEngine.Object.Destroy(g);
+
+            BeginReset();
+            
+        }
+        //End reset when user hit enter key
+        else if (oWindow != null && !oWindow.Active && resetting && !beginReset && Input.GetKey(KeyCode.Return))
+        {
+            //Calculate offset
+            Vector3 positionOffset = robotObject.transform.GetChild(0).transform.position - preResetPosition;
+            Vector3 rotationOffset = Quaternion.ToEulerAngles(robotObject.transform.GetChild(0).transform.rotation) 
+                - preResetRotation;
+            
+            //Record the new spawnpoint
+            robotStartPosition += positionOffset;
+            robotStartRotation += rotationOffset;
+            
             EndReset();
-        }
 
-        if (resetting)
+        }
+        else if (resetting && !beginReset)
         {
-            if (Input.GetMouseButton(1))
-            {
-                Vector3 rotation = new Vector3(0f,
-                    Input.GetKey(KeyCode.RightArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.LeftArrow) ? -RESET_VELOCITY : 0f,
-                    0f);
-                if (!rotation.Equals(Vector3.zero))
-                    RotateRobot(rotation);
-            }
-            else
-            {
-                Vector3 transposition = new Vector3(
-                    Input.GetKey(KeyCode.RightArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.LeftArrow) ? -RESET_VELOCITY : 0f,
-                    0f,
-                    Input.GetKey(KeyCode.UpArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.DownArrow) ? -RESET_VELOCITY : 0f);
-
-                if (!transposition.Equals(Vector3.zero))
-                    TransposeRobot(transposition);
-            }
+            Resetting();
         }
+        
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
-
-        //}
+        
         if (Input.GetKey(KeyCode.A))
             StateMachine.Instance.PushState(new ReplayState());
     }
@@ -424,6 +388,7 @@ public class MainState : SimState
 
     void BeginReset(bool resetTransform = true)
     {
+        beginReset = false;
         resetting = true;
 
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
@@ -447,10 +412,44 @@ public class MainState : SimState
             r.WorldTransform = newTransform;
         }
 
-        //RotateRobot(robotStartOrientation);
         RotateRobot(robotStartRotation);
+        RotateRobot(robotStartOrientation);
+
+
     }
 
+    void Resetting()
+    {
+        //Record the original transform
+        if (!preResetTransformSet)
+        {
+            preResetPosition = robotObject.transform.GetChild(0).transform.position;
+            preResetRotation = Quaternion.ToEulerAngles(robotObject.transform.GetChild(0).transform.rotation);
+            preResetTransformSet = true;
+        }
+
+        if (Input.GetMouseButton(1))
+        {
+            //Transform position
+            Vector3 rotation = new Vector3(0f,
+                Input.GetKey(KeyCode.RightArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.LeftArrow) ? -RESET_VELOCITY : 0f,
+                0f);
+            if (!rotation.Equals(Vector3.zero))
+                RotateRobot(rotation);
+
+        }
+        else
+        {
+            //Transform rotation along the horizontal plane
+            Vector3 transposition = new Vector3(
+                Input.GetKey(KeyCode.RightArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.LeftArrow) ? -RESET_VELOCITY : 0f,
+                0f,
+                Input.GetKey(KeyCode.UpArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.DownArrow) ? -RESET_VELOCITY : 0f);
+
+            if (!transposition.Equals(Vector3.zero))
+                TransposeRobot(transposition);
+        }
+    }
     void EndReset()
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
@@ -464,8 +463,8 @@ public class MainState : SimState
             t.Clear();
             t.Tracking = true;
         }
-
         resetting = false;
+
     }
 
     void TransposeRobot(Vector3 transposition)
