@@ -11,7 +11,6 @@ namespace Assets.Scripts.FEA
 {
     public class ReplayState : SimState
     {
-        float pausedTime;
         float rewindTime;
         float playbackSpeed;
 
@@ -50,7 +49,6 @@ namespace Assets.Scripts.FEA
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
             }
 
-            pausedTime = trackers[0].States[0].Key;
             rewindTime = 0.0f;
             playbackSpeed = 1.0f;
         }
@@ -61,10 +59,10 @@ namespace Assets.Scripts.FEA
         public override void Update()
         {
             if (Input.GetKey(KeyCode.LeftArrow))
-                rewindTime += Time.deltaTime * playbackSpeed;
+                rewindTime += Time.smoothDeltaTime * playbackSpeed;
 
             if (Input.GetKey(KeyCode.RightArrow))
-                rewindTime -= Time.deltaTime * playbackSpeed;
+                rewindTime -= Time.smoothDeltaTime * playbackSpeed;
 
             if (rewindTime < 0.0f)
                 rewindTime = 0.0f;
@@ -73,39 +71,23 @@ namespace Assets.Scripts.FEA
 
             foreach (Tracker t in trackers)
             {
+                float replayTime = ReplayTime;
+                int currentIndex = (int)Math.Floor(replayTime);
+
+                StateDescriptor lowerState = t.States[currentIndex];
+                StateDescriptor upperState = currentIndex < t.States.Length - 1 ? t.States[currentIndex + 1] : lowerState;
+
+                float percent = replayTime - currentIndex;
+
                 RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
-                BulletSharp.Math.Matrix worldTransform = r.WorldTransform;
 
                 if (!r.IsActive)
                     r.Activate();
 
-                float currentTime = pausedTime - rewindTime;
-                int closestIndex = FindClosestIndex(currentTime, t.States.Select((x) => x.Key).ToArray());
+                BulletSharp.Math.Matrix worldTransform = r.WorldTransform;
 
-                var lower = t.States[closestIndex];
-                StateDescriptor lowerState = lower.Value;
-                float lowerTime = lower.Key;
-
-                int upperIndex = closestIndex;
-
-                for (; upperIndex < t.States.Length - 1 && lowerTime == t.States[upperIndex].Key; upperIndex++) ;
-
-                if (closestIndex == upperIndex)
-                {
-                    worldTransform.Origin = lowerState.Position;
-                    worldTransform.Basis = lowerState.Rotation;
-                }
-                else
-                {
-                    var upper = t.States[upperIndex];
-                    StateDescriptor upperState = upper.Value;
-                    float upperTime = upper.Key;
-
-                    float percent = 1 - ((currentTime - upperTime) / (lowerTime - upperTime));
-
-                    worldTransform.Origin = BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent);
-                    worldTransform.Basis = BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent);
-                }
+                worldTransform.Origin = BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent);
+                worldTransform.Basis = BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent);
 
                 r.WorldTransform = worldTransform;
             }
@@ -134,7 +116,7 @@ namespace Assets.Scripts.FEA
             {
                 t.Tracking = true;
 
-                StateDescriptor currentState = t.States[(int)Math.Floor(ReplayTime)].Value;
+                StateDescriptor currentState = t.States[(int)Math.Floor(ReplayTime)];
 
                 RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
@@ -143,27 +125,6 @@ namespace Assets.Scripts.FEA
 
                 t.Clear();
             }
-        }
-
-        /// <summary>
-        /// Finds the index whose value is closest to the given target.
-        /// The values must be sorted in decreasing order.
-        /// </summary>
-        /// <param name="target"></param>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        private int FindClosestIndex(float target, float[] values)
-        {
-            if (target >= values[0])
-                return 0;
-
-            for (int i = 0; i < values.Length - 1; i++)
-            {
-                if (target <= values[i] && target > values[i + 1])
-                    return i;
-            }
-
-            return values.Length - 1;
         }
     }
 }

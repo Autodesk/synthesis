@@ -10,19 +10,28 @@ namespace Assets.Scripts.FEA
 {
     public class Tracker : MonoBehaviour
     {
+        private const float fixedTimeStep = 1f / 60f;
+
+        private BPhysicsWorld physicsWorld;
+
         private RigidBody rigidBody;
 
-        private float updateTime;
+        private int lastFrameCount;
 
         /// <summary>
         /// The collection of states stored by the Tracker.
         /// </summary>
-        public FixedQueue<KeyValuePair<float, StateDescriptor>> States { get; set; }
+        public FixedQueue<StateDescriptor> States { get; set; }
 
         /// <summary>
         /// The number of seconds the tracker keeps any given state.
         /// </summary>
         public const float Lifetime = 3.0f;
+
+        /// <summary>
+        /// The number of states in the queue.
+        /// </summary>
+        public const int Length = (int)(Lifetime / fixedTimeStep);
 
         /// <summary>
         /// If true, the Tracker will actively track its parent.
@@ -35,30 +44,19 @@ namespace Assets.Scripts.FEA
         public bool Trace { get; set; }
 
         /// <summary>
-        /// Returns the number of states in the queue.
-        /// </summary>
-        public static int Length
-        {
-            get
-            {
-                return (int)(Lifetime / Time.fixedDeltaTime);
-            }
-        }
-
-        /// <summary>
         /// Returns a StateDescriptor based on the current frame.
         /// </summary>
-        private KeyValuePair<float, StateDescriptor> State
+        private StateDescriptor State
         {
             get
             {
-                return new KeyValuePair<float, StateDescriptor>(updateTime, new StateDescriptor
+                return new StateDescriptor
                 {
                     Position = rigidBody.WorldTransform.Origin,
                     Rotation = rigidBody.WorldTransform.Basis,
                     LinearVelocity = rigidBody.LinearVelocity,
                     AngularVelocity = rigidBody.AngularVelocity
-                });
+                };
             }
         }
 
@@ -75,28 +73,30 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void Start()
         {
+            physicsWorld = BPhysicsWorld.Get();
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();
-            updateTime = 0f;
+            lastFrameCount = physicsWorld.frameCount;
 
             Tracking = true;
-            States = new FixedQueue<KeyValuePair<float, StateDescriptor>>(Length, State);
+            States = new FixedQueue<StateDescriptor>(Length, State);
         }
 
         /// <summary>
-        /// Updates the total time.
+        /// Adds any new states to the queue.
         /// </summary>
         void Update()
         {
-            updateTime += Time.deltaTime;
+            if (Tracking)
+                AddStates();
         }
 
         /// <summary>
-        /// Adds the current state to the states queue.
+        /// Draws lines representing stored states.
         /// </summary>
         void FixedUpdate()
         {
             if (Tracking)
-                States.Add(State);
+                AddStates();
 
             if (!Trace)
                 return;
@@ -104,11 +104,12 @@ namespace Assets.Scripts.FEA
             Vector3 lastPoint = Vector3.zero;
             int i = 0;
 
-            foreach (StateDescriptor state in States.Select((x) => x.Value))
+            foreach (StateDescriptor state in States)
             {
                 if (lastPoint != Vector3.zero)
                 {
                     float age = (float)i / States.Length;
+                    //Debug.DrawLine(lastPoint, state.Position.ToUnity(), i % 2 == 0 ? Color.red : Color.blue);
                     Debug.DrawLine(lastPoint, state.Position.ToUnity(), new Color(age * 0.5f,
                         1.0f, age * 0.5f, 1.0f - age * 0.5f));
                 }
@@ -116,6 +117,19 @@ namespace Assets.Scripts.FEA
                 lastPoint = state.Position.ToUnity();
                 i++;
             }
+        }
+
+        /// <summary>
+        /// Adds states to the queue depending on how many frames have passed.
+        /// </summary>
+        private void AddStates()
+        {
+            int numSteps = physicsWorld.frameCount - lastFrameCount;
+
+            for (int i = 0; i < numSteps; i++)
+                States.Add(State);
+
+            lastFrameCount += numSteps;
         }
     }
 }
