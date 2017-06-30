@@ -27,12 +27,12 @@ std::string SerialHelper::m_usbNames[2]{"", ""};
 priority_mutex SerialHelper::m_nameMutex;
 
 SerialHelper::SerialHelper() {
-  viOpenDefaultRM(reinterpret_cast<ViSession*>(&m_resourceHandle));
+  //viOpenDefaultRM(reinterpret_cast<ViSession*>(&m_resourceHandle));
 }
 
 std::string SerialHelper::GetVISASerialPortName(HAL_SerialPort port,
                                                 int32_t* status) {
-  if (port == HAL_SerialPort::HAL_SerialPort_Onboard) {
+  /*if (port == HAL_SerialPort::HAL_SerialPort_Onboard) {
     return OnboardResourceVISA;
   } else if (port == HAL_SerialPort::HAL_SerialPort_MXP) {
     return MxpResourceVISA;
@@ -54,12 +54,13 @@ std::string SerialHelper::GetVISASerialPortName(HAL_SerialPort port,
     // Error
   } else {
     return m_visaResource[visaIndex].str();
-  }
+  }*/
+  return "NotReal";
 }
 
 std::string SerialHelper::GetOSSerialPortName(HAL_SerialPort port,
                                               int32_t* status) {
-  if (port == HAL_SerialPort::HAL_SerialPort_Onboard) {
+  /*if (port == HAL_SerialPort::HAL_SerialPort_Onboard) {
     return OnboardResourceOS;
   } else if (port == HAL_SerialPort::HAL_SerialPort_MXP) {
     return MxpResourceOS;
@@ -81,11 +82,12 @@ std::string SerialHelper::GetOSSerialPortName(HAL_SerialPort port,
     // Error
   } else {
     return m_osResource[osIndex].str();
-  }
+  }*/
+  return "NotReal";
 }
 
 std::vector<std::string> SerialHelper::GetVISASerialPortList(int32_t* status) {
-  std::vector<std::string> retVec;
+  /*std::vector<std::string> retVec;
 
   // Always add 2 onboard ports
   retVec.emplace_back(OnboardResourceVISA);
@@ -104,11 +106,12 @@ std::vector<std::string> SerialHelper::GetVISASerialPortList(int32_t* status) {
     retVec.emplace_back(i.str());
   }
 
-  return retVec;
+  return retVec;*/
+  return std::vector<std::string>();
 }
 
 std::vector<std::string> SerialHelper::GetOSSerialPortList(int32_t* status) {
-  std::vector<std::string> retVec;
+  /*std::vector<std::string> retVec;
 
   // Always add 2 onboard ports
   retVec.emplace_back(OnboardResourceOS);
@@ -127,11 +130,12 @@ std::vector<std::string> SerialHelper::GetOSSerialPortList(int32_t* status) {
     retVec.emplace_back(i.str());
   }
 
-  return retVec;
+  return retVec;*/
+  return std::vector<std::string>();
 }
 
 void SerialHelper::SortHubPathVector() {
-  m_sortedHubPath.clear();
+  /*m_sortedHubPath.clear();
   m_sortedHubPath = m_unsortedHubPath;
   std::sort(m_sortedHubPath.begin(), m_sortedHubPath.end(),
             [](const llvm::SmallVectorImpl<char>& lhs,
@@ -139,12 +143,12 @@ void SerialHelper::SortHubPathVector() {
               llvm::StringRef lhsRef(lhs.begin(), lhs.size());
               llvm::StringRef rhsRef(rhs.begin(), rhs.size());
               return lhsRef.compare(rhsRef);
-            });
+            });*/
 }
 
 void SerialHelper::CoiteratedSort(
-    llvm::SmallVectorImpl<llvm::SmallString<16>>& vec) {
-  llvm::SmallVector<llvm::SmallString<16>, 4> sortedVec;
+  llvm::SmallVectorImpl<llvm::SmallString<16>>& vec) {
+  /*llvm::SmallVector<llvm::SmallString<16>, 4> sortedVec;
   for (auto& str : m_sortedHubPath) {
     for (size_t i = 0; i < m_unsortedHubPath.size(); i++) {
       if (llvm::StringRef{m_unsortedHubPath[i].begin(),
@@ -155,11 +159,11 @@ void SerialHelper::CoiteratedSort(
       }
     }
   }
-  vec = sortedVec;
+  vec = sortedVec;*/
 }
 
 void SerialHelper::QueryHubPaths(int32_t* status) {
-  // VISA resource matching string
+  /*// VISA resource matching string
   const char* str = "?*";
   // Items needed for VISA
   ViUInt32 retCnt = 0;
@@ -280,11 +284,11 @@ void SerialHelper::QueryHubPaths(int32_t* status) {
   CoiteratedSort(m_visaResource);
   CoiteratedSort(m_osResource);
 done:
-  viClose(viList);
+  viClose(viList);*/
 }
 
 int32_t SerialHelper::GetIndexForPort(HAL_SerialPort port, int32_t* status) {
-  // Hold lock whenever we're using the names array
+  /*// Hold lock whenever we're using the names array
   std::lock_guard<hal::priority_mutex> lock(m_nameMutex);
 
   std::string portString = m_usbNames[port - 2];
@@ -337,7 +341,8 @@ int32_t SerialHelper::GetIndexForPort(HAL_SerialPort port, int32_t* status) {
     }
   }
 
-  return retIndex;
+  return retIndex;*/
+  return -1;
 }
 
 }  // namespace hal
