@@ -277,7 +277,6 @@
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
-    <None Include="Assets\PowerUps Vol 1 Free\Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="GenerateTargetFrameworkMonikerAttribute" />
