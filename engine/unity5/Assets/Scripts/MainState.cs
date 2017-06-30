@@ -89,10 +89,22 @@ public class MainState : SimState
             gui.hideGuiCallback = HideGUI;
             gui.showGuiCallback = ShowGUI;
 
-            gui.AddAction("Reset Robot", () =>
+            gui.AddWindow("Reset Robot", new DialogWindow("Reset Robot", "Quick Reset", "Reset Spawnpoint"), (object o) =>
             {
-                BeginReset();
-                EndReset();
+                HideGUI();
+                switch ((int)o)
+                {
+                    case 0:
+                        BeginReset();
+                        EndReset();
+                        break;
+                    case 1:
+                        preResetTransformSet = false;
+                        BeginReset();
+                        break;
+                    
+                }
+                
             });
 
             CreateOrientWindow();
@@ -118,10 +130,10 @@ public class MainState : SimState
                         case 3:
                             dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
                             break;
-
                     }
                 });
 
+            
             gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
                 {
                     if ((int)o == 0)
@@ -201,7 +213,6 @@ public class MainState : SimState
                 case 4:
                     robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
                     EndReset();
-                    //BeginReset();
                     break;
                 case 5:
                     BeginReset(false);
@@ -288,8 +299,8 @@ public class MainState : SimState
         //Reset key only toggles the state to begin reset
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !resetting)
         {
-            beginReset = true;
-            preResetTransformSet = false;
+            BeginReset();
+            EndReset();
         }
 
         if (beginReset)
@@ -307,7 +318,6 @@ public class MainState : SimState
             //Calculate offset and add to the start position
             Vector3 positionOffset = robotObject.transform.GetChild(0).transform.position - preResetPosition;
             robotStartPosition += positionOffset;
-            
             EndReset();
 
         }
@@ -333,6 +343,7 @@ public class MainState : SimState
         };
 
         string loadResult;
+        //Change to .field file. Maybe FieldProperties? Also need to look at field definition
         fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
         Debug.Log(loadResult);
         fieldDefinition.CreateTransform(fieldObject.transform);
@@ -348,8 +359,9 @@ public class MainState : SimState
         {
             return new RigidNode(guid);
         };
-
+        
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        //Read .robot instead. Maybe need a RobotSkeleton class
         rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
         rootNode.ListAllNodes(nodes);
 
@@ -441,6 +453,7 @@ public class MainState : SimState
                 TransposeRobot(transposition);
         }
     }
+
     void EndReset()
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
@@ -455,7 +468,6 @@ public class MainState : SimState
             t.Tracking = true;
         }
         resetting = false;
-
     }
 
     void TransposeRobot(Vector3 transposition)
