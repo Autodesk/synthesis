@@ -1,13 +1,13 @@
 CC := $(FRC_PATH)/bin/arm-frc-linux-gnueabi-g++.exe
-CCFLAGS := -Iinclude
+CCFLAGS := -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -std=c++11
 
-SRC_FILES := athena/PWM.cpp
-OBJ_FILES := $(addprefix build/,$(subst .cpp,.o,$(SRC_FILES)))
+SRC_FILES := $(wildcard lib/athena/*.cpp)
+OBJ_FILES := $(patsubst lib/athena/%.cpp,build/%.o,$(SRC_FILES))
 OUT := build/libHALAthena.so
 
-build/%.o: lib/%.cpp
+build/%.o: lib/athena/%.cpp
 	mkdir -p build/$(dir $@)
-	$(CC) -fPIC -c $< -o $@ $(CCFLAGS)
+	$(CC) -c $< -o $@ $(CCFLAGS)
 
 $(OUT): $(OBJ_FILES)
 	$(CC) -shared $^ -o $@ $(CCFLAGS)
