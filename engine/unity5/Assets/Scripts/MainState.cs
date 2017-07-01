@@ -17,6 +17,11 @@ public class MainState : SimState
     private UnityPacket unityPacket;
 
     private DynamicCamera dynamicCamera;
+    private GameObject dynamicCameraObject;
+
+    private Camera robotCamera;
+    private GameObject robotCameraObject;
+    private Vector3 robotCameraOffset;
 
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
@@ -110,25 +115,28 @@ public class MainState : SimState
             CreateOrientWindow();
 
             //Added a satelite view directly above the robot
-            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Satelite"), (object o) =>
+            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Robot view"), (object o) =>
                 {
                     HideGUI();
 
                     switch ((int)o)
                     {
                         case 0:
+                            ToDynamicCamera();
                             dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
                             break;
                         case 1:
+                            ToDynamicCamera();
                             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
                             dynamicCamera.EnableMoving();
                             break;
                         case 2:
+                            ToDynamicCamera();
                             dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
                             break;
 
                         case 3:
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+                            ToRobotCamera();
                             break;
                     }
                 });
@@ -212,6 +220,7 @@ public class MainState : SimState
                     break;
                 case 4:
                     robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+                    robotStartOrientation.ToUnity();
                     EndReset();
                     break;
                 case 5:
@@ -255,8 +264,15 @@ public class MainState : SimState
 
         Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
         Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+
+        dynamicCameraObject = GameObject.Find("Main Camera");
+        dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
         
-        dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
+        robotCameraObject = GameObject.Find("RobotCamera");
+        robotCameraObject.transform.parent = robotObject.transform.GetChild(0).transform;
+        robotCamera = robotObject.GetComponent<Camera>();
+        robotCameraObject.SetActive(false);
+        robotCameraOffset = new Vector3(0f, 0.5f, 0f);
 
         extraElements = new List<GameObject>();
 
@@ -331,6 +347,10 @@ public class MainState : SimState
         
         if (Input.GetKey(KeyCode.A))
             StateMachine.Instance.PushState(new ReplayState());
+        if(robotCameraObject.active)
+            //robotCameraObject.transform.position = Vector3.Lerp(robotCameraObject.transform.position, robotObject.transform.GetChild(0).transform.position + robotCameraOffset, Time.deltaTime);
+            robotCameraObject.transform.position =  robotObject.transform.GetChild(0).transform.position + robotCameraOffset;
+
     }
 
     bool LoadField(string directory)
@@ -510,5 +530,17 @@ public class MainState : SimState
     void RotateRobot(Vector3 rotation)
     {
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
+    }
+
+    void ToDynamicCamera()
+    {
+        dynamicCameraObject.SetActive(true);
+        robotCameraObject.SetActive(false);
+    }
+
+    void ToRobotCamera()
+    {
+        dynamicCameraObject.SetActive(false);
+        robotCameraObject.SetActive(true);
     }
 }
