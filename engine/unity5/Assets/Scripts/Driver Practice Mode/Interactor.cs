@@ -28,9 +28,10 @@ namespace BulletUnity
         {
             if (other.UserObject.ToString().Contains(collisionKeyword))
             {
+                collisionObject = GameObject.Find(other.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
                 collisionDetected = true;
                 Debug.Log(other.UserObject.ToString());
-                collisionObject = GameObject.Find(other.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
+                
             }
         }
 
@@ -49,6 +50,7 @@ namespace BulletUnity
 
         public GameObject GetObject()
         {
+            collisionDetected = false;
             return collisionObject;
         }
 

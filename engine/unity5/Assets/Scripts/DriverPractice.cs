@@ -39,7 +39,7 @@ namespace BulletUnity {
             objectsHeld = new List<GameObject>();
             gamepieces = new List<string>();
 
-            gamepieces.Add("GAME_BALL_RED"); //Replace
+            gamepieces.Add("GRAY_TOTE"); //Replace
             holdingLimit = 1; //Replace
 
             positionOffset = new UnityEngine.Vector3(0, -.4f, -.1f); //Replace
@@ -54,13 +54,17 @@ namespace BulletUnity {
 	
 	    // Update is called once per frame
 	    void Update () {
-	        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Pickup]))
+            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Pickup]))
             {
                 Intake();
             }
             if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Release]))
             {
                 ReleaseGamepiece();
+            }
+            else
+            {
+                HoldGamepiece();
             }
 
             //This should be replaced to be used buttons in a sort of configuration menu
@@ -73,9 +77,10 @@ namespace BulletUnity {
             if (Input.GetKey(KeyCode.Alpha8)) changeReleaseY(-0.1f);
             if (Input.GetKey(KeyCode.Alpha9)) changeReleaseZ(0.1f);
             if (Input.GetKey(KeyCode.Alpha0)) changeReleaseZ(-0.1f);
+            
 
 
-            HoldGamepiece();
+            
 
             if (Input.GetKeyDown(KeyCode.T)) SpawnGamepiece();
 	    }
@@ -88,12 +93,18 @@ namespace BulletUnity {
             if (objectsHeld.Count < holdingLimit && intakeInteractor.GetDetected())
             {
                 for (int i = 0; i < objectsHeld.Count; i++) if (objectsHeld[i].Equals(intakeInteractor.GetObject())) return; //This makes sure the object the robot is touching isn't an object already being held.
-                objectsHeld.Add(intakeInteractor.GetObject());
                 GameObject newObject = intakeInteractor.GetObject();
+                objectsHeld.Add(newObject);
+                newObject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
+                newObject.GetComponent<BRigidBody>().angularVelocity = UnityEngine.Vector3.zero;
                 newObject.GetComponentInChildren<Renderer>().material.color = Color.blue;
-                newObject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
 
-               
+
+                foreach (BRigidBody rb in this.GetComponentsInChildren<BRigidBody>())
+                {
+                    newObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+                }
+
             }
         }
 
@@ -104,10 +115,15 @@ namespace BulletUnity {
         {
             if (objectsHeld.Count > 0)
             {
+                BRigidBody rb;
                 for (int i = 0; i < objectsHeld.Count; i++)
                 {
-                  objectsHeld[i].GetComponent<BRigidBody>().velocity = releaseNode.GetComponent<BRigidBody>().velocity;
-                  objectsHeld[i].GetComponent<BRigidBody>().SetPosition(releaseNode.GetComponent<BRigidBody>().transform.position + releaseNode.GetComponent<BRigidBody>().transform.rotation * positionOffset);
+                  rb = objectsHeld[i].GetComponent<BRigidBody>();
+                  rb.velocity = releaseNode.GetComponent<BRigidBody>().velocity;
+                  rb.SetPosition(releaseNode.GetComponent<BRigidBody>().transform.position + releaseNode.GetComponent<BRigidBody>().transform.rotation * positionOffset);
+                    rb.angularVelocity = UnityEngine.Vector3.zero;
+                    rb.angularFactor = UnityEngine.Vector3.zero;
+
                 }
             }
             Debug.DrawLine(releaseNode.transform.position + releaseNode.GetComponent<BRigidBody>().transform.rotation * positionOffset, releaseNode.transform.position+releaseNode.transform.rotation*releaseVelocity);
@@ -122,6 +138,7 @@ namespace BulletUnity {
             if (objectsHeld.Count > 0)
             {
                 objectsHeld[0].GetComponent<BRigidBody>().velocity += releaseNode.transform.rotation * releaseVelocity;
+                objectsHeld[0].GetComponent<BRigidBody>().angularFactor = UnityEngine.Vector3.one;
                 StartCoroutine(UnIgnoreCollision(objectsHeld[0]));
                 objectsHeld.RemoveAt(0);
             }
@@ -133,8 +150,12 @@ namespace BulletUnity {
         /// </summary>
         IEnumerator UnIgnoreCollision(GameObject obj)
         {
-            yield return new WaitForSeconds(0.2f);
-            obj.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
+            yield return new WaitForSeconds(0.5f);
+
+            foreach (BRigidBody rb in this.GetComponentsInChildren<BRigidBody>())
+            {
+                obj.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), false);
+            }
         }
 
         /// <summary>
