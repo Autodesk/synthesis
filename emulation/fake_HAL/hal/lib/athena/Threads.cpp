@@ -68,7 +68,8 @@ int32_t HAL_GetCurrentThreadPriority(HAL_Bool* isRealTime, int32_t* status) {
  * @return The success state of setting the priority
  */
 HAL_Bool HAL_SetThreadPriority(NativeThreadHandle handle, HAL_Bool realTime,
-                               int32_t priority, int32_t* status) {
+                               int32_t priority, int32_t* status)
+{/*
   if (handle == nullptr) {
     *status = NULL_PARAMETER;
     return false;
@@ -99,7 +100,8 @@ HAL_Bool HAL_SetThreadPriority(NativeThreadHandle handle, HAL_Bool realTime,
   } else {
     *status = 0;
     return true;
-  }
+	
+  }*/
 }
 
 /**
@@ -116,7 +118,7 @@ HAL_Bool HAL_SetThreadPriority(NativeThreadHandle handle, HAL_Bool realTime,
  */
 HAL_Bool HAL_SetCurrentThreadPriority(HAL_Bool realTime, int32_t priority,
                                       int32_t* status) {
-  auto thread = pthread_self();
-  return HAL_SetThreadPriority(&thread, realTime, priority, status);
+  //auto thread = pthread_self();
+  return true; // HAL_SetThreadPriority(&thread, realTime, priority, status);
 }
 }
