@@ -31,7 +31,7 @@ extern "C" {
  * If opening the MXP port, also sets up the channel functions appropriately
  * @param port The port to open, 0 for the on-board, 1 for the MXP.
  */
-void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status) {
+void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status) { /*
   initializeDigital(status);
   if (*status != 0) return;
 
@@ -66,6 +66,7 @@ void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status) {
     }
     return;
   }
+  */
 }
 
 /**
@@ -82,7 +83,7 @@ void HAL_InitializeI2C(HAL_I2CPort port, int32_t* status) {
  */
 int32_t HAL_TransactionI2C(HAL_I2CPort port, int32_t deviceAddress,
                            uint8_t* dataToSend, int32_t sendSize,
-                           uint8_t* dataReceived, int32_t receiveSize) {
+                           uint8_t* dataReceived, int32_t receiveSize) { /*
   if (port > 1) {
     // Set port out of range error here
     return -1;
@@ -99,6 +100,8 @@ int32_t HAL_TransactionI2C(HAL_I2CPort port, int32_t deviceAddress,
         static_cast<int32_t>(sendSize), reinterpret_cast<char*>(dataReceived),
         static_cast<int32_t>(receiveSize));
   }
+  */
+  return 0;
 }
 
 /**
@@ -113,7 +116,7 @@ int32_t HAL_TransactionI2C(HAL_I2CPort port, int32_t deviceAddress,
  * @return >= 0 on success or -1 on transfer abort.
  */
 int32_t HAL_WriteI2C(HAL_I2CPort port, int32_t deviceAddress,
-                     uint8_t* dataToSend, int32_t sendSize) {
+                     uint8_t* dataToSend, int32_t sendSize) { /*
   if (port > 1) {
     // Set port out of range error here
     return -1;
@@ -127,6 +130,8 @@ int32_t HAL_WriteI2C(HAL_I2CPort port, int32_t deviceAddress,
     return i2clib_write(handle, deviceAddress,
                         reinterpret_cast<const char*>(dataToSend), sendSize);
   }
+  */
+	  return 0;
 }
 
 /**
@@ -143,7 +148,7 @@ int32_t HAL_WriteI2C(HAL_I2CPort port, int32_t deviceAddress,
  * @return >= 0 on success or -1 on transfer abort.
  */
 int32_t HAL_ReadI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* buffer,
-                    int32_t count) {
+                    int32_t count) { /*
   if (port > 1) {
     // Set port out of range error here
     return -1;
@@ -157,9 +162,11 @@ int32_t HAL_ReadI2C(HAL_I2CPort port, int32_t deviceAddress, uint8_t* buffer,
     return i2clib_read(handle, deviceAddress, reinterpret_cast<char*>(buffer),
                        static_cast<int32_t>(count));
   }
+  */
+	  return 0;
 }
 
-void HAL_CloseI2C(HAL_I2CPort port) {
+void HAL_CloseI2C(HAL_I2CPort port) { /*
   if (port > 1) {
     // Set port out of range error here
     return;
@@ -179,5 +186,6 @@ void HAL_CloseI2C(HAL_I2CPort port) {
     HAL_FreeDIOPort(i2CMXPDigitalHandle2);
   }
   return;
+  */
 }
 }
