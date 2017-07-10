@@ -104,10 +104,12 @@ HAL_DigitalHandle HAL_InitializeDIOPort(HAL_PortHandle portHandle,
 
   return handle;
   */
+  return 0;
 }
 
 HAL_Bool HAL_CheckDIOChannel(int32_t channel) {
   //return channel < kNumDigitalChannels && channel >= 0;
+	return 0;
 }
 
 void HAL_FreeDIOPort(HAL_DigitalHandle dioPortHandle) { /*
@@ -156,6 +158,7 @@ HAL_DigitalPWMHandle HAL_AllocateDigitalPWM(int32_t* status) { /*
 
   return handle;
   */
+  return 0;
 }
 
 /**
@@ -329,6 +332,7 @@ HAL_Bool HAL_GetDIO(HAL_DigitalHandle dioPortHandle, int32_t* status) { /*
     return ((currentDIO.MXP >> remapMXPChannel(port->channel)) & 1) != 0;
   }
   */
+  return 0;
 }
 
 /**
@@ -361,6 +365,7 @@ HAL_Bool HAL_GetDIODirection(HAL_DigitalHandle dioPortHandle, int32_t* status) {
            0;
   }
   */
+  return 0;
 }
 
 /**
@@ -417,6 +422,7 @@ HAL_Bool HAL_IsPulsing(HAL_DigitalHandle dioPortHandle, int32_t* status) { /*
     return (pulseRegister.MXP & (1 << remapMXPChannel(port->channel))) != 0;
   }
   */
+  return 0;
 }
 
 /**
@@ -431,6 +437,7 @@ HAL_Bool HAL_IsAnyPulsing(int32_t* status) { /*
   return pulseRegister.Headers != 0 && pulseRegister.MXP != 0 &&
          pulseRegister.SPIPort != 0;
   */
+  return 0;
 }
 
 /**
@@ -490,6 +497,7 @@ int32_t HAL_GetFilterSelect(HAL_DigitalHandle dioPortHandle, int32_t* status) { 
                                               status);
   }
   */
+  return 0;
 }
 
 /**
@@ -544,5 +552,6 @@ int64_t HAL_GetFilterPeriod(int32_t filterIndex, int32_t* status) { /*
   }
   return hdrPeriod;
   */
+  return 0;
 }
 }

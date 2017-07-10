@@ -31,6 +31,7 @@ HAL_Bool HAL_IsAccumulatorChannel(HAL_AnalogInputHandle analogPortHandle,
   }
   return false;
   */
+	return false;
 }
 
 /**
@@ -143,6 +144,7 @@ int64_t HAL_GetAccumulatorValue(HAL_AnalogInputHandle analogPortHandle,
   int64_t value = port->accumulator->readOutput_Value(status);
   return value;
   */
+	return 0;
 }
 
 /**
@@ -167,6 +169,7 @@ int64_t HAL_GetAccumulatorCount(HAL_AnalogInputHandle analogPortHandle,
   }
   return port->accumulator->readOutput_Count(status);
   */
+	return 0;
 }
 
 /**

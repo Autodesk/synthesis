@@ -50,6 +50,7 @@ HAL_GyroHandle HAL_InitializeAnalogGyro(HAL_AnalogInputHandle analogHandle,
     }
     return HAL_kInvalidHandle;
 	*/
+	return 0;
   }
 
   // handle known to be correct, so no need to type check
@@ -217,6 +218,7 @@ double HAL_GetAnalogGyroAngle(HAL_GyroHandle handle, int32_t* status) { /*
 
   return scaledValue;
   */
+  return 0;
 }
 
 double HAL_GetAnalogGyroRate(HAL_GyroHandle handle, int32_t* status) { /*
@@ -232,6 +234,7 @@ double HAL_GetAnalogGyroRate(HAL_GyroHandle handle, int32_t* status) { /*
          ((1 << HAL_GetAnalogOversampleBits(gyro->handle, status)) *
           gyro->voltsPerDegreePerSecond);
   */
+  return 0;
 }
 
 double HAL_GetAnalogGyroOffset(HAL_GyroHandle handle, int32_t* status) { /*
@@ -242,6 +245,7 @@ double HAL_GetAnalogGyroOffset(HAL_GyroHandle handle, int32_t* status) { /*
   }
   return gyro->offset;
   */
+  return 0;
 }
 
 int32_t HAL_GetAnalogGyroCenter(HAL_GyroHandle handle, int32_t* status) { /*
@@ -252,5 +256,6 @@ int32_t HAL_GetAnalogGyroCenter(HAL_GyroHandle handle, int32_t* status) { /*
   }
   return gyro->center;
   */
+  return 0;
 }
 
