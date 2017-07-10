@@ -30,9 +30,9 @@ static priority_recursive_mutex digitalRelayMutex;
 extern "C" {
 HAL_RelayHandle HAL_InitializeRelayPort(HAL_PortHandle portHandle, HAL_Bool fwd,
                                         int32_t* status) {
-  initializeDigital(status);
+  /*initializeDigital(status);
 
-  if (*status != 0) return HAL_kInvalidHandle;
+  if (*status != 0) return HAL_kInvalidHandle;*/
 
   int16_t channel = getPortHandleChannel(portHandle);
   if (channel == InvalidHandleIndex) {
@@ -84,7 +84,7 @@ HAL_Bool HAL_CheckRelayChannel(int32_t channel) {
  */
 void HAL_SetRelay(HAL_RelayHandle relayPortHandle, HAL_Bool on,
                   int32_t* status) {
-  auto port = relayHandles.Get(relayPortHandle);
+  /*auto port = relayHandles.Get(relayPortHandle);
   if (port == nullptr) {
     *status = HAL_HANDLE_ERROR;
     return;
@@ -109,14 +109,14 @@ void HAL_SetRelay(HAL_RelayHandle relayPortHandle, HAL_Bool on,
     relaySystem->writeValue_Forward(relays, status);
   } else {
     relaySystem->writeValue_Reverse(relays, status);
-  }
+  }*/
 }
 
 /**
  * Get the current state of the relay channel
  */
 HAL_Bool HAL_GetRelay(HAL_RelayHandle relayPortHandle, int32_t* status) {
-  auto port = relayHandles.Get(relayPortHandle);
+  /*auto port = relayHandles.Get(relayPortHandle);
   if (port == nullptr) {
     *status = HAL_HANDLE_ERROR;
     return false;
@@ -129,6 +129,6 @@ HAL_Bool HAL_GetRelay(HAL_RelayHandle relayPortHandle, int32_t* status) {
     relays = relaySystem->readValue_Reverse(status);
   }
 
-  return (relays & (1 << port->channel)) != 0;
+  return (relays & (1 << port->channel)) != 0;*/
 }
 }
