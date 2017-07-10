@@ -16,8 +16,8 @@
 
 namespace hal {
 priority_recursive_mutex analogRegisterWindowMutex;
-std::unique_ptr<tAI> analogInputSystem;
-std::unique_ptr<tAO> analogOutputSystem;
+//std::unique_ptr<tAI> analogInputSystem;
+//std::unique_ptr<tAO> analogOutputSystem;
 
 IndexedHandleResource<HAL_AnalogInputHandle, hal::AnalogPort, kNumAnalogInputs,
                       HAL_HandleEnum::AnalogInput>
@@ -36,10 +36,10 @@ void initializeAnalog(int32_t* status) {
   if (analogSystemInitialized) return;
   std::lock_guard<priority_recursive_mutex> sync(analogRegisterWindowMutex);
   if (analogSystemInitialized) return;
-  analogInputSystem.reset(tAI::create(status));
+  /*analogInputSystem.reset(tAI::create(status));
   analogOutputSystem.reset(tAO::create(status));
   setAnalogNumChannelsToActivate(kNumAnalogInputs);
-  setAnalogSampleRate(kDefaultSampleRate, status);
+  setAnalogSampleRate(kDefaultSampleRate, status);*/
   analogSystemInitialized = true;
 }
 
@@ -49,9 +49,10 @@ void initializeAnalog(int32_t* status) {
  * @return Active channels.
  */
 int32_t getAnalogNumActiveChannels(int32_t* status) {
-  int32_t scanSize = analogInputSystem->readConfig_ScanSize(status);
+  /*int32_t scanSize = analogInputSystem->readConfig_ScanSize(status);
   if (scanSize == 0) return 8;
-  return scanSize;
+  return scanSize;*/
+  return 0;
 }
 
 /**
@@ -82,7 +83,7 @@ void setAnalogSampleRate(double samplesPerSecond, int32_t* status) {
   // TODO: This will change when variable size scan lists are implemented.
   // TODO: Need double comparison with epsilon.
   // wpi_assert(!sampleRateSet || GetSampleRate() == samplesPerSecond);
-  analogSampleRateSet = true;
+  /*analogSampleRateSet = true;
 
   // Compute the convert rate
   uint32_t ticksPerSample =
@@ -103,7 +104,7 @@ void setAnalogSampleRate(double samplesPerSecond, int32_t* status) {
   analogInputSystem->writeConfig(config, status);
 
   // Indicate that the scan size has been commited to hardware.
-  setAnalogNumChannelsToActivate(0);
+  setAnalogNumChannelsToActivate(0);*/
 }
 
 /**
