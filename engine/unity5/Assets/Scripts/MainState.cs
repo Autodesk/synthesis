@@ -48,7 +48,10 @@ public class MainState : SimState
 
     private System.Random random;
 
-    bool resetting;
+    private bool resetting;
+    private bool resetButton = false;
+
+    private bool orient = false;
 
     public override void Awake()
     {
@@ -264,25 +267,25 @@ public class MainState : SimState
 
         BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
 
-        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]))
+        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) || resetButton)
         {
-            if (!resetting)
-            {
-                foreach (GameObject g in extraElements)
-                    UnityEngine.Object.Destroy(g);
+                if (!resetting)
+                {
+                    foreach (GameObject g in extraElements)
+                        UnityEngine.Object.Destroy(g);
 
-                BeginReset();
-            }
+                    BeginReset();
+                }
 
-            Vector3 transposition = new Vector3(
-                Input.GetKey(KeyCode.RightArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.LeftArrow) ? -RESET_VELOCITY : 0f,
-                0f,
-                Input.GetKey(KeyCode.UpArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.DownArrow) ? -RESET_VELOCITY : 0f);
+                Vector3 transposition = new Vector3(
+                    Input.GetKey(KeyCode.RightArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.LeftArrow) ? -RESET_VELOCITY : 0f,
+                    0f,
+                    Input.GetKey(KeyCode.UpArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.DownArrow) ? -RESET_VELOCITY : 0f);
 
-            if (!transposition.Equals(Vector3.zero))
-                TransposeRobot(transposition);
+                if (!transposition.Equals(Vector3.zero))
+                    TransposeRobot(transposition);
         }
-        else if (oWindow != null && !oWindow.Active && resetting)
+        else if (oWindow != null && !oWindow.Active && resetting && !orient)
         {
             EndReset();
         }
@@ -350,7 +353,7 @@ public class MainState : SimState
         return true;
     }
 
-    void BeginReset(bool resetTransform = true)
+    public void BeginReset(bool resetTransform = true)
     {
         resetting = true;
 
@@ -378,7 +381,7 @@ public class MainState : SimState
         RotateRobot(robotStartOrientation);
     }
 
-    void EndReset()
+    public void EndReset()
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -395,7 +398,7 @@ public class MainState : SimState
         resetting = false;
     }
 
-    void TransposeRobot(Vector3 transposition)
+    public void TransposeRobot(Vector3 transposition)
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -432,8 +435,39 @@ public class MainState : SimState
         }
     }
 
-    void RotateRobot(Vector3 rotation)
+    public void RotateRobot(Vector3 rotation)
     {
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
+    }
+
+
+    //Public Functions for button interaction
+    public void ResetRobot()
+    {
+        resetButton = !resetButton;
+        orient = false;
+    }
+
+    public void StartOrient()
+    {
+        resetButton = false;
+        orient = !orient;
+        if (orient)
+        {
+            BeginReset(false);
+            TransposeRobot(new Vector3(0f, 1f, 0f));
+        }
+    }
+
+    public void SaveOrientation()
+    {
+        robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+    }
+
+    public void ResetOrientation()
+    {
+        robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+        EndReset();
+        BeginReset();
     }
 }
