@@ -102,6 +102,7 @@ HAL_Bool HAL_SetThreadPriority(NativeThreadHandle handle, HAL_Bool realTime,
     return true;
 	
   }*/
+	return true;
 }
 
 /**
