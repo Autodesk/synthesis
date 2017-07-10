@@ -1,5 +1,5 @@
 CC := $(FRC_PATH)/bin/arm-frc-linux-gnueabi-g++.exe
-CCFLAGS := -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -std=c++11
+CCFLAGS := -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -std=c++11 -Wpedantic
 
 SRC_FILES := $(wildcard lib/athena/*.cpp) \
 	$(wildcard lib/athena/cpp/*.cpp)
