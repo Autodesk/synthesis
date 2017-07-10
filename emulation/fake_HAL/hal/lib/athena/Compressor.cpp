@@ -34,6 +34,8 @@ HAL_CompressorHandle HAL_InitializeCompressor(int32_t module, int32_t* status) {
 HAL_Bool HAL_CheckCompressorModule(int32_t module) {
   return module < kNumPCMModules && module >= 0;
   */
+
+	return 0;
 }
 
 HAL_Bool HAL_GetCompressor(HAL_CompressorHandle compressorHandle,
@@ -50,6 +52,8 @@ HAL_Bool HAL_GetCompressor(HAL_CompressorHandle compressorHandle,
 
   return value;
   */
+
+	return true;
 }
 
 void HAL_SetCompressorClosedLoopControl(HAL_CompressorHandle compressorHandle,
@@ -79,6 +83,8 @@ HAL_Bool HAL_GetCompressorClosedLoopControl(
 
   return value;
   */
+
+	return true;
 }
 
 HAL_Bool HAL_GetCompressorPressureSwitch(HAL_CompressorHandle compressorHandle,
@@ -95,6 +101,7 @@ HAL_Bool HAL_GetCompressorPressureSwitch(HAL_CompressorHandle compressorHandle,
 
   return value;
   */
+  return true;
 }
 
 double HAL_GetCompressorCurrent(HAL_CompressorHandle compressorHandle,
@@ -111,6 +118,7 @@ double HAL_GetCompressorCurrent(HAL_CompressorHandle compressorHandle,
 
   return value;
   */
+  return 0;
 }
 HAL_Bool HAL_GetCompressorCurrentTooHighFault(
     HAL_CompressorHandle compressorHandle, int32_t* status) { /*
@@ -126,6 +134,7 @@ HAL_Bool HAL_GetCompressorCurrentTooHighFault(
 
   return value;
   */
+  return true;
 }
 HAL_Bool HAL_GetCompressorCurrentTooHighStickyFault(
     HAL_CompressorHandle compressorHandle, int32_t* status) { /*
@@ -141,6 +150,7 @@ HAL_Bool HAL_GetCompressorCurrentTooHighStickyFault(
 
   return value;
   */
+  return true;
 }
 HAL_Bool HAL_GetCompressorShortedStickyFault(
     HAL_CompressorHandle compressorHandle, int32_t* status) { /*
@@ -156,6 +166,7 @@ HAL_Bool HAL_GetCompressorShortedStickyFault(
 
   return value;
   */
+  return true;
 }
 HAL_Bool HAL_GetCompressorShortedFault(HAL_CompressorHandle compressorHandle,
                                        int32_t* status) { /*
@@ -171,6 +182,7 @@ HAL_Bool HAL_GetCompressorShortedFault(HAL_CompressorHandle compressorHandle,
 
   return value;
   */
+  return true;
 }
 HAL_Bool HAL_GetCompressorNotConnectedStickyFault(
     HAL_CompressorHandle compressorHandle, int32_t* status) { /*
@@ -186,6 +198,7 @@ HAL_Bool HAL_GetCompressorNotConnectedStickyFault(
 
   return value;
   */
+  return true;
 }
 HAL_Bool HAL_GetCompressorNotConnectedFault(
     HAL_CompressorHandle compressorHandle, int32_t* status) { /*
@@ -201,5 +214,6 @@ HAL_Bool HAL_GetCompressorNotConnectedFault(
 
   return value;
   */
+  return true;
 }
 
