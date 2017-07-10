@@ -84,6 +84,7 @@ static uint8_t readRegister(Register reg);
  * Initialize the accelerometer.
  */
 static void initializeAccelerometer() {
+  /*
   int32_t status;
 
   if (!accel) {
@@ -98,9 +99,11 @@ static void initializeAccelerometer() {
     // The device identification number should be 0x2a
     assert(readRegister(kReg_WhoAmI) == 0x2a);
   }
+  */
 }
 
 static void writeRegister(Register reg, uint8_t data) {
+  /*
   int32_t status = 0;
   uint64_t initialTime;
 
@@ -127,9 +130,11 @@ static void writeRegister(Register reg, uint8_t data) {
   while (accel->readSTAT(&status) & 1) {
     if (HAL_GetFPGATime(&status) > initialTime + 1000) break;
   }
+  */
 }
 
 static uint8_t readRegister(Register reg) {
+  /*
   int32_t status = 0;
   uint64_t initialTime;
 
@@ -157,8 +162,11 @@ static uint8_t readRegister(Register reg) {
   }
 
   return accel->readDATI(&status);
+  */
+  return 0;
 }
 
+// This function will probably (read: hopefully) be fine as is.
 /**
  * Convert a 12-bit raw acceleration value into a scaled double in units of
  * 1 g-force, taking into account the accelerometer range.
@@ -189,6 +197,7 @@ extern "C" {
  * mode to change any configuration.
  */
 void HAL_SetAccelerometerActive(HAL_Bool active) {
+  // All of these function calls are already stubs
   initializeAccelerometer();
 
   uint8_t ctrlReg1 = readRegister(kReg_CtrlReg1);
@@ -201,6 +210,7 @@ void HAL_SetAccelerometerActive(HAL_Bool active) {
  * The accelerometer should be in standby mode when this is called.
  */
 void HAL_SetAccelerometerRange(HAL_AccelerometerRange range) {
+  // All of these function calls are already stubs
   initializeAccelerometer();
 
   accelerometerRange = range;
@@ -216,10 +226,13 @@ void HAL_SetAccelerometerRange(HAL_AccelerometerRange range) {
  * This is a floating point value in units of 1 g-force
  */
 double HAL_GetAccelerometerX() {
+  // All of these function calls are already stubs
   initializeAccelerometer();
 
   int32_t raw =
       (readRegister(kReg_OutXMSB) << 4) | (readRegister(kReg_OutXLSB) >> 4);
+
+  // Except this one
   return unpackAxis(raw);
 }
 
@@ -229,10 +242,13 @@ double HAL_GetAccelerometerX() {
  * This is a floating point value in units of 1 g-force
  */
 double HAL_GetAccelerometerY() {
+  // All of these function calls are already stubs
   initializeAccelerometer();
 
   int32_t raw =
       (readRegister(kReg_OutYMSB) << 4) | (readRegister(kReg_OutYLSB) >> 4);
+
+  // Except this one
   return unpackAxis(raw);
 }
 
@@ -242,10 +258,13 @@ double HAL_GetAccelerometerY() {
  * This is a floating point value in units of 1 g-force
  */
 double HAL_GetAccelerometerZ() {
+  // All of these function calls are already stubs
   initializeAccelerometer();
 
   int32_t raw =
       (readRegister(kReg_OutZMSB) << 4) | (readRegister(kReg_OutZLSB) >> 4);
+
+  // Except this one
   return unpackAxis(raw);
 }
 
