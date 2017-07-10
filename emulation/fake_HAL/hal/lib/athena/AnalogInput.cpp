@@ -27,9 +27,9 @@ extern "C" {
  */
 HAL_AnalogInputHandle HAL_InitializeAnalogInputPort(HAL_PortHandle portHandle,
                                                     int32_t* status) {
-  int16_t channel = getPortHandleChannel(portHandle);
+  /*int16_t channel = getPortHandleChannel(portHandle);
   HAL_AnalogInputHandle handle = analogInputHandles.Allocate(channel, status);
-  /*initializeAnalog(status);
+  initializeAnalog(status);
 
   if (*status != 0) return HAL_kInvalidHandle;
 
@@ -60,8 +60,9 @@ HAL_AnalogInputHandle HAL_InitializeAnalogInputPort(HAL_PortHandle portHandle,
   // Set default configuration
   analogInputSystem->writeScanList(channel, channel, status);
   HAL_SetAnalogAverageBits(handle, kDefaultAverageBits, status);
-  HAL_SetAnalogOversampleBits(handle, kDefaultOversampleBits, status);*/
-  return handle;
+  HAL_SetAnalogOversampleBits(handle, kDefaultOversampleBits, status);
+  return handle;*/
+  return 0;
 }
 
 /**
