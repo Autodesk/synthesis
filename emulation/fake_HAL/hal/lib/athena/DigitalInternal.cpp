@@ -24,10 +24,10 @@ namespace hal {
 // Create a mutex to protect changes to the DO PWM config
 priority_recursive_mutex digitalPwmMutex;
 
-std::unique_ptr<tDIO> digitalSystem;
+/*std::unique_ptr<tDIO> digitalSystem;
 std::unique_ptr<tRelay> relaySystem;
 std::unique_ptr<tPWM> pwmSystem;
-std::unique_ptr<tSPI> spiSystem;
+std::unique_ptr<tSPI> spiSystem;*/
 
 static std::atomic<bool> digitalSystemsInitialized{false};
 static hal::priority_mutex initializeMutex;
@@ -47,7 +47,7 @@ void initializeDigital(int32_t* status) {
   // Second check in case another thread was waiting
   if (digitalSystemsInitialized) return;
 
-  digitalSystem.reset(tDIO::create(status));
+  /*digitalSystem.reset(tDIO::create(status));
 
   // Relay Setup
   relaySystem.reset(tRelay::create(status));
@@ -96,7 +96,7 @@ void initializeDigital(int32_t* status) {
   }
 
   // SPI setup
-  spiSystem.reset(tSPI::create(status));
+  spiSystem.reset(tSPI::create(status));*/
 
   digitalSystemsInitialized = true;
 }
