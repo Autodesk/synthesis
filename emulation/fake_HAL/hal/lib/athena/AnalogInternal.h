@@ -34,6 +34,7 @@ struct AnalogPort {
   std::unique_ptr<tAccumulator> accumulator;
 };
 
+//TODO: remove this once all of the dependencies are gone
 extern IndexedHandleResource<HAL_AnalogInputHandle, hal::AnalogPort,
                              kNumAnalogInputs, HAL_HandleEnum::AnalogInput>
     analogInputHandles;
