@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>nmake</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>nmake clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>nmake</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>nmake clean</NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>nmake</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="lib\athena\Accelerometer.cpp" />
+    <ClCompile Include="lib\athena\AnalogAccumulator.cpp" />
+    <ClCompile Include="lib\athena\AnalogGyro.cpp" />
+    <ClCompile Include="lib\athena\AnalogInput.cpp" />
+    <ClCompile Include="lib\athena\AnalogInternal.cpp" />
+    <ClCompile Include="lib\athena\AnalogOutput.cpp" />
+    <ClCompile Include="lib\athena\AnalogTrigger.cpp" />
+    <ClCompile Include="lib\athena\Compressor.cpp" />
+    <ClCompile Include="lib\athena\Constants.cpp" />
+    <ClCompile Include="lib\athena\Counter.cpp" />
+    <ClCompile Include="lib\athena\cpp\priority_mutex.cpp" />
+    <ClCompile Include="lib\athena\cpp\SerialHelper.cpp" />
+    <ClCompile Include="lib\athena\ctre\CtreCanNode.cpp" />
+    <ClCompile Include="lib\athena\ctre\PCM.cpp" />
+    <ClCompile Include="lib\athena\ctre\PDP.cpp" />
+    <ClCompile Include="lib\athena\DigitalInternal.cpp" />
+    <ClCompile Include="lib\athena\DIO.cpp" />
+    <ClCompile Include="lib\athena\Encoder.cpp" />
+    <ClCompile Include="lib\athena\FPGAEncoder.cpp" />
+    <ClCompile Include="lib\athena\FRCDriverStation.cpp" />
+    <ClCompile Include="lib\athena\HAL.cpp" />
+    <ClCompile Include="lib\athena\I2C.cpp" />
+    <ClCompile Include="lib\athena\Interrupts.cpp" />
+    <ClCompile Include="lib\athena\Notifier.cpp" />
+    <ClCompile Include="lib\athena\OSSerialPort.cpp" />
+    <ClCompile Include="lib\athena\PCMInternal.cpp" />
+    <ClCompile Include="lib\athena\PDP.cpp" />
+    <ClCompile Include="lib\athena\Ports.cpp" />
+    <ClCompile Include="lib\athena\Power.cpp" />
+    <ClCompile Include="lib\athena\PWM.cpp" />
+    <ClCompile Include="lib\athena\Relay.cpp" />
+    <ClCompile Include="lib\athena\SerialPort.cpp" />
+    <ClCompile Include="lib\athena\Solenoid.cpp" />
+    <ClCompile Include="lib\athena\SPI.cpp" />
+    <ClCompile Include="lib\athena\Threads.cpp" />
+    <ClCompile Include="lib\shared\cpp\fpga_clock.cpp" />
+    <ClCompile Include="lib\shared\handles\HandlesInternal.cpp" />
+    <ClCompile Include="lib\sim\HALDesktop.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\ConvertUTF.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\ConvertUTFWrapper.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\ErrorHandling.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\Hashing.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\raw_ostream.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\raw_os_ostream.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\SmallPtrSet.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\SmallVector.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\StringExtras.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\StringMap.cpp" />
+    <ClCompile Include="wpiutil\src\llvm\StringRef.cpp" />
+    <ClCompile Include="wpiutil\src\support\Base64.cpp" />
+    <ClCompile Include="wpiutil\src\support\leb128.cpp" />
+    <ClCompile Include="wpiutil\src\support\raw_istream.cpp" />
+    <ClCompile Include="wpiutil\src\support\raw_socket_istream.cpp" />
+    <ClCompile Include="wpiutil\src\support\raw_socket_ostream.cpp" />
+    <ClCompile Include="wpiutil\src\support\timestamp.cpp" />
+    <ClCompile Include="wpiutil\src\tcpsockets\SocketError.cpp" />
+    <ClCompile Include="wpiutil\src\tcpsockets\TCPAcceptor.cpp" />
+    <ClCompile Include="wpiutil\src\tcpsockets\TCPConnector.cpp" />
+    <ClCompile Include="wpiutil\src\tcpsockets\TCPStream.cpp" />
+    <ClCompile Include="wpiutil\unittest\Base64Test.cpp" />
+    <ClCompile Include="wpiutil\unittest\leb128Test.cpp" />
+    <ClCompile Include="wpiutil\unittest\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\ctre\ctre.h" />
+    <ClInclude Include="include\ctre\CtreCanNode.h" />
+    <ClInclude Include="include\ctre\ctre_frames.h" />
+    <ClInclude Include="include\ctre\PCM.h" />
+    <ClInclude Include="include\ctre\PDP.h" />
+    <ClInclude Include="include\hal\Accelerometer.h" />
+    <ClInclude Include="include\hal\AnalogAccumulator.h" />
+    <ClInclude Include="include\hal\AnalogGyro.h" />
+    <ClInclude Include="include\hal\AnalogInput.h" />
+    <ClInclude Include="include\hal\AnalogOutput.h" />
+    <ClInclude Include="include\hal\AnalogTrigger.h" />
+    <ClInclude Include="include\hal\CAN.h" />
+    <ClInclude Include="include\hal\ChipObject.h" />
+    <ClInclude Include="include\hal\Compressor.h" />
+    <ClInclude Include="include\hal\Constants.h" />
+    <ClInclude Include="include\hal\Counter.h" />
+    <ClInclude Include="include\hal\cpp\fpga_clock.h" />
+    <ClInclude Include="include\hal\cpp\Log.h" />
+    <ClInclude Include="include\hal\cpp\make_unique.h" />
+    <ClInclude Include="include\hal\cpp\priority_condition_variable.h" />
+    <ClInclude Include="include\hal\cpp\priority_mutex.h" />
+    <ClInclude Include="include\hal\cpp\SerialHelper.h" />
+    <ClInclude Include="include\hal\DIO.h" />
+    <ClInclude Include="include\hal\DriverStation.h" />
+    <ClInclude Include="include\hal\Encoder.h" />
+    <ClInclude Include="include\hal\Errors.h" />
+    <ClInclude Include="include\hal\HAL.h" />
+    <ClInclude Include="include\hal\handles\DigitalHandleResource.h" />
+    <ClInclude Include="include\hal\handles\HandlesInternal.h" />
+    <ClInclude Include="include\hal\handles\IndexedClassedHandleResource.h" />
+    <ClInclude Include="include\hal\handles\IndexedHandleResource.h" />
+    <ClInclude Include="include\hal\handles\LimitedClassedHandleResource.h" />
+    <ClInclude Include="include\hal\handles\LimitedHandleResource.h" />
+    <ClInclude Include="include\hal\handles\UnlimitedHandleResource.h" />
+    <ClInclude Include="include\hal\I2C.h" />
+    <ClInclude Include="include\hal\Interrupts.h" />
+    <ClInclude Include="include\hal\labview\HAL.h" />
+    <ClInclude Include="include\hal\Notifier.h" />
+    <ClInclude Include="include\hal\OSSerialPort.h" />
+    <ClInclude Include="include\hal\PDP.h" />
+    <ClInclude Include="include\hal\Ports.h" />
+    <ClInclude Include="include\hal\Power.h" />
+    <ClInclude Include="include\hal\PWM.h" />
+    <ClInclude Include="include\hal\Relay.h" />
+    <ClInclude Include="include\hal\SerialPort.h" />
+    <ClInclude Include="include\hal\Solenoid.h" />
+    <ClInclude Include="include\hal\SPI.h" />
+    <ClInclude Include="include\hal\Threads.h" />
+    <ClInclude Include="include\hal\Types.h" />
+    <ClInclude Include="lib\athena\AnalogInternal.h" />
+    <ClInclude Include="lib\athena\ConstantsInternal.h" />
+    <ClInclude Include="lib\athena\DigitalInternal.h" />
+    <ClInclude Include="lib\athena\EncoderInternal.h" />
+    <ClInclude Include="lib\athena\FPGAEncoder.h" />
+    <ClInclude Include="lib\athena\frccansae\CANDeviceInterface.h" />
+    <ClInclude Include="lib\athena\PCMInternal.h" />
+    <ClInclude Include="lib\athena\PortsInternal.h" />
+    <ClInclude Include="lib\athena\visa\visa.h" />
+    <ClInclude Include="lib\athena\visa\visatype.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\fpgainterfacecapi\NiFpga.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\nInterfaceGlobals.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tAccel.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tAccumulator.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tAI.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tAlarm.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tAnalogTrigger.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tAO.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tBIST.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tCounter.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tDIO.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tDMA.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tEncoder.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tGlobal.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tInterrupt.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tPower.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tPWM.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tRelay.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tSPI.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\nroborio_fpganamespace\tSysWatchdog.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\printFpgaVersion.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\RoboRIO_FRC_ChipObject_Aliases.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\tDMAChannelDescriptor.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\tDMAManager.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\tInterruptManager.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\tSystem.h" />
+    <ClInclude Include="ni-libraries\include\frc_fpga_chipobject\tSystemInterface.h" />
+    <ClInclude Include="ni-libraries\include\frc_networkcommunication\AICalibration.h" />
+    <ClInclude Include="ni-libraries\include\frc_networkcommunication\CANInterfacePlugin.h" />
+    <ClInclude Include="ni-libraries\include\frc_networkcommunication\CANSessionMux.h" />
+    <ClInclude Include="ni-libraries\include\frc_networkcommunication\FRCComm.h" />
+    <ClInclude Include="ni-libraries\include\frc_networkcommunication\LoadOut.h" />
+    <ClInclude Include="ni-libraries\include\frc_networkcommunication\UsageReporting.h" />
+    <ClInclude Include="ni-libraries\include\i2clib\i2c-lib.h" />
+    <ClInclude Include="ni-libraries\include\spilib\spi-lib.h" />
+    <ClInclude Include="wpiutil\include\llvm\AlignOf.h" />
+    <ClInclude Include="wpiutil\include\llvm\ArrayRef.h" />
+    <ClInclude Include="wpiutil\include\llvm\Compiler.h" />
+    <ClInclude Include="wpiutil\include\llvm\ConvertUTF.h" />
+    <ClInclude Include="wpiutil\include\llvm\DenseMap.h" />
+    <ClInclude Include="wpiutil\include\llvm\DenseMapInfo.h" />
+    <ClInclude Include="wpiutil\include\llvm\EpochTracker.h" />
+    <ClInclude Include="wpiutil\include\llvm\Format.h" />
+    <ClInclude Include="wpiutil\include\llvm\Hashing.h" />
+    <ClInclude Include="wpiutil\include\llvm\iterator_range.h" />
+    <ClInclude Include="wpiutil\include\llvm\MathExtras.h" />
+    <ClInclude Include="wpiutil\include\llvm\None.h" />
+    <ClInclude Include="wpiutil\include\llvm\Optional.h" />
+    <ClInclude Include="wpiutil\include\llvm\PointerLikeTypeTraits.h" />
+    <ClInclude Include="wpiutil\include\llvm\raw_ostream.h" />
+    <ClInclude Include="wpiutil\include\llvm\raw_os_ostream.h" />
+    <ClInclude Include="wpiutil\include\llvm\SmallPtrSet.h" />
+    <ClInclude Include="wpiutil\include\llvm\SmallSet.h" />
+    <ClInclude Include="wpiutil\include\llvm\SmallString.h" />
+    <ClInclude Include="wpiutil\include\llvm\SmallVector.h" />
+    <ClInclude Include="wpiutil\include\llvm\STLExtras.h" />
+    <ClInclude Include="wpiutil\include\llvm\StringExtras.h" />
+    <ClInclude Include="wpiutil\include\llvm\StringMap.h" />
+    <ClInclude Include="wpiutil\include\llvm\StringRef.h" />
+    <ClInclude Include="wpiutil\include\llvm\type_traits.h" />
+    <ClInclude Include="wpiutil\include\llvm\WindowsError.h" />
+    <ClInclude Include="wpiutil\include\support\atomic_static.h" />
+    <ClInclude Include="wpiutil\include\support\Base64.h" />
+    <ClInclude Include="wpiutil\include\support\ConcurrentQueue.h" />
+    <ClInclude Include="wpiutil\include\support\deprecated.h" />
+    <ClInclude Include="wpiutil\include\support\jni_util.h" />
+    <ClInclude Include="wpiutil\include\support\leb128.h" />
+    <ClInclude Include="wpiutil\include\support\Logger.h" />
+    <ClInclude Include="wpiutil\include\support\raw_istream.h" />
+    <ClInclude Include="wpiutil\include\support\raw_socket_istream.h" />
+    <ClInclude Include="wpiutil\include\support\raw_socket_ostream.h" />
+    <ClInclude Include="wpiutil\include\support\SafeThread.h" />
+    <ClInclude Include="wpiutil\include\support\timestamp.h" />
+    <ClInclude Include="wpiutil\include\tcpsockets\NetworkAcceptor.h" />
+    <ClInclude Include="wpiutil\include\tcpsockets\NetworkStream.h" />
+    <ClInclude Include="wpiutil\include\tcpsockets\SocketError.h" />
+    <ClInclude Include="wpiutil\include\tcpsockets\TCPAcceptor.h" />
+    <ClInclude Include="wpiutil\include\tcpsockets\TCPConnector.h" />
+    <ClInclude Include="wpiutil\include\tcpsockets\TCPStream.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
