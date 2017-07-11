@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HAL", "HAL.vcxproj", "{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM_RoboRIO = Debug|ARM_RoboRIO
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM_RoboRIO = Release|ARM_RoboRIO
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Debug|ARM_RoboRIO.ActiveCfg = Debug|Win32
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Debug|ARM_RoboRIO.Build.0 = Debug|Win32
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Debug|x64.ActiveCfg = Debug|x64
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Debug|x64.Build.0 = Debug|x64
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Debug|x86.ActiveCfg = Debug|Win32
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Debug|x86.Build.0 = Debug|Win32
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Release|ARM_RoboRIO.ActiveCfg = Release|Win32
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Release|ARM_RoboRIO.Build.0 = Release|Win32
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Release|x64.ActiveCfg = Release|x64
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Release|x64.Build.0 = Release|x64
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Release|x86.ActiveCfg = Release|Win32
+		{10245A8C-5346-4DB1-A1DA-F0AFF9CE8A1A}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
