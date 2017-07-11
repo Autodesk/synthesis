@@ -3,12 +3,6 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 
-public enum FileBrowserType
-{
-    File,
-    Directory
-}
-
 /// <summary>
 /// Modified version of http://wiki.unity3d.com/index.php?title=FileBrowser.
 /// Directory only based file browser.
@@ -21,6 +15,8 @@ class FileBrowser : OverlayWindow
     /// The maximum time in seconds between clicks to be considered a double click.
     /// </summary>
     private const float DOUBLE_CLICK_TIME = .2f;
+
+    private const float SINGLE_CLICK_TIME = .3f;
 
     /// <summary>
     /// The selected directory location.
@@ -68,9 +64,6 @@ class FileBrowser : OverlayWindow
     /// </summary>
     private float lastClick = 0;
 
-    private float _buttonDownPhaseStart;
-    private float _doubleClickPhaseStart;
-
     /// <summary>
     /// Default textures.
     /// </summary>
@@ -97,6 +90,11 @@ class FileBrowser : OverlayWindow
 	/// Custom GUIStyle for labels.
 	/// </summary>s
 	private GUIStyle fileBrowserLabel;
+
+    //2017
+    private GUIStyle listStyle;
+    private GUIStyle highlightStyle;
+    private GUIStyle buttonStyle;
 
     public FileBrowser(string windowTitle, bool allowEsc = true)
     {
@@ -139,6 +137,23 @@ class FileBrowser : OverlayWindow
         fileBrowserButton.onHover.background = buttonSelected;
         fileBrowserButton.onActive.background = buttonSelected;
 
+        //listStyle = new GUIStyle("button");
+        //listStyle.normal.background = new Texture2D(0, 0);
+        //listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
+        //listStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
+        //listStyle.alignment = TextAnchor.MiddleLeft;
+        //listStyle.normal.textColor = Color.white;
+
+        listStyle = new GUIStyle("button");
+        listStyle.normal.background = buttonTexture;
+        listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
+        listStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
+        listStyle.font = russoOne;
+
+        highlightStyle = new GUIStyle(listStyle);
+        highlightStyle.normal.background = listStyle.active.background;
+        highlightStyle.hover.background = highlightStyle.normal.background;
+
         //Custom style for labels
         fileBrowserLabel = new GUIStyle(GUI.skin.label);
         fileBrowserLabel.font = russoOne;
@@ -152,26 +167,73 @@ class FileBrowser : OverlayWindow
     /// <param name="stringify">Optional function to convert object to string</param>
     /// <param name="highlight">Optional currently-selected item's string representation</param>
     /// <returns>The selected object</returns>
-    private static object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify, string highlight)
+    //private static object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify, string highlight)
+    //{
+    //    object selected = null;
+    //    Color bg = GUI.backgroundColor;
+    //    foreach (T o in items)
+    //    {
+    //        string entry = stringify != null ? stringify(o) : o.ToString();
+
+    //        if (highlight != null && highlight.Equals(entry))
+    //        {
+    //            GUI.backgroundColor = new Color(1f, 0.25f, 0.25f, bg.a);
+    //        }
+    //        if (GUILayout.Button(entry, fileBrowserButton))
+    //        {
+    //            selected = o;
+    //        }
+    //        GUI.backgroundColor = bg;
+    //    }
+    //    return selected;
+    //}
+
+    //====================================================IN PROGRESS=======================================================
+    private object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify, string highlight)
     {
         object selected = null;
-        Color bg = GUI.backgroundColor;
         foreach (T o in items)
-        {
+        { 
             string entry = stringify != null ? stringify(o) : o.ToString();
 
             if (highlight != null && highlight.Equals(entry))
             {
-                GUI.backgroundColor = new Color(1f, 0.25f, 0.25f, bg.a);
+                Debug.Log(entry);
+                if (GUILayout.Button(entry, highlightStyle))
+                {
+                    selected = o;
+                }
             }
-            if (GUILayout.Button(entry, fileBrowserButton))
+            if (GUILayout.Button(entry, listStyle))
             {
                 selected = o;
             }
-            GUI.backgroundColor = bg;
         }
         return selected;
     }
+
+    //==============================================================SAMPLE=============================
+    //private object SelectList<T>(IEnumerable<T> items, string highlight, GUIStyle buttonStyle)
+    //{
+    //    object selected = null;
+    //    foreach (T o in items)
+    //    {
+    //        string entry = o.ToString();
+    //        if (highlight != null && highlight.Equals(entry))
+    //        {
+    //            Debug.Log(entry);
+    //            if (GUILayout.Button(entry, highlightStyle))
+    //            {
+    //                selected = o;
+    //            }
+    //        }
+    //        else if (GUILayout.Button(entry, buttonStyle))
+    //        {
+    //            selected = o;
+    //        }
+    //    }
+    //    return selected;
+    //}
 
     /// <summary>
     /// Renders the browser window.
@@ -210,35 +272,51 @@ class FileBrowser : OverlayWindow
             directoryLocation = directoryInfo.FullName;
         }
 
-
         // Handle the directories list
         GUILayout.BeginArea(new Rect(10, 35, 480, 300));
-        GUILayout.Label("Directories:", fileBrowserLabel);
+        GUILayout.Label("When choosing a folder, please select the field/robot folder containing these elements" +
+                " " + "NOT the field/robot itself!", fileBrowserLabel);
+
         directoryScroll = GUILayout.BeginScrollView(directoryScroll);
         directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
         {
             return o.Name;
         }, new DirectoryInfo(directoryLocation).Name) as DirectoryInfo;
+
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
         if (directorySelection != null)
         {
+            bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
+            //bool singleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) > SINGLE_CLICK_TIME;
+
             // If directory contains field or robot files, display error message to user prompting them to select directory
             // instead of the actual field
             if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
                                                                   || directorySelection.GetFiles("*.bxdj").Length != 0)
             {
-                UserMessageManager.Dispatch("Please select dir", 5);
+                UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
             }
-            else
+
+            if (doubleClick)
             {
-                // If a directory was selected, jump there
+                // If a directory was double clicked, jump there
                 directoryLocation = directorySelection.FullName;
             }
+
+            else
+            {
+                // If directory was clicked once, highlight it
+                directoryInfo = directorySelection;
+            }
+
+            //if (singleClick)
+            //{
+            //    // If directory was clicked once, highlight it
+            //    directoryInfo = directorySelection;
+            //}
         }
-
-
 
         // The manual location box and the select button
         GUILayout.BeginArea(new Rect(10, 390, 480, 25));
@@ -248,8 +326,6 @@ class FileBrowser : OverlayWindow
         GUILayout.Label(directoryLocation.Length > labelLen ?
                         directoryLocation.Substring(0, 5) + "..." + directoryLocation.Substring(directoryLocation.Length - labelLen + 8) :
                         directoryLocation, fileBrowserLabel);
-
-        bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
 
         //if (doubleClick || GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
         if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
@@ -262,6 +338,7 @@ class FileBrowser : OverlayWindow
         {
             lastClick = Time.time;
         }
+
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
     }
@@ -285,41 +362,5 @@ class FileBrowser : OverlayWindow
     public Rect GetWindowRect()
     {
         return windowRect;
-    }
-
-    public void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            _buttonDownPhaseStart = Time.time;
-        }
-
-        if (_doubleClickPhaseStart > -1 && (Time.time - _doubleClickPhaseStart) > 0.2f)
-        {
-            Debug.Log("single click");
-            _doubleClickPhaseStart = -1;
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (Time.time - _buttonDownPhaseStart > 1.0f)
-            {
-                Debug.Log("long click");
-                _doubleClickPhaseStart = -1;
-            }
-            else
-            {
-                if (Time.time - _doubleClickPhaseStart < 0.2f)
-                {
-                    Debug.Log("double click");
-                    _doubleClickPhaseStart = -1;
-                }
-                else
-                {
-                    _doubleClickPhaseStart = Time.time;
-                }
-            }
-        }
-
     }
 }
