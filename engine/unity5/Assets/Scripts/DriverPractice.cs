@@ -26,6 +26,7 @@ namespace BulletUnity {
         private List<GameObject> objectsHeld; //list of gamepieces this robot is currently holding
         private List<string> gamepieces = new List<string>(); //list of the identifiers of gamepieces in the current field
 
+        public bool modeEnabled = false;
         /// <summary>
         /// If configuration file exists, loads information and auto-configures robot.
         /// If coniguration file doesn't exist, initializes variables for users to configure.
@@ -40,13 +41,13 @@ namespace BulletUnity {
             gamepieces = new List<string>();
 
             gamepieces.Add("GRAY_TOTE"); //Replace
-            holdingLimit = 1; //Replace
+            holdingLimit = 0; //Replace
 
             positionOffset = new UnityEngine.Vector3(0, -.4f, -.1f); //Replace
 
-            intakeNode = GameObject.Find("node_1.bxda"); //Replace
+            intakeNode = GameObject.Find("node_0.bxda"); //Replace
             intakeInteractor = intakeNode.AddComponent<Interactor>();
-            releaseNode = GameObject.Find("node_1.bxda"); //Replace
+            releaseNode = GameObject.Find("node_0.bxda"); //Replace
 
             releaseVelocity = new UnityEngine.Vector3(0, 7.8f, -3.9f); //Replace
             intakeInteractor.SetKeyword(gamepieces[0]); //Replace
@@ -54,36 +55,47 @@ namespace BulletUnity {
 	
 	    // Update is called once per frame
 	    void Update () {
-            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Pickup]))
+            if (modeEnabled)
             {
-                Intake();
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Pickup]))
+                {
+                    Intake();
+                }
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Release]))
+                {
+                    ReleaseGamepiece();
+                }
+                else
+                {
+                    HoldGamepiece();
+                }
+
+                //This should be replaced to be used buttons in a sort of configuration menu
+                if (Input.GetKey(KeyCode.Alpha3)) changeOffsetY(0.1f);
+                if (Input.GetKey(KeyCode.Alpha4)) changeOffsetY(-0.1f);
+                if (Input.GetKey(KeyCode.Alpha5)) changeOffsetZ(0.1f);
+                if (Input.GetKey(KeyCode.Alpha6)) changeOffsetZ(-0.1f);
+
+                if (Input.GetKey(KeyCode.Alpha7)) changeReleaseY(0.1f);
+                if (Input.GetKey(KeyCode.Alpha8)) changeReleaseY(-0.1f);
+                if (Input.GetKey(KeyCode.Alpha9)) changeReleaseZ(0.1f);
+                if (Input.GetKey(KeyCode.Alpha0)) changeReleaseZ(-0.1f);
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    DefineGamepiece();
+                }
+
+
+
+                if (Input.GetKeyDown(KeyCode.T)) SpawnGamepiece();
             }
-            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Release]))
-            {
-                ReleaseGamepiece();
-            }
-            else
-            {
-                HoldGamepiece();
-            }
-
-            //This should be replaced to be used buttons in a sort of configuration menu
-            if (Input.GetKey(KeyCode.Alpha3)) changeOffsetY(0.1f);
-            if (Input.GetKey(KeyCode.Alpha4)) changeOffsetY(-0.1f);
-            if (Input.GetKey(KeyCode.Alpha5)) changeOffsetZ(0.1f);
-            if (Input.GetKey(KeyCode.Alpha6)) changeOffsetZ(-0.1f);
-            
-            if (Input.GetKey(KeyCode.Alpha7)) changeReleaseY(0.1f);
-            if (Input.GetKey(KeyCode.Alpha8)) changeReleaseY(-0.1f);
-            if (Input.GetKey(KeyCode.Alpha9)) changeReleaseZ(0.1f);
-            if (Input.GetKey(KeyCode.Alpha0)) changeReleaseZ(-0.1f);
-            
-
-
-            
-
-            if (Input.GetKeyDown(KeyCode.T)) SpawnGamepiece();
 	    }
+
+        private void OnGUI()
+        {
+            UserMessageManager.Render();
+        }
 
         /// <summary>
         /// If the robot's intake node is touching an gamepiece, make the robot 'intake' it by adding it to the list of held objects and cheats physics by disabling collisions on the gamepiece.
@@ -104,7 +116,6 @@ namespace BulletUnity {
                 {
                     newObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
                 }
-
             }
         }
 
@@ -198,6 +209,45 @@ namespace BulletUnity {
         }
 
         #region Configuration
+
+        /// <summary>
+        /// Allows the user to select a dynamic object with their mouse and add it to the list of gamepieces.
+        /// </summary>
+        public void DefineGamepiece()
+        {
+            //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
+            BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
+            ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
+
+            BPhysicsWorld world = BPhysicsWorld.Get();
+            world.world.RayTest(start, end, rayResult);
+
+            //If there is a collision object and it is dynamic, add it to the list of gamepieces
+            if (rayResult.CollisionObject != null)
+            { 
+                if (rayResult.CollisionObject.CollisionFlags != BulletSharp.CollisionFlags.StaticObject)
+                {
+                    string name = (rayResult.CollisionObject.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
+                    gamepieces[0] = name;
+                    intakeInteractor.SetKeyword(gamepieces[0]);
+                    GameObject gamepiece = GameObject.Find(name);
+                    gamepiece.GetComponentInChildren<Renderer>().material.color = Color.blue;
+
+                    UserMessageManager.Dispatch(name + " has been selected as the gamepiece", 2);
+                }
+                else
+                {
+                    UserMessageManager.Dispatch("The gamepiece must be a dynamic object!", 2);
+                }
+            }
+            else
+            {
+                
+            }
+        }
+
         public void changeOffsetX(float amount)
         {
             positionOffset.x += amount;
