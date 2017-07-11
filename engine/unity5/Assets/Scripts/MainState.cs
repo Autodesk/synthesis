@@ -53,6 +53,8 @@ public class MainState : SimState
 
     private bool orient = false;
 
+    private DriverPractice driverPractice;
+
     public override void Awake()
     {
         GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
@@ -347,8 +349,7 @@ public class MainState : SimState
             Debug.Log(t);
         }
 
-        //Delet this
-        robotObject.AddComponent<DriverPractice>();
+        driverPractice = robotObject.AddComponent<DriverPractice>();
 
         return true;
     }
@@ -469,5 +470,10 @@ public class MainState : SimState
         robotStartOrientation = BulletSharp.Math.Matrix.Identity;
         EndReset();
         BeginReset();
+    }
+
+    public DriverPractice GetDriverPractice()
+    {
+        return driverPractice;
     }
 }

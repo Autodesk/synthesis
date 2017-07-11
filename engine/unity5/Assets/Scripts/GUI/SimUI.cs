@@ -94,6 +94,12 @@ namespace Assets.Scripts.FSM
         {
             main.ResetOrientation();
         }
+
+        //Driver Practice Mode Functions
+        public void DPMEnable()
+        {
+            main.GetDriverPractice().modeEnabled = !main.GetDriverPractice().modeEnabled;
+        }
         
     }
 }
