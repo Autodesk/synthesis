@@ -10,6 +10,7 @@
 #include <signal.h>  // linux for kill
 #include <sys/prctl.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 #include <atomic>
 #include <cstdlib>
@@ -228,7 +229,6 @@ uint64_t HAL_GetFPGATime(int32_t* status) {
   if (!global) {
     *status = NiFpga_Status_ResourceNotInitialized;
   */
-    return 0;
   /*
   }
   std::lock_guard<hal::priority_mutex> lock(timeMutex);
@@ -240,6 +240,10 @@ uint64_t HAL_GetFPGATime(int32_t* status) {
   return static_cast<uint64_t>(timeEpoch) << 32 |
          static_cast<uint64_t>(fpgaTime);
   */
+  *status = 0;
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  tv.tv_sec  *(uint64_t)10000000 + tv.tv_usec;
 }
 
 /**
@@ -263,11 +267,12 @@ HAL_Bool HAL_GetSystemActive(int32_t* status) {
   if (!watchdog) {
     *status = NiFpga_Status_ResourceNotInitialized;
     return false;
-  */
-  }
+  
+  }*/
   /*
   return watchdog->readStatus_SystemActive(status);
   */
+  return false;
 }
 
 HAL_Bool HAL_GetBrownedOut(int32_t* status) {
