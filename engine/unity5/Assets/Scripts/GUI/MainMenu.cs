@@ -60,6 +60,9 @@ public class MainMenu : MonoBehaviour
     private string dpmSelectedFieldName;
     private string dpmSelectedRobotName;
 
+    private float _buttonDownPhaseStart;
+    private float _doubleClickPhaseStart;
+
 
     private FileBrowser fieldBrowser = null;
     private bool customfieldon = true;
@@ -270,23 +273,6 @@ public class MainMenu : MonoBehaviour
 
         customfieldon = true;
         fieldBrowser.Active = true;
-
-    //    String[] str = new String[2];
-    //    str[0] = simSelectedField.Substring(0, 5);
-    //    str[1] = simSelectedField.Substring(simSelectedField.Length - 50 + 8);
-
-    //    for (int parentIndex = 0; parentIndex < simSelectedField.Length; parentIndex++)
-    //    {
-    //        if (GUILayout.Button(str[parentIndex]))
-    //        {
-    //            string parentDirectoryName = fieldDirectory;
-    //            for (int i = simSelectedField.Length - 1; i > parentIndex; i--)
-    //            {
-    //                parentDirectoryName = Path.GetDirectoryName(parentDirectoryName);
-    //            }
-    //            //SetNewDirectory(parentDirectoryName);
-    //        }
-    //    }
     }
 
     public void SwitchRobotDir()
@@ -462,11 +448,52 @@ public class MainMenu : MonoBehaviour
         else UserMessageManager.Dispatch("No field in directory!",2);
     }*/
 
+
+    //if single click
+    //      highlight directory
+    //if double click
+    //      open folder
+
+    public void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _buttonDownPhaseStart = Time.time;
+        }
+
+        if (_doubleClickPhaseStart > -1 && (Time.time - _doubleClickPhaseStart) > 0.2f)
+        {
+            Debug.Log("single click");
+            _doubleClickPhaseStart = -1;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (Time.time - _buttonDownPhaseStart > 1.0f)
+            {
+                Debug.Log("long click");
+                _doubleClickPhaseStart = -1;
+            }
+            else
+            {
+                if (Time.time - _doubleClickPhaseStart < 0.2f)
+                {
+                    Debug.Log("double click");
+                    _doubleClickPhaseStart = -1;
+                }
+                else
+                {
+                    _doubleClickPhaseStart = Time.time;
+                }
+            }
+        }
+    }
+
     public void InitFieldBrowser()
     {
         if (fieldBrowser == null)
         {
-            fieldBrowser = new FileBrowser("Choose Field Directory", fieldDirectory, true);
+            fieldBrowser = new FileBrowser("Choose Field Folder", fieldDirectory, true);
             fieldBrowser.Active = true;
             fieldBrowser.OnComplete += (object obj) =>
             {
@@ -507,7 +534,7 @@ public class MainMenu : MonoBehaviour
     {
         if (robotBrowser == null)
         {
-            robotBrowser = new FileBrowser("Choose Robot Directory", robotDirectory, true);
+            robotBrowser = new FileBrowser("Choose Robot Folder", robotDirectory, true);
             robotBrowser.Active = true;
             robotBrowser.OnComplete += (object obj) =>
             {
@@ -566,7 +593,6 @@ public class MainMenu : MonoBehaviour
 
     public void OpenWebsite()
     {
-        //System.Diagnostics.Process.Start("\\..\\FieldExporter\\Inventor_Exporter.exe");
         Application.OpenURL("http://bxd.autodesk.com/");
     }
 
