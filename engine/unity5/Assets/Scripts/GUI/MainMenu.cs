@@ -116,10 +116,15 @@ public class MainMenu : MonoBehaviour {
                     }
                 break;
          }
+<<<<<<< HEAD
 
          //Initializes and renders the Field Browser
          InitFieldBrowser();
          InitRobotBrowser();
+=======
+         if (fieldDirectory != null) InitFieldBrowser();
+         if (robotDirectory != null) InitRobotBrowser();
+>>>>>>> refs/remotes/origin/master
         
          //Renders the message manager which displays error messages
          UserMessageManager.Render();
@@ -676,10 +681,16 @@ public class MainMenu : MonoBehaviour {
         InitGraphicsSettings();
         fields = new ArrayList();
         robots = new ArrayList();
+<<<<<<< HEAD
 
         robotDirectory = PlayerPrefs.GetString("RobotDirectory",System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//Synthesis//Robots");
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//Synthesis//Fields");
+=======
+        robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
+        robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
+        fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
+>>>>>>> refs/remotes/origin/master
         fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the field directory no longer exists, set it to the default application path.
 
         simSelectedField = PlayerPrefs.GetString("simSelectedField");
