@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
+using Assets.Scripts.FEA;
 
 public class UnityFieldDefinition : FieldDefinition
 {
@@ -86,10 +87,6 @@ public class UnityFieldDefinition : FieldDefinition
             {
                 PropertySet currentPropertySet = GetPropertySets()[node.PropertySetID];
                 PropertySet.PropertySetCollider psCollider = currentPropertySet.Collider;
-                
-                BRigidBody rb = subObject.AddComponent<BRigidBody>();
-                rb.friction = currentPropertySet.Friction * FRICTION_SCALE;
-                rb.mass = currentPropertySet.Mass;
 
                 switch (psCollider.CollisionType)
                 {
@@ -155,8 +152,14 @@ public class UnityFieldDefinition : FieldDefinition
                         break;
                 }
 
+                BRigidBody rb = subObject.AddComponent<BRigidBody>();
+                rb.friction = currentPropertySet.Friction * FRICTION_SCALE;
+                rb.mass = currentPropertySet.Mass;
+
                 if (currentPropertySet.Mass == 0)
                     rb.collisionFlags = BulletSharp.CollisionFlags.StaticObject;
+                else
+                    subObject.AddComponent<Tracker>();
 
                 meshObject.transform.parent = subObject.transform;
             }
