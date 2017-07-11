@@ -433,9 +433,7 @@ public class MainState : SimState
             Debug.Log(t);
         }
 
-<<<<<<< HEAD
         driverPractice = robotObject.AddComponent<DriverPractice>();
-=======
 
         //Robot camera feature
         robotCameraObject = GameObject.Find("RobotCameraList");
@@ -447,7 +445,6 @@ public class MainState : SimState
         robotCameraObject.SetActive(false);
         
         
->>>>>>> refs/remotes/origin/master
         RotateRobot(robotStartOrientation);
         return true;
     }
@@ -573,8 +570,6 @@ public class MainState : SimState
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
     }
 
-<<<<<<< HEAD
-
     //Public Functions for button interaction
     public void ResetRobot()
     {
@@ -609,8 +604,6 @@ public class MainState : SimState
     {
         return driverPractice;
     }
-}
-=======
     
     //Helper methods to avoid conflicts between main camera and robot cameras
     void ToDynamicCamera()
@@ -637,4 +630,3 @@ public class MainState : SimState
         }
     }
 }
->>>>>>> refs/remotes/origin/master
