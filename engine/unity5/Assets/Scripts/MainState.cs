@@ -126,7 +126,7 @@ public class MainState : SimState
             gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Robot view"), (object o) =>
                 {
                     HideGUI();
-
+                    
                     switch ((int)o)
                     {
                         case 0:
@@ -143,7 +143,10 @@ public class MainState : SimState
                             dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
                             break;
                         case 3:
-                            ToRobotCamera();
+                            if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+                            {
+                                ToRobotCamera();
+                            }
                             break;
 
                     }
@@ -415,6 +418,7 @@ public class MainState : SimState
         robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
         robotCameraObject.SetActive(false);
         
+        
         RotateRobot(robotStartOrientation);
 
         return true;
@@ -547,13 +551,23 @@ public class MainState : SimState
     {
         dynamicCameraObject.SetActive(true);
         robotCameraObject.SetActive(false);
-        robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(false);
+        if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+        {
+            robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(false);
+        }
     }
 
     void ToRobotCamera()
     {
         dynamicCameraObject.SetActive(false);
         robotCameraObject.SetActive(true);
-        robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(true);
+        if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+        {
+            robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(true);
+        }
+        else
+        {
+            UserMessageManager.Dispatch("No camera on robot", 2);
+        }
     }
 }
