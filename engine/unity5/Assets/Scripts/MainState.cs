@@ -54,18 +54,14 @@ public class MainState : SimState
 
     private System.Random random;
 
-<<<<<<< HEAD
-    private bool resetting;
     private bool resetButton = false;
 
     private bool orient = false;
 
     private DriverPractice driverPractice;
-=======
     //Indicate different state (begin reset, resetting, end reset)
     private bool resetting;
     private bool beginReset;
->>>>>>> refs/remotes/origin/master
 
     public override void Awake()
     {
@@ -300,7 +296,6 @@ public class MainState : SimState
         }
 
         BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
-<<<<<<< HEAD
 
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) || resetButton)
         {
@@ -321,7 +316,6 @@ public class MainState : SimState
                     TransposeRobot(transposition);
         }
         else if (oWindow != null && !oWindow.Active && resetting && !orient)
-=======
         
         //Reset key only toggles the state to begin reset
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !resetting)
@@ -340,7 +334,6 @@ public class MainState : SimState
         }
         //End reset when user hit enter key
         else if (oWindow != null && !oWindow.Active && resetting && !beginReset && Input.GetKey(KeyCode.Return))
->>>>>>> refs/remotes/origin/master
         {
             robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
             //Calculate offset and add to the start position
@@ -413,12 +406,8 @@ public class MainState : SimState
             Debug.Log(t);
         }
 
-<<<<<<< HEAD
         driverPractice = robotObject.AddComponent<DriverPractice>();
-=======
         RotateRobot(robotStartOrientation);
->>>>>>> refs/remotes/origin/master
-
         return true;
     }
 
