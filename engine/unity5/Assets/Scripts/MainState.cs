@@ -110,7 +110,7 @@ public class MainState : SimState
             CreateOrientWindow();
 
             //Added a satelite view directly above the robot
-            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Satelite"), (object o) =>
+            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam"), (object o) =>
                 {
                     HideGUI();
 
@@ -125,10 +125,6 @@ public class MainState : SimState
                             break;
                         case 2:
                             dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
-                            break;
-
-                        case 3:
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
                             break;
                     }
                 });
@@ -273,7 +269,7 @@ public class MainState : SimState
 
         //Start simulator by prompting user to customize spawn point
         resetting = false;
-        beginReset = true;
+        beginReset = false;
     }
 
     public override void Update()
