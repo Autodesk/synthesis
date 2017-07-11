@@ -3,6 +3,12 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 
+public enum FileBrowserType
+{
+    File,
+    Directory
+}
+
 /// <summary>
 /// Modified version of http://wiki.unity3d.com/index.php?title=FileBrowser.
 /// Directory only based file browser.
@@ -14,7 +20,7 @@ class FileBrowser : OverlayWindow
     /// <summary>
     /// The maximum time in seconds between clicks to be considered a double click.
     /// </summary>
-    private const float DOUBLE_CLICK_TIME = 0.2f;
+    private const float DOUBLE_CLICK_TIME = .2f;
 
     /// <summary>
     /// The selected directory location.
@@ -56,10 +62,14 @@ class FileBrowser : OverlayWindow
     /// Internal reference to scroll position.
     /// </summary>
     private Vector2 directoryScroll;
+
     /// <summary>
     /// Internal reference to the last click time.
     /// </summary>
     private float lastClick = 0;
+
+    private float _buttonDownPhaseStart;
+    private float _doubleClickPhaseStart;
 
     /// <summary>
     /// Default textures.
@@ -148,9 +158,8 @@ class FileBrowser : OverlayWindow
         Color bg = GUI.backgroundColor;
         foreach (T o in items)
         {
-
-
             string entry = stringify != null ? stringify(o) : o.ToString();
+
             if (highlight != null && highlight.Equals(entry))
             {
                 GUI.backgroundColor = new Color(1f, 0.25f, 0.25f, bg.a);
@@ -215,20 +224,35 @@ class FileBrowser : OverlayWindow
 
         if (directorySelection != null)
         {
-            // If a directory was selected, jump there
-            directoryLocation = directorySelection.FullName;
+            // If directory contains field or robot files, display error message to user prompting them to select directory
+            // instead of the actual field
+            if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
+                                                                  || directorySelection.GetFiles("*.bxdj").Length != 0)
+            {
+                UserMessageManager.Dispatch("Please select dir", 5);
+            }
+            else
+            {
+                // If a directory was selected, jump there
+                directoryLocation = directorySelection.FullName;
+            }
         }
+
+
 
         // The manual location box and the select button
         GUILayout.BeginArea(new Rect(10, 390, 480, 25));
         GUILayout.BeginHorizontal();
         const int labelLen = 50;
+
         GUILayout.Label(directoryLocation.Length > labelLen ?
                         directoryLocation.Substring(0, 5) + "..." + directoryLocation.Substring(directoryLocation.Length - labelLen + 8) :
-                        directoryLocation);
+                        directoryLocation, fileBrowserLabel);
 
         bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
-        if (doubleClick || GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
+
+        //if (doubleClick || GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
+        if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
         {
             _active = false;
             if (OnComplete != null)
@@ -261,5 +285,41 @@ class FileBrowser : OverlayWindow
     public Rect GetWindowRect()
     {
         return windowRect;
+    }
+
+    public void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _buttonDownPhaseStart = Time.time;
+        }
+
+        if (_doubleClickPhaseStart > -1 && (Time.time - _doubleClickPhaseStart) > 0.2f)
+        {
+            Debug.Log("single click");
+            _doubleClickPhaseStart = -1;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (Time.time - _buttonDownPhaseStart > 1.0f)
+            {
+                Debug.Log("long click");
+                _doubleClickPhaseStart = -1;
+            }
+            else
+            {
+                if (Time.time - _doubleClickPhaseStart < 0.2f)
+                {
+                    Debug.Log("double click");
+                    _doubleClickPhaseStart = -1;
+                }
+                else
+                {
+                    _doubleClickPhaseStart = Time.time;
+                }
+            }
+        }
+
     }
 }

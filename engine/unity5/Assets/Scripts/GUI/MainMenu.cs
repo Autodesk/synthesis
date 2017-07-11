@@ -3,16 +3,18 @@ using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 
-public class MainMenu : MonoBehaviour {
 
-    public enum Tab { Main, Sim, Options, FieldDir, RobotDir};
+public class MainMenu : MonoBehaviour
+{
+
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
     public GameObject homeTab;
     public GameObject simTab;
     public GameObject optionsTab;
 
-    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
+    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration }
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -80,10 +82,10 @@ public class MainMenu : MonoBehaviour {
     /// <summary>
     /// Runs every frame to update the GUI elements.
     /// </summary>
-    void OnGUI ()
+    void OnGUI()
     {
         switch (currentTab)
-         {
+        {
             case Tab.FieldDir:
                 if (customfieldon && !fieldBrowser.Active)
                 {
@@ -105,14 +107,14 @@ public class MainMenu : MonoBehaviour {
                     optionsTab.SetActive(false);
                     simTab.SetActive(true);
                     customroboton = false;
-                    }
+                }
                 break;
-         }
-         InitFieldBrowser();
-         InitRobotBrowser();
-        
-         UserMessageManager.Render();
-         UserMessageManager.scale = canvas.scaleFactor;
+        }
+        InitFieldBrowser();
+        InitRobotBrowser();
+
+        UserMessageManager.Render();
+        UserMessageManager.scale = canvas.scaleFactor;
     }
 
     public void SwitchTabHome()
@@ -125,7 +127,7 @@ public class MainMenu : MonoBehaviour {
             optionsTab.SetActive(false);
             homeTab.SetActive(true);
         }
-        else UserMessageManager.Dispatch("You must select a directory or exit first!",3);
+        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
     public void SwitchTabSim()
@@ -158,7 +160,7 @@ public class MainMenu : MonoBehaviour {
     {
         currentSim = Sim.Selection;
 
-        
+
         defaultSimulator.SetActive(false);
         driverPracticeMode.SetActive(false);
         localMultiplayer.SetActive(false);
@@ -268,6 +270,23 @@ public class MainMenu : MonoBehaviour {
 
         customfieldon = true;
         fieldBrowser.Active = true;
+
+    //    String[] str = new String[2];
+    //    str[0] = simSelectedField.Substring(0, 5);
+    //    str[1] = simSelectedField.Substring(simSelectedField.Length - 50 + 8);
+
+    //    for (int parentIndex = 0; parentIndex < simSelectedField.Length; parentIndex++)
+    //    {
+    //        if (GUILayout.Button(str[parentIndex]))
+    //        {
+    //            string parentDirectoryName = fieldDirectory;
+    //            for (int i = simSelectedField.Length - 1; i > parentIndex; i--)
+    //            {
+    //                parentDirectoryName = Path.GetDirectoryName(parentDirectoryName);
+    //            }
+    //            //SetNewDirectory(parentDirectoryName);
+    //        }
+    //    }
     }
 
     public void SwitchRobotDir()
@@ -312,7 +331,7 @@ public class MainMenu : MonoBehaviour {
             }
             else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
 
-  
+
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
@@ -391,14 +410,12 @@ public class MainMenu : MonoBehaviour {
          }
          else startButton.GetComponent<Image>().color = Color.green;
      }
-
      public void StartButtonExit()
      {
          Text buttontext = readyText.GetComponent<Text>();
          buttontext.text = ("START");
          buttontext.fontSize = 30;
      }
-
  /*    //Starts the simulation
      public void StartButtonClicked()
      {
@@ -413,7 +430,8 @@ public class MainMenu : MonoBehaviour {
     //Exits the program
     public void Exit()
     {
-        if (!Application.isEditor) {
+        if (!Application.isEditor)
+        {
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
@@ -432,7 +450,6 @@ public class MainMenu : MonoBehaviour {
         }
         else UserMessageManager.Dispatch("No robot in directory!", 2);
     }
-
     //Selects the fields, records the filename, and switches to the main Tab.
     public void SelectFieldButtonClicked()
     {
@@ -641,15 +658,16 @@ public class MainMenu : MonoBehaviour {
         }
     }
     #endregion
-    void Start () {
-        
+    void Start()
+    {
+
         FindAllGameObjects();
         splashScreen.SetActive(true);
         InitGraphicsSettings();
         fields = new ArrayList();
         robots = new ArrayList();
 
-        robotDirectory = PlayerPrefs.GetString("RobotDirectory",(Application.dataPath) + "//Robots");
+        robotDirectory = PlayerPrefs.GetString("RobotDirectory", (Application.dataPath) + "//Robots");
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = Directory.GetParent(Application.dataPath).FullName; //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (Application.dataPath) + "//Fields");
         fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : robotDirectory = Directory.GetParent(Application.dataPath).FullName; //if the field directory no longer exists, set it to the default application path.
@@ -691,10 +709,10 @@ public class MainMenu : MonoBehaviour {
             SwitchTabHome();
             SwitchSimDefault();
         }
-        
-        
+
+
     }
-	 void FindAllGameObjects()
+    void FindAllGameObjects()
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
