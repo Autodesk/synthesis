@@ -142,10 +142,10 @@ public class MainState : SimState
                             ToDynamicCamera();
                             dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
                             break;
-
                         case 3:
                             ToRobotCamera();
                             break;
+
                     }
                 });
 
