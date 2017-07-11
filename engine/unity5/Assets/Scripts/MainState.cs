@@ -354,6 +354,7 @@ public class MainState : SimState
             StateMachine.Instance.PushState(new ReplayState());
         
         robotCameraObject.transform.position = robotObject.transform.GetChild(0).transform.position;
+        robotCameraObject.transform.localPosition = new Vector3(0f, 0f, 0f);
     }
 
     bool LoadField(string directory)
@@ -401,7 +402,7 @@ public class MainState : SimState
             }
 
             node.CreateJoint();
-
+            
             node.MainObject.AddComponent<Tracker>().Trace = true;
 
             Tracker t = node.MainObject.GetComponent<Tracker>();
