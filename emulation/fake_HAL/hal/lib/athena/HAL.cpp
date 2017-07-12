@@ -10,6 +10,7 @@
 #include <signal.h>  // linux for kill
 #include <sys/prctl.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 #include <atomic>
 #include <cstdlib>
@@ -206,11 +207,15 @@ int32_t HAL_GetFPGAVersion(int32_t* status) {
  * @return FPGA Revision number.
  */
 int64_t HAL_GetFPGARevision(int32_t* status) {
+  /*
   if (!global) {
     *status = NiFpga_Status_ResourceNotInitialized;
+  */
     return 0;
+  /*
   }
   return global->readRevision(status);
+  */
 }
 
 /**
@@ -220,9 +225,11 @@ int64_t HAL_GetFPGARevision(int32_t* status) {
  * reset).
  */
 uint64_t HAL_GetFPGATime(int32_t* status) {
+  /*
   if (!global) {
     *status = NiFpga_Status_ResourceNotInitialized;
-    return 0;
+  */
+  /*
   }
   std::lock_guard<hal::priority_mutex> lock(timeMutex);
   uint32_t fpgaTime = global->readLocalTime(status);
@@ -232,6 +239,11 @@ uint64_t HAL_GetFPGATime(int32_t* status) {
   prevFPGATime = fpgaTime;
   return static_cast<uint64_t>(timeEpoch) << 32 |
          static_cast<uint64_t>(fpgaTime);
+  */
+  *status = 0;
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  tv.tv_sec  *(uint64_t)10000000 + tv.tv_usec;
 }
 
 /**
@@ -239,33 +251,48 @@ uint64_t HAL_GetFPGATime(int32_t* status) {
  * @return true if the button is currently pressed down
  */
 HAL_Bool HAL_GetFPGAButton(int32_t* status) {
+  /*
   if (!global) {
     *status = NiFpga_Status_ResourceNotInitialized;
+  */
     return false;
+  /*
   }
   return global->readUserButton(status);
+  */
 }
 
 HAL_Bool HAL_GetSystemActive(int32_t* status) {
+  /*
   if (!watchdog) {
     *status = NiFpga_Status_ResourceNotInitialized;
     return false;
-  }
+  
+  }*/
+  /*
   return watchdog->readStatus_SystemActive(status);
+  */
+  return false;
 }
 
 HAL_Bool HAL_GetBrownedOut(int32_t* status) {
+  /*
   if (!watchdog) {
     *status = NiFpga_Status_ResourceNotInitialized;
+  */
     return false;
+  /*
   }
   return !(watchdog->readStatus_PowerAlive(status));
+  */
 }
 
 static void timerRollover(uint64_t currentTime, HAL_NotifierHandle handle) {
   // reschedule timer for next rollover
+  /*
   int32_t status = 0;
   HAL_UpdateNotifierAlarm(handle, currentTime + 0x80000000ULL, &status);
+  */
 }
 
 void HAL_BaseInitialize(int32_t* status) {
@@ -278,11 +305,13 @@ void HAL_BaseInitialize(int32_t* status) {
   // Second check in case another thread was waiting
   if (initialized) return;
   // image 4; Fixes errors caused by multiple processes. Talk to NI about this
+  /*
   nFPGA::nRoboRIO_FPGANamespace::g_currentTargetClass =
       nLoadOut::kTargetClass_RoboRIO;
 
   global.reset(tGlobal::create(status));
   watchdog.reset(tSysWatchdog::create(status));
+  */
   initialized = true;
 }
 
@@ -295,7 +324,7 @@ int32_t HAL_Initialize(int32_t mode) {
 
   prctl(PR_SET_PDEATHSIG, SIGTERM);
 
-  FRC_NetworkCommunication_Reserve(nullptr);
+  //FRC_NetworkCommunication_Reserve(nullptr);
 
   std::atexit([]() {
     // Unregister our new data condition variable.
@@ -305,6 +334,7 @@ int32_t HAL_Initialize(int32_t mode) {
   int32_t status = 0;
   HAL_BaseInitialize(&status);
 
+  /*
   if (!rolloverNotifier)
     rolloverNotifier = HAL_InitializeNotifier(timerRollover, nullptr, &status);
   if (status == 0) {
@@ -313,6 +343,7 @@ int32_t HAL_Initialize(int32_t mode) {
       HAL_UpdateNotifierAlarm(rolloverNotifier, curTime + 0x80000000ULL,
                               &status);
   }
+  */
 
   // Kill any previous robot programs
   std::fstream fs;
