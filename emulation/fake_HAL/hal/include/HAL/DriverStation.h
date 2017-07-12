@@ -40,8 +40,6 @@ struct {
   const char *dynamicData;
 } embeddedDynamicChunks[kEmbeddedCount];
 
-char sendBuffer[2048];
-
 struct HAL_ControlWord {
   uint32_t enabled : 1;
   uint32_t autonomous : 1;
