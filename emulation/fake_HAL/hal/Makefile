@@ -33,10 +33,11 @@ SRC_FILES = \
 	lib/athena/Threads.cpp \
 	lib/athena/cpp/priority_mutex.cpp \
 	lib/athena/cpp/SerialHelper.cpp \
-	lib/StateNetwork/StateNetworkServer.cpp \
 	lib/OSAL/Synchronized.cpp \
 	lib/OSAL/System.cpp \
-	lib/OSAL/Task.cpp 
+	lib/OSAL/Task.cpp \
+	lib/crc32.cpp \
+	#lib/StateNetwork/StateNetworkServer.cpp \
 
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 OUT = build/libHALAthena.so
