@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class DynamicCamera : MonoBehaviour
 {
@@ -125,6 +126,7 @@ public class DynamicCamera : MonoBehaviour
                 {
                     targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
 
+
                     if (Input.GetMouseButton(0))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
@@ -243,9 +245,79 @@ public class DynamicCamera : MonoBehaviour
 
     }
 
+    //This state locates directly above the field and looks straight down on the field in order for robot positioning
+    //Not working with 2016&2017 field because they are not centered
+    public class OverviewState : CameraState
+    {
+        Vector3 positionVector;
+        Vector3 rotationVector;
+        Vector3 fieldVector;
+        GameObject field;
+
+        public OverviewState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+            field = GameObject.Find("Field");
+            fieldVector = field.transform.position;
+        }
+
+        public override void Init()
+        {
+            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
+            mono.transform.position = positionVector;
+            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+        public override void Update()
+        {
+            
+        }
+        
+        public override void End()
+        {
+
+        }
+    }
+
+    //This state locates directly above the robot and follows it
+    public class SateliteState : CameraState
+    {
+        Vector3 targetPosition;
+        Vector3 rotationVector;
+        GameObject target;
+
+        public SateliteState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+        }
+
+        public override void Init()
+        {
+            target = GameObject.Find("Robot");
+            targetPosition = target.transform.position;
+            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+
+        public override void Update()
+        {
+            if(target != null && target.transform.childCount > 0)
+            {
+                targetPosition = target.transform.GetChild(0).transform.position;
+                
+            }
+            mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
+            mono.transform.LookAt(targetPosition);
+        }
+
+        public override void End()
+        {
+
+        }
+    }
     void Start()
     {
-        SwitchCameraState(new DriverStationState(this));
+        SwitchCameraState(new OrbitState(this));
     }
 
     void LateUpdate()
