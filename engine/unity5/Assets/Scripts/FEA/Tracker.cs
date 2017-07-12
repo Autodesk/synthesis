@@ -1,4 +1,5 @@
-﻿using BulletSharp;
+﻿using Assets.Scripts.FSM;
+using BulletSharp;
 using BulletUnity;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,12 @@ namespace Assets.Scripts.FEA
         private const float fixedTimeStep = 1f / 60f;
 
         private BPhysicsWorld physicsWorld;
-
         private RigidBody rigidBody;
-
-        private int lastFrameCount;
 
         /// <summary>
         /// The collection of states stored by the Tracker.
         /// </summary>
-        public FixedQueue<StateDescriptor> States { get; set; }
+        public FixedQueue<StateDescriptor> States { get; private set; }
 
         /// <summary>
         /// The number of seconds the tracker keeps any given state.
@@ -32,11 +30,6 @@ namespace Assets.Scripts.FEA
         /// The number of states in the queue.
         /// </summary>
         public const int Length = (int)(Lifetime / fixedTimeStep);
-
-        /// <summary>
-        /// If true, the Tracker will actively track its parent.
-        /// </summary>
-        public bool Tracking { get; set; }
 
         /// <summary>
         /// If true, lines will be drawn showing the history of the parent's motion.
@@ -69,25 +62,29 @@ namespace Assets.Scripts.FEA
         }
 
         /// <summary>
+        /// Adds the current state to the states queue.
+        /// </summary>
+        public void AddState()
+        {
+            States.Add(State);
+        }
+
+        /// <summary>
         /// Called when the Tracker is initialized.
         /// </summary>
         void Start()
         {
             physicsWorld = BPhysicsWorld.Get();
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();
-            lastFrameCount = physicsWorld.frameCount;
 
-            Tracking = true;
             States = new FixedQueue<StateDescriptor>(Length, State);
-        }
 
-        /// <summary>
-        /// Adds any new states to the queue.
-        /// </summary>
-        void Update()
-        {
-            if (Tracking)
-                AddStates();
+            MainState mainState = StateMachine.Instance.CurrentState as MainState;
+
+            if (mainState != null)
+                mainState.Trackers.Add(this);
+            else
+                Destroy(this);
         }
 
         /// <summary>
@@ -95,21 +92,17 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void FixedUpdate()
         {
-            if (Tracking)
-                AddStates();
-
             if (!Trace)
                 return;
 
             Vector3 lastPoint = Vector3.zero;
             int i = 0;
-
+            
             foreach (StateDescriptor state in States)
             {
                 if (lastPoint != Vector3.zero)
                 {
                     float age = (float)i / States.Length;
-                    //Debug.DrawLine(lastPoint, state.Position.ToUnity(), i % 2 == 0 ? Color.red : Color.blue);
                     Debug.DrawLine(lastPoint, state.Position.ToUnity(), new Color(age * 0.5f,
                         1.0f, age * 0.5f, 1.0f - age * 0.5f));
                 }
@@ -117,19 +110,6 @@ namespace Assets.Scripts.FEA
                 lastPoint = state.Position.ToUnity();
                 i++;
             }
-        }
-
-        /// <summary>
-        /// Adds states to the queue depending on how many frames have passed.
-        /// </summary>
-        private void AddStates()
-        {
-            int numSteps = physicsWorld.frameCount - lastFrameCount;
-
-            for (int i = 0; i < numSteps; i++)
-                States.Add(State);
-
-            lastFrameCount += numSteps;
         }
     }
 }

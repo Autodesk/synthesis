@@ -10,8 +10,15 @@ namespace Assets.Scripts.FSM
     public class StateMachine : MonoBehaviour
     {
         private Stack<SimState> activeStates;
-        private SimState currentState;
+
+        /// <summary>
+        /// The current state in the StateMachine.
+        /// </summary>
+        public SimState CurrentState { get; private set; }
         
+        /// <summary>
+        /// The global StateMachine instance.
+        /// </summary>
         public static StateMachine Instance
         {
             get
@@ -20,50 +27,63 @@ namespace Assets.Scripts.FSM
             }
         }
 
-        public StateMachine()
+        /// <summary>
+        /// Initializes the StateMachine.
+        /// </summary>
+        private StateMachine()
         {
             activeStates = new Stack<SimState>();
         }
 
+        /// <summary>
+        /// Adds a new state to the StateMachine and pauses the current one if it exists.
+        /// </summary>
+        /// <param name="state"></param>
         public void PushState(SimState state)
         {
-            if (currentState != null)
-                currentState.Pause();
+            if (CurrentState != null)
+                CurrentState.Pause();
 
             if (!activeStates.Contains(state))
                 activeStates.Push(state);
 
-            currentState = state;
+            CurrentState = state;
 
-            currentState.Start();
-            currentState.Resume();
+            CurrentState.Start();
+            CurrentState.Resume();
         }
 
+        /// <summary>
+        /// Removes the current state from the StateMachine.
+        /// </summary>
         public void PopState()
         {
-            if (currentState == null)
+            if (CurrentState == null)
                 return;
 
-            currentState.Pause();
-            currentState.End();
+            CurrentState.Pause();
+            CurrentState.End();
 
             activeStates.Pop();
 
             if (activeStates.Count > 0)
             {
-                currentState = activeStates.Last();
+                CurrentState = activeStates.Last();
 
-                currentState.Resume();
+                CurrentState.Resume();
             }
             else
             {
-                currentState = null;
+                CurrentState = null;
             }
         }
 
+        /// <summary>
+        /// Creates the default state when the StateMachine is initialized.
+        /// </summary>
         void Start()
         {
-            if (currentState != null)
+            if (CurrentState != null)
                 return;
 
             string defaultStateName = EditorPrefs.GetString(StateMachineEditor.DefaultStateNameKey);
@@ -84,29 +104,50 @@ namespace Assets.Scripts.FSM
             
         }
 
+        /// <summary>
+        /// Updates the current state.
+        /// </summary>
         void Update()
         {
-            if (currentState != null)
-                currentState.Update();
+            if (CurrentState != null)
+                CurrentState.Update();
         }
 
+        /// <summary>
+        /// LateUpdates the current state.
+        /// </summary>
+        void LateUpdate()
+        {
+            if (CurrentState != null)
+                CurrentState.LateUpdate();
+        }
+
+        /// <summary>
+        /// FixedUpdates the current state.
+        /// </summary>
         void FixedUpdate()
         {
-            if (currentState != null)
-                currentState.FixedUpdate();
+            if (CurrentState != null)
+                CurrentState.FixedUpdate();
         }
 
+        /// <summary>
+        /// Updates the GUI of the current state.
+        /// </summary>
         [STAThread]
         void OnGUI()
         {
-            if (currentState != null)
-                currentState.OnGUI();
+            if (CurrentState != null)
+                CurrentState.OnGUI();
         }
 
+        /// <summary>
+        /// Calls the Awake method of the current state.
+        /// </summary>
         void Awake()
         {
-            if (currentState != null)
-                currentState.Awake();
+            if (CurrentState != null)
+                CurrentState.Awake();
         }
     }
 }
