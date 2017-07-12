@@ -3,16 +3,18 @@ using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 
-public class MainMenu : MonoBehaviour {
 
-    public enum Tab { Main, Sim, Options, FieldDir, RobotDir};
+public class MainMenu : MonoBehaviour
+{
+
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
     public GameObject homeTab;
     public GameObject simTab;
     public GameObject optionsTab;
 
-    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
+    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration }
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -58,6 +60,9 @@ public class MainMenu : MonoBehaviour {
     private string dpmSelectedFieldName;
     private string dpmSelectedRobotName;
 
+    private float _buttonDownPhaseStart;
+    private float _doubleClickPhaseStart;
+
 
     private FileBrowser fieldBrowser = null;
     private bool customfieldon = true;
@@ -80,10 +85,10 @@ public class MainMenu : MonoBehaviour {
     /// <summary>
     /// Runs every frame to update the GUI elements.
     /// </summary>
-    void OnGUI ()
+    void OnGUI()
     {
         switch (currentTab)
-         {
+        {
             case Tab.FieldDir:
                 if (customfieldon && !fieldBrowser.Active)
                 {
@@ -105,7 +110,7 @@ public class MainMenu : MonoBehaviour {
                     optionsTab.SetActive(false);
                     simTab.SetActive(true);
                     customroboton = false;
-                    }
+                }
                 break;
          }
          if (fieldDirectory != null) InitFieldBrowser();
@@ -125,7 +130,7 @@ public class MainMenu : MonoBehaviour {
             optionsTab.SetActive(false);
             homeTab.SetActive(true);
         }
-        else UserMessageManager.Dispatch("You must select a directory or exit first!",3);
+        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
     public void SwitchTabSim()
@@ -158,7 +163,7 @@ public class MainMenu : MonoBehaviour {
     {
         currentSim = Sim.Selection;
 
-        
+
         defaultSimulator.SetActive(false);
         driverPracticeMode.SetActive(false);
         localMultiplayer.SetActive(false);
@@ -312,7 +317,7 @@ public class MainMenu : MonoBehaviour {
             }
             else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
 
-  
+
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
@@ -391,14 +396,12 @@ public class MainMenu : MonoBehaviour {
          }
          else startButton.GetComponent<Image>().color = Color.green;
      }
-
      public void StartButtonExit()
      {
          Text buttontext = readyText.GetComponent<Text>();
          buttontext.text = ("START");
          buttontext.fontSize = 30;
      }
-
  /*    //Starts the simulation
      public void StartButtonClicked()
      {
@@ -413,7 +416,8 @@ public class MainMenu : MonoBehaviour {
     //Exits the program
     public void Exit()
     {
-        if (!Application.isEditor) {
+        if (!Application.isEditor)
+        {
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
@@ -432,7 +436,6 @@ public class MainMenu : MonoBehaviour {
         }
         else UserMessageManager.Dispatch("No robot in directory!", 2);
     }
-
     //Selects the fields, records the filename, and switches to the main Tab.
     public void SelectFieldButtonClicked()
     {
@@ -445,11 +448,52 @@ public class MainMenu : MonoBehaviour {
         else UserMessageManager.Dispatch("No field in directory!",2);
     }*/
 
+
+    //if single click
+    //      highlight directory
+    //if double click
+    //      open folder
+
+    public void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _buttonDownPhaseStart = Time.time;
+        }
+
+        if (_doubleClickPhaseStart > -1 && (Time.time - _doubleClickPhaseStart) > 0.2f)
+        {
+            Debug.Log("single click");
+            _doubleClickPhaseStart = -1;
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            if (Time.time - _buttonDownPhaseStart > 1.0f)
+            {
+                Debug.Log("long click");
+                _doubleClickPhaseStart = -1;
+            }
+            else
+            {
+                if (Time.time - _doubleClickPhaseStart < 0.2f)
+                {
+                    Debug.Log("double click");
+                    _doubleClickPhaseStart = -1;
+                }
+                else
+                {
+                    _doubleClickPhaseStart = Time.time;
+                }
+            }
+        }
+    }
+
     public void InitFieldBrowser()
     {
         if (fieldBrowser == null)
         {
-            fieldBrowser = new FileBrowser("Choose Field Directory", fieldDirectory, true);
+            fieldBrowser = new FileBrowser("Choose Field Folder", fieldDirectory, true);
             fieldBrowser.Active = true;
             fieldBrowser.OnComplete += (object obj) =>
             {
@@ -490,7 +534,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (robotBrowser == null)
         {
-            robotBrowser = new FileBrowser("Choose Robot Directory", robotDirectory, true);
+            robotBrowser = new FileBrowser("Choose Robot Folder", robotDirectory, true);
             robotBrowser.Active = true;
             robotBrowser.OnComplete += (object obj) =>
             {
@@ -549,7 +593,6 @@ public class MainMenu : MonoBehaviour {
 
     public void OpenWebsite()
     {
-        //System.Diagnostics.Process.Start("\\..\\FieldExporter\\Inventor_Exporter.exe");
         Application.OpenURL("http://bxd.autodesk.com/");
     }
 
@@ -641,13 +684,15 @@ public class MainMenu : MonoBehaviour {
         }
     }
     #endregion
-    void Start () {
-        
+    void Start()
+    {
+
         FindAllGameObjects();
         splashScreen.SetActive(true);
         InitGraphicsSettings();
         fields = new ArrayList();
         robots = new ArrayList();
+
         robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
@@ -663,8 +708,6 @@ public class MainMenu : MonoBehaviour {
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
         canvas = GetComponent<Canvas>();
-
-
 
         customfieldon = false;
         customroboton = false;
@@ -690,10 +733,10 @@ public class MainMenu : MonoBehaviour {
             SwitchTabHome();
             SwitchSimDefault();
         }
-        
-        
+
+
     }
-	 void FindAllGameObjects()
+    void FindAllGameObjects()
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
