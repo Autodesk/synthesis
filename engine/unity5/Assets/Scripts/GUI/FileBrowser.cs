@@ -16,12 +16,12 @@ class FileBrowser : OverlayWindow
     /// </summary>
     private const float DOUBLE_CLICK_TIME = .2f;
 
-    private const float SINGLE_CLICK_TIME = .3f;
-
     /// <summary>
     /// The selected directory location.
     /// </summary>
     private string directoryLocation;
+
+    private string selectedDirectoryLocation;
 
     /// <summary>
     /// The title of the window.
@@ -193,8 +193,10 @@ class FileBrowser : OverlayWindow
     {
         object selected = null;
         foreach (T o in items)
-        { 
+        {
             string entry = stringify != null ? stringify(o) : o.ToString();
+            //string _entry = stringy != null ? stringy(o) : o.ToString();
+            //string _entry = o.ToString();
 
             if (highlight != null && highlight.Equals(entry))
             {
@@ -211,29 +213,6 @@ class FileBrowser : OverlayWindow
         }
         return selected;
     }
-
-    //==============================================================SAMPLE=============================
-    //private object SelectList<T>(IEnumerable<T> items, string highlight, GUIStyle buttonStyle)
-    //{
-    //    object selected = null;
-    //    foreach (T o in items)
-    //    {
-    //        string entry = o.ToString();
-    //        if (highlight != null && highlight.Equals(entry))
-    //        {
-    //            Debug.Log(entry);
-    //            if (GUILayout.Button(entry, highlightStyle))
-    //            {
-    //                selected = o;
-    //            }
-    //        }
-    //        else if (GUILayout.Button(entry, buttonStyle))
-    //        {
-    //            selected = o;
-    //        }
-    //    }
-    //    return selected;
-    //}
 
     /// <summary>
     /// Renders the browser window.
@@ -288,8 +267,8 @@ class FileBrowser : OverlayWindow
 
         if (directorySelection != null)
         {
+
             bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
-            //bool singleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) > SINGLE_CLICK_TIME;
 
             // If directory contains field or robot files, display error message to user prompting them to select directory
             // instead of the actual field
@@ -308,14 +287,8 @@ class FileBrowser : OverlayWindow
             else
             {
                 // If directory was clicked once, highlight it
-                directoryInfo = directorySelection;
+                directoryLocation = directorySelection.Name;
             }
-
-            //if (singleClick)
-            //{
-            //    // If directory was clicked once, highlight it
-            //    directoryInfo = directorySelection;
-            //}
         }
 
         // The manual location box and the select button
