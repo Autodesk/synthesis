@@ -70,7 +70,7 @@ void StateNetworkServer::SendStatePacket(OutputStatePacket pack) {
 }
 
 bool StateNetworkServer::ReceiveStatePacket(InputStatePacket *pack) {
-	ULONG available;
+	uint64_t available;
 	fd_set set;
 	FD_ZERO(&set);
 	FD_SET(udpRecvSocket, &set);
