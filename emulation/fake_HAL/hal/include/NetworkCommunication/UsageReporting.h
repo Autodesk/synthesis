@@ -2,9 +2,10 @@
 #ifndef __UsageReporting_h__
 #define __UsageReporting_h__
 
-#ifndef EXPORT_FUNC
+/*#ifndef EXPORT_FUNC
 #define EXPORT_FUNC __declspec(dllexport) extern
-#endif
+#endif*/
+#define EXPORT_FUNC extern
 
 #define kUsageReporting_version 1
 

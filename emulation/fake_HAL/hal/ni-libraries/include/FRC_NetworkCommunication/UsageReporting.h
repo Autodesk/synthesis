@@ -2,17 +2,9 @@
 #ifndef __UsageReporting_h__
 #define __UsageReporting_h__
 
-#ifdef _WIN32
-#include <stdint.h>
-#define EXPORT_FUNC __declspec(dllexport) __cdecl
-#elif defined (__vxworks)
-#include <vxWorks.h>
-#define EXPORT_FUNC
-#else
 #include <stdint.h>
 #include <stdlib.h>
 #define EXPORT_FUNC
-#endif
 
 #define kUsageReporting_version 1
 
