@@ -52,7 +52,8 @@ class FileBrowser : OverlayWindow
     /// <summary>
     /// Default Directory Path
     /// </summary>
-    private string directoryPath = new DirectoryInfo(Application.dataPath).FullName;
+    private string directoryPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments);
+    private string backupPath = new DirectoryInfo(Application.dataPath).FullName;
 
     /// <summary>
     /// Internal reference to scroll position.
