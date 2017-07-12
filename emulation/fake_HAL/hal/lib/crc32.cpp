@@ -1,5 +1,5 @@
 /* Crc - 32 BIT ANSI X3.66 CRC checksum files */
-#include "FRCNetComm/crc32.h"
+#include "crc32.h"
 
 #include <stdio.h>
 #include <stdint.h>

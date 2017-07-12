@@ -378,7 +378,7 @@ extern "C" {
 	*
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Initialize(void);
+	extern NiFpga_Status NiFpga_Initialize(void);
 
 	/**
 	* You must call this function after all other function calls if
@@ -388,7 +388,7 @@ extern "C" {
 	*
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Finalize(void);
+	extern NiFpga_Status NiFpga_Finalize(void);
 
 	/**
 	* A handle to an FPGA session.
@@ -428,7 +428,7 @@ extern "C" {
 	*                longer needed
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Open(const char*     bitfile,
+	extern NiFpga_Status NiFpga_Open(const char*     bitfile,
 		const char*     signature,
 		const char*     resource,
 		uint32_t        attribute,
@@ -451,7 +451,7 @@ extern "C" {
 	* @param attribute bitwise OR of any NiFpga_CloseAttributes, or 0
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Close(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_Close(NiFpga_Session session,
 		uint32_t       attribute);
 
 	/**
@@ -470,7 +470,7 @@ extern "C" {
 	* @param attribute bitwise OR of any NiFpga_RunAttributes, or 0
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Run(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_Run(NiFpga_Session session,
 		uint32_t       attribute);
 
 	/**
@@ -479,7 +479,7 @@ extern "C" {
 	* @param session handle to a currently open session
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Abort(NiFpga_Session session);
+	extern NiFpga_Status NiFpga_Abort(NiFpga_Session session);
 
 	/**
 	* Resets the FPGA VI.
@@ -487,7 +487,7 @@ extern "C" {
 	* @param session handle to a currently open session
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Reset(NiFpga_Session session);
+	extern NiFpga_Status NiFpga_Reset(NiFpga_Session session);
 
 	/**
 	* Re-downloads the FPGA bitstream to the target.
@@ -495,7 +495,7 @@ extern "C" {
 	* @param session handle to a currently open session
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_Download(NiFpga_Session session);
+	extern NiFpga_Status NiFpga_Download(NiFpga_Session session);
 
 	/**
 	* Reads a boolean value from a given indicator or control.
@@ -505,7 +505,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadBool(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadBool(NiFpga_Session session,
 		uint32_t       indicator,
 		NiFpga_Bool*   value);
 
@@ -517,7 +517,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadI8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadI8(NiFpga_Session session,
 		uint32_t       indicator,
 		int8_t*        value);
 
@@ -529,7 +529,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadU8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadU8(NiFpga_Session session,
 		uint32_t       indicator,
 		uint8_t*       value);
 
@@ -541,7 +541,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadI16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadI16(NiFpga_Session session,
 		uint32_t       indicator,
 		int16_t*       value);
 
@@ -553,7 +553,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadU16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadU16(NiFpga_Session session,
 		uint32_t       indicator,
 		uint16_t*      value);
 
@@ -565,7 +565,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadI32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadI32(NiFpga_Session session,
 		uint32_t       indicator,
 		int32_t*       value);
 
@@ -577,7 +577,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadU32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadU32(NiFpga_Session session,
 		uint32_t       indicator,
 		uint32_t*      value);
 
@@ -589,7 +589,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadI64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadI64(NiFpga_Session session,
 		uint32_t       indicator,
 		int64_t*       value);
 
@@ -601,7 +601,7 @@ extern "C" {
 	* @param value outputs the value that was read
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadU64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadU64(NiFpga_Session session,
 		uint32_t       indicator,
 		uint64_t*      value);
 
@@ -613,7 +613,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteBool(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteBool(NiFpga_Session session,
 		uint32_t       control,
 		NiFpga_Bool    value);
 
@@ -625,7 +625,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteI8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteI8(NiFpga_Session session,
 		uint32_t       control,
 		int8_t         value);
 
@@ -637,7 +637,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteU8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteU8(NiFpga_Session session,
 		uint32_t       control,
 		uint8_t        value);
 
@@ -649,7 +649,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteI16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteI16(NiFpga_Session session,
 		uint32_t       control,
 		int16_t        value);
 
@@ -661,7 +661,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteU16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteU16(NiFpga_Session session,
 		uint32_t       control,
 		uint16_t       value);
 
@@ -673,7 +673,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteI32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteI32(NiFpga_Session session,
 		uint32_t       control,
 		int32_t        value);
 
@@ -685,7 +685,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteU32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteU32(NiFpga_Session session,
 		uint32_t       control,
 		uint32_t       value);
 
@@ -697,7 +697,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteI64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteI64(NiFpga_Session session,
 		uint32_t       control,
 		int64_t        value);
 
@@ -709,7 +709,7 @@ extern "C" {
 	* @param value value to write
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteU64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteU64(NiFpga_Session session,
 		uint32_t       control,
 		uint64_t       value);
 
@@ -726,7 +726,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayBool(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayBool(NiFpga_Session session,
 		uint32_t       indicator,
 		NiFpga_Bool*   array,
 		size_t         size);
@@ -744,7 +744,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayI8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayI8(NiFpga_Session session,
 		uint32_t       indicator,
 		int8_t*        array,
 		size_t         size);
@@ -762,7 +762,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayU8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayU8(NiFpga_Session session,
 		uint32_t       indicator,
 		uint8_t*       array,
 		size_t         size);
@@ -780,7 +780,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayI16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayI16(NiFpga_Session session,
 		uint32_t       indicator,
 		int16_t*       array,
 		size_t         size);
@@ -798,7 +798,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayU16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayU16(NiFpga_Session session,
 		uint32_t       indicator,
 		uint16_t*      array,
 		size_t         size);
@@ -816,7 +816,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayI32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayI32(NiFpga_Session session,
 		uint32_t       indicator,
 		int32_t*       array,
 		size_t         size);
@@ -834,7 +834,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayU32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayU32(NiFpga_Session session,
 		uint32_t       indicator,
 		uint32_t*      array,
 		size_t         size);
@@ -852,7 +852,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayI64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayI64(NiFpga_Session session,
 		uint32_t       indicator,
 		int64_t*       array,
 		size_t         size);
@@ -870,7 +870,7 @@ extern "C" {
 	* @param size exact number of elements in the indicator or control
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadArrayU64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadArrayU64(NiFpga_Session session,
 		uint32_t       indicator,
 		uint64_t*      array,
 		size_t         size);
@@ -888,7 +888,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayBool(NiFpga_Session     session,
+	extern NiFpga_Status NiFpga_WriteArrayBool(NiFpga_Session     session,
 		uint32_t           control,
 		const NiFpga_Bool* array,
 		size_t             size);
@@ -906,7 +906,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayI8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteArrayI8(NiFpga_Session session,
 		uint32_t       control,
 		const int8_t*  array,
 		size_t         size);
@@ -924,7 +924,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayU8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteArrayU8(NiFpga_Session session,
 		uint32_t       control,
 		const uint8_t* array,
 		size_t         size);
@@ -942,7 +942,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayI16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteArrayI16(NiFpga_Session session,
 		uint32_t       control,
 		const int16_t* array,
 		size_t         size);
@@ -960,7 +960,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayU16(NiFpga_Session  session,
+	extern NiFpga_Status NiFpga_WriteArrayU16(NiFpga_Session  session,
 		uint32_t        control,
 		const uint16_t* array,
 		size_t          size);
@@ -978,7 +978,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayI32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteArrayI32(NiFpga_Session session,
 		uint32_t       control,
 		const int32_t* array,
 		size_t         size);
@@ -996,7 +996,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayU32(NiFpga_Session  session,
+	extern NiFpga_Status NiFpga_WriteArrayU32(NiFpga_Session  session,
 		uint32_t        control,
 		const uint32_t* array,
 		size_t          size);
@@ -1014,7 +1014,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayI64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteArrayI64(NiFpga_Session session,
 		uint32_t       control,
 		const int64_t* array,
 		size_t         size);
@@ -1032,7 +1032,7 @@ extern "C" {
 	* @param size exact number of elements in the control or indicator
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteArrayU64(NiFpga_Session  session,
+	extern NiFpga_Status NiFpga_WriteArrayU64(NiFpga_Session  session,
 		uint32_t        control,
 		const uint64_t* array,
 		size_t          size);
@@ -1101,7 +1101,7 @@ extern "C" {
 	* @param context outputs the IRQ context
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReserveIrqContext(NiFpga_Session     session,
+	extern NiFpga_Status NiFpga_ReserveIrqContext(NiFpga_Session     session,
 		NiFpga_IrqContext* context);
 
 	/**
@@ -1111,7 +1111,7 @@ extern "C" {
 	* @param context IRQ context to unreserve
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_UnreserveIrqContext(NiFpga_Session    session,
+	extern NiFpga_Status NiFpga_UnreserveIrqContext(NiFpga_Session    session,
 		NiFpga_IrqContext context);
 
 	/**
@@ -1133,7 +1133,7 @@ extern "C" {
 	* @param timedOut if non-NULL, outputs whether the timeout expired
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WaitOnIrqs(NiFpga_Session    session,
+	extern NiFpga_Status NiFpga_WaitOnIrqs(NiFpga_Session    session,
 		NiFpga_IrqContext context,
 		uint32_t          irqs,
 		uint32_t          timeout,
@@ -1147,7 +1147,7 @@ extern "C" {
 	* @param irqs bitwise OR of NiFpga_Irqs
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcknowledgeIrqs(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_AcknowledgeIrqs(NiFpga_Session session,
 		uint32_t       irqs);
 
 	/**
@@ -1161,7 +1161,7 @@ extern "C" {
 	*              DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ConfigureFifo(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ConfigureFifo(NiFpga_Session session,
 		uint32_t       fifo,
 		size_t         depth);
 
@@ -1178,7 +1178,7 @@ extern "C" {
 	*                    the requested number
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ConfigureFifo2(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ConfigureFifo2(NiFpga_Session session,
 		uint32_t       fifo,
 		size_t         requestedDepth,
 		size_t*        actualDepth);
@@ -1189,7 +1189,7 @@ extern "C" {
 	* @param fifo FIFO to start
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_StartFifo(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_StartFifo(NiFpga_Session session,
 		uint32_t       fifo);
 
 	/**
@@ -1199,7 +1199,7 @@ extern "C" {
 	* @param fifo FIFO to stop
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_StopFifo(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_StopFifo(NiFpga_Session session,
 		uint32_t       fifo);
 
 	/**
@@ -1214,7 +1214,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoBool(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoBool(NiFpga_Session session,
 		uint32_t       fifo,
 		NiFpga_Bool*   data,
 		size_t         numberOfElements,
@@ -1233,7 +1233,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoI8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoI8(NiFpga_Session session,
 		uint32_t       fifo,
 		int8_t*        data,
 		size_t         numberOfElements,
@@ -1252,7 +1252,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoU8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoU8(NiFpga_Session session,
 		uint32_t       fifo,
 		uint8_t*       data,
 		size_t         numberOfElements,
@@ -1271,7 +1271,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoI16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoI16(NiFpga_Session session,
 		uint32_t       fifo,
 		int16_t*       data,
 		size_t         numberOfElements,
@@ -1290,7 +1290,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoU16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoU16(NiFpga_Session session,
 		uint32_t       fifo,
 		uint16_t*      data,
 		size_t         numberOfElements,
@@ -1309,7 +1309,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoI32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoI32(NiFpga_Session session,
 		uint32_t       fifo,
 		int32_t*       data,
 		size_t         numberOfElements,
@@ -1328,7 +1328,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoU32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoU32(NiFpga_Session session,
 		uint32_t       fifo,
 		uint32_t*      data,
 		size_t         numberOfElements,
@@ -1347,7 +1347,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoI64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoI64(NiFpga_Session session,
 		uint32_t       fifo,
 		int64_t*       data,
 		size_t         numberOfElements,
@@ -1366,7 +1366,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReadFifoU64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReadFifoU64(NiFpga_Session session,
 		uint32_t       fifo,
 		uint64_t*      data,
 		size_t         numberOfElements,
@@ -1386,7 +1386,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoBool(NiFpga_Session     session,
+	extern NiFpga_Status NiFpga_WriteFifoBool(NiFpga_Session     session,
 		uint32_t           fifo,
 		const NiFpga_Bool* data,
 		size_t             numberOfElements,
@@ -1406,7 +1406,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoI8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteFifoI8(NiFpga_Session session,
 		uint32_t       fifo,
 		const int8_t*  data,
 		size_t         numberOfElements,
@@ -1426,7 +1426,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoU8(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteFifoU8(NiFpga_Session session,
 		uint32_t       fifo,
 		const uint8_t* data,
 		size_t         numberOfElements,
@@ -1446,7 +1446,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoI16(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteFifoI16(NiFpga_Session session,
 		uint32_t       fifo,
 		const int16_t* data,
 		size_t         numberOfElements,
@@ -1466,7 +1466,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoU16(NiFpga_Session  session,
+	extern NiFpga_Status NiFpga_WriteFifoU16(NiFpga_Session  session,
 		uint32_t        fifo,
 		const uint16_t* data,
 		size_t          numberOfElements,
@@ -1486,7 +1486,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoI32(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteFifoI32(NiFpga_Session session,
 		uint32_t       fifo,
 		const int32_t* data,
 		size_t         numberOfElements,
@@ -1506,7 +1506,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoU32(NiFpga_Session  session,
+	extern NiFpga_Status NiFpga_WriteFifoU32(NiFpga_Session  session,
 		uint32_t        fifo,
 		const uint32_t* data,
 		size_t          numberOfElements,
@@ -1526,7 +1526,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoI64(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_WriteFifoI64(NiFpga_Session session,
 		uint32_t       fifo,
 		const int64_t* data,
 		size_t         numberOfElements,
@@ -1546,7 +1546,7 @@ extern "C" {
 	*                               the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_WriteFifoU64(NiFpga_Session  session,
+	extern NiFpga_Status NiFpga_WriteFifoU64(NiFpga_Session  session,
 		uint32_t        fifo,
 		const uint64_t* data,
 		size_t          numberOfElements,
@@ -1577,7 +1577,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsBool(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsBool(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		NiFpga_Bool**  elements,
@@ -1611,7 +1611,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsI8(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsI8(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		int8_t**       elements,
@@ -1645,7 +1645,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsU8(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsU8(
 		NiFpga_Session  session,
 		uint32_t        fifo,
 		uint8_t**       elements,
@@ -1679,7 +1679,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsI16(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsI16(
 		NiFpga_Session  session,
 		uint32_t        fifo,
 		int16_t**       elements,
@@ -1713,7 +1713,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsU16(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsU16(
 		NiFpga_Session   session,
 		uint32_t         fifo,
 		uint16_t**       elements,
@@ -1747,7 +1747,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsI32(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsI32(
 		NiFpga_Session  session,
 		uint32_t        fifo,
 		int32_t**       elements,
@@ -1781,7 +1781,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsU32(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsU32(
 		NiFpga_Session   session,
 		uint32_t         fifo,
 		uint32_t**       elements,
@@ -1815,7 +1815,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsI64(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsI64(
 		NiFpga_Session  session,
 		uint32_t        fifo,
 		int64_t**       elements,
@@ -1849,7 +1849,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoReadElementsU64(
+	extern NiFpga_Status NiFpga_AcquireFifoReadElementsU64(
 		NiFpga_Session   session,
 		uint32_t         fifo,
 		uint64_t**       elements,
@@ -1882,7 +1882,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsBool(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsBool(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		NiFpga_Bool**  elements,
@@ -1916,7 +1916,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI8(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI8(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		int8_t**       elements,
@@ -1950,7 +1950,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU8(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU8(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		uint8_t**      elements,
@@ -1984,7 +1984,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI16(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI16(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		int16_t**      elements,
@@ -2018,7 +2018,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU16(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU16(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		uint16_t**     elements,
@@ -2052,7 +2052,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI32(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI32(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		int32_t**      elements,
@@ -2086,7 +2086,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU32(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU32(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		uint32_t**     elements,
@@ -2120,7 +2120,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI64(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsI64(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		int64_t**      elements,
@@ -2154,7 +2154,7 @@ extern "C" {
 	*                          remaining in the host memory part of the DMA FIFO
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU64(
+	extern NiFpga_Status NiFpga_AcquireFifoWriteElementsU64(
 		NiFpga_Session session,
 		uint32_t       fifo,
 		uint64_t**     elements,
@@ -2176,7 +2176,7 @@ extern "C" {
 	* @param elements number of elements to release
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_ReleaseFifoElements(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_ReleaseFifoElements(NiFpga_Session session,
 		uint32_t       fifo,
 		size_t         elements);
 
@@ -2188,7 +2188,7 @@ extern "C" {
 	* @param endpoint outputs the endpoint reference
 	* @return result of the call
 	*/
-	__declspec(dllexport) extern NiFpga_Status NiFpga_GetPeerToPeerFifoEndpoint(NiFpga_Session session,
+	extern NiFpga_Status NiFpga_GetPeerToPeerFifoEndpoint(NiFpga_Session session,
 		uint32_t       fifo,
 		uint32_t*      endpoint);
 
