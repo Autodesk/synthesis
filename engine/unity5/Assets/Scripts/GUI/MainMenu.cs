@@ -448,47 +448,6 @@ public class MainMenu : MonoBehaviour
         else UserMessageManager.Dispatch("No field in directory!",2);
     }*/
 
-
-    //if single click
-    //      highlight directory
-    //if double click
-    //      open folder
-
-    public void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            _buttonDownPhaseStart = Time.time;
-        }
-
-        if (_doubleClickPhaseStart > -1 && (Time.time - _doubleClickPhaseStart) > 0.2f)
-        {
-            Debug.Log("single click");
-            _doubleClickPhaseStart = -1;
-        }
-
-        if (Input.GetMouseButtonUp(0))
-        {
-            if (Time.time - _buttonDownPhaseStart > 1.0f)
-            {
-                Debug.Log("long click");
-                _doubleClickPhaseStart = -1;
-            }
-            else
-            {
-                if (Time.time - _doubleClickPhaseStart < 0.2f)
-                {
-                    Debug.Log("double click");
-                    _doubleClickPhaseStart = -1;
-                }
-                else
-                {
-                    _doubleClickPhaseStart = Time.time;
-                }
-            }
-        }
-    }
-
     public void InitFieldBrowser()
     {
         if (fieldBrowser == null)
@@ -598,21 +557,21 @@ public class MainMenu : MonoBehaviour
 
     public void OpenTutorials()
     {
-        Application.OpenURL("http://bxd.autodesk.com/?page=Tutorials");
+        Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
     }
 
     public void OpenRobotExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRobotExporter");
+        Application.OpenURL("http://bxd.autodesk.com/tutorial-robot.html");
     }
 
     public void OpenFieldExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialFieldExporter");
+        Application.OpenURL("http://bxd.autodesk.com/tutorial-field.html");
     }
     public void OpenRobotConfigurationTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
+        Application.OpenURL("http://bxd.autodesk.com/tutorial-sim.html");
     }
     public void ResetControls()
     {
