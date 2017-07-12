@@ -30,7 +30,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2017\Bin\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -155,7 +155,9 @@
     <None Include="BxDFieldExporter.X.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Autodesk.BxDFieldExporter.Inventor.addin" />
+    <None Include="Autodesk.BxDFieldExporter.Inventor.addin">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Readme.txt" />
@@ -166,6 +168,39 @@
     </EmbeddedResource>
     <EmbeddedResource Include="EditCoordinate.resx" />
     <EmbeddedResource Include="Resource.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTAddNewComponent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTAddAssembly.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTAddPart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTAddSpawnLocation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTComponentProperties.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTEditSpawnLocation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTExportField.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTRemoveAssembly.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RemoveComponent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTRemoveAssembly1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TTRemoveSpawnPoint.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
