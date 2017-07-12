@@ -211,6 +211,7 @@
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
+    <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
     <Compile Include="Assets\Scripts\FEA\ReplayState.cs" />
     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />

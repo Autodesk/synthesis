@@ -14,6 +14,11 @@ public class MainState : SimState
 {
     const float RESET_VELOCITY = 0.05f;
 
+    private BPhysicsWorld physicsWorld;
+    private int lastFrameCount;
+
+    private bool tracking;
+
     private UnityPacket unityPacket;
 
     private DynamicCamera dynamicCamera;
@@ -48,7 +53,12 @@ public class MainState : SimState
 
     private System.Random random;
 
+    private FixedQueue<List<ContactDescriptor>> contactPoints;
+    private List<ContactDescriptor> currentContacts;
+
     bool resetting;
+
+    public List<Tracker> Trackers { get; private set; }
 
     public override void Awake()
     {
@@ -100,7 +110,7 @@ public class MainState : SimState
                             break;
                         case 1:
                             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
-                            dynamicCamera.EnableMoving();
+                            DynamicCamera.MovingEnabled = true;
                             break;
                         case 2:
                             dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
@@ -202,16 +212,22 @@ public class MainState : SimState
     void HideGUI()
     {
         gui.guiVisible = false;
-        dynamicCamera.EnableMoving();
+        DynamicCamera.MovingEnabled = true;
     }
 
     void ShowGUI()
     {
-        dynamicCamera.DisableMoving();
+        DynamicCamera.MovingEnabled = false;
     }
 
     public override void Start()
     {
+        physicsWorld = BPhysicsWorld.Get();
+        lastFrameCount = physicsWorld.frameCount;
+
+        Trackers = new List<Tracker>();
+        tracking = true;
+
         unityPacket = new UnityPacket();
         unityPacket.Start();
 
@@ -234,16 +250,27 @@ public class MainState : SimState
         transparentWindowTexture = Resources.Load("Images/transparentBackground") as Texture2D;
 
         resetting = false;
+
+        contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
+
+        PersistentManifold.ContactProcessed += ProcessContact;
     }
 
     public override void Update()
     {
+        // TEMPORARY vvv
         if (Input.GetKey(KeyCode.Alpha0))
             UnityEngine.Object.Instantiate(GameObject.Find("Ball:1"), new Vector3(0, 10, 0), Quaternion.identity);
+        //           ^^^
 
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
 	}
+
+    public override void LateUpdate()
+    {
+        UpdateTrackers();
+    }
 
     public override void FixedUpdate()
     {
@@ -286,7 +313,25 @@ public class MainState : SimState
             rigidBody.GetCollisionObject().Activate();
 
         if (Input.GetKey(KeyCode.Space))
-            StateMachine.Instance.PushState(new ReplayState());
+        {
+            contactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
+        }
+
+        UpdateTrackers();
+    }
+
+    public override void Resume()
+    {
+        lastFrameCount = physicsWorld.frameCount;
+        tracking = true;
+
+        ResetContacts();
+    }
+
+    public override void End()
+    {
+        tracking = false;
     }
 
     bool LoadField(string directory)
@@ -333,6 +378,9 @@ public class MainState : SimState
 
             node.CreateJoint();
 
+            CollisionObject co = node.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            co.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+
             node.MainObject.AddComponent<Tracker>().Trace = true;
 
             Tracker t = node.MainObject.GetComponent<Tracker>();
@@ -342,15 +390,60 @@ public class MainState : SimState
         return true;
     }
 
+    private void UpdateTrackers()
+    {
+        int numSteps = physicsWorld.frameCount - lastFrameCount;
+
+        if (tracking)
+        {
+            bool updated = false;
+
+            // numSteps should only == 1, but if it's ever > 1 the system won't break.
+            for (int i = 0; i < numSteps; i++)
+            {
+                updated = true;
+
+                contactPoints.Add(currentContacts);
+
+                foreach (Tracker t in Trackers)
+                    t.AddState();
+            }
+
+            if (updated)
+                currentContacts = null;
+        }
+
+        lastFrameCount += numSteps;
+    }
+
+    private void ProcessContact(ManifoldPoint cp, CollisionObject body0, CollisionObject body1)
+    {
+        if (!((BRigidBody)body0.UserObject).gameObject.name.StartsWith("node") && !((BRigidBody)body1.UserObject).gameObject.name.StartsWith("node"))
+            return;
+
+        if (currentContacts == null)
+            currentContacts = new List<ContactDescriptor>();
+
+        currentContacts.Add(new ContactDescriptor
+        {
+            AppliedImpulse = cp.AppliedImpulse,
+            Position = (cp.PositionWorldOnA + cp.PositionWorldOnB) * 0.5f
+        });
+    }
+
+    private void ResetContacts()
+    {
+        contactPoints.Clear(null);
+        currentContacts = null;
+    }
+
     void BeginReset(bool resetTransform = true)
     {
         resetting = true;
+        tracking = false;
 
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
-        {
-            t.Tracking = false;
             t.Clear();
-        }
 
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -372,6 +465,8 @@ public class MainState : SimState
 
     void EndReset()
     {
+        tracking = true;
+
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
             RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
@@ -379,10 +474,9 @@ public class MainState : SimState
         }
 
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
-        {
             t.Clear();
-            t.Tracking = true;
-        }
+
+        ResetContacts();
 
         resetting = false;
     }
