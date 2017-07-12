@@ -14,7 +14,7 @@ class FileBrowser : OverlayWindow
     /// <summary>
     /// The maximum time in seconds between clicks to be considered a double click.
     /// </summary>
-    private const float DOUBLE_CLICK_TIME = .2f;
+    private const float DOUBLE_CLICK_TIME = .3f;
 
     /// <summary>
     /// The selected directory location for two clicks.
@@ -25,11 +25,6 @@ class FileBrowser : OverlayWindow
     /// The selected directory location for one click.
     /// </summary>
     private string selectedDirectoryLocation;
-
-    /// <summary>
-    /// Temporary placeholder for directoryLocation and selectedDirectoryLocation
-    /// </summary>
-    private string currentDirectory;
 
     /// <summary>
     /// The title of the window.
@@ -108,6 +103,11 @@ class FileBrowser : OverlayWindow
     private GUIStyle highlightStyle;
     private GUIStyle buttonStyle;
 
+    /// <summary>
+    /// Custom GUIStyle for browser description text
+    /// </summary>
+    private GUIStyle descriptionStyle;
+
     private DirectoryInfo tempSelection;
 
     public FileBrowser(string windowTitle, bool allowEsc = true)
@@ -128,7 +128,6 @@ class FileBrowser : OverlayWindow
 
         directoryLocation = defaultDirectory;
         selectedDirectoryLocation = defaultDirectory;
-        currentDirectory = defaultDirectory;
 
         //Loads textures and fonts
         buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
@@ -168,6 +167,12 @@ class FileBrowser : OverlayWindow
         //Custom style for labels
         fileBrowserLabel = new GUIStyle(GUI.skin.label);
         fileBrowserLabel.font = russoOne;
+
+        //Custom style for description text
+        descriptionStyle = new GUIStyle(GUI.skin.label);
+        descriptionStyle.font = Resources.GetBuiltinResource<Font>("Arial.ttf") as Font;
+        descriptionStyle.fontSize = 13;
+        descriptionStyle.margin = new RectOffset(5, 5, 5, 2);
     }
 
     /// <summary>
@@ -250,60 +255,57 @@ class FileBrowser : OverlayWindow
             directoryInfo = directoryInfo.Parent;
             directoryLocation = directoryInfo.FullName;
             selectedDirectoryLocation = directoryInfo.FullName;
-            currentDirectory = directoryInfo.FullName;
         }
 
         // Handle the directories list
         GUILayout.BeginArea(new Rect(10, 35, 480, 300));
+
         GUILayout.Label("When choosing a folder, please select the field/robot folder containing these elements" +
-                " " + "NOT the field/robot itself!", fileBrowserLabel);
+                " " + "NOT the field/robot itself!", descriptionStyle);
 
         directoryScroll = GUILayout.BeginScrollView(directoryScroll);
-
-        
-
         directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
         {
             return o.Name;
         }, new DirectoryInfo(directoryLocation).Name) as DirectoryInfo;
 
-        
-
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
-        if (directorySelection != null && selectedDirectoryLocation != null && currentDirectory != null)
+        if (directorySelection != null && selectedDirectoryLocation != null)
         {
 
             bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
 
             if (doubleClick)
             {
-                // If a directory was double clicked, jump there
-                directoryLocation = directorySelection.FullName;
-
                 // If directory contains field or robot files, display error message to user prompting them to select directory
                 // instead of the actual field
                 if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
                                                                       || directorySelection.GetFiles("*.bxdj").Length != 0)
                 {
-                    //directoryLocation = currentDirectory;
                     UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
+                }
+                else
+                {
+                    // If a directory was double clicked, jump there
+                    directoryLocation = directorySelection.FullName;
                 }
             }
 
             else
             {
-                // If directory was clicked once, select it as a current path and highlight it
-                selectedDirectoryLocation = directorySelection.FullName;
-
                 // If directory contains field or robot files, display error message to user prompting them to select directory
                 // instead of the actual field
                 if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
                                                                       || directorySelection.GetFiles("*.bxdj").Length != 0)
                 {
-                    //directoryLocation = currentDirectory;
                     UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
+                }
+                else
+                {
+                    // If directory was clicked once, select it as a current path and highlight it
+                    selectedDirectoryLocation = directorySelection.FullName;
                 }
             }
         }
