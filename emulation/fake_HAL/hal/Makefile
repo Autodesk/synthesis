@@ -32,7 +32,11 @@ SRC_FILES = \
 	lib/athena/SPI.cpp \
 	lib/athena/Threads.cpp \
 	lib/athena/cpp/priority_mutex.cpp \
-	lib/athena/cpp/SerialHelper.cpp
+	lib/athena/cpp/SerialHelper.cpp \
+	lib/athena/cpp/StateNetworkServer.cpp \
+	lib/athena/cpp/Synchronized.cpp \
+	lib/athena/cpp/System.cpp \
+	lib/athena/cpp/Task.cpp 
 
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 OUT = build/libHALAthena.so
