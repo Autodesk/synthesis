@@ -1,5 +1,5 @@
 CC = /frc/bin/arm-frc-linux-gnueabi-g++.exe
-CCFLAGS = -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -std=c++11 -Wpedantic
+CCFLAGS = -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -Ilib -std=c++11 -Wpedantic
 
 SRC_FILES = \
 	lib/athena/Accelerometer.cpp \
@@ -32,7 +32,11 @@ SRC_FILES = \
 	lib/athena/SPI.cpp \
 	lib/athena/Threads.cpp \
 	lib/athena/cpp/priority_mutex.cpp \
-	lib/athena/cpp/SerialHelper.cpp
+	lib/athena/cpp/SerialHelper.cpp \
+	lib/StateNetwork/StateNetworkServer.cpp \
+	lib/OSAL/Synchronized.cpp \
+	lib/OSAL/System.cpp \
+	lib/OSAL/Task.cpp 
 
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 OUT = build/libHALAthena.so
