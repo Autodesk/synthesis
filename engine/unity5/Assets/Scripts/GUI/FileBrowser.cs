@@ -287,7 +287,7 @@ class FileBrowser : OverlayWindow
                 if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
                                                                       || directorySelection.GetFiles("*.bxdj").Length != 0)
                 {
-                    directoryLocation = currentDirectory;
+                    //directoryLocation = currentDirectory;
                     UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
                 }
             }
@@ -302,7 +302,7 @@ class FileBrowser : OverlayWindow
                 if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
                                                                       || directorySelection.GetFiles("*.bxdj").Length != 0)
                 {
-                    directoryLocation = currentDirectory;
+                    //directoryLocation = currentDirectory;
                     UserMessageManager.Dispatch("Please DO NOT select the field/robot itself!", 5);
                 }
             }
