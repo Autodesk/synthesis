@@ -28,6 +28,20 @@
 #define HALFRC_NetworkCommunication_DynamicType_Kinect_Joystick 24
 #define HALFRC_NetworkCommunication_DynamicType_Kinect_Custom 25
 
+enum EmbeddedDynamicChunk {
+  kEmbeddedUserDataHigh = 0,
+  kEmbeddedErrors = 1,
+  kEmbeddedUserDataLow = 2,
+  kEmbeddedCount
+};
+
+struct {
+  uint32_t dynamicLen;
+  const char *dynamicData;
+} embeddedDynamicChunks[kEmbeddedCount];
+
+char sendBuffer[2048];
+
 struct HAL_ControlWord {
   uint32_t enabled : 1;
   uint32_t autonomous : 1;
