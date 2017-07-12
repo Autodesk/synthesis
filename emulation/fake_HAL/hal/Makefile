@@ -37,7 +37,26 @@ SRC_FILES = \
 	lib/OSAL/System.cpp \
 	lib/OSAL/Task.cpp \
 	lib/crc32.cpp \
-	#lib/StateNetwork/StateNetworkServer.cpp \
+	lib/ChipObject/NiFpga.cpp \
+	lib/ChipObject/NiFpgaState.cpp \
+	lib/ChipObject/NiIRQImpl.cpp \
+	lib/ChipObject/niLoadOut.cpp \
+	lib/ChipObject/NiRio.cpp \
+	lib/ChipObject/nUsageReporting.cpp \
+	lib/ChipObject/PWMDecoder.cpp \
+	lib/ChipObject/tAccumulatorImpl.cpp \
+	lib/ChipObject/tAIImpl.cpp \
+	lib/ChipObject/tAlarmImpl.cpp \
+	lib/ChipObject/tAnalogTriggerImpl.cpp \
+	lib/ChipObject/tCounterImpl.cpp \
+	lib/ChipObject/tDIOImpl.cpp \
+	lib/ChipObject/tEncoderImpl.cpp \
+	lib/ChipObject/tGlobalImpl.cpp \
+	lib/ChipObject/tInterruptImpl.cpp \
+	lib/ChipObject/tInterruptManager.cpp \
+	lib/ChipObject/tSolenoidImpl.cpp \
+	lib/ChipObject/tSystem.cpp \
+	lib/ChipObject/tWatchcatImpl.cpp \
 
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 OUT = build/libHALAthena.so
