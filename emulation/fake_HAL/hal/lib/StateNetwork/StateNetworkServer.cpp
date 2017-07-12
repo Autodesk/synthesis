@@ -1,5 +1,5 @@
-#include "StateNetwork/StateNetworkServer.h"
-#include <OSAL/OSAL.h>
+#include "StateNetworkServer.h"
+#include "OSAL/OSAL.h"
 #include <stdio.h>
 #if USE_WINAPI
 #include <Windows.h>
