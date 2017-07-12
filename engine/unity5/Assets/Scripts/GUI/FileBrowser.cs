@@ -108,6 +108,8 @@ class FileBrowser : OverlayWindow
     private GUIStyle highlightStyle;
     private GUIStyle buttonStyle;
 
+    private DirectoryInfo tempSelection;
+
     public FileBrowser(string windowTitle, bool allowEsc = true)
     {
         Init(windowTitle, Directory.GetParent(Application.dataPath).FullName, allowEsc);
@@ -183,21 +185,34 @@ class FileBrowser : OverlayWindow
         {
             string entry = stringify != null ? stringify(o) : o.ToString();;
 
+
             if (highlight != null && highlight.Equals(entry))
             {
                 Debug.Log(entry);
                 if (GUILayout.Button(entry, highlightStyle))
                 {
                     selected = o;
+                    tempSelection = o as DirectoryInfo;
                 }
             }
-            if (GUILayout.Button(entry, listStyle))
+            if(tempSelection != null && entry.Equals(tempSelection.Name))
+            {
+                if (GUILayout.Button(entry, highlightStyle))
+                {
+                    selected = o;
+                    tempSelection = o as DirectoryInfo;
+
+                }
+            }
+            else if (GUILayout.Button(entry, listStyle))
             {
                 selected = o;
+                tempSelection = o as DirectoryInfo;
             }
         }
         return selected;
     }
+
 
     /// <summary>
     /// Renders the browser window.
@@ -244,10 +259,15 @@ class FileBrowser : OverlayWindow
                 " " + "NOT the field/robot itself!", fileBrowserLabel);
 
         directoryScroll = GUILayout.BeginScrollView(directoryScroll);
+
+        
+
         directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
         {
             return o.Name;
         }, new DirectoryInfo(directoryLocation).Name) as DirectoryInfo;
+
+        
 
         GUILayout.EndScrollView();
         GUILayout.EndArea();
