@@ -12,7 +12,8 @@ using Assets.Scripts.FSM;
 
 public class MainState : SimState
 {
-    const float RESET_VELOCITY = 0.05f;
+    private const float ResetVelocity = 0.05f;
+    private const int SolverIterations = 100;
 
     private BPhysicsWorld physicsWorld;
     private int lastFrameCount;
@@ -54,7 +55,6 @@ public class MainState : SimState
     private System.Random random;
 
     private FixedQueue<List<ContactDescriptor>> contactPoints;
-    private List<ContactDescriptor> currentContacts;
 
     bool resetting;
 
@@ -65,6 +65,7 @@ public class MainState : SimState
         GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
         BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
         BPhysicsWorld.Get().DoDebugDraw = false;
+        ((DynamicsWorld)BPhysicsWorld.Get().world).SolverInfo.NumIterations = SolverIterations;
     }
 
     public override void OnGUI()
@@ -252,8 +253,6 @@ public class MainState : SimState
         resetting = false;
 
         contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
-
-        PersistentManifold.ContactProcessed += ProcessContact;
     }
 
     public override void Update()
@@ -297,9 +296,9 @@ public class MainState : SimState
             }
 
             Vector3 transposition = new Vector3(
-                Input.GetKey(KeyCode.RightArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.LeftArrow) ? -RESET_VELOCITY : 0f,
+                Input.GetKey(KeyCode.RightArrow) ? ResetVelocity : Input.GetKey(KeyCode.LeftArrow) ? -ResetVelocity : 0f,
                 0f,
-                Input.GetKey(KeyCode.UpArrow) ? RESET_VELOCITY : Input.GetKey(KeyCode.DownArrow) ? -RESET_VELOCITY : 0f);
+                Input.GetKey(KeyCode.UpArrow) ? ResetVelocity : Input.GetKey(KeyCode.DownArrow) ? -ResetVelocity : 0f);
 
             if (!transposition.Equals(Vector3.zero))
                 TransposeRobot(transposition);
@@ -326,7 +325,7 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
         tracking = true;
 
-        ResetContacts();
+        contactPoints.Clear(null);
     }
 
     public override void End()
@@ -378,13 +377,7 @@ public class MainState : SimState
 
             node.CreateJoint();
 
-            CollisionObject co = node.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
-            co.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
-
             node.MainObject.AddComponent<Tracker>().Trace = true;
-
-            Tracker t = node.MainObject.GetComponent<Tracker>();
-            Debug.Log(t);
         }
 
         return true;
@@ -396,45 +389,77 @@ public class MainState : SimState
 
         if (tracking)
         {
-            bool updated = false;
-
-            // numSteps should only == 1, but if it's ever > 1 the system won't break.
+            // numSteps should only == 1 or 0, but if it's ever > 1 the system won't break.
             for (int i = 0; i < numSteps; i++)
             {
-                updated = true;
-
-                contactPoints.Add(currentContacts);
-
                 foreach (Tracker t in Trackers)
                     t.AddState();
-            }
 
-            if (updated)
-                currentContacts = null;
+                List<ContactDescriptor> frameContacts = null;
+
+                int numManifolds = physicsWorld.world.Dispatcher.NumManifolds;
+
+                for (int j = 0; j < numManifolds; j++)
+                {
+                    PersistentManifold contactManifold = physicsWorld.world.Dispatcher.GetManifoldByIndexInternal(j);
+                    BRigidBody obA = (BRigidBody)contactManifold.Body0.UserObject;
+                    BRigidBody obB = (BRigidBody)contactManifold.Body1.UserObject;
+
+                    if (!obA.gameObject.name.StartsWith("node") && !obB.gameObject.name.StartsWith("node"))
+                        continue;
+
+                    List<ContactDescriptor> manifoldContacts = new List<ContactDescriptor>();
+
+                    int numContacts = contactManifold.NumContacts;
+
+                    if (numContacts == 0)
+                        continue;
+
+                    for (int k = 0; k < numContacts; k++)
+                    {
+                        ManifoldPoint cp = contactManifold.GetContactPoint(k);
+
+                        manifoldContacts.Add(new ContactDescriptor
+                        {
+                            AppliedImpulse = cp.AppliedImpulse,
+                            Position = (cp.PositionWorldOnA + cp.PositionWorldOnB) * 0.5f
+                        });
+                    }
+
+                    ContactDescriptor consolidatedContact;
+
+                    if (obA.gameObject.name.StartsWith("node"))
+                        consolidatedContact = new ContactDescriptor
+                        {
+                            RobotBody = obA,
+                            OtherBody = obB,
+                        };
+                    else
+                        consolidatedContact = new ContactDescriptor
+                        {
+                            RobotBody = obB,
+                            OtherBody = obA
+                        };
+
+                    foreach (ContactDescriptor cd in manifoldContacts)
+                    {
+                        consolidatedContact.AppliedImpulse += cd.AppliedImpulse;
+                        consolidatedContact.Position += cd.Position;
+                    }
+
+                    consolidatedContact.Position /= numContacts;
+
+                    if (frameContacts == null)
+                        frameContacts = new List<ContactDescriptor>();
+
+                    frameContacts.Add(consolidatedContact);
+                }
+
+                contactPoints.Add(frameContacts);
+            }
         }
 
         lastFrameCount += numSteps;
-    }
-
-    private void ProcessContact(ManifoldPoint cp, CollisionObject body0, CollisionObject body1)
-    {
-        if (!((BRigidBody)body0.UserObject).gameObject.name.StartsWith("node") && !((BRigidBody)body1.UserObject).gameObject.name.StartsWith("node"))
-            return;
-
-        if (currentContacts == null)
-            currentContacts = new List<ContactDescriptor>();
-
-        currentContacts.Add(new ContactDescriptor
-        {
-            AppliedImpulse = cp.AppliedImpulse,
-            Position = (cp.PositionWorldOnA + cp.PositionWorldOnB) * 0.5f
-        });
-    }
-
-    private void ResetContacts()
-    {
-        contactPoints.Clear(null);
-        currentContacts = null;
     }
 
     void BeginReset(bool resetTransform = true)
@@ -476,7 +501,7 @@ public class MainState : SimState
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
 
-        ResetContacts();
+        contactPoints.Clear(null);
 
         resetting = false;
     }

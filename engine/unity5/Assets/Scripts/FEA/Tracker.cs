@@ -24,7 +24,7 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// The number of seconds the tracker keeps any given state.
         /// </summary>
-        public const float Lifetime = 3.0f;
+        public const float Lifetime = 3f;
 
         /// <summary>
         /// The number of states in the queue.
@@ -85,31 +85,6 @@ namespace Assets.Scripts.FEA
                 mainState.Trackers.Add(this);
             else
                 Destroy(this);
-        }
-
-        /// <summary>
-        /// Draws lines representing stored states.
-        /// </summary>
-        void FixedUpdate()
-        {
-            if (!Trace)
-                return;
-
-            Vector3 lastPoint = Vector3.zero;
-            int i = 0;
-            
-            foreach (StateDescriptor state in States)
-            {
-                if (lastPoint != Vector3.zero)
-                {
-                    float age = (float)i / States.Length;
-                    Debug.DrawLine(lastPoint, state.Position.ToUnity(), new Color(age * 0.5f,
-                        1.0f, age * 0.5f, 1.0f - age * 0.5f));
-                }
-
-                lastPoint = state.Position.ToUnity();
-                i++;
-            }
         }
     }
 }
