@@ -28,7 +28,7 @@ public partial class RigidNode : RigidNode_Base
 
             Material[] materials = new Material[meshu.subMeshCount];
             for (int i = 0; i < materials.Length; i++)
-                materials[i] = sub.surfaces[i].AsMaterial();
+                materials[i] = sub.surfaces[i].AsMaterial(true);
 
             meshObject.GetComponent<MeshRenderer>().materials = materials;
 

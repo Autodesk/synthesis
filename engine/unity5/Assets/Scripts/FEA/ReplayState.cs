@@ -13,6 +13,7 @@ namespace Assets.Scripts.FEA
     public class ReplayState : SimState
     {
         private const float CircleRenderDistance = 10f;
+        private const float ConsolidationEpsilon = 0.25f;
 
         private const int SliderLeftMargin = 192;
         private const int SliderRightMargin = 192;
@@ -27,16 +28,20 @@ namespace Assets.Scripts.FEA
 
         private const int CircleRadius = 8;
 
-        private const int ControlButtonSize = 32;
-        private const int ControlMargin = (SliderLeftMargin - ControlButtonSize * 3) / 4;
-
-        private const int CollisionButtonMargin = 16;
+        private const int ButtonSize = 32;
+        private const int ControlButtonMargin = (SliderLeftMargin - ButtonSize * 3) / 4;
+        private const int EditButtonMargin = (SliderRightMargin - ButtonSize * 2) / 3;
 
         private const int CollisionSliderMargin = 16;
-        private const int CollisionSliderHeight = 128;
-        private const float CollisionSliderTopValue = 20f;
+        private const int CollisionSliderHeight = 256;
+        private const float CollisionSliderTopValue = 500f;
 
-        enum PlaybackMode
+        private const int InfoBoxWidth = 96;
+        private const int InfoBoxHeight = 16;
+
+        private readonly Color HighlightColor = new Color(1.0f, 0.0f, 0.0f);
+
+        private enum PlaybackMode
         {
             Paused,
             Play,
@@ -45,6 +50,15 @@ namespace Assets.Scripts.FEA
 
         private PlaybackMode playbackMode;
 
+        private enum EditMode
+        {
+            None,
+            Threshold,
+            Consolidate
+        }
+
+        private EditMode editMode;
+
         private float rewindTime;
         private float playbackSpeed;
         private float sliderPos;
@@ -52,7 +66,6 @@ namespace Assets.Scripts.FEA
 
         private bool firstFrame;
         private bool active;
-        private bool showCollisionSlider;
 
         private Camera camera;
         private List<Tracker> trackers;
@@ -67,11 +80,49 @@ namespace Assets.Scripts.FEA
         private GUIStyle stopStyle;
         private GUIStyle playStyle;
         private GUIStyle collisionStyle;
+        private GUIStyle consolidateStyle;
+
+        private BRigidBody _selectedBody;
 
         /// <summary>
-        /// The normalized replay time.
+        /// The body being currently highlighted.
         /// </summary>
-        private float ReplayTime
+        private BRigidBody SelectedBody
+        {
+            get
+            {
+                return _selectedBody;
+            }
+            set
+            {
+                if (value == _selectedBody)
+                    return;
+
+                if (_selectedBody != null)
+                    CurrentColor = Color.black;
+
+                if ((_selectedBody = value) != null)
+                    CurrentColor = HighlightColor;
+            }
+        }
+
+        /// <summary>
+        /// Used for setting the color of the selected body.
+        /// </summary>
+        private Color CurrentColor
+        {
+            set
+            {
+                foreach (Renderer r in SelectedBody.GetComponentsInChildren<Renderer>())
+                    foreach (Material m in r.materials)
+                        m.SetColor("_EmissionColor", value);
+            }
+        }
+
+        /// <summary>
+        /// The replay time in frames.
+        /// </summary>
+        private float RewindFrame
         {
             get
             {
@@ -97,11 +148,11 @@ namespace Assets.Scripts.FEA
         {
             this.contactPoints = contactPoints.ToList();
             this.trackers = trackers;
-
+            
             playbackMode = PlaybackMode.Paused;
             firstFrame = true;
             active = false;
-            contactThreshold = Mathf.Sqrt(CollisionSliderTopValue / 2);
+            contactThreshold = Mathf.Sqrt(30f);
 
             camera = UnityEngine.Object.FindObjectOfType<Camera>();
 
@@ -123,6 +174,10 @@ namespace Assets.Scripts.FEA
             Texture2D collisionHoverTexture = (Texture2D)Resources.Load("Images/collisionHover");
             Texture2D collisionPressedTexture = (Texture2D)Resources.Load("Images/collisionPressed");
 
+            Texture2D consolidateTexture = (Texture2D)Resources.Load("Images/consolidate");
+            Texture2D consolidateHoverTexture = (Texture2D)Resources.Load("Images/consolidateHover");
+            Texture2D consolidatePressedTexture = (Texture2D)Resources.Load("Images/consolidatePressed");
+
             circleTexture = (Texture)Resources.Load("Images/circle");
             keyframeTexture = (Texture)Resources.Load("Images/keyframe");
 
@@ -132,7 +187,7 @@ namespace Assets.Scripts.FEA
 
             windowStyle = new GUIStyle
             {
-                alignment = TextAnchor.UpperCenter,
+                alignment = TextAnchor.UpperLeft,
                 normal = new GUIStyleState
                 {
                     background = sliderBackground,
@@ -152,8 +207,8 @@ namespace Assets.Scripts.FEA
 
             rewindStyle = new GUIStyle
             {
-                fixedWidth = ControlButtonSize,
-                fixedHeight = ControlButtonSize,
+                fixedWidth = ButtonSize,
+                fixedHeight = ButtonSize,
                 normal = new GUIStyleState { background = rewindTexture },
                 hover = new GUIStyleState { background = rewindHoverTexture },
                 active = new GUIStyleState { background = rewindPressedTexture }
@@ -161,8 +216,8 @@ namespace Assets.Scripts.FEA
 
             stopStyle = new GUIStyle
             {
-                fixedWidth = ControlButtonSize,
-                fixedHeight = ControlButtonSize,
+                fixedWidth = ButtonSize,
+                fixedHeight = ButtonSize,
                 normal = new GUIStyleState { background = stopTexture },
                 hover = new GUIStyleState { background = stopHoverTexture },
                 active = new GUIStyleState { background = stopPressedTexture }
@@ -170,8 +225,8 @@ namespace Assets.Scripts.FEA
 
             playStyle = new GUIStyle
             {
-                fixedWidth = ControlButtonSize,
-                fixedHeight = ControlButtonSize,
+                fixedWidth = ButtonSize,
+                fixedHeight = ButtonSize,
                 normal = new GUIStyleState { background = playTexture },
                 hover = new GUIStyleState { background = playHoverTexture },
                 active = new GUIStyleState { background = playPressedTexture }
@@ -179,11 +234,20 @@ namespace Assets.Scripts.FEA
 
             collisionStyle = new GUIStyle
             {
-                fixedWidth = ControlButtonSize,
-                fixedHeight = ControlButtonSize,
+                fixedWidth = ButtonSize,
+                fixedHeight = ButtonSize,
                 normal = new GUIStyleState { background = collisionTexture },
                 hover = new GUIStyleState { background = collisionHoverTexture },
                 active = new GUIStyleState { background = collisionPressedTexture }
+            };
+
+            consolidateStyle = new GUIStyle
+            {
+                fixedWidth = ButtonSize,
+                fixedHeight = ButtonSize,
+                normal = new GUIStyleState { background = consolidateTexture },
+                hover = new GUIStyleState { background = consolidateHoverTexture },
+                active = new GUIStyleState { background = consolidatePressedTexture }
             };
         }
 
@@ -216,12 +280,12 @@ namespace Assets.Scripts.FEA
         }
 
         /// <summary>
-        /// Draws the horizontal slider.
+        /// Renders the GUI.
         /// </summary>
         public override void OnGUI()
         {
-            Rect controlRect = new Rect(ControlMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
-                ControlButtonSize, ControlButtonSize);
+            Rect controlRect = new Rect(ControlButtonMargin, Screen.height - (SliderBottomMargin + SliderThickness + SliderThickness / 2),
+                ButtonSize, ButtonSize);
 
             if (GUI.Button(controlRect, string.Empty, rewindStyle))
             {
@@ -231,12 +295,12 @@ namespace Assets.Scripts.FEA
                 playbackMode = PlaybackMode.Rewind;
             }
 
-            controlRect.x += ControlButtonSize + ControlMargin;
+            controlRect.x += ButtonSize + ControlButtonMargin;
 
             if (GUI.Button(controlRect, string.Empty, stopStyle))
                 playbackMode = PlaybackMode.Paused;
 
-            controlRect.x += ControlButtonSize + ControlMargin;
+            controlRect.x += ButtonSize + ControlButtonMargin;
 
             if (GUI.Button(controlRect, string.Empty, playStyle))
             {
@@ -246,21 +310,35 @@ namespace Assets.Scripts.FEA
                 playbackMode = PlaybackMode.Play;
             }
 
-            controlRect.x = Screen.width - SliderRightMargin + CollisionButtonMargin;
+            controlRect.x = Screen.width - SliderRightMargin + EditButtonMargin;
 
             if (GUI.Button(controlRect, string.Empty, collisionStyle))
-                showCollisionSlider = !showCollisionSlider;
+                editMode = editMode == EditMode.Threshold ? EditMode.None : EditMode.Threshold;
 
-            Rect collisionSliderRect = new Rect(controlRect.x + (ControlButtonSize / 2 - SliderThickness / 2),
+            Rect collisionSliderRect = new Rect(controlRect.x + (ButtonSize - SliderThickness) / 2,
                 controlRect.y - CollisionSliderMargin - CollisionSliderHeight, SliderThickness, CollisionSliderHeight);
 
-            if (showCollisionSlider)
+            if (editMode == EditMode.Threshold)
+            {
                 contactThreshold = GUI.VerticalSlider(collisionSliderRect, contactThreshold, Mathf.Sqrt(CollisionSliderTopValue), 0f, windowStyle, thumbStyle);
 
-            Rect collisionLabelRect = new Rect(controlRect.x + controlRect.width + CollisionButtonMargin, controlRect.y,
-                Screen.width - (controlRect.x + controlRect.width + CollisionButtonMargin * 2), controlRect.height);
+                Rect collisionLabelRect = new Rect(controlRect.x + controlRect.width, controlRect.y - controlRect.height - CollisionSliderMargin,
+                    Screen.width - (controlRect.x + controlRect.width), controlRect.height);
 
-            GUI.Label(collisionLabelRect, "Impact Threshold:\n" + AdjustedContactThreshold.ToString("F2") + " Newtons", windowStyle);
+                GUI.Label(collisionLabelRect, "Impulse Threshold:\n" + AdjustedContactThreshold.ToString("F2") + " Newtons", windowStyle);
+            }
+
+            controlRect.x += ButtonSize + EditButtonMargin;
+
+            bool consolidatePressed = editMode == EditMode.Consolidate ? GUI.Button(controlRect, consolidateStyle.hover.background, GUIStyle.none) :
+                GUI.Button(controlRect, string.Empty, consolidateStyle);
+
+            if (consolidatePressed)
+                editMode = editMode == EditMode.Consolidate ? EditMode.None : EditMode.Consolidate;
+
+            if (editMode == EditMode.Consolidate)
+                GUI.Label(new Rect(Screen.width - SliderLeftMargin, controlRect.y - InfoBoxHeight - CollisionSliderMargin,
+                    Screen.width - SliderLeftMargin, InfoBoxHeight), "Select a collision to consolidate.", windowStyle);
 
             Rect sliderRect = new Rect(SliderLeftMargin, Screen.height - (SliderBottomMargin + SliderThickness),
                 Screen.width - (SliderRightMargin + SliderLeftMargin), SliderThickness);
@@ -270,7 +348,8 @@ namespace Assets.Scripts.FEA
             Rect guiRect = new Rect(0, Screen.height - (SliderBottomMargin + SliderThickness + KeyframeHeight),
                 Screen.width, SliderBottomMargin + SliderThickness + KeyframeHeight);
 
-            if (!active && (guiRect.Contains(Event.current.mousePosition) || (showCollisionSlider && collisionSliderRect.Contains(Event.current.mousePosition))) &&
+            if (!active && (guiRect.Contains(Event.current.mousePosition) ||
+                (editMode == EditMode.Threshold && collisionSliderRect.Contains(Event.current.mousePosition))) &&
                 Input.GetMouseButton(0))
             {
                 DynamicCamera.MovingEnabled = false;
@@ -283,6 +362,8 @@ namespace Assets.Scripts.FEA
                 active = false;
             }
 
+            bool circleHovered = false;
+
             int i = Tracker.Length - 1;
 
             foreach (List<ContactDescriptor> l in contactPoints)
@@ -291,15 +372,17 @@ namespace Assets.Scripts.FEA
                 {
                     ContactDescriptor lastContact = default(ContactDescriptor);
 
-                    foreach (ContactDescriptor m in l)
+                    for (int j = 0; j < l.Count; j++)
                     {
-                        if (m.AppliedImpulse >= AdjustedContactThreshold)
+                        ContactDescriptor currentContact = l[j];
+
+                        if (currentContact.AppliedImpulse >= AdjustedContactThreshold)
                         {
                             float keyframeTime = Tracker.Lifetime - ((float)i / (Tracker.Length - 1)) * Tracker.Lifetime;
 
-                            if (!lastContact.Equals(m))
+                            if (!lastContact.Equals(currentContact))
                             {
-                                lastContact = m;
+                                lastContact = currentContact;
 
                                 float pixelsPerValue = (sliderRect.width - KeyframeWidth - ThumbWidth / 2) / Tracker.Lifetime;
 
@@ -316,24 +399,47 @@ namespace Assets.Scripts.FEA
                                 }
                             }
 
-                            Vector3 collisionPoint = camera.WorldToScreenPoint(m.Position.ToUnity());
+                            Vector3 collisionPoint = camera.WorldToScreenPoint(currentContact.Position.ToUnity());
 
                             if (collisionPoint.z > 0.0f)
                             {
-                                float distance = Math.Abs((Tracker.Length - 1 - i) - ReplayTime);
-
                                 Rect circleRect = new Rect(collisionPoint.x - CircleRadius, Screen.height - (collisionPoint.y - CircleRadius),
                                     CircleRadius * 2, CircleRadius * 2);
 
-                                if (circleRect.Contains(Event.current.mousePosition))
-                                    GUI.color = Color.white;
-                                else
-                                    GUI.color = new Color(1f, 1f, 1f, Math.Max((CircleRenderDistance - distance) / CircleRenderDistance, 0.1f));
+                                bool shouldActivate = false;
 
-                                if (GUI.Button(circleRect, circleTexture, GUIStyle.none))
-                                    rewindTime = keyframeTime;
+                                if (circleRect.Contains(Event.current.mousePosition) && !circleHovered)
+                                {
+                                    GUI.color = Color.white;
+                                    SelectedBody = currentContact.RobotBody;
+                                    shouldActivate = true;
+                                }
+                                else
+                                {
+                                    GUI.color = new Color(1f, 1f, 1f, Math.Max((CircleRenderDistance -
+                                        Math.Abs((Tracker.Length - 1 - i) - RewindFrame)) / CircleRenderDistance, 0.1f));
+                                }
+
+                                if (GUI.Button(circleRect, circleTexture, GUIStyle.none) && Event.current.button == 0 && shouldActivate)
+                                {
+                                    if (editMode == EditMode.Consolidate)
+                                    {
+                                        l[j] = ConsolidateContacts(l, currentContact);
+                                        editMode = EditMode.None;
+                                    }
+                                    else
+                                    {
+                                        rewindTime = keyframeTime;
+                                    }
+                                }
+
+                                if (circleRect.Contains(Event.current.mousePosition) && shouldActivate)
+                                    GUI.Label(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y - InfoBoxHeight,
+                                        InfoBoxWidth, InfoBoxHeight), "Impulse: " + currentContact.AppliedImpulse.ToString("F2"), windowStyle);
 
                                 GUI.color = Color.white;
+
+                                circleHovered = circleHovered || shouldActivate;
                             }
                         }
                     }
@@ -341,6 +447,9 @@ namespace Assets.Scripts.FEA
 
                 i--;
             }
+
+            if (!circleHovered)
+                SelectedBody = null;
         }
 
         /// <summary>
@@ -403,7 +512,7 @@ namespace Assets.Scripts.FEA
 
             foreach (Tracker t in trackers)
             {
-                float replayTime = ReplayTime;
+                float replayTime = RewindFrame;
                 int currentIndex = (int)Math.Floor(replayTime);
 
                 StateDescriptor lowerState = t.States[currentIndex];
@@ -433,12 +542,14 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void End()
         {
+            SelectedBody = null;
+
             foreach (Tracker t in trackers)
             {
                 if (t.Trace)
                     UnityEngine.Object.Destroy(t.gameObject.GetComponent<LineRenderer>());
 
-                StateDescriptor currentState = t.States[(int)Math.Floor(ReplayTime)];
+                StateDescriptor currentState = t.States[(int)Math.Floor(RewindFrame)];
 
                 RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
                 r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
@@ -447,6 +558,74 @@ namespace Assets.Scripts.FEA
 
                 t.Clear();
             }
+        }
+
+        /// <summary>
+        /// Consolidates the given contact with its surrounding contacts.
+        /// </summary>
+        /// <param name="contacts"></param>
+        /// <param name="start"></param>
+        /// <returns></returns>
+        private ContactDescriptor ConsolidateContacts(List<ContactDescriptor> contacts, ContactDescriptor start)
+        {
+            List<ContactDescriptor> removedContacts = new List<ContactDescriptor>();
+            BulletSharp.Math.Vector3 lastPoint = start.Position;
+
+            int startIndex = contactPoints.IndexOf(contacts) - 1;
+            int lowerBound = startIndex;
+
+            for (; lowerBound >= 0; lowerBound--)
+            {
+                ContactDescriptor? c = UpdateContact(lowerBound, lastPoint, ref start);
+
+                if (!c.HasValue)
+                    break;
+
+                lastPoint = c.Value.Position;
+                removedContacts.Add(c.Value);
+            }
+
+            for (int i = startIndex; i >= lowerBound; i--)
+            {
+                List<ContactDescriptor> currentContacts = contactPoints[i];
+
+                if (currentContacts == null)
+                    continue;
+
+                currentContacts.RemoveAll((x) => removedContacts.Contains(x));
+            }
+
+            return start;
+        }
+
+        /// <summary>
+        /// Finds the nearest contact to the one given if it's within the consolidation epsilon.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="point"></param>
+        /// <param name="contact"></param>
+        /// <returns></returns>
+        private ContactDescriptor? UpdateContact(int index, BulletSharp.Math.Vector3 point, ref ContactDescriptor contact)
+        {
+            ContactDescriptor? nextContact = null;
+
+            List<ContactDescriptor> currentContacts = contactPoints[index];
+
+            if (currentContacts == null)
+                return nextContact;
+
+            foreach (ContactDescriptor c in currentContacts)
+            {
+                if (c.RobotBody != contact.RobotBody || c.OtherBody != contact.OtherBody || (c.Position - point).Length > ConsolidationEpsilon)
+                    continue;
+
+                contact.AppliedImpulse += c.AppliedImpulse;
+                nextContact = c;
+
+                break;
+            }
+
+            return nextContact;
         }
     }
 }
