@@ -50,7 +50,7 @@ void HAL_LatchPWMZero(HAL_DigitalHandle pwmPortHandle, int32_t* status);
 void HAL_SetPWMPeriodScale(HAL_DigitalHandle pwmPortHandle, int32_t squelchMask,
                            int32_t* status);
 int32_t HAL_GetLoopTiming(int32_t* status);
-extern float pwmValues[10];
+
 extern void HAL_StartUnityThread();
 #ifdef __cplusplus
 }

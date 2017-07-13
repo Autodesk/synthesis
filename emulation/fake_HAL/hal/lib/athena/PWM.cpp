@@ -44,6 +44,8 @@ static inline int32_t GetFullRangeScaleFactor(DigitalPort* port) {
   return GetMaxPositivePwm(port) - GetMinNegativePwm(port);
 }  ///< The scale for positions.
 
+float pwmValues[10];
+
 extern "C" {
 
 
@@ -233,7 +235,6 @@ extern "C" {
 	 */
 	void HAL_SetPWMSpeed(HAL_DigitalHandle pwmPortHandle, double speed,
 		int32_t* status) {
-		printf("speed: %f\n", speed);
 
 		auto port = digitalChannelHandles.Get(pwmPortHandle, HAL_HandleEnum::PWM);
 		if (port == nullptr) {
@@ -471,9 +472,11 @@ extern "C" {
 
 	void* StateNetworkThread(void* param) {
 		StateNetworkServer stateNetwork;
+		stateNetwork.Open();
 
 		OutputStatePacket packet;
 		while (true) {
+			printf("%d %d\n", pwmValues[0], pwmValues[1]);
 			std::copy(pwmValues, pwmValues + 10, packet.dio[0].pwmValues);
 			stateNetwork.SendStatePacket(packet);
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
