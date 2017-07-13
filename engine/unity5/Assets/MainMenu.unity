@@ -13181,7 +13181,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Don't know how to get a new field in the simulator? Check our our tutorial!
+  m_Text: Don't know how to get a new field in the simulator? Check out our tutorial!
 --- !u!222 &1920925917
 CanvasRenderer:
   m_ObjectHideFlags: 0
