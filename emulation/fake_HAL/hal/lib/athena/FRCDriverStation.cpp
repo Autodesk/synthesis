@@ -55,23 +55,24 @@ bool enabled;
 FRCRobotControl ctl;
 
 void* DriverStationThread(void* param) {
+  printf("Starting driver station connection thread\n");
   struct sockaddr_in robotAddress;
 	struct sockaddr_in dsAddress;
 	int robotSocket;
 	int dsSocket;
 
-    //get's the IP address in the form 10.xx.xx.0
-	uint32_t network = 0; //(10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
+  //int teamID = 3636;
+	//uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
 	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
+  //10.0.2.5
+  uint32_t network = (10 << 24) | 0 | 2 << 8 | 5;
 
 	robotAddress.sin_family = AF_INET;
-    //10.xx.xx.2
-	robotAddress.sin_addr.s_addr = htonl(network | 2);
+	robotAddress.sin_addr.s_addr = htonl(0);
 	robotAddress.sin_port = htons( 1110 );
 
 	dsAddress.sin_family = AF_INET;
-    //10.xx.xx.5
-	dsAddress.sin_addr.s_addr = htonl(network | 5);
+	dsAddress.sin_addr.s_addr = htonl(network);
 	dsAddress.sin_port = htons( 1150 );
 
 	robotSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -80,8 +81,15 @@ void* DriverStationThread(void* param) {
 		return NULL;
 	}
 
+  int option = 1;
+  if(setsockopt(robotSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) != 0) {
+    fprintf(stderr, "Could not set socket options for ROBOT!\n");
+    perror("setsockopt");
+  }
+
 	if (bind(robotSocket, (const struct sockaddr *)&robotAddress, sizeof(robotAddress)) != 0) {
 		fprintf(stderr, "Could not bind socket ROBOT!  Did you configure your loopback adapters?\n");
+    perror("bind");
 		return NULL;
 	}
 
@@ -324,8 +332,15 @@ int32_t HAL_SendError(HAL_Bool isError, int32_t errorCode, HAL_Bool isLVCode,
 
 int32_t HAL_GetControlWord(HAL_ControlWord* controlWord) {
   std::memset(controlWord, 0, sizeof(HAL_ControlWord));
-  return FRC_NetworkCommunication_getControlWord(
-      reinterpret_cast<ControlWord_t*>(controlWord));
+  controlWord->enabled = ctl.control.enabled;
+  controlWord->autonomous = ctl.control.autonomous;
+  controlWord->test = ctl.control.test;
+  controlWord->fmsAttached = ctl.control.fmsAttached;
+  controlWord->eStop = !ctl.control.notEStop;
+
+  /*return FRC_NetworkCommunication_getControlWord(
+      reinterpret_cast<ControlWord_t*>(controlWord));*/
+  return 0;
 }
 
 HAL_AllianceStationID HAL_GetAllianceStation(int32_t* status) {
