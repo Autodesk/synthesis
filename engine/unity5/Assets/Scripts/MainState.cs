@@ -349,10 +349,13 @@ public class MainState : SimState
         
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
-        
-        if (Input.GetKey(KeyCode.A))
-            StateMachine.Instance.PushState(new ReplayState());
-        
+
+        if (!beginReset && !resetting)
+        {
+            if (Input.GetKey(KeyCode.A))
+                StateMachine.Instance.PushState(new ReplayState());
+        }
+
         robotCameraObject.transform.position = robotObject.transform.GetChild(0).transform.position;
         robotCameraObject.transform.localPosition = new Vector3(0f, 0f, 0f);
     }
