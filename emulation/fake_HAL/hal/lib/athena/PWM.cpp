@@ -44,8 +44,6 @@ static inline int32_t GetFullRangeScaleFactor(DigitalPort* port) {
   return GetMaxPositivePwm(port) - GetMinNegativePwm(port);
 }  ///< The scale for positions.
 
-
-
 extern "C" {
 
 
