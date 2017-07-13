@@ -1,35 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace RobotImporter.Joints
+using GopherAPI.Other;
+
+namespace GopherAPI.Properties
 {
-   
+    public enum JointType { ROTATIONAL, LINEAR }
     public class Joint
     {
-        public readonly UInt32 ID;
+        public readonly JointType Type;
+        public readonly UInt32 JointID;
 
-        public readonly UInt32 ParentID; 
+        public readonly UInt32 ParentID;
         public readonly UInt32 ChildID;
-        public readonly bool HasJointLimits;
-        //if has Joint Limits
-        public readonly UInt16 Friction;
+
 
         /// <summary>
         /// Rotational Joint: Vector normal to the plane of rotation
         /// Linear Joint: Vector parallel to the plane of movement
         /// Should be an array of 3 floats with indices 0, 1, 2 corresponding to X, Y, and Z respectively. 
         /// </summary>
-        public readonly float[] DefVector;
+        public readonly Vec3 DefVector;
 
         /// <summary>
         /// Rotational Joint: Point relative to the parent part
         /// Linear Joint: Point of connection relative to the parent part
         /// Should be an array of 3 floats with indices 0, 1, 2 corresponding to X, Y, and Z respectively. 
         /// </summary>
-        public readonly float[] RelativePoint;
+        public readonly Vec3 RelativePoint;
 
         /// <summary>
         /// Rotational Joint: Degree of freedom clockwise
@@ -42,21 +43,25 @@ namespace RobotImporter.Joints
         /// </summary>
         public readonly float RetroFreedomFactor;
 
-        public Joint(UInt32 id, UInt32 parentID, UInt32 childID, bool hasJointLimits, UInt16 friction,
-            float[] defVector, float [] relativePoint, float proFreedomFactor, float retroFreedomFactor)
+        public readonly IJointAttribute JointAttribute;
+        
+        public Joint(byte[] GenericData, IJointAttribute jointAttribute)
         {
-            ID = id;
+            using (var Reader = new BinaryReader(new MemoryStream(GenericData)))
+            {
+                JointID = Reader.ReadUInt32();
+                Type = (JointType)Reader.ReadUInt16();
 
+                ParentID = Reader.ReadUInt32();
+                ChildID = Reader.ReadUInt32();
 
-            ParentID = parentID;
-            ChildID = childID;
-            HasJointLimits = hasJointLimits;
-            Friction = friction;
+                DefVector = new Vec3(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
+                RelativePoint = new Vec3(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
 
-            DefVector = defVector;
-            RelativePoint = relativePoint;
-            ProFreedomFactor = proFreedomFactor;
-            RetroFreedomFactor = retroFreedomFactor;
+                ProFreedomFactor = Reader.ReadSingle();
+                RetroFreedomFactor = Reader.ReadSingle();
+            }
+            JointAttribute = jointAttribute;
         }
     }
 }

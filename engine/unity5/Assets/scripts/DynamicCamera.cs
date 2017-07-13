@@ -135,11 +135,14 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         panValue = 0f;
-
+                        
                         if (Input.GetMouseButton(1))
                         {
-                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.1f);
+                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
+                            //Debug.Log(magnification);
+                            Debug.Log(Vector3.Distance(mono.transform.position, robot.transform.position));
                         }
+
                     }
 
                     rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
@@ -270,9 +273,9 @@ public class DynamicCamera : MonoBehaviour
         }
         public override void Update()
         {
-            
+
         }
-        
+
         public override void End()
         {
 
@@ -301,10 +304,10 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            if(target != null && target.transform.childCount > 0)
+            if (target != null && target.transform.childCount > 0)
             {
                 targetPosition = target.transform.GetChild(0).transform.position;
-                
+
             }
             mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
             mono.transform.LookAt(targetPosition);

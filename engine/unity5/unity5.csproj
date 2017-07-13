@@ -219,6 +219,7 @@
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachineEditor.cs" />
     <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
+    <Compile Include="Assets\Scripts\GUI\EditorWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Extensions.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
