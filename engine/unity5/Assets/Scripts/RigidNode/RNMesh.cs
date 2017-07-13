@@ -15,7 +15,7 @@ public partial class RigidNode : RigidNode_Base
 
         if (!mesh.GUID.Equals(GUID))
             return false;
-        MainObject.transform.localScale = new Vector3(-1f, 1f, 1f);
+
         List<GameObject> meshObjects = new List<GameObject>();
         
         AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
@@ -34,10 +34,8 @@ public partial class RigidNode : RigidNode_Base
             
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
-
-            ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
-
             
+            ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
         });
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
@@ -47,18 +45,17 @@ public partial class RigidNode : RigidNode_Base
             colliders[id] = meshu;
         });
 
+
         MainObject.transform.position = root.position + ComOffset;
         MainObject.transform.rotation = root.rotation;
+
 
         foreach (GameObject meshObject in meshObjects)
         {
             meshObject.transform.parent = MainObject.transform;
+
         }
-
-        MainObject.transform.localScale = new Vector3(1f, 1f, 1f);
-
-        //MainObject.AddComponent<BRigidBody>();
-
+        
         if (this.HasDriverMeta<WheelDriverMeta>())
         {
             CreateWheel();
@@ -91,7 +88,6 @@ public partial class RigidNode : RigidNode_Base
         
         if (this.HasDriverMeta<WheelDriverMeta>())
             UpdateWheelMass(); // 'tis a wheel, so needs more mass for joints to work correctly.
-
 
         #region Free mesh
         foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
