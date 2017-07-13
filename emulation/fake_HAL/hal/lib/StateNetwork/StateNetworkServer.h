@@ -22,6 +22,9 @@ public:
 	/// Receives an input packet from the server into the given pointer.
 	/// Returns true if successful
 	bool ReceiveStatePacket(InputStatePacket *pack);
+
+    StateNetworkServer*	HAL_GetStateNetworkServerInstance();
+    
 };
 
 #endif
