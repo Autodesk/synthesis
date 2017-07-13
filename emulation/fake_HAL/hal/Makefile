@@ -33,10 +33,10 @@ SRC_FILES = \
 	lib/athena/Threads.cpp \
 	lib/athena/cpp/priority_mutex.cpp \
 	lib/athena/cpp/SerialHelper.cpp \
+	lib/StateNetwork/StateNetworkServer.cpp \
 	lib/OSAL/Synchronized.cpp \
 	lib/OSAL/System.cpp \
 	lib/OSAL/Task.cpp \
-	lib/crc32.cpp \
 	lib/ChipObject/NiFpga.cpp \
 	lib/ChipObject/NiFpgaState.cpp \
 	lib/ChipObject/NiIRQImpl.cpp \
@@ -56,7 +56,7 @@ SRC_FILES = \
 	lib/ChipObject/tInterruptManager.cpp \
 	lib/ChipObject/tSolenoidImpl.cpp \
 	lib/ChipObject/tSystem.cpp \
-	lib/ChipObject/tWatchcatImpl.cpp \
+	lib/ChipObject/tWatchcatImpl.cpp 
 
 OBJ_FILES = $(SRC_FILES:.cpp=.o)
 OUT = build/libHALAthena.so

@@ -83,3 +83,10 @@ bool StateNetworkServer::ReceiveStatePacket(InputStatePacket *pack) {
 	}
 	return flag;
 }
+
+StateNetworkServer* StateNetworkServer::HAL_GetStateNetworkServerInstance() {
+
+	static StateNetworkServer* SNSInstance = new StateNetworkServer();
+	return SNSInstance;
+
+}
