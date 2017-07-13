@@ -190,23 +190,12 @@ class FileBrowser : OverlayWindow
         {
             string entry = stringify != null ? stringify(o) : o.ToString();;
 
-
-            if (highlight != null && highlight.Equals(entry))
-            {
-                Debug.Log(entry);
-                if (GUILayout.Button(entry, highlightStyle))
-                {
-                    selected = o;
-                    tempSelection = o as DirectoryInfo;
-                }
-            }
             if(tempSelection != null && entry.Equals(tempSelection.Name))
             {
                 if (GUILayout.Button(entry, highlightStyle))
                 {
                     selected = o;
                     tempSelection = o as DirectoryInfo;
-
                 }
             }
             else if (GUILayout.Button(entry, listStyle))
@@ -255,6 +244,7 @@ class FileBrowser : OverlayWindow
             directoryInfo = directoryInfo.Parent;
             directoryLocation = directoryInfo.FullName;
             selectedDirectoryLocation = directoryInfo.FullName;
+            tempSelection = null;
         }
 
         // Handle the directories list
@@ -291,6 +281,8 @@ class FileBrowser : OverlayWindow
                     // If a directory was double clicked, jump there
                     directoryLocation = directorySelection.FullName;
                 }
+
+                tempSelection = null;
             }
 
             else
