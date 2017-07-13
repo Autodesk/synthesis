@@ -19,7 +19,8 @@
 #include "OSAL/WaitSemaphore.h"
 #include "OSAL/OSAL.h"
 
-#define EXPORT_FUNC __declspec(dllexport) extern
+//#define EXPORT_FUNC __declspec(dllexport) extern
+#define EXPORT_FUNC
 
 // Commandeer some bytes at the end for advanced I/O feedback.
 #define IO_CONFIG_DATA_SIZE 32
