@@ -32,8 +32,8 @@ public class MainState : SimState
     //Testing camera location, can be deleted later
 
     //=================================IN PROGRESS=============================
-    private UltraSensor ultraSensor;
-    private GameObject ultraSensorObject;
+    //private UltraSensor ultraSensor;
+    //private GameObject ultraSensorObject;
     //=========================================================================
 
     private GameObject fieldObject;
@@ -306,7 +306,7 @@ public class MainState : SimState
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
-        Debug.Log(ultraSensor.ReturnOutput());
+        //Debug.Log(ultraSensor.ReturnOutput());
     }
 
     public override void FixedUpdate()
@@ -415,8 +415,8 @@ public class MainState : SimState
         }
 
         //For Ultrasonic testing purposes
-        ultraSensorObject = GameObject.Find("node_0.bxda");
-        ultraSensor = ultraSensorObject.AddComponent<UltraSensor>();
+        //ultraSensorObject = GameObject.Find("node_0.bxda");
+        //ultraSensor = ultraSensorObject.AddComponent<UltraSensor>();
 
         //Robot camera feature
         robotCameraObject = GameObject.Find("RobotCameraList");
