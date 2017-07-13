@@ -6,7 +6,6 @@ public class RobotCamera : MonoBehaviour
     private List<GameObject> robotCameraList = new List<GameObject>();
     public GameObject CurrentCamera { get; set; }
     
-
     public void SwitchCamera(GameObject robotCamera)
     {
         CurrentCamera.SetActive(false);
