@@ -37,6 +37,11 @@ SRC_FILES = \
 	lib/OSAL/Synchronized.cpp \
 	lib/OSAL/System.cpp \
 	lib/OSAL/Task.cpp \
+	lib/crc32.cpp \
+	lib/ErrorBase.cpp \
+	lib/Error.cpp \
+	lib/Timer.cpp \
+	lib/Utility.cpp \
 	lib/ChipObject/NiFpga.cpp \
 	lib/ChipObject/NiFpgaState.cpp \
 	lib/ChipObject/NiIRQImpl.cpp \
