@@ -94,6 +94,10 @@ class FileBrowser : OverlayWindow
 	/// Custom GUIStyle for labels.
 	/// </summary>s
 	private GUIStyle fileBrowserLabel;
+    /// <summary>
+    /// Custom GUIStyle for path labels.
+    /// </summary>
+    private GUIStyle pathLabel;
 
     /// <summary>
     /// Custom GUIStyle for highlight feature
@@ -167,6 +171,11 @@ class FileBrowser : OverlayWindow
         //Custom style for labels
         fileBrowserLabel = new GUIStyle(GUI.skin.label);
         fileBrowserLabel.font = russoOne;
+
+        //Custom style for path labels (smaller font size than  fileBrowserLabel
+        pathLabel = new GUIStyle(GUI.skin.label);
+        pathLabel.font = russoOne;
+        pathLabel.fontSize = 12;
 
         //Custom style for description text
         descriptionStyle = new GUIStyle(GUI.skin.label);
@@ -311,16 +320,17 @@ class FileBrowser : OverlayWindow
 
         if (twoClicks)
         {
+            //If the file path is greater than labelLen, then it will replace part of the path name with "..."
             GUILayout.Label(directoryLocation.Length > labelLen ?
                         directoryLocation.Substring(0, 5) + "..." + directoryLocation.Substring(directoryLocation.Length - labelLen + 8) :
-                        directoryLocation, fileBrowserLabel);
+                        directoryLocation, pathLabel);
         }
         else
         {
             GUILayout.Label(selectedDirectoryLocation.Length > labelLen ?
                             selectedDirectoryLocation.Substring(0, 5) + "..." +
                             selectedDirectoryLocation.Substring(selectedDirectoryLocation.Length - labelLen + 8) :
-                            selectedDirectoryLocation, fileBrowserLabel);
+                            selectedDirectoryLocation, pathLabel);
         }
 
         if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))

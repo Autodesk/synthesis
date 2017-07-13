@@ -17,8 +17,7 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -242,6 +241,8 @@
     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
     <Compile Include="Assets\Scripts\RobotCamera.cs" />
+    <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
+    <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
     <Compile Include="Assets\Scripts\Settings\Controls.cs" />
     <Compile Include="Assets\Scripts\Settings\Serializer.cs" />
     <Compile Include="Assets\Scripts\Settings\Settings.cs" />

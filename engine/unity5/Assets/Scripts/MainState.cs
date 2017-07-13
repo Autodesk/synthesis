@@ -31,6 +31,11 @@ public class MainState : SimState
     private Vector3 robotCameraRotation3 = new Vector3(0f, 45f, 0f);
     //Testing camera location, can be deleted later
 
+    //=================================IN PROGRESS=============================
+    private UltraSensor ultraSensor;
+    private GameObject ultraSensorObject;
+    //=========================================================================
+
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
 
@@ -301,6 +306,7 @@ public class MainState : SimState
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
+        Debug.Log(ultraSensor.ReturnOutput());
     }
 
     public override void FixedUpdate()
@@ -408,6 +414,9 @@ public class MainState : SimState
             Debug.Log(t);
         }
 
+        //For Ultrasonic testing purposes
+        ultraSensorObject = GameObject.Find("node_0.bxda");
+        ultraSensor = ultraSensorObject.AddComponent<UltraSensor>();
 
         //Robot camera feature
         robotCameraObject = GameObject.Find("RobotCameraList");
