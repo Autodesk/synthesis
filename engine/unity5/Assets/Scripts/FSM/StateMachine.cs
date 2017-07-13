@@ -11,6 +11,8 @@ namespace Assets.Scripts.FSM
     {
         private Stack<SimState> activeStates;
         private SimState currentState;
+
+        private MainState mainState;
         
         public static StateMachine Instance
         {
@@ -76,6 +78,7 @@ namespace Assets.Scripts.FSM
             }
 
             SimState defaultState = Activator.CreateInstance(defaultStateType) as SimState;
+            mainState = (MainState)defaultState;
 
             if (defaultState == null)
                 Debug.LogError("\"" + defaultStateName + "\" does not extend SimState!");
@@ -107,6 +110,11 @@ namespace Assets.Scripts.FSM
         {
             if (currentState != null)
                 currentState.Awake();
+        }
+
+        public MainState GetMainState()
+        {
+            return mainState;
         }
     }
 }

@@ -12,18 +12,20 @@ using Assets.Scripts.FSM;
 
 public class MainState : SimState
 {
+    private SimulatorUI simUI;
+
     const float RESET_VELOCITY = 0.05f;
 
     private UnityPacket unityPacket;
 
     private DynamicCamera dynamicCamera;
-    
+
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
 
     private GameObject robotObject;
     private RigidNode_Base rootNode;
-    
+
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
@@ -72,6 +74,8 @@ public class MainState : SimState
             menuButton.font = russoOne;
             menuButton.normal.background = buttonTexture;
             menuButton.hover.background = buttonSelected;
+            
+            
             menuButton.active.background = buttonSelected;
             menuButton.onNormal.background = buttonSelected;
             menuButton.onHover.background = buttonSelected;
@@ -96,7 +100,7 @@ public class MainState : SimState
                     switch ((int)o)
                     {
                         case 0:
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));            
+                            dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
                             break;
                         case 1:
                             dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
@@ -135,7 +139,7 @@ public class MainState : SimState
             "",
             menuWindow
         );
-        
+
         gui.Render();
     }
 
@@ -210,10 +214,10 @@ public class MainState : SimState
         dynamicCamera.DisableMoving();
     }
 
-    public override void Start()
+    public override void Start() 
     {
         FixedQueue<int> queue = new FixedQueue<int>(100);
-
+        
         for (int i = 0; i < 150; i++)
             queue.Add(i);
 
@@ -225,11 +229,11 @@ public class MainState : SimState
 
         Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
         Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
-        
+
         dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
 
         extraElements = new List<GameObject>();
-        
+
         random = new System.Random();
 
         buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
@@ -248,7 +252,7 @@ public class MainState : SimState
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
-	}
+    }
 
     public override void FixedUpdate()
     {
@@ -328,7 +332,7 @@ public class MainState : SimState
         {
             RigidNode node = (RigidNode)n;
             node.CreateTransform(robotObject.transform);
-            
+
             if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
             {
                 Debug.Log("Robot not loaded!");
@@ -347,7 +351,7 @@ public class MainState : SimState
         return true;
     }
 
-    void BeginReset(bool resetTransform = true)
+    public void BeginReset(bool resetTransform = true)
     {
         resetting = true;
 
@@ -375,7 +379,7 @@ public class MainState : SimState
         RotateRobot(robotStartOrientation);
     }
 
-    void EndReset()
+    public void EndReset()
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -433,4 +437,13 @@ public class MainState : SimState
     {
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
     }
+
+    #region button functions
+
+    public void loadFile(BXDAMesh mesh)
+    {
+    
+    }
+
+#endregion
 }

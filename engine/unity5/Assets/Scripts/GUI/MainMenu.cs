@@ -338,7 +338,7 @@ public class MainMenu : MonoBehaviour {
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
-            Application.LoadLevel("Scene");
+            Application.LoadLevel("Scene(WithUIToolbar)");
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
