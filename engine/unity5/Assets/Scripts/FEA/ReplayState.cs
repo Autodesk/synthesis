@@ -205,50 +205,11 @@ namespace Assets.Scripts.FEA
                 }
             };
 
-            rewindStyle = new GUIStyle
-            {
-                fixedWidth = ButtonSize,
-                fixedHeight = ButtonSize,
-                normal = new GUIStyleState { background = rewindTexture },
-                hover = new GUIStyleState { background = rewindHoverTexture },
-                active = new GUIStyleState { background = rewindPressedTexture }
-            };
-
-            stopStyle = new GUIStyle
-            {
-                fixedWidth = ButtonSize,
-                fixedHeight = ButtonSize,
-                normal = new GUIStyleState { background = stopTexture },
-                hover = new GUIStyleState { background = stopHoverTexture },
-                active = new GUIStyleState { background = stopPressedTexture }
-            };
-
-            playStyle = new GUIStyle
-            {
-                fixedWidth = ButtonSize,
-                fixedHeight = ButtonSize,
-                normal = new GUIStyleState { background = playTexture },
-                hover = new GUIStyleState { background = playHoverTexture },
-                active = new GUIStyleState { background = playPressedTexture }
-            };
-
-            collisionStyle = new GUIStyle
-            {
-                fixedWidth = ButtonSize,
-                fixedHeight = ButtonSize,
-                normal = new GUIStyleState { background = collisionTexture },
-                hover = new GUIStyleState { background = collisionHoverTexture },
-                active = new GUIStyleState { background = collisionPressedTexture }
-            };
-
-            consolidateStyle = new GUIStyle
-            {
-                fixedWidth = ButtonSize,
-                fixedHeight = ButtonSize,
-                normal = new GUIStyleState { background = consolidateTexture },
-                hover = new GUIStyleState { background = consolidateHoverTexture },
-                active = new GUIStyleState { background = consolidatePressedTexture }
-            };
+            rewindStyle = CreateButtonStyle("rewind");
+            stopStyle = CreateButtonStyle("stop");
+            playStyle = CreateButtonStyle("play");
+            collisionStyle = CreateButtonStyle("collision");
+            consolidateStyle = CreateButtonStyle("consolidate");
         }
 
         /// <summary>
@@ -626,6 +587,27 @@ namespace Assets.Scripts.FEA
             }
 
             return nextContact;
+        }
+
+        /// <summary>
+        /// Creates a button from the given texture name.
+        /// </summary>
+        /// <param name="textureName"></param>
+        /// <returns></returns>
+        private GUIStyle CreateButtonStyle(string textureName)
+        {
+            Texture2D normalTexture = (Texture2D)Resources.Load("Images/" + textureName);
+            Texture2D hoverTexture = (Texture2D)Resources.Load("Images/" + textureName + "Hover");
+            Texture2D pressedTexture = (Texture2D)Resources.Load("Images/" + textureName + "Pressed");
+
+            return new GUIStyle
+            {
+                fixedWidth = ButtonSize,
+                fixedHeight = ButtonSize,
+                normal = new GUIStyleState { background = normalTexture },
+                hover = new GUIStyleState { background = hoverTexture },
+                active = new GUIStyleState { background = pressedTexture }
+            };
         }
     }
 }
