@@ -28,7 +28,7 @@ public class MainState : SimState
     private Vector3 robotCameraPosition2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraRotation2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraPosition3 = new Vector3(0f, 0.5f, 0f);
-    private Vector3 robotCameraRotation3 = new Vector3(0f, 45f, 0f);
+    private Vector3 robotCameraRotation3 = new Vector3(0f, 90f, 0f);
     //Testing camera location, can be deleted later
 
     //=================================IN PROGRESS=============================
@@ -48,7 +48,7 @@ public class MainState : SimState
 
     //A flag to indicate whether the prereset transform is recorded (used to find the related transform)
     private bool preResetTransformSet = false;
-    
+
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
     private List<GameObject> extraElements;
@@ -120,9 +120,9 @@ public class MainState : SimState
                         preResetTransformSet = false;
                         BeginReset();
                         break;
-                    
+
                 }
-                
+
             });
 
             CreateOrientWindow();
@@ -131,7 +131,7 @@ public class MainState : SimState
             gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Robot view"), (object o) =>
                 {
                     HideGUI();
-                    
+
                     switch ((int)o)
                     {
                         case 0:
@@ -157,7 +157,7 @@ public class MainState : SimState
                     }
                 });
 
-            
+
             gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
                 {
                     if ((int)o == 0)
@@ -307,7 +307,41 @@ public class MainState : SimState
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
+
+
+        // Will switch the camera state with the camera toggle button
+        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+        {
+            if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
+            {
+                //Switch to robot camera after Freeroam (make sure robot camera exists first)
+                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState))
+                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+                {
+                    ToRobotCamera();
+                }
+
+                //Toggle afterwards and will not activate dynamic camera
+                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
+
+            }
+            else if (robotCameraObject.activeSelf)
+            {
+                //Switch to dynamic camera after the last camera
+                if (robotCamera.IsLastCamera())
+                {
+                    //Need to toggle before switching to dynamic because toggling will activate current camera
+                    robotCamera.ToggleCamera();
+                    ToDynamicCamera();
+                }
+                else
+                {
+                    robotCamera.ToggleCamera();
+                }
+            }
+        }
     }
+
 
     public override void FixedUpdate()
     {
@@ -322,7 +356,7 @@ public class MainState : SimState
         }
 
         BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
-        
+
         //Reset key only toggles the state to begin reset
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !resetting)
         {
@@ -336,7 +370,7 @@ public class MainState : SimState
                 UnityEngine.Object.Destroy(g);
 
             BeginReset();
-            
+
         }
         //End reset when user hit enter key
         else if (oWindow != null && !oWindow.Active && resetting && !beginReset && Input.GetKey(KeyCode.Return))
@@ -352,7 +386,7 @@ public class MainState : SimState
         {
             Resetting();
         }
-        
+
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
 
@@ -391,7 +425,7 @@ public class MainState : SimState
         {
             return new RigidNode(guid);
         };
-        
+
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
         //Read .robot instead. Maybe need a RobotSkeleton class
         rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
@@ -428,9 +462,11 @@ public class MainState : SimState
         //The camera data should be read here as a foreach loop and included in robot file
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
         robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
+        robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
+
         robotCameraObject.SetActive(false);
-        
-        
+
+
         RotateRobot(robotStartOrientation);
 
         return true;
@@ -461,9 +497,9 @@ public class MainState : SimState
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
             r.WorldTransform = newTransform;
         }
-        
+
         RotateRobot(robotStartOrientation);
-        
+
     }
 
     void Resetting()
@@ -557,7 +593,7 @@ public class MainState : SimState
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
     }
 
-    
+
     //Helper methods to avoid conflicts between main camera and robot cameras
     void ToDynamicCamera()
     {

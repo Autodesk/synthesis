@@ -17,7 +17,7 @@ public partial class RigidNode : RigidNode_Base
             return false;
 
         List<GameObject> meshObjects = new List<GameObject>();
-
+        
         AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             GameObject meshObject = new GameObject(MainObject.name + "_mesh");
@@ -31,12 +31,11 @@ public partial class RigidNode : RigidNode_Base
                 materials[i] = sub.surfaces[i].AsMaterial();
 
             meshObject.GetComponent<MeshRenderer>().materials = materials;
-
+            
             meshObject.transform.position = root.position;
             meshObject.transform.rotation = root.rotation;
-
+            
             ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
-
         });
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
@@ -46,14 +45,17 @@ public partial class RigidNode : RigidNode_Base
             colliders[id] = meshu;
         });
 
+
         MainObject.transform.position = root.position + ComOffset;
         MainObject.transform.rotation = root.rotation;
 
+
         foreach (GameObject meshObject in meshObjects)
+        {
             meshObject.transform.parent = MainObject.transform;
 
-        //MainObject.AddComponent<BRigidBody>();
-
+        }
+        
         if (this.HasDriverMeta<WheelDriverMeta>())
         {
             CreateWheel();
