@@ -7,7 +7,7 @@ public class DynamicCamera : MonoBehaviour
     /// <summary>
     /// The scrolling enabled.
     /// </summary>
-    private static bool movingEnabled = true;
+    public static bool MovingEnabled { get; set; }
 
     /// <summary>
     /// The state of the camera.
@@ -122,11 +122,10 @@ public class DynamicCamera : MonoBehaviour
         {
             if (robot != null && robot.transform.childCount > 0)
             {
-                if (movingEnabled)
+                targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
+
+                if (MovingEnabled)
                 {
-                    targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
-
-
                     if (Input.GetMouseButton(0))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
@@ -139,20 +138,19 @@ public class DynamicCamera : MonoBehaviour
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
-                            //Debug.Log(magnification);
-                            Debug.Log(Vector3.Distance(mono.transform.position, robot.transform.position));
+                            
                         }
 
                     }
-
-                    rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
-                    rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
-
-                    lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
-
-                    mono.transform.position = lagVector;
-                    mono.transform.LookAt(targetVector);
                 }
+
+                rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
+                rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+
+                lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+
+                mono.transform.position = lagVector;
+                mono.transform.LookAt(targetVector);
             }
             else
             {
@@ -211,7 +209,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Update()
         {
-            if (movingEnabled)
+            if (MovingEnabled)
             {
                 if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
                 {
@@ -325,17 +323,18 @@ public class DynamicCamera : MonoBehaviour
 
     void LateUpdate()
     {
-        if (movingEnabled)
-        {
-            // Will switch the camera state with the camera toggle button
-            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
-            {
-                if (cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
-                else if (cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
-                else if (cameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
-            }
-        }
+        if (_cameraState != null) _cameraState.Update();
+    }
 
+    /// <summary>
+    /// Switch to the next camera state
+    /// </summary>
+    /// <param name="currentCameraState"></param>
+    public void ToggleCameraState(CameraState currentCameraState)
+    {
+        if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
+        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
         if (_cameraState != null) _cameraState.Update();
     }
 
@@ -350,23 +349,6 @@ public class DynamicCamera : MonoBehaviour
         _cameraState.Init();
     }
 
-    /// <summary>
-    /// Enables the scrolling.
-    /// </summary>
-    public void EnableMoving()
-    {
-        movingEnabled = true;
-    }
-
-    /// <summary>
-    /// Disables the scrolling.
-    /// </summary>
-    public void DisableMoving()
-    {
-        movingEnabled = false;
-    }
-
-    /// <summary>
     /// Calculates the appropriate lag vector from the given current vector, target vector, and responsiveness constant.
     /// </summary>
     /// <param name="lagVector"></param>

@@ -94,6 +94,10 @@ class FileBrowser : OverlayWindow
 	/// Custom GUIStyle for labels.
 	/// </summary>s
 	private GUIStyle fileBrowserLabel;
+    /// <summary>
+    /// Custom GUIStyle for path labels.
+    /// </summary>
+    private GUIStyle pathLabel;
 
     /// <summary>
     /// Custom GUIStyle for highlight feature
@@ -168,6 +172,11 @@ class FileBrowser : OverlayWindow
         fileBrowserLabel = new GUIStyle(GUI.skin.label);
         fileBrowserLabel.font = russoOne;
 
+        //Custom style for path labels (smaller font size than  fileBrowserLabel
+        pathLabel = new GUIStyle(GUI.skin.label);
+        pathLabel.font = russoOne;
+        pathLabel.fontSize = 12;
+
         //Custom style for description text
         descriptionStyle = new GUIStyle(GUI.skin.label);
         descriptionStyle.font = Resources.GetBuiltinResource<Font>("Arial.ttf") as Font;
@@ -190,23 +199,12 @@ class FileBrowser : OverlayWindow
         {
             string entry = stringify != null ? stringify(o) : o.ToString();;
 
-
-            if (highlight != null && highlight.Equals(entry))
-            {
-                Debug.Log(entry);
-                if (GUILayout.Button(entry, highlightStyle))
-                {
-                    selected = o;
-                    tempSelection = o as DirectoryInfo;
-                }
-            }
             if(tempSelection != null && entry.Equals(tempSelection.Name))
             {
                 if (GUILayout.Button(entry, highlightStyle))
                 {
                     selected = o;
                     tempSelection = o as DirectoryInfo;
-
                 }
             }
             else if (GUILayout.Button(entry, listStyle))
@@ -255,6 +253,7 @@ class FileBrowser : OverlayWindow
             directoryInfo = directoryInfo.Parent;
             directoryLocation = directoryInfo.FullName;
             selectedDirectoryLocation = directoryInfo.FullName;
+            tempSelection = null;
         }
 
         // Handle the directories list
@@ -291,6 +290,8 @@ class FileBrowser : OverlayWindow
                     // If a directory was double clicked, jump there
                     directoryLocation = directorySelection.FullName;
                 }
+
+                tempSelection = null;
             }
 
             else
@@ -319,16 +320,17 @@ class FileBrowser : OverlayWindow
 
         if (twoClicks)
         {
+            //If the file path is greater than labelLen, then it will replace part of the path name with "..."
             GUILayout.Label(directoryLocation.Length > labelLen ?
                         directoryLocation.Substring(0, 5) + "..." + directoryLocation.Substring(directoryLocation.Length - labelLen + 8) :
-                        directoryLocation, fileBrowserLabel);
+                        directoryLocation, pathLabel);
         }
         else
         {
             GUILayout.Label(selectedDirectoryLocation.Length > labelLen ?
                             selectedDirectoryLocation.Substring(0, 5) + "..." +
                             selectedDirectoryLocation.Substring(selectedDirectoryLocation.Length - labelLen + 8) :
-                            selectedDirectoryLocation, fileBrowserLabel);
+                            selectedDirectoryLocation, pathLabel);
         }
 
         if (GUILayout.Button("Select", fileBrowserButton, GUILayout.Width(68)))
