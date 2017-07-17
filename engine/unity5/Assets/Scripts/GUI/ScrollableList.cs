@@ -106,11 +106,7 @@ public class ScrollableList : MonoBehaviour {
 
         GUILayout.EndScrollView();
         GUILayout.EndArea();
-
-        
-
     }
-
 
     private object SelectList<T>(IEnumerable<T> items, string highlight, GUIStyle buttonStyle)
     {

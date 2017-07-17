@@ -1,4 +1,5 @@
-﻿using BulletSharp;
+﻿using Assets.Scripts.FSM;
+using BulletSharp;
 using BulletUnity;
 using System;
 using System.Collections.Generic;
@@ -10,35 +11,30 @@ namespace Assets.Scripts.FEA
 {
     public class Tracker : MonoBehaviour
     {
+        private const float fixedTimeStep = 1f / 60f;
+
+        private BPhysicsWorld physicsWorld;
         private RigidBody rigidBody;
 
-        private FixedQueue<StateDescriptor> statesQueue;
+        /// <summary>
+        /// The collection of states stored by the Tracker.
+        /// </summary>
+        public FixedQueue<StateDescriptor> States { get; private set; }
 
         /// <summary>
         /// The number of seconds the tracker keeps any given state.
         /// </summary>
-        public const float Lifetime = 3.0f;
+        public const float Lifetime = 3f;
 
         /// <summary>
-        /// If true, the Tracker will actively track its parent.
+        /// The number of states in the queue.
         /// </summary>
-        public bool Tracking { get; set; }
+        public const int Length = (int)(Lifetime / fixedTimeStep);
 
         /// <summary>
         /// If true, lines will be drawn showing the history of the parent's motion.
         /// </summary>
         public bool Trace { get; set; }
-
-        /// <summary>
-        /// Returns the number of states in the queue.
-        /// </summary>
-        public static int Length
-        {
-            get
-            {
-                return (int)(Lifetime / Time.fixedDeltaTime);
-            }
-        }
 
         /// <summary>
         /// Returns a StateDescriptor based on the current frame.
@@ -58,38 +54,19 @@ namespace Assets.Scripts.FEA
         }
 
         /// <summary>
-        /// Returns the StateDescriptor at the given index.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public StateDescriptor GetState(int index)
-        {
-            return statesQueue[index];
-        }
-
-        /// <summary>
-        /// Removes any information in the states queue until the given index.
-        /// </summary>
-        /// <param name="index"></param>
-        public void PopTo(int index)
-        {
-            StateDescriptor[] oldDescriptions = new StateDescriptor[Length - index];
-
-            for (int i = 0; i < oldDescriptions.Length; i++)
-                oldDescriptions[i] = statesQueue[statesQueue.Length - 1 - i];
-
-            statesQueue.Clear(oldDescriptions[0]);
-
-            for (int i = 0; i < oldDescriptions.Length; i++)
-                statesQueue.Add(oldDescriptions[i]);
-        }
-
-        /// <summary>
         /// Clears all saved states with the current state.
         /// </summary>
         public void Clear()
         {
-            statesQueue.Clear(State);
+            States.Clear(State);
+        }
+
+        /// <summary>
+        /// Adds the current state to the states queue.
+        /// </summary>
+        public void AddState()
+        {
+            States.Add(State);
         }
 
         /// <summary>
@@ -97,37 +74,17 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void Start()
         {
-            Tracking = true;
-
+            physicsWorld = BPhysicsWorld.Get();
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();
-            statesQueue = new FixedQueue<StateDescriptor>(Length, State);
-        }
 
-        /// <summary>
-        /// Adds the current state to the states queue.
-        /// </summary>
-        void FixedUpdate()
-        {
-            if (Tracking)
-                statesQueue.Add(State);
+            States = new FixedQueue<StateDescriptor>(Length, State);
 
-            if (!Trace)
-                return;
+            MainState mainState = StateMachine.Instance.CurrentState as MainState;
 
-            Vector3 lastPoint = Vector3.zero;
-            int i = 0;
-
-            foreach (StateDescriptor state in statesQueue)
-            {
-                if (lastPoint != Vector3.zero)
-                {
-                    float age = (float)i / statesQueue.Length;
-                    Debug.DrawLine(lastPoint, state.Position.ToUnity(), new Color(1.0f, age * 0.5f, 0.0f, 1.0f - age * 0.5f));
-                }
-
-                lastPoint = state.Position.ToUnity();
-                i++;
-            }
+            if (mainState != null)
+                mainState.Trackers.Add(this);
+            else
+                Destroy(this);
         }
     }
 }

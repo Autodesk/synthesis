@@ -19,7 +19,7 @@ namespace Assets.Scripts.FSM
             DrawDefaultInspector();
 
             StateMachine machine = (StateMachine)target;
-            
+
             defaultStateName = EditorGUILayout.TextField("Default State Name", defaultStateName ??
                 (EditorPrefs.HasKey(DefaultStateNameKey) ? EditorPrefs.GetString(DefaultStateNameKey) : string.Empty));
 
