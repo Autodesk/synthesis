@@ -211,15 +211,18 @@ int FRCNetImpl::runThread() {
 	SOCKET robotSocket;
 	SOCKET dsSocket;
 
+    //get's the IP address in the form 10.xx.xx.0
 	uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
 	fprintf(stderr, "Team number: %i\n", teamID);
 	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
 
 	robotAddress.sin_family = AF_INET;
+    //10.xx.xx.2
 	robotAddress.sin_addr.s_addr = htonl(network | 2);
 	robotAddress.sin_port = htons( 1110 );
 
 	dsAddress.sin_family = AF_INET;
+    //10.xx.xx.5
 	dsAddress.sin_addr.s_addr = htonl(network | 5);
 	dsAddress.sin_port = htons( 1150 );
 

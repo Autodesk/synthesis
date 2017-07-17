@@ -31,7 +31,7 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2017\Bin\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDRobotExporter\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -176,6 +176,11 @@
     <Content Include="Images\SelectJointInsideJoint32.bmp" />
     <Content Include="Images\StartRobotExporter16.bmp" />
     <Content Include="Images\StartRobotExporter32.bmp" />
+    <None Include="Resources\TTExportRobot.png" />
+    <None Include="Resources\TTEditLimits.png" />
+    <None Include="Resources\TTLimitsDropdown.png" />
+    <None Include="Resources\TTEditDrivers.png" />
+    <None Include="Resources\TTDriverDropdown.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
