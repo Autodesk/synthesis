@@ -351,7 +351,6 @@ public class MainState : SimState
                 }
             }
         }
-
         UpdateTrackers();
     }
 
@@ -649,9 +648,9 @@ public class MainState : SimState
 
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
-
+            
         contactPoints.Clear(null);
-
+        
         resetting = false;
     }
 
