@@ -28,7 +28,7 @@ public partial class RigidNode : RigidNode_Base
 
             Material[] materials = new Material[meshu.subMeshCount];
             for (int i = 0; i < materials.Length; i++)
-                materials[i] = sub.surfaces[i].AsMaterial();
+                materials[i] = sub.surfaces[i].AsMaterial(true);
 
             meshObject.GetComponent<MeshRenderer>().materials = materials;
             
@@ -49,13 +49,9 @@ public partial class RigidNode : RigidNode_Base
         MainObject.transform.position = root.position + ComOffset;
         MainObject.transform.rotation = root.rotation;
 
-
         foreach (GameObject meshObject in meshObjects)
-        {
             meshObject.transform.parent = MainObject.transform;
 
-        }
-        
         if (this.HasDriverMeta<WheelDriverMeta>())
         {
             CreateWheel();
