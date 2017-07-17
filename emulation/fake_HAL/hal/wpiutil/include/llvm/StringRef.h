@@ -20,6 +20,9 @@
 #include <string>
 #include <utility>
 
+#undef min
+#undef max
+
 namespace llvm {
   template <typename T>
   class SmallVectorImpl;

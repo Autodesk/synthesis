@@ -1,5 +1,5 @@
-CC = /frc/bin/arm-frc-linux-gnueabi-g++.exe
-CCFLAGS = -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -Ilib -std=c++11 -Wpedantic
+CC = cl#/frc/bin/arm-frc-linux-gnueabi-g++.exe
+CCFLAGS = -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -Ilib -std=c++11
 
 SRC_FILES = \
 	lib/athena/Accelerometer.cpp \

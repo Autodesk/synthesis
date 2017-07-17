@@ -13,7 +13,7 @@
 #include "PortsInternal.h"
 
 namespace hal {
-std::unique_ptr<PCM> PCM_modules[kNumPCMModules];
+//std::unique_ptr<PCM> PCM_modules[kNumPCMModules];
 
 void initializePCM(int32_t module, int32_t* status) {
   /*if (!HAL_CheckSolenoidModule(module)) {

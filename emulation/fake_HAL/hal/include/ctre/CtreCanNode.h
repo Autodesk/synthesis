@@ -4,6 +4,7 @@
 #include <map>
 #include <string.h> // memcpy
 #include <sys/time.h>
+
 class CtreCanNode
 {
 public:
@@ -15,7 +16,6 @@ public:
 		return _deviceNumber;
 	}
 protected:
-
 
 	template <typename T> class txTask{
 		public:

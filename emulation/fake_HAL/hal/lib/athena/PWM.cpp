@@ -10,7 +10,6 @@
 #include <cmath>
 #include <thread>
 #include <chrono>
-#include <pthread.h>
 #include "ConstantsInternal.h"
 #include "DigitalInternal.h"
 #include "HAL/handles/HandlesInternal.h"
@@ -216,6 +215,7 @@ extern "C" {
 			*status = HAL_HANDLE_ERROR;
 			return;
 		}
+		pwmValues[port->channel] = value / 255.0;
 
 		/*if (port->channel < tPWM::kNumHdrRegisters) {
 		  pwmSystem->writeHdr(port->channel, value, status);
@@ -281,9 +281,8 @@ extern "C" {
 			return;
 		}
 		HAL_StartUnityThread();
-		pwmValues[port->channel] = speed;
 
-		//HAL_SetPWMRaw(pwmPortHandle, rawValue, status);
+		HAL_SetPWMRaw(pwmPortHandle, rawValue, status);
 	}
 
 	/**
@@ -470,13 +469,12 @@ extern "C" {
 		return 0;
 	}
 
-	void* StateNetworkThread(void* param) {
+	void StateNetworkThread() {
 		StateNetworkServer stateNetwork;
 		stateNetwork.Open();
 
 		OutputStatePacket packet;
 		while (true) {
-			printf("%d %d\n", pwmValues[0], pwmValues[1]);
 			std::copy(pwmValues, pwmValues + 10, packet.dio[0].pwmValues);
 			stateNetwork.SendStatePacket(packet);
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
@@ -487,11 +485,10 @@ extern "C" {
 
 	bool threadStarted = false;
 	void HAL_StartUnityThread() {
-		pthread_t thread;
 		if (threadStarted == true) {
 			return;
 		}
-		pthread_create(&thread, NULL, StateNetworkThread, NULL);
+    std::thread(StateNetworkThread).detach();
 		threadStarted = true;
 	}
 }

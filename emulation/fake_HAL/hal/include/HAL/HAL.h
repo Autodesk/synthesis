@@ -37,6 +37,9 @@
 
 #endif  // HAL_USE_LABVIEW
 
+#undef max
+#undef min
+
 #include "FRC_NetworkCommunication/UsageReporting.h"
 #include "HAL/Types.h"
 

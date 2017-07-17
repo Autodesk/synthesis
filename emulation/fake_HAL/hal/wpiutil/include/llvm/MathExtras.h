@@ -27,6 +27,9 @@
 #include <intrin.h>
 #endif
 
+#undef min
+#undef max
+
 namespace llvm {
 /// \brief The behavior an operation has on an input of 0.
 enum ZeroBehavior {

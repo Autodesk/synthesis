@@ -7,10 +7,9 @@
 
 #include "HAL/HAL.h"
 
-#include <signal.h>  // linux for kill
-#include <sys/prctl.h>
-#include <unistd.h>
-#include <sys/time.h>
+//#include <signal.h>  // linux for kill
+//#include <unistd.h>
+//#include <sys/time.h>
 
 #include <atomic>
 #include <cstdlib>
@@ -30,6 +29,8 @@
 #include "HAL/handles/HandlesInternal.h"
 #include "ctre/ctre.h"
 #include "visa/visa.h"
+
+#include <chrono>
 
 using namespace hal;
 
@@ -241,9 +242,10 @@ uint64_t HAL_GetFPGATime(int32_t* status) {
          static_cast<uint64_t>(fpgaTime);
   */
   *status = 0;
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  tv.tv_sec  *(uint64_t)10000000 + tv.tv_usec;
+  //struct timeval tv;
+  //gettimeofday(&tv, NULL);
+  //tv.tv_sec  *(uint64_t)10000000 + tv.tv_usec;
+  return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 /**
@@ -319,7 +321,14 @@ void HAL_BaseInitialize(int32_t* status) {
  * Call this to start up HAL. This is required for robot programs.
  */
 int32_t HAL_Initialize(int32_t mode) {
-  setlinebuf(stdin);
+  WSADATA wsaData;
+  int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+  if (iResult != 0) {
+	printf("WSAStartup failed: %d\n", iResult);
+	return 1;
+  }
+
+  /*setlinebuf(stdin);
   setlinebuf(stdout);
 
   prctl(PR_SET_PDEATHSIG, SIGTERM);
@@ -334,7 +343,6 @@ int32_t HAL_Initialize(int32_t mode) {
   int32_t status = 0;
   HAL_BaseInitialize(&status);
 
-  /*
   if (!rolloverNotifier)
     rolloverNotifier = HAL_InitializeNotifier(timerRollover, nullptr, &status);
   if (status == 0) {
@@ -343,7 +351,6 @@ int32_t HAL_Initialize(int32_t mode) {
       HAL_UpdateNotifierAlarm(rolloverNotifier, curTime + 0x80000000ULL,
                               &status);
   }
-  */
 
   // Kill any previous robot programs
   std::fstream fs;
@@ -381,7 +388,7 @@ int32_t HAL_Initialize(int32_t mode) {
   fs.seekp(0);
   pid = getpid();
   fs << pid << std::endl;
-  fs.close();
+  fs.close();*/
 
   HAL_InitializeDriverStation();
 
@@ -394,8 +401,9 @@ int64_t HAL_Report(int32_t resource, int32_t instanceNumber, int32_t context,
     feature = "";
   }
 
-  return FRC_NetworkCommunication_nUsageReporting_report(
-      resource, instanceNumber, context, feature);
+  /*return FRC_NetworkCommunication_nUsageReporting_report(
+      resource, instanceNumber, context, feature);*/
+  return 0;
 }
 
 // TODO: HACKS

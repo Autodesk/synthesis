@@ -6,9 +6,9 @@
 /*----------------------------------------------------------------------------*/
 
 #pragma once
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#pragma GCC diagnostic ignored "-Wignored-qualifiers"
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wpedantic"
+//#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 
 #include <stdint.h>
 
@@ -43,4 +43,4 @@ using namespace nFPGA;
 using namespace nRoboRIO_FPGANamespace;
 }  // namespace hal
 
-#pragma GCC diagnostic pop
+//#pragma GCC diagnostic pop
