@@ -1,57 +1,55 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef DIGITAL_INPUT_H_
-#define DIGITAL_INPUT_H_
+#pragma once
 
-class DigitalModule;
+#include <memory>
+#include <string>
 
 #include "DigitalSource.h"
 #include "LiveWindow/LiveWindowSendable.h"
 
+namespace frc {
+
+class DigitalGlitchFilter;
+
 /**
  * Class to read a digital input.
- * This class will read digital inputs and return the current value on the channel. Other devices
- * such as encoders, gear tooth sensors, etc. that are implemented elsewhere will automatically
- * allocate digital inputs and outputs as required. This class is only for devices like switches
- * etc. that aren't implemented anywhere else.
+ * This class will read digital inputs and return the current value on the
+ * channel. Other devices such as encoders, gear tooth sensors, etc. that are
+ * implemented elsewhere will automatically allocate digital inputs and outputs
+ * as required. This class is only for devices like switches etc. that aren't
+ * implemented anywhere else.
  */
 class DigitalInput : public DigitalSource, public LiveWindowSendable {
-public:
-	explicit DigitalInput(uint32_t channel);
-	DigitalInput(uint8_t moduleNumber, uint32_t channel);
-	virtual ~DigitalInput();
-	uint32_t Get();
-	uint32_t GetChannel();
+ public:
+  explicit DigitalInput(int channel);
+  virtual ~DigitalInput();
+  bool Get() const;
+  int GetChannel() const override;
 
-	// Digital Source Interface
-	virtual uint32_t GetChannelForRouting();
-	virtual uint32_t GetModuleForRouting();
-	virtual bool GetAnalogTriggerForRouting();
-	
-	// Interruptable Interface
-	virtual void RequestInterrupts(tInterruptHandler handler, void *param=NULL); ///< Asynchronus handler version.
-	virtual void RequestInterrupts();		///< Synchronus Wait version.
-	void SetUpSourceEdge(bool risingEdge, bool fallingEdge);
+  // Digital Source Interface
+  HAL_Handle GetPortHandleForRouting() const override;
+  AnalogTriggerType GetAnalogTriggerTypeForRouting() const override;
+  bool IsAnalogTrigger() const override;
 
-	void UpdateTable();
-	void StartLiveWindowMode();
-	void StopLiveWindowMode();
-	std::string GetSmartDashboardType();
-	void InitTable(ITable *subTable);
-	ITable * GetTable();
+  void UpdateTable();
+  void StartLiveWindowMode();
+  void StopLiveWindowMode();
+  std::string GetSmartDashboardType() const;
+  void InitTable(std::shared_ptr<ITable> subTable);
+  std::shared_ptr<ITable> GetTable() const;
 
-private:
-	void InitDigitalInput(uint8_t moduleNumber, uint32_t channel);
-	uint32_t m_channel;
-	DigitalModule *m_module;
-	bool m_lastValue;
-	
-	ITable *m_table;
+ private:
+  int m_channel;
+  HAL_DigitalHandle m_handle;
+
+  std::shared_ptr<ITable> m_table;
+  friend class DigitalGlitchFilter;
 };
 
-#endif
-
+}  // namespace frc

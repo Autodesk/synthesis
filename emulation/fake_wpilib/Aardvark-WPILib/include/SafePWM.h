@@ -1,43 +1,45 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __SAFE_PWM__
-#define __SAFE_PWM__
+#pragma once
+
+#include <memory>
 
 #include "MotorSafety.h"
+#include "MotorSafetyHelper.h"
 #include "PWM.h"
+#include "llvm/raw_ostream.h"
 
-class MotorSafetyHelper;
+namespace frc {
 
 /**
  * A safe version of the PWM class.
- * It is safe because it implements the MotorSafety interface that provides timeouts
- * in the event that the motor value is not updated before the expiration time.
- * This delegates the actual work to a MotorSafetyHelper object that is used for all
- * objects that implement MotorSafety.
+ * It is safe because it implements the MotorSafety interface that provides
+ * timeouts in the event that the motor value is not updated before the
+ * expiration time. This delegates the actual work to a MotorSafetyHelper
+ * object that is used for all objects that implement MotorSafety.
  */
-class SafePWM: public PWM, public MotorSafety
-{
-public:
-	explicit SafePWM(uint32_t channel);
-	SafePWM(uint8_t moduleNumber, uint32_t channel);
-	~SafePWM();
+class SafePWM : public PWM, public MotorSafety {
+ public:
+  explicit SafePWM(int channel);
+  virtual ~SafePWM() = default;
 
-	void SetExpiration(float timeout);
-	float GetExpiration();
-	bool IsAlive();
-	void StopMotor();
-	bool IsSafetyEnabled();
-	void SetSafetyEnabled(bool enabled);
-	void GetDescription(char *desc);
+  void SetExpiration(double timeout);
+  double GetExpiration() const;
+  bool IsAlive() const;
+  void StopMotor();
+  bool IsSafetyEnabled() const;
+  void SetSafetyEnabled(bool enabled);
+  void GetDescription(llvm::raw_ostream& desc) const;
 
-	virtual void SetSpeed(float speed);
-private:
-	void InitSafePWM();
-	MotorSafetyHelper *m_safetyHelper;
+  virtual void SetSpeed(double speed);
+
+ private:
+  std::unique_ptr<MotorSafetyHelper> m_safetyHelper;
 };
 
-#endif
+}  // namespace frc

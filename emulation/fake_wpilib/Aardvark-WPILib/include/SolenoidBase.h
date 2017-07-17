@@ -1,38 +1,40 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef SOLENOID_BASE_H_
-#define SOLENOID_BASE_H_
+#pragma once
 
-#include "Resource.h"
 #include "SensorBase.h"
-#include "ChipObject.h"
-#include "OSAL/Synchronized.h"
+
+namespace frc {
 
 /**
  * SolenoidBase class is the common base class for the Solenoid and
  * DoubleSolenoid classes.
  */
 class SolenoidBase : public SensorBase {
-public:
-	virtual ~SolenoidBase();
-	uint8_t GetAll();
+ public:
+  virtual ~SolenoidBase() = default;
+  static int GetAll(int module);
+  int GetAll() const;
 
-protected:
-	explicit SolenoidBase(uint8_t moduleNumber);
-	void Set(uint8_t value, uint8_t mask);
-	virtual void InitSolenoid() = 0;
+  static int GetPCMSolenoidBlackList(int module);
+  int GetPCMSolenoidBlackList() const;
+  static bool GetPCMSolenoidVoltageStickyFault(int module);
+  bool GetPCMSolenoidVoltageStickyFault() const;
+  static bool GetPCMSolenoidVoltageFault(int module);
+  bool GetPCMSolenoidVoltageFault() const;
+  static void ClearAllPCMStickyFaults(int module);
+  void ClearAllPCMStickyFaults();
 
-	uint32_t m_moduleNumber; ///< Slot number where the module is plugged into the chassis.
-	static Resource *m_allocated;
-
-private:
-	static tSolenoid *m_fpgaSolenoidModule; ///< FPGA Solenoid Module object.
-	static uint32_t m_refCount; ///< Reference count for the chip object.
-	static ReentrantSemaphore m_semaphore;
+ protected:
+  explicit SolenoidBase(int pcmID);
+  static const int m_maxModules = 63;
+  static const int m_maxPorts = 8;
+  int m_moduleNumber;  // PCM module number
 };
 
-#endif
+}  // namespace frc
