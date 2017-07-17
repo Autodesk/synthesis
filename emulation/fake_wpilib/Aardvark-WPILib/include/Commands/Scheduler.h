@@ -1,71 +1,73 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __SCHEDULER_H__
-#define __SCHEDULER_H__
+#pragma once
+
+#include <list>
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "Commands/Command.h"
 #include "ErrorBase.h"
+#include "HAL/cpp/priority_mutex.h"
 #include "SmartDashboard/NamedSendable.h"
-#include "networktables/NetworkTable.h"
-#include "networktables2/type/NumberArray.h"
-#include "networktables2/type/StringArray.h"
 #include "SmartDashboard/SmartDashboard.h"
-#include <list>
-#include <map>
-#include <set>
-#include <vector>
-#include "OSAL/Synchronized.h"
+#include "networktables/NetworkTable.h"
+
+namespace frc {
 
 class ButtonScheduler;
 class Subsystem;
 
-class Scheduler : public ErrorBase, public NamedSendable
-{
-public:
-	static Scheduler *GetInstance();
+class Scheduler : public ErrorBase, public NamedSendable {
+ public:
+  static Scheduler* GetInstance();
 
-	void AddCommand(Command* command);
-	void AddButton(ButtonScheduler* button);
-	void RegisterSubsystem(Subsystem *subsystem);
-	void Run();	
-	void Remove(Command *command);
-	void RemoveAll();
-	void SetEnabled(bool enabled);
-	
-	void UpdateTable();
-	std::string GetSmartDashboardType();
-	void InitTable(ITable *subTable);
-	ITable * GetTable();
-	std::string GetName();
-	std::string GetType();
+  void AddCommand(Command* command);
+  void AddButton(ButtonScheduler* button);
+  void RegisterSubsystem(Subsystem* subsystem);
+  void Run();
+  void Remove(Command* command);
+  void RemoveAll();
+  void ResetAll();
+  void SetEnabled(bool enabled);
 
-private:
-	Scheduler();
-	virtual ~Scheduler();
+  void UpdateTable();
+  std::string GetSmartDashboardType() const;
+  void InitTable(std::shared_ptr<ITable> subTable);
+  std::shared_ptr<ITable> GetTable() const;
+  std::string GetName() const;
+  std::string GetType() const;
 
-	void ProcessCommandAddition(Command *command);
+ private:
+  Scheduler();
+  virtual ~Scheduler() = default;
 
-	static Scheduler *_instance;
-	Command::SubsystemSet m_subsystems;
-	ReentrantSemaphore m_buttonsLock;
-	typedef std::vector<ButtonScheduler *> ButtonVector;
-	ButtonVector m_buttons;
-	typedef std::vector<Command *> CommandVector;
-	ReentrantSemaphore m_additionsLock;
-	CommandVector m_additions;
-	typedef std::set<Command *> CommandSet;
-	CommandSet m_commands;
-	bool m_adding;
-	bool m_enabled;
-	StringArray *commands;
-	NumberArray *ids;
-	NumberArray *toCancel;
-	ITable *m_table;
-	bool m_runningCommandsChanged;
+  void ProcessCommandAddition(Command* command);
+
+  Command::SubsystemSet m_subsystems;
+  hal::priority_mutex m_buttonsLock;
+  typedef std::vector<ButtonScheduler*> ButtonVector;
+  ButtonVector m_buttons;
+  typedef std::vector<Command*> CommandVector;
+  hal::priority_mutex m_additionsLock;
+  CommandVector m_additions;
+  typedef std::set<Command*> CommandSet;
+  CommandSet m_commands;
+  bool m_adding = false;
+  bool m_enabled = true;
+  std::vector<std::string> commands;
+  std::vector<double> ids;
+  std::vector<double> toCancel;
+  std::shared_ptr<ITable> m_table;
+  bool m_runningCommandsChanged = false;
 };
-#endif
 
+}  // namespace frc

@@ -1,26 +1,27 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __JOYSTICK_BUTTON_H__
-#define __JOYSTICK_BUTTON_H__
+#pragma once
 
-#include "GenericHID.h"
 #include "Buttons/Button.h"
+#include "GenericHID.h"
 
-class JoystickButton : public Button
-{
-public:
-	JoystickButton(GenericHID *joystick, int buttonNumber);
-	virtual ~JoystickButton() {}
+namespace frc {
 
-	virtual bool Get();
+class JoystickButton : public Button {
+ public:
+  JoystickButton(GenericHID* joystick, int buttonNumber);
+  virtual ~JoystickButton() = default;
 
-private:
-	GenericHID *m_joystick;
-	int m_buttonNumber;
+  virtual bool Get();
+
+ private:
+  GenericHID* m_joystick;
+  int m_buttonNumber;
 };
 
-#endif
+}  // namespace frc

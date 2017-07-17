@@ -4,7 +4,7 @@
 #ifndef __tSystem_h__
 #define __tSystem_h__
 
-#include "ChipObject/NiFpga.h"
+#include "fpgainterfacecapi/NiFpga.h"
 typedef NiFpga_Status tRioStatusCode;
 
 #define FRC_FPGA_PRELOAD_BITFILE
@@ -20,6 +20,7 @@ public:
    tSystem(tRioStatusCode *status);
    ~tSystem();
    void getFpgaGuid(uint32_t *guid_ptr, tRioStatusCode *status);
+   void reset(tRioStatusCode *status);
 
 protected:
    static NiFpga_Session _DeviceHandle;
