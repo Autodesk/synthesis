@@ -1,34 +1,23 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef Talon_H
-#define Talon_H
+#pragma once
 
-#include "SafePWM.h"
-#include "SpeedController.h"
-#include "PIDOutput.h"
+#include "PWMSpeedController.h"
+
+namespace frc {
 
 /**
- * CTRE Talon Speed Controller
+ * Cross the Road Electronics (CTRE) Talon and Talon SR Speed Controller
  */
-class Talon : public SafePWM, public SpeedController
-{
-public:
-	explicit Talon(uint32_t channel);
-	Talon(uint8_t moduleNumber, uint32_t channel);
-	virtual ~Talon();
-	virtual void Set(float value, uint8_t syncGroup=0);
-	virtual float Get();
-	virtual void Disable();
-
-	virtual void PIDWrite(float output);
-
-private:
-	void InitTalon();
+class Talon : public PWMSpeedController {
+ public:
+  explicit Talon(int channel);
+  virtual ~Talon() = default;
 };
 
-#endif
-
+}  // namespace frc

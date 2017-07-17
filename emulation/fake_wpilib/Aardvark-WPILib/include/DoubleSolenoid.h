@@ -1,51 +1,61 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef DOUBLE_SOLENOID_H_
-#define DOUBLE_SOLENOID_H_
+#pragma once
 
-#include "SolenoidBase.h"
+#include <memory>
+#include <string>
+
+#include "HAL/Types.h"
 #include "LiveWindow/LiveWindowSendable.h"
+#include "SolenoidBase.h"
 #include "tables/ITableListener.h"
 
+namespace frc {
 
 /**
  * DoubleSolenoid class for running 2 channels of high voltage Digital Output
- * (9472 module).
- * 
+ * (PCM).
+ *
  * The DoubleSolenoid class is typically used for pneumatics solenoids that
  * have two positions controlled by two separate channels.
  */
-class DoubleSolenoid : public SolenoidBase, public LiveWindowSendable, public ITableListener {
-public:
-	typedef enum {kOff, kForward, kReverse} Value;
+class DoubleSolenoid : public SolenoidBase,
+                       public LiveWindowSendable,
+                       public ITableListener {
+ public:
+  enum Value { kOff, kForward, kReverse };
 
-	explicit DoubleSolenoid(uint32_t forwardChannel, uint32_t reverseChannel);
-	DoubleSolenoid(uint8_t moduleNumber, uint32_t forwardChannel, uint32_t reverseChannel);
-	virtual ~DoubleSolenoid();
-	virtual void Set(Value value);
-	virtual Value Get();
-	
-	void ValueChanged(ITable* source, const std::string& key, EntryValue value, bool isNew);
-	void UpdateTable();
-	void StartLiveWindowMode();
-	void StopLiveWindowMode();
-	std::string GetSmartDashboardType();
-	void InitTable(ITable *subTable);
-	ITable * GetTable();
+  explicit DoubleSolenoid(int forwardChannel, int reverseChannel);
+  DoubleSolenoid(int moduleNumber, int forwardChannel, int reverseChannel);
+  virtual ~DoubleSolenoid();
+  virtual void Set(Value value);
+  virtual Value Get() const;
+  bool IsFwdSolenoidBlackListed() const;
+  bool IsRevSolenoidBlackListed() const;
 
-private:
-	virtual void InitSolenoid();
+  void ValueChanged(ITable* source, llvm::StringRef key,
+                    std::shared_ptr<nt::Value> value, bool isNew);
+  void UpdateTable();
+  void StartLiveWindowMode();
+  void StopLiveWindowMode();
+  std::string GetSmartDashboardType() const;
+  void InitTable(std::shared_ptr<ITable> subTable);
+  std::shared_ptr<ITable> GetTable() const;
 
-	uint32_t m_forwardChannel; ///< The forward channel on the module to control.
-	uint32_t m_reverseChannel; ///< The reverse channel on the module to control.
-	uint8_t m_forwardMask; ///< The mask for the forward channel.
-	uint8_t m_reverseMask; ///< The mask for the reverse channel.
-	
-	ITable *m_table;
+ private:
+  int m_forwardChannel;  ///< The forward channel on the module to control.
+  int m_reverseChannel;  ///< The reverse channel on the module to control.
+  int m_forwardMask;     ///< The mask for the forward channel.
+  int m_reverseMask;     ///< The mask for the reverse channel.
+  HAL_SolenoidHandle m_forwardHandle = HAL_kInvalidHandle;
+  HAL_SolenoidHandle m_reverseHandle = HAL_kInvalidHandle;
+
+  std::shared_ptr<ITable> m_table;
 };
 
-#endif
+}  // namespace frc

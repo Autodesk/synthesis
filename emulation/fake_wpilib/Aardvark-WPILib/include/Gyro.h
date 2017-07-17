@@ -1,70 +1,60 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2014-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef GYRO_H_
-#define GYRO_H_
+#pragma once
 
-#include "SensorBase.h"
-#include "PIDSource.h"
-#include "LiveWindow/LiveWindowSendable.h"
-
-class AnalogChannel;
-class AnalogModule;
+namespace frc {
 
 /**
- * Use a rate gyro to return the robots heading relative to a starting position.
- * The Gyro class tracks the robots heading based on the starting position. As the robot
- * rotates the new heading is computed by integrating the rate of rotation returned
- * by the sensor. When the class is instantiated, it does a short calibration routine
- * where it samples the gyro while at rest to determine the default offset. This is
- * subtracted from each sample to determine the heading. This gyro class must be used 
- * with a channel that is assigned one of the Analog accumulators from the FPGA. See
- * AnalogChannel for the current accumulator assignments.
+ * Interface for yaw rate gyros
  */
-class Gyro : public SensorBase, public PIDSource, public LiveWindowSendable
-{
-public:
-	static const uint32_t kOversampleBits;
-	static const uint32_t kAverageBits;
+class Gyro {
+ public:
+  virtual ~Gyro() = default;
 
-	static const float kSamplesPerSecond;
-	static const float kCalibrationSampleTime;
-	static const float kDefaultVoltsPerDegreePerSecond;
+  /**
+   * Calibrate the gyro by running for a number of samples and computing the
+   * center value. Then use the center value as the Accumulator center value for
+   * subsequent measurements. It's important to make sure that the robot is not
+   * moving while the centering calculations are in progress, this is typically
+   * done when the robot is first turned on while it's sitting at rest before
+   * the competition starts.
+   */
+  virtual void Calibrate() = 0;
 
-	Gyro(uint8_t moduleNumber, uint32_t channel);
-	explicit Gyro(uint32_t channel);
-	explicit Gyro(AnalogChannel *channel);
-	explicit Gyro(AnalogChannel &channel);
-	virtual ~Gyro();
-	virtual float GetAngle();
-	virtual double GetRate();
-	void SetSensitivity(float voltsPerDegreePerSecond);
-	void SetPIDSourceParameter(PIDSourceParameter pidSource);
-	virtual void Reset();
+  /**
+   * Reset the gyro. Resets the gyro to a heading of zero. This can be used if
+   * there is significant drift in the gyro and it needs to be recalibrated
+   * after it has been running.
+   */
+  virtual void Reset() = 0;
 
-	// PIDSource interface
-	double PIDGet();
-	
-	void UpdateTable();
-	void StartLiveWindowMode();
-	void StopLiveWindowMode();
-	std::string GetSmartDashboardType();
-	void InitTable(ITable *subTable);
-	ITable * GetTable();
+  /**
+   * Return the actual angle in degrees that the robot is currently facing.
+   *
+   * The angle is based on the current accumulator value corrected by the
+   * oversampling rate, the gyro type and the A/D calibration values. The angle
+   * is continuous, that is it will continue from 360 to 361 degrees. This
+   * allows algorithms that wouldn't want to see a discontinuity in the gyro
+   * output as it sweeps past from 360 to 0 on the second time around.
+   *
+   * @return the current heading of the robot in degrees. This heading is based
+   *         on integration of the returned rate from the gyro.
+   */
+  virtual double GetAngle() const = 0;
 
-private:
-	void InitGyro();
-
-	AnalogChannel *m_analog;
-	float m_voltsPerDegreePerSecond;
-	float m_offset;
-	bool m_channelAllocated;
-	uint32_t m_center;
-	PIDSourceParameter m_pidSource;
-	
-	ITable *m_table;
+  /**
+   * Return the rate of rotation of the gyro
+   *
+   * The rate is based on the most recent reading of the gyro analog value
+   *
+   * @return the current rate in degrees per second
+   */
+  virtual double GetRate() const = 0;
 };
-#endif
+
+}  // namespace frc

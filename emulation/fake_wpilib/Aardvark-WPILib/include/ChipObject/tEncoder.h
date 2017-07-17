@@ -1,14 +1,15 @@
 // Copyright (c) National Instruments 2008.  All Rights Reserved.
 // Do Not Edit... this file is generated!
 
-#ifndef __nFRC_2012_1_6_4_Encoder_h__
-#define __nFRC_2012_1_6_4_Encoder_h__
+#ifndef __nFRC_2017_17_0_2_Encoder_h__
+#define __nFRC_2017_17_0_2_Encoder_h__
 
-#include "tSystemInterface.h"
+#include "../tSystem.h"
+#include "../tSystemInterface.h"
 
 namespace nFPGA
 {
-namespace nFRC_2012_1_6_4
+namespace nFRC_2017_17_0_2
 {
 
 class tEncoder
@@ -24,7 +25,7 @@ public:
 
    typedef enum
    {
-      kNumSystems = 4,
+      kNumSystems = 8,
    } tIfaceConstants;
 
    typedef
@@ -56,11 +57,11 @@ public:
          unsigned IndexSource_Module : 1;
          unsigned IndexSource_AnalogTrigger : 1;
          unsigned IndexActiveHigh : 1;
+         unsigned IndexEdgeSensitive : 1;
          unsigned Reverse : 1;
-         unsigned Enable : 1;
 #else
-         unsigned Enable : 1;
          unsigned Reverse : 1;
+         unsigned IndexEdgeSensitive : 1;
          unsigned IndexActiveHigh : 1;
          unsigned IndexSource_AnalogTrigger : 1;
          unsigned IndexSource_Module : 1;
@@ -137,8 +138,8 @@ public:
    virtual void writeConfig_IndexSource_Module(unsigned char value, tRioStatusCode *status) = 0;
    virtual void writeConfig_IndexSource_AnalogTrigger(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_IndexActiveHigh(bool value, tRioStatusCode *status) = 0;
+   virtual void writeConfig_IndexEdgeSensitive(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_Reverse(bool value, tRioStatusCode *status) = 0;
-   virtual void writeConfig_Enable(bool value, tRioStatusCode *status) = 0;
    virtual tConfig readConfig(tRioStatusCode *status) = 0;
    virtual unsigned char readConfig_ASource_Channel(tRioStatusCode *status) = 0;
    virtual unsigned char readConfig_ASource_Module(tRioStatusCode *status) = 0;
@@ -150,8 +151,8 @@ public:
    virtual unsigned char readConfig_IndexSource_Module(tRioStatusCode *status) = 0;
    virtual bool readConfig_IndexSource_AnalogTrigger(tRioStatusCode *status) = 0;
    virtual bool readConfig_IndexActiveHigh(tRioStatusCode *status) = 0;
+   virtual bool readConfig_IndexEdgeSensitive(tRioStatusCode *status) = 0;
    virtual bool readConfig_Reverse(tRioStatusCode *status) = 0;
-   virtual bool readConfig_Enable(tRioStatusCode *status) = 0;
 
 
    typedef enum
@@ -196,4 +197,4 @@ private:
 }
 }
 
-#endif // __nFRC_2012_1_6_4_Encoder_h__
+#endif // __nFRC_2017_17_0_2_Encoder_h__

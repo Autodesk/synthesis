@@ -2,15 +2,15 @@
 #ifndef __AICalibration_h__
 #define __AICalibration_h__
 
-
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-	__declspec(dllexport) uint32_t FRC_NetworkCommunication_nAICalibration_getLSBWeight(const uint32_t aiSystemIndex, const uint32_t channel, int32_t *status);
-	__declspec(dllexport) int32_t FRC_NetworkCommunication_nAICalibration_getOffset(const uint32_t aiSystemIndex, const uint32_t channel, int32_t *status);
+	uint32_t FRC_NetworkCommunication_nAICalibration_getLSBWeight(const uint32_t aiSystemIndex, const uint32_t channel, int32_t *status);
+	int32_t FRC_NetworkCommunication_nAICalibration_getOffset(const uint32_t aiSystemIndex, const uint32_t channel, int32_t *status);
 
 #ifdef __cplusplus
 }

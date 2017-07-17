@@ -1,14 +1,15 @@
 // Copyright (c) National Instruments 2008.  All Rights Reserved.
 // Do Not Edit... this file is generated!
 
-#ifndef __nFRC_2012_1_6_4_AI_h__
-#define __nFRC_2012_1_6_4_AI_h__
+#ifndef __nFRC_2017_17_0_2_AI_h__
+#define __nFRC_2017_17_0_2_AI_h__
 
-#include "tSystemInterface.h"
+#include "../tSystem.h"
+#include "../tSystemInterface.h"
 
 namespace nFPGA
 {
-namespace nFRC_2012_1_6_4
+namespace nFRC_2017_17_0_2
 {
 
 class tAI
@@ -18,32 +19,13 @@ public:
    virtual ~tAI(){}
 
    virtual tSystemInterface* getSystemInterface() = 0;
-   static tAI* create(unsigned char sys_index, tRioStatusCode *status);
-   virtual unsigned char getSystemIndex() = 0;
-
+   static tAI* create(tRioStatusCode *status);
 
    typedef enum
    {
-      kNumSystems = 2,
+      kNumSystems = 1,
    } tIfaceConstants;
 
-   typedef
-   union{
-      struct{
-#ifdef __vxworks
-         unsigned Channel : 3;
-         unsigned Module : 1;
-         unsigned Averaged : 1;
-#else
-         unsigned Averaged : 1;
-         unsigned Module : 1;
-         unsigned Channel : 3;
-#endif
-      };
-      struct{
-         unsigned value : 5;
-      };
-   } tReadSelect;
    typedef
    union{
       struct{
@@ -59,6 +41,29 @@ public:
          unsigned value : 29;
       };
    } tConfig;
+   typedef
+   union{
+      struct{
+#ifdef __vxworks
+         unsigned Channel : 3;
+         unsigned Averaged : 1;
+#else
+         unsigned Averaged : 1;
+         unsigned Channel : 3;
+#endif
+      };
+      struct{
+         unsigned value : 4;
+      };
+   } tReadSelect;
+
+
+
+   typedef enum
+   {
+   } tOutput_IfaceConstants;
+
+   virtual signed int readOutput(tRioStatusCode *status) = 0;
 
 
    typedef enum
@@ -107,14 +112,6 @@ public:
    virtual unsigned char readScanList(unsigned char bitfield_index, tRioStatusCode *status) = 0;
 
 
-
-   typedef enum
-   {
-   } tOutput_IfaceConstants;
-
-   virtual signed int readOutput(tRioStatusCode *status) = 0;
-
-
    typedef enum
    {
    } tLatchOutput_IfaceConstants;
@@ -128,11 +125,9 @@ public:
 
    virtual void writeReadSelect(tReadSelect value, tRioStatusCode *status) = 0;
    virtual void writeReadSelect_Channel(unsigned char value, tRioStatusCode *status) = 0;
-   virtual void writeReadSelect_Module(unsigned char value, tRioStatusCode *status) = 0;
    virtual void writeReadSelect_Averaged(bool value, tRioStatusCode *status) = 0;
    virtual tReadSelect readReadSelect(tRioStatusCode *status) = 0;
    virtual unsigned char readReadSelect_Channel(tRioStatusCode *status) = 0;
-   virtual unsigned char readReadSelect_Module(tRioStatusCode *status) = 0;
    virtual bool readReadSelect_Averaged(tRioStatusCode *status) = 0;
 
 
@@ -146,4 +141,4 @@ private:
 }
 }
 
-#endif // __nFRC_2012_1_6_4_AI_h__
+#endif // __nFRC_2017_17_0_2_AI_h__

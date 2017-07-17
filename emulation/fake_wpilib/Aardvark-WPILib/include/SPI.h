@@ -1,15 +1,19 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-#define HAS_SPI 0
-#if HAS_SPI
-#ifndef __SPI_H__
-#define __SPI_H__
 
-#include "ChipObject.h"
+#pragma once
+
+#include <stdint.h>
+
 #include "SensorBase.h"
+
+enum HAL_SPIPort : int32_t;
+
+namespace frc {
 
 class DigitalOutput;
 class DigitalInput;
@@ -20,66 +24,55 @@ class DigitalInput;
  * This class is intended to be used by sensor (and other SPI device) drivers.
  * It probably should not be used directly.
  *
- * The FPGA only supports a single SPI interface.
  */
-class SPI : public SensorBase
-{
-public:
-	enum tFrameMode {kChipSelect, kPreLatchPulse, kPostLatchPulse, kPreAndPostLatchPulse};
-	enum tSPIConstants {kReceiveFIFODepth=512, kTransmitFIFODepth=512};
+class SPI : public SensorBase {
+ public:
+  enum Port { kOnboardCS0 = 0, kOnboardCS1, kOnboardCS2, kOnboardCS3, kMXP };
+  explicit SPI(Port port);
+  virtual ~SPI();
 
-	SPI(DigitalOutput &clk, DigitalOutput &mosi, DigitalInput &miso);
-	SPI(DigitalOutput *clk, DigitalOutput *mosi, DigitalInput *miso);
-	SPI(DigitalOutput &clk, DigitalOutput &mosi);
-	SPI(DigitalOutput *clk, DigitalOutput *mosi);
-	SPI(DigitalOutput &clk, DigitalInput &miso);
-	SPI(DigitalOutput *clk, DigitalInput *miso);
-	virtual ~SPI();
+  SPI(const SPI&) = delete;
+  SPI& operator=(const SPI&) = delete;
 
-	void SetBitsPerWord(uint32_t bits);
-	uint32_t GetBitsPerWord();
-	void SetClockRate(double hz);
+  void SetClockRate(double hz);
 
-	void SetMSBFirst();
-	void SetLSBFirst();
+  void SetMSBFirst();
+  void SetLSBFirst();
 
-	void SetSampleDataOnFalling();
-	void SetSampleDataOnRising();
+  void SetSampleDataOnFalling();
+  void SetSampleDataOnRising();
 
-	void SetSlaveSelect(DigitalOutput *ss, tFrameMode mode=kChipSelect, bool activeLow=false);
-	void SetSlaveSelect(DigitalOutput &ss, tFrameMode mode=kChipSelect, bool activeLow=false);
-	DigitalOutput *GetSlaveSelect(tFrameMode *mode=NULL, bool *activeLow=NULL);
+  void SetClockActiveLow();
+  void SetClockActiveHigh();
 
-	void SetClockActiveLow();
-	void SetClockActiveHigh();
+  void SetChipSelectActiveHigh();
+  void SetChipSelectActiveLow();
 
-	virtual void ApplyConfig();
+  virtual int Write(uint8_t* data, int size);
+  virtual int Read(bool initiate, uint8_t* dataReceived, int size);
+  virtual int Transaction(uint8_t* dataToSend, uint8_t* dataReceived, int size);
 
-	virtual uint16_t GetOutputFIFOAvailable();
-	virtual uint16_t GetNumReceived();
+  void InitAccumulator(double period, int cmd, int xfer_size, int valid_mask,
+                       int valid_value, int data_shift, int data_size,
+                       bool is_signed, bool big_endian);
+  void FreeAccumulator();
+  void ResetAccumulator();
+  void SetAccumulatorCenter(int center);
+  void SetAccumulatorDeadband(int deadband);
+  int GetAccumulatorLastValue() const;
+  int64_t GetAccumulatorValue() const;
+  int64_t GetAccumulatorCount() const;
+  double GetAccumulatorAverage() const;
+  void GetAccumulatorOutput(int64_t& value, int64_t& count) const;
 
-	virtual bool IsDone();
-	bool HadReceiveOverflow();
+ protected:
+  HAL_SPIPort m_port;
+  bool m_msbFirst = false;          // default little-endian
+  bool m_sampleOnTrailing = false;  // default data updated on falling edge
+  bool m_clk_idle_high = false;     // default clock active high
 
-	virtual void Write(uint32_t data);
-	virtual uint32_t Read(bool initiate = false);
-
-	virtual void Reset();
-	virtual void ClearReceivedData();
-
-protected:
-	static ReentrantSemaphore m_semaphore;
-
-	tSPI* m_spi;
-	tSPI::tConfig m_config;
-	tSPI::tChannels m_channels;
-	DigitalOutput *m_ss;
-
-private:
-	void Init(DigitalOutput *clk, DigitalOutput *mosi, DigitalInput *miso);
-
-	DISALLOW_COPY_AND_ASSIGN(SPI);
+ private:
+  void Init();
 };
 
-#endif
-#endif
+}  // namespace frc

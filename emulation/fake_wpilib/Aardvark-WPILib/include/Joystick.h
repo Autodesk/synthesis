@@ -1,77 +1,88 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef JOYSTICK_H_
-#define JOYSTICK_H_
+#pragma once
 
-#include "GenericHID.h"
+#include <stdint.h>
+
+#include <memory>
+#include <vector>
+
 #include "ErrorBase.h"
+#include "JoystickBase.h"
+
+namespace frc {
 
 class DriverStation;
 
 /**
  * Handle input from standard Joysticks connected to the Driver Station.
- * This class handles standard input that comes from the Driver Station. Each time a value is requested
- * the most recent value is returned. There is a single class instance for each joystick and the mapping
- * of ports to hardware buttons depends on the code in the driver station.
+ * This class handles standard input that comes from the Driver Station. Each
+ * time a value is requested the most recent value is returned. There is a
+ * single class instance for each joystick and the mapping of ports to hardware
+ * buttons depends on the code in the Driver Station.
  */
-class Joystick : public GenericHID, public ErrorBase
-{
-public:
-	static const uint32_t kDefaultXAxis;
-	static const uint32_t kDefaultYAxis;
-	static const uint32_t kDefaultZAxis;
-	static const uint32_t kDefaultTwistAxis;
-	static const uint32_t kDefaultThrottleAxis;
-	static const uint32_t kDefaultTriggerButton;
-	static const uint32_t kDefaultTopButton;
-	typedef enum
-	{
-		kXAxis, kYAxis, kZAxis, kTwistAxis, kThrottleAxis, kNumAxisTypes
-	} AxisType;
-	typedef enum
-	{
-		kTriggerButton, kTopButton, kNumButtonTypes
-	} ButtonType;
+class Joystick : public JoystickBase, public ErrorBase {
+ public:
+  static const int kDefaultXAxis = 0;
+  static const int kDefaultYAxis = 1;
+  static const int kDefaultZAxis = 2;
+  static const int kDefaultTwistAxis = 2;
+  static const int kDefaultThrottleAxis = 3;
 
-	explicit Joystick(uint32_t port);
-	Joystick(uint32_t port, uint32_t numAxisTypes, uint32_t numButtonTypes);
-	virtual ~Joystick();
+  typedef enum {
+    kXAxis,
+    kYAxis,
+    kZAxis,
+    kTwistAxis,
+    kThrottleAxis,
+    kNumAxisTypes
+  } AxisType;
 
-	uint32_t GetAxisChannel(AxisType axis);
-	void SetAxisChannel(AxisType axis, uint32_t channel); 
+  static const int kDefaultTriggerButton = 1;
+  static const int kDefaultTopButton = 2;
 
-	virtual float GetX(JoystickHand hand = kRightHand);
-	virtual float GetY(JoystickHand hand = kRightHand);
-	virtual float GetZ();
-	virtual float GetTwist();
-	virtual float GetThrottle();
-	virtual float GetAxis(AxisType axis);
-	float GetRawAxis(uint32_t axis);
+  typedef enum { kTriggerButton, kTopButton, kNumButtonTypes } ButtonType;
 
-	virtual bool GetTrigger(JoystickHand hand = kRightHand);
-	virtual bool GetTop(JoystickHand hand = kRightHand);
-	virtual bool GetBumper(JoystickHand hand = kRightHand);
-	virtual bool GetButton(ButtonType button);
-	bool GetRawButton(uint32_t button);
-	static Joystick* GetStickForPort(uint32_t port);
-	
-	virtual float GetMagnitude();
-	virtual float GetDirectionRadians();
-	virtual float GetDirectionDegrees();
+  explicit Joystick(int port);
+  Joystick(int port, int numAxisTypes, int numButtonTypes);
+  virtual ~Joystick() = default;
 
-private:
-	DISALLOW_COPY_AND_ASSIGN(Joystick);
-	void InitJoystick(uint32_t numAxisTypes, uint32_t numButtonTypes);
+  Joystick(const Joystick&) = delete;
+  Joystick& operator=(const Joystick&) = delete;
 
-	DriverStation *m_ds;
-	uint32_t m_port;
-	uint32_t *m_axes;
-	uint32_t *m_buttons;
+  int GetAxisChannel(AxisType axis) const;
+  void SetAxisChannel(AxisType axis, int channel);
+
+  double GetX(JoystickHand hand = kRightHand) const override;
+  double GetY(JoystickHand hand = kRightHand) const override;
+  double GetZ(JoystickHand hand = kRightHand) const override;
+  double GetTwist() const override;
+  double GetThrottle() const override;
+  virtual double GetAxis(AxisType axis) const;
+
+  bool GetTrigger(JoystickHand hand = kRightHand) const override;
+  bool GetTop(JoystickHand hand = kRightHand) const override;
+  bool GetButton(ButtonType button) const;
+  static Joystick* GetStickForPort(int port);
+
+  virtual double GetMagnitude() const;
+  virtual double GetDirectionRadians() const;
+  virtual double GetDirectionDegrees() const;
+
+  int GetAxisType(int axis) const;
+
+  int GetAxisCount() const;
+  int GetButtonCount() const;
+
+ private:
+  DriverStation& m_ds;
+  std::vector<int> m_axes;
+  std::vector<int> m_buttons;
 };
 
-#endif
- 
+}  // namespace frc

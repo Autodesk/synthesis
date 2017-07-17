@@ -1,60 +1,69 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2014-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef COMPRESSOR_H_
-#define COMPRESSOR_H_
+#pragma once
 
-#define COMPRESSOR_PRIORITY 90
+#include <memory>
+#include <string>
 
-#include "SensorBase.h"
-#include "Relay.h"
-#include "OSAL/Task.h"
+#include "HAL/Types.h"
 #include "LiveWindow/LiveWindowSendable.h"
+#include "SensorBase.h"
+#include "tables/ITableListener.h"
 
-class DigitalInput;
+namespace frc {
 
 /**
- * Compressor object.
- * The Compressor object is designed to handle the operation of the compressor, pressure sensor and
- * relay for a FIRST robot pneumatics system. The Compressor object starts a task which runs in the
- * backround and periodically polls the pressure sensor and operates the relay that controls the
- * compressor.
- */ 
-class Compressor: public SensorBase, public LiveWindowSendable
-{
-public:
-	Compressor(uint32_t pressureSwitchChannel, uint32_t compressorRelayChannel);
-	Compressor(uint8_t pressureSwitchModuleNumber, uint32_t pressureSwitchChannel,
-			uint8_t compresssorRelayModuleNumber, uint32_t compressorRelayChannel);
-	~Compressor();
+ * PCM compressor
+ */
+class Compressor : public SensorBase,
+                   public LiveWindowSendable,
+                   public ITableListener {
+ public:
+  // Default PCM ID is 0
+  explicit Compressor(int pcmID = GetDefaultSolenoidModule());
+  virtual ~Compressor() = default;
 
-	void Start();
-	void Stop();
-	bool Enabled();
-	uint32_t GetPressureSwitchValue();
-	void SetRelayValue(Relay::Value relayValue);
-	
-	void UpdateTable();
-	void StartLiveWindowMode();
-	void StopLiveWindowMode();
-	std::string GetSmartDashboardType();
-	void InitTable(ITable *subTable);
-	ITable * GetTable();
+  void Start();
+  void Stop();
+  bool Enabled() const;
 
-private:
-	void InitCompressor(uint8_t pressureSwitchModuleNumber, uint32_t pressureSwitchChannel,
-				uint8_t compresssorRelayModuleNumber, uint32_t compressorRelayChannel);
+  bool GetPressureSwitchValue() const;
 
-	DigitalInput *m_pressureSwitch;
-	Relay *m_relay;
-	bool m_enabled;
-	Task m_task;
-	
-	ITable *m_table;
+  double GetCompressorCurrent() const;
+
+  void SetClosedLoopControl(bool on);
+  bool GetClosedLoopControl() const;
+
+  bool GetCompressorCurrentTooHighFault() const;
+  bool GetCompressorCurrentTooHighStickyFault() const;
+  bool GetCompressorShortedStickyFault() const;
+  bool GetCompressorShortedFault() const;
+  bool GetCompressorNotConnectedStickyFault() const;
+  bool GetCompressorNotConnectedFault() const;
+  void ClearAllPCMStickyFaults();
+
+  void UpdateTable() override;
+  void StartLiveWindowMode() override;
+  void StopLiveWindowMode() override;
+  std::string GetSmartDashboardType() const override;
+  void InitTable(std::shared_ptr<ITable> subTable) override;
+  std::shared_ptr<ITable> GetTable() const override;
+  void ValueChanged(ITable* source, llvm::StringRef key,
+                    std::shared_ptr<nt::Value> value, bool isNew) override;
+
+ protected:
+  HAL_CompressorHandle m_compressorHandle;
+
+ private:
+  void SetCompressor(bool on);
+  int m_module;
+
+  std::shared_ptr<ITable> m_table;
 };
 
-#endif
-
+}  // namespace frc

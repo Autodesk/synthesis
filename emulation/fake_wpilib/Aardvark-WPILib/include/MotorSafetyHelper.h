@@ -1,40 +1,49 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __MOTOR_SAFETY_HELPER__
-#define __MOTOR_SAFETY_HELPER__
+#pragma once
+
+#include <set>
 
 #include "ErrorBase.h"
-#include "OSAL/Synchronized.h"
+#include "HAL/cpp/priority_mutex.h"
 
+namespace frc {
 
 class MotorSafety;
 
-class MotorSafetyHelper : public ErrorBase
-{
-public:
-	MotorSafetyHelper(MotorSafety *safeObject);
-	~MotorSafetyHelper();
-	void Feed();
-	void SetExpiration(float expirationTime);
-	float GetExpiration();
-	bool IsAlive();
-	void Check();
-	void SetSafetyEnabled(bool enabled);
-	bool IsSafetyEnabled();
-	static void CheckMotors();
-private:
-	double m_expiration;			// the expiration time for this object
-	bool m_enabled;					// true if motor safety is enabled for this motor
-	double m_stopTime; 				// the FPGA clock value when this motor has expired
-	ReentrantSemaphore m_syncMutex;			// protect accesses to the state for this object
-	MotorSafety *m_safeObject;		// the object that is using the helper
-	MotorSafetyHelper *m_nextHelper; // next object in the list of MotorSafetyHelpers
-	static MotorSafetyHelper *m_headHelper; // the head of the list of MotorSafetyHelper objects
-	static ReentrantSemaphore m_listMutex;	// protect accesses to the list of helpers
+class MotorSafetyHelper : public ErrorBase {
+ public:
+  explicit MotorSafetyHelper(MotorSafety* safeObject);
+  ~MotorSafetyHelper();
+  void Feed();
+  void SetExpiration(double expirationTime);
+  double GetExpiration() const;
+  bool IsAlive() const;
+  void Check();
+  void SetSafetyEnabled(bool enabled);
+  bool IsSafetyEnabled() const;
+  static void CheckMotors();
+
+ private:
+  // the expiration time for this object
+  double m_expiration;
+  // true if motor safety is enabled for this motor
+  bool m_enabled;
+  // the FPGA clock value when this motor has expired
+  double m_stopTime;
+  // protect accesses to the state for this object
+  mutable hal::priority_recursive_mutex m_syncMutex;
+  // the object that is using the helper
+  MotorSafety* m_safeObject;
+  // List of all existing MotorSafetyHelper objects.
+  static std::set<MotorSafetyHelper*> m_helperList;
+  // protect accesses to the list of helpers
+  static hal::priority_recursive_mutex m_listMutex;
 };
 
-#endif
+}  // namespace frc
