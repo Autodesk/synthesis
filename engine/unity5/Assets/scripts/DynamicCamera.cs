@@ -7,7 +7,7 @@ public class DynamicCamera : MonoBehaviour
     /// <summary>
     /// The scrolling enabled.
     /// </summary>
-    public static bool MovingEnabled { get; private set; }
+    public static bool MovingEnabled { get; set; }
 
     /// <summary>
     /// The state of the camera.
@@ -122,11 +122,10 @@ public class DynamicCamera : MonoBehaviour
         {
             if (robot != null && robot.transform.childCount > 0)
             {
+                targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
+
                 if (MovingEnabled)
                 {
-                    targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
-
-
                     if (Input.GetMouseButton(0))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
@@ -144,15 +143,15 @@ public class DynamicCamera : MonoBehaviour
                         }
 
                     }
-
-                    rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
-                    rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
-
-                    lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
-
-                    mono.transform.position = lagVector;
-                    mono.transform.LookAt(targetVector);
                 }
+
+                rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
+                rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+
+                lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+
+                mono.transform.position = lagVector;
+                mono.transform.LookAt(targetVector);
             }
             else
             {
@@ -351,23 +350,6 @@ public class DynamicCamera : MonoBehaviour
         _cameraState.Init();
     }
 
-    /// <summary>
-    /// Enables the scrolling.
-    /// </summary>
-    public void EnableMoving()
-    {
-        MovingEnabled = true;
-    }
-
-    /// <summary>
-    /// Disables the scrolling.
-    /// </summary>
-    public void DisableMoving()
-    {
-        MovingEnabled = false;
-    }
-
-    /// <summary>
     /// Calculates the appropriate lag vector from the given current vector, target vector, and responsiveness constant.
     /// </summary>
     /// <param name="lagVector"></param>
