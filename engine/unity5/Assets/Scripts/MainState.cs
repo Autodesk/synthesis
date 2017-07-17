@@ -351,9 +351,9 @@ public class MainState : SimState
                 }
             }
         }
+
         UpdateTrackers();
     }
-
 
     public override void FixedUpdate()
     {
@@ -421,9 +421,11 @@ public class MainState : SimState
         contactPoints.Clear(null);
     }
 
-    public override void End()
+    public override void Pause()
     {
         tracking = false;
+
+        ToDynamicCamera();
     }
 
     bool LoadField(string directory)
@@ -648,9 +650,9 @@ public class MainState : SimState
 
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
-            
+
         contactPoints.Clear(null);
-        
+
         resetting = false;
     }
 

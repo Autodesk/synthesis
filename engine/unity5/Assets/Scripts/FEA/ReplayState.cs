@@ -68,6 +68,7 @@ namespace Assets.Scripts.FEA
         private bool active;
 
         private Camera camera;
+        private DynamicCamera dynamicCamera;
         private List<Tracker> trackers;
         private List<List<ContactDescriptor>> contactPoints;
 
@@ -155,6 +156,7 @@ namespace Assets.Scripts.FEA
             contactThreshold = Mathf.Sqrt(30f);
 
             camera = UnityEngine.Object.FindObjectOfType<Camera>();
+            DynamicCamera.MovingEnabled = true;
 
             Texture2D thumbTexture = (Texture2D)Resources.Load("Images/thumb");
 
@@ -418,6 +420,14 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void Update()
         {
+            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+            {
+                if (dynamicCamera == null)
+                    dynamicCamera = UnityEngine.Object.FindObjectOfType<DynamicCamera>();
+
+                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
+            }
+
             if (firstFrame)
             {
                 firstFrame = false;
