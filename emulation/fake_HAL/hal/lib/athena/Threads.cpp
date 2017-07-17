@@ -7,8 +7,8 @@
 
 #include "HAL/Threads.h"
 
-#include <pthread.h>
-#include <sched.h>
+//#include <pthread.h>
+//#include <sched.h>
 
 #include "HAL/Errors.h"
 
@@ -23,7 +23,7 @@ extern "C" {
  */
 int32_t HAL_GetThreadPriority(NativeThreadHandle handle, HAL_Bool* isRealTime,
                               int32_t* status) {
-  sched_param sch;
+  /*sched_param sch;
   int policy;
   int success = pthread_getschedparam(*handle, &policy, &sch);
   if (success == 0) {
@@ -39,7 +39,8 @@ int32_t HAL_GetThreadPriority(NativeThreadHandle handle, HAL_Bool* isRealTime,
     *isRealTime = false;
     // 0 is the only suppored priority for non-realtime, so scale to 1
     return 1;
-  }
+  }*/
+  return 1;
 }
 
 /**
@@ -51,8 +52,9 @@ int32_t HAL_GetThreadPriority(NativeThreadHandle handle, HAL_Bool* isRealTime,
  * @return The current thread priority. Scaled 1-99, with 1 being highest.
  */
 int32_t HAL_GetCurrentThreadPriority(HAL_Bool* isRealTime, int32_t* status) {
-  auto thread = pthread_self();
-  return HAL_GetThreadPriority(&thread, isRealTime, status);
+  /*auto thread = pthread_self();
+  return HAL_GetThreadPriority(&thread, isRealTime, status);*/
+  return 1;
 }
 
 /**

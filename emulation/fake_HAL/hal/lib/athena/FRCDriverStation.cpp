@@ -12,12 +12,12 @@
 #include <cstring>
 #include <limits>
 
-#include <pthread.h>
-#include <sys/socket.h>
+#include <thread>
+#include <winsock2.h>
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <semaphore.h>
-#include <unistd.h>
+//#include <netinet/in.h>
+//#include <semaphore.h>
+//#include <unistd.h>
 
 #include "FRC_NetworkCommunication/FRCComm.h"
 #include "HAL/DriverStation.h"
@@ -25,6 +25,9 @@
 #include "HAL/cpp/priority_mutex.h"
 #include "DriverStation.h"
 #include "crc32.h"
+
+#undef min
+#undef max
 
 static_assert(sizeof(int32_t) >= sizeof(int),
               "FRC_NetworkComm status variable is larger than 32 bits");
@@ -34,12 +37,15 @@ struct HAL_JoystickAxesInt {
   int16_t axes[HAL_kMaxJoystickAxes];
 };
 
+struct {
+  uint32_t dynamicLen;
+  const char *dynamicData;
+} embeddedDynamicChunks[kEmbeddedCount];
+
 static hal::priority_mutex msgMutex;
 static hal::priority_condition_variable newDSDataAvailableCond;
 static hal::priority_mutex newDSDataAvailableMutex;
 static int newDSDataAvailableCounter{0};
-
-pthread_t thread;
 
 FRCCommonControlData lastDataPacket;
 DynamicControlData lastDynamicControlPacket [32];
@@ -54,49 +60,49 @@ ReentrantSemaphore* resyncSem = NULL;
 bool enabled;
 FRCRobotControl ctl;
 
-void* DriverStationThread(void* param) {
+void DriverStationThread() {
   printf("Starting driver station connection thread\n");
   struct sockaddr_in robotAddress;
 	struct sockaddr_in dsAddress;
 	int robotSocket;
 	int dsSocket;
-
-  //int teamID = 3636;
-	//uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
+  
+  int teamID = 3636;
+	uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
 	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
   //10.0.2.5
-  uint32_t network = (10 << 24) | 0 | 2 << 8 | 5;
+  //uint32_t network = (10 << 24) | 0 | 2 << 8 | 0;
 
 	robotAddress.sin_family = AF_INET;
-	robotAddress.sin_addr.s_addr = htonl(0);
+	robotAddress.sin_addr.s_addr = htonl(network | 2);
 	robotAddress.sin_port = htons( 1110 );
 
 	dsAddress.sin_family = AF_INET;
-	dsAddress.sin_addr.s_addr = htonl(network);
+	dsAddress.sin_addr.s_addr = htonl(network | 5);
 	dsAddress.sin_port = htons( 1150 );
 
 	robotSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (robotSocket < 0) {
 		fprintf(stderr, "Could not create socket ROBOT!\n");
-		return NULL;
+		return;
 	}
 
-  int option = 1;
+  /*int option = 1;
   if(setsockopt(robotSocket, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option)) != 0) {
     fprintf(stderr, "Could not set socket options for ROBOT!\n");
     perror("setsockopt");
-  }
+  }*/
 
 	if (bind(robotSocket, (const struct sockaddr *)&robotAddress, sizeof(robotAddress)) != 0) {
 		fprintf(stderr, "Could not bind socket ROBOT!  Did you configure your loopback adapters?\n");
     perror("bind");
-		return NULL;
+		return;
 	}
 
 	dsSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (dsSocket < 0) {
 		fprintf(stderr, "Could not create socket DS!  Did you configure your loopback adapters?\n");
-		return NULL;
+		return;
 	}
 
 	char buffer[1024];
@@ -106,7 +112,8 @@ void* DriverStationThread(void* param) {
 	bool lockedResync = false;
 
 	// Read from the DS thread
-	while (enabled) {
+	while (true) {
+		printf("loop\n");
 		if (resyncSem != NULL && !lockedResync) {
 			resyncSem->take();
 			lockedResync = true;
@@ -265,14 +272,13 @@ void* DriverStationThread(void* param) {
 		memcpy(&sendBuffer[0x3fc], &crc, sizeof(uint32_t));
 		sendto(dsSocket,(const char *) &sendBuffer, 0x07, 0,(const sockaddr*)&dsAddress, sizeof(dsAddress));
 	}
-
-  return NULL;
 }
 
 extern "C" {
 int32_t HAL_SetErrorData(const char* errors, int32_t errorsLength,
                          int32_t waitMs) {
-  return setErrorData(errors, errorsLength, waitMs);
+  //return setErrorData(errors, errorsLength, waitMs);
+  return 0;
 }
 
 int32_t HAL_SendError(HAL_Bool isError, int32_t errorCode, HAL_Bool isLVCode,
@@ -280,7 +286,7 @@ int32_t HAL_SendError(HAL_Bool isError, int32_t errorCode, HAL_Bool isLVCode,
                       const char* callStack, HAL_Bool printMsg) {
   // Avoid flooding console by keeping track of previous 5 error
   // messages and only printing again if they're longer than 1 second old.
-  static constexpr int KEEP_MSGS = 5;
+  /*static constexpr int KEEP_MSGS = 5;
   std::lock_guard<hal::priority_mutex> lock(msgMutex);
   static std::string prevMsg[KEEP_MSGS];
   static std::chrono::time_point<std::chrono::steady_clock>
@@ -327,7 +333,8 @@ int32_t HAL_SendError(HAL_Bool isError, int32_t errorCode, HAL_Bool isLVCode,
     }
     prevMsgTime[i] = curTime;
   }
-  return retval;
+  return retval;*/
+  return 0;
 }
 
 int32_t HAL_GetControlWord(HAL_ControlWord* controlWord) {
@@ -344,14 +351,15 @@ int32_t HAL_GetControlWord(HAL_ControlWord* controlWord) {
 }
 
 HAL_AllianceStationID HAL_GetAllianceStation(int32_t* status) {
-  HAL_AllianceStationID allianceStation;
+  /*HAL_AllianceStationID allianceStation;
   *status = FRC_NetworkCommunication_getAllianceStation(
       reinterpret_cast<AllianceStationID_t*>(&allianceStation));
-  return allianceStation;
+  return allianceStation;*/
+  return HAL_AllianceStationID_kRed1;
 }
 
 int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {
-  HAL_JoystickAxesInt axesInt;
+  /*HAL_JoystickAxesInt axesInt;
 
   int retVal = FRC_NetworkCommunication_getJoystickAxes(
       joystickNum, reinterpret_cast<JoystickAxes_t*>(&axesInt),
@@ -370,19 +378,22 @@ int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {
     }
   }
 
-  return retVal;
+  return retVal;*/
+  return 0;
 }
 
 int32_t HAL_GetJoystickPOVs(int32_t joystickNum, HAL_JoystickPOVs* povs) {
-  return FRC_NetworkCommunication_getJoystickPOVs(
+  /*return FRC_NetworkCommunication_getJoystickPOVs(
       joystickNum, reinterpret_cast<JoystickPOV_t*>(povs),
-      HAL_kMaxJoystickPOVs);
+      HAL_kMaxJoystickPOVs);*/
+  return 0;
 }
 
 int32_t HAL_GetJoystickButtons(int32_t joystickNum,
                                HAL_JoystickButtons* buttons) {
-  return FRC_NetworkCommunication_getJoystickButtons(
-      joystickNum, &buttons->buttons, &buttons->count);
+  /*return FRC_NetworkCommunication_getJoystickButtons(
+      joystickNum, &buttons->buttons, &buttons->count);*/
+  return 0;
 }
 /**
  * Retrieve the Joystick Descriptor for particular slot
@@ -397,11 +408,11 @@ int32_t HAL_GetJoystickButtons(int32_t joystickNum,
  */
 int32_t HAL_GetJoystickDescriptor(int32_t joystickNum,
                                   HAL_JoystickDescriptor* desc) {
-  desc->isXbox = 0;
+  /*desc->isXbox = 0;
   desc->type = std::numeric_limits<uint8_t>::max();
   desc->name[0] = '\0';
   desc->axisCount =
-      HAL_kMaxJoystickAxes; /* set to the desc->axisTypes's capacity */
+      HAL_kMaxJoystickAxes; 
   desc->buttonCount = 0;
   desc->povCount = 0;
   int retval = FRC_NetworkCommunication_getJoystickDesc(
@@ -409,13 +420,11 @@ int32_t HAL_GetJoystickDescriptor(int32_t joystickNum,
       reinterpret_cast<char*>(&desc->name), &desc->axisCount,
       reinterpret_cast<uint8_t*>(&desc->axisTypes), &desc->buttonCount,
       &desc->povCount);
-  /* check the return, if there is an error and the RIOimage predates FRC2017,
-   * then axisCount needs to be cleared */
   if (retval != 0) {
-    /* set count to zero so downstream code doesn't decode invalid axisTypes. */
     desc->axisCount = 0;
   }
-  return retval;
+  return retval;*/
+  return 0;
 }
 
 HAL_Bool HAL_GetJoystickIsXbox(int32_t joystickNum) {
@@ -428,16 +437,17 @@ HAL_Bool HAL_GetJoystickIsXbox(int32_t joystickNum) {
 }
 
 int32_t HAL_GetJoystickType(int32_t joystickNum) {
-  HAL_JoystickDescriptor joystickDesc;
+  /*HAL_JoystickDescriptor joystickDesc;
   if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
     return -1;
   } else {
     return joystickDesc.type;
-  }
+  }*/
+  return 0;
 }
 
 char* HAL_GetJoystickName(int32_t joystickNum) {
-  HAL_JoystickDescriptor joystickDesc;
+  /*HAL_JoystickDescriptor joystickDesc;
   if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
     char* name = static_cast<char*>(std::malloc(1));
     name[0] = '\0';
@@ -448,48 +458,52 @@ char* HAL_GetJoystickName(int32_t joystickNum) {
     std::strncpy(name, joystickDesc.name, len);
     name[len] = '\0';
     return name;
-  }
+  }*/
+  return 0;
 }
 
 int32_t HAL_GetJoystickAxisType(int32_t joystickNum, int32_t axis) {
-  HAL_JoystickDescriptor joystickDesc;
+  /*HAL_JoystickDescriptor joystickDesc;
   if (HAL_GetJoystickDescriptor(joystickNum, &joystickDesc) < 0) {
     return -1;
   } else {
     return joystickDesc.axisTypes[axis];
-  }
+  }*/
+  return 0;
 }
 
 int32_t HAL_SetJoystickOutputs(int32_t joystickNum, int64_t outputs,
                                int32_t leftRumble, int32_t rightRumble) {
-  return FRC_NetworkCommunication_setJoystickOutputs(joystickNum, outputs,
-                                                     leftRumble, rightRumble);
+  /*return FRC_NetworkCommunication_setJoystickOutputs(joystickNum, outputs,
+                                                     leftRumble, rightRumble);*/
+  return 0;
 }
 
 double HAL_GetMatchTime(int32_t* status) {
-  float matchTime;
+  /*float matchTime;
   *status = FRC_NetworkCommunication_getMatchTime(&matchTime);
-  return matchTime;
+  return matchTime;*/
+  return 0.0;
 }
 
 void HAL_ObserveUserProgramStarting(void) {
-  FRC_NetworkCommunication_observeUserProgramStarting();
+  //FRC_NetworkCommunication_observeUserProgramStarting();
 }
 
 void HAL_ObserveUserProgramDisabled(void) {
-  FRC_NetworkCommunication_observeUserProgramDisabled();
+  //FRC_NetworkCommunication_observeUserProgramDisabled();
 }
 
 void HAL_ObserveUserProgramAutonomous(void) {
-  FRC_NetworkCommunication_observeUserProgramAutonomous();
+  //FRC_NetworkCommunication_observeUserProgramAutonomous();
 }
 
 void HAL_ObserveUserProgramTeleop(void) {
-  FRC_NetworkCommunication_observeUserProgramTeleop();
+  //FRC_NetworkCommunication_observeUserProgramTeleop();
 }
 
 void HAL_ObserveUserProgramTest(void) {
-  FRC_NetworkCommunication_observeUserProgramTest();
+  //FRC_NetworkCommunication_observeUserProgramTest();
 }
 
 bool HAL_IsNewControlData(void) {
@@ -497,7 +511,7 @@ bool HAL_IsNewControlData(void) {
   // will return false when instead it should return true. However, this at a
   // 20ms rate occurs once every 2.7 years of DS connected runtime, so not
   // worth the cycles to check.
-  thread_local int lastCount{-1};
+  /*thread_local int lastCount{-1};
   int currentCount = 0;
   {
     std::unique_lock<hal::priority_mutex> lock(newDSDataAvailableMutex);
@@ -505,13 +519,14 @@ bool HAL_IsNewControlData(void) {
   }
   if (lastCount == currentCount) return false;
   lastCount = currentCount;
-  return true;
+  return true;*/
+  return false;
 }
 
 /**
  * Waits for the newest DS packet to arrive. Note that this is a blocking call.
  */
-void HAL_WaitForDSData(void) { HAL_WaitForDSDataTimeout(0); }
+void HAL_WaitForDSData(void) { /*HAL_WaitForDSDataTimeout(0);*/ }
 
 /**
  * Waits for the newest DS packet to arrive. If timeout is <= 0, this will wait
@@ -519,7 +534,7 @@ void HAL_WaitForDSData(void) { HAL_WaitForDSDataTimeout(0); }
  * time has passed. Returns true on new data, false on timeout.
  */
 HAL_Bool HAL_WaitForDSDataTimeout(double timeout) {
-  auto timeoutTime =
+  /*auto timeoutTime =
       std::chrono::steady_clock::now() + std::chrono::duration<double>(timeout);
 
   std::unique_lock<hal::priority_mutex> lock(newDSDataAvailableMutex);
@@ -533,7 +548,7 @@ HAL_Bool HAL_WaitForDSDataTimeout(double timeout) {
     } else {
       newDSDataAvailableCond.wait(lock);
     }
-  }
+  }*/
   return true;
 }
 
@@ -545,13 +560,13 @@ extern int NetCommRPCProxy_SetOccurFuncPointer(
 constexpr int32_t refNumber = 42;
 
 static int32_t newDataOccur(uint32_t refNum) {
-  // Since we could get other values, require our specific handle
+  /*// Since we could get other values, require our specific handle
   // to signal our threads
   if (refNum != refNumber) return 0;
   std::lock_guard<hal::priority_mutex> lock(newDSDataAvailableMutex);
   // Nofify all threads
   newDSDataAvailableCounter++;
-  newDSDataAvailableCond.notify_all();
+  newDSDataAvailableCond.notify_all();*/
   return 0;
 }
 
@@ -570,7 +585,7 @@ void HAL_InitializeDriverStation(void) {
   // Second check in case another thread was waiting
   if (initialized) return;
 
-  pthread_create(&thread, NULL, DriverStationThread, NULL);
+  std::thread(DriverStationThread).detach();
 
   initialized = true;
 }

@@ -130,5 +130,6 @@ HAL_Bool HAL_GetRelay(HAL_RelayHandle relayPortHandle, int32_t* status) {
   }
 
   return (relays & (1 << port->channel)) != 0;*/
+  return true;
 }
 }

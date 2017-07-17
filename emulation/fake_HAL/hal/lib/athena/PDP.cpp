@@ -13,11 +13,11 @@
 #include "HAL/Ports.h"
 #include "HAL/cpp/make_unique.h"
 #include "PortsInternal.h"
-#include "ctre/PDP.h"
+//#include "ctre/PDP.h"
 
 using namespace hal;
 
-static std::unique_ptr<PDP> pdp[kNumPDPModules];
+//static std::unique_ptr<PDP> pdp[kNumPDPModules];
 
 static inline bool checkPDPInit(int32_t module, int32_t* status) {
   /*if (!HAL_CheckPDPModule(module)) {

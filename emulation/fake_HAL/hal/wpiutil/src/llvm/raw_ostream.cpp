@@ -52,6 +52,9 @@
 #if defined(_WIN32)
 #include <windows.h>
 
+#undef min
+#undef max
+
 /// Determines if the program is running on Windows 8 or newer. This
 /// reimplements one of the helpers in the Windows 8.1 SDK, which are intended
 /// to supercede raw calls to GetVersionEx. Old SDKs, Cygwin, and MinGW don't

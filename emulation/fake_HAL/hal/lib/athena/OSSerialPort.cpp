@@ -8,9 +8,9 @@
 #include "HAL/OSSerialPort.h"
 
 #include <fcntl.h>
-#include <sys/ioctl.h>
-#include <termios.h>
-#include <unistd.h>
+//#include <sys/ioctl.h>
+//#include <termios.h>
+//#include <unistd.h>
 
 #include <chrono>
 #include <cstring>
@@ -226,6 +226,7 @@ int32_t HAL_WriteOSSerial(HAL_SerialPort port, const char* buffer,
   string[count] = 0;
   printf(string);
   //return write(portHandles[port], buffer, count);
+  return count;
 }
 void HAL_FlushOSSerial(HAL_SerialPort port, int32_t* status) {
   fflush(stdout);

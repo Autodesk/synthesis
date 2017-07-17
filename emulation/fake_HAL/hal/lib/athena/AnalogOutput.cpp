@@ -100,7 +100,8 @@ double HAL_GetAnalogOutput(HAL_AnalogOutputHandle analogOutputHandle,
   }
 
   uint16_t rawValue = analogOutputSystem->readMXP(port->channel, status);
-
-  return rawValue * 5.0 / 0x1000;*/
+  */
+  //return rawValue * 5.0 / 0x1000;
+  return 0.0;
 }
 }

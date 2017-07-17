@@ -139,6 +139,7 @@ int32_t HAL_WriteSerial(HAL_SerialPort port, const char* buffer, int32_t count,
   memcpy(string, buffer, count);
   string[count] = 0;
   printf(string);
+  return count;
   /*uint32_t retCount = 0;
 
   *status =

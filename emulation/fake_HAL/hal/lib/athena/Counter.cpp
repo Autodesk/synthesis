@@ -291,6 +291,7 @@ int32_t HAL_GetCounterSamplesToAverage(HAL_CounterHandle counterHandle,
     return 0;
   }
   return counter->counter->readTimerConfig_AverageSize(status);*/
+  return 0;
 }
 
 /**
