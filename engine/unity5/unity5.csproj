@@ -211,6 +211,7 @@
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
+    <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
     <Compile Include="Assets\Scripts\FEA\ReplayState.cs" />
     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
@@ -242,6 +243,8 @@
     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
     <Compile Include="Assets\Scripts\RobotCamera.cs" />
+    <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
+    <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
     <Compile Include="Assets\Scripts\Settings\Controls.cs" />
     <Compile Include="Assets\Scripts\Settings\Serializer.cs" />
     <Compile Include="Assets\Scripts\Settings\Settings.cs" />
