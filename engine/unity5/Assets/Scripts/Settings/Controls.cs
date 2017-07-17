@@ -6,6 +6,7 @@ public class Controls : MonoBehaviour
     public enum Control { Forward, Backward, Right, Left, ResetRobot, CameraToggle, pwm2Plus, pwm2Neg, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, pwm6Plus, pwm6Neg, Pickup, Release, Spawn};
 
     public static KeyCode[] ControlKey = new KeyCode[20];
+    public static KeyCode[] BackupKeys = new KeyCode[20];
     public static readonly string[] ControlName = { "Move Forward", "Move Backward", "Turn Right", "Turn Left", "Reset Robot", "Toggle Camera", "PWM 2 Positive", "PWM 2 Negative", "PWM 3 Positive", "PWM 3 Negative", "PWM 4 Positive", "PWM 4 Negative", "PWM 5 Positive", "PWM 5 Negative", "PWM 6 Positive", "PWM 6 Negative", "Pick Up Gamepiece", "Release Gamepiece", "Spawn Gamepiece"};
 
     public static void ResetDefaults()
@@ -70,5 +71,19 @@ public class Controls : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public static void disableControls()
+    {
+        ControlKey.CopyTo(BackupKeys, 0);
+        for (int i = 0; i < ControlKey.Length; i++)
+        {
+            ControlKey[i] = KeyCode.None;
+        }
+    }
+
+    public static void enableControls()
+    {
+        BackupKeys.CopyTo(BackupKeys, 0);
     }
 }

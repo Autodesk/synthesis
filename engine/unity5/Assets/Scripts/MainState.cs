@@ -187,6 +187,8 @@ public class MainState : SimState
         );
 
         gui.Render();
+
+        UserMessageManager.Render();
     }
 
     void CreateOrientWindow()
@@ -300,6 +302,8 @@ public class MainState : SimState
         //Start simulator by prompting user to customize spawn point
         resetting = false;
         beginReset = false;
+
+        Controls.LoadControls();
     }
 
     public override void Update()

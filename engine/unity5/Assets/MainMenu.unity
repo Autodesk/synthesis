@@ -3660,7 +3660,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   list: []
-  setting: 
+  setting: Screen Mode
 --- !u!114 &458303893
 MonoBehaviour:
   m_ObjectHideFlags: 0
