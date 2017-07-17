@@ -148,7 +148,7 @@ namespace Assets.Scripts.FEA
         {
             this.contactPoints = contactPoints.ToList();
             this.trackers = trackers;
-            
+
             playbackMode = PlaybackMode.Paused;
             firstFrame = true;
             active = false;
@@ -495,7 +495,7 @@ namespace Assets.Scripts.FEA
             }
 
             if (Input.GetKey(KeyCode.Return))
-                StateMachine.Instance.PopState();    
+                StateMachine.Instance.PopState();
         }
 
         /// <summary>
