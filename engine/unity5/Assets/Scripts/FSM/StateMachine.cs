@@ -15,7 +15,7 @@ namespace Assets.Scripts.FSM
         /// The current state in the StateMachine.
         /// </summary>
         public SimState CurrentState { get; private set; }
-        
+
         /// <summary>
         /// The global StateMachine instance.
         /// </summary>
@@ -101,7 +101,7 @@ namespace Assets.Scripts.FSM
                 Debug.LogError("\"" + defaultStateName + "\" does not extend SimState!");
             else
                 PushState(defaultState);
-            
+
         }
 
         /// <summary>

@@ -221,6 +221,7 @@
     <Compile Include="Assets\Scripts\FSM\StateMachineEditor.cs" />
     <Compile Include="Assets\Scripts\Fun\Rainbow.cs" />
     <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
+    <Compile Include="Assets\Scripts\GUI\EditorWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Extensions.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
@@ -241,6 +242,9 @@
     <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
+    <Compile Include="Assets\Scripts\RobotCamera.cs" />
+    <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
+    <Compile Include="Assets\Scripts\Sensors\UltraSensor.cs" />
     <Compile Include="Assets\Scripts\Settings\Controls.cs" />
     <Compile Include="Assets\Scripts\Settings\Serializer.cs" />
     <Compile Include="Assets\Scripts\Settings\Settings.cs" />

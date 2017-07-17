@@ -312,4 +312,16 @@ public class DynamicCamera : MonoBehaviour
 
         return lagScalar;
     }
+
+    /// <summary>
+    /// Switch to the next camera state
+    /// </summary>
+    /// <param name="currentCameraState"></param>
+    public void ToggleCameraState(CameraState currentCameraState)
+    {
+        if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
+        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
+        if (_cameraState != null) _cameraState.Update();
+    }
 }
