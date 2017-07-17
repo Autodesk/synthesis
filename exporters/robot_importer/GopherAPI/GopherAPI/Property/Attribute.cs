@@ -14,7 +14,7 @@ namespace GopherAPI.Properties
     /// <summary>
     /// This struct will store all special attribute information except color, which is stored in meshes
     /// </summary>
-    public struct Attribute
+    public struct STLAttribute
     {
         public readonly AttribType Type;
         /// <summary>
@@ -23,24 +23,72 @@ namespace GopherAPI.Properties
         public readonly UInt32 AttributeID;
         public readonly float Friction;
         public readonly bool IsDynamic;
-        public readonly float? Mass;
+        private readonly float? mass;
 
         /// <summary>
         /// For Box Colliders
         /// </summary>
-        public readonly float? XScale;
+        private readonly float? xScale;
         /// <summary>
         /// For Box Colliders
         /// </summary>
-        public readonly float? YScale;
+        private readonly float? yScale;
         /// <summary>
         /// For Box Colliders
         /// </summary>
-        public readonly float? ZScale;
+        private readonly float? zScale;
         /// <summary>
         /// For Sphere Colliders
         /// </summary>
-        public readonly float? GScale;
+        private readonly float? gScale;
+
+        #region Properties
+        public float XScale
+        {
+            get
+            {
+                if (xScale == null)
+                    throw new Exception("ERROR: xScale is null");
+                return (float)xScale;
+            }
+        }
+        public float YScale
+        {
+            get
+            {
+                if (yScale == null)
+                    throw new Exception("ERROR: yScale is null");
+                return (float)yScale;
+            }
+        }
+        public float ZScale
+        {
+            get
+            {
+                if (zScale == null)
+                    throw new Exception("ERROR: zScale is null");
+                return (float)zScale;
+            }
+        }
+        public float GScale
+        {
+            get
+            {
+                if (gScale == null)
+                    throw new Exception("ERROR: gScale is null");
+                return (float)gScale;
+            }
+        }
+        public float Mass
+        {
+            get
+            {
+                if (mass == null)
+                    throw new Exception("ERROR: mass is null");
+                return (float)mass;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Note: mass, xScale, yScale, zScale, and gScale are nullable, but an exception will be thrown if they are null and values are expected. 
@@ -55,16 +103,16 @@ namespace GopherAPI.Properties
         /// <param name="yScale"></param>
         /// <param name="zScale"></param>
         /// <param name="gScale"></param>
-        public Attribute(AttribType type, UInt32 attributeID, float friction, bool isDynamic, float? mass, float? xScale, float? yScale, float? zScale, float? gScale)
+        public STLAttribute(AttribType type, UInt32 attributeID, float friction, bool isDynamic, float? mass, float? xScale, float? yScale, float? zScale, float? gScale)
         {
             Type = type;
             AttributeID = attributeID;
             Friction = friction;
             IsDynamic = isDynamic;
             if(IsDynamic)
-                Mass = mass;
+                this.mass = mass;
             else
-                Mass = null;
+                this.mass = null;
 
             switch (Type)
             {
@@ -76,24 +124,24 @@ namespace GopherAPI.Properties
                     if (zScale == null)
                         throw new Exception("ERROR: Value expected for zScale");
 
-                    XScale = xScale;
-                    YScale = yScale;
-                    ZScale = zScale;
-                    GScale = null;
+                    this.xScale = xScale;
+                    this.yScale = yScale;
+                    this.zScale = zScale;
+                    this.gScale = null;
                     break;
                 case AttribType.SPHERE_COLLIDER:
                     if (gScale == null)
                         throw new Exception("ERROR: Value expected for gScale");
-                    XScale = null;
-                    YScale = null;
-                    ZScale = null;
-                    GScale = gScale;
+                    this.xScale = null;
+                    this.yScale = null;
+                    this.zScale = null;
+                    this.gScale = gScale;
                     break;
                 case AttribType.MESH_COLLIDER:
-                    XScale = null;
-                    YScale = null;
-                    ZScale = null;
-                    GScale = null;
+                    this.xScale = null;
+                    this.yScale = null;
+                    this.zScale = null;
+                    this.gScale = null;
                     break;
                 default:
                     throw new Exception("ERROR: Type undefined or null or something. Ya dun goofed");

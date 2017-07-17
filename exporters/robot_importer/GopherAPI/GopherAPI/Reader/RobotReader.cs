@@ -90,7 +90,7 @@ namespace GopherAPI.Reader
 
                 while (pos < RawFile.Length)
                 {
-                    Temp.ID = Reader.ReadUInt32(); pos += 4;
+                    Temp.ID = (SectionType)Reader.ReadUInt32(); pos += 4;
                     Temp.Length = Reader.ReadUInt32(); pos += 4;
                     Temp.Data = Reader.ReadBytes((int)Temp.Length); pos += (int)Temp.Length;
                     Sections.Add(Temp);
@@ -105,7 +105,7 @@ namespace GopherAPI.Reader
         /// <param name="raw"></param>
         private void PreProcessSTL(Section raw)
         {
-            if(raw.ID != 1)
+            if(raw.ID != (SectionType)1)
             {
                 throw new Exception("ERROR: Invalid Section passed to RobotReader.PreProcessSTL");
             }
@@ -118,22 +118,22 @@ namespace GopherAPI.Reader
                 {
                     temp.MeshID = Reader.ReadUInt32();
 
-                    temp.TransMat[0, 0] = Reader.ReadSingle();
-                    temp.TransMat[1, 0] = Reader.ReadSingle();
-                    temp.TransMat[2, 0] = Reader.ReadSingle();
-                    temp.TransMat[3, 0] = Reader.ReadSingle();
-                    temp.TransMat[0, 1] = Reader.ReadSingle();
-                    temp.TransMat[1, 1] = Reader.ReadSingle();
-                    temp.TransMat[2, 1] = Reader.ReadSingle();
-                    temp.TransMat[3, 1] = Reader.ReadSingle();
-                    temp.TransMat[0, 2] = Reader.ReadSingle();
-                    temp.TransMat[1, 2] = Reader.ReadSingle();
-                    temp.TransMat[2, 2] = Reader.ReadSingle();
-                    temp.TransMat[3, 2] = Reader.ReadSingle();
-                    temp.TransMat[0, 3] = Reader.ReadSingle();
-                    temp.TransMat[1, 3] = Reader.ReadSingle();
-                    temp.TransMat[2, 3] = Reader.ReadSingle();
-                    temp.TransMat[3, 3] = Reader.ReadSingle();
+                    //temp.TransMat[0, 0] = Reader.ReadSingle();
+                    //temp.TransMat[1, 0] = Reader.ReadSingle();
+                    //temp.TransMat[2, 0] = Reader.ReadSingle();
+                    //temp.TransMat[3, 0] = Reader.ReadSingle();
+                    //temp.TransMat[0, 1] = Reader.ReadSingle();
+                    //temp.TransMat[1, 1] = Reader.ReadSingle();
+                    //temp.TransMat[2, 1] = Reader.ReadSingle();
+                    //temp.TransMat[3, 1] = Reader.ReadSingle();
+                    //temp.TransMat[0, 2] = Reader.ReadSingle();
+                    //temp.TransMat[1, 2] = Reader.ReadSingle();
+                    //temp.TransMat[2, 2] = Reader.ReadSingle();
+                    //temp.TransMat[3, 2] = Reader.ReadSingle();
+                    //temp.TransMat[0, 3] = Reader.ReadSingle();
+                    //temp.TransMat[1, 3] = Reader.ReadSingle();
+                    //temp.TransMat[2, 3] = Reader.ReadSingle();
+                    //temp.TransMat[3, 3] = Reader.ReadSingle();
 
                     Reader.ReadBytes(80);
 
@@ -154,7 +154,7 @@ namespace GopherAPI.Reader
         {
             foreach(var sect in Sections)
             {
-                if (sect.ID == 1)
+                if (sect.ID == (SectionType)1)
                     PreProcessSTL(sect);
             }
         }
@@ -186,7 +186,7 @@ namespace GopherAPI.Reader
                             Reader.ReadBytes(2);
                     }
                 }
-                LoadedRobot.Meshes.Add(new Mesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, uint.MaxValue, rawMesh.TransMat));
+                LoadedRobot.Meshes.Add(new Mesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, uint.MaxValue, null/*rawMesh.TransMat*/));
 
             }
         }
@@ -199,7 +199,7 @@ namespace GopherAPI.Reader
         /// <param name="raw"></param>
         private void ProcessAttributes(Section raw)
         {
-            if (raw.ID != 2)
+            if (raw.ID != (SectionType)2)
             {
                 throw new Exception("ERROR: Invalid Section passed to PreProcessAttribs");
             }
@@ -221,11 +221,11 @@ namespace GopherAPI.Reader
                             TempIsDynamic = Reader.ReadBoolean();
                             if (TempIsDynamic)
                             {
-                                LoadedRobot.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFriction, TempIsDynamic, Reader.ReadSingle(), TempX, TempY, TempZ, null));
+                                LoadedRobot.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFriction, TempIsDynamic, Reader.ReadSingle(), TempX, TempY, TempZ, null));
                             }
                             else
                             {
-                                LoadedRobot.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFriction, TempIsDynamic, null, TempX, TempY, TempZ, null));
+                                LoadedRobot.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFriction, TempIsDynamic, null, TempX, TempY, TempZ, null));
 
                             }
                             break;
@@ -235,11 +235,11 @@ namespace GopherAPI.Reader
                             TempIsDynamic = Reader.ReadBoolean();
                             if (TempIsDynamic)
                             {
-                                LoadedRobot.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFric, TempIsDynamic, Reader.ReadSingle(), null, null, null, TempG));
+                                LoadedRobot.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFric, TempIsDynamic, Reader.ReadSingle(), null, null, null, TempG));
                             }
                             else
                             {
-                                LoadedRobot.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFric, TempIsDynamic, null, null, null, null, TempG));
+                                LoadedRobot.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFric, TempIsDynamic, null, null, null, null, TempG));
                             }
 
                             break;
@@ -248,11 +248,11 @@ namespace GopherAPI.Reader
                             TempIsDynamic = Reader.ReadBoolean();
                             if (TempIsDynamic)
                             {
-                                LoadedRobot.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempF, TempIsDynamic, Reader.ReadSingle(), null, null, null, null));
+                                LoadedRobot.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempF, TempIsDynamic, Reader.ReadSingle(), null, null, null, null));
                             }
                             else
                             {
-                                LoadedRobot.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempF, TempIsDynamic, null, null, null, null, null));
+                                LoadedRobot.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempF, TempIsDynamic, null, null, null, null, null));
                             }
                             break;
                     }
@@ -267,173 +267,173 @@ namespace GopherAPI.Reader
         {
             foreach (var sect in Sections)
             {
-                if (sect.ID == 2)
+                if (sect.ID == (SectionType)2)
                     ProcessAttributes(sect);
             }
         }
 
-        /// <summary>
-        /// Throws an exception if raw.ID is not 3
-        /// </summary>
-        /// <param name="raw"></param>
-        private void ProcessJoints(Section raw)
-        {
-            if (raw.ID != 3)
-            {
-                throw new Exception("ERROR: Invalid Section passed to ProcessJoints");
-            }
+        ///// <summary>
+        ///// Throws an exception if raw.ID is not 3
+        ///// </summary>
+        ///// <param name="raw"></param>
+        //private void ProcessJoints(Section raw)
+        //{
+        //    if (raw.ID != (SectionType)3)
+        //    {
+        //        throw new Exception("ERROR: Invalid Section passed to ProcessJoints");
+        //    }
 
-            using (var Reader = new BinaryReader(new MemoryStream(raw.Data)))
-            {
-                uint JointCount = Reader.ReadUInt32();
+        //    using (var Reader = new BinaryReader(new MemoryStream(raw.Data)))
+        //    {
+        //        uint JointCount = Reader.ReadUInt32();
 
-                for (uint i = 0; i < JointCount; i++)
-                {
-                    byte[] GenericData = Reader.ReadBytes(46);
+        //        for (uint i = 0; i < JointCount; i++)
+        //        {
+        //            byte[] GenericData = Reader.ReadBytes(46);
 
-                    uint TempJointID = Reader.ReadUInt32();
+        //            uint TempJointID = Reader.ReadUInt32();
 
-                    JAType Type = (JAType)Reader.ReadUInt16();
-                    bool HasLimits;
-                    switch (Type)
-                    {
-                        default:
-                            LoadedRobot.Joints.Add(new Joint(GenericData, new NoDriver()));
-                            break;
-                        case JAType.MOTOR:
-                            bool PortType = Reader.ReadBoolean();
-                            float Port = Reader.ReadSingle();
+        //            JAType Type = (JAType)Reader.ReadUInt16();
+        //            bool HasLimits;
+        //            switch (Type)
+        //            {
+        //                default:
+        //                    LoadedRobot.Joints.Add(new Joint(GenericData));
+        //                    break;
+        //                case JAType.MOTOR:
+        //                    bool PortType = Reader.ReadBoolean();
+        //                    float Port = Reader.ReadSingle();
 
-                            HasLimits = Reader.ReadBoolean();
+        //                    HasLimits = Reader.ReadBoolean();
 
-                            if (HasLimits)
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new Motor(PortType, Port, HasLimits, (Friction)Reader.ReadUInt16(),
-                                    Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
-                            }
-                            else
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new Motor(PortType, Port, HasLimits, Friction.NO_LIMITS,
-                                    Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
-                            }
-                            break;
-                        case JAType.SERVO:
-                            float CANPort = Reader.ReadSingle();
-                            HasLimits = Reader.ReadBoolean();
+        //                    if (HasLimits)
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new Motor(PortType, Port, HasLimits, (Friction)Reader.ReadUInt16(),
+        //                            Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
+        //                    }
+        //                    else
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new Motor(PortType, Port, HasLimits, Friction.NO_LIMITS,
+        //                            Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
+        //                    }
+        //                    break;
+        //                case JAType.SERVO:
+        //                    float CANPort = Reader.ReadSingle();
+        //                    HasLimits = Reader.ReadBoolean();
 
-                            if (HasLimits)
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new Servo(CANPort, HasLimits, (Friction)Reader.ReadUInt16())));
-                            }
-                            else
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new Servo(CANPort, HasLimits, Friction.NO_LIMITS)));
-                            break;
-                        case JAType.BUMPER_PNUEMATIC:
-                            float Port1 = Reader.ReadSingle();
-                            float Port2 = Reader.ReadSingle();
-                            HasLimits = Reader.ReadBoolean();
+        //                    if (HasLimits)
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new Servo(CANPort, HasLimits, (Friction)Reader.ReadUInt16())));
+        //                    }
+        //                    else
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new Servo(CANPort, HasLimits, Friction.NO_LIMITS)));
+        //                    break;
+        //                case JAType.BUMPER_PNUEMATIC:
+        //                    float Port1 = Reader.ReadSingle();
+        //                    float Port2 = Reader.ReadSingle();
+        //                    HasLimits = Reader.ReadBoolean();
 
-                            if (HasLimits)
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new BumperPnuematic(Port1, Port2, HasLimits, (Friction)Reader.ReadUInt16(),
-                                    (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
-                            }
-                            else
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new BumperPnuematic(Port1, Port2, HasLimits, Friction.NO_LIMITS,
-                                    (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
-                            }
-                            break;
-                        case JAType.RELAY_PNUEMATIC:
-                            float relayPort = Reader.ReadSingle();
-                            HasLimits = Reader.ReadBoolean();
-                            if (HasLimits)
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new RelayPnuematic(relayPort, HasLimits, (Friction)Reader.ReadUInt16(),
-                                    (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
-                            }
-                            else
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new RelayPnuematic(relayPort, HasLimits, Friction.NO_LIMITS,
-                                    (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
-                            }
+        //                    if (HasLimits)
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new BumperPnuematic(Port1, Port2, HasLimits, (Friction)Reader.ReadUInt16(),
+        //                            (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
+        //                    }
+        //                    else
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new BumperPnuematic(Port1, Port2, HasLimits, Friction.NO_LIMITS,
+        //                            (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
+        //                    }
+        //                    break;
+        //                case JAType.RELAY_PNUEMATIC:
+        //                    float relayPort = Reader.ReadSingle();
+        //                    HasLimits = Reader.ReadBoolean();
+        //                    if (HasLimits)
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new RelayPnuematic(relayPort, HasLimits, (Friction)Reader.ReadUInt16(),
+        //                            (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
+        //                    }
+        //                    else
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new RelayPnuematic(relayPort, HasLimits, Friction.NO_LIMITS,
+        //                            (InternalDiameter)Reader.ReadUInt16(), (Pressure)Reader.ReadUInt16())));
+        //                    }
 
-                            break;
-                        case JAType.WORM_SCREW:
-                            PortType = Reader.ReadBoolean();
-                            Port = Reader.ReadSingle();
-                            HasLimits = Reader.ReadBoolean();
-                            if (HasLimits)
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new WormScrew(PortType, Port, HasLimits, (Friction)Reader.ReadUInt16())));
-                            }
-                            else
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new WormScrew(PortType, Port, HasLimits, Friction.NO_LIMITS)));
-                            }
-                            break;
-                        case JAType.DUAL_MOTOR:
-                            PortType = Reader.ReadBoolean();
-                            Port1 = Reader.ReadSingle();
-                            Port2 = Reader.ReadSingle();
+        //                    break;
+        //                case JAType.WORM_SCREW:
+        //                    PortType = Reader.ReadBoolean();
+        //                    Port = Reader.ReadSingle();
+        //                    HasLimits = Reader.ReadBoolean();
+        //                    if (HasLimits)
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new WormScrew(PortType, Port, HasLimits, (Friction)Reader.ReadUInt16())));
+        //                    }
+        //                    else
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new WormScrew(PortType, Port, HasLimits, Friction.NO_LIMITS)));
+        //                    }
+        //                    break;
+        //                case JAType.DUAL_MOTOR:
+        //                    PortType = Reader.ReadBoolean();
+        //                    Port1 = Reader.ReadSingle();
+        //                    Port2 = Reader.ReadSingle();
 
-                            HasLimits = Reader.ReadBoolean();
+        //                    HasLimits = Reader.ReadBoolean();
 
-                            if (HasLimits)
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new DualMotor(PortType, Port1, Port2, HasLimits, (Friction)Reader.ReadUInt16(),
-                                    Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
-                            }
-                            else
-                            {
-                                LoadedRobot.Joints.Add(new Joint(GenericData, new DualMotor(PortType, Port1, Port2, HasLimits, Friction.NO_LIMITS,
-                                    Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
-                            }
-                            break;
-                        case JAType.ELEVATOR:
-                            PortType = Reader.ReadBoolean();
-                            Port = Reader.ReadSingle();
-                            HasLimits = Reader.ReadBoolean();
-                            Friction frict;
-                            if (HasLimits)
-                                frict = (Friction)Reader.ReadUInt16();
-                            else
-                                frict = Friction.NO_LIMITS;
-                            bool HasBrakes = Reader.ReadBoolean();
-                            float BrakePort1, BrakePort2;
-                            if (HasBrakes)
-                            {
-                                BrakePort1 = Reader.ReadSingle();
-                                BrakePort2 = Reader.ReadSingle();
-                            }
-                            else
-                            {
-                                BrakePort1 = float.MaxValue;
-                                BrakePort2 = float.MaxValue;
-                            }
-                            Stages stages = (Stages)Reader.ReadUInt16();
-                            float GearIn = Reader.ReadSingle();
-                            float GearOut = Reader.ReadSingle();
+        //                    if (HasLimits)
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new DualMotor(PortType, Port1, Port2, HasLimits, (Friction)Reader.ReadUInt16(),
+        //                            Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
+        //                    }
+        //                    else
+        //                    {
+        //                        LoadedRobot.Joints.Add(new Joint(GenericData, new DualMotor(PortType, Port1, Port2, HasLimits, Friction.NO_LIMITS,
+        //                            Reader.ReadBoolean(), (Wheel)Reader.ReadUInt16(), Reader.ReadUInt16(), Reader.ReadUInt16())));
+        //                    }
+        //                    break;
+        //                case JAType.ELEVATOR:
+        //                    PortType = Reader.ReadBoolean();
+        //                    Port = Reader.ReadSingle();
+        //                    HasLimits = Reader.ReadBoolean();
+        //                    Friction frict;
+        //                    if (HasLimits)
+        //                        frict = (Friction)Reader.ReadUInt16();
+        //                    else
+        //                        frict = Friction.NO_LIMITS;
+        //                    bool HasBrakes = Reader.ReadBoolean();
+        //                    float BrakePort1, BrakePort2;
+        //                    if (HasBrakes)
+        //                    {
+        //                        BrakePort1 = Reader.ReadSingle();
+        //                        BrakePort2 = Reader.ReadSingle();
+        //                    }
+        //                    else
+        //                    {
+        //                        BrakePort1 = float.MaxValue;
+        //                        BrakePort2 = float.MaxValue;
+        //                    }
+        //                    Stages stages = (Stages)Reader.ReadUInt16();
+        //                    float GearIn = Reader.ReadSingle();
+        //                    float GearOut = Reader.ReadSingle();
 
-                            LoadedRobot.Joints.Add(new Joint(GenericData, new Elevator(PortType, Port, HasLimits, frict, HasBrakes, BrakePort1, BrakePort2, stages, GearIn, GearOut)));
-                            break;
-                    }
+        //                    LoadedRobot.Joints.Add(new Joint(GenericData, new Elevator(PortType, Port, HasLimits, frict, HasBrakes, BrakePort1, BrakePort2, stages, GearIn, GearOut)));
+        //                    break;
+        //            }
 
-                }
-            }
-        }
+        //        }
+        //    }
+        //}
 
-        /// <summary>
-        /// Step 5/5: Parses the raw Joint and Joint Attribute data.
-        /// </summary>
-        public void ProcessJoints()
-        {
-            foreach (var sect in Sections)
-            {
-                if (sect.ID == 3)
-                    ProcessJoints(sect);
-            }
-        }
+        ///// <summary>
+        ///// Step 5/5: Parses the raw Joint and Joint STLAttribute data.
+        ///// </summary>
+        //public void ProcessJoints()
+        //{
+        //    foreach (var sect in Sections)
+        //    {
+        //        if (sect.ID == (SectionType)3)
+        //            ProcessJoints(sect);
+        //    }
+        //}
 
         /// <summary>
         /// Step 1.5/5: Parses thumbnail image (not technically needed to load the robot).
@@ -459,7 +459,7 @@ namespace GopherAPI.Reader
             PreProcessSTL();
             ProcessMeshes();
             ProcessAttributes();
-            ProcessJoints();
+            //ProcessJoints();
         }
 
         /// <summary>
