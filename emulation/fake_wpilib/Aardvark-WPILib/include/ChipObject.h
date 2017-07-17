@@ -1,31 +1,46 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __ChipObject_h__
-#define __ChipObject_h__
+#pragma once
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 
-#include "ChipObject/NiRio.h"
+#include <stdint.h>
 
-#include "ChipObject/tAccumulator.h"
-#include "ChipObject/tAI.h"
-#include "ChipObject/tAlarm.h"
-#include "ChipObject/tAnalogTrigger.h"
-#include "ChipObject/tCounter.h"
-#include "ChipObject/tDIO.h"
-#include "ChipObject/tDMA.h"
-//#include "ChipObject/tDMAManager.h"
-#include "ChipObject/tEncoder.h"
-#include "ChipObject/tGlobal.h"
-#include "ChipObject/tInterrupt.h"
-#include "ChipObject/tInterruptManager.h"
-#include "ChipObject/tSolenoid.h"
-#include "ChipObject/tSPI.h"
-#include "ChipObject/tWatchdog.h"
+#include "FRC_FPGA_ChipObject/RoboRIO_FRC_ChipObject_Aliases.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/nInterfaceGlobals.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAI.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAO.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccel.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAccumulator.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAlarm.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tAnalogTrigger.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tBIST.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tCounter.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tDIO.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tDMA.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tEncoder.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tGlobal.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tInterrupt.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tPWM.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tPower.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tRelay.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tSPI.h"
+#include "FRC_FPGA_ChipObject/nRoboRIO_FPGANamespace/tSysWatchdog.h"
+#include "FRC_FPGA_ChipObject/tDMAChannelDescriptor.h"
+#include "FRC_FPGA_ChipObject/tDMAManager.h"
+#include "FRC_FPGA_ChipObject/tInterruptManager.h"
+#include "FRC_FPGA_ChipObject/tSystem.h"
+#include "FRC_FPGA_ChipObject/tSystemInterface.h"
 
+namespace hal {
 using namespace nFPGA;
-using namespace nFRC_2012_1_6_4;
+using namespace nRoboRIO_FPGANamespace;
+}  // namespace hal
 
-#endif
+#pragma GCC diagnostic pop

@@ -1,61 +1,80 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __SerialPort_h__
-#define __SerialPort_h__
+#pragma once
+
+#include <string>
 
 #include "ErrorBase.h"
+#include "llvm/StringRef.h"
 
+namespace frc {
 
 /**
- * Driver for the RS-232 serial port on the cRIO.
- * 
+ * Driver for the RS-232 serial port on the roboRIO.
+ *
  * The current implementation uses the VISA formatted I/O mode.  This means that
- *   all traffic goes through the fomatted buffers.  This allows the intermingled
- *   use of Printf(), Scanf(), and the raw buffer accessors Read() and Write().
- * 
+ * all traffic goes through the fomatted buffers.  This allows the intermingled
+ * use of Printf(), Scanf(), and the raw buffer accessors Read() and Write().
+ *
  * More information can be found in the NI-VISA User Manual here:
  *   http://www.ni.com/pdf/manuals/370423a.pdf
  * and the NI-VISA Programmer's Reference Manual here:
  *   http://www.ni.com/pdf/manuals/370132c.pdf
  */
-class SerialPort : public ErrorBase
-{
-public:
-	typedef enum {kParity_None=0, kParity_Odd=1, kParity_Even=2, kParity_Mark=3, kParity_Space=4} Parity;
-	typedef enum {kStopBits_One=10, kStopBits_OnePointFive=15, kStopBits_Two=20} StopBits;
-	typedef enum {kFlowControl_None=0, kFlowControl_XonXoff=1, kFlowControl_RtsCts=2, kFlowControl_DtrDsr=4} FlowControl;
-	typedef enum {kFlushOnAccess=1, kFlushWhenFull=2} WriteBufferMode;
+class SerialPort : public ErrorBase {
+ public:
+  enum Parity {
+    kParity_None = 0,
+    kParity_Odd = 1,
+    kParity_Even = 2,
+    kParity_Mark = 3,
+    kParity_Space = 4
+  };
+  enum StopBits {
+    kStopBits_One = 10,
+    kStopBits_OnePointFive = 15,
+    kStopBits_Two = 20
+  };
+  enum FlowControl {
+    kFlowControl_None = 0,
+    kFlowControl_XonXoff = 1,
+    kFlowControl_RtsCts = 2,
+    kFlowControl_DtrDsr = 4
+  };
+  enum WriteBufferMode { kFlushOnAccess = 1, kFlushWhenFull = 2 };
+  enum Port { kOnboard = 0, kMXP = 1, kUSB = 2, kUSB1 = 2, kUSB2 = 3 };
 
-	SerialPort(uint32_t baudRate, uint8_t dataBits = 8, Parity parity = kParity_None, StopBits stopBits = kStopBits_One);
-	~SerialPort();
-	void SetFlowControl(FlowControl flowControl);
-	void EnableTermination(char terminator = '\n');
-	void DisableTermination();
-	int32_t GetBytesReceived();
-	void Printf(const char *writeFmt, ...);
-	void Scanf(const char *readFmt, ...);
-	uint32_t Read(char *buffer, int32_t count);
-	uint32_t Write(const char *buffer, int32_t count);
-	void SetTimeout(float timeout);
-	void SetReadBufferSize(uint32_t size);
-	void SetWriteBufferSize(uint32_t size);
-	void SetWriteBufferMode(WriteBufferMode mode);
-	void Flush();
-	void Reset();
+  SerialPort(int baudRate, Port port = kOnboard, int dataBits = 8,
+             Parity parity = kParity_None, StopBits stopBits = kStopBits_One);
+  ~SerialPort();
 
-	/*
-	 * Do not call me!
-	 */
-	//void _internalHandler(uint32_t port, uint32_t eventType, uint32_t event);
-private:
-	uint32_t m_resourceManagerHandle;
-	uint32_t m_portHandle;
-	bool m_consoleModeEnabled;
-	DISALLOW_COPY_AND_ASSIGN(SerialPort);
+  SerialPort(const SerialPort&) = delete;
+  SerialPort& operator=(const SerialPort&) = delete;
+
+  void SetFlowControl(FlowControl flowControl);
+  void EnableTermination(char terminator = '\n');
+  void DisableTermination();
+  int GetBytesReceived();
+  int Read(char* buffer, int count);
+  int Write(const char* buffer, int count);
+  int Write(llvm::StringRef buffer);
+  void SetTimeout(double timeout);
+  void SetReadBufferSize(int size);
+  void SetWriteBufferSize(int size);
+  void SetWriteBufferMode(WriteBufferMode mode);
+  void Flush();
+  void Reset();
+
+ private:
+  int m_resourceManagerHandle = 0;
+  int m_portHandle = 0;
+  bool m_consoleModeEnabled = false;
+  int m_port;
 };
 
-#endif
+}  // namespace frc

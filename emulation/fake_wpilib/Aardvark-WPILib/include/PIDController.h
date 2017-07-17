@@ -1,108 +1,153 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef PIDCONTROLLER_H_
-#define PIDCONTROLLER_H_
+#pragma once
+
+#include <atomic>
+#include <memory>
+#include <queue>
+#include <string>
 
 #include "Base.h"
 #include "Controller.h"
+#include "HAL/cpp/priority_mutex.h"
 #include "LiveWindow/LiveWindow.h"
+#include "Notifier.h"
+#include "PIDInterface.h"
+#include "PIDSource.h"
+#include "Timer.h"
+
+namespace frc {
 
 class PIDOutput;
-class PIDSource;
-class Notifier;
 
 /**
  * Class implements a PID Control Loop.
- * 
+ *
  * Creates a separate thread which reads the given PIDSource and takes
- * care of the integral calculations, as well as writing the given
- * PIDOutput
+ * care of the integral calculations, as well as writing the given PIDOutput.
+ *
+ * This feedback controller runs in discrete time, so time deltas are not used
+ * in the integral and derivative calculations. Therefore, the sample rate
+ * affects the controller's behavior for a given set of PID constants.
  */
-class PIDController : public LiveWindowSendable, public Controller, public ITableListener
-{
-public:
-	PIDController(float p, float i, float d,
-					PIDSource *source, PIDOutput *output,
-					float period = 0.05);
-	PIDController(float p, float i, float d, float f,
-					PIDSource *source, PIDOutput *output,
-					float period = 0.05);
-	virtual ~PIDController();
-	virtual float Get();
-	virtual void SetContinuous(bool continuous = true);
-	virtual void SetInputRange(float minimumInput, float maximumInput);
-	virtual void SetOutputRange(float mimimumOutput, float maximumOutput);
-	virtual void SetPID(float p, float i, float d);
-	virtual void SetPID(float p, float i, float d, float f);
-	virtual float GetP();
-	virtual float GetI();
-	virtual float GetD();
-	virtual float GetF();
-	
-	virtual void SetSetpoint(float setpoint);
-	virtual float GetSetpoint();
+class PIDController : public LiveWindowSendable,
+                      public PIDInterface,
+                      public ITableListener {
+ public:
+  PIDController(double p, double i, double d, PIDSource* source,
+                PIDOutput* output, double period = 0.05);
+  PIDController(double p, double i, double d, double f, PIDSource* source,
+                PIDOutput* output, double period = 0.05);
+  virtual ~PIDController();
 
-	virtual float GetError();
-	
-	virtual void SetTolerance(float percent);
-	virtual void SetAbsoluteTolerance(float absValue);
-	virtual void SetPercentTolerance(float percentValue);
-	virtual bool OnTarget();
-	
-	virtual void Enable();
-	virtual void Disable();
-	virtual bool IsEnabled();
-	
-	virtual void Reset();
-	
-	virtual void InitTable(ITable* table);
+  PIDController(const PIDController&) = delete;
+  PIDController& operator=(const PIDController) = delete;
 
-private:
-	float m_P;			// factor for "proportional" control
-	float m_I;			// factor for "integral" control
-	float m_D;			// factor for "derivative" control
-	float m_F;			// factor for "feed forward" control
-	float m_maximumOutput;	// |maximum output|
-	float m_minimumOutput;	// |minimum output|
-	float m_maximumInput;		// maximum input - limit setpoint to this
-	float m_minimumInput;		// minimum input - limit setpoint to this
-	bool m_continuous;	// do the endpoints wrap around? eg. Absolute encoder
-	bool m_enabled; 			//is the pid controller enabled
-	float m_prevError;	// the prior sensor input (used to compute velocity)
-	double m_totalError; //the sum of the errors for use in the integral calc
-	enum {kAbsoluteTolerance, kPercentTolerance, kNoTolerance} m_toleranceType;
-	float m_tolerance;	//the percetage or absolute error that is considered on target
-	float m_setpoint;
-	float m_error;
-	float m_result;
-	float m_period;
-	
-	ReentrantSemaphore m_semaphore;
-	
-	PIDSource *m_pidInput;
-	PIDOutput *m_pidOutput;
-	Notifier *m_controlLoop;
+  virtual double Get() const;
+  virtual void SetContinuous(bool continuous = true);
+  virtual void SetInputRange(double minimumInput, double maximumInput);
+  virtual void SetOutputRange(double minimumOutput, double maximumOutput);
+  void SetPID(double p, double i, double d) override;
+  virtual void SetPID(double p, double i, double d, double f);
+  double GetP() const override;
+  double GetI() const override;
+  double GetD() const override;
+  virtual double GetF() const;
 
-	void Initialize(float p, float i, float d, float f,
-					PIDSource *source, PIDOutput *output,
-					float period = 0.05);
-	static void CallCalculate(void *controller);
-	
-	virtual ITable* GetTable();
-	virtual std::string GetSmartDashboardType();
-	virtual void ValueChanged(ITable* source, const std::string& key, EntryValue value, bool isNew);
-	virtual void UpdateTable();
-	virtual void StartLiveWindowMode();
-	virtual void StopLiveWindowMode();
-protected:
-	ITable* m_table;
-	void Calculate();
+  void SetSetpoint(double setpoint) override;
+  double GetSetpoint() const override;
+  double GetDeltaSetpoint() const;
 
-	DISALLOW_COPY_AND_ASSIGN(PIDController);
+  virtual double GetError() const;
+  virtual double GetAvgError() const;
+
+  virtual void SetPIDSourceType(PIDSourceType pidSource);
+  virtual PIDSourceType GetPIDSourceType() const;
+
+  virtual void SetTolerance(double percent);
+  virtual void SetAbsoluteTolerance(double absValue);
+  virtual void SetPercentTolerance(double percentValue);
+  virtual void SetToleranceBuffer(int buf = 1);
+  virtual bool OnTarget() const;
+
+  void Enable() override;
+  void Disable() override;
+  bool IsEnabled() const override;
+
+  void Reset() override;
+
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+
+ protected:
+  PIDSource* m_pidInput;
+  PIDOutput* m_pidOutput;
+
+  std::shared_ptr<ITable> m_table;
+  virtual void Calculate();
+  virtual double CalculateFeedForward();
+  double GetContinuousError(double error) const;
+
+ private:
+  // factor for "proportional" control
+  double m_P;
+  // factor for "integral" control
+  double m_I;
+  // factor for "derivative" control
+  double m_D;
+  // factor for "feed forward" control
+  double m_F;
+  // |maximum output|
+  double m_maximumOutput = 1.0;
+  // |minimum output|
+  double m_minimumOutput = -1.0;
+  // maximum input - limit setpoint to this
+  double m_maximumInput = 0;
+  // minimum input - limit setpoint to this
+  double m_minimumInput = 0;
+  // do the endpoints wrap around? eg. Absolute encoder
+  bool m_continuous = false;
+  // is the pid controller enabled
+  bool m_enabled = false;
+  // the prior error (used to compute velocity)
+  double m_prevError = 0;
+  // the sum of the errors for use in the integral calc
+  double m_totalError = 0;
+  enum {
+    kAbsoluteTolerance,
+    kPercentTolerance,
+    kNoTolerance
+  } m_toleranceType = kNoTolerance;
+
+  // the percetage or absolute error that is considered on target.
+  double m_tolerance = 0.05;
+  double m_setpoint = 0;
+  double m_prevSetpoint = 0;
+  double m_error = 0;
+  double m_result = 0;
+  double m_period;
+
+  // Length of buffer for averaging for tolerances.
+  std::atomic<unsigned> m_bufLength{1};
+  std::queue<double> m_buf;
+  double m_bufTotal = 0;
+
+  mutable hal::priority_recursive_mutex m_mutex;
+
+  std::unique_ptr<Notifier> m_controlLoop;
+  Timer m_setpointTimer;
+
+  std::shared_ptr<ITable> GetTable() const override;
+  std::string GetSmartDashboardType() const override;
+  void ValueChanged(ITable* source, llvm::StringRef key,
+                    std::shared_ptr<nt::Value> value, bool isNew) override;
+  void UpdateTable() override;
+  void StartLiveWindowMode() override;
+  void StopLiveWindowMode() override;
 };
 
-#endif
+}  // namespace frc

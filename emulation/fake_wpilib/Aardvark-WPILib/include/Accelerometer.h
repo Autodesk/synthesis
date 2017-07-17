@@ -1,51 +1,51 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2014-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef ACCELEROMETER_H_
-#define ACCELEROMETER_H_
+#pragma once
 
-#include "AnalogChannel.h"
-#include "SensorBase.h"
-#include "PIDSource.h"
-#include "LiveWindow/LiveWindowSendable.h"
+namespace frc {
 
-/** 
- * Handle operation of the accelerometer.
- * The accelerometer reads acceleration directly through the sensor. Many sensors have
- * multiple axis and can be treated as multiple devices. Each is calibrated by finding
- * the center value over a period of time.
+/**
+ * Interface for 3-axis accelerometers
  */
-class Accelerometer : public SensorBase, public PIDSource, public LiveWindowSendable {
-public:
-	explicit Accelerometer(uint32_t channel);
-	Accelerometer(uint8_t moduleNumber, uint32_t channel);
-	explicit Accelerometer(AnalogChannel *channel);
-	virtual ~Accelerometer();
+class Accelerometer {
+ public:
+  virtual ~Accelerometer() = default;
 
-	float GetAcceleration();
-	void SetSensitivity(float sensitivity);
-	void SetZero(float zero);
-	double PIDGet();
+  enum Range { kRange_2G = 0, kRange_4G = 1, kRange_8G = 2, kRange_16G = 3 };
 
-	void UpdateTable();
-	void StartLiveWindowMode();
-	void StopLiveWindowMode();
-	std::string GetSmartDashboardType();
-	void InitTable(ITable *subTable);
-	ITable * GetTable();
+  /**
+   * Common interface for setting the measuring range of an accelerometer.
+   *
+   * @param range The maximum acceleration, positive or negative, that the
+   * accelerometer will measure.  Not all accelerometers support all ranges.
+   */
+  virtual void SetRange(Range range) = 0;
 
-private:
-	void InitAccelerometer();
+  /**
+   * Common interface for getting the x axis acceleration
+   *
+   * @return The acceleration along the x axis in g-forces
+   */
+  virtual double GetX() = 0;
 
-	AnalogChannel *m_analogChannel;
-	float m_voltsPerG;
-	float m_zeroGVoltage;
-	bool m_allocatedChannel;
-	
-	ITable *m_table;
+  /**
+   * Common interface for getting the y axis acceleration
+   *
+   * @return The acceleration along the y axis in g-forces
+   */
+  virtual double GetY() = 0;
+
+  /**
+   * Common interface for getting the z axis acceleration
+   *
+   * @return The acceleration along the z axis in g-forces
+   */
+  virtual double GetZ() = 0;
 };
 
-#endif
+}  // namespace frc

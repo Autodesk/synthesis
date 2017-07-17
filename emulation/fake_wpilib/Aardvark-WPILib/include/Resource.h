@@ -1,15 +1,22 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef RESOURCE_H_
-#define RESOURCE_H_
+#pragma once
+
+#include <stdint.h>
+
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "ErrorBase.h"
-#include "OSAL/Synchronized.h"
+#include "HAL/cpp/priority_mutex.h"
 
+namespace frc {
 
 /**
  * The Resource class is a convenient way to track allocated resources.
@@ -20,25 +27,25 @@
  * resources; it just tracks which indices were marked in use by
  * Allocate and not yet freed by Free.
  */
-class Resource : public ErrorBase
-{
-public:
-	virtual ~Resource();
-	static void CreateResourceObject(Resource **r, uint32_t elements);
-	uint32_t Allocate(const char *resourceDesc);
-	uint32_t Allocate(uint32_t index, const char *resourceDesc);
-	void Free(uint32_t index);
+class Resource : public ErrorBase {
+ public:
+  virtual ~Resource() = default;
 
-private:
-	explicit Resource(uint32_t size);
+  Resource(const Resource&) = delete;
+  Resource& operator=(const Resource&) = delete;
 
-	bool *m_isAllocated;
-	ReentrantSemaphore m_allocateLock;
-	uint32_t m_size;
+  static void CreateResourceObject(std::unique_ptr<Resource>& r,
+                                   uint32_t elements);
+  explicit Resource(uint32_t size);
+  uint32_t Allocate(const std::string& resourceDesc);
+  uint32_t Allocate(uint32_t index, const std::string& resourceDesc);
+  void Free(uint32_t index);
 
-	static ReentrantSemaphore m_createLock;
+ private:
+  std::vector<bool> m_isAllocated;
+  hal::priority_recursive_mutex m_allocateLock;
 
-	DISALLOW_COPY_AND_ASSIGN(Resource);
+  static hal::priority_recursive_mutex m_createLock;
 };
 
-#endif
+}  // namespace frc
