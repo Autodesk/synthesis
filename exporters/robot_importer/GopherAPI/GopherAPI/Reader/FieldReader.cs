@@ -28,21 +28,20 @@ namespace GopherAPI.Reader
             {
                 //TODO: Implement Version Checker
                 Reader.ReadBytes(80);
-
                 while (true)
                 {
                     Section Temp = new Section();
                     try
                     {
-                        Temp.ID = Reader.ReadUInt32();
+                        Temp.ID = (SectionType)Reader.ReadUInt32();
                         Temp.Length = Reader.ReadUInt32();
-                        if (Temp.ID == 1)
-                            Temp.Data = Reader.ReadBytes((int)Temp.Length + 4); //note: make sure we don't need this by the end of the summer
+                        if (Temp.ID == (SectionType)1)
+                            Temp.Data = Reader.ReadBytes((int)Temp.Length/* + 4*/); //note: make sure we don't need this by the end of the summer
                         else
                             Temp.Data = Reader.ReadBytes((int)Temp.Length);
                     }
                     catch (EndOfStreamException e)
-                    { Console.WriteLine("End Of Stream"); break; }
+                    { Console.WriteLine("End Of Stream at iteration " + (Sections.Count + 1).ToString()); break; }
                     Sections.Add(Temp);
                 }
             }
@@ -54,7 +53,7 @@ namespace GopherAPI.Reader
         /// <param name="raw"></param>
         private void PreProcessSTL(Section raw)
         {
-            if (raw.ID != 1)
+            if (raw.ID != (SectionType)1)
             {
                 throw new Exception("ERROR: Invalid Section passed to RobotReader.PreProcessSTL");
             }
@@ -64,8 +63,7 @@ namespace GopherAPI.Reader
                 for (uint i = 0; i < MeshCount; i++)
                 {
                     RawMesh temp = new RawMesh();
-                    temp.MeshID = Reader.ReadUInt32();
-                    var butt = Reader.ReadBytes(80);
+                    //temp.MeshID = Reader.ReadUInt32();
 
                     temp.FacetCount = Reader.ReadUInt32();
                     temp.Facets = Reader.ReadBytes((int)(50 * temp.FacetCount));
@@ -82,7 +80,7 @@ namespace GopherAPI.Reader
         {
             foreach (var sect in Sections)
             {
-                if (sect.ID == 1)
+                if (sect.ID == (SectionType)1)
                     PreProcessSTL(sect);
             }
         }
@@ -114,9 +112,9 @@ namespace GopherAPI.Reader
                         else
                             Reader.ReadBytes(2);
                     }
-                    TempAttID = Reader.ReadUInt32();
+                    //TempAttID = Reader.ReadUInt32();
                 }
-                LoadedField.Meshes.Add(new Mesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, TempAttID, rawMesh.TransMat));
+                LoadedField.Meshes.Add(new Mesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, TempAttID, null/*rawMesh.TransMat*/));
 
             }
         }
@@ -125,7 +123,7 @@ namespace GopherAPI.Reader
         {
             foreach(var section in Sections)
             {
-                if(section.ID == 1)
+                if(section.ID == (SectionType)1)
                 {
                     PreProcessSTL(section);
                 }
@@ -139,9 +137,9 @@ namespace GopherAPI.Reader
         /// <param name="raw"></param>
         private void ProcessAttributes(Section raw)
         {
-            if (raw.ID != 2)
+            if (raw.ID != (SectionType)2)
             {
-                throw new Exception("ERROR: Invalid Section passed to PreProcessAttribs");
+                throw new Exception("ERROR: Invalid Section passed to ProcessAttributes");
             }
             using (var Reader = new BinaryReader(new MemoryStream(raw.Data)))
             {
@@ -161,25 +159,30 @@ namespace GopherAPI.Reader
                             TempIsDynamic = Reader.ReadBoolean();
                             if (TempIsDynamic)
                             {
-                                LoadedField.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFriction, TempIsDynamic, Reader.ReadSingle(), TempX, TempY, TempZ, null));
+                                LoadedField.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFriction, TempIsDynamic, Reader.ReadSingle(), TempX, TempY, TempZ, null));
                             }
                             else
                             {
-                                LoadedField.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFriction, TempIsDynamic, null, TempX, TempY, TempZ, null));
+                                LoadedField.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFriction, TempIsDynamic, null, TempX, TempY, TempZ, null));
 
                             }
                             break;
                         case Properties.AttribType.SPHERE_COLLIDER:
+                            long PosCor = Reader.BaseStream.Position;
                             float TempG = Reader.ReadSingle();
                             float TempFric = Reader.ReadSingle();
                             TempIsDynamic = Reader.ReadBoolean();
                             if (TempIsDynamic)
                             {
-                                LoadedField.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFric, TempIsDynamic, Reader.ReadSingle(), null, null, null, TempG));
+                                LoadedField.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFric, TempIsDynamic, Reader.ReadSingle(), null, null, null, TempG));
                             }
                             else
                             {
-                                LoadedField.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempFric, TempIsDynamic, null, null, null, null, TempG));
+                                LoadedField.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempFric, TempIsDynamic, null, null, null, null, TempG));
+                                if (Reader.BaseStream.Position != PosCor + 9)
+                                {
+                                    Console.WriteLine("\nWut");
+                                }
                             }
 
                             break;
@@ -188,11 +191,11 @@ namespace GopherAPI.Reader
                             TempIsDynamic = Reader.ReadBoolean();
                             if (TempIsDynamic)
                             {
-                                LoadedField.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempF, TempIsDynamic, Reader.ReadSingle(), null, null, null, null));
+                                LoadedField.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempF, TempIsDynamic, Reader.ReadSingle(), null, null, null, null));
                             }
                             else
                             {
-                                LoadedField.Attributes.Add(new Properties.Attribute(TempType, TempAttID, TempF, TempIsDynamic, null, null, null, null, null));
+                                LoadedField.Attributes.Add(new Properties.STLAttribute(TempType, TempAttID, TempF, TempIsDynamic, null, null, null, null, null));
                             }
                             break;
                     }
@@ -207,7 +210,7 @@ namespace GopherAPI.Reader
         {
             foreach (var sect in Sections)
             {
-                if (sect.ID == 2)
+                if (sect.ID == (SectionType)2)
                     ProcessAttributes(sect);
             }
         }
@@ -218,7 +221,7 @@ namespace GopherAPI.Reader
         /// <param name="raw"></param>
         private void ProcessJoints(Section raw)
         {
-            if (raw.ID != 3)
+            if (raw.ID != (SectionType)3)
             {
                 throw new Exception("ERROR: Invalid Section passed to ProcessJoints");
             }
@@ -231,7 +234,7 @@ namespace GopherAPI.Reader
                 {
                     byte[] GenericData = Reader.ReadBytes(46);
 
-                    LoadedField.Joints.Add(new Properties.Joint(GenericData, new Properties.NoDriver()));
+                    LoadedField.Joints.Add(new Properties.Joint(GenericData));
                 }
             }
         }
@@ -243,7 +246,7 @@ namespace GopherAPI.Reader
         {
             foreach (var sect in Sections)
             {
-                if (sect.ID == 3)
+                if (sect.ID == (SectionType)3)
                     ProcessJoints(sect);
             }
         }
