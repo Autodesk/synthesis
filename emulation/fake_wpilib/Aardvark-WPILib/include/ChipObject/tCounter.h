@@ -1,14 +1,15 @@
 // Copyright (c) National Instruments 2008.  All Rights Reserved.
 // Do Not Edit... this file is generated!
 
-#ifndef __nFRC_2012_1_6_4_Counter_h__
-#define __nFRC_2012_1_6_4_Counter_h__
+#ifndef __nFRC_2017_17_0_2_Counter_h__
+#define __nFRC_2017_17_0_2_Counter_h__
 
-#include "tSystemInterface.h"
+#include "../tSystem.h"
+#include "../tSystemInterface.h"
 
 namespace nFPGA
 {
-namespace nFRC_2012_1_6_4
+namespace nFRC_2017_17_0_2
 {
 
 class tCounter
@@ -56,21 +57,21 @@ public:
          unsigned IndexSource_Module : 1;
          unsigned IndexSource_AnalogTrigger : 1;
          unsigned IndexActiveHigh : 1;
+         unsigned IndexEdgeSensitive : 1;
          unsigned UpRisingEdge : 1;
          unsigned UpFallingEdge : 1;
          unsigned DownRisingEdge : 1;
          unsigned DownFallingEdge : 1;
          unsigned Mode : 2;
          unsigned PulseLengthThreshold : 6;
-         unsigned Enable : 1;
 #else
-         unsigned Enable : 1;
          unsigned PulseLengthThreshold : 6;
          unsigned Mode : 2;
          unsigned DownFallingEdge : 1;
          unsigned DownRisingEdge : 1;
          unsigned UpFallingEdge : 1;
          unsigned UpRisingEdge : 1;
+         unsigned IndexEdgeSensitive : 1;
          unsigned IndexActiveHigh : 1;
          unsigned IndexSource_AnalogTrigger : 1;
          unsigned IndexSource_Module : 1;
@@ -147,13 +148,13 @@ public:
    virtual void writeConfig_IndexSource_Module(unsigned char value, tRioStatusCode *status) = 0;
    virtual void writeConfig_IndexSource_AnalogTrigger(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_IndexActiveHigh(bool value, tRioStatusCode *status) = 0;
+   virtual void writeConfig_IndexEdgeSensitive(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_UpRisingEdge(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_UpFallingEdge(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_DownRisingEdge(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_DownFallingEdge(bool value, tRioStatusCode *status) = 0;
    virtual void writeConfig_Mode(unsigned char value, tRioStatusCode *status) = 0;
    virtual void writeConfig_PulseLengthThreshold(unsigned short value, tRioStatusCode *status) = 0;
-   virtual void writeConfig_Enable(bool value, tRioStatusCode *status) = 0;
    virtual tConfig readConfig(tRioStatusCode *status) = 0;
    virtual unsigned char readConfig_UpSource_Channel(tRioStatusCode *status) = 0;
    virtual unsigned char readConfig_UpSource_Module(tRioStatusCode *status) = 0;
@@ -165,13 +166,13 @@ public:
    virtual unsigned char readConfig_IndexSource_Module(tRioStatusCode *status) = 0;
    virtual bool readConfig_IndexSource_AnalogTrigger(tRioStatusCode *status) = 0;
    virtual bool readConfig_IndexActiveHigh(tRioStatusCode *status) = 0;
+   virtual bool readConfig_IndexEdgeSensitive(tRioStatusCode *status) = 0;
    virtual bool readConfig_UpRisingEdge(tRioStatusCode *status) = 0;
    virtual bool readConfig_UpFallingEdge(tRioStatusCode *status) = 0;
    virtual bool readConfig_DownRisingEdge(tRioStatusCode *status) = 0;
    virtual bool readConfig_DownFallingEdge(tRioStatusCode *status) = 0;
    virtual unsigned char readConfig_Mode(tRioStatusCode *status) = 0;
    virtual unsigned short readConfig_PulseLengthThreshold(tRioStatusCode *status) = 0;
-   virtual bool readConfig_Enable(tRioStatusCode *status) = 0;
 
 
    typedef enum
@@ -216,4 +217,4 @@ private:
 }
 }
 
-#endif // __nFRC_2012_1_6_4_Counter_h__
+#endif // __nFRC_2017_17_0_2_Counter_h__

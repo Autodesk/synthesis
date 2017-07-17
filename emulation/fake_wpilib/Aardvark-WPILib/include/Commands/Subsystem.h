@@ -1,48 +1,53 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __SUBSYSTEM_H__
-#define __SUBSYSTEM_H__
+#pragma once
+
+#include <memory>
+#include <string>
 
 #include "ErrorBase.h"
 #include "SmartDashboard/NamedSendable.h"
-#include <string>
 
+namespace frc {
 
 class Command;
 
-class Subsystem : public ErrorBase, public NamedSendable
-{
-	friend class Scheduler;
-public:
-	Subsystem(const char *name);
-	virtual ~Subsystem() {}
+class Subsystem : public ErrorBase, public NamedSendable {
+  friend class Scheduler;
 
-	void SetDefaultCommand(Command *command);
-	Command *GetDefaultCommand();
-	void SetCurrentCommand(Command *command);
-	Command *GetCurrentCommand();
-	virtual void InitDefaultCommand();
-	
-private:
-	void ConfirmCommand();
+ public:
+  explicit Subsystem(const std::string& name);
+  virtual ~Subsystem() = default;
 
-	Command *m_currentCommand;
-	bool m_currentCommandChanged;
-	Command *m_defaultCommand;
-	std::string m_name;
-	bool m_initializedDefaultCommand;
+  void SetDefaultCommand(Command* command);
+  Command* GetDefaultCommand();
+  void SetCurrentCommand(Command* command);
+  Command* GetCurrentCommand() const;
+  virtual void Periodic();
+  virtual void InitDefaultCommand();
 
-public:
-	virtual std::string GetName();
-	virtual void InitTable(ITable* table);
-	virtual ITable* GetTable();
-	virtual std::string GetSmartDashboardType();
-protected:
-	ITable* m_table;
+ private:
+  void ConfirmCommand();
+
+  Command* m_currentCommand = nullptr;
+  bool m_currentCommandChanged = true;
+  Command* m_defaultCommand = nullptr;
+  std::string m_name;
+  bool m_initializedDefaultCommand = false;
+
+ public:
+  std::string GetName() const override;
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+  std::shared_ptr<ITable> GetTable() const override;
+  std::string GetSmartDashboardType() const override;
+
+ protected:
+  std::shared_ptr<ITable> m_table;
 };
 
-#endif
+}  // namespace frc

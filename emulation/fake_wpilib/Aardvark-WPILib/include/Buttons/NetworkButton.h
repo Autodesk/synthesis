@@ -1,28 +1,30 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __NETWORK_BUTTON_H__
-#define __NETWORK_BUTTON_H__
+#pragma once
 
-#include "Buttons/Button.h"
+#include <memory>
 #include <string>
 
-class NetworkButton : public Button
-{
-public:
-	NetworkButton(const char *tableName, const char *field);
-	NetworkButton(ITable* table, const char *field);
-	virtual ~NetworkButton() {}
+#include "Buttons/Button.h"
 
-	virtual bool Get();
+namespace frc {
 
-private:
-	ITable* m_netTable;
-	std::string m_field;
+class NetworkButton : public Button {
+ public:
+  NetworkButton(const std::string& tableName, const std::string& field);
+  NetworkButton(std::shared_ptr<ITable> table, const std::string& field);
+  virtual ~NetworkButton() = default;
 
+  virtual bool Get();
+
+ private:
+  std::shared_ptr<ITable> m_netTable;
+  std::string m_field;
 };
 
-#endif
+}  // namespace frc

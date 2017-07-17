@@ -6,8 +6,6 @@
 
 #include "tSystem.h"
 
-class NTTask;
-
 namespace ni
 {
    namespace dsc
@@ -30,7 +28,7 @@ public:
    tInterruptManager(uint32_t interruptMask, bool watcher, tRioStatusCode *status);
    ~tInterruptManager();
    void registerHandler(tInterruptHandler handler, void *param, tRioStatusCode *status);
-   uint32_t watch(int32_t timeoutInMs, tRioStatusCode *status);
+   uint32_t watch(int32_t timeoutInMs, bool ignorePrevious, tRioStatusCode *status);
    void enable(tRioStatusCode *status);
    void disable(tRioStatusCode *status);
    bool isEnabled(tRioStatusCode *status);
