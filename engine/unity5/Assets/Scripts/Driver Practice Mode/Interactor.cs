@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using BulletSharp;
 using BulletSharp.Math;
 using System.Collections;
@@ -14,9 +15,11 @@ namespace BulletUnity
     /// </summary>
     public class Interactor : BCollisionCallbacksDefault
     {
-        private GameObject collisionObject;
-        private bool collisionDetected = false;
-        private string collisionKeyword;
+        private GameObject[] collisionObject = new GameObject[2];
+        private bool[] collisionDetected = new bool[2];
+        public string[] collisionKeyword = new string[2];
+        
+        public List<GameObject> heldGamepieces = new List<GameObject>();
 
         /// <summary>
         /// Method is called whenever interactor collides with another object.
@@ -26,12 +29,30 @@ namespace BulletUnity
         /// <param name="manifoldList">List of collision manifolds--this isn't used</param>
         public override void BOnCollisionEnter(CollisionObject other, PersistentManifoldList manifoldList)
         {
-            if (other.UserObject.ToString().Contains(collisionKeyword))
+            string gamepiece;
+            for (int i = 0; i < collisionKeyword.Length; i++)
             {
-                collisionObject = GameObject.Find(other.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
-                collisionDetected = true;
-                Debug.Log(other.UserObject.ToString());
-                
+                if (collisionKeyword[i] != null)
+                { 
+                    gamepiece = collisionKeyword[i];
+                    if (other.UserObject.ToString().Contains(gamepiece))
+                    {
+                        bool skip = false;
+                        //Debug.Log(other.UserObject.ToString());
+                        GameObject tempGamepiece = GameObject.Find(other.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
+                        foreach (GameObject gp in heldGamepieces)
+                        {
+                            if (gp == tempGamepiece) skip = true;
+                        }
+                        if (!skip)
+                        {
+                            Debug.Log("does this happen");
+                            collisionObject[i] = tempGamepiece;
+                            collisionDetected[i] = true;
+                            Debug.Log(collisionObject[i].ToString() + i.ToString());
+                        }
+                    }
+                }
             }
         }
 
@@ -42,26 +63,34 @@ namespace BulletUnity
         /// <param name="other">The object the interactor stopped colliding with</param>
         public override void BOnCollisionExit(CollisionObject other)
         {
-            if (other.UserObject.ToString().Contains(collisionKeyword))
+            string gamepiece;
+            for (int i = 0; i < collisionKeyword.Length; i++)
             {
-                collisionDetected = false;
+                if (collisionKeyword[i] != null)
+                {
+                    gamepiece = collisionKeyword[i];
+                    if (other.UserObject.ToString().Contains(gamepiece))
+                    {
+                        collisionDetected[i] = false;
+                    }
+                }
             }
         }
 
-        public GameObject GetObject()
+        public GameObject GetObject(int index)
         {
-            collisionDetected = false;
-            return collisionObject;
+            collisionDetected[index] = false;       
+            return collisionObject[index];
         }
 
-        public bool GetDetected()
+        public bool GetDetected(int index)
         {
-            return collisionDetected;
+            return collisionDetected[index];
         }
 
-        public void SetKeyword(string keyword)
+        public void SetKeyword(string keyword, int index)
         {
-            collisionKeyword = keyword;
+            collisionKeyword[index] = keyword;
         }
     }
 }
