@@ -47,5 +47,14 @@ namespace GopherAPI.STL
             AttributeID = attributeID;
             TransMat = transMat;
         }
+        public Mesh(UInt32 meshID, STLFile stl, UInt32 attributeID, TransformationMatrix transMat)
+        {
+            MeshID = meshID;
+            Facets = stl.Facets;
+            PartColor = stl.Color;
+            IsDefault = stl.IsDefault;
+            AttributeID = attributeID;
+            TransMat = transMat;
+        }
     }
 }

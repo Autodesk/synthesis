@@ -8,7 +8,7 @@ namespace GopherAPI.Other
     public class Vec3
     {
         private float[] values;
-        public object this[int index]
+        public float this[int index]
         {
             get { return values[index]; }
             set { values[index] = (float)value; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using GopherAPI.Other;
+using System.IO;
 
 namespace GopherAPI.STL
 {
@@ -26,7 +27,32 @@ namespace GopherAPI.STL
         /// XYZ for Point 3
         /// </summary>
         public readonly Vec3 Point3;
-
+        
+        internal byte[] Binary
+        {
+            get
+            {
+                var stream = new MemoryStream();
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.Write(Normal[0]);
+                    writer.Write(Normal[1]);
+                    writer.Write(Normal[2]);
+                    writer.Write(Point1[0]);
+                    writer.Write(Point1[1]);
+                    writer.Write(Point1[2]);
+                    writer.Write(Point2[0]);
+                    writer.Write(Point2[1]);
+                    writer.Write(Point2[2]);
+                    writer.Write(Point3[0]);
+                    writer.Write(Point3[1]);
+                    writer.Write(Point3[2]);
+                }
+                var ret = stream.ToArray();
+                stream.Dispose();
+                return ret;
+            }
+        }
 
         public Facet(Vec3 normal, Vec3 point1, Vec3 point2, Vec3 point3)
         {

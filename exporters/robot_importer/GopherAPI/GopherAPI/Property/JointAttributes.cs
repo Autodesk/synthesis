@@ -18,7 +18,7 @@ namespace GopherAPI.Properties
     public interface IJointAttribute
     {
         /// <summary>
-        /// Returns the Joint Attribute type
+        /// Returns the Joint STLAttribute type
         /// </summary>
         /// <returns></returns>
         JAType GetJAType();
@@ -26,16 +26,20 @@ namespace GopherAPI.Properties
 
     public struct NoDriver : IJointAttribute
     {
+        public readonly uint JointID;
         public JAType GetJAType()
         {
             return JAType.NONE;
+        }
+        public NoDriver(uint jointID)
+        {
+            JointID = jointID;
         }
     }
 
     public struct Motor : IJointAttribute
     {
-        public readonly JAType Type;
-
+        public readonly uint JointID;
         public readonly bool IsCAN;
 
         /// <summary>
@@ -54,12 +58,12 @@ namespace GopherAPI.Properties
 
         public JAType GetJAType()
         {
-            return Type;
+            return JAType.MOTOR;
         }
 
-        public Motor(bool isCAN, float motorPort, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
+        public Motor(uint jointID, bool isCAN, float motorPort, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
         {
-            Type = JAType.MOTOR;
+            JointID = jointID;
             IsCAN = isCAN;
             MotorPort = motorPort;
             HasLimits = hasLimits;
@@ -76,7 +80,7 @@ namespace GopherAPI.Properties
 
     public struct Servo : IJointAttribute
     {
-        public readonly JAType Type;
+        public readonly uint JointID;
 
         /// <summary>
         /// Always a CAN
@@ -88,12 +92,12 @@ namespace GopherAPI.Properties
 
         public JAType GetJAType()
         {
-            return Type;
+            return JAType.SERVO;
         }
 
-        public Servo(float motorPort, bool hasLimits, Friction friction)
+        public Servo(uint jointID, float motorPort, bool hasLimits, Friction friction)
         {
-            Type = JAType.SERVO;
+            JointID = jointID;
             MotorPort = motorPort;
             HasLimits = hasLimits;
             if (HasLimits)
@@ -105,8 +109,8 @@ namespace GopherAPI.Properties
 
     public struct BumperPnuematic : IJointAttribute
     {
-        public readonly JAType Type;
-        
+        public readonly uint JointID;
+
         public readonly float SolenoidPortOne;
         public readonly float SolenoidPortTwo;
 
@@ -118,12 +122,12 @@ namespace GopherAPI.Properties
 
         public JAType GetJAType()
         {
-            return Type;
+            return JAType.BUMPER_PNUEMATIC;
         }
 
-        public BumperPnuematic(float solenoidPortOne, float solenoidPortTwo, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
+        public BumperPnuematic(uint jointID, float solenoidPortOne, float solenoidPortTwo, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
         {
-            Type = JAType.BUMPER_PNUEMATIC;
+            JointID = jointID;
             SolenoidPortOne = solenoidPortOne;
             SolenoidPortTwo = solenoidPortTwo;
 
@@ -137,8 +141,9 @@ namespace GopherAPI.Properties
 
     public struct RelayPnuematic : IJointAttribute
     {
-        public readonly JAType Type;
-        
+        public readonly uint JointID;
+
+
         public readonly float RelayPort;
 
         public readonly bool HasLimits;
@@ -149,12 +154,12 @@ namespace GopherAPI.Properties
 
         public JAType GetJAType()
         {
-            return Type;
+            return JAType.RELAY_PNUEMATIC;
         }
 
-        public RelayPnuematic(float relayPort, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
+        public RelayPnuematic(uint jointID, float relayPort, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
         {
-            Type = JAType.RELAY_PNUEMATIC;
+            JointID = jointID;
             RelayPort = relayPort;
 
             HasLimits = hasLimits;
@@ -167,7 +172,8 @@ namespace GopherAPI.Properties
 
     public struct WormScrew : IJointAttribute
     {
-        public readonly JAType Type;
+        public readonly uint JointID;
+
 
         public readonly bool IsCAN;
         /// <summary>
@@ -180,11 +186,11 @@ namespace GopherAPI.Properties
 
         public JAType GetJAType()
         {
-            return Type;
+            return JAType.WORM_SCREW;
         }
-        public WormScrew(bool isCAN, float motorPort, bool hasLimits, Friction friction)
+        public WormScrew(uint jointID, bool isCAN, float motorPort, bool hasLimits, Friction friction)
         {
-            Type = JAType.WORM_SCREW;
+            JointID = jointID;
             IsCAN = isCAN;
             MotorPort = motorPort;
             HasLimits = hasLimits;
@@ -197,7 +203,8 @@ namespace GopherAPI.Properties
 
     public struct DualMotor : IJointAttribute
     {
-        public readonly JAType Type;
+        public readonly uint JointID;
+
 
         public readonly bool IsCAN;
 
@@ -215,12 +222,12 @@ namespace GopherAPI.Properties
 
         public JAType GetJAType()
         {
-            return Type;
+            return JAType.DUAL_MOTOR;
         }
 
-        public DualMotor(bool isCAN, float motorPort1, float motorPort2, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
+        public DualMotor(uint jointID, bool isCAN, float motorPort1, float motorPort2, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
         {
-            Type = JAType.DUAL_MOTOR;
+            JointID = jointID;
             IsCAN = isCAN;
             PortOne = motorPort1;
             PortTwo = motorPort2;
@@ -238,7 +245,8 @@ namespace GopherAPI.Properties
 
     public struct Elevator : IJointAttribute
     {
-        public readonly JAType Type;
+        public readonly uint JointID;
+
 
         public readonly bool IsCAN;
         /// <summary>
@@ -259,12 +267,12 @@ namespace GopherAPI.Properties
 
         public JAType GetJAType()
         {
-            return Type;
+            return JAType.ELEVATOR;
         }
 
-        public Elevator(bool isCAN, float motorPort, bool hasLimits, Friction friction, bool hasBrake, float brakePortOne, float brakePortTwo, Stages stages, float inputGear, float outputGear)
+        public Elevator(uint jointID, bool isCAN, float motorPort, bool hasLimits, Friction friction, bool hasBrake, float brakePortOne, float brakePortTwo, Stages stages, float inputGear, float outputGear)
         {
-            Type = JAType.ELEVATOR;
+            JointID = jointID;
             IsCAN = isCAN;
             MotorPort = motorPort;
             HasLimits = hasLimits;
