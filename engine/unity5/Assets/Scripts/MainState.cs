@@ -39,7 +39,7 @@ public class MainState : SimState
 
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
 
-    private Vector3 preResetPosition = new Vector3(0f, 1f, 0f);
+    private Vector3 preResetPosition = new Vector3(0f, 0f, 0f);
 
     //A flag to indicate whether the prereset transform is recorded (used to find the related transform)
     private bool preResetTransformSet = false;
@@ -70,6 +70,7 @@ public class MainState : SimState
     //Indicate different state (begin reset, resetting, end reset)
     private bool resetting;
     private bool beginReset;
+    private bool isResetting;
 
     public override void Awake()
     {
@@ -112,7 +113,7 @@ public class MainState : SimState
                         EndReset();
                         break;
                     case 1:
-                        preResetTransformSet = false;
+                        isResetting = true;
                         BeginReset();
                         break;
 
@@ -211,7 +212,7 @@ public class MainState : SimState
         {
             if (!resetting)
             {
-                BeginReset(false);
+                BeginReset();
                 TransposeRobot(new Vector3(0f, 1f, 0f));
             }
 
@@ -302,6 +303,17 @@ public class MainState : SimState
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
 
+        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !resetting)
+        {
+            BeginReset();
+            EndReset();
+        }
+
+        if (isResetting)
+        {
+            Resetting();
+        }
+
         // Will switch the camera state with the camera toggle button
         if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
         {
@@ -338,6 +350,7 @@ public class MainState : SimState
 
     public override void FixedUpdate()
     {
+       
         if (Input.GetKey(KeyCode.M))
             SceneManager.LoadScene("MainMenu");
 
@@ -350,36 +363,7 @@ public class MainState : SimState
 
         BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
 
-        //Reset key only toggles the state to begin reset
-        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !resetting)
-        {
-            BeginReset();
-            EndReset();
-        }
-
-        if (beginReset)
-        {
-            foreach (GameObject g in extraElements)
-                UnityEngine.Object.Destroy(g);
-
-            BeginReset();
-
-        }
-        //End reset when user hit enter key
-        else if (oWindow != null && !oWindow.Active && resetting && !beginReset && Input.GetKey(KeyCode.Return))
-        {
-            robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-            //Calculate offset and add to the start position
-            Vector3 positionOffset = robotObject.transform.GetChild(0).transform.position - preResetPosition;
-            robotStartPosition += positionOffset;
-            EndReset();
-
-        }
-        else if (resetting && !beginReset)
-        {
-            Resetting();
-        }
-
+        
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
 
@@ -444,7 +428,8 @@ public class MainState : SimState
             Debug.Log(t);
         }
 
-
+        preResetPosition = robotObject.transform.GetChild(0).transform.position - new Vector3(0,1,0);
+        Debug.Log("node original position is: " + preResetPosition);
         //Robot camera feature
         robotCameraObject = GameObject.Find("RobotCameraList");
         robotCamera = robotCameraObject.AddComponent<RobotCamera>();
@@ -464,9 +449,6 @@ public class MainState : SimState
 
     void BeginReset(bool resetTransform = true)
     {
-        beginReset = false;
-        resetting = true;
-
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
         {
             t.Tracking = false;
@@ -490,18 +472,19 @@ public class MainState : SimState
 
         RotateRobot(robotStartOrientation);
 
+        foreach (GameObject g in extraElements)
+            UnityEngine.Object.Destroy(g);
+
+        
+        if (isResetting)
+        {
+            Debug.Log("is resetting!");
+            preResetTransformSet = false;
+        }
     }
 
     void Resetting()
     {
-        //Record the original transform
-        if (!preResetTransformSet)
-        {
-            //Use the index 0 child because the robot remains at the same position in the world when running
-            preResetPosition = robotObject.transform.GetChild(0).transform.position;
-            preResetTransformSet = true;
-        }
-
         if (Input.GetMouseButton(1))
         {
             //Transform position
@@ -523,6 +506,33 @@ public class MainState : SimState
             if (!transposition.Equals(Vector3.zero))
                 TransposeRobot(transposition);
         }
+
+        //Record the original transform
+        if (!preResetTransformSet)
+        {
+            Debug.Log("The last preResetPosition is: " + preResetPosition);
+            //Use the index 0 child because the robot remains at the same position in the world when running
+            preResetPosition = robotObject.transform.GetChild(0).transform.position;
+            Debug.Log("The new preResetPosition is: " + preResetPosition);
+            preResetTransformSet = true;
+        }
+
+        if (Input.GetKey(KeyCode.Return))
+        {
+            isResetting = false;
+
+            robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+            //Calculate offset and add to the start position
+            Vector3 nodePosition = robotObject.transform.GetChild(0).transform.position;
+            Debug.Log("current node position is: " + nodePosition);
+
+            Vector3 positionOffset = new Vector3(nodePosition.x - preResetPosition.x, 0f, nodePosition.z - preResetPosition.z);
+            Debug.Log("positionOffset is: " + positionOffset);
+            robotStartPosition += positionOffset;
+            Debug.Log("Robot start position is changed to " + robotStartPosition);
+            //RotateRobot(robotStartOrientation);
+            EndReset();
+        }
     }
 
     void EndReset()
@@ -538,7 +548,6 @@ public class MainState : SimState
             t.Clear();
             t.Tracking = true;
         }
-        resetting = false;
     }
 
     void TransposeRobot(Vector3 transposition)
