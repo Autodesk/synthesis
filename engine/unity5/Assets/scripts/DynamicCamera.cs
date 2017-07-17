@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class DynamicCamera : MonoBehaviour
 {
@@ -133,11 +134,14 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         panValue = 0f;
-
+                        
                         if (Input.GetMouseButton(1))
                         {
-                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.1f);
+                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
+                            //Debug.Log(magnification);
+                            Debug.Log(Vector3.Distance(mono.transform.position, robot.transform.position));
                         }
+
                     }
                 }
 
@@ -243,25 +247,95 @@ public class DynamicCamera : MonoBehaviour
 
     }
 
+    //This state locates directly above the field and looks straight down on the field in order for robot positioning
+    //Not working with 2016&2017 field because they are not centered
+    public class OverviewState : CameraState
+    {
+        Vector3 positionVector;
+        Vector3 rotationVector;
+        Vector3 fieldVector;
+        GameObject field;
+
+        public OverviewState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+            field = GameObject.Find("Field");
+            fieldVector = field.transform.position;
+        }
+
+        public override void Init()
+        {
+            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
+            mono.transform.position = positionVector;
+            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+        public override void Update()
+        {
+
+        }
+
+        public override void End()
+        {
+
+        }
+    }
+
+    //This state locates directly above the robot and follows it
+    public class SateliteState : CameraState
+    {
+        Vector3 targetPosition;
+        Vector3 rotationVector;
+        GameObject target;
+
+        public SateliteState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+        }
+
+        public override void Init()
+        {
+            target = GameObject.Find("Robot");
+            targetPosition = target.transform.position;
+            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+
+        public override void Update()
+        {
+            if (target != null && target.transform.childCount > 0)
+            {
+                targetPosition = target.transform.GetChild(0).transform.position;
+
+            }
+            mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
+            mono.transform.LookAt(targetPosition);
+        }
+
+        public override void End()
+        {
+
+        }
+    }
     void Start()
     {
-        MovingEnabled = true;
-        SwitchCameraState(new DriverStationState(this));
+        SwitchCameraState(new OrbitState(this));
     }
 
     void LateUpdate()
     {
-        if (MovingEnabled)
-        {
-            // Will switch the camera state with the camera toggle button
-            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
-            {
-                if (cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
-                else if (cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
-                else if (cameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
-            }
-        }
+        if (_cameraState != null) _cameraState.Update();
+    }
 
+    /// <summary>
+    /// Switch to the next camera state
+    /// </summary>
+    /// <param name="currentCameraState"></param>
+    public void ToggleCameraState(CameraState currentCameraState)
+    {
+        if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
+        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
         if (_cameraState != null) _cameraState.Update();
     }
 
@@ -276,7 +350,6 @@ public class DynamicCamera : MonoBehaviour
         _cameraState.Init();
     }
 
-    /// <summary>
     /// Calculates the appropriate lag vector from the given current vector, target vector, and responsiveness constant.
     /// </summary>
     /// <param name="lagVector"></param>
@@ -311,17 +384,5 @@ public class DynamicCamera : MonoBehaviour
             lagScalar = targetScalar;
 
         return lagScalar;
-    }
-
-    /// <summary>
-    /// Switch to the next camera state
-    /// </summary>
-    /// <param name="currentCameraState"></param>
-    public void ToggleCameraState(CameraState currentCameraState)
-    {
-        if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
-        else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
-        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
-        if (_cameraState != null) _cameraState.Update();
     }
 }
