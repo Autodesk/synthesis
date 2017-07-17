@@ -1,59 +1,49 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef SENSORBASE_H_
-#define SENSORBASE_H_
+#pragma once
 
-#include "ChipObject/NiRio.h"
-#include "ErrorBase.h"
-#include <stdio.h>
 #include "Base.h"
+#include "ErrorBase.h"
+
+namespace frc {
 
 /**
  * Base class for all sensors.
- * Stores most recent status information as well as containing utility functions for checking
- * channels and error processing.
+ * Stores most recent status information as well as containing utility functions
+ * for checking channels and error processing.
  */
-class SensorBase: public ErrorBase {
-public:
-	SensorBase();
-	virtual ~SensorBase();
-	static void DeleteSingletons();
-	static uint32_t GetDefaultAnalogModule() { return 1; }
-	static uint32_t GetDefaultDigitalModule() { return 1; }
-	static uint32_t GetDefaultSolenoidModule() { return 1; }
-	static bool CheckAnalogModule(uint8_t moduleNumber);
-	static bool CheckDigitalModule(uint8_t moduleNumber);
-	static bool CheckPWMModule(uint8_t moduleNumber);
-	static bool CheckRelayModule(uint8_t moduleNumber);
-	static bool CheckSolenoidModule(uint8_t moduleNumber);
-	static bool CheckDigitalChannel(uint32_t channel);
-	static bool CheckRelayChannel(uint32_t channel);
-	static bool CheckPWMChannel(uint32_t channel);
-	static bool CheckAnalogChannel(uint32_t channel);
-	static bool CheckSolenoidChannel(uint32_t channel);
+class SensorBase : public ErrorBase {
+ public:
+  SensorBase() = default;
+  virtual ~SensorBase() = default;
 
-	static const uint32_t kSystemClockTicksPerMicrosecond;
-	static const uint32_t kDigitalChannels;
-	static const uint32_t kAnalogChannels;
-	static const uint32_t kAnalogModules;
-	static const uint32_t kDigitalModules;
-	static const uint32_t kSolenoidChannels;
-	static const uint32_t kSolenoidModules;
-	static const uint32_t kPwmChannels;
-	static const uint32_t kRelayChannels;
-	static const uint32_t kChassisSlots;
-protected:
-	void AddToSingletonList();
+  SensorBase(const SensorBase&) = delete;
+  SensorBase& operator=(const SensorBase&) = delete;
 
-private:
-	DISALLOW_COPY_AND_ASSIGN(SensorBase);
-	static SensorBase *m_singletonList;
-	SensorBase *m_nextSingleton;
+  static int GetDefaultSolenoidModule() { return 0; }
+
+  static bool CheckSolenoidModule(int moduleNumber);
+  static bool CheckDigitalChannel(int channel);
+  static bool CheckRelayChannel(int channel);
+  static bool CheckPWMChannel(int channel);
+  static bool CheckAnalogInputChannel(int channel);
+  static bool CheckAnalogOutputChannel(int channel);
+  static bool CheckSolenoidChannel(int channel);
+  static bool CheckPDPChannel(int channel);
+
+  static const int kDigitalChannels;
+  static const int kAnalogInputs;
+  static const int kAnalogOutputs;
+  static const int kSolenoidChannels;
+  static const int kSolenoidModules;
+  static const int kPwmChannels;
+  static const int kRelayChannels;
+  static const int kPDPChannels;
 };
 
-
-#endif
+}  // namespace frc

@@ -1,14 +1,15 @@
 // Copyright (c) National Instruments 2008.  All Rights Reserved.
 // Do Not Edit... this file is generated!
 
-#ifndef __nFRC_2012_1_6_4_Global_h__
-#define __nFRC_2012_1_6_4_Global_h__
+#ifndef __nFRC_2017_17_0_2_Global_h__
+#define __nFRC_2017_17_0_2_Global_h__
 
-#include "tSystemInterface.h"
+#include "../tSystem.h"
+#include "../tSystemInterface.h"
 
 namespace nFPGA
 {
-namespace nFRC_2012_1_6_4
+namespace nFRC_2017_17_0_2
 {
 
 class tGlobal
@@ -25,7 +26,38 @@ public:
       kNumSystems = 1,
    } tIfaceConstants;
 
+   typedef
+   union{
+      struct{
+#ifdef __vxworks
+         unsigned Comm : 8;
+         unsigned Mode : 8;
+         unsigned RSL : 1;
+#else
+         unsigned RSL : 1;
+         unsigned Mode : 8;
+         unsigned Comm : 8;
+#endif
+      };
+      struct{
+         unsigned value : 17;
+      };
+   } tLEDs;
 
+
+
+   typedef enum
+   {
+   } tLEDs_IfaceConstants;
+
+   virtual void writeLEDs(tLEDs value, tRioStatusCode *status) = 0;
+   virtual void writeLEDs_Comm(unsigned char value, tRioStatusCode *status) = 0;
+   virtual void writeLEDs_Mode(unsigned char value, tRioStatusCode *status) = 0;
+   virtual void writeLEDs_RSL(bool value, tRioStatusCode *status) = 0;
+   virtual tLEDs readLEDs(tRioStatusCode *status) = 0;
+   virtual unsigned char readLEDs_Comm(tRioStatusCode *status) = 0;
+   virtual unsigned char readLEDs_Mode(tRioStatusCode *status) = 0;
+   virtual bool readLEDs_RSL(tRioStatusCode *status) = 0;
 
 
    typedef enum
@@ -44,10 +76,9 @@ public:
 
    typedef enum
    {
-   } tFPGA_LED_IfaceConstants;
+   } tUserButton_IfaceConstants;
 
-   virtual void writeFPGA_LED(bool value, tRioStatusCode *status) = 0;
-   virtual bool readFPGA_LED(tRioStatusCode *status) = 0;
+   virtual bool readUserButton(tRioStatusCode *status) = 0;
 
 
    typedef enum
@@ -67,4 +98,4 @@ private:
 }
 }
 
-#endif // __nFRC_2012_1_6_4_Global_h__
+#endif // __nFRC_2017_17_0_2_Global_h__

@@ -38,5 +38,5 @@ inline void printFPGAVersion(ttGlobal &global)
 
 }
 
-#endif // __tSystemInterface_h__
+#endif // __printFPGAVersion_h__
 

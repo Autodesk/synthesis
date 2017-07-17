@@ -1,47 +1,64 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef NOTIFIER_H
-#define NOTIFIER_H
+#pragma once
 
-#include "ChipObject.h"
+#include <stdint.h>
+
+#include <atomic>
+#include <functional>
+#include <utility>
+
 #include "ErrorBase.h"
-#include "OSAL/Synchronized.h"
+#include "HAL/Notifier.h"
+#include "HAL/cpp/priority_mutex.h"
 
-typedef void (*TimerEventHandler)(void *param);
+namespace frc {
 
-class Notifier : public ErrorBase
-{
-public:
-	Notifier(TimerEventHandler handler, void *param = NULL);
-	virtual ~Notifier();
-	void StartSingle(double delay);
-	void StartPeriodic(double period);
-	void Stop();
-private:
-	static Notifier *timerQueueHead;
-	static ReentrantSemaphore queueSemaphore;
-	static tAlarm *talarm;
-	static tInterruptManager *manager;
-	static int refcount;
+typedef std::function<void()> TimerEventHandler;
 
-	static const uint32_t kTimerInterruptNumber = 28;
-	static void ProcessQueue(uint32_t mask, void *params); // process the timer queue on a timer event
-	static void UpdateAlarm();			// update the FPGA alarm since the queue has changed
-	void InsertInQueue(bool reschedule);	// insert this Notifier in the timer queue
-	void DeleteFromQueue();				// delete this Notifier from the timer queue
-	TimerEventHandler m_handler;			// address of the handler
-	void *m_param;							// a parameter to pass to the handler
-	double m_period;						// the relative time (either periodic or single)
-	double m_expirationTime;				// absolute expiration time for the current event
-	Notifier *m_nextEvent;					// next Nofifier event
-	bool m_periodic;						// true if this is a periodic event
-	bool m_queued;							// indicates if this entry is queued
-	ReentrantSemaphore m_handlerSemaphore;				// held by interrupt manager task while handler call is in progress 
-	DISALLOW_COPY_AND_ASSIGN(Notifier);
+class Notifier : public ErrorBase {
+ public:
+  explicit Notifier(TimerEventHandler handler);
+
+  template <typename Callable, typename Arg, typename... Args>
+  Notifier(Callable&& f, Arg&& arg, Args&&... args)
+      : Notifier(std::bind(std::forward<Callable>(f), std::forward<Arg>(arg),
+                           std::forward<Args>(args)...)) {}
+
+  virtual ~Notifier();
+
+  Notifier(const Notifier&) = delete;
+  Notifier& operator=(const Notifier&) = delete;
+
+  void StartSingle(double delay);
+  void StartPeriodic(double period);
+  void Stop();
+
+ private:
+  // update the HAL alarm
+  void UpdateAlarm();
+  // HAL callback
+  static void Notify(uint64_t currentTimeInt, HAL_NotifierHandle handle);
+
+  // used to constrain execution between destructors and callback
+  static hal::priority_mutex m_destructorMutex;
+  // held while updating process information
+  hal::priority_mutex m_processMutex;
+  // HAL handle, atomic for proper destruction
+  std::atomic<HAL_NotifierHandle> m_notifier{0};
+  // address of the handler
+  TimerEventHandler m_handler;
+  // the absolute expiration time
+  double m_expirationTime = 0;
+  // the relative time (either periodic or single)
+  double m_period = 0;
+  // true if this is a periodic event
+  bool m_periodic = false;
 };
 
-#endif
+}  // namespace frc

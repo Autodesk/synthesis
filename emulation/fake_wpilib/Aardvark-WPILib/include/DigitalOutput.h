@@ -1,63 +1,64 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef DIGITAL_OUTPUT_H_
-#define DIGITAL_OUTPUT_H_
+#pragma once
+
+#include <memory>
+#include <string>
 
 #include "DigitalSource.h"
+#include "HAL/Types.h"
 #include "LiveWindow/LiveWindowSendable.h"
 #include "tables/ITableListener.h"
 
-class DigitalModule;
+namespace frc {
 
 /**
  * Class to write to digital outputs.
- * Write values to the digital output channels. Other devices implemented elsewhere will allocate
- * channels automatically so for those devices it shouldn't be done here.
+ * Write values to the digital output channels. Other devices implemented
+ * elsewhere will allocate channels automatically so for those devices it
+ * shouldn't be done here.
  */
-class DigitalOutput : public DigitalSource, public ITableListener, public LiveWindowSendable
-{
-public:
-	explicit DigitalOutput(uint32_t channel);
-	DigitalOutput(uint8_t moduleNumber, uint32_t channel);
-	virtual ~DigitalOutput();
-	void Set(uint32_t value);
-	uint32_t GetChannel();
-	void Pulse(float length);
-	bool IsPulsing();
-	void SetPWMRate(float rate);
-	void EnablePWM(float initialDutyCycle);
-	void DisablePWM();
-	void UpdateDutyCycle(float dutyCycle);
+class DigitalOutput : public DigitalSource,
+                      public ITableListener,
+                      public LiveWindowSendable {
+ public:
+  explicit DigitalOutput(int channel);
+  virtual ~DigitalOutput();
+  void Set(bool value);
+  bool Get() const;
+  int GetChannel() const override;
+  void Pulse(double length);
+  bool IsPulsing() const;
+  void SetPWMRate(double rate);
+  void EnablePWM(double initialDutyCycle);
+  void DisablePWM();
+  void UpdateDutyCycle(double dutyCycle);
 
-	// Digital Source Interface
-	virtual uint32_t GetChannelForRouting();
-	virtual uint32_t GetModuleForRouting();
-	virtual bool GetAnalogTriggerForRouting();
-	virtual void RequestInterrupts(tInterruptHandler handler, void *param);
-	virtual void RequestInterrupts();
+  // Digital Source Interface
+  HAL_Handle GetPortHandleForRouting() const override;
+  AnalogTriggerType GetAnalogTriggerTypeForRouting() const override;
+  bool IsAnalogTrigger() const override;
 
-	void SetUpSourceEdge(bool risingEdge, bool fallingEdge);
-	
-	virtual void ValueChanged(ITable* source, const std::string& key, EntryValue value, bool isNew);
-	void UpdateTable();
-	void StartLiveWindowMode();
-	void StopLiveWindowMode();
-	std::string GetSmartDashboardType();
-	void InitTable(ITable *subTable);
-	ITable * GetTable();
+  void ValueChanged(ITable* source, llvm::StringRef key,
+                    std::shared_ptr<nt::Value> value, bool isNew) override;
+  void UpdateTable();
+  void StartLiveWindowMode();
+  void StopLiveWindowMode();
+  std::string GetSmartDashboardType() const;
+  void InitTable(std::shared_ptr<ITable> subTable);
+  std::shared_ptr<ITable> GetTable() const;
 
-private:
-	void InitDigitalOutput(uint8_t moduleNumber, uint32_t channel);
+ private:
+  int m_channel;
+  HAL_DigitalHandle m_handle;
+  HAL_DigitalPWMHandle m_pwmGenerator;
 
-	uint32_t m_channel;
-	uint32_t m_pwmGenerator;
-	DigitalModule *m_module;
-	
-	ITable *m_table;
+  std::shared_ptr<ITable> m_table;
 };
 
-#endif
+}  // namespace frc

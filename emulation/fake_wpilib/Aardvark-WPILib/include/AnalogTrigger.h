@@ -1,44 +1,45 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef ANALOG_TRIGGER_H_
-#define ANALOG_TRIGGER_H_
+#pragma once
+
+#include <memory>
 
 #include "AnalogTriggerOutput.h"
+#include "HAL/Types.h"
 #include "SensorBase.h"
 
-class AnalogChannel;
-class AnalogModule;
+namespace frc {
 
-class AnalogTrigger: public SensorBase
-{
-	friend class AnalogTriggerOutput;
-public:
-	AnalogTrigger(uint8_t moduleNumber, uint32_t channel);
-	explicit AnalogTrigger(uint32_t channel);
-	explicit AnalogTrigger(AnalogChannel *channel);
-	virtual ~AnalogTrigger();
+class AnalogInput;
 
-	void SetLimitsVoltage(float lower, float upper);
-	void SetLimitsRaw(int32_t lower, int32_t upper);
-	void SetAveraged(bool useAveragedValue);
-	void SetFiltered(bool useFilteredValue);
-	uint32_t GetIndex();
-	bool GetInWindow();
-	bool GetTriggerState();
-	AnalogTriggerOutput *CreateOutput(AnalogTriggerOutput::Type type);
+class AnalogTrigger : public SensorBase {
+  friend class AnalogTriggerOutput;
 
-private:
-	void InitTrigger(uint8_t moduleNumber, uint32_t channel);
+ public:
+  explicit AnalogTrigger(int channel);
+  explicit AnalogTrigger(AnalogInput* channel);
+  virtual ~AnalogTrigger();
 
-	uint8_t m_index;
-	tAnalogTrigger *m_trigger;
-	AnalogModule *m_analogModule;
-	uint32_t m_channel;
+  void SetLimitsVoltage(double lower, double upper);
+  void SetLimitsRaw(int lower, int upper);
+  void SetAveraged(bool useAveragedValue);
+  void SetFiltered(bool useFilteredValue);
+  int GetIndex() const;
+  bool GetInWindow();
+  bool GetTriggerState();
+  std::shared_ptr<AnalogTriggerOutput> CreateOutput(
+      AnalogTriggerType type) const;
+
+ private:
+  int m_index;
+  HAL_AnalogTriggerHandle m_trigger;
+  AnalogInput* m_analogInput = nullptr;
+  bool m_ownsAnalog = false;
 };
 
-#endif
-
+}  // namespace frc

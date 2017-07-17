@@ -1,33 +1,52 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef INTERRUPTABLE_SENSORBASE_H_
-#define INTERRUPTABLE_SENSORBASE_H_
+#pragma once
 
-#include "ChipObject.h"
+#include "AnalogTriggerType.h"
+#include "HAL/Interrupts.h"
 #include "SensorBase.h"
 
-class InterruptableSensorBase : public SensorBase
-{
-public:
-	InterruptableSensorBase();
-	virtual ~InterruptableSensorBase();
-	virtual void RequestInterrupts(tInterruptHandler handler, void *param) = 0; ///< Asynchronus handler version.
-	virtual void RequestInterrupts() = 0;		///< Synchronus Wait version.
-	virtual void CancelInterrupts();			///< Free up the underlying chipobject functions.
-	virtual void WaitForInterrupt(float timeout); ///< Synchronus version.
-	virtual void EnableInterrupts();			///< Enable interrupts - after finishing setup.
-	virtual void DisableInterrupts();		///< Disable, but don't deallocate.
-	virtual double ReadInterruptTimestamp();		///< Return the timestamp for the interrupt that occurred.
-protected:
-	tInterrupt *m_interrupt;
-	tInterruptManager *m_manager;
-	uint32_t m_interruptIndex;
-	void AllocateInterrupts(bool watcher);
+namespace frc {
+
+class InterruptableSensorBase : public SensorBase {
+ public:
+  enum WaitResult {
+    kTimeout = 0x0,
+    kRisingEdge = 0x1,
+    kFallingEdge = 0x100,
+    kBoth = 0x101,
+  };
+
+  InterruptableSensorBase();
+  virtual ~InterruptableSensorBase() = default;
+  virtual HAL_Handle GetPortHandleForRouting() const = 0;
+  virtual AnalogTriggerType GetAnalogTriggerTypeForRouting() const = 0;
+  virtual void RequestInterrupts(
+      HAL_InterruptHandlerFunction handler,
+      void* param);                  ///< Asynchronus handler version.
+  virtual void RequestInterrupts();  ///< Synchronus Wait version.
+  virtual void
+  CancelInterrupts();  ///< Free up the underlying chipobject functions.
+  virtual WaitResult WaitForInterrupt(
+      double timeout,
+      bool ignorePrevious = true);  ///< Synchronus version.
+  virtual void
+  EnableInterrupts();  ///< Enable interrupts - after finishing setup.
+  virtual void DisableInterrupts();       ///< Disable, but don't deallocate.
+  virtual double ReadRisingTimestamp();   ///< Return the timestamp for the
+                                          /// rising interrupt that occurred.
+  virtual double ReadFallingTimestamp();  ///< Return the timestamp for the
+                                          /// falling interrupt that occurred.
+  virtual void SetUpSourceEdge(bool risingEdge, bool fallingEdge);
+
+ protected:
+  HAL_InterruptHandle m_interrupt = HAL_kInvalidHandle;
+  void AllocateInterrupts(bool watcher);
 };
 
-#endif
-
+}  // namespace frc

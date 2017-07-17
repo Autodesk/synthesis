@@ -1,71 +1,65 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2008. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2008-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef ROBOT_H_
-#define ROBOT_H_
+#pragma once
+
+#include <thread>
 
 #include "Base.h"
-#include "OSAL/Task.h"
-#include "Watchdog.h"
+#include "HAL/HAL.h"
+#include "llvm/raw_ostream.h"
+
+namespace frc {
 
 class DriverStation;
 
-#define START_ROBOT_CLASS(_ClassName_) \
-	void *FRC_userClassFactory() \
-	{ \
-		return new _ClassName_(); \
-	} \
-	extern "C" { \
-		int32_t FRC_UserProgram_StartupLibraryInit() \
-		{ \
-			RobotBase::startRobotTask(FRC_userClassFactory); \
-			return 0; \
-		} \
-	}
+#define START_ROBOT_CLASS(_ClassName_)                                  \
+  int main() {                                                          \
+    if (!HAL_Initialize(500, 0)) {                                      \
+      llvm::errs() << "FATAL ERROR: HAL could not be initialized\n";    \
+      return -1;                                                        \
+    }                                                                   \
+    HAL_Report(HALUsageReporting::kResourceType_Language,               \
+               HALUsageReporting::kLanguage_CPlusPlus);                 \
+    llvm::outs() << "\n********** Robot program starting **********\n"; \
+    static _ClassName_ robot;                                           \
+    robot.StartCompetition();                                           \
+  }
 
 /**
  * Implement a Robot Program framework.
- * The RobotBase class is intended to be subclassed by a user creating a robot program.
- * Overridden Autonomous() and OperatorControl() methods are called at the appropriate time
- * as the match proceeds. In the current implementation, the Autonomous code will run to
- * completion before the OperatorControl code could start. In the future the Autonomous code
- * might be spawned as a task, then killed at the end of the Autonomous period.
+ * The RobotBase class is intended to be subclassed by a user creating a robot
+ * program. Overridden Autonomous() and OperatorControl() methods are called at
+ * the appropriate time as the match proceeds. In the current implementation,
+ * the Autonomous code will run to completion before the OperatorControl code
+ * could start. In the future the Autonomous code might be spawned as a task,
+ * then killed at the end of the Autonomous period.
  */
-typedef void* (*RobotFactory)();
-
 class RobotBase {
-	friend class RobotDeleter;
-public:
-	static RobotBase &getInstance();
-	static void setInstance(RobotBase* robot);
+ public:
+  bool IsEnabled() const;
+  bool IsDisabled() const;
+  bool IsAutonomous() const;
+  bool IsOperatorControl() const;
+  bool IsTest() const;
+  bool IsNewDataAvailable() const;
+  static std::thread::id GetThreadId();
+  virtual void StartCompetition() = 0;
 
-	bool IsEnabled();
-	bool IsDisabled();
-	bool IsAutonomous();
-	bool IsOperatorControl();
-    bool IsTest();
-	bool IsSystemActive();
-	bool IsNewDataAvailable();
-	Watchdog &GetWatchdog();
-	static void startRobotTask(RobotFactory factory);
-	static DWORD WINAPI robotTask(LPVOID obj);
+ protected:
+  RobotBase();
+  virtual ~RobotBase() = default;
 
-protected:
-	virtual ~RobotBase();
-	virtual void StartCompetition() = 0;
-	RobotBase();
-	static void WriteVersionString();
+  RobotBase(const RobotBase&) = delete;
+  RobotBase& operator=(const RobotBase&) = delete;
 
-	Task *m_task;
-	Watchdog m_watchdog;
-	DriverStation *m_ds;
-private:
-	static RobotBase *m_instance;
-	DISALLOW_COPY_AND_ASSIGN(RobotBase);
+  DriverStation& m_ds;
+
+  static std::thread::id m_threadId;
 };
 
-#endif
-
+}  // namespace frc

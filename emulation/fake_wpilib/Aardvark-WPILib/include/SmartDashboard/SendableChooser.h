@@ -1,47 +1,60 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __SENDABLE_CHOOSER_H__
-#define __SENDABLE_CHOOSER_H__
+#pragma once
 
-#include "SmartDashboard/Sendable.h"
-#include "tables/ITable.h"
-#include <map>
+#include <memory>
 #include <string>
 
+#include "SmartDashboard/SendableChooserBase.h"
+#include "llvm/StringMap.h"
+#include "llvm/StringRef.h"
+#include "tables/ITable.h"
+
+namespace frc {
+
 /**
- * The {@link SendableChooser} class is a useful tool for presenting a selection of options
- * to the {@link SmartDashboard}.
+ * The {@link SendableChooser} class is a useful tool for presenting a selection
+ * of options to the {@link SmartDashboard}.
  *
- * <p>For instance, you may wish to be able to select between multiple autonomous modes.
- * You can do this by putting every possible {@link Command} you want to run as an autonomous into
- * a {@link SendableChooser} and then put it into the {@link SmartDashboard} to have a list of options
- * appear on the laptop.  Once autonomous starts, simply ask the {@link SendableChooser} what the selected
- * value is.</p>
+ * <p>For instance, you may wish to be able to select between multiple
+ * autonomous modes. You can do this by putting every possible {@link Command}
+ * you want to run as an autonomous into a {@link SendableChooser} and then put
+ * it into the {@link SmartDashboard} to have a list of options appear on the
+ * laptop.  Once autonomous starts, simply ask the {@link SendableChooser} what
+ * the selected value is.</p>
  *
+ * @tparam T The type of values to be stored
  * @see SmartDashboard
  */
-class SendableChooser : public Sendable
-{
-public:
-	SendableChooser();
-	virtual ~SendableChooser() {};
+template <class T>
+class SendableChooser : public SendableChooserBase {
+  llvm::StringMap<T> m_choices;
 
-	void AddObject(const char *name, void *object);
-	void AddDefault(const char *name, void *object);
-	void *GetSelected();
+  template <class U>
+  static U _unwrap_smart_ptr(const U& value);
 
-	virtual void InitTable(ITable* subtable);
-	virtual ITable* GetTable();
-	virtual std::string GetSmartDashboardType();
+  template <class U>
+  static U* _unwrap_smart_ptr(const std::unique_ptr<U>& value);
 
-private:
-	std::string m_defaultChoice;
-	std::map<std::string, void *> m_choices;
-	ITable *m_table;
+  template <class U>
+  static std::weak_ptr<U> _unwrap_smart_ptr(const std::shared_ptr<U>& value);
+
+ public:
+  virtual ~SendableChooser() = default;
+
+  void AddObject(llvm::StringRef name, T object);
+  void AddDefault(llvm::StringRef name, T object);
+
+  auto GetSelected() -> decltype(_unwrap_smart_ptr(m_choices[""]));
+
+  void InitTable(std::shared_ptr<ITable> subtable) override;
 };
 
-#endif
+}  // namespace frc
+
+#include "SendableChooser.inc"

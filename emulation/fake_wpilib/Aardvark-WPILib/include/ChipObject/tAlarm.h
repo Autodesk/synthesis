@@ -1,14 +1,15 @@
 // Copyright (c) National Instruments 2008.  All Rights Reserved.
 // Do Not Edit... this file is generated!
 
-#ifndef __nFRC_2012_1_6_4_Alarm_h__
-#define __nFRC_2012_1_6_4_Alarm_h__
+#ifndef __nFRC_2017_17_0_2_Alarm_h__
+#define __nFRC_2017_17_0_2_Alarm_h__
 
-#include "tSystemInterface.h"
+#include "../tSystem.h"
+#include "../tSystemInterface.h"
 
 namespace nFPGA
 {
-namespace nFRC_2012_1_6_4
+namespace nFRC_2017_17_0_2
 {
 
 class tAlarm
@@ -54,4 +55,4 @@ private:
 }
 }
 
-#endif // __nFRC_2012_1_6_4_Alarm_h__
+#endif // __nFRC_2017_17_0_2_Alarm_h__

@@ -1,29 +1,30 @@
-/*
- * NamedSendable.h
- *
- *  Created on: Oct 19, 2012
- *      Author: Mitchell Wills
- */
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) FIRST 2012-2017. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
 
-#ifndef NAMEDSENDABLE_H_
-#define NAMEDSENDABLE_H_
-
+#pragma once
 
 #include <string>
+
 #include "SmartDashboard/Sendable.h"
 
-/**
- * The interface for sendable objects that gives the sendable a default name in the Smart Dashboard
- * 
- */
-class NamedSendable : public Sendable
-{
-public:
+namespace frc {
 
-    /**
-     * @return the name of the subtable of SmartDashboard that the Sendable object will use
-     */
-	virtual std::string GetName() = 0;
+/**
+ * The interface for sendable objects that gives the sendable a default name in
+ * the Smart Dashboard
+ *
+ */
+class NamedSendable : public Sendable {
+ public:
+  /**
+   * @return the name of the subtable of SmartDashboard that the Sendable object
+   *         will use
+   */
+  virtual std::string GetName() const = 0;
 };
 
-#endif /* NAMEDSENDABLE_H_ */
+}  // namespace frc

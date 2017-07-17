@@ -1,70 +1,76 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) FIRST 2011. All Rights Reserved.							  */
+/* Copyright (c) FIRST 2011-2017. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib.  */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-#ifndef __PID_SUBSYSTEM_H__
-#define __PID_SUBSYSTEM_H__
+#pragma once
+
+#include <memory>
+#include <string>
 
 #include "Commands/Subsystem.h"
 #include "PIDController.h"
-#include "PIDSource.h"
 #include "PIDOutput.h"
+#include "PIDSource.h"
+
+namespace frc {
 
 /**
  * This class is designed to handle the case where there is a {@link Subsystem}
- * which uses a single {@link PIDController} almost constantly (for instance, 
+ * which uses a single {@link PIDController} almost constantly (for instance,
  * an elevator which attempts to stay at a constant height).
  *
- * <p>It provides some convenience methods to run an internal {@link PIDController}.
- * It also allows access to the internal {@link PIDController} in order to give total control
- * to the programmer.</p>
+ * <p>It provides some convenience methods to run an internal {@link
+ * PIDController}. It also allows access to the internal {@link PIDController}
+ * in order to give total control to the programmer.</p>
  *
  */
-class PIDSubsystem : public Subsystem, public PIDOutput, public PIDSource
-{
-public:
-	PIDSubsystem(const char *name, double p, double i, double d);
-	PIDSubsystem(const char *name, double p, double i, double d, double f);
-	PIDSubsystem(const char *name, double p, double i, double d, double f, double period);
-	PIDSubsystem(double p, double i, double d);
-	PIDSubsystem(double p, double i, double d, double f);
-	PIDSubsystem(double p, double i, double d, double f, double period);
-	virtual ~PIDSubsystem();
-	
-	void Enable();
-	void Disable();
+class PIDSubsystem : public Subsystem, public PIDOutput, public PIDSource {
+ public:
+  PIDSubsystem(const std::string& name, double p, double i, double d);
+  PIDSubsystem(const std::string& name, double p, double i, double d, double f);
+  PIDSubsystem(const std::string& name, double p, double i, double d, double f,
+               double period);
+  PIDSubsystem(double p, double i, double d);
+  PIDSubsystem(double p, double i, double d, double f);
+  PIDSubsystem(double p, double i, double d, double f, double period);
+  virtual ~PIDSubsystem() = default;
 
-	// PIDOutput interface
-	virtual void PIDWrite(float output);
+  void Enable();
+  void Disable();
 
-	// PIDSource interface
-	virtual double PIDGet();
-	void SetSetpoint(double setpoint);
-	void SetSetpointRelative(double deltaSetpoint);
-	void SetInputRange(float minimumInput, float maximumInput);
-	double GetSetpoint();
-	double GetPosition();
+  // PIDOutput interface
+  virtual void PIDWrite(double output);
 
-	virtual void SetAbsoluteTolerance(float absValue);
-	virtual void SetPercentTolerance(float percent);
-	virtual bool OnTarget();
-	
-protected:
-	PIDController *GetPIDController();
+  // PIDSource interface
+  virtual double PIDGet();
+  void SetSetpoint(double setpoint);
+  void SetSetpointRelative(double deltaSetpoint);
+  void SetInputRange(double minimumInput, double maximumInput);
+  void SetOutputRange(double minimumOutput, double maximumOutput);
+  double GetSetpoint();
+  double GetPosition();
+  double GetRate();
 
-	virtual double ReturnPIDInput() = 0;
-	virtual void UsePIDOutput(double output) = 0;
+  virtual void SetAbsoluteTolerance(double absValue);
+  virtual void SetPercentTolerance(double percent);
+  virtual bool OnTarget() const;
 
-private:
-	/** The internal {@link PIDController} */
-	PIDController *m_controller;
+ protected:
+  std::shared_ptr<PIDController> GetPIDController();
 
-public:
-	virtual void InitTable(ITable* table);
-	virtual std::string GetSmartDashboardType();
+  virtual double ReturnPIDInput() = 0;
+  virtual void UsePIDOutput(double output) = 0;
+
+ private:
+  /** The internal {@link PIDController} */
+  std::shared_ptr<PIDController> m_controller;
+
+ public:
+  void InitTable(std::shared_ptr<ITable> subtable) override;
+  std::string GetSmartDashboardType() const override;
 };
 
-#endif
-
+}  // namespace frc
