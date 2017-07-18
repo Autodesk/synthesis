@@ -2,93 +2,95 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.IO;
+/// <summary>
+/// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
+/// </summary>
+public class MainMenu : MonoBehaviour {
 
-
-public class MainMenu : MonoBehaviour
-{
-
-    public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
+    //This refers to what tab the main menu is currently in.
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir};
     public static Tab currentTab = Tab.Main;
 
+    //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
+    //We store these because it allows us to easily find and access specific UI objects.
     public GameObject homeTab;
     public GameObject simTab;
     public GameObject optionsTab;
 
-    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration }
+    //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
+    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
-    private GameObject selectionPanel; //The Mode Selection Tab GUI Objects
+    //These are necessary references to specific UI parent objects.
+    //We disable and enable these when the state of the main menu changes to reflect the user's selection.
+    private GameObject selectionPanel;
     private GameObject defaultSimulator;
     private GameObject driverPracticeMode;
     private GameObject dpmConfiguration;
     private GameObject localMultiplayer;
-    private GameObject simLoadField; //The LoadField GUI Objects
-    private GameObject simLoadRobot; //The LoadRobot GUI Objects
+    private GameObject simLoadField;
+    private GameObject simLoadRobot;
     private GameObject dpmLoadField;
     private GameObject dpmLoadRobot;
     private GameObject multiplayerLoadField;
     private GameObject multiplayerLoadRobot;
 
+    //We alter these to reflect the user's selected fields and robots.
     private GameObject simRobotSelectText;
     private GameObject simFieldSelectText;
     private GameObject dpmRobotSelectText;
     private GameObject dpmFieldSelectText;
 
+    //This reflects the state of driver practice mode configuration and displays what field a robot is configured for.
     private GameObject configurationText;
 
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
-    private GameObject splashScreen; //A panel that shows up at the start while initializing everything.
+
+    private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
     private ArrayList fields; //ArrayList of field folders to select
     private ArrayList robots; //ArrayList of robot folders to select
 
-    private int fieldindex; //The current index of field selection
-    private int robotindex; //The current index of robot selection
-
-    private Sprite currentimage; //The current thumbnail to be previewed
-    private string currenttext; //The current text to be displayed
-
+    //Variables for Default Simulator mode
     private string simSelectedField; //the selected field file path
     private string simSelectedRobot; //the selected robot file path
     private string simSelectedFieldName; //the selected field name
     private string simSelectedRobotName; //the selected robot name
 
-    private string dpmSelectedField;
-    private string dpmSelectedRobot;
-    private string dpmSelectedFieldName;
-    private string dpmSelectedRobotName;
+    //Variables for Driver Practice mode
+    private string dpmSelectedField; //the selected field file path
+    private string dpmSelectedRobot; //the selected robot file path
+    private string dpmSelectedFieldName; //the selected field name
+    private string dpmSelectedRobotName; //the selected robot name
 
-    private float _buttonDownPhaseStart;
-    private float _doubleClickPhaseStart;
+    private FileBrowser fieldBrowser = null; //field directory browser
+    private bool customfieldon = true; //whether the field directory browser is on
+    public string fieldDirectory; //file path for field directory
 
+    private FileBrowser robotBrowser = null; //robot directory browser
+    private bool customroboton = true; //whether the robot directory browser is on
+    public string robotDirectory; //file path for robot directory
 
-    private FileBrowser fieldBrowser = null;
-    private bool customfieldon = true;
-    public string fieldDirectory;
+    public static GameObject inputConflict; //UI object that shows when two inputs conflict with each other
 
-    private FileBrowser robotBrowser = null;
-    private bool customroboton = true;
-    public string robotDirectory;
+    public static bool fullscreen; //true if application is in fullscreen
+    public static int resolutionsetting; //resolution setting index
+    private int[] xresolution = new int[10]; //arrays of resolution widths corresponding to index
+    private int[] yresolution = new int[10]; //arrays of resolution heights corresponding to index
 
-    public static GameObject inputConflict;
-
-    public static bool fullscreen;
-    public static int resolutionsetting;
-    private int[] xresolution = new int[10];
-    private int[] yresolution = new int[10];
-
-    private Canvas canvas;
+    private Canvas canvas; //canvas component of this object--used for scaling user message manager to size
 
 
     /// <summary>
     /// Runs every frame to update the GUI elements.
     /// </summary>
-    void OnGUI()
+    void OnGUI ()
     {
         switch (currentTab)
-        {
+         {
+            //Switches back to sim tab UI elements if field browser is closed
             case Tab.FieldDir:
                 if (customfieldon && !fieldBrowser.Active)
                 {
@@ -100,7 +102,8 @@ public class MainMenu : MonoBehaviour
                     customfieldon = false;
                 }
                 break;
-
+            
+            //Switches back to sim tab UI elements if robot directory is closed
             case Tab.RobotDir:
                 if (customroboton && !robotBrowser.Active)
                 {
@@ -110,19 +113,25 @@ public class MainMenu : MonoBehaviour
                     optionsTab.SetActive(false);
                     simTab.SetActive(true);
                     customroboton = false;
-                }
+                    }
                 break;
          }
+
+         //Initializes and renders the Field Browser
          if (fieldDirectory != null) InitFieldBrowser();
          if (robotDirectory != null) InitRobotBrowser();
         
+         //Renders the message manager which displays error messages
          UserMessageManager.Render();
          UserMessageManager.scale = canvas.scaleFactor;
     }
 
+    /// <summary>
+    /// Switches to the home tab and its respective UI elements.
+    /// </summary>
     public void SwitchTabHome()
     {
-        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir)
+        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir) //checks if directory browser is active
         {
             currentTab = Tab.Main;
 
@@ -130,12 +139,15 @@ public class MainMenu : MonoBehaviour
             optionsTab.SetActive(false);
             homeTab.SetActive(true);
         }
-        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
+        else UserMessageManager.Dispatch("You must select a directory or exit first!",3);
     }
 
+    /// <summary>
+    /// Switches to the sim tab and its respective UI elements.
+    /// </summary>
     public void SwitchTabSim()
     {
-        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir)
+        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir) //checks if directory browser is active
         {
             currentTab = Tab.Sim;
 
@@ -146,9 +158,12 @@ public class MainMenu : MonoBehaviour
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
+    /// <summary>
+    /// Switches to the options tab and its respective UI elements.
+    /// </summary>
     public void SwitchTabOptions()
     {
-        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir)
+        if (currentTab != Tab.RobotDir && currentTab != Tab.FieldDir) //checks if directory browser is active
         {
             currentTab = Tab.Options;
 
@@ -159,11 +174,14 @@ public class MainMenu : MonoBehaviour
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
+    /// <summary>
+    /// Switches to the selection menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
     public void SwitchSimSelection()
     {
         currentSim = Sim.Selection;
 
-
+        
         defaultSimulator.SetActive(false);
         driverPracticeMode.SetActive(false);
         localMultiplayer.SetActive(false);
@@ -178,6 +196,9 @@ public class MainMenu : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Switches to the default simulator menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
     public void SwitchSimDefault()
     {
         currentSim = Sim.DefaultSimulator;
@@ -191,6 +212,9 @@ public class MainMenu : MonoBehaviour
         simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
     }
 
+    /// <summary>
+    /// Switches to the driver practice menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
     public void SwitchDriverPractice()
     {
         currentSim = Sim.DriverPracticeMode;
@@ -205,6 +229,9 @@ public class MainMenu : MonoBehaviour
         dpmFieldSelectText.GetComponent<Text>().text = dpmSelectedFieldName;
     }
 
+    /// <summary>
+    /// Switches to the multiplayer menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
     public void SwitchMultiplayer()
     {
         currentSim = Sim.Multiplayer;
@@ -215,6 +242,9 @@ public class MainMenu : MonoBehaviour
         localMultiplayer.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load robot menu for the default simulator and activates its respective UI elements.
+    /// </summary>
     public void SwitchSimLoadRobot()
     {
         currentSim = Sim.SimLoadRobot;
@@ -223,6 +253,9 @@ public class MainMenu : MonoBehaviour
         simLoadRobot.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load field menu for the default simulator and activates its respective UI elements.
+    /// </summary>
     public void SwitchSimLoadField()
     {
         currentSim = Sim.SimLoadField;
@@ -231,6 +264,9 @@ public class MainMenu : MonoBehaviour
         simLoadField.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load robot menu for the driver practice mode and activates its respective UI elements.
+    /// </summary>
     public void SwitchDPMLoadRobot()
     {
         currentSim = Sim.DPMLoadRobot;
@@ -239,28 +275,15 @@ public class MainMenu : MonoBehaviour
         dpmLoadRobot.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the load field menu for the driver practice mode and activates its respective UI elements.
+    /// </summary>
     public void SwitchDPMLoadField()
     {
         currentSim = Sim.DPMLoadField;
 
         driverPracticeMode.SetActive(false);
         dpmLoadField.SetActive(true);
-    }
-
-    public void SwitchMultiplayerLoadRobot()
-    {
-        currentSim = Sim.MultiplayerLoadRobot;
-
-        localMultiplayer.SetActive(false);
-        multiplayerLoadRobot.SetActive(true);
-    }
-
-    public void SwitchMultiplayerLoadField()
-    {
-        currentSim = Sim.SimLoadField;
-
-        localMultiplayer.SetActive(false);
-        multiplayerLoadField.SetActive(true);
     }
 
     public void SwitchFieldDir()
@@ -317,7 +340,7 @@ public class MainMenu : MonoBehaviour
             }
             else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
 
-
+  
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
@@ -396,12 +419,14 @@ public class MainMenu : MonoBehaviour
          }
          else startButton.GetComponent<Image>().color = Color.green;
      }
+
      public void StartButtonExit()
      {
          Text buttontext = readyText.GetComponent<Text>();
          buttontext.text = ("START");
          buttontext.fontSize = 30;
      }
+
  /*    //Starts the simulation
      public void StartButtonClicked()
      {
@@ -416,8 +441,7 @@ public class MainMenu : MonoBehaviour
     //Exits the program
     public void Exit()
     {
-        if (!Application.isEditor)
-        {
+        if (!Application.isEditor) {
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
@@ -436,6 +460,7 @@ public class MainMenu : MonoBehaviour
         }
         else UserMessageManager.Dispatch("No robot in directory!", 2);
     }
+
     //Selects the fields, records the filename, and switches to the main Tab.
     public void SelectFieldButtonClicked()
     {
@@ -452,7 +477,7 @@ public class MainMenu : MonoBehaviour
     {
         if (fieldBrowser == null)
         {
-            fieldBrowser = new FileBrowser("Choose Field Folder", fieldDirectory, true);
+            fieldBrowser = new FileBrowser("Choose Field Directory", fieldDirectory, true);
             fieldBrowser.Active = true;
             fieldBrowser.OnComplete += (object obj) =>
             {
@@ -493,7 +518,7 @@ public class MainMenu : MonoBehaviour
     {
         if (robotBrowser == null)
         {
-            robotBrowser = new FileBrowser("Choose Robot Folder", robotDirectory, true);
+            robotBrowser = new FileBrowser("Choose Robot Directory", robotDirectory, true);
             robotBrowser.Active = true;
             robotBrowser.OnComplete += (object obj) =>
             {
@@ -552,26 +577,27 @@ public class MainMenu : MonoBehaviour
 
     public void OpenWebsite()
     {
+        //System.Diagnostics.Process.Start("\\..\\FieldExporter\\Inventor_Exporter.exe");
         Application.OpenURL("http://bxd.autodesk.com/");
     }
 
     public void OpenTutorials()
     {
-        Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+        Application.OpenURL("http://bxd.autodesk.com/?page=Tutorials");
     }
 
     public void OpenRobotExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/tutorial-robot.html");
+        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRobotExporter");
     }
 
     public void OpenFieldExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/tutorial-field.html");
+        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialFieldExporter");
     }
     public void OpenRobotConfigurationTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/tutorial-sim.html");
+        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
     }
     public void ResetControls()
     {
@@ -643,9 +669,8 @@ public class MainMenu : MonoBehaviour
         }
     }
     #endregion
-    void Start()
-    {
-
+    void Start () {
+        
         FindAllGameObjects();
         splashScreen.SetActive(true);
         InitGraphicsSettings();
@@ -667,6 +692,8 @@ public class MainMenu : MonoBehaviour
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
         canvas = GetComponent<Canvas>();
+
+
 
         customfieldon = false;
         customroboton = false;
@@ -692,10 +719,10 @@ public class MainMenu : MonoBehaviour
             SwitchTabHome();
             SwitchSimDefault();
         }
-
-
+        
+        
     }
-    void FindAllGameObjects()
+	 void FindAllGameObjects()
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
