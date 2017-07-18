@@ -68,5 +68,12 @@ namespace InvAddIn
         {
 
         }
+
+        private void CancelButton_onClick(object sender, FormClosedEventArgs e)
+        {
+            mAddInInterface.setCancel(true);
+            mAddInInterface.setRunOnce(false);
+            //this.Close();
+        }
     }
 }
