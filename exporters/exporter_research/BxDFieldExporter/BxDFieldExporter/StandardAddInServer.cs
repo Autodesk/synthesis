@@ -6,15 +6,25 @@ using System.Drawing;
 using System.Collections;
 using System.Timers;
 using ExportProcess;
+using InvAddIn;
+using System.Diagnostics;
 
 namespace BxDFieldExporter
 {
-
+    //User Defined Interface Exposed through the Add-In Automation property
+    public interface AutomationInterface
+    {
+        void setDone(bool isDone);
+        bool getDone();
+        void setRunOnce(bool run);
+        bool getRunOnce();
+        void setCancel(bool isCancel);
+    }
     //TLDR: exports the field
 
 
     [GuidAttribute("e50be244-9f7b-4b94-8f87-8224faba8ca1")]
-    public class StandardAddInServer : Inventor.ApplicationAddInServer
+    public class StandardAddInServer : Inventor.ApplicationAddInServer, AutomationInterface
     {
         // all the global variables
         #region variables
@@ -36,7 +46,7 @@ namespace BxDFieldExporter
         static ButtonDefinition editComponent;
         static ButtonDefinition addAssembly;
         static ButtonDefinition addPart;// contain the buttons that the user can interact with
-        static ButtonDefinition removeSubAssembly;
+        static ButtonDefinition removePart;
         static ButtonDefinition removeAssembly;
         static ButtonDefinition cancelExport;
         static ButtonDefinition exportField;
@@ -48,6 +58,7 @@ namespace BxDFieldExporter
         Inventor.Environment oNewEnv;
         int spawnLocationNumber;
         static bool done;
+        static bool cancel = false;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldComponents;// arraylist of all the field properties the user has set
         static ArrayList SpawnPoints;
@@ -61,6 +72,7 @@ namespace BxDFieldExporter
         UserInputEvents UIEvent;// the uievents that react to selections
         static Document oDoc;// a doc to add new highlight sets to
         static HighlightSet oSet;// highlight set that represents the selection
+        static HighlightSet partSet; //highlight set for current selected parts 
         Inventor.UserInputEventsSink_OnSelectEventHandler click_OnSelectEventDelegate;// handles the selection events
         Inventor.UserInterfaceEventsSink_OnEnvironmentChangeEventHandler enviroment_OnChangeEventDelegate;
         static bool inExportView;// boolean to help in detecting wether or not to react to an event based on wether or not the application is exporting
@@ -69,6 +81,7 @@ namespace BxDFieldExporter
         static Object currentSelected;// the current component that the user is editing, needed for the unselection stuff
         static bool found;// boolean to help in searching for objects and the corrosponding actions
         private static uint fieldID = 0; //Numerical ID to associate STLs with the field Property
+        
         #endregion 
         public StandardAddInServer()
         {
@@ -142,11 +155,40 @@ namespace BxDFieldExporter
             get
             {
                 // TODO: Add ApplicationAddInServer.Automation getter implementation
-                return null;
+                return this;
             }
         }
 
         #endregion
+
+        #region API exposed methods
+        public void setDone(bool isDone)
+        {
+            done = isDone;
+        }
+
+        public bool getDone()
+        {
+            return done;
+        }
+
+        public void setRunOnce(bool run)
+        {
+            runOnce = run;
+        }
+
+        public bool getRunOnce()
+        {
+            return runOnce;
+        }
+
+        public void setCancel(bool isCancel)
+        {
+            cancel = isCancel;
+        }
+    
+        #endregion 
+
         // called when the exporter starts
         public void startExport_OnExecute(Inventor.NameValueMap Context)
         {
@@ -170,13 +212,16 @@ namespace BxDFieldExporter
                     exportField.Enabled = true;
                     addPart.Enabled = true;
                     removeAssembly.Enabled = true;
-                    removeSubAssembly.Enabled = true;
+                    removePart.Enabled = true;
                     AssemblyDocument asmDoc = (AssemblyDocument)m_inventorApplication.ActiveDocument;// get the active assembly document
                     BrowserNodeDefinition oDef; // create browsernodedef to use to add browser node to the pane
                     oDoc = m_inventorApplication.ActiveDocument;// get the active document in inventor
                     oPanes = oDoc.BrowserPanes;// get the browserpanes to add
                     oSet = oDoc.CreateHighlightSet();// create a highlightset to add the selected occcurences to
-                    oSet.Color = m_inventorApplication.TransientObjects.CreateColor(125, 0, 255);
+                    oSet.Color = m_inventorApplication.TransientObjects.CreateColor(100, 0, 200);
+
+                    partSet = oDoc.CreateHighlightSet();
+                    partSet.Color = m_inventorApplication.TransientObjects.CreateColor(100, 0, 200);
                     rand = new Random();// create new random num generator to generate internal ids
                     try
                     {// if no browser pane previously created then create a new one
@@ -259,8 +304,8 @@ namespace BxDFieldExporter
                 stdole.IPictureDisp removeAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveAssembly16));
                 stdole.IPictureDisp removeAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveAssembly32));
 
-                stdole.IPictureDisp removeSubAssemblyIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly16));
-                stdole.IPictureDisp removeSubAssemblyIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly32));
+                stdole.IPictureDisp removePartIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly16));
+                stdole.IPictureDisp removePartIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSubAssembly16));
 
                 stdole.IPictureDisp addPartIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart16));
                 stdole.IPictureDisp addPartIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddNewPart32));
@@ -329,7 +374,7 @@ namespace BxDFieldExporter
                     ttAddNewComponent, "Add New Component");
 
                 addAssembly = controlDefs.AddButtonDefinition(" Add New Assembly ", "BxD:FieldExporter:AddNewItem", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addAssemblyIconSmall, addAssemblyIconLarge);
-                addAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssembly_OnExecute);
+                addAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssemblies_OnExecute);
                 toolTip(addAssembly, "Adds an assembly to a field component.",
                     "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click \"Add New Assembly\", and select the assembly to add to the component. To add multiple assemblies to one component, repeat the process.",
                     ttAddAssembly, "Add Assembly");
@@ -352,9 +397,9 @@ namespace BxDFieldExporter
                     "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click \"Remove Assembly\", and select the assembly to remove from the component. To remove multiple assemblies from one component, repeat the process",
                     ttRemoveAssembly, "Remove Assembly");
 
-                removeSubAssembly = controlDefs.AddButtonDefinition(" Remove Part ", "BxD:FieldExporter:RemovePart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeSubAssemblyIconSmall, removeSubAssemblyIconLarge);
-                removeSubAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeSubAssembly_OnExecute);
-                toolTip(removeSubAssembly, "Removes a part from a field component.",
+                removePart = controlDefs.AddButtonDefinition(" Remove Part ", "BxD:FieldExporter:RemovePart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removePartIconSmall, removePartIconLarge);
+                removePart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removePart_OnExecute);
+                toolTip(removePart, "Removes a part from a field component.",
                    "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click “Remove Part”, and select the part to remove from the component. To remove multiple parts from one component, repeat the process.",
                    ttRemovePart, "Remove Assembly");
 
@@ -378,7 +423,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     ttExportField, "Export Field");
 
                 addPart = controlDefs.AddButtonDefinition(" Add New Part ", "BxD:FieldExporter:AddNewPart", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addPartIconSmall, addPartIconLarge);
-                addPart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewSubAssembly_OnExecute);
+                addPart.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewPart_OnExecute);
                 toolTip(addPart, "Adds a part to a field component.",
                     "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click “Add New Part”, and select the part to add to the component. To add multiple part to one component, repeat the process.",
                     ttAddPart, "Add New Part");
@@ -404,7 +449,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 AddItems.CommandControls.AddButton(addAssembly, true, true);
                 AddItems.CommandControls.AddButton(addPart, true, true);
                 RemoveItems.CommandControls.AddButton(removeAssembly, true, true);// add buttons to the part panels
-                RemoveItems.CommandControls.AddButton(removeSubAssembly, true, true);
+                RemoveItems.CommandControls.AddButton(removePart, true, true);
                 ExporterControl.CommandControls.AddButton(exportField, true, true);
                 addNewComponent.Enabled = false;
                 editComponent.Enabled = false;
@@ -416,7 +461,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 addNewComponent.Enabled = false;
                 addPart.Enabled = false;
                 removeAssembly.Enabled = false;
-                removeSubAssembly.Enabled = false;
+                removePart.Enabled = false;
                 UserInterfaceEvents UIEvents = m_inventorApplication.UserInterfaceManager.UserInterfaceEvents;
 
                 enviroment_OnChangeEventDelegate = new UserInterfaceEventsSink_OnEnvironmentChangeEventHandler(OnEnvironmentChange);
@@ -465,13 +510,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             button.ProgressiveToolTip.Title = title;
         }
 
-        public void test(Inventor.NameValueMap Context)
-        {
-            AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-            WorkPoint joint = (WorkPoint)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                      (SelectionFilterEnum.kWorkPointFilter, "Select a part to remove");
-        }
         // reacts to a selection
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View)
         {
@@ -534,7 +572,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 addAssembly.Enabled = true;
                                 addPart.Enabled = true;
                                 removeAssembly.Enabled = true;
-                                removeSubAssembly.Enabled = true;
+                                removePart.Enabled = true;
                                 editSpawnLocation.Enabled = false;
                                 removeSpawnPoint.Enabled = false;
                             }
@@ -548,7 +586,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 addAssembly.Enabled = false;
                                 addPart.Enabled = false;
                                 removeAssembly.Enabled = false;
-                                removeSubAssembly.Enabled = false;
+                                removePart.Enabled = false;
                                 editSpawnLocation.Enabled = true;
                                 removeSpawnPoint.Enabled = true;
                                 oSet.AddItem(ucs);
@@ -605,6 +643,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                         if (t.same(node.BrowserNodeDefinition))
                         {// if t is part of that browser node
                             if (!currentSelected.Equals(t))
+                           
                             {// is the selected node is no longer selected 
                                 found = true;// tell the program it found the node
                                 oSet.Clear();// clear the highlighted set in prep to add new occurrences
@@ -638,7 +677,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 addAssembly.Enabled = false;
                 addPart.Enabled = false;
                 removeAssembly.Enabled = false;
-                removeSubAssembly.Enabled = false;
+                removePart.Enabled = false;
                 editSpawnLocation.Enabled = false;
                 removeSpawnPoint.Enabled = false;
             }
@@ -657,7 +696,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     exportField.Enabled = false;
                     addPart.Enabled = false;
                     removeAssembly.Enabled = false;
-                    removeSubAssembly.Enabled = false;
+                    removePart.Enabled = false;
                     editSpawnLocation.Enabled = false;
                     removeSpawnPoint.Enabled = false;
 
@@ -679,7 +718,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     exportField.Enabled = true;
                     addPart.Enabled = true;
                     removeAssembly.Enabled = true;
-                    removeSubAssembly.Enabled = true;
+                    removePart.Enabled = true;
 
                     oPane.Visible = true;// Hide the browser pane
                     oPane.Activate();
@@ -731,70 +770,130 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             return def;// returns the browsernodedef
         }
-        // removes an assembly from the arraylist of the Component
-        public void addNewAssembly_OnExecute(Inventor.NameValueMap Context)
+        
+        //Opens the "Add Part(s)" window and adds parts to a component
+        public void addNewPart_OnExecute(Inventor.NameValueMap Context)
         {
-            try
+            //Create form and show it
+            AddPart form = new AddPart();
+            form.Show();
+            
+            done = false;
+            cancel = false;
+            int componentsAdded = 0; //Tracks how many components are added
+            while (!done)
             {
-                runOnce = true;
-                done = false;
-                bool selected = false;
-                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
+                ComponentOccurrence joint = null;
+                AssemblyDocument asmDoc = (AssemblyDocument)
+                             m_inventorApplication.ActiveDocument;
+                joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a part
+                          (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
+                if (joint != null)
                 {
-                    if (node.Selected)
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    {
+                        if (node.Selected)// find the selected node
+                        {
+                            foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                            {
+                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                                {
+                                    t.compOcc.Add(joint);// add the part occurence to the arraylist
+                                    partSet.AddItem(joint); //add the part occurence to a set that is highlighted in purple
+                                    node.DoSelect();
+                                }
+                            }
+                        }
+                    }
+                    componentsAdded++; //Tracks how many components are added
+                }
+            }
+
+            partSet.Clear(); //Clears the highlighted set
+
+            //If the user clicks "cancel", remove all parts previously added to the list
+            if (cancel == true)
+            {
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                {
+                    if (node.Selected)// find the selected node
                     {
                         foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
                         {
                             if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
                             {
-                                selected = true;// if one node is selected then we can add the new sub assembly
-                            }
-                        }
-                    }
-                }
-                if (selected)// if there is a selected node then we can add a part to it
-                {
-                    while (!done)
-                    {
-                        ComponentOccurrence joint = null;
-                        AssemblyDocument asmDoc = (AssemblyDocument)
-                                 m_inventorApplication.ActiveDocument;
-                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
-                        if (joint != null)
-                        {
-                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
-                            {
-                                if (node.Selected)// find the selected node
+                                for (int i = 0; i < componentsAdded; i++) //for each previously added component
                                 {
-                                    foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
-                                    {
-                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
-                                        {
-                                            t.compOcc.Add(joint);// add the occurence to the arraylist
-                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
-                                            node.DoSelect();
-                                        }
-                                    }
+                                    t.compOcc.RemoveAt(t.compOcc.Count - 1); //removes the component
                                 }
                             }
                         }
-                        runOnce = false;
                     }
                 }
-                else
-                {
-                    MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
-                }
-                runOnce = false;
-            }
-            catch (Exception)
-            {
-
-            }
-            runOnce = true;
-
+            } 
         }
+        
+        //Opens the "Add Assembly(s)" and adds assemblies to a component
+        public void addNewAssemblies_OnExecute(Inventor.NameValueMap Context)
+        {
+            //Create form and show it
+            AddAssembly form = new AddAssembly();
+            form.Show();
+
+            done = false;
+            cancel = false;
+            int componentsAdded = 0; //Tracks how many components are added
+            while (!done)
+            {
+                ComponentOccurrence joint = null;
+                AssemblyDocument asmDoc = (AssemblyDocument)
+                             m_inventorApplication.ActiveDocument;
+                joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select an assembly
+                          (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
+                if (joint != null)
+                {
+                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                    {
+                        if (node.Selected)// find the selected node
+                        {
+                            foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                            {
+                                if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                                {
+                                    t.compOcc.Add(joint);// add the assembly occurence to the arraylist
+                                    partSet.AddItem(joint); //add the assembly occurence to a set that is highlighted in purple
+                                    node.DoSelect();
+                                }
+                            }
+                        }
+                    }
+                    componentsAdded++; //Tracks how many components are added
+                }
+            }
+            partSet.Clear(); //Clears the highlighted set
+
+            //If the user clicks "cancel", remove all parts previously added to the list
+            if (cancel == true)
+            {
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                {
+                    if (node.Selected)// find the selected node
+                    {
+                        foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                        {
+                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                            {
+                                for (int i = 0; i < componentsAdded; i++) //for each previously added component
+                                {
+                                    t.compOcc.RemoveAt(t.compOcc.Count - 1); //remove previously added components
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // removes an assembly from the arraylist of the Component
         public void removeAssembly_OnExecute(Inventor.NameValueMap Context)
         {
@@ -867,8 +966,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
             }
         }
+        
         // removes a part from the arraylist of the Component
-        public void removeSubAssembly_OnExecute(Inventor.NameValueMap Context)
+        public void removePart_OnExecute(Inventor.NameValueMap Context)
         {
             try
             {
@@ -939,7 +1039,73 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
             }
         }
-        // adds a part to the arraylist of the Component
+        
+        //Old Code for adding a single assembly
+        public void addNewAssembly_OnExecute(Inventor.NameValueMap Context)
+        {
+            try
+            {
+                runOnce = true;
+                done = false;
+                bool selected = false;
+                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
+                {
+                    if (node.Selected)
+                    {
+                        foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                        {
+                            if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                            {
+                                selected = true;// if one node is selected then we can add the new sub assembly
+                            }
+                        }
+                    }
+                }
+                if (selected)// if there is a selected node then we can add a part to it
+                {
+                    while (!done)
+                    {
+                        ComponentOccurrence joint = null;
+                        AssemblyDocument asmDoc = (AssemblyDocument)
+                                 m_inventorApplication.ActiveDocument;
+                        joint = (ComponentOccurrence)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
+                                  (SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
+                        if (joint != null)
+                        {
+                            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
+                            {
+                                if (node.Selected)// find the selected node
+                                {
+                                    foreach (FieldDataComponent t in FieldComponents)// look at all the field data Components
+                                    {
+                                        if (t.same(node.BrowserNodeDefinition))// is the fieldDataComponent is from that browsernode then run
+                                        {
+                                            t.compOcc.Add(joint);// add the occurence to the arraylist
+                                            m_inventorApplication.ActiveDocument.SelectSet.Clear();
+                                            node.DoSelect();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        runOnce = false;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Please select a browser node to add a part to");// if the user didn't select a browser node then tell them
+                }
+                runOnce = false;
+            }
+            catch (Exception)
+            {
+
+            }
+            runOnce = true;
+
+        }
+
+        //Old Code for adding a single part
         public void addNewSubAssembly_OnExecute(Inventor.NameValueMap Context)
         {
             try
@@ -1177,6 +1343,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 MessageBox.Show(e.ToString());
             }
         }
+        
         // edits the properties of the Component
         public static void editComponentProperites_OnExecute(Inventor.NameValueMap Context)
         {
@@ -1185,6 +1352,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             //show a dialog for the user to enter in values
             form.ShowDialog();
         }
+       
         // adds new property Component to the browser pane
         public static void addNewComponent_OnExecute(Inventor.NameValueMap Context)
         {
@@ -1193,6 +1361,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             //show the form to the user
             System.Windows.Forms.Application.Run(form);
         }
+        
         // cancels the export
         public void cancleExporter_OnExecute(Inventor.NameValueMap Context)
         {
@@ -1219,13 +1388,14 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 exportField.Enabled = false;
                 addPart.Enabled = false;
                 removeAssembly.Enabled = false;
-                removeSubAssembly.Enabled = false;
+                removePart.Enabled = false;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString());
             }
         }
+        
         // read the saved data
         private void readSaveFieldData()
         {
@@ -1330,6 +1500,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 MessageBox.Show(e.ToString());
             }
         }
+        
         // writes the name of the dataComponents to a property set so we can read them later
         private void writeFieldComponentNames()
         {
@@ -1372,6 +1543,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 set.ItemByPropId[3].Value = spawnLocationNumber;// write the value to the property
             }
         }
+        
         // writes the data Components to the propery set
         private void writeSaveFieldComponent(FieldDataComponent f)
         {
@@ -1433,9 +1605,15 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 set.ItemByPropId[11].Value = g;
             }
         }
+        
         // exports the field
         public void exportField_OnExecute(Inventor.NameValueMap Context)
         {
+            if(FieldComponents.Count == 0)
+            {
+                MessageBox.Show("ERROR: No Field Components!");
+                return;
+            }
             envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
             FieldSaver exporter = new FieldSaver(m_inventorApplication, FieldComponents);
         }
