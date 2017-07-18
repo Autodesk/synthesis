@@ -195,6 +195,7 @@ public class MainState : SimState
         );
 
         gui.Render();
+        UserMessageManager.Render();
     }
 
     void CreateOrientWindow()
@@ -333,7 +334,7 @@ public class MainState : SimState
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
                 //Switch to robot camera after Freeroam (make sure robot camera exists first)
-                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState))
+                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
                     && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
                 {
                     ToRobotCamera();
