@@ -22,6 +22,7 @@ namespace GopherAPI.Properties
         /// </summary>
         /// <returns></returns>
         JAType GetJAType();
+        bool GetIsDriveWheel();
         uint GetJointID();
     }
 
@@ -39,6 +40,10 @@ namespace GopherAPI.Properties
         public NoDriver(uint jointID)
         {
             JointID = jointID;
+        }
+        public bool GetIsDriveWheel()
+        {
+            return false;
         }
     }
 
@@ -70,6 +75,11 @@ namespace GopherAPI.Properties
             return JAType.MOTOR;
         }
 
+        public bool GetIsDriveWheel()
+        {
+            return IsDriveWheel;
+        }
+        
         public Motor(uint jointID, bool isCAN, float motorPort, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
         {
             JointID = jointID;
@@ -90,10 +100,6 @@ namespace GopherAPI.Properties
     public struct Servo : IJointAttribute
     {
         public readonly uint JointID;
-        public uint GetJointID()
-        {
-            return JointID;
-        }
 
         /// <summary>
         /// Always a CAN
@@ -106,6 +112,16 @@ namespace GopherAPI.Properties
         public JAType GetJAType()
         {
             return JAType.SERVO;
+        }
+
+        public bool GetIsDriveWheel()
+        {
+            return false;
+        }
+
+        public uint GetJointID()
+        {
+            return JointID;
         }
 
         public Servo(uint jointID, float motorPort, bool hasLimits, Friction friction)
@@ -123,6 +139,7 @@ namespace GopherAPI.Properties
     public struct BumperPnuematic : IJointAttribute
     {
         public readonly uint JointID;
+
         public uint GetJointID()
         {
             return JointID;
@@ -140,6 +157,11 @@ namespace GopherAPI.Properties
         public JAType GetJAType()
         {
             return JAType.BUMPER_PNUEMATIC;
+        }
+
+        public bool GetIsDriveWheel()
+        {
+            return false;
         }
 
         public BumperPnuematic(uint jointID, float solenoidPortOne, float solenoidPortTwo, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
@@ -178,6 +200,11 @@ namespace GopherAPI.Properties
             return JAType.RELAY_PNUEMATIC;
         }
 
+        public bool GetIsDriveWheel()
+        {
+            return false;
+        }
+
         public RelayPnuematic(uint jointID, float relayPort, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
         {
             JointID = jointID;
@@ -209,6 +236,11 @@ namespace GopherAPI.Properties
         public readonly bool HasLimits;
         public readonly Friction Friction;
 
+        public bool GetIsDriveWheel()
+        {
+            return false;
+        }
+        
         public JAType GetJAType()
         {
             return JAType.WORM_SCREW;
@@ -229,11 +261,11 @@ namespace GopherAPI.Properties
     public struct DualMotor : IJointAttribute
     {
         public readonly uint JointID;
+
         public uint GetJointID()
         {
             return JointID;
         }
-
 
         public readonly bool IsCAN;
 
@@ -253,6 +285,12 @@ namespace GopherAPI.Properties
         {
             return JAType.DUAL_MOTOR;
         }
+
+        public bool GetIsDriveWheel()
+        {
+            return IsDriveWheel;
+        }
+
 
         public DualMotor(uint jointID, bool isCAN, float motorPort1, float motorPort2, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
         {

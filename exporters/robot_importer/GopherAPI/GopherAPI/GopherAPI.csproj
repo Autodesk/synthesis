@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DriveTrain.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Other\Vec3.cs" />
     <Compile Include="Property\JointAttributes.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="STL\Mesh.cs" />
     <Compile Include="Other\TransformationMatrix.cs" />
     <Compile Include="STL\STLFile.cs" />
+    <Compile Include="Wheel.cs" />
     <Compile Include="Writer\GopherScribe.cs" />
   </ItemGroup>
   <ItemGroup />

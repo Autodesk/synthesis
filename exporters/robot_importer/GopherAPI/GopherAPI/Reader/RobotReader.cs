@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using GopherAPI.Properties;
+using System.Diagnostics;
 
 namespace GopherAPI.Reader
 {
@@ -93,6 +94,8 @@ namespace GopherAPI.Reader
                     Temp.ID = (SectionType)Reader.ReadUInt32(); pos += 4;
                     Temp.Length = Reader.ReadUInt32(); pos += 4;
                     Temp.Data = Reader.ReadBytes((int)Temp.Length); pos += (int)Temp.Length;
+                    if ((uint)Temp.ID > 5)
+                        Debug.WriteLine("WARNING: Bad Section ID detected");
                     Sections.Add(Temp);
                     Temp = new Section();
                 }
@@ -272,6 +275,15 @@ namespace GopherAPI.Reader
             }
         }
 
+        /// <summary>
+        /// Throws an exception if raw.ID is not 3
+        /// </summary>
+        /// <param name="raw"></param>
+        public void ProcessJoints(Section raw)
+        {
+            return;
+        }
+
         ///// <summary>
         ///// Throws an exception if raw.ID is not 3
         ///// </summary>
@@ -434,7 +446,6 @@ namespace GopherAPI.Reader
         //            ProcessJoints(sect);
         //    }
         //}
-
         /// <summary>
         /// Step 1.5/5: Parses thumbnail image (not technically needed to load the robot).
         /// </summary>

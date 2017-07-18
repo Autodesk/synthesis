@@ -8,15 +8,16 @@ using GopherAPI.Properties;
 
 namespace GopherAPI
 {
+    public enum JointSearchMode { PARENTS, CHILDREN, BOTH }
     public class Robot
     {
         public Bitmap Thumbnail;
 
-        private List<STLMesh> meshes = new List<STLMesh>();
-        private List<STLAttribute> attributes = new List<STLAttribute>();
-        private List<Joint> joints = new List<Joint>();
-        private List<IJointAttribute> jointAttribs = new List<IJointAttribute>();
-        private Other.Vec3 spawn;
+        protected List<STLMesh> meshes = new List<STLMesh>();
+        protected List<STLAttribute> attributes = new List<STLAttribute>();
+        protected List<Joint> joints = new List<Joint>();
+        protected List<IJointAttribute> jointAttributes = new List<IJointAttribute>();
+        //private Other.Vec3 spawn;
 
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetMesh method.
@@ -30,8 +31,10 @@ namespace GopherAPI
         /// IMPORTANT: JointID might not be the same as the index in the list. Use the GetJoint method.
         /// </summary>
         public List<Joint> Joints { get => joints; }
-
-        public List<IJointAttribute> JointAttributes { get => jointAttribs; }
+        /// <summary>
+        /// Pretty much useless to access it here. Use GetJointAttribute and reference a joint to get the attributes attached to it
+        /// </summary>
+        public List<IJointAttribute> JointAttributes { get => jointAttributes; }
 
         /// <summary>
         /// Searches meshes for a mesh with the matching ID
@@ -89,8 +92,121 @@ namespace GopherAPI
         }
 
         /// <summary>
-        /// Not yet implemented in the exporter
+        /// Returns an array of all the Joints attached to a given STLMesh
         /// </summary>
-        public Other.Vec3 Spawn { get => spawn; set => spawn = value; }
+        /// <param name="mesh"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        private Joint[] GetJoints(STLMesh mesh, JointSearchMode mode)
+        {
+            List<Joint> ret = new List<Joint>();
+            switch (mode)
+            {
+                case JointSearchMode.PARENTS:
+                    foreach (var j in joints)
+                    {
+                        if (j.ParentID == mesh.MeshID)
+                            ret.Add(j);
+                    }
+                    break;
+                case JointSearchMode.CHILDREN:
+                    foreach (var j in joints)
+                    {
+                        if (j.ChildID == mesh.MeshID)
+                            ret.Add(j);
+                    }
+                    break;
+                case JointSearchMode.BOTH:
+                    foreach (var j in joints)
+                    {
+                        if (j.ChildID == mesh.MeshID || j.ParentID == mesh.MeshID)
+                            ret.Add(j);
+                    }
+                    break;
+            }
+            return ret.ToArray();
+        }
+
+        /// <summary>
+        /// Gets the IJointAttribute attached to the joint parameter. If none exists, it will return a 'NoDriver' struct with a matching jointID
+        /// </summary>
+        /// <param name="joint"></param>
+        /// <returns></returns>
+        public IJointAttribute GetJointAttribute(Joint joint)
+        {
+            foreach (var ja in jointAttributes)
+            {
+                if (ja.GetJointID() == joint.JointID)
+                    return ja;
+            }
+            return new NoDriver(joint.JointID);
+        }
+
+        protected Robot(Robot robot)
+        {
+            meshes = robot.Meshes;
+            attributes = robot.Attributes;
+            joints = robot.Joints;
+            jointAttributes = robot.JointAttributes;
+        }
+
+        public SortedRobot GetSortedRobot()
+        {
+            return new SortedRobot(this);
+        }
+    }
+
+    public class SortedRobot : Robot
+    {
+        private List<STLMesh> staticMeshes;
+        private List<STLMesh> dynamicMeshes;
+        private DriveTrain driveTrain;
+
+        public List<STLMesh> StaticMeshes => staticMeshes;
+        public  List<STLMesh> DynamicMeshes => dynamicMeshes;
+        public DriveTrain DriveTrain => driveTrain;
+
+        public SortedRobot(Robot robot) : base(robot)
+        {
+            //Sort joints into wheel joints and non-wheel joints, then filters out duplicates
+            List<Joint> NonWheelJoints = new List<Joint>();
+            foreach (var ja in jointAttributes)
+            {
+                if(!ja.GetIsDriveWheel())
+                    NonWheelJoints.Add(GetJoint(ja.GetJointID()));
+            }
+            NonWheelJoints = (List<Joint>)NonWheelJoints.Distinct(); //filter duplicates
+
+            List<Joint> WheelJoints = new List<Joint>();
+            foreach (var ja in jointAttributes)
+            {
+                if (ja.GetIsDriveWheel())
+                    WheelJoints.Add(GetJoint(ja.GetJointID()));
+            }
+            WheelJoints = (List<Joint>)WheelJoints.Distinct(); //filter duplicates
+
+            //Gets the IDs of all the meshes with joints attached, then adds all the meshes to dynamicMeshes
+            List<uint> dynamicMeshIDs = new List<uint>();
+            foreach(var j in NonWheelJoints)
+            {
+                dynamicMeshIDs.Add(j.ChildID);
+                dynamicMeshIDs.Add(j.ParentID);
+            }
+            dynamicMeshIDs = (List<uint>)dynamicMeshIDs.Distinct(); //filter duplicates
+            foreach (var id in dynamicMeshIDs)
+            {
+                dynamicMeshes.Add(GetMesh(id));
+            }
+
+            //Creates the DriveTrain object
+            List<Wheel> wheels = new List<Wheel>();
+            List<STLMesh> parents = new List<STLMesh>();
+            foreach(var j in WheelJoints)
+            {
+                wheels.Add(new Wheel(GetMesh(j.ChildID), j));
+                parents.Add(GetMesh(j.ParentID));
+            }
+            driveTrain = new DriveTrain(wheels.ToArray(), parents.ToArray());
+        }
     }
 }

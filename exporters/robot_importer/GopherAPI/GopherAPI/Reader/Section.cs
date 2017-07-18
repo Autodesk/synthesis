@@ -16,6 +16,7 @@ namespace GopherAPI.Reader
     {
         public UInt32 MeshID;
         public UInt32 FacetCount;
+        public TransformationMatrix TransMat;
         public byte[] Facets;
     }
 }

@@ -18,27 +18,62 @@ namespace GopherTester
     {
         static void Main(string[] args)
         {
+            FieldReader reader;
             Stopwatch sw = Stopwatch.StartNew();
-            Field field = new Field();
-
-            List<Facet> facets = new List<Facet>();
-            for(int i = 0; i < 10; i++)
+            Console.Write(sw.ElapsedMilliseconds.ToString() + ": ");
+            Console.Write("Loading File into memory...");
+            try
             {
-                facets.Add(new Facet(new Vec3(10, 32, 49), new Vec3(324, 231, 23), new Vec3(12, 34, 123), new Vec3(32, 123, 43)));
+                reader = new FieldReader(@"C:\Users\t_howab\Desktop\Fields\test7.field");
             }
-            List<STLAttribute> attributes = new List<STLAttribute> { new STLAttribute(AttribType.BOX_COLLIDER, 2, 50.0f, false, null, 10f, 15f, 155, null) };
-            List<Joint> joints = new List<Joint> { };
+            catch(Exception e)
+            {
+                Console.WriteLine("FAILED");
+                Console.WriteLine(e.ToString());
+                Console.Read();
+                return;
+            }
+            Console.WriteLine("DONE");
+            Console.Write(sw.ElapsedMilliseconds.ToString() + ": ");
+            Console.Write("Slicing and Dicing...");
+            try
+            {
+                reader.PreProcess();
 
-            STLMesh mesh = new STLMesh(10, facets.ToArray(), SystemColors.GrayText, false, 2, new TransformationMatrix());
-            field.Meshes.Add(mesh);
-            field.Attributes.AddRange(attributes);
-
-            GopherScribe.WriteField(field, new FileStream(@"C:\users\t_howab\desktop\field1.field", FileMode.CreateNew));
-
-            FieldReader reader = new FieldReader(@"C:\users\t_howab\desktop\field1.field");
-
-            reader.PreProcess();
-
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("FAILED");
+                Console.Read();
+                return;
+            }
+            Console.WriteLine("DONE");
+            Console.Write(sw.ElapsedMilliseconds.ToString() + ": ");
+            Console.Write("Processing Image...");
+            try
+            {
+                reader.ProcessImage();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("FAILED");
+                Console.Read();
+                return;
+            }
+            Console.WriteLine("DONE");
+            Console.WriteLine(sw.ElapsedMilliseconds.ToString() + ": ");
+            Console.WriteLine("Slicing and Dicing Twice...");
+            try
+            {
+                reader.PreProcessSTL();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("FAILED");
+                Console.Read();
+                return;
+            }
+            Console.WriteLine("DONE");
 
         }
     }

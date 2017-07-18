@@ -7,6 +7,7 @@ using System.Text;
 using System.IO;
 using GopherAPI.STL;
 using GopherAPI.Other;
+using System.Diagnostics;
 
 namespace GopherAPI.Reader
 {
@@ -35,10 +36,9 @@ namespace GopherAPI.Reader
                     {
                         Temp.ID = (SectionType)Reader.ReadUInt32();
                         Temp.Length = Reader.ReadUInt32();
-                        if (Temp.ID == (SectionType)1)
-                            Temp.Data = Reader.ReadBytes((int)Temp.Length/* + 4*/); //note: make sure we don't need this by the end of the summer
-                        else
-                            Temp.Data = Reader.ReadBytes((int)Temp.Length);
+                        if ((uint)Temp.ID > 5)
+                            Debug.WriteLine("WARNING: Bad Section ID detected");
+                        Temp.Data = Reader.ReadBytes((int)Temp.Length);
                     }
                     catch (EndOfStreamException e)
                     { Console.WriteLine("End Of Stream at iteration " + (Sections.Count + 1).ToString()); break; }
