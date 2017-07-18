@@ -16,6 +16,8 @@ namespace Assets.Scripts.FSM
         /// </summary>
         public SimState CurrentState { get; private set; }
 
+        public MainState MainState { get; private set; }
+
         /// <summary>
         /// The global StateMachine instance.
         /// </summary>
@@ -96,6 +98,7 @@ namespace Assets.Scripts.FSM
             }
 
             SimState defaultState = Activator.CreateInstance(defaultStateType) as SimState;
+            MainState = (MainState)defaultState;
 
             if (defaultState == null)
                 Debug.LogError("\"" + defaultStateName + "\" does not extend SimState!");

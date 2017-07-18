@@ -17,9 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
-    <RootNamespace>
-    </RootNamespace>
-    <LangVersion>4</LangVersion>
+    <RootNamespace></RootNamespace>
+    <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -210,6 +209,8 @@
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
+    <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
+    <Compile Include="Assets\Scripts\DriverPractice.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
@@ -233,11 +234,14 @@
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
+    <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
+    <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MouseListener.cs" />
+    <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />

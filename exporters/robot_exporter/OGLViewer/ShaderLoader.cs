@@ -91,7 +91,7 @@ namespace OGLViewer
             GL.AttachShader(shaderProgram, vertexShader);
             GL.AttachShader(shaderProgram, fragmentShader);
             GL.LinkProgram(shaderProgram);
-            GL.GetProgram(shaderProgram, ProgramParameter.LinkStatus, out status);
+            GL.GetProgram(shaderProgram, GetProgramParameterName.LinkStatus, out status);
             if (status == 0)
             {
                 Console.WriteLine("Shader program log:\n" + GL.GetProgramInfoLog(shaderProgram));
