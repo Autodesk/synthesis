@@ -51,6 +51,7 @@ namespace EditorsLibrary
                 this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
                 this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             }
+            OpenTK.Toolkit.Init(); // This was added by a person #thuglyfe
             // 
             // labelDebugPosition
             // 
