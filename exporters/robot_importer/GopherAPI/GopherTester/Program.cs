@@ -16,63 +16,34 @@ namespace GopherTester
 {
     class Program
     {
+        static void SEPrompt(Exception e)
+        {
+            Console.Write("Show exception? [Y/N]");
+            if (Console.ReadLine() == "Y")
+            {
+                Console.WriteLine(e.ToString());
+                Console.Read();
+            }
+        }
         static void Main(string[] args)
         {
             FieldReader reader;
             Stopwatch sw = Stopwatch.StartNew();
             Console.Write(sw.ElapsedMilliseconds.ToString() + ": ");
             Console.Write("Loading File into memory...");
-            try
-            {
-                reader = new FieldReader(@"C:\Users\t_howab\Desktop\Fields\test7.field");
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("FAILED");
-                Console.WriteLine(e.ToString());
-                Console.Read();
-                return;
-            }
+            reader = new FieldReader(@"C:\Users\t_howab\Desktop\Fields\test8.field");
             Console.WriteLine("DONE");
             Console.Write(sw.ElapsedMilliseconds.ToString() + ": ");
             Console.Write("Slicing and Dicing...");
-            try
-            {
-                reader.PreProcess();
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("FAILED");
-                Console.Read();
-                return;
-            }
+            reader.PreProcess();
             Console.WriteLine("DONE");
             Console.Write(sw.ElapsedMilliseconds.ToString() + ": ");
             Console.Write("Processing Image...");
-            try
-            {
-                reader.ProcessImage();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("FAILED");
-                Console.Read();
-                return;
-            }
+            reader.ProcessImage();
             Console.WriteLine("DONE");
             Console.WriteLine(sw.ElapsedMilliseconds.ToString() + ": ");
             Console.WriteLine("Slicing and Dicing Twice...");
-            try
-            {
-                reader.PreProcessSTL();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("FAILED");
-                Console.Read();
-                return;
-            }
+            reader.PreProcessSTL();
             Console.WriteLine("DONE");
 
         }

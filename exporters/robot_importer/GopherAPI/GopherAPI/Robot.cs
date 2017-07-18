@@ -149,6 +149,7 @@ namespace GopherAPI
             joints = robot.Joints;
             jointAttributes = robot.JointAttributes;
         }
+        public Robot() { }
 
         public SortedRobot GetSortedRobot()
         {
@@ -158,8 +159,8 @@ namespace GopherAPI
 
     public class SortedRobot : Robot
     {
-        private List<STLMesh> staticMeshes;
-        private List<STLMesh> dynamicMeshes;
+        private List<STLMesh> staticMeshes = new List<STLMesh>();
+        private List<STLMesh> dynamicMeshes = new List<STLMesh>();
         private DriveTrain driveTrain;
 
         public List<STLMesh> StaticMeshes => staticMeshes;
@@ -207,6 +208,13 @@ namespace GopherAPI
                 parents.Add(GetMesh(j.ParentID));
             }
             driveTrain = new DriveTrain(wheels.ToArray(), parents.ToArray());
+
+            //Adds to the staticMeshes List
+            foreach(var mesh in meshes)
+            {
+                if (!dynamicMeshes.Contains(mesh) && !DriveTrain.Contains(mesh))
+                    staticMeshes.Add(mesh);
+            }
         }
     }
 }

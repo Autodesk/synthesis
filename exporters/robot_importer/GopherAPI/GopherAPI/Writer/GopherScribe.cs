@@ -497,7 +497,6 @@ namespace GopherAPI.Writer
                 Section AttribSection = PreWrite(field.Attributes.ToArray());
                 Section ImageSection = PreWrite(field.Thumbnail);
                 Section JointSection = PreWrite(field.Joints.ToArray());
-                Section JointAttribSection = PreWrite(field.JointAttributes.ToArray());
 
                 //Write Meshes
                 if (!MeshSection.IsEmpty)
@@ -530,14 +529,6 @@ namespace GopherAPI.Writer
                     writer.Write((uint)JointSection.ID);
                     writer.Write(JointSection.Length);
                     writer.Write(JointSection.Data);
-                }
-
-                //Write JointAttributes
-                if (!JointAttribSection.IsEmpty)
-                {
-                    writer.Write((uint)JointAttribSection.ID);
-                    writer.Write(JointAttribSection.Length);
-                    writer.Write(JointAttribSection.Data);
                 }
             }
         }

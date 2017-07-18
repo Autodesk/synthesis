@@ -14,7 +14,6 @@ namespace GopherAPI
         private List<STLMesh> meshes = new List<STLMesh>();
         private List<STLAttribute> attributes = new List<STLAttribute>();
         private List<Joint> joints = new List<Joint>();
-        private List<IJointAttribute> jointAttributes = new List<IJointAttribute>();
         private Other.Vec3 spawn;
 
         /// <summary>
@@ -29,11 +28,6 @@ namespace GopherAPI
         /// IMPORTANT: JointID might not be the same as the index in the list. Use the GetJoint method.
         /// </summary>
         public List<Joint> Joints { get => joints; }
-
-        /// <summary>
-        /// Joint attributes contain a 'JointID' member that tells you which joint it is attatched to. Use GetJointAttribute(Joint) to get the attached joint attribute
-        /// </summary>
-        public List<IJointAttribute> JointAttributes => jointAttributes;
 
         /// <summary>
         /// Searches meshes for a mesh with the matching ID
@@ -88,21 +82,6 @@ namespace GopherAPI
                     return joint;
             }
             throw new Exception("ERROR: STLAttribute not found");
-        }
-
-        /// <summary>
-        /// Gets the IJointAttribute attached to the joint parameter. If none exists, it will return a 'NoDriver' struct with a matching jointID
-        /// </summary>
-        /// <param name="joint"></param>
-        /// <returns></returns>
-        public IJointAttribute GetJointAttribute(Joint joint)
-        {
-            foreach(var ja in jointAttributes)
-            {
-                if (ja.GetJointID() == joint.JointID)
-                    return ja;
-            }
-            return new NoDriver(joint.JointID);
         }
 
         public Other.Vec3 Spawn { get => spawn; set => spawn = value; }

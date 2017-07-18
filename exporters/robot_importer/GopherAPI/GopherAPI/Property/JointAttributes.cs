@@ -314,6 +314,11 @@ namespace GopherAPI.Properties
     {
         public readonly uint JointID;
 
+        public bool GetIsDriveWheel()
+        {
+            return false;
+        }
+
         public uint GetJointID()
         {
             return JointID;

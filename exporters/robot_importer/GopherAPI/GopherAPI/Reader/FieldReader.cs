@@ -55,19 +55,37 @@ namespace GopherAPI.Reader
         {
             if (raw.ID != (SectionType)1)
             {
-                throw new Exception("ERROR: Invalid Section passed to RobotReader.PreProcessSTL");
+                throw new ArgumentException("ERROR: Invalid Section passed to RobotReader.PreProcessSTL", "raw");
             }
             using (var Reader = new BinaryReader(new MemoryStream(raw.Data)))
             {
                 uint MeshCount = Reader.ReadUInt32();
                 for (uint i = 0; i < MeshCount; i++)
                 {
-                    RawMesh temp = new RawMesh();
-                    //temp.MeshID = Reader.ReadUInt32();
+                    var temp = new RawMesh();
+                    temp.MeshID = Reader.ReadUInt32();
+                    TransformationMatrix tm = new TransformationMatrix();
+                    tm[0, 0] = Reader.ReadSingle();
+                    tm[0, 1] = Reader.ReadSingle();
+                    tm[0, 2] = Reader.ReadSingle();
+                    tm[0, 3] = Reader.ReadSingle();
+                    tm[1, 0] = Reader.ReadSingle();
+                    tm[1, 1] = Reader.ReadSingle();
+                    tm[1, 2] = Reader.ReadSingle();
+                    tm[1, 3] = Reader.ReadSingle();
+                    tm[2, 0] = Reader.ReadSingle();
+                    tm[2, 1] = Reader.ReadSingle();
+                    tm[2, 2] = Reader.ReadSingle();
+                    tm[2, 3] = Reader.ReadSingle();
+                    tm[3, 0] = Reader.ReadSingle();
+                    tm[3, 1] = Reader.ReadSingle();
+                    tm[3, 2] = Reader.ReadSingle();
+                    tm[3, 3] = Reader.ReadSingle();
+                    temp.TransMat = tm;
+                    Reader.ReadBytes(80);
 
                     temp.FacetCount = Reader.ReadUInt32();
-                    temp.Facets = Reader.ReadBytes((int)(50 * temp.FacetCount));
-                    
+                    temp.Facets = Reader.ReadBytes(50 * (int)temp.FacetCount);
                     RawMeshes.Add(temp);
                 }
             }
@@ -114,21 +132,8 @@ namespace GopherAPI.Reader
                     }
                     //TempAttID = Reader.ReadUInt32();
                 }
-                LoadedField.Meshes.Add(new STLMesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, TempAttID, null/*rawMesh.TransMat*/));
-
+                LoadedField.Meshes.Add(new STLMesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, TempAttID, rawMesh.TransMat));
             }
-        }
-
-        public void ProcessMeshes2()
-        {
-            foreach(var section in Sections)
-            {
-                if(section.ID == (SectionType)1)
-                {
-                    PreProcessSTL(section);
-                }
-            }
-            ProcessMeshes();
         }
 
         /// <summary>

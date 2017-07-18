@@ -8,13 +8,44 @@ namespace GopherAPI.STL
 {
     public struct STLMesh
     {
-
         public readonly UInt32 MeshID;
 
         /// <summary>
         /// An array of all the facets of the mesh
         /// </summary>
         public readonly Facet[] Facets;
+
+        /// <summary>
+        /// An array of all the verteces of all the Facets
+        /// </summary>
+        public Vec3[] VertexArray
+        {
+            get
+            {
+                List<Vec3> ret = new List<Vec3>();
+                foreach (var facet in Facets)
+                {
+                    ret.Add(facet.Point1);
+                    ret.Add(facet.Point2);
+                    ret.Add(facet.Point3);
+                }
+                return ret.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// An array of all the normals of all the Facets
+        /// </summary>
+        public Vec3[] NormalArray
+        {
+            get
+            {
+                List<Vec3> ret = new List<Vec3>();
+                foreach (var facet in Facets)
+                    ret.Add(facet.Normal);
+                return ret.ToArray();
+            }
+        }
 
         /// <summary>
         /// If IsDefault is true, this will be ignored and the color will be set to the bumper color
