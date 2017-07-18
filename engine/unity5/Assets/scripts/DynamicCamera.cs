@@ -384,4 +384,11 @@ public class DynamicCamera : MonoBehaviour
 
         return lagScalar;
     }
+
+    public void SwitchCameraState(int type)
+    {
+        if (type == 0) SwitchCameraState(new FreeroamState(this));
+        else if (type == 1) SwitchCameraState(new OrbitState(this));
+        else SwitchCameraState(new DriverStationState(this));
+    }
 }
