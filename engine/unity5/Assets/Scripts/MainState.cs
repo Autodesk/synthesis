@@ -79,6 +79,8 @@ public class MainState : SimState
     private bool isResettingOrientation;
     private bool isResetting;
 
+    private DriverPractice driverPractice;
+
     public List<Tracker> Trackers { get; private set; }
 
     public override void Awake()
@@ -135,46 +137,46 @@ public class MainState : SimState
 
             //Added a robot view to toggle among cameras on robot
             gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Robot view"), (object o) =>
+            {
+                HideGUI();
+
+                switch ((int)o)
                 {
-                    HideGUI();
+                    case 0:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
+                        break;
+                    case 1:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
+                        DynamicCamera.MovingEnabled = true;
+                        break;
+                    case 2:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
+                        break;
+                    case 3:
+                        if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+                        {
+                            ToRobotCamera();
+                        }
+                        break;
 
-                    switch ((int)o)
-                    {
-                        case 0:
-                            ToDynamicCamera();
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
-                            break;
-                        case 1:
-                            ToDynamicCamera();
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
-                            DynamicCamera.MovingEnabled = true;
-                            break;
-                        case 2:
-                            ToDynamicCamera();
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
-                            break;
-                        case 3:
-                            if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
-                            {
-                                ToRobotCamera();
-                            }
-                            break;
-
-                    }
-                });
+                }
+            });
 
 
             gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
-                {
-                    if ((int)o == 0)
-                        SceneManager.LoadScene("MainMenu");
-                });
+            {
+                if ((int)o == 0)
+                    SceneManager.LoadScene("MainMenu");
+            });
 
             gui.AddWindow("Quit to Desktop", new DialogWindow("Quit to Desktop?", "Yes", "No"), (object o) =>
-                {
-                    if ((int)o == 0)
-                        Application.Quit();
-                });
+            {
+                if ((int)o == 0)
+                    Application.Quit();
+            });
         }
 
         if (Input.GetMouseButtonUp(0) && !gui.ClickedInsideWindow())
@@ -184,10 +186,10 @@ public class MainState : SimState
         }
 
         GUI.Window(1, new Rect(0, 0, gui.GetSidebarWidth(), 25), (int windowID) =>
-            {
-                if (GUI.Button(new Rect(0, 0, gui.GetSidebarWidth(), 25), "Menu", menuButton))
-                    gui.EscPressed();
-            },
+        {
+            if (GUI.Button(new Rect(0, 0, gui.GetSidebarWidth(), 25), "Menu", menuButton))
+                gui.EscPressed();
+        },
             "",
             menuWindow
         );
@@ -231,7 +233,7 @@ public class MainState : SimState
             {
                 case 0:
                     RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-                    
+
                     break;
                 case 1:
                     RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
@@ -313,6 +315,8 @@ public class MainState : SimState
 
         contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         isResettingOrientation = false;
+
+        Controls.LoadControls();
     }
 
     public override void Update()
@@ -322,7 +326,7 @@ public class MainState : SimState
         //Debug.Log(ultraSensor.ReturnOutput());
 
 
-        
+
         // Will switch the camera state with the camera toggle button
         if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
         {
@@ -360,7 +364,7 @@ public class MainState : SimState
 
     public override void FixedUpdate()
     {
-       
+
         if (Input.GetKey(KeyCode.M))
             SceneManager.LoadScene("MainMenu");
 
@@ -384,7 +388,7 @@ public class MainState : SimState
 
         BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
 
-        
+
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
 
@@ -466,6 +470,8 @@ public class MainState : SimState
             Tracker t = node.MainObject.GetComponent<Tracker>();
             Debug.Log(t);
         }
+
+        driverPractice = robotObject.AddComponent<DriverPractice>();
 
         //For Ultrasonic testing purposes
         //ultraSensorObject = GameObject.Find("node_0.bxda");
@@ -597,7 +603,7 @@ public class MainState : SimState
         foreach (GameObject g in extraElements)
             UnityEngine.Object.Destroy(g);
 
-        
+
         if (isResetting)
         {
             Debug.Log("is resetting!");
@@ -630,7 +636,7 @@ public class MainState : SimState
             if (!transposition.Equals(Vector3.zero))
                 TransposeRobot(transposition);
         }
-        
+
         //Update robotStartPosition when hit enter
         if (Input.GetKey(KeyCode.Return))
         {
@@ -655,10 +661,11 @@ public class MainState : SimState
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
 
-        foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>()) {
+        foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
+        {
             t.Clear();
-            
-        contactPoints.Clear(null);
+
+            contactPoints.Clear(null);
 
         }
     }
@@ -729,5 +736,10 @@ public class MainState : SimState
         {
             UserMessageManager.Dispatch("No camera on robot", 2);
         }
+    }
+
+    public DriverPractice GetDriverPractice()
+    {
+        return driverPractice;
     }
 }
