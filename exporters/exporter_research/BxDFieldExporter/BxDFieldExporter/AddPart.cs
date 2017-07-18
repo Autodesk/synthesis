@@ -15,14 +15,17 @@ namespace InvAddIn
 {
     public partial class AddPart : Form
     {
+        //Used to access StandardAddInServer's exposed API
         private Inventor.Application mApplication;
         private AutomationInterface mAddInInterface;
+
         public AddPart()
         {
             this.Location = new System.Drawing.Point(450, 350);
             InitializeComponent();
             this.TopMost = true;
 
+            //Used to access StandardAddInServer's exposed API
             try
             {
                 mApplication = System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application") as Inventor.Application;
@@ -33,9 +36,7 @@ namespace InvAddIn
                 Type inventorAppType = System.Type.GetTypeFromProgID("Inventor.Application");
                 mApplication = System.Activator.CreateInstance(inventorAppType) as Inventor.Application;
             }
-
             mApplication.Visible = true;
-
 
             //Iterates through Inventor Add-Ins collection  
             foreach (ApplicationAddIn oAddIn in mApplication.ApplicationAddIns)
@@ -68,11 +69,6 @@ namespace InvAddIn
             this.Close();
         }
 
-        private void Label_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void CancelButton_onClick(object sender, MouseEventArgs e)
         {
             mAddInInterface.setCancel(true);
@@ -84,7 +80,6 @@ namespace InvAddIn
         {
             mAddInInterface.setCancel(true);
             mAddInInterface.setRunOnce(false);
-           // this.Close();
         }
     }
 }
