@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{35D57FF3-6647-4B8C-AFB9-E680D60DE40E}</ProjectGuid>
     <RootNamespace>AardvarkWPILib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <OutDir>$(SolutionDir)\$(Platform)\$(Configuration)\</OutDir>
