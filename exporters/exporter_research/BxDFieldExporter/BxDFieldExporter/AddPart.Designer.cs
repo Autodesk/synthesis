@@ -86,6 +86,7 @@
             this.Controls.Add(this.okButton);
             this.Name = "AddPart";
             this.Text = "Add Part";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CancelButton_onClick);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

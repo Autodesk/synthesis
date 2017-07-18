@@ -37,7 +37,6 @@ namespace BxDFieldExporter
         static bool runOnce;
         EnvironmentManager envMan;
         static RibbonPanel ComponentControls;// the ribbon panels that the buttons will be a part of
-        static RibbonPanel SpawnControls;
         static RibbonPanel AddItems;
         static RibbonPanel RemoveItems;
         static RibbonPanel ExporterControl;
@@ -51,17 +50,12 @@ namespace BxDFieldExporter
         static ButtonDefinition cancelExport;
         static ButtonDefinition exportField;
         static ButtonDefinition removeComponent;
-        static ButtonDefinition createNewRobotSpawnLocation;
-        static ButtonDefinition editSpawnLocation;
-        static ButtonDefinition removeSpawnPoint;
         EditCoordinate coorForm;
         Inventor.Environment oNewEnv;
-        int spawnLocationNumber;
         static bool done;
         static bool cancel = false;
         static Random rand;// random number genator that can create internal ids
         static ArrayList FieldComponents;// arraylist of all the field properties the user has set
-        static ArrayList SpawnPoints;
         public static FieldDataComponent selectedComponent;// the current component that the user is editing
         static BrowserPanes oPanes;// all the browser panes in the active doc
         object resultObj;
@@ -197,9 +191,6 @@ namespace BxDFieldExporter
             {
                 if (!inExportView)
                 {
-
-                    SpawnPoints = new ArrayList();
-                    spawnLocationNumber = 1;
                     nativeDoc = m_inventorApplication.ActiveDocument;
                     envMan = ((AssemblyDocument)m_inventorApplication.ActiveDocument).EnvironmentManager;
                     inExportView = true;
@@ -316,30 +307,17 @@ namespace BxDFieldExporter
                 stdole.IPictureDisp removeComponentIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType16));
                 stdole.IPictureDisp removeComponentIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveType32));
 
-                stdole.IPictureDisp addSpawnLocationIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddSpawnLocation16));
-                stdole.IPictureDisp addSpawnLocationIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AddSpawnLocation32));
-
-                stdole.IPictureDisp changeSpawnLocationLocationIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation16));
-                stdole.IPictureDisp changeSpawnLocationLocationIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ChangeSpawnLocation32));
-
                 stdole.IPictureDisp exportFieldIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField16));
                 stdole.IPictureDisp exportFieldIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ExportField32));
 
-                stdole.IPictureDisp removeSpawnPointIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSpawnLocation16));
-                stdole.IPictureDisp removeSpawnPointIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.RemoveSpawnLocation32));
-
                 stdole.IPictureDisp ttAddNewComponent = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddNewComponent));
                 stdole.IPictureDisp ttAddAssembly = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddAssembly));
-                stdole.IPictureDisp ttAddPart = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddPart));
-                stdole.IPictureDisp ttAddSpawnLocation = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddSpawnLocation));
+                stdole.IPictureDisp ttAddPart = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTAddPart));     
                 stdole.IPictureDisp ttComponentProperties = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTComponentProperties));
-                stdole.IPictureDisp ttEditSpawnLocation = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTEditSpawnLocation));
                 stdole.IPictureDisp ttExportField = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTExportField));
                 stdole.IPictureDisp ttRemovePart = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemovePart));
                 stdole.IPictureDisp ttRemoveComponent = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveComponent));
                 stdole.IPictureDisp ttRemoveAssembly = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveAssembly));
-                stdole.IPictureDisp ttRemoveSpawnPoint = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.TTRemoveSpawnPoint));
-
 
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
@@ -357,12 +335,9 @@ namespace BxDFieldExporter
                 ComponentControls = oContextualTabOne.RibbonPanels.Add("Component Controls", "BxD:FieldExporter:ComponentControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 AddItems = oContextualTabOne.RibbonPanels.Add("Add Items", "BxD:FieldExporter:AddItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 RemoveItems = oContextualTabOne.RibbonPanels.Add("Remove Items", "BxD:FieldExporter:RemoveItems", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
-                SpawnControls = oContextualTabOne.RibbonPanels.Add("Spawn Location Controls", "BxD:FieldExporter:SpawnLocationControls", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");
                 ExporterControl = oContextualTabOne.RibbonPanels.Add("Robot Exporter Control", "BxD:FieldExporter:ExporterControl", "{e50be244-9f7b-4b94-8f87-8224faba8ca1}");// inits the part panels
                 AddItems.Reposition("BxD:FieldExporter:ComponentControls", false);
                 RemoveItems.Reposition("BxD:FieldExporter:AddItems", false);
-                SpawnControls.Reposition("BxD:FieldExporter:RemoveItems", false);
-                ExporterControl.Reposition("BxD:FieldExporter:SpawnLocationControls", false);
                 ControlDefinitions controlDefs = m_inventorApplication.CommandManager.ControlDefinitions;// get the controls for Inventor
                 beginExporter = controlDefs.AddButtonDefinition("Start Exporter", "BxD:FieldExporter:StartExporter", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, "Starts the field exporter", "Yay lets start!", startExporterIconSmall, startExporterIconLarge, ButtonDisplayEnum.kAlwaysDisplayText);
                 beginExporter.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(startExport_OnExecute);
@@ -377,19 +352,7 @@ namespace BxDFieldExporter
                 addAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(addNewAssemblies_OnExecute);
                 toolTip(addAssembly, "Adds an assembly to a field component.",
                     "Click on a field component in the Field Exporter hierarchy so that it is highlighted. Click \"Add New Assembly\", and select the assembly to add to the component. To add multiple assemblies to one component, repeat the process.",
-                    ttAddAssembly, "Add Assembly");
-
-                createNewRobotSpawnLocation = controlDefs.AddButtonDefinition(" Add New Spawn Location ", "BxD:FieldExporter:AddNewSpawnLocation", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, addSpawnLocationIconSmall, addSpawnLocationIconLarge);
-                createNewRobotSpawnLocation.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(createNewSpawnLocation_OnExecute);
-                toolTip(createNewRobotSpawnLocation, "Creates a new spawn point.",
-                    "Spawn points allow the robot to start at specific locations on the field in the simulation.",
-                     ttAddSpawnLocation, "Add New Spawn Location");
-
-                editSpawnLocation = controlDefs.AddButtonDefinition(" Edit Spawn Location ", "BxD:FieldExporter:EditSpawnLocation", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, changeSpawnLocationLocationIconSmall, changeSpawnLocationLocationIconLarge);
-                editSpawnLocation.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(editSpawnLocation_OnExecute);
-                toolTip(editSpawnLocation, "Edits the coordinates of a spawn location.",
-                    "Select a spawn in the Field Components hierarchy. Click “Edit Spawn Location” and input the desired x, y, and z coordinates of the spawn location.",
-                    ttEditSpawnLocation, "Edit Spawn Location");
+                    ttAddAssembly, "Add Assembly");    
 
                 removeAssembly = controlDefs.AddButtonDefinition(" Remove Assembly ", "BxD:FieldExporter:RemoveAssembly", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeAssemblyIconSmall, removeAssemblyIconLarge);
                 removeAssembly.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeAssembly_OnExecute);
@@ -434,18 +397,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     "Removing the component will ungroup all parts or assemblies attached to the component.",
                     ttRemoveComponent, "Remove Component");
 
-                removeSpawnPoint = controlDefs.AddButtonDefinition(" Remove Spawn Point ", "BxD:FieldExporter:RemoveSpawnPoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, removeSpawnPointIconSmall, removeSpawnPointIconLarge);
-                removeSpawnPoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(removeSpawn_OnExecute);
-                toolTip(removeSpawnPoint, "Removes a spawn point from the field.",
-                    "Select a spawn in the Field Components hierarchy. Click \"Remove Spawn Point\"",
-                    ttRemoveSpawnPoint, "Remove Spawn Point");
-
                 ComponentControls.CommandControls.AddButton(addNewComponent, true, true);
                 ComponentControls.CommandControls.AddButton(removeComponent, true, true);
                 ComponentControls.CommandControls.AddButton(editComponent, true, true);
-                SpawnControls.CommandControls.AddButton(createNewRobotSpawnLocation, true, true);
-                SpawnControls.CommandControls.AddButton(editSpawnLocation, true, true);
-                SpawnControls.CommandControls.AddButton(removeSpawnPoint, true, true);
                 AddItems.CommandControls.AddButton(addAssembly, true, true);
                 AddItems.CommandControls.AddButton(addPart, true, true);
                 RemoveItems.CommandControls.AddButton(removeAssembly, true, true);// add buttons to the part panels
@@ -573,25 +527,8 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 addPart.Enabled = true;
                                 removeAssembly.Enabled = true;
                                 removePart.Enabled = true;
-                                editSpawnLocation.Enabled = false;
-                                removeSpawnPoint.Enabled = false;
                             }
-                        }
-                        foreach (UserCoordinateSystem ucs in SpawnPoints)
-                        {
-                            if (((BrowserNodeDefinition)sel).Label.Equals(ucs.Name))
-                            {
-                                editComponent.Enabled = false;
-                                removeComponent.Enabled = false;
-                                addAssembly.Enabled = false;
-                                addPart.Enabled = false;
-                                removeAssembly.Enabled = false;
-                                removePart.Enabled = false;
-                                editSpawnLocation.Enabled = true;
-                                removeSpawnPoint.Enabled = true;
-                                oSet.AddItem(ucs);
-                            }
-                        }
+                        } 
                     }
                 }
             }
@@ -655,18 +592,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                             }
                         }
                     }
-                    foreach (UserCoordinateSystem ucs in SpawnPoints)
-                    {
-                        if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))
-                        {// if t is part of that browser node
-                            if (!currentSelected.Equals(ucs))
-                            {// is the selected node is no longer selected 
-                                found = true;// tell the program it found the node
-                                oSet.Clear();// clear the highlighted set in prep to add new occurrences
-                                currentSelected = ucs;// change the selected dataComponent
-                            }
-                        }
-                    }
                 }
             }
             if (!found)
@@ -678,8 +603,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 addPart.Enabled = false;
                 removeAssembly.Enabled = false;
                 removePart.Enabled = false;
-                editSpawnLocation.Enabled = false;
-                removeSpawnPoint.Enabled = false;
             }
             if (!m_inventorApplication.ActiveDocument.InternalName.Equals(nativeDoc.InternalName))
             {
@@ -697,8 +620,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     addPart.Enabled = false;
                     removeAssembly.Enabled = false;
                     removePart.Enabled = false;
-                    editSpawnLocation.Enabled = false;
-                    removeSpawnPoint.Enabled = false;
+
 
                     oPane.Visible = false;// Hide the browser pane
                 }
@@ -1204,146 +1126,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
         }
 
-        public void removeSpawn_OnExecute(Inventor.NameValueMap Context)
-        {
-            ArrayList selectedNodes = new ArrayList();
-            String names = "";
-            foreach (BrowserNode node in oPane.TopNode.BrowserNodes)
-            {// looks through all the nodes under the top node
-                if (node.Selected)
-                {// if the node is seleted
-                    foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
-                    {
-                        if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
-                        {
-                            selectedNodes.Add(node);
-                            names += node.BrowserNodeDefinition.Label + " ";
-                        }
-                    }
-                }
-            }
-            DialogResult dialogResult = MessageBox.Show("Are you sure you want to delete Component: " + "\n" + names, "Remove Component", MessageBoxButtons.OKCancel);
-            if (dialogResult == DialogResult.OK)
-            {
-                foreach (BrowserNode node in selectedNodes)
-                {
-                    foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
-                    {
-                        if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
-                        {
-                            SpawnPoints.Remove(ucs);
-                            ucs.Delete();
-                            node.Delete();
-                        }
-                    }
-                }
-            }
-        }
-
-        public void editSpawnLocation_OnExecute(Inventor.NameValueMap Context)
-        {
-            try
-            {
-                coorForm = new EditCoordinate();
-                bool selected = false;
-                foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
-                {
-                    if (node.Selected)
-                    {
-                        foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
-                        {
-                            if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
-                            {
-                                selected = true;// if one node is selected then we can add the new sub assembly
-                            }
-                        }
-                    }
-                }
-                if (selected)// if there is a selected node then we can add a part to it
-                {
-                    foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// looks over all of the nodes
-                    {
-                        if (node.Selected)
-                        {
-                            foreach (UserCoordinateSystem ucs in SpawnPoints)// look at all the field data Components
-                            {
-                                if (ucs.Name.Equals(node.BrowserNodeDefinition.Label))// is the fieldDataComponent is from that browsernode then run
-                                {
-                                    coorForm.readData(ucs);
-                                    coorForm.Show();
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    UserCoordinateSystem Choose = (UserCoordinateSystem)m_inventorApplication.CommandManager.Pick// have the user select a leaf occurrence or part
-                                      (SelectionFilterEnum.kUserCoordinateSystemFilter, "Select a UCS to edit");
-                    coorForm.readData(Choose);
-                    coorForm.Show();
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
-        }
-
-        public void createNewSpawnLocation_OnExecute(Inventor.NameValueMap Context)
-        {
-            try
-            {
-                AssemblyDocument oDocs;
-                oDocs = (AssemblyDocument)m_inventorApplication.ActiveDocument;
-                AssemblyComponentDefinition oCompDef;
-                oCompDef = oDocs.ComponentDefinition;
-                TransientGeometry oTG;
-                oTG = m_inventorApplication.TransientGeometry;
-                Matrix oMatrix;
-                oMatrix = oTG.CreateMatrix();
-                Matrix oTranslationMatrix;
-                oTranslationMatrix = oTG.CreateMatrix();
-                oTranslationMatrix.SetTranslation(oTG.CreateVector(0, 50, 0));
-                oMatrix.TransformBy(oTranslationMatrix);
-                UserCoordinateSystemDefinition oUCSDef;
-                oUCSDef = oCompDef.UserCoordinateSystems.CreateDefinition();
-                oUCSDef.Transformation = oMatrix;
-                UserCoordinateSystem oUCS;
-                oUCS = oCompDef.UserCoordinateSystems.Add(oUCSDef);
-                try
-                {
-                    oUCS.Name = "Spawn: " + spawnLocationNumber;
-                }
-                catch (Exception)
-                {
-                    spawnLocationNumber++;
-                    oUCS.Name = "Spawn: " + spawnLocationNumber;
-                }
-                spawnLocationNumber++;
-                SpawnPoints.Add(oUCS);
-                BrowserNodeDefinition def;
-                int th = rand.Next();// get the next random number for the browser node's internal id
-                ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
-                ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
-                oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
-                try
-                {
-                    oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
-                }
-                catch (Exception)
-                {// if the method fails then assume that there is already a ClientNodeResource
-                    oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
-                }
-                def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(oUCS.Name, th, oRes);// creates a new browser node def for the field data
-                oPane.TopNode.AddChild(def);// add the browsernode to the topnode
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
-        }
-        
         // edits the properties of the Component
         public static void editComponentProperites_OnExecute(Inventor.NameValueMap Context)
         {
@@ -1414,7 +1196,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     if (s.DisplayName.Equals("Number of Folders"))
                     {// is the name is correct the assume it is what we are looking fos
                         name = (String)s.ItemByPropId[2].Value;// reads the names for the field data Component
-                        spawnLocationNumber = (int)s.ItemByPropId[3].Value;
                     }
                 }
                 String[] names = name.Split(arr);// set names equal to the string of dataComponent without its limits
@@ -1469,31 +1250,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                         }
                     }
                 }
-                for (int i = 0; i < spawnLocationNumber + 1; i++)
-                {
-                    foreach (UserCoordinateSystem ucs in ((AssemblyComponentDefinition)((AssemblyDocument)m_inventorApplication.ActiveDocument).ComponentDefinition).UserCoordinateSystems)
-                    {
-                        if (ucs.Name.Equals("Spawn: " + i))
-                        {
-                            SpawnPoints.Add(ucs);
-                            BrowserNodeDefinition def;
-                            int th = rand.Next();// get the next random number for the browser node's internal id
-                            ClientNodeResources oNodeRescs; // creates a ClientNodeResourcess that we add the ClientNodeResource to
-                            ClientNodeResource oRes = null;// creates a ClientNodeResource for adding the browsernode, needs to be null for some reason, idk
-                            oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
-                            try
-                            {
-                                oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
-                            }
-                            catch (Exception)
-                            {// if the method fails then assume that there is already a ClientNodeResource
-                                oRes = oPanes.ClientNodeResources.ItemById("MYID", 1);// get the ClientNodeResource by the name
-                            }
-                            def = (BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(ucs.Name, th, oRes);// creates a new browser node def for the field data
-                            oPane.TopNode.AddChild(def);// add the browsernode to the topnode
-                        }
-                    }
-                }
             }
             catch (Exception e)
             {
@@ -1534,14 +1290,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             {// if that fails we assume that there is already that property so we write to it
                 set.ItemByPropId[2].Value = g;// write the value to the property
             }
-            try
-            {
-                set.Add(spawnLocationNumber, "Number of Spawn Locations", 3);// write the value to the property
-            }
-            catch (Exception)
-            {
-                set.ItemByPropId[3].Value = spawnLocationNumber;// write the value to the property
-            }
+            
         }
         
         // writes the data Components to the propery set
