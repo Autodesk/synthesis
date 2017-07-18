@@ -1191,6 +1191,12 @@ Select a joint so that it is highlighted blue. Then, select whether it has limit
         }
         // exports the robot
         public void exportRobot_OnExecute(Inventor.NameValueMap Context) {
+            if (jointList.Count == 0)
+            {
+                MessageBox.Show("ERROR: No Joints Defined!");
+                return;
+            }
+      
             try {
                 control.saveFile();// save the file
                 envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
