@@ -264,7 +264,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
+            positionVector = new Vector3(0f, 15f, 0f) + fieldVector;
             mono.transform.position = positionVector;
             rotationVector = new Vector3(90f, 90f, 0f);
             mono.transform.rotation = Quaternion.Euler(rotationVector);
@@ -334,7 +334,8 @@ public class DynamicCamera : MonoBehaviour
     {
         if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
         else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
-        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
+        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this));
         if (_cameraState != null) _cameraState.Update();
     }
 
