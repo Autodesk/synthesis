@@ -63,7 +63,6 @@
             this.Label.Size = new System.Drawing.Size(59, 13);
             this.Label.TabIndex = 2;
             this.Label.Text = "Add Part(s)";
-            this.Label.Click += new System.EventHandler(this.Label_Click);
             // 
             // pictureBox1
             // 
