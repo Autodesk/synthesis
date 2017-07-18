@@ -75,7 +75,7 @@ public class SimUI : MonoBehaviour
     {
         if (main == null)
         {
-            main = transform.GetComponent<StateMachine>().GetMainState();
+            main = transform.GetComponent<StateMachine>().MainState;
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
         else if (dpm == null)
@@ -209,10 +209,10 @@ public class SimUI : MonoBehaviour
     /// <summary>
     /// Resets the robot
     /// </summary>
-    public void PressReset()
-    {
-        main.ResetRobot();
-    }
+    //public void PressReset()
+    //{
+    //    main.ResetRobot();
+    //}
     #endregion
     #region camera button functions
     //Camera Functions
@@ -233,46 +233,46 @@ public class SimUI : MonoBehaviour
     #endregion
     #region orient button functions
 
-    //Orient Robot Functions
-    public void OrientStart()
-    {
-        main.StartOrient();
-    }
+    ////Orient Robot Functions
+    //public void OrientStart()
+    //{
+    //    main.StartOrient();
+    //}
 
-    public void OrientLeft()
-    {
-        main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-    }
+    //public void OrientLeft()
+    //{
+    //    main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+    //}
 
-    public void OrientRight()
-    {
-        main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-    }
+    //public void OrientRight()
+    //{
+    //    main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+    //}
 
-    public void OrientForward()
-    {
-        main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-    }
+    //public void OrientForward()
+    //{
+    //    main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+    //}
 
-    public void OrientBackward()
-    {
-        main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-    }
+    //public void OrientBackward()
+    //{
+    //    main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
+    //}
 
-    public void OrientSave()
-    {
-        main.SaveOrientation();
-    }
+    //public void OrientSave()
+    //{
+    //    main.SaveOrientation();
+    //}
 
-    public void OrientEnd()
-    {
-        //To be filled in later when UI work has been done
-    }
+    //public void OrientEnd()
+    //{
+    //    //To be filled in later when UI work has been done
+    //}
 
-    public void OrientDefault()
-    {
-        main.ResetOrientation();
-    }
+    //public void OrientDefault()
+    //{
+    //    main.ResetOrientation();
+    //}
 
     #endregion
     #region driver practice mode button functions
