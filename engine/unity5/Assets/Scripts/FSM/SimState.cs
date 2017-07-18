@@ -36,6 +36,11 @@ namespace Assets.Scripts.FSM
         public virtual void Update() { }
 
         /// <summary>
+        /// Called when the SimState is updated late.
+        /// </summary>
+        public virtual void LateUpdate() { }
+
+        /// <summary>
         /// Called when the SimState is updated on a fixed basis.
         /// </summary>
         public virtual void FixedUpdate() { }
