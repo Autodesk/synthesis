@@ -6,7 +6,7 @@ using GopherAPI.Other;
 
 namespace GopherAPI.STL
 {
-    public struct Mesh
+    public struct STLMesh
     {
 
         public readonly UInt32 MeshID;
@@ -37,7 +37,7 @@ namespace GopherAPI.STL
         /// </summary>
         public int Size { get => Facets.Length; }
 
-        public Mesh(UInt32 meshID, Facet[] facets, Color partColor, bool isDefault,
+        public STLMesh(UInt32 meshID, Facet[] facets, Color partColor, bool isDefault,
             UInt32 attributeID, TransformationMatrix transMat)
         {
             MeshID = meshID;
@@ -47,7 +47,7 @@ namespace GopherAPI.STL
             AttributeID = attributeID;
             TransMat = transMat;
         }
-        public Mesh(UInt32 meshID, STLFile stl, UInt32 attributeID, TransformationMatrix transMat)
+        public STLMesh(UInt32 meshID, STLFile stl, UInt32 attributeID, TransformationMatrix transMat)
         {
             MeshID = meshID;
             Facets = stl.Facets;

@@ -22,10 +22,15 @@ namespace GopherAPI.Properties
         /// </summary>
         /// <returns></returns>
         JAType GetJAType();
+        uint GetJointID();
     }
 
     public struct NoDriver : IJointAttribute
     {
+        public uint GetJointID()
+        {
+            return JointID;
+        }
         public readonly uint JointID;
         public JAType GetJAType()
         {
@@ -41,6 +46,10 @@ namespace GopherAPI.Properties
     {
         public readonly uint JointID;
         public readonly bool IsCAN;
+        public uint GetJointID()
+        {
+            return JointID;
+        }
 
         /// <summary>
         /// If IsCAN is false, this is a PWM port. Otherwise, its a CAN port.
@@ -81,6 +90,10 @@ namespace GopherAPI.Properties
     public struct Servo : IJointAttribute
     {
         public readonly uint JointID;
+        public uint GetJointID()
+        {
+            return JointID;
+        }
 
         /// <summary>
         /// Always a CAN
@@ -110,6 +123,10 @@ namespace GopherAPI.Properties
     public struct BumperPnuematic : IJointAttribute
     {
         public readonly uint JointID;
+        public uint GetJointID()
+        {
+            return JointID;
+        }
 
         public readonly float SolenoidPortOne;
         public readonly float SolenoidPortTwo;
@@ -142,6 +159,10 @@ namespace GopherAPI.Properties
     public struct RelayPnuematic : IJointAttribute
     {
         public readonly uint JointID;
+        public uint GetJointID()
+        {
+            return JointID;
+        }
 
 
         public readonly float RelayPort;
@@ -173,6 +194,10 @@ namespace GopherAPI.Properties
     public struct WormScrew : IJointAttribute
     {
         public readonly uint JointID;
+        public uint GetJointID()
+        {
+            return JointID;
+        }
 
 
         public readonly bool IsCAN;
@@ -204,6 +229,10 @@ namespace GopherAPI.Properties
     public struct DualMotor : IJointAttribute
     {
         public readonly uint JointID;
+        public uint GetJointID()
+        {
+            return JointID;
+        }
 
 
         public readonly bool IsCAN;
@@ -247,6 +276,10 @@ namespace GopherAPI.Properties
     {
         public readonly uint JointID;
 
+        public uint GetJointID()
+        {
+            return JointID;
+        }
 
         public readonly bool IsCAN;
         /// <summary>

@@ -30,7 +30,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
+    <OutputPath>E:\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>

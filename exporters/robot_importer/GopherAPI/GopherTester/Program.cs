@@ -29,7 +29,7 @@ namespace GopherTester
             List<STLAttribute> attributes = new List<STLAttribute> { new STLAttribute(AttribType.BOX_COLLIDER, 2, 50.0f, false, null, 10f, 15f, 155, null) };
             List<Joint> joints = new List<Joint> { };
 
-            Mesh mesh = new Mesh(10, facets.ToArray(), SystemColors.GrayText, false, 2, new TransformationMatrix());
+            STLMesh mesh = new STLMesh(10, facets.ToArray(), SystemColors.GrayText, false, 2, new TransformationMatrix());
             field.Meshes.Add(mesh);
             field.Attributes.AddRange(attributes);
 

@@ -186,7 +186,7 @@ namespace GopherAPI.Reader
                             Reader.ReadBytes(2);
                     }
                 }
-                LoadedRobot.Meshes.Add(new Mesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, uint.MaxValue, null/*rawMesh.TransMat*/));
+                LoadedRobot.Meshes.Add(new STLMesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, uint.MaxValue, null/*rawMesh.TransMat*/));
 
             }
         }

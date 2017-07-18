@@ -114,7 +114,7 @@ namespace GopherAPI.Reader
                     }
                     //TempAttID = Reader.ReadUInt32();
                 }
-                LoadedField.Meshes.Add(new Mesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, TempAttID, null/*rawMesh.TransMat*/));
+                LoadedField.Meshes.Add(new STLMesh(rawMesh.MeshID, tempFacets.ToArray(), TempColor, TempIsDefault, TempAttID, null/*rawMesh.TransMat*/));
 
             }
         }

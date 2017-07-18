@@ -27,7 +27,10 @@ namespace GopherAPI.STL
         /// XYZ for Point 3
         /// </summary>
         public readonly Vec3 Point3;
-        
+
+        public Vec3[] Verteces
+        { get { return new Vec3[] { Normal, Point1, Point2, Point3 }; } }
+
         internal byte[] Binary
         {
             get

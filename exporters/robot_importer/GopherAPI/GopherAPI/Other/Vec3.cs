@@ -13,6 +13,7 @@ namespace GopherAPI.Other
             get { return values[index]; }
             set { values[index] = (float)value; }
         }
+
         public Vec3()
         {
             values = new float[] { 0f, 0f, 0f };

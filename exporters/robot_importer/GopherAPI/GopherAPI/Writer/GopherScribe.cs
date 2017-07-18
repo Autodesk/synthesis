@@ -137,7 +137,7 @@ namespace GopherAPI.Writer
         /// </summary>
         /// <param name="meshes"></param>
         /// <returns></returns>
-        public static Section PreWrite(Mesh[] meshes)
+        public static Section PreWrite(STLMesh[] meshes)
         {
             if (meshes.Length == 0)
                 return new Section { IsEmpty = true };
@@ -172,7 +172,7 @@ namespace GopherAPI.Writer
         /// </summary>
         /// <param name="meshes"></param>
         /// <returns></returns>
-        public static Section PreWrite(List<Mesh> meshes)
+        public static Section PreWrite(List<STLMesh> meshes)
         {
             return PreWrite(meshes.ToArray());
         }

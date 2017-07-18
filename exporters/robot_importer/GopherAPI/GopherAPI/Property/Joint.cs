@@ -37,14 +37,13 @@ namespace GopherAPI.Properties
         /// Linear Joint: Centimeters of freedom in the direction of the defining vector
         /// </summary>
         public readonly float ProFreedomFactor;
+
         /// <summary>
         /// Rotational Joint: Degree of freedom counter-clockwise
         /// Linear Joint: Centimeters of freedom opposite the direction of the defining vector
         /// </summary>
         public readonly float RetroFreedomFactor;
 
-        public readonly IJointAttribute JointAttribute;
-        
         public Joint(byte[] GenericData)
         {
             using (var Reader = new BinaryReader(new MemoryStream(GenericData)))

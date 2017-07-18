@@ -11,10 +11,8 @@ namespace GopherAPI
     public class Field
     {
         public Bitmap Thumbnail;
-
-
-        private List<Mesh> meshes = new List<Mesh>();
-        private List<STLAttribute> attributes = new List<Properties.STLAttribute>();
+        private List<STLMesh> meshes = new List<STLMesh>();
+        private List<STLAttribute> attributes = new List<STLAttribute>();
         private List<Joint> joints = new List<Joint>();
         private List<IJointAttribute> jointAttributes = new List<IJointAttribute>();
         private Other.Vec3 spawn;
@@ -22,7 +20,7 @@ namespace GopherAPI
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetMesh method.
         /// </summary>
-        public List<Mesh> Meshes { get => meshes; }
+        public List<STLMesh> Meshes { get => meshes; }
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetAttribute method.
         /// </summary>
@@ -32,6 +30,9 @@ namespace GopherAPI
         /// </summary>
         public List<Joint> Joints { get => joints; }
 
+        /// <summary>
+        /// Joint attributes contain a 'JointID' member that tells you which joint it is attatched to. Use GetJointAttribute(Joint) to get the attached joint attribute
+        /// </summary>
         public List<IJointAttribute> JointAttributes => jointAttributes;
 
         /// <summary>
@@ -39,14 +40,14 @@ namespace GopherAPI
         /// </summary>
         /// <param name="MeshID"></param>
         /// <returns></returns>
-        public Mesh GetMesh(UInt32 MeshID)
+        public STLMesh GetMesh(UInt32 MeshID)
         {
             foreach(var mesh in meshes)
             {
                 if (mesh.MeshID == MeshID)
                     return mesh;
             }
-            throw new Exception("ERROR: Mesh not found");
+            throw new Exception("ERROR: STLMesh not found");
         }
 
         /// <summary>
@@ -65,6 +66,16 @@ namespace GopherAPI
         }
 
         /// <summary>
+        /// Searches attributes for the STLAttributes matching the AttributeID of the stlMesh parameter
+        /// </summary>
+        /// <param name="stlMesh"></param>
+        /// <returns></returns>
+        public STLAttribute GetAttribute(STLMesh stlMesh)
+        {
+            return GetAttribute(stlMesh.AttributeID);
+        }
+
+        /// <summary>
         /// Searches joints for a joint with the matching ID
         /// </summary>
         /// <param name="JointID"></param>
@@ -79,6 +90,20 @@ namespace GopherAPI
             throw new Exception("ERROR: STLAttribute not found");
         }
 
+        /// <summary>
+        /// Gets the IJointAttribute attached to the joint parameter. If none exists, it will return a 'NoDriver' struct with a matching jointID
+        /// </summary>
+        /// <param name="joint"></param>
+        /// <returns></returns>
+        public IJointAttribute GetJointAttribute(Joint joint)
+        {
+            foreach(var ja in jointAttributes)
+            {
+                if (ja.GetJointID() == joint.JointID)
+                    return ja;
+            }
+            return new NoDriver(joint.JointID);
+        }
 
         public Other.Vec3 Spawn { get => spawn; set => spawn = value; }
     }

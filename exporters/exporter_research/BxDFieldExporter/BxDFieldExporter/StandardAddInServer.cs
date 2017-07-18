@@ -1436,6 +1436,11 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
         // exports the field
         public void exportField_OnExecute(Inventor.NameValueMap Context)
         {
+            if(FieldComponents.Count == 0)
+            {
+                MessageBox.Show("ERROR: No field components created");
+                return;
+            }
             envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
             FieldSaver exporter = new FieldSaver(m_inventorApplication, FieldComponents);
         }

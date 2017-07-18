@@ -18,11 +18,14 @@ namespace GopherAPI.Properties
     {
         public readonly AttribType Type;
         /// <summary>
-        /// AttributeID is the ID of the attribute itself for fields, but for robots it is the ID of the STL mesh it is attatched to.
+        /// AttributeID is the ID that will be referenced by the Field/Robot class when getting attributes for an object
         /// </summary>
         public readonly UInt32 AttributeID;
         public readonly float Friction;
         public readonly bool IsDynamic;
+        /// <summary>
+        /// Should be null unless IsDynamic is true
+        /// </summary>
         private readonly float? mass;
 
         /// <summary>

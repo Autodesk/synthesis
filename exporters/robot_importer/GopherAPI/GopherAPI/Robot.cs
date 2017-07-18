@@ -12,7 +12,7 @@ namespace GopherAPI
     {
         public Bitmap Thumbnail;
 
-        private List<Mesh> meshes = new List<Mesh>();
+        private List<STLMesh> meshes = new List<STLMesh>();
         private List<STLAttribute> attributes = new List<STLAttribute>();
         private List<Joint> joints = new List<Joint>();
         private List<IJointAttribute> jointAttribs = new List<IJointAttribute>();
@@ -21,7 +21,7 @@ namespace GopherAPI
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetMesh method.
         /// </summary>
-        public List<Mesh> Meshes { get => meshes; }
+        public List<STLMesh> Meshes { get => meshes; }
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetAttribute method.
         /// </summary>
@@ -38,14 +38,14 @@ namespace GopherAPI
         /// </summary>
         /// <param name="MeshID"></param>
         /// <returns></returns>
-        public Mesh GetMesh(UInt32 MeshID)
+        public STLMesh GetMesh(UInt32 MeshID)
         {
             foreach (var mesh in meshes)
             {
                 if (mesh.MeshID == MeshID)
                     return mesh;
             }
-            throw new Exception("ERROR: Mesh not found");
+            throw new Exception("ERROR: STLMesh not found");
         }
 
         /// <summary>
@@ -64,6 +64,16 @@ namespace GopherAPI
         }
 
         /// <summary>
+        /// Searches attributes for the STLAttributes matching the AttributeID of the stlMesh parameter
+        /// </summary>
+        /// <param name="stlMesh"></param>
+        /// <returns></returns>
+        public STLAttribute GetAttribute(STLMesh stlMesh)
+        {
+            return GetAttribute(stlMesh.AttributeID);
+        }
+
+        /// <summary>
         /// Searches joints for a joint with the matching ID
         /// </summary>
         /// <param name="JointID"></param>
@@ -78,6 +88,9 @@ namespace GopherAPI
             throw new Exception("ERROR: STLAttribute not found");
         }
 
+        /// <summary>
+        /// Not yet implemented in the exporter
+        /// </summary>
         public Other.Vec3 Spawn { get => spawn; set => spawn = value; }
     }
 }
