@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public class Controls : MonoBehaviour
 {
-    public enum Control { Forward, Backward, Right, Left, ResetRobot, CameraToggle, pwm2Plus, pwm2Neg, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, pwm6Plus, pwm6Neg, Pickup, Release, Spawn};
+    public enum Control { Forward, Backward, Right, Left, ResetRobot, CameraToggle, pwm2Plus, pwm2Neg, pwm3Plus, pwm3Neg, pwm4Plus, pwm4Neg, pwm5Plus, pwm5Neg, pwm6Plus, pwm6Neg, PickupPrimary, ReleasePrimary, SpawnPrimary, PickupSecondary, ReleaseSecondary, SpawnSecondary};
 
-    public static KeyCode[] ControlKey = new KeyCode[20];
-    public static KeyCode[] BackupKeys = new KeyCode[20];
-    public static readonly string[] ControlName = { "Move Forward", "Move Backward", "Turn Right", "Turn Left", "Reset Robot", "Toggle Camera", "PWM 2 Positive", "PWM 2 Negative", "PWM 3 Positive", "PWM 3 Negative", "PWM 4 Positive", "PWM 4 Negative", "PWM 5 Positive", "PWM 5 Negative", "PWM 6 Positive", "PWM 6 Negative", "Pick Up Gamepiece", "Release Gamepiece", "Spawn Gamepiece"};
+    public static KeyCode[] ControlKey = new KeyCode[23];
+    public static KeyCode[] BackupKeys = new KeyCode[23];
+    public static readonly string[] ControlName = { "Move Forward", "Move Backward", "Turn Right", "Turn Left", "Reset Robot", "Toggle Camera", "PWM 2 Positive", "PWM 2 Negative", "PWM 3 Positive", "PWM 3 Negative", "PWM 4 Positive", "PWM 4 Negative", "PWM 5 Positive", "PWM 5 Negative", "PWM 6 Positive", "PWM 6 Negative", "Pick Up Primary Gamepiece", "Release Primary Gamepiece", "Spawn Primary Gamepiece", "Pick Up Secondary Gamepiece", "Release Secondary Gamepiece", "Spawn Secondary Gamepiece"};
 
     public static void ResetDefaults()
     {
@@ -27,9 +27,13 @@ public class Controls : MonoBehaviour
         ControlKey[(int)Control.pwm5Neg] = KeyCode.Alpha8;
         ControlKey[(int)Control.pwm6Plus] = KeyCode.Alpha9;
         ControlKey[(int)Control.pwm6Neg] = KeyCode.Alpha0;
-        ControlKey[(int)Control.Pickup] = KeyCode.Space;
-        ControlKey[(int)Control.Release] = KeyCode.E;
-        ControlKey[(int)Control.Spawn] = KeyCode.Q;
+        ControlKey[(int)Control.PickupPrimary] = KeyCode.X;
+        ControlKey[(int)Control.ReleasePrimary] = KeyCode.E;
+        ControlKey[(int)Control.SpawnPrimary] = KeyCode.Q;
+        ControlKey[(int)Control.PickupSecondary] = KeyCode.X;
+        ControlKey[(int)Control.ReleaseSecondary] = KeyCode.E;
+        ControlKey[(int)Control.SpawnSecondary] = KeyCode.Q;
+
     }
 
     public static void LoadControls()

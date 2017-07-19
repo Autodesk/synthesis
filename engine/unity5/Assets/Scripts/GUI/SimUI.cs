@@ -20,6 +20,10 @@ public class SimUI : MonoBehaviour
 
     GameObject dpmWindow;
     GameObject configWindow;
+    GameObject defineIntakeWindow;
+    GameObject defineReleaseWindow;
+    GameObject setSpawnWindow;
+    GameObject defineGamepieceWindow;
 
     GameObject releaseVelocityPanel;
 
@@ -30,10 +34,17 @@ public class SimUI : MonoBehaviour
     GameObject releaseVerticalEntry;
     GameObject releaseHorizontalEntry;
 
+    
+
+
     Text enableDPMText;
 
     Text primaryGamepieceText;
     Text secondaryGamepieceText;
+
+    Text intakeControlText;
+    Text releaseControlText;
+    Text spawnControlText;
 
     Text configHeaderText;
     Text configuringText;
@@ -59,6 +70,8 @@ public class SimUI : MonoBehaviour
     private float deltaReleaseSpeed;
     private float deltaReleaseHorizontal;
     private float deltaReleaseVertical;
+
+    private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
 
     bool isEditing = false;
 
@@ -89,8 +102,8 @@ public class SimUI : MonoBehaviour
         {
             UpdateDPMValues();
             UpdateVectorConfiguration();
-
-           
+            UpdateWindows(); //please don't
+            if (settingControl != 0) ListenControl();
         }
             
     }
@@ -129,6 +142,14 @@ public class SimUI : MonoBehaviour
         releaseMechanismText = AuxFunctions.FindObject(canvas, "ReleaseMechanismText").GetComponent<Text>();
         intakeMechanismText = AuxFunctions.FindObject(canvas, "IntakeMechanismText").GetComponent<Text>();
 
+        defineIntakeWindow = AuxFunctions.FindObject(canvas, "DefineIntakePanel");
+        defineReleaseWindow = AuxFunctions.FindObject(canvas, "DefineReleasePanel");
+        defineGamepieceWindow = AuxFunctions.FindObject(canvas, "DefineGamepiecePanel");
+        setSpawnWindow = AuxFunctions.FindObject(canvas, "SetGamepieceSpawnPanel");
+
+        intakeControlText = AuxFunctions.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
+        releaseControlText = AuxFunctions.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
+        spawnControlText = AuxFunctions.FindObject(canvas, "SpawnInputButton").GetComponentInChildren<Text>();
     }
 
     /// <summary>
@@ -149,6 +170,19 @@ public class SimUI : MonoBehaviour
 
             releaseMechanismText.text = "Current Part:  " + dpm.releaseNode[configuringIndex].name;
             intakeMechanismText.text = "Current Part:  " + dpm.intakeNode[configuringIndex].name;
+
+            if (configuringIndex == 0)
+            {
+                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupPrimary].ToString();
+                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleasePrimary].ToString();
+                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnPrimary].ToString();
+            }
+            else
+            {
+                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupSecondary].ToString();
+                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleaseSecondary].ToString();
+                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnSecondary].ToString();
+            }
         }
     }
 
@@ -202,6 +236,45 @@ public class SimUI : MonoBehaviour
             releaseSpeedEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][0].ToString();
             releaseHorizontalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][1].ToString();
             releaseVerticalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][2].ToString();
+        }
+    }
+
+    private void UpdateWindows()
+    {
+        if (configuring)
+        {
+            if (dpm.addingGamepiece)
+            {
+                configWindow.SetActive(false);
+                dpmWindow.SetActive(false);
+                defineGamepieceWindow.SetActive(true);
+            }
+            else if (dpm.settingSpawn != 0)
+            {
+                configWindow.SetActive(false);
+                dpmWindow.SetActive(false);
+                setSpawnWindow.SetActive(true);
+            }
+            else if (dpm.definingIntake)
+            {
+                configWindow.SetActive(false);
+                dpmWindow.SetActive(false);
+                defineIntakeWindow.SetActive(true);
+            }
+            else if (dpm.definingRelease)
+            {
+                configWindow.SetActive(false);
+                dpmWindow.SetActive(false);
+                defineReleaseWindow.SetActive(true);
+            }
+            else
+            {
+                defineGamepieceWindow.SetActive(false);
+                setSpawnWindow.SetActive(false);
+                defineIntakeWindow.SetActive(false);
+                defineReleaseWindow.SetActive(false);
+                configWindow.SetActive(true);
+            }
         }
     }
 
@@ -375,6 +448,7 @@ public class SimUI : MonoBehaviour
     {
         configWindow.SetActive(false);
         configuring = false;
+        dpm.Save();
     }
 
     public void DefineGamepiece()
@@ -382,9 +456,19 @@ public class SimUI : MonoBehaviour
         dpm.DefineGamepiece(configuringIndex);
     }
 
+    public void CancelDefineGamepiece()
+    {
+        dpm.addingGamepiece = false;
+    }
+
     public void DefineIntake()
     {
         dpm.DefineIntake(configuringIndex);
+    }
+
+    public void CancelDefineIntake()
+    {
+        dpm.definingIntake = false;
     }
 
     public void HighlightIntake()
@@ -397,9 +481,24 @@ public class SimUI : MonoBehaviour
         dpm.DefineRelease(configuringIndex);
     }
 
+    public void CancelDefineRelease()
+    {
+        dpm.definingRelease = false;
+    }
+
     public void HighlightRelease()
     {
         dpm.HighlightNode(dpm.releaseNode[configuringIndex].name);
+    }
+
+    public void SetGamepieceSpawn()
+    {
+        dpm.StartGamepieceSpawn(configuringIndex);
+    }
+
+    public void CancelGamepieceSpawn()
+    {
+        dpm.settingSpawn = 0;
     }
 
 
@@ -512,7 +611,56 @@ public class SimUI : MonoBehaviour
                 dpm.releaseVelocity[configuringIndex][2] = temp;
         }
     }
-        #endregion
+    #endregion
+    #region control customization functions
+    
+    public void ChangeIntakeControl()
+    {
+        settingControl = 1;
+    }
 
+    public void ChangeReleaseControl()
+    {
+        settingControl = 2;
+    }
+
+    public void ChangeSpawnControl()
+    {
+        settingControl = 3;
+    }
+
+    private void ListenControl()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            settingControl = 0;
+            return;
+        }
+        foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+        {
+            if (Input.GetKeyDown(vKey))
+            {
+                if (configuringIndex == 0)
+                {
+                    if (settingControl == 1)
+                    {
+                        Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+                    }
+                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
+                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+                }
+                else
+                {
+                    if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
+                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
+                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+                }
+                Controls.SaveControls();
+                settingControl = 0;
+            }
+        }
+    }
+
+    #endregion
 }
 

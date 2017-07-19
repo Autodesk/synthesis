@@ -83,6 +83,8 @@ public class MainState : SimState
 
     public List<Tracker> Trackers { get; private set; }
 
+    public static bool ControlsDisabled = false;
+
     public override void Awake()
     {
         GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
@@ -373,7 +375,7 @@ public class MainState : SimState
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
 
-            DriveJoints.UpdateAllMotors(rootNode, packet.dio);
+            if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
 
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
