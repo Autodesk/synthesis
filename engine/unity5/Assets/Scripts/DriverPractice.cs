@@ -143,6 +143,8 @@ namespace BulletUnity {
             drawnTrajectory[0].endColor = Color.cyan;
             drawnTrajectory[1].startColor = Color.red;
             drawnTrajectory[1].endColor = Color.magenta;
+
+            Load();
         }
 	
 	    // Update is called once per frame
@@ -780,11 +782,93 @@ namespace BulletUnity {
                     writer.WriteLine("#Release Velocity");
                     sb = new StringBuilder();
                     writer.WriteLine(sb.Append(releaseVelocity[i][0]).Append("|").Append(releaseVelocity[i][1]).Append("|").Append(releaseVelocity[i][2]));
-                    writer.WriteLine("");
                 }
                 writer.Close();
             }
             Debug.Log("Save successful!");
         }
+
+        public void Load()
+        {
+            string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\dpmConfiguration.txt";
+            if (File.Exists(filePath))
+            {
+                StreamReader reader = new StreamReader(filePath);
+                string line = "";
+                int counter = 0;
+                int index = 0;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Equals("#Name")) counter++;
+                    else if (counter == 1)
+                    {
+                        if (line.Equals("#Spawnpoint")) counter++;
+                        else
+                        {
+                            gamepieceNames[index] = line;
+                        }
+                    }
+                    else if (counter == 2)
+                    {
+                        if (line.Equals("#Intake Node")) counter++;
+                        else gamepieceSpawn[index] = DeserializeVector3Array(line);
+                    }
+                    else if (counter == 3)
+                    {
+                        if (line.Equals("#Release Node")) counter++;
+                        else intakeNode[index] = GameObject.Find(line);
+                    }
+                    else if (counter == 4)
+                    {
+                        if (line.Equals("#Release Position")) counter++;
+                        else releaseNode[index] = GameObject.Find(line);
+                    }
+                    else if (counter == 5)
+                    {
+                        if (line.Equals("#Release Velocity")) counter++;
+                        else positionOffset[index] = DeserializeVector3Array(line);
+                    }
+                    else if (counter == 6)
+                    {
+                        if (line.Contains("#Gamepiece"))
+                        {
+                            counter = 0;
+                            index++;
+                        }
+                        else releaseVelocity[index] = DeserializeArray(line);
+                    }
+                }
+                reader.Close();
+            }
+        }
+
+        public static UnityEngine.Vector3 DeserializeVector3Array(string aData)
+        {
+            UnityEngine.Vector3 result = new UnityEngine.Vector3(0, 0, 0);
+            string[] values = aData.Split('|');
+            Debug.Log(values[0]);
+            if (values.Length != 3)
+                throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
+            result = new UnityEngine.Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
+            return result;
+        }
+        public static float[] DeserializeArray(string aData)
+        {
+            float[] result = new float[3];
+            string[] values = aData.Split('|');
+            if (values.Length != 3)
+                throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = float.Parse(values[i]);
+            }
+            return result;
+        }
+
+
+
     }
+
+
 }
