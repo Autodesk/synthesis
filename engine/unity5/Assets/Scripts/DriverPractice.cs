@@ -751,12 +751,12 @@ namespace BulletUnity {
         public void Save()
         {
             string filePath = PlayerPrefs.GetString("simSelectedRobot");
-            if (File.Exists(filePath + "\\dpmConfiguration.txt"))
+            if (File.Exists(filePath + "\\dpmConfig.txt"))
             {
-                File.Delete(filePath + "\\dpmConfiguration.txt");
+                File.Delete(filePath + "\\dpmConfig.txt");
             }
-            Debug.Log("Saving to " + filePath + "\\dpmConfiguration.txt");
-            using (StreamWriter writer = new StreamWriter(filePath + "\\dpmConfiguration.txt", false))
+            Debug.Log("Saving to " + filePath + "\\dpmConfig.txt");
+            using (StreamWriter writer = new StreamWriter(filePath + "\\dpmConfig.txt", false))
             {
                 StringBuilder sb;
                 for (int i = 0; i < gamepieceNames.Count; i++)
@@ -790,7 +790,7 @@ namespace BulletUnity {
 
         public void Load()
         {
-            string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\dpmConfiguration.txt";
+            string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\dpmConfig.txt";
             if (File.Exists(filePath))
             {
                 StreamReader reader = new StreamReader(filePath);
