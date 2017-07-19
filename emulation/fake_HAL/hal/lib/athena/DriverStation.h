@@ -64,7 +64,6 @@ typedef struct
 	uint8_t *data;
 } DynamicControlData;
 
-
 /*
 
 0		|	Upper byte for packet identification
@@ -97,10 +96,10 @@ struct FRCCommonControlData2015 {
 	uint8_t command;
 	uint8_t station;
 	
-	uint8_t size_joystick0;
+	/*uint8_t size_joystick0;
 	uint8_t size_up_to_pov0;
 	uint8_t size_axes0;
-	uint8_t axis0[6];
+	uint8_t axis0[4];
 	uint8_t unknown1[1];
 	uint16_t buttons0;
 	uint8_t size_pov0; // unsure
@@ -131,7 +130,7 @@ struct FRCCommonControlData2015 {
 	uint8_t unknown4[1];
 	uint16_t buttons3;
 	uint8_t size_pov3; // unsure
-	uint8_t pov3[2];
+	uint8_t pov3[2];*/
 };
 
 /*
@@ -159,8 +158,15 @@ struct FRCRobotControl2015 {
 
 extern float JAG_SPEEDS[32];
 
+struct FRCJoystick {
+  uint8_t num_axes;
+  int8_t axes[12];
+  uint8_t num_buttons;
+  uint16_t buttons;
+  //TODO: pov
+};
 
-struct FRCCommonControlData{
+struct FRCCommonControlData {
 	uint16_t packetIndex;
 	union {
 		uint8_t control;
@@ -192,63 +198,8 @@ struct FRCCommonControlData{
 	char dsID_Alliance;
 	char dsID_Position;
 
-	union {
-		int8_t stick0Axes[6];
-		struct {
-			int8_t stick0Axis1;
-			int8_t stick0Axis2;
-			int8_t stick0Axis3;
-			int8_t stick0Axis4;
-			int8_t stick0Axis5;
-			int8_t stick0Axis6;
-		};
-	};
-	uint16_t stick0Buttons;		// Left-most 4 bits are unused
-
-	union {
-		int8_t stick1Axes[6];
-		struct {
-			int8_t stick1Axis1;
-			int8_t stick1Axis2;
-			int8_t stick1Axis3;
-			int8_t stick1Axis4;
-			int8_t stick1Axis5;
-			int8_t stick1Axis6;
-		};
-	};
-	uint16_t stick1Buttons;		// Left-most 4 bits are unused
-
-	union {
-		int8_t stick2Axes[6];
-		struct {
-			int8_t stick2Axis1;
-			int8_t stick2Axis2;
-			int8_t stick2Axis3;
-			int8_t stick2Axis4;
-			int8_t stick2Axis5;
-			int8_t stick2Axis6;
-		};
-	};
-	uint16_t stick2Buttons;		// Left-most 4 bits are unused
-
-	union {
-		int8_t stick3Axes[6];
-		struct {
-			int8_t stick3Axis1;
-			int8_t stick3Axis2;
-			int8_t stick3Axis3;
-			int8_t stick3Axis4;
-			int8_t stick3Axis5;
-			int8_t stick3Axis6;
-		};
-	};
-	uint16_t stick3Buttons;		// Left-most 4 bits are unused
-
-	//Analog inputs are 10 bit right-justified
-	uint16_t analog1;
-	uint16_t analog2;
-	uint16_t analog3;
-	uint16_t analog4;
+  uint8_t num_joysticks;
+  FRCJoystick joysticks[6];
 
 	uint64_t cRIOChecksum;
 	uint32_t FPGAChecksum0;

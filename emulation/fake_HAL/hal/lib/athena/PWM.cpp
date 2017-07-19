@@ -145,6 +145,8 @@ extern "C" {
 		port->centerPwm = centerPwm;
 		port->minPwm = minPwm;
 		port->configSet = true;
+
+    printf("%d %d\n", minPwm, maxPwm);
 	}
 
 	void HAL_SetPWMConfigRaw(HAL_DigitalHandle pwmPortHandle, int32_t maxPwm,
@@ -210,12 +212,12 @@ extern "C" {
 	 */
 	void HAL_SetPWMRaw(HAL_DigitalHandle pwmPortHandle, int32_t value,
 		int32_t* status) {
+		HAL_StartUnityThread();
 		auto port = digitalChannelHandles.Get(pwmPortHandle, HAL_HandleEnum::PWM);
 		if (port == nullptr) {
 			*status = HAL_HANDLE_ERROR;
 			return;
 		}
-		pwmValues[port->channel] = value / 255.0;
 
 		/*if (port->channel < tPWM::kNumHdrRegisters) {
 		  pwmSystem->writeHdr(port->channel, value, status);
@@ -274,14 +276,15 @@ extern "C" {
 				static_cast<double>(GetMaxNegativePwm(dPort)) + 0.5);
 		}
 
+    //printf("%d\n", GetMaxPositivePwm(dPort));
 		if (!((rawValue >= GetMinNegativePwm(dPort)) &&
 			(rawValue <= GetMaxPositivePwm(dPort))) ||
 			rawValue == kPwmDisabled) {
 			*status = HAL_PWM_SCALE_ERROR;
 			return;
 		}
-		HAL_StartUnityThread();
 
+		pwmValues[port->channel] = speed;
 		HAL_SetPWMRaw(pwmPortHandle, rawValue, status);
 	}
 
@@ -463,10 +466,10 @@ extern "C" {
 	 * @return The loop time
 	 */
 	int32_t HAL_GetLoopTiming(int32_t* status) {
-		initializeDigital(status);
-		if (*status != 0) return 0;
+		//initializeDigital(status);
+		//if (*status != 0) return 0;
 		//return pwmSystem->readLoopTiming(status);
-		return 0;
+		return 260;
 	}
 
 	void StateNetworkThread() {
@@ -475,6 +478,7 @@ extern "C" {
 
 		OutputStatePacket packet;
 		while (true) {
+      printf("%f %f %f %f\n", pwmValues[0], pwmValues[1], pwmValues[2], pwmValues[3]);
 			std::copy(pwmValues, pwmValues + 10, packet.dio[0].pwmValues);
 			stateNetwork.SendStatePacket(packet);
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));

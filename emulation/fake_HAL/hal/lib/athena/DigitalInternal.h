@@ -53,7 +53,8 @@ constexpr double kDefaultPwmCenter = 1.5;
 /**
  * kDefaultPWMStepsDown is the number of PWM steps below the centerpoint
  */
-constexpr int32_t kDefaultPwmStepsDown = 1000;
+//constexpr int32_t kDefaultPwmStepsDown = 1000;
+constexpr int32_t kDefaultPwmStepsDown = 128;
 constexpr int32_t kPwmDisabled = 0;
 
 // Create a mutex to protect changes to the DO PWM config
