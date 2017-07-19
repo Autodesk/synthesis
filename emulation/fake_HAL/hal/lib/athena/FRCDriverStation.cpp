@@ -106,14 +106,13 @@ void DriverStationThread() {
 	}
 
 	char buffer[1024];
-	for (int i = 0; i < 32; i++) {
+	/*for (int i = 0; i < 32; i++) {
 		memset(&lastDynamicControlPacket [i], 0, sizeof(lastDynamicControlPacket [i]));
-	}
+	}*/
 	bool lockedResync = false;
 
 	// Read from the DS thread
 	while (true) {
-		printf("loop\n");
 		if (resyncSem != NULL && !lockedResync) {
 			resyncSem->take();
 			lockedResync = true;
@@ -127,6 +126,7 @@ void DriverStationThread() {
 		// Convert 2015 packets to 2014 (TODO find a better way)
 		{
 			FRCCommonControlData p2014;
+      memset(&p2014, 0, sizeof(p2014));
 			FRCCommonControlData2015 p2015;
 			memcpy(&p2015, &buffer, sizeof(p2015));
 			p2014.packetIndex = p2015.packetIndex++;
@@ -166,14 +166,43 @@ void DriverStationThread() {
 
 			p2014.dsID_Alliance = alliance;
 			p2014.dsID_Position = position;
-			memcpy(&p2014.stick0Axes[0], &p2015.axis0[0], (size_t)6);
+
+			/*memcpy(&p2014.stick0Axes[0], &p2015.axis0[0], (size_t)6);
 			memcpy(&p2014.stick1Axes[0], &p2015.axis1[0], (size_t)6);
 			memcpy(&p2014.stick2Axes[0], &p2015.axis2[0], (size_t)6);
 			memcpy(&p2014.stick3Axes[0], &p2015.axis3[0], (size_t)6);
 			p2014.stick0Buttons = p2015.buttons0;
 			p2014.stick1Buttons = p2015.buttons1;
 			p2014.stick2Buttons = p2015.buttons2;
-			p2014.stick3Buttons = p2015.buttons3;
+			p2014.stick3Buttons = p2015.buttons3;*/
+      int joystick_idx = 0;
+      size_t address = (size_t)&buffer[6];
+      while(address < (size_t)&buffer + len) {
+        uint8_t size = *(uint8_t*)address;
+        size_t old_address = address;
+        address += 2; //skip the next byte
+
+        uint8_t num_axes = *(uint8_t*)address;
+        //printf("%d\n", num_axes);
+        p2014.joysticks[joystick_idx].num_axes = num_axes;
+        address += 1;
+        for(int axis = 0; axis < num_axes; axis++) {
+          p2014.joysticks[joystick_idx].axes[axis] = *(int8_t*)address;
+          address += 1;
+        }
+
+        uint8_t num_buttons = *(uint8_t*)address;
+        p2014.joysticks[joystick_idx].num_buttons = num_buttons;
+        address += 1;
+        p2014.joysticks[joystick_idx].buttons = ntohs(*(uint16_t*)address);
+        address += 2;
+
+        address = old_address + size + 1;
+
+        p2014.num_joysticks++;
+        joystick_idx++;
+      }
+
 			p2014.enabled = p2015.state & 4 ? true : false;
 			p2014.autonomous = p2015.state & 2 ? true : false;
 			p2014.test = p2015.state & 1 ? true : false;
@@ -185,8 +214,8 @@ void DriverStationThread() {
 		}
 
 		// Reading dynamic data
-		{
-			int head = 115;
+		/*{
+			int head = address;
 			uint8_t size;
 			uint8_t id;
 			while (head < 1024 && (size = buffer[head]) > 0) {
@@ -201,20 +230,20 @@ void DriverStationThread() {
 				memcpy(lastDynamicControlPacket [id].data, &buffer[head], size+2);
 				head += size;
 			}
-		}
+		}*/
 
 		{
 			// Handle endians
 			lastDataPacket.packetIndex = ntohs(lastDataPacket.packetIndex);
 			lastDataPacket.teamID = ntohs(lastDataPacket.teamID);
-			lastDataPacket.analog1 = ntohs(lastDataPacket.analog1);
-			lastDataPacket.analog2 = ntohs(lastDataPacket.analog2);
-			lastDataPacket.analog3 = ntohs(lastDataPacket.analog3);
-			lastDataPacket.analog4 = ntohs(lastDataPacket.analog4);
-			lastDataPacket.stick0Buttons = ntohs(lastDataPacket.stick0Buttons);
-			lastDataPacket.stick1Buttons = ntohs(lastDataPacket.stick1Buttons);
-			lastDataPacket.stick2Buttons = ntohs(lastDataPacket.stick2Buttons);
-			lastDataPacket.stick3Buttons = ntohs(lastDataPacket.stick3Buttons);
+			//lastDataPacket.analog1 = ntohs(lastDataPacket.analog1);
+			//lastDataPacket.analog2 = ntohs(lastDataPacket.analog2);
+			//lastDataPacket.analog3 = ntohs(lastDataPacket.analog3);
+			//lastDataPacket.analog4 = ntohs(lastDataPacket.analog4);
+			//lastDataPacket.stick0Buttons = ntohs(lastDataPacket.stick0Buttons);
+			//lastDataPacket.stick1Buttons = ntohs(lastDataPacket.stick1Buttons);
+			//lastDataPacket.stick2Buttons = ntohs(lastDataPacket.stick2Buttons);
+			//lastDataPacket.stick3Buttons = ntohs(lastDataPacket.stick3Buttons);
 		}
 
 		readingSem.give();
@@ -229,7 +258,7 @@ void DriverStationThread() {
 				Sleep(250);
 				resyncSem->take();
 			}
-		}
+    }
 
 		char sendBuffer[2048];
 		writingSem.take();
@@ -343,7 +372,9 @@ int32_t HAL_GetControlWord(HAL_ControlWord* controlWord) {
   controlWord->autonomous = ctl.control.autonomous;
   controlWord->test = ctl.control.test;
   controlWord->fmsAttached = ctl.control.fmsAttached;
+  controlWord->dsAttached = true;
   controlWord->eStop = !ctl.control.notEStop;
+  //printf("%d\n", controlWord->autonomous);
 
   /*return FRC_NetworkCommunication_getControlWord(
       reinterpret_cast<ControlWord_t*>(controlWord));*/
@@ -359,11 +390,16 @@ HAL_AllianceStationID HAL_GetAllianceStation(int32_t* status) {
 }
 
 int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {
-  /*HAL_JoystickAxesInt axesInt;
+  HAL_JoystickAxesInt axesInt;
+  axesInt.count = lastDataPacket.joysticks[joystickNum].num_axes;
+  //memcpy(axesInt.axes, lastDataPacket.joysticks[joystickNum].axes, 12);
+  for(int i = 0; i < axesInt.count; i++) {
+    axesInt.axes[i] = lastDataPacket.joysticks[joystickNum].axes[i];
+  }
 
-  int retVal = FRC_NetworkCommunication_getJoystickAxes(
+  /*int retVal = FRC_NetworkCommunication_getJoystickAxes(
       joystickNum, reinterpret_cast<JoystickAxes_t*>(&axesInt),
-      HAL_kMaxJoystickAxes);
+      HAL_kMaxJoystickAxes);*/
 
   // copy integer values to double values
   axes->count = axesInt.count;
@@ -378,7 +414,8 @@ int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {
     }
   }
 
-  return retVal;*/
+  //return retVal;
+
   return 0;
 }
 
@@ -386,15 +423,21 @@ int32_t HAL_GetJoystickPOVs(int32_t joystickNum, HAL_JoystickPOVs* povs) {
   /*return FRC_NetworkCommunication_getJoystickPOVs(
       joystickNum, reinterpret_cast<JoystickPOV_t*>(povs),
       HAL_kMaxJoystickPOVs);*/
+
   return 0;
 }
 
 int32_t HAL_GetJoystickButtons(int32_t joystickNum,
                                HAL_JoystickButtons* buttons) {
+  buttons->count = lastDataPacket.joysticks[joystickNum].num_buttons;
+  buttons->buttons = lastDataPacket.joysticks[joystickNum].buttons;
+  //printf("%d\n", buttons->buttons);
+
   /*return FRC_NetworkCommunication_getJoystickButtons(
       joystickNum, &buttons->buttons, &buttons->count);*/
   return 0;
 }
+
 /**
  * Retrieve the Joystick Descriptor for particular slot
  * @param desc [out] descriptor (data transfer object) to fill in.  desc is
