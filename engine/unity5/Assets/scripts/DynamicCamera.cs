@@ -138,8 +138,7 @@ public class DynamicCamera : MonoBehaviour
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
-                            //Debug.Log(magnification);
-                            Debug.Log(Vector3.Distance(mono.transform.position, robot.transform.position));
+                            
                         }
 
                     }
@@ -384,5 +383,12 @@ public class DynamicCamera : MonoBehaviour
             lagScalar = targetScalar;
 
         return lagScalar;
+    }
+
+    public void SwitchCameraState(int type)
+    {
+        if (type == 0) SwitchCameraState(new FreeroamState(this));
+        else if (type == 1) SwitchCameraState(new OrbitState(this));
+        else SwitchCameraState(new DriverStationState(this));
     }
 }

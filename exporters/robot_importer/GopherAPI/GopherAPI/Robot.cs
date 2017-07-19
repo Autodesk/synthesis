@@ -10,12 +10,12 @@ namespace GopherAPI
 {
     public class Robot
     {
-        //TODO: Figure out how to implement the embedded image here
         public Bitmap Thumbnail;
 
         private List<Mesh> meshes = new List<Mesh>();
-        private List<Properties.Attribute> attributes = new List<Properties.Attribute>();
+        private List<STLAttribute> attributes = new List<STLAttribute>();
         private List<Joint> joints = new List<Joint>();
+        private List<IJointAttribute> jointAttribs = new List<IJointAttribute>();
         private Other.Vec3 spawn;
 
         /// <summary>
@@ -25,11 +25,13 @@ namespace GopherAPI
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetAttribute method.
         /// </summary>
-        public List<Properties.Attribute> Attributes { get => attributes; }
+        public List<STLAttribute> Attributes { get => attributes; }
         /// <summary>
         /// IMPORTANT: JointID might not be the same as the index in the list. Use the GetJoint method.
         /// </summary>
         public List<Joint> Joints { get => joints; }
+
+        public List<IJointAttribute> JointAttributes { get => jointAttribs; }
 
         /// <summary>
         /// Searches meshes for a mesh with the matching ID
@@ -51,14 +53,14 @@ namespace GopherAPI
         /// </summary>
         /// <param name="AttributeID"></param>
         /// <returns></returns>
-        public Properties.Attribute GetAttribute(UInt32 AttributeID)
+        public STLAttribute GetAttribute(UInt32 AttributeID)
         {
             foreach (var attrib in attributes)
             {
                 if (attrib.AttributeID == AttributeID)
                     return attrib;
             }
-            throw new Exception("ERROR: Attribute not found");
+            throw new Exception("ERROR: STLAttribute not found");
         }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace GopherAPI
                 if (joint.JointID == JointID)
                     return joint;
             }
-            throw new Exception("ERROR: Attribute not found");
+            throw new Exception("ERROR: STLAttribute not found");
         }
 
         public Other.Vec3 Spawn { get => spawn; set => spawn = value; }

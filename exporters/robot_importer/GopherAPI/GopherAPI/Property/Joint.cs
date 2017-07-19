@@ -45,7 +45,7 @@ namespace GopherAPI.Properties
 
         public readonly IJointAttribute JointAttribute;
         
-        public Joint(byte[] GenericData, IJointAttribute jointAttribute)
+        public Joint(byte[] GenericData)
         {
             using (var Reader = new BinaryReader(new MemoryStream(GenericData)))
             {
@@ -61,7 +61,6 @@ namespace GopherAPI.Properties
                 ProFreedomFactor = Reader.ReadSingle();
                 RetroFreedomFactor = Reader.ReadSingle();
             }
-            JointAttribute = jointAttribute;
         }
     }
 }

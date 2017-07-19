@@ -36,8 +36,12 @@ namespace Assets.Scripts.FEA
         private const int CollisionSliderHeight = 256;
         private const float CollisionSliderTopValue = 500f;
 
-        private const int InfoBoxWidth = 96;
+        private const int InfoBoxWidth = 112;
         private const int InfoBoxHeight = 16;
+
+        private const int ReturnWidth = 128;
+        private const int ReturnHeight = 64;
+        private const int ReturnMargin = 16;
 
         private readonly Color HighlightColor = new Color(1.0f, 0.0f, 0.0f);
 
@@ -68,6 +72,7 @@ namespace Assets.Scripts.FEA
         private bool active;
 
         private Camera camera;
+        private DynamicCamera dynamicCamera;
         private List<Tracker> trackers;
         private List<List<ContactDescriptor>> contactPoints;
 
@@ -81,6 +86,7 @@ namespace Assets.Scripts.FEA
         private GUIStyle playStyle;
         private GUIStyle collisionStyle;
         private GUIStyle consolidateStyle;
+        private GUIStyle returnStyle;
 
         private BRigidBody _selectedBody;
 
@@ -154,7 +160,7 @@ namespace Assets.Scripts.FEA
             active = false;
             contactThreshold = Mathf.Sqrt(30f);
 
-            camera = UnityEngine.Object.FindObjectOfType<Camera>();
+            DynamicCamera.MovingEnabled = true;
 
             Texture2D thumbTexture = (Texture2D)Resources.Load("Images/thumb");
 
@@ -210,6 +216,7 @@ namespace Assets.Scripts.FEA
             playStyle = CreateButtonStyle("play");
             collisionStyle = CreateButtonStyle("collision");
             consolidateStyle = CreateButtonStyle("consolidate");
+            returnStyle = CreateButtonStyle("return");
         }
 
         /// <summary>
@@ -360,7 +367,7 @@ namespace Assets.Scripts.FEA
                                 }
                             }
 
-                            Vector3 collisionPoint = camera.WorldToScreenPoint(currentContact.Position.ToUnity());
+                            Vector3 collisionPoint = camera != null ? camera.WorldToScreenPoint(currentContact.Position.ToUnity()) : Vector3.zero;
 
                             if (collisionPoint.z > 0.0f)
                             {
@@ -385,8 +392,9 @@ namespace Assets.Scripts.FEA
                                 {
                                     if (editMode == EditMode.Consolidate)
                                     {
-                                        l[j] = ConsolidateContacts(l, currentContact);
+                                        ConsolidateContacts(l, currentContact);
                                         editMode = EditMode.None;
+                                        break;
                                     }
                                     else
                                     {
@@ -396,7 +404,7 @@ namespace Assets.Scripts.FEA
 
                                 if (circleRect.Contains(Event.current.mousePosition) && shouldActivate)
                                     GUI.Label(new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y - InfoBoxHeight,
-                                        InfoBoxWidth, InfoBoxHeight), "Impulse: " + currentContact.AppliedImpulse.ToString("F2"), windowStyle);
+                                        InfoBoxWidth, InfoBoxHeight), "Impulse: " + currentContact.AppliedImpulse.ToString("F2") + " N", windowStyle);
 
                                 GUI.color = Color.white;
 
@@ -411,6 +419,9 @@ namespace Assets.Scripts.FEA
 
             if (!circleHovered)
                 SelectedBody = null;
+
+            if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))
+                StateMachine.Instance.PopState();
         }
 
         /// <summary>
@@ -418,6 +429,15 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void Update()
         {
+            if (dynamicCamera == null)
+            {
+                dynamicCamera = UnityEngine.Object.FindObjectOfType<DynamicCamera>();
+                camera = dynamicCamera.GetComponent<Camera>();
+            }
+
+            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+                dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
+
             if (firstFrame)
             {
                 firstFrame = false;
@@ -527,23 +547,40 @@ namespace Assets.Scripts.FEA
         /// <param name="contacts"></param>
         /// <param name="start"></param>
         /// <returns></returns>
-        private ContactDescriptor ConsolidateContacts(List<ContactDescriptor> contacts, ContactDescriptor start)
+        private void ConsolidateContacts(List<ContactDescriptor> contacts, ContactDescriptor start)
         {
+            contacts.Remove(start);
+
             List<ContactDescriptor> removedContacts = new List<ContactDescriptor>();
+            
             BulletSharp.Math.Vector3 lastPoint = start.Position;
 
-            int startIndex = contactPoints.IndexOf(contacts) - 1;
+            int startIndex = contactPoints.IndexOf(contacts);
             int lowerBound = startIndex;
 
             for (; lowerBound >= 0; lowerBound--)
             {
-                ContactDescriptor? c = UpdateContact(lowerBound, lastPoint, ref start);
+                List<ContactDescriptor> lc = GetValidContacts(lowerBound, lastPoint, ref start);
 
-                if (!c.HasValue)
+                int numContacts = lc.Count;
+
+                if (numContacts == 0)
+                {
+                    if (lowerBound == startIndex)
+                        continue;
+
                     break;
+                }
 
-                lastPoint = c.Value.Position;
-                removedContacts.Add(c.Value);
+                lastPoint = BulletSharp.Math.Vector3.Zero;
+
+                foreach (ContactDescriptor c in lc)
+                {
+                    lastPoint += c.Position;
+                    removedContacts.Add(c);
+                }
+
+                lastPoint /= numContacts;
             }
 
             for (int i = startIndex; i >= lowerBound; i--)
@@ -556,37 +593,34 @@ namespace Assets.Scripts.FEA
                 currentContacts.RemoveAll((x) => removedContacts.Contains(x));
             }
 
-            return start;
+            contacts.Add(start);
         }
 
         /// <summary>
-        /// Finds the nearest contact to the one given if it's within the consolidation epsilon.
+        /// Finds all nearby contacts within the consolidation epsilon.
         /// </summary>
         /// <param name="index"></param>
         /// <param name="point"></param>
         /// <param name="contact"></param>
         /// <returns></returns>
-        private ContactDescriptor? UpdateContact(int index, BulletSharp.Math.Vector3 point, ref ContactDescriptor contact)
+        private List<ContactDescriptor> GetValidContacts(int index, BulletSharp.Math.Vector3 point, ref ContactDescriptor contact)
         {
-            ContactDescriptor? nextContact = null;
-
             List<ContactDescriptor> currentContacts = contactPoints[index];
+            List<ContactDescriptor> validContacts = new List<ContactDescriptor>();
 
             if (currentContacts == null)
-                return nextContact;
+                return validContacts;
 
             foreach (ContactDescriptor c in currentContacts)
             {
-                if (c.RobotBody != contact.RobotBody || c.OtherBody != contact.OtherBody || (c.Position - point).Length > ConsolidationEpsilon)
+                if (c.RobotBody != contact.RobotBody || c.Equals(contact) || (c.Position - point).Length > ConsolidationEpsilon)
                     continue;
 
                 contact.AppliedImpulse += c.AppliedImpulse;
-                nextContact = c;
-
-                break;
+                validContacts.Add(c);
             }
 
-            return nextContact;
+            return validContacts;
         }
 
         /// <summary>
@@ -602,8 +636,6 @@ namespace Assets.Scripts.FEA
 
             return new GUIStyle
             {
-                fixedWidth = ButtonSize,
-                fixedHeight = ButtonSize,
                 normal = new GUIStyleState { background = normalTexture },
                 hover = new GUIStyleState { background = hoverTexture },
                 active = new GUIStyleState { background = pressedTexture }
