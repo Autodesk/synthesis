@@ -25,6 +25,8 @@ public class SimUI : MonoBehaviour
     GameObject setSpawnWindow;
     GameObject defineGamepieceWindow;
 
+    GameObject freeroamCameraWindow;
+
     GameObject releaseVelocityPanel;
 
     GameObject xOffsetEntry;
@@ -75,7 +77,7 @@ public class SimUI : MonoBehaviour
 
     bool isEditing = false;
 
-
+    private bool freeroamWindoOn = false;
 
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
@@ -150,6 +152,8 @@ public class SimUI : MonoBehaviour
         intakeControlText = AuxFunctions.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
         releaseControlText = AuxFunctions.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
         spawnControlText = AuxFunctions.FindObject(canvas, "SpawnInputButton").GetComponentInChildren<Text>();
+
+        freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
     }
 
     /// <summary>
@@ -275,6 +279,11 @@ public class SimUI : MonoBehaviour
                 defineReleaseWindow.SetActive(false);
                 configWindow.SetActive(true);
             }
+        }
+
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState))&&!freeroamWindoOn){
+            freeroamCameraWindow.SetActive(true);
+            freeroamWindoOn = true;
         }
     }
 
@@ -469,6 +478,11 @@ public class SimUI : MonoBehaviour
     public void CancelDefineIntake()
     {
         dpm.definingIntake = false;
+    }
+
+    public void CloseFreeroamWindow()
+    {
+        freeroamCameraWindow.SetActive(false);
     }
 
     public void HighlightIntake()
