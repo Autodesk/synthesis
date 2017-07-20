@@ -34,7 +34,7 @@ public class MainState : SimState
     private Vector3 robotCameraPosition2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraRotation2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraPosition3 = new Vector3(0f, 0.5f, 0f);
-    private Vector3 robotCameraRotation3 = new Vector3(0f, 90f, 0f);
+    private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
     //Testing camera location, can be deleted later
 
     //=================================IN PROGRESS=============================
@@ -351,7 +351,7 @@ public class MainState : SimState
         {
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
-                //Switch to robot camera after Freeroam (make sure robot camera exists first)
+                //Switch to robot camera after overview (make sure robot camera exists first)
                 if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
                     && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
                 {
