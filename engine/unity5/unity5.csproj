@@ -235,10 +235,7 @@
     <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-<<<<<<< HEAD
     <Compile Include="Assets\Scripts\LocalizationHelperr.cs" />
-=======
->>>>>>> master
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MouseListener.cs" />

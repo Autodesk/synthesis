@@ -19,8 +19,27 @@ public class SimulatorUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //dynamicCamera.cameraState
+        //if (Input.GetKey(Controls.ControlKey[Controls.Control.CameraToggle])) {
+      //  if (dynamicCamera.cameraState ) { 
 
+
+
+      //  }
     }
+
+    public void showControlPanel(bool show)
+    {
+        if (show)
+        {
+            AuxFunctions.FindObject("FullscreenPanel").GetComponent<RectTransform>().localScale = new Vector3(1, 1);
+        }
+        else
+        {
+            AuxFunctions.FindObject("FullscreenPanel").GetComponent<RectTransform>().localScale = new Vector3(0, 0);
+        }
+    }
+
 
     //In game UI loads robot using UI icons
     public void robotClick()
@@ -43,35 +62,18 @@ public class SimulatorUI : MonoBehaviour
     }
 
     //In game UI switches view using UI icons
-    public void switchViewClick()
-    {
-        switch (x)
-        {
-            case 0:
-                dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
-                x++;
-                break;
-            case 1:
-                dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
-                dynamicCamera.EnableMoving();
-                x++;
-                break;
-            case 2:
-                dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
-                x = 0;
-                break;
-        }
-    }
+  
     public void switchViewClickMoreBetterer(int joe)
     {
         switch (joe)
         {
             case 1:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
+                Debug.Log("go ahead and type out what you were going to type out");
                 break;
             case 2:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
-                dynamicCamera.EnableMoving();
+                DynamicCamera.MovingEnabled = true;
                 break;
             case 3:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));

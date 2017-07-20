@@ -12,15 +12,11 @@ using Assets.Scripts.FSM;
 
 public class MainState : SimState
 {
-    private SimulatorUI simUI;
-
     const float RESET_VELOCITY = 0.05f;
 
     private UnityPacket unityPacket;
 
     private DynamicCamera dynamicCamera;
-<<<<<<< HEAD
-=======
     private GameObject dynamicCameraObject;
 
     private RobotCamera robotCamera;
@@ -39,7 +35,6 @@ public class MainState : SimState
     //private UltraSensor ultraSensor;
     //private GameObject ultraSensorObject;
     //=========================================================================
->>>>>>> master
 
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
@@ -103,8 +98,6 @@ public class MainState : SimState
             menuButton.font = russoOne;
             menuButton.normal.background = buttonTexture;
             menuButton.hover.background = buttonSelected;
-            
-            
             menuButton.active.background = buttonSelected;
             menuButton.onNormal.background = buttonSelected;
             menuButton.onHover.background = buttonSelected;
@@ -136,49 +129,46 @@ public class MainState : SimState
 
             //Added a robot view to toggle among cameras on robot
             gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Robot view"), (object o) =>
+            {
+                HideGUI();
+
+                switch ((int)o)
                 {
-                    HideGUI();
+                    case 0:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
+                        break;
+                    case 1:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
+                        DynamicCamera.MovingEnabled = true;
+                        break;
+                    case 2:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
+                        break;
+                    case 3:
+                        if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+                        {
+                            ToRobotCamera();
+                        }
+                        break;
 
-                    switch ((int)o)
-                    {
-                        case 0:
-<<<<<<< HEAD
-=======
-                            ToDynamicCamera();
->>>>>>> master
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
-                            break;
-                        case 1:
-                            ToDynamicCamera();
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
-                            dynamicCamera.EnableMoving();
-                            break;
-                        case 2:
-                            ToDynamicCamera();
-                            dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
-                            break;
-                        case 3:
-                            if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
-                            {
-                                ToRobotCamera();
-                            }
-                            break;
-
-                    }
-                });
+                }
+            });
 
 
             gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
-                {
-                    if ((int)o == 0)
-                        SceneManager.LoadScene("MainMenu");
-                });
+            {
+                if ((int)o == 0)
+                    SceneManager.LoadScene("MainMenu");
+            });
 
             gui.AddWindow("Quit to Desktop", new DialogWindow("Quit to Desktop?", "Yes", "No"), (object o) =>
-                {
-                    if ((int)o == 0)
-                        Application.Quit();
-                });
+            {
+                if ((int)o == 0)
+                    Application.Quit();
+            });
         }
 
         if (Input.GetMouseButtonUp(0) && !gui.ClickedInsideWindow())
@@ -188,10 +178,10 @@ public class MainState : SimState
         }
 
         GUI.Window(1, new Rect(0, 0, gui.GetSidebarWidth(), 25), (int windowID) =>
-            {
-                if (GUI.Button(new Rect(0, 0, gui.GetSidebarWidth(), 25), "Menu", menuButton))
-                    gui.EscPressed();
-            },
+        {
+            if (GUI.Button(new Rect(0, 0, gui.GetSidebarWidth(), 25), "Menu", menuButton))
+                gui.EscPressed();
+        },
             "",
             menuWindow
         );
@@ -267,18 +257,18 @@ public class MainState : SimState
     void HideGUI()
     {
         gui.guiVisible = false;
-        dynamicCamera.EnableMoving();
+        DynamicCamera.MovingEnabled = true;
     }
 
     void ShowGUI()
     {
-        dynamicCamera.DisableMoving();
+        DynamicCamera.MovingEnabled = false;
     }
 
-    public override void Start() 
+    public override void Start()
     {
         FixedQueue<int> queue = new FixedQueue<int>(100);
-        
+
         for (int i = 0; i < 150; i++)
             queue.Add(i);
 
@@ -291,12 +281,8 @@ public class MainState : SimState
         Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
         Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
-<<<<<<< HEAD
-        dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
-=======
         dynamicCameraObject = GameObject.Find("Main Camera");
         dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
->>>>>>> master
 
         extraElements = new List<GameObject>();
 
@@ -320,9 +306,6 @@ public class MainState : SimState
     {
         if (Input.GetKeyDown(KeyCode.Escape))
             gui.EscPressed();
-<<<<<<< HEAD
-    }
-=======
         //Debug.Log(ultraSensor.ReturnOutput());
 
 
@@ -359,7 +342,6 @@ public class MainState : SimState
         }
     }
 
->>>>>>> master
 
     public override void FixedUpdate()
     {
@@ -611,16 +593,6 @@ public class MainState : SimState
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
     }
 
-<<<<<<< HEAD
-    #region button functions
-
-    public void loadFile(BXDAMesh mesh)
-    {
-    
-    }
-
-#endregion
-=======
 
     //Helper methods to avoid conflicts between main camera and robot cameras
     void ToDynamicCamera()
@@ -646,5 +618,4 @@ public class MainState : SimState
             UserMessageManager.Dispatch("No camera on robot", 2);
         }
     }
->>>>>>> master
 }
