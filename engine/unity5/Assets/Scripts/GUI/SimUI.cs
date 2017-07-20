@@ -411,11 +411,19 @@ public class SimUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Toggles the display of gamepiece release trajectories.
+    /// Toggles the display of primary gamepiece release trajectory.
     /// </summary>
-    public void DisplayTrajectories()
+    public void DisplayTrajectoryPrimary()
     {
-        dpm.displayTrajectories = !dpm.displayTrajectories;
+        dpm.displayTrajectories[0] = !dpm.displayTrajectories[0];
+    }
+
+    /// <summary>
+    /// Toggles the display of primary gamepiece release trajectory.
+    /// </summary>
+    public void DisplayTrajectorySecondary()
+    {
+        dpm.displayTrajectories[1] = !dpm.displayTrajectories[1];
     }
 
     /// <summary>
@@ -429,6 +437,8 @@ public class SimUI : MonoBehaviour
             configuringIndex = 0;
             configHeaderText.text = "Configuration Menu - Primary Gamepiece";
             configWindow.SetActive(true);
+            dpm.displayTrajectories[0] = true;
+            dpm.displayTrajectories[1] = false;
         }
         else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!",5);
     }
@@ -444,6 +454,8 @@ public class SimUI : MonoBehaviour
             configuringIndex = 1;
             configHeaderText.text = "Configuration Menu - Secondary Gamepiece";
             configWindow.SetActive(true);
+            dpm.displayTrajectories[0] = false;
+            dpm.displayTrajectories[1] = true;
         }
         else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
     }
@@ -470,6 +482,7 @@ public class SimUI : MonoBehaviour
     {
         configWindow.SetActive(false);
         configuring = false;
+        dpm.displayTrajectories[configuringIndex] = false;
         dpm.Save();
     }
 

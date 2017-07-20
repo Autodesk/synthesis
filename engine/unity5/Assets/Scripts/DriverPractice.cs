@@ -38,7 +38,7 @@ namespace BulletUnity {
         public List<string> gamepieceNames; //list of the identifiers of gamepieces
         public List<GameObject> spawnedGamepieces;
 
-        public bool displayTrajectories = false; //projects gamepiece trajectories if true
+        public List<bool> displayTrajectories; //projects gamepiece trajectories if true
         private List<LineRenderer> drawnTrajectory;
 
         public bool modeEnabled = false;
@@ -144,6 +144,10 @@ namespace BulletUnity {
             drawnTrajectory[1].startColor = Color.red;
             drawnTrajectory[1].endColor = Color.magenta;
 
+            displayTrajectories = new List<bool>();
+            displayTrajectories.Add(false);
+            displayTrajectories.Add(false);
+
             Load();
         }
 	
@@ -200,24 +204,20 @@ namespace BulletUnity {
 
                 if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
 
-                if (displayTrajectories)
+                for (int i = 0; i < 2; i++)
                 {
-                    for (int i = 0; i < 2; i++)
+                    if (displayTrajectories[i])
                     {
-
                         releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
                         if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
                         DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < 2; i++)
+                    else
                     {
-
                         if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
                     }
                 }
+
 
                 if (highlightTimer > 0) highlightTimer--;
                 else if (highlightTimer == 0) RevertHighlight();
