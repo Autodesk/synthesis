@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -15,6 +16,24 @@ namespace GopherAPI.Other
         {
             get { return values[y + (4 * x)]; }
             set { values[y + (4 * x)] = (float)value; }
+        }
+
+        public byte[] Binary
+        {
+            get
+            {
+                var stream = new MemoryStream();
+                using (var writer = new BinaryWriter(stream))
+                {
+                    foreach (var f in values)
+                    {
+                        writer.Write(f);
+                    }
+                }
+                var ret = stream.ToArray();
+                stream.Dispose();
+                return ret;
+            }
         }
 
         public TransformationMatrix()
