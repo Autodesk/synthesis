@@ -386,9 +386,6 @@ public class MainState : SimState
     public override void FixedUpdate()
     {
 
-        if (Input.GetKey(KeyCode.M))
-            SceneManager.LoadScene("MainMenu");
-
         if (rootNode != null)
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
