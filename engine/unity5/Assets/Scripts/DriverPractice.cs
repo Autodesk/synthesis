@@ -198,7 +198,7 @@ namespace BulletUnity {
 
                 if (definingIntake || definingRelease) SelectingNode();
 
-                if (Input.GetKey(KeyCode.T)) SpawnGamepiece(0);
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
 
                 if (displayTrajectories)
                 {

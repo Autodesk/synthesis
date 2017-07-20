@@ -280,6 +280,7 @@ public class SimUI : MonoBehaviour
                 setSpawnWindow.SetActive(false);
                 defineIntakeWindow.SetActive(false);
                 defineReleaseWindow.SetActive(false);
+                dpmWindow.SetActive(true);
                 configWindow.SetActive(true);
             }
         }
