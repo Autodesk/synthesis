@@ -51,6 +51,8 @@ public class MainState : SimState
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private Vector3 nodeToRobotOffset;
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+    private const float HOLD_TIME = 0.8f;
+    private float keyDownTime = 0f;
 
     private List<GameObject> extraElements;
 
@@ -82,6 +84,8 @@ public class MainState : SimState
     private DriverPractice driverPractice;
 
     public List<Tracker> Trackers { get; private set; }
+
+    public static bool ControlsDisabled = false;
 
     public override void Awake()
     {
@@ -195,6 +199,7 @@ public class MainState : SimState
         );
 
         gui.Render();
+        UserMessageManager.Render();
     }
 
     void CreateOrientWindow()
@@ -325,7 +330,23 @@ public class MainState : SimState
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
-
+        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
+        {
+            keyDownTime = Time.time;
+        }
+        if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
+        {
+            if (Time.time - keyDownTime > HOLD_TIME)
+            {
+                isResetting = true;
+                BeginReset();
+            }
+            else
+            {
+                BeginReset();
+                EndReset();
+            }
+        }
 
         // Will switch the camera state with the camera toggle button
         if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
@@ -333,7 +354,7 @@ public class MainState : SimState
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
                 //Switch to robot camera after Freeroam (make sure robot camera exists first)
-                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState))
+                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
                     && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
                 {
                     ToRobotCamera();
@@ -372,15 +393,9 @@ public class MainState : SimState
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
 
-            DriveJoints.UpdateAllMotors(rootNode, packet.dio);
+            if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
-
-        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
-        {
-            BeginReset();
-            EndReset();
-        }
-
+        
         if (isResetting)
         {
             Resetting();
