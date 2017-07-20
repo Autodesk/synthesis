@@ -36,6 +36,8 @@ public class SimUI : MonoBehaviour
     GameObject releaseVerticalEntry;
     GameObject releaseHorizontalEntry;
 
+    GameObject lockPanel;
+
     
 
 
@@ -151,6 +153,8 @@ public class SimUI : MonoBehaviour
         intakeControlText = AuxFunctions.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
         releaseControlText = AuxFunctions.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
         spawnControlText = AuxFunctions.FindObject(canvas, "SpawnInputButton").GetComponentInChildren<Text>();
+
+        lockPanel = AuxFunctions.FindObject(canvas, "DPMLockPanel");
 
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
     }
@@ -276,6 +280,7 @@ public class SimUI : MonoBehaviour
                 setSpawnWindow.SetActive(false);
                 defineIntakeWindow.SetActive(false);
                 defineReleaseWindow.SetActive(false);
+                dpmWindow.SetActive(true);
                 configWindow.SetActive(true);
             }
         }
@@ -381,15 +386,17 @@ public class SimUI : MonoBehaviour
         if (!dpm.modeEnabled)
         {
             dpm.modeEnabled = true;
-            enableDPMText.text = "Disable";
+            enableDPMText.text = "Disable Driver Practice Mode";
+            lockPanel.SetActive(false);
         }
         else
         {
             if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
             else
             {
-                enableDPMText.text = "Enable";
+                enableDPMText.text = "Enable Driver Practice Mode";
                 dpm.modeEnabled = false;
+                lockPanel.SetActive(true);
             }
             
         }
@@ -519,7 +526,7 @@ public class SimUI : MonoBehaviour
 
     public void CancelGamepieceSpawn()
     {
-        dpm.settingSpawn = 0;
+        dpm.FinishGamepieceSpawn();
     }
 
 

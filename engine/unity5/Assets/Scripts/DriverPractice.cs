@@ -198,7 +198,7 @@ namespace BulletUnity {
 
                 if (definingIntake || definingRelease) SelectingNode();
 
-                if (Input.GetKey(KeyCode.T)) SpawnGamepiece(0);
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
 
                 if (displayTrajectories)
                 {
@@ -474,7 +474,8 @@ namespace BulletUnity {
                     {
                         spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                         spawnIndicator.name = "SpawnIndicator";
-                        Destroy(spawnIndicator.GetComponent<BRigidBody>());
+                        spawnIndicator.GetComponent<BRigidBody>().mass = 0;
+                        spawnIndicator.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
                         if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
                         Renderer render = spawnIndicator.GetComponentInChildren<Renderer>();
                         render.material.shader = Shader.Find("Transparent/Diffuse");
@@ -499,12 +500,19 @@ namespace BulletUnity {
         private void UpdateGamepieceSpawn()
         {
             int index = settingSpawn - 1;
-            if (spawnIndicator != null) spawnIndicator.transform.position = gamepieceSpawn[index];
-            if (Input.GetKey(KeyCode.LeftArrow)) gamepieceSpawn[index] += UnityEngine.Vector3.forward*0.1f;
-            if (Input.GetKey(KeyCode.RightArrow)) gamepieceSpawn[index] += UnityEngine.Vector3.back * 0.1f;
-            if (Input.GetKey(KeyCode.UpArrow)) gamepieceSpawn[index] += UnityEngine.Vector3.right * 0.1f;
-            if (Input.GetKey(KeyCode.DownArrow)) gamepieceSpawn[index] += UnityEngine.Vector3.left * 0.1f;
-            if (Input.GetKeyDown(KeyCode.Return)) FinishGamepieceSpawn();
+            if (spawnIndicator != null)
+            {
+                if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
+                if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
+                if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
+                if (Input.GetKey(KeyCode.DownArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
+                    gamepieceSpawn[index] = spawnIndicator.transform.position;
+                    FinishGamepieceSpawn();
+                }
+            }
         }
 
         public void FinishGamepieceSpawn()
@@ -514,7 +522,6 @@ namespace BulletUnity {
             DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
             dynamicCamera.SwitchCameraState(lastCameraState);
             MainState.ControlsDisabled = false;
-            UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
         }
 
         #endregion
