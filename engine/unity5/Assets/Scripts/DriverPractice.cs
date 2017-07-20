@@ -441,7 +441,10 @@ namespace BulletUnity {
             {
                 try //In case the game piece somehow doens't exist in the scene
                 {
-                    spawnedGamepieces.Add(Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity));
+                    GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                    gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
+                    gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
+                    spawnedGamepieces.Add(gameobject);
                 }
                 catch
                 {
@@ -474,8 +477,7 @@ namespace BulletUnity {
                     {
                         spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                         spawnIndicator.name = "SpawnIndicator";
-                        spawnIndicator.GetComponent<BRigidBody>().mass = 0;
-                        spawnIndicator.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
+                        Destroy(spawnIndicator.GetComponent<BRigidBody>());
                         if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
                         Renderer render = spawnIndicator.GetComponentInChildren<Renderer>();
                         render.material.shader = Shader.Find("Transparent/Diffuse");
@@ -488,7 +490,7 @@ namespace BulletUnity {
 
                     DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
-                    dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
+                    dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
 
                     MainState.ControlsDisabled = true;
                 }
@@ -502,6 +504,7 @@ namespace BulletUnity {
             int index = settingSpawn - 1;
             if (spawnIndicator != null)
             {
+                ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
                 if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
                 if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
                 if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
@@ -847,6 +850,9 @@ namespace BulletUnity {
                     }
                 }
                 reader.Close();
+
+                SetInteractor(intakeNode[0], 0);
+                SetInteractor(intakeNode[1], 1);
             }
         }
 
