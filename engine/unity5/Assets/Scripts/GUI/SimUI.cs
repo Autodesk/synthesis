@@ -26,6 +26,7 @@ public class SimUI : MonoBehaviour
     GameObject defineGamepieceWindow;
 
     GameObject freeroamCameraWindow;
+    GameObject spawnpointWindow;
 
     GameObject releaseVelocityPanel;
 
@@ -157,6 +158,7 @@ public class SimUI : MonoBehaviour
         lockPanel = AuxFunctions.FindObject(canvas, "DPMLockPanel");
 
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
+        spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
     }
 
     /// <summary>
@@ -295,6 +297,15 @@ public class SimUI : MonoBehaviour
         else if(!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
         {
             freeroamCameraWindow.SetActive(false);
+        }
+
+        if (main.IsResetting)
+        {
+            spawnpointWindow.SetActive(true);
+        }
+        else
+        {
+            spawnpointWindow.SetActive(false);
         }
     }
 
