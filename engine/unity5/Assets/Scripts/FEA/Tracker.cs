@@ -86,5 +86,16 @@ namespace Assets.Scripts.FEA
             else
                 Destroy(this);
         }
+
+        /// <summary>
+        /// Called when the Tracker is destroyed.
+        /// </summary>
+        void OnDestroy()
+        {
+            MainState mainState = StateMachine.Instance.CurrentState as MainState;
+
+            if (mainState != null)
+                mainState.Trackers.Remove(this);
+        }
     }
 }
