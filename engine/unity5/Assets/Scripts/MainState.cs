@@ -34,7 +34,7 @@ public class MainState : SimState
     private Vector3 robotCameraPosition2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraRotation2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraPosition3 = new Vector3(0f, 0.5f, 0f);
-    private Vector3 robotCameraRotation3 = new Vector3(0f, 90f, 0f);
+    private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
     //Testing camera location, can be deleted later
 
     //=================================IN PROGRESS=============================
@@ -79,7 +79,7 @@ public class MainState : SimState
 
     //Flags to tell different types of reset
     private bool isResettingOrientation;
-    private bool isResetting;
+    public bool IsResetting { get; private set; }
 
     private DriverPractice driverPractice;
 
@@ -129,7 +129,7 @@ public class MainState : SimState
                         EndReset();
                         break;
                     case 1:
-                        isResetting = true;
+                        IsResetting = true;
                         BeginReset();
                         break;
 
@@ -316,8 +316,6 @@ public class MainState : SimState
         lightGreyWindowTexture = Resources.Load("Images/lightGreyBackground") as Texture2D;
         transparentWindowTexture = Resources.Load("Images/transparentBackground") as Texture2D;
 
-        //Start simulator by prompting user to customize spawn point
-
         contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         isResettingOrientation = false;
 
@@ -330,15 +328,15 @@ public class MainState : SimState
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
-        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
+        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
         {
             keyDownTime = Time.time;
         }
-        if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
+        if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
         {
             if (Time.time - keyDownTime > HOLD_TIME)
             {
-                isResetting = true;
+                IsResetting = true;
                 BeginReset();
             }
             else
@@ -353,7 +351,7 @@ public class MainState : SimState
         {
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
-                //Switch to robot camera after Freeroam (make sure robot camera exists first)
+                //Switch to robot camera after overview (make sure robot camera exists first)
                 if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
                     && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
                 {
@@ -393,7 +391,7 @@ public class MainState : SimState
             if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
         
-        if (isResetting)
+        if (IsResetting)
         {
             Resetting();
         }
@@ -405,7 +403,7 @@ public class MainState : SimState
             rigidBody.GetCollisionObject().Activate();
 
 
-        if (!isResetting && Input.GetKey(KeyCode.Space))
+        if (!IsResetting && Input.GetKey(KeyCode.Space))
         {
             contactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
@@ -616,7 +614,7 @@ public class MainState : SimState
             UnityEngine.Object.Destroy(g);
 
 
-        if (isResetting)
+        if (IsResetting)
         {
             Debug.Log("is resetting!");
         }
@@ -664,7 +662,7 @@ public class MainState : SimState
     /// </summary>
     void EndReset()
     {
-        isResetting = false;
+        IsResetting = false;
         isResettingOrientation = false;
 
         foreach (RigidNode n in rootNode.ListAllNodes())
