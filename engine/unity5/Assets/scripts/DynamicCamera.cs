@@ -196,6 +196,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
+            mono.transform.position = new Vector3(0f, 1f, 0f);
             positionVector = new Vector3(0f, 1f, 0f);
             lagPosVector = positionVector;
             rotationVector = Vector3.zero;
@@ -203,7 +204,7 @@ public class DynamicCamera : MonoBehaviour
             zoomValue = 60f;
             lagZoom = zoomValue;
             rotationSpeed = 3f;
-            transformSpeed = 0.25f;
+            transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
         }
 
@@ -211,29 +212,23 @@ public class DynamicCamera : MonoBehaviour
         {
             if (MovingEnabled)
             {
-                if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
-                {
-                    positionVector += (Input.GetAxis("Mouse Y") * mono.transform.up) * transformSpeed;
-                    positionVector += (Input.GetAxis("Mouse X") * mono.transform.right) * transformSpeed;
-                }
-                else if (Input.GetMouseButton(0))
-                {
-                    rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
-                    positionVector += (Input.GetAxis("Mouse Y") * mono.transform.forward) * transformSpeed;
-                }
-                else if (Input.GetMouseButton(1))
+                if (Input.GetMouseButton(1))
                 {
                     rotationVector.x -= Input.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
 
+                positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
+
                 zoomValue = Mathf.Max(Mathf.Min(zoomValue - Input.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
-                lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
+                //lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
                 lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);
                 lagZoom = CalculateLagScalar(lagZoom, zoomValue, lagResponsiveness);
 
-                mono.transform.position = lagPosVector;
+                mono.transform.position += positionVector;
+                positionVector = Vector3.zero;
                 mono.transform.eulerAngles = lagRotVector;
                 mono.GetComponent<Camera>().fieldOfView = lagZoom;
             }
