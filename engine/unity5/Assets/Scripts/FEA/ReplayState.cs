@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,6 +43,10 @@ namespace Assets.Scripts.FEA
         private const int ReturnWidth = 128;
         private const int ReturnHeight = 64;
         private const int ReturnMargin = 16;
+
+        private const int SaveWidth = 64;
+        private const int SaveHeight = 64;
+        private const int SaveMargin = 16;
 
         private readonly Color HighlightColor = new Color(1.0f, 0.0f, 0.0f);
 
@@ -87,6 +92,7 @@ namespace Assets.Scripts.FEA
         private GUIStyle collisionStyle;
         private GUIStyle consolidateStyle;
         private GUIStyle returnStyle;
+        private GUIStyle saveStyle;
 
         private BRigidBody _selectedBody;
 
@@ -217,6 +223,7 @@ namespace Assets.Scripts.FEA
             collisionStyle = CreateButtonStyle("collision");
             consolidateStyle = CreateButtonStyle("consolidate");
             returnStyle = CreateButtonStyle("return");
+            saveStyle = CreateButtonStyle("save");
         }
 
         /// <summary>
@@ -419,6 +426,9 @@ namespace Assets.Scripts.FEA
 
             if (!circleHovered)
                 SelectedBody = null;
+
+            if (GUI.Button(new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight), string.Empty, saveStyle))
+                ReplayExporter.Write("test", PlayerPrefs.GetString("simSelectedField"), PlayerPrefs.GetString("simSelectedRobot"), trackers, contactPoints);
 
             if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))
                 StateMachine.Instance.PopState();

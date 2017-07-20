@@ -548,18 +548,10 @@ public class MainState : SimState
 
                     ContactDescriptor consolidatedContact;
 
-                    if (obA.gameObject.name.StartsWith("node"))
-                        consolidatedContact = new ContactDescriptor
-                        {
-                            RobotBody = obA,
-                            OtherBody = obB,
-                        };
-                    else
-                        consolidatedContact = new ContactDescriptor
-                        {
-                            RobotBody = obB,
-                            OtherBody = obA
-                        };
+                    consolidatedContact = new ContactDescriptor
+                    {
+                        RobotBody = obA.name.StartsWith("node") ? obA : obB
+                    };
 
                     foreach (ContactDescriptor cd in manifoldContacts)
                     {
