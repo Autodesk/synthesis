@@ -76,9 +76,8 @@ public class SimUI : MonoBehaviour
     private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
 
     bool isEditing = false;
-
-    private bool freeroamWindoOn = false;
-
+    
+    private bool freeroamWindowClosed = false;
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
     /// </summary>
@@ -281,9 +280,16 @@ public class SimUI : MonoBehaviour
             }
         }
 
-        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState))&&!freeroamWindoOn){
-            freeroamCameraWindow.SetActive(true);
-            freeroamWindoOn = true;
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed){
+            if (!freeroamWindowClosed)
+            {
+                freeroamCameraWindow.SetActive(true);
+            }
+            
+        }
+        else if(!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        {
+            freeroamCameraWindow.SetActive(false);
         }
     }
 
@@ -483,6 +489,7 @@ public class SimUI : MonoBehaviour
     public void CloseFreeroamWindow()
     {
         freeroamCameraWindow.SetActive(false);
+        freeroamWindowClosed = true;
     }
 
     public void HighlightIntake()
