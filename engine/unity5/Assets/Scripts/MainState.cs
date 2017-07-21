@@ -140,7 +140,7 @@ public class MainState : SimState
             CreateOrientWindow();
 
             //Added a robot view to toggle among cameras on robot
-            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Robot view"), (object o) =>
+            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Overview", "Robot view"), (object o) =>
             {
                 HideGUI();
 
@@ -160,6 +160,10 @@ public class MainState : SimState
                         dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
                         break;
                     case 3:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
+                        break;
+                    case 4:
                         if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
                         {
                             ToRobotCamera();
@@ -268,7 +272,6 @@ public class MainState : SimState
                     robotStartOrientation = BulletSharp.Math.Matrix.Identity;
                     robotStartPosition = new Vector3(0f, 1f, 0f);
                     EndReset();
-                    //BeginReset();
 
                     break;
             }
@@ -328,12 +331,15 @@ public class MainState : SimState
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
+        //Reset hot key, start counting time whenever it's pressed down
         if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
         {
             keyDownTime = Time.time;
         }
+
         if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
         {
+            //Enter reset spawnpoint mode when long hold reset key
             if (Time.time - keyDownTime > HOLD_TIME)
             {
                 IsResetting = true;
@@ -390,7 +396,7 @@ public class MainState : SimState
 
             if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
-
+        
         if (IsResetting)
         {
             Resetting();
@@ -409,6 +415,7 @@ public class MainState : SimState
             StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
         }
 
+        //This line is essential for the reset to work accurately
         robotCameraObject.transform.position = robotObject.transform.GetChild(0).transform.position;
 
         UpdateTrackers();
@@ -493,8 +500,11 @@ public class MainState : SimState
         robotCamera = robotCameraObject.AddComponent<RobotCamera>();
 
         //The camera data should be read here as a foreach loop and included in robot file
+        //Attached to main frame and face the front
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
+        //Attached to the first node and face the front
         robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
+        //Attached to main frame and face the back
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
 
         robotCameraObject.SetActive(true);
@@ -589,7 +599,7 @@ public class MainState : SimState
     /// </summary>
     /// <param name="resetTransform"></param>
 
-    public void BeginReset(bool resetTransform = true)
+    public void BeginReset()
     {
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
@@ -599,10 +609,7 @@ public class MainState : SimState
             RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
             r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
-
-            if (!resetTransform)
-                continue;
-
+            
             BulletSharp.Math.Matrix newTransform = r.WorldTransform;
             newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;

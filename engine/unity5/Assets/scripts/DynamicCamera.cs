@@ -242,7 +242,7 @@ public class DynamicCamera : MonoBehaviour
     }
 
     //This state locates directly above the field and looks straight down on the field in order for robot positioning
-    //Not working with 2016&2017 field because they are not centered
+    //Not working well with 2016&2017 field because they are not centered
     public class OverviewState : CameraState
     {
         Vector3 positionVector;
