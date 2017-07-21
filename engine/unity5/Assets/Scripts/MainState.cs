@@ -356,7 +356,11 @@ public class MainState : SimState
             {
                 //Switch to robot camera after overview (make sure robot camera exists first)
                 if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
+<<<<<<< HEAD
                     && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null && GameObject.Find("RobotCameraPanel") == null)
+=======
+                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+>>>>>>> Isabelle
                 {
                     ToRobotCamera();
                 }
@@ -393,7 +397,11 @@ public class MainState : SimState
 
             if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> Isabelle
         if (IsResetting)
         {
             Resetting();
@@ -591,7 +599,11 @@ public class MainState : SimState
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
     /// <param name="resetTransform"></param>
+<<<<<<< HEAD
     void BeginReset(bool resetTransform = true)
+=======
+    public void BeginReset(bool resetTransform = true)
+>>>>>>> Isabelle
     {
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
@@ -663,7 +675,11 @@ public class MainState : SimState
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
+<<<<<<< HEAD
     void EndReset()
+=======
+    public void EndReset()
+>>>>>>> Isabelle
     {
         IsResetting = false;
         isResettingOrientation = false;
