@@ -127,7 +127,7 @@ namespace BulletUnity {
             gamepieceSpawn.Add(new UnityEngine.Vector3(0f,3f,0f));
             gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
 
-
+            UpdateVelocities();
 
             drawnTrajectory = new List<LineRenderer>();
             drawnTrajectory.Add(gameObject.AddComponent<LineRenderer>());
@@ -208,7 +208,6 @@ namespace BulletUnity {
                 {
                     if (displayTrajectories[i])
                     {
-                        releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
                         if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
                         DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
                     }
@@ -297,9 +296,9 @@ namespace BulletUnity {
             {
                 BRigidBody orb = objectsHeld[index][0].GetComponent<BRigidBody>();
                 orb.collisionFlags = BulletSharp.CollisionFlags.None;
+                StartCoroutine(UnIgnoreCollision(objectsHeld[index][0]));
                 orb.velocity += releaseNode[index].transform.rotation * releaseVelocityVector[index];
                 orb.angularFactor = UnityEngine.Vector3.one;
-                StartCoroutine(UnIgnoreCollision(objectsHeld[index][0]));
                 intakeInteractor[index].heldGamepieces.Remove(objectsHeld[index][0]);
                 objectsHeld[index].RemoveAt(0);
             }
@@ -715,14 +714,23 @@ namespace BulletUnity {
         public void ChangeReleaseSpeed(float amount, int index)
         {
             releaseVelocity[index][0] += amount;
+            UpdateVelocities();
         }
         public void ChangeReleaseHorizontalAngle(float amount, int index)
         {
             releaseVelocity[index][1] += amount;
+            UpdateVelocities();
         }
         public void ChangeReleaseVerticalAngle(float amount, int index)
         {
             releaseVelocity[index][2] += amount;
+            UpdateVelocities();
+        }
+
+        private void UpdateVelocities()
+        {
+            for (int i = 0; i < releaseVelocityVector.Count; i++)
+                releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
         }
         #endregion
 
@@ -853,6 +861,7 @@ namespace BulletUnity {
 
                 SetInteractor(intakeNode[0], 0);
                 SetInteractor(intakeNode[1], 1);
+                UpdateVelocities(); 
             }
         }
 
