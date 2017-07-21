@@ -48,7 +48,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\t_buckm\Documents\GitHub\synthesis\exporters\Aardvark-Libraries\CLEW;C:\Users\t_buckm\Documents\GitHub\synthesis\exporters\Aardvark-Libraries\VHACD;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

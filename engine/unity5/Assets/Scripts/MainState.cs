@@ -23,10 +23,10 @@ public class MainState : SimState
     private UnityPacket unityPacket;
 
     private DynamicCamera dynamicCamera;
-    private GameObject dynamicCameraObject;
+    public GameObject dynamicCameraObject;
 
     private RobotCamera robotCamera;
-    private GameObject robotCameraObject;
+    public GameObject robotCameraObject;
 
     //Testing camera location, can be deleted later
     private Vector3 robotCameraPosition = new Vector3(0f, 0.5f, 0f);
@@ -34,7 +34,7 @@ public class MainState : SimState
     private Vector3 robotCameraPosition2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraRotation2 = new Vector3(0f, 0f, 0f);
     private Vector3 robotCameraPosition3 = new Vector3(0f, 0.5f, 0f);
-    private Vector3 robotCameraRotation3 = new Vector3(0f, 90f, 0f);
+    private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
     //Testing camera location, can be deleted later
 
     //=================================IN PROGRESS=============================
@@ -51,6 +51,8 @@ public class MainState : SimState
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private Vector3 nodeToRobotOffset;
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+    private const float HOLD_TIME = 0.8f;
+    private float keyDownTime = 0f;
 
     private List<GameObject> extraElements;
 
@@ -77,13 +79,13 @@ public class MainState : SimState
 
     //Flags to tell different types of reset
     private bool isResettingOrientation;
-    private bool isResetting;
+    public bool IsResetting { get; private set; }
 
     private DriverPractice driverPractice;
 
-    private Canvas canvas;
-
     public List<Tracker> Trackers { get; private set; }
+
+    public static bool ControlsDisabled = false;
 
     public override void Awake()
     {
@@ -128,7 +130,7 @@ public class MainState : SimState
                         EndReset();
                         break;
                     case 1:
-                        isResetting = true;
+                        IsResetting = true;
                         BeginReset();
                         break;
 
@@ -198,6 +200,7 @@ public class MainState : SimState
         );
 
         gui.Render();
+        UserMessageManager.Render();
     }
 
     void CreateOrientWindow()
@@ -314,12 +317,8 @@ public class MainState : SimState
         lightGreyWindowTexture = Resources.Load("Images/lightGreyBackground") as Texture2D;
         transparentWindowTexture = Resources.Load("Images/transparentBackground") as Texture2D;
 
-        //Start simulator by prompting user to customize spawn point
-
         contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         isResettingOrientation = false;
-
-        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
 
         Controls.LoadControls();
     }
@@ -330,16 +329,32 @@ public class MainState : SimState
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
-
+        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
+        {
+            keyDownTime = Time.time;
+        }
+        if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
+        {
+            if (Time.time - keyDownTime > HOLD_TIME)
+            {
+                IsResetting = true;
+                BeginReset();
+            }
+            else
+            {
+                BeginReset();
+                EndReset();
+            }
+        }
 
         // Will switch the camera state with the camera toggle button
         if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
         {
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
-                //Switch to robot camera after Freeroam (make sure robot camera exists first)
-                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState))
-                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
+                //Switch to robot camera after overview (make sure robot camera exists first)
+                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
+                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null && GameObject.Find("RobotCameraPanel") == null)
                 {
                     ToRobotCamera();
                 }
@@ -370,23 +385,14 @@ public class MainState : SimState
     public override void FixedUpdate()
     {
 
-        if (Input.GetKey(KeyCode.M))
-            SceneManager.LoadScene("MainMenu");
-
         if (rootNode != null)
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
 
-            DriveJoints.UpdateAllMotors(rootNode, packet.dio);
+            if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
-
-        if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
-        {
-            BeginReset();
-            EndReset();
-        }
-
-        if (isResetting)
+        
+        if (IsResetting)
         {
             Resetting();
         }
@@ -398,7 +404,7 @@ public class MainState : SimState
             rigidBody.GetCollisionObject().Activate();
 
 
-        if (!isResetting && Input.GetKey(KeyCode.Space))
+        if (!IsResetting && Input.GetKey(KeyCode.Space))
         {
             contactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
@@ -415,15 +421,11 @@ public class MainState : SimState
         tracking = true;
 
         contactPoints.Clear(null);
-
-        canvas.enabled = true;
     }
 
     public override void Pause()
     {
         tracking = false;
-
-        canvas.enabled = false;
 
         ToDynamicCamera();
     }
@@ -496,7 +498,7 @@ public class MainState : SimState
         robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
 
-        robotCameraObject.SetActive(false);
+        robotCameraObject.SetActive(true);
 
 
         RotateRobot(robotStartOrientation);
@@ -539,7 +541,7 @@ public class MainState : SimState
                     for (int k = 0; k < numContacts; k++)
                     {
                         ManifoldPoint cp = contactManifold.GetContactPoint(k);
-                        
+
                         manifoldContacts.Add(new ContactDescriptor
                         {
                             AppliedImpulse = cp.AppliedImpulse,
@@ -605,7 +607,7 @@ public class MainState : SimState
             UnityEngine.Object.Destroy(g);
 
 
-        if (isResetting)
+        if (IsResetting)
         {
             Debug.Log("is resetting!");
         }
@@ -653,7 +655,7 @@ public class MainState : SimState
     /// </summary>
     void EndReset()
     {
-        isResetting = false;
+        IsResetting = false;
         isResettingOrientation = false;
 
         foreach (RigidNode n in rootNode.ListAllNodes())
@@ -718,7 +720,7 @@ public class MainState : SimState
     void ToDynamicCamera()
     {
         dynamicCameraObject.SetActive(true);
-        robotCameraObject.SetActive(false);
+        //robotCameraObject.SetActive(false);
         if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
         {
             robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(false);
@@ -728,7 +730,7 @@ public class MainState : SimState
     void ToRobotCamera()
     {
         dynamicCameraObject.SetActive(false);
-        robotCameraObject.SetActive(true);
+        //robotCameraObject.SetActive(true);
         if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
         {
             robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(true);

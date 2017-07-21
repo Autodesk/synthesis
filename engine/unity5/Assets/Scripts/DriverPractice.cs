@@ -4,10 +4,12 @@ using UnityEngine;
 using BulletSharp;
 using BulletSharp.Math;
 using System.Collections;
+using System.IO;
+using System.Text;
 using BulletUnity.Debugging;
 using System.Linq;
 
-namespace BulletUnity { 
+namespace BulletUnity {
     [AddComponentMenu("Physics Bullet/RigidBody")]
     /// <summary>
     /// This is a class that handles everything associated with the driver practice mode.
@@ -31,12 +33,12 @@ namespace BulletUnity {
 
         public List<List<GameObject>> objectsHeld; //list of gamepieces this robot is currently holding
         public List<GameObject> primaryHeld;
-        public List<GameObject> secondaryHeld; 
+        public List<GameObject> secondaryHeld;
 
         public List<string> gamepieceNames; //list of the identifiers of gamepieces
         public List<GameObject> spawnedGamepieces;
 
-        public bool displayTrajectories = false; //projects gamepiece trajectories if true
+        public List<bool> displayTrajectories; //projects gamepiece trajectories if true
         private List<LineRenderer> drawnTrajectory;
 
         public bool modeEnabled = false;
@@ -44,9 +46,9 @@ namespace BulletUnity {
         private int configuringIndex = 0;
         private int processingIndex = 0; //we use this to alternate which index is processed first.
 
-        private bool addingGamepiece = false; //true when user is currently selecting a gamepiece to be added.
-        private bool definingIntake = false; // true when user is currently selecting a robot part for the intake mechanism
-        private bool definingRelease = false;
+        public bool addingGamepiece = false; //true when user is currently selecting a gamepiece to be added.
+        public bool definingIntake = false; // true when user is currently selecting a robot part for the intake mechanism
+        public bool definingRelease = false; //true when user is currently selecting a robot part for the release mechanism
 
         //for highlight current mechanism features
         private GameObject highlightedNode;
@@ -58,6 +60,12 @@ namespace BulletUnity {
         private GameObject hoveredNode;
         private List<Color> hoveredColors = new List<Color>();
         private Color hoverColor = new Color(1, 1, 0, 0.1f);
+
+        //for gamepiece spawning customizability
+        private List<UnityEngine.Vector3> gamepieceSpawn;
+        private GameObject spawnIndicator;
+        public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
+        private DynamicCamera.CameraState lastCameraState;
 
 
         /// <summary>
@@ -115,6 +123,10 @@ namespace BulletUnity {
             SetInteractor(intakeNode[0], 0);
             SetInteractor(intakeNode[1], 1);
 
+            gamepieceSpawn = new List<UnityEngine.Vector3>();
+            gamepieceSpawn.Add(new UnityEngine.Vector3(0f,3f,0f));
+            gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
+
 
 
             drawnTrajectory = new List<LineRenderer>();
@@ -131,6 +143,12 @@ namespace BulletUnity {
             drawnTrajectory[0].endColor = Color.cyan;
             drawnTrajectory[1].startColor = Color.red;
             drawnTrajectory[1].endColor = Color.magenta;
+
+            displayTrajectories = new List<bool>();
+            displayTrajectories.Add(false);
+            displayTrajectories.Add(false);
+
+            Load();
         }
 	
 	    // Update is called once per frame
@@ -139,12 +157,12 @@ namespace BulletUnity {
             {
                 if (processingIndex == 0)
                 {
-                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Pickup]))
+                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
                     {
                         Intake(0);
                         Intake(1);
                     }
-                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.Release]))
+                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
                     {
                         ReleaseGamepiece(0);
                         ReleaseGamepiece(1);
@@ -158,12 +176,12 @@ namespace BulletUnity {
                 }
                 else
                 {
-                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Pickup]))
+                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
                     {
                         Intake(1);
                         Intake(0);
                     }
-                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.Release]))
+                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
                     {
                         ReleaseGamepiece(1);
                         ReleaseGamepiece(0);
@@ -184,29 +202,27 @@ namespace BulletUnity {
 
                 if (definingIntake || definingRelease) SelectingNode();
 
-                if (Input.GetKey(KeyCode.T)) SpawnGamepiece(0);
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
 
-                if (displayTrajectories)
+                for (int i = 0; i < 2; i++)
                 {
-                    for (int i = 0; i < 2; i++)
+                    if (displayTrajectories[i])
                     {
-
                         releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
                         if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
                         DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < 2; i++)
+                    else
                     {
-
                         if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
                     }
                 }
 
+
                 if (highlightTimer > 0) highlightTimer--;
                 else if (highlightTimer == 0) RevertHighlight();
+
+                if (settingSpawn != 0) UpdateGamepieceSpawn();
             }
 	    }
 
@@ -404,7 +420,8 @@ namespace BulletUnity {
         {
             if (modeEnabled)
             {
-                if (definingIntake) UserMessageManager.Dispatch("You must select a robot part first!", 5);
+                if (definingIntake || definingRelease) UserMessageManager.Dispatch("You must select a robot part first!", 5);
+                else if (settingSpawn != 0) UserMessageManager.Dispatch("You must set the gamepiece spawnpoint first! Press enter to save your the current position",5);
                 else
                 {
                     UserMessageManager.Dispatch("Click on a dynamic object to add it as a gamepiece", 5);
@@ -424,7 +441,10 @@ namespace BulletUnity {
             {
                 try //In case the game piece somehow doens't exist in the scene
                 {
-                    spawnedGamepieces.Add(Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity));
+                    GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                    gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
+                    gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
+                    spawnedGamepieces.Add(gameobject);
                 }
                 catch
                 {
@@ -443,6 +463,68 @@ namespace BulletUnity {
             {
                 Destroy(g);
             }
+        }
+
+        public void StartGamepieceSpawn(int index)
+        {
+            if (definingRelease || definingIntake || addingGamepiece) Debug.Log("User Error"); //Message Manager already dispatches error message to user
+            else if (settingSpawn == 0)
+            {
+                if (GameObject.Find(gamepieceNames[index]) != null)
+                {
+                    if (spawnIndicator != null) Destroy(spawnIndicator);
+                    if (spawnIndicator == null)
+                    {
+                        spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                        spawnIndicator.name = "SpawnIndicator";
+                        Destroy(spawnIndicator.GetComponent<BRigidBody>());
+                        if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
+                        Renderer render = spawnIndicator.GetComponentInChildren<Renderer>();
+                        render.material.shader = Shader.Find("Transparent/Diffuse");
+                        Color newColor = render.material.color;
+                        newColor.a = 0.6f;
+                        render.material.color = newColor;
+                    }
+                    spawnIndicator.transform.position = gamepieceSpawn[index];
+                    settingSpawn = index + 1;
+
+                    DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                    lastCameraState = dynamicCamera.cameraState;
+                    dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+
+                    MainState.ControlsDisabled = true;
+                }
+                else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
+            }
+            else FinishGamepieceSpawn(); //if already setting spawn, end editing process
+        }
+
+        private void UpdateGamepieceSpawn()
+        {
+            int index = settingSpawn - 1;
+            if (spawnIndicator != null)
+            {
+                ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
+                if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
+                if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
+                if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
+                if (Input.GetKey(KeyCode.DownArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
+                    gamepieceSpawn[index] = spawnIndicator.transform.position;
+                    FinishGamepieceSpawn();
+                }
+            }
+        }
+
+        public void FinishGamepieceSpawn()
+        {
+            settingSpawn = 0;
+            if (spawnIndicator != null) Destroy(spawnIndicator);
+            DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+            dynamicCamera.SwitchCameraState(lastCameraState);
+            MainState.ControlsDisabled = false;
         }
 
         #endregion
@@ -602,7 +684,7 @@ namespace BulletUnity {
             RevertHighlight();
             highlightedNode = GameObject.Find(node);
             ChangeNodeColors(highlightedNode, highlightColor, originalColors);
-            highlightTimer = 120;
+            highlightTimer = 80;
  
 
         }
@@ -675,5 +757,131 @@ namespace BulletUnity {
             }
         }
         #endregion
+
+        public void Save()
+        {
+            string filePath = PlayerPrefs.GetString("simSelectedRobot");
+            if (File.Exists(filePath + "\\dpmConfig.txt"))
+            {
+                File.Delete(filePath + "\\dpmConfig.txt");
+            }
+            Debug.Log("Saving to " + filePath + "\\dpmConfig.txt");
+            using (StreamWriter writer = new StreamWriter(filePath + "\\dpmConfig.txt", false))
+            {
+                StringBuilder sb;
+                for (int i = 0; i < gamepieceNames.Count; i++)
+                {
+                    writer.WriteLine("##Gamepiece" + i);
+                    writer.WriteLine("#Name");
+                    writer.WriteLine(gamepieceNames[i]);
+
+                    writer.WriteLine("#Spawnpoint");
+                    sb = new StringBuilder();
+                    writer.WriteLine(sb.Append(gamepieceSpawn[i].x).Append("|").Append(gamepieceSpawn[i].y).Append("|").Append(gamepieceSpawn[i].z));
+
+                    writer.WriteLine("#Intake Node");
+                    writer.WriteLine(intakeNode[i].name);
+
+                    writer.WriteLine("#Release Node");
+                    writer.WriteLine(releaseNode[i].name);
+
+                    writer.WriteLine("#Release Position");
+                    sb = new StringBuilder();
+                    writer.WriteLine(sb.Append(positionOffset[i].x).Append("|").Append(positionOffset[i].y).Append("|").Append(positionOffset[i].z));
+
+                    writer.WriteLine("#Release Velocity");
+                    sb = new StringBuilder();
+                    writer.WriteLine(sb.Append(releaseVelocity[i][0]).Append("|").Append(releaseVelocity[i][1]).Append("|").Append(releaseVelocity[i][2]));
+                }
+                writer.Close();
+            }
+            Debug.Log("Save successful!");
+        }
+
+        public void Load()
+        {
+            string filePath = PlayerPrefs.GetString("simSelectedRobot") + "\\dpmConfig.txt";
+            if (File.Exists(filePath))
+            {
+                StreamReader reader = new StreamReader(filePath);
+                string line = "";
+                int counter = 0;
+                int index = 0;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Equals("#Name")) counter++;
+                    else if (counter == 1)
+                    {
+                        if (line.Equals("#Spawnpoint")) counter++;
+                        else
+                        {
+                            gamepieceNames[index] = line;
+                        }
+                    }
+                    else if (counter == 2)
+                    {
+                        if (line.Equals("#Intake Node")) counter++;
+                        else gamepieceSpawn[index] = DeserializeVector3Array(line);
+                    }
+                    else if (counter == 3)
+                    {
+                        if (line.Equals("#Release Node")) counter++;
+                        else intakeNode[index] = GameObject.Find(line);
+                    }
+                    else if (counter == 4)
+                    {
+                        if (line.Equals("#Release Position")) counter++;
+                        else releaseNode[index] = GameObject.Find(line);
+                    }
+                    else if (counter == 5)
+                    {
+                        if (line.Equals("#Release Velocity")) counter++;
+                        else positionOffset[index] = DeserializeVector3Array(line);
+                    }
+                    else if (counter == 6)
+                    {
+                        if (line.Contains("#Gamepiece"))
+                        {
+                            counter = 0;
+                            index++;
+                        }
+                        else releaseVelocity[index] = DeserializeArray(line);
+                    }
+                }
+                reader.Close();
+
+                SetInteractor(intakeNode[0], 0);
+                SetInteractor(intakeNode[1], 1);
+            }
+        }
+
+        public static UnityEngine.Vector3 DeserializeVector3Array(string aData)
+        {
+            UnityEngine.Vector3 result = new UnityEngine.Vector3(0, 0, 0);
+            string[] values = aData.Split('|');
+            Debug.Log(values[0]);
+            if (values.Length != 3)
+                throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
+            result = new UnityEngine.Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
+            return result;
+        }
+        public static float[] DeserializeArray(string aData)
+        {
+            float[] result = new float[3];
+            string[] values = aData.Split('|');
+            if (values.Length != 3)
+                throw new System.FormatException("component count mismatch. Expected 3 components but got " + values.Length);
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = float.Parse(values[i]);
+            }
+            return result;
+        }
+
+
+
     }
+
+
 }
