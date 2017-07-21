@@ -64,7 +64,7 @@ public class SimulatorUI : MonoBehaviour
     public void resetRobotClick()
     {
         mainState = stateMachine.GetComponent<StateMachine>().MainState;
-        mainState.BeginReset(true);
+        mainState.BeginReset();
         mainState.EndReset();
     }
 
