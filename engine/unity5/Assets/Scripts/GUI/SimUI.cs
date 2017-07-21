@@ -20,6 +20,11 @@ public class SimUI : MonoBehaviour
 
     GameObject dpmWindow;
     GameObject configWindow;
+    GameObject swapWindow;
+
+    GameObject wheelPanel;
+    GameObject driveBasePanel;
+    GameObject manipulatorPanel;
 
     GameObject releaseVelocityPanel;
 
@@ -41,7 +46,12 @@ public class SimUI : MonoBehaviour
     Text intakeMechanismText;
     Text releaseMechanismText;
 
+
     public bool dpmWindowOn = false; //if the driver practice mode window is active
+    public bool swapWindowOn = false; //if the swap window is active
+    public bool wheelPanelOn = false; //if the wheel panel is active
+    public bool driveBasePanelOn = false; //if the drive base panel is active
+    public bool manipulatorPanelOn = false; //if the manipulator panel is active
 
     public bool configuring = false; //if the configuration window is active
     public int configuringIndex = 0; //0 if user is configuring primary, 1 if user is configuring secondary
@@ -108,6 +118,10 @@ public class SimUI : MonoBehaviour
 
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
+        swapWindow = AuxFunctions.FindObject(canvas, "SwapPanel");
+        wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
+        driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
+        manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
 
         enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
 
@@ -512,7 +526,56 @@ public class SimUI : MonoBehaviour
                 dpm.releaseVelocity[configuringIndex][2] = temp;
         }
     }
-        #endregion
+    #endregion
 
+    #region swap part
+    /// <summary>
+    /// Toggles the Driver Practice Mode window
+    /// </summary>
+    public void SwapToggleWindow()
+    {
+        swapWindowOn = !swapWindowOn;
+        swapWindow.SetActive(swapWindowOn);
+    }
+
+    public void TogglePanel(GameObject panel)
+    {
+        if (panel.activeSelf == true)
+        {
+            panel.SetActive(false);
+        } else
+        {
+            panel.SetActive(true);
+        } 
+    }
+
+    public void PartToggleWindow(string Window)
+    {
+        List<GameObject> swapPanels = new List<GameObject> { wheelPanel, driveBasePanel, manipulatorPanel };
+        switch (Window)
+        {
+            case "wheel":
+                TogglePanel(wheelPanel);
+                driveBasePanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+            case "driveBase":
+                TogglePanel(driveBasePanel);
+                wheelPanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+            case "manipulator":
+                TogglePanel(manipulatorPanel);
+                driveBasePanel.SetActive(false);
+                wheelPanel.SetActive(false);
+                break;
+            default:
+                wheelPanel.SetActive(false);
+                driveBasePanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+        }
+    }
+    #endregion
 }
 
