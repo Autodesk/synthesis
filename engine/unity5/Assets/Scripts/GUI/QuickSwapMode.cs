@@ -4,43 +4,71 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class QuickSwapMode : MonoBehaviour {
+public class QuickSwapMode : MonoBehaviour
+{
     private GameObject quickSwapMode;
+    
     //Wheel options
     private GameObject tractionWheel;
     private GameObject colsonWheel;
     private GameObject mecanumWheel;
     private GameObject omniWheel;
+    List<GameObject> wheels;
 
     //Drive Base options
     private GameObject defaultDrive;
+    List<GameObject> bases;
 
     //Manipulator Options
     private GameObject defaultManipulator;
+    List<GameObject> manipulators;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         FindAllGameObjects();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        StartQuickSwap();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 
     void FindAllGameObjects()
     {
-        quickSwapMode = GameObject.Find("QuickSwapMode");//AuxFunctions.FindObject(gameObject, "QuickSwapMode");
-        //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
-        //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
-        tractionWheel = GameObject.Find("TractionWheel");//AuxFunctions.FindObject(quickSwapMode, "TractionWheel");
-        colsonWheel = AuxFunctions.FindObject(quickSwapMode, "ColsonWheel");
-        mecanumWheel = AuxFunctions.FindObject(quickSwapMode, "MecanumWheel");
-        omniWheel = AuxFunctions.FindObject(quickSwapMode, "OmniWheel");
+        quickSwapMode = GameObject.Find("QuickSwapMode");
 
-        defaultDrive = AuxFunctions.FindObject(quickSwapMode, "DefaultBase");
+        //Find wheel objects
+        tractionWheel = GameObject.Find("TractionWheel");
+        colsonWheel = GameObject.Find("ColsonWheel");
+        mecanumWheel = GameObject.Find("MecanumWheel");
+        omniWheel = GameObject.Find("OmniWheel");
+        //Put all the wheels in the wheels list
+        wheels = new List<GameObject> { tractionWheel, colsonWheel, mecanumWheel, omniWheel };
 
-        defaultManipulator = AuxFunctions.FindObject(quickSwapMode, "DefaultManipulator");
+        //Find drive base objects
+        defaultDrive = GameObject.Find("DefaultBase");
+        //Put all the drive bases in the bases list
+        bases = new List<GameObject> { defaultDrive };
+
+        //Find manipulator objects
+        defaultManipulator = GameObject.Find("DefaultManipulator");
+        //Put all the manipulators in the manipulators list
+        manipulators = new List<GameObject> { defaultManipulator };
+    }
+
+    public void StartQuickSwap()
+    {
+        //Selects the traction wheel (default)  
+        SelectWheel(0);
+
+        //Selects the default base
+        SelectDriveBase(0);
+
+        //Selects the default manipulator
+        SelectManipulator(0);
     }
 
     public void SetColor(GameObject part, Color color)
@@ -48,33 +76,58 @@ public class QuickSwapMode : MonoBehaviour {
         part.GetComponent<Image>().color = color;
     }
 
-    public void SelectWheel(string Wheel)
+    /// <summary>
+    /// Selects a wheel, as referenced by its index in the wheels list
+    /// </summary>
+    /// <param name="wheel"></param>
+    public void SelectWheel(int wheel) 
     {
-        List<GameObject> wheels = new List<GameObject> {tractionWheel, colsonWheel, mecanumWheel, omniWheel };
         Color purple = new Color(0.757f, 0.200f, 0.757f);
-        Color white = new Color(1f, 1f, 1f);
 
-        for(int i = 0; i< wheels.Count; i++)
+        //unselects all wheels
+        for (int i = 0; i < wheels.Count; i++)
         {
-            SetColor(wheels[i], white);
+            SetColor(wheels[i], Color.white);
         }
 
-        switch (Wheel)
-        {
-            case "traction":
-                SetColor(tractionWheel, purple);
-                break;
-            case "colson":
-                SetColor(colsonWheel, purple);
-                break;
-            case "mecanum":
-                SetColor(mecanumWheel, purple);
-                break;
-            case "omni":
-                SetColor(omniWheel, purple);
-                break;
-            default:
-                break;
-        }
+        //selects the wheel that is clicked
+        SetColor(wheels[wheel], purple);
     }
+
+    /// <summary>
+    /// Selects a drive base, as referenced by its index in the bases list
+    /// </summary>
+    /// <param name="driveBase"></param>
+    public void SelectDriveBase(int driveBase) //Drive Bases are indexed in the list bases
+    {
+        Color purple = new Color(0.757f, 0.200f, 0.757f);
+        
+        //unselects all wheels
+        for (int j = 0; j < bases.Count; j++)
+        {
+            SetColor(bases[j], Color.white);          
+        }
+        
+        //selects the wheel that is clicked
+        SetColor(bases[driveBase], purple);
+    }
+
+    /// <summary>
+    /// Selects a manipulator, as referenced by its index in the manipualtors list
+    /// </summary>
+    /// <param name="manipulator"></param>
+    public void SelectManipulator(int manipulator) //Drive Bases are indexed in the list bases
+    {
+        Color purple = new Color(0.757f, 0.200f, 0.757f);
+
+        //unselects all wheels
+        for (int k = 0; k < manipulators.Count; k++)
+        {
+            SetColor(manipulators[k], Color.white);
+        }
+
+        //selects the wheel that is clicked
+        SetColor(manipulators[manipulator], purple);
+    }
+
 }
