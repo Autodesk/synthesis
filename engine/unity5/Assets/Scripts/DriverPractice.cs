@@ -36,7 +36,9 @@ namespace BulletUnity {
         public List<GameObject> secondaryHeld;
 
         public List<string> gamepieceNames; //list of the identifiers of gamepieces
-        public List<GameObject> spawnedGamepieces;
+        public List<List<GameObject>> spawnedGamepieces;
+        public List<GameObject> spawnedPrimary;
+        public List<GameObject> spawnedSecondary;
 
         public List<bool> displayTrajectories; //projects gamepiece trajectories if true
         private List<LineRenderer> drawnTrajectory;
@@ -114,7 +116,11 @@ namespace BulletUnity {
             gamepieceNames.Add("WOAH");
             gamepieceNames.Add("TEST");
 
-            spawnedGamepieces = new List<GameObject>();
+            spawnedGamepieces = new List<List<GameObject>>();
+            spawnedPrimary = new List<GameObject>();
+            spawnedSecondary = new List<GameObject>();
+            spawnedGamepieces.Add(spawnedPrimary);
+            spawnedGamepieces.Add(spawnedSecondary);
 
             holdingLimit = new List<int>();
             holdingLimit.Add(30);
@@ -444,7 +450,7 @@ namespace BulletUnity {
                     GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
                     gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                     gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-                    spawnedGamepieces.Add(gameobject);
+                    spawnedGamepieces[index].Add(gameobject);
                 }
                 catch
                 {
@@ -459,9 +465,12 @@ namespace BulletUnity {
         /// </summary>
         public void ClearGamepieces()
         {
-            foreach (GameObject g in spawnedGamepieces)
+            for (int i = 0; i < spawnedGamepieces.Count; i++)
             {
-                Destroy(g);
+                foreach (GameObject g in spawnedGamepieces[i])
+                {
+                    Destroy(g);
+                }
             }
         }
 
