@@ -98,6 +98,7 @@ public class SimUI : MonoBehaviour
         {
             main = transform.GetComponent<StateMachine>().MainState;
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+            //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
         }
         else if (dpm == null)
@@ -111,8 +112,7 @@ public class SimUI : MonoBehaviour
         {
             UpdateDPMValues();
             UpdateVectorConfiguration();
-            UpdateWindows(); //please don't
-            UpdateCameraWindow();
+            UpdateWindows();
             if (settingControl != 0) ListenControl();
 
         }
@@ -297,6 +297,8 @@ public class SimUI : MonoBehaviour
 
         UpdateFreeroamWindow();
         UpdateSpawnpointWindow();
+        UpdateCameraWindow();
+
     }
 
     private void UpdateCameraView()
