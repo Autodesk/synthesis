@@ -415,10 +415,10 @@ public class SimUI : MonoBehaviour
             else
             {
                 enableDPMText.text = "Enable Driver Practice Mode";
-                dpm.modeEnabled = false;
-                lockPanel.SetActive(true);
                 dpm.displayTrajectories[0] = false;
                 dpm.displayTrajectories[1] = false;
+                dpm.modeEnabled = false;
+                lockPanel.SetActive(true);
             }
 
         }
@@ -716,7 +716,7 @@ public class SimUI : MonoBehaviour
                 {
                     if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
                     else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+                    else Controls.SetControl((int)Controls.Control.SpawnSecondary, vKey);
                 }
                 Controls.SaveControls();
                 settingControl = 0;
