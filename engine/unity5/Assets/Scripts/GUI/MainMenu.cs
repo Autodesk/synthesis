@@ -5,10 +5,11 @@ using System.IO;
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
-public class MainMenu : MonoBehaviour {
+public class MainMenu : MonoBehaviour
+{
 
     //This refers to what tab the main menu is currently in.
-    public enum Tab { Main, Sim, Options, FieldDir, RobotDir};
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
@@ -18,7 +19,7 @@ public class MainMenu : MonoBehaviour {
     public GameObject optionsTab;
 
     //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
-    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
+    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, QuickSwapMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration }
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -27,6 +28,7 @@ public class MainMenu : MonoBehaviour {
     private GameObject selectionPanel;
     private GameObject defaultSimulator;
     private GameObject driverPracticeMode;
+    private GameObject quickSwapMode;
     private GameObject dpmConfiguration;
     private GameObject localMultiplayer;
     private GameObject simLoadField;
@@ -86,10 +88,10 @@ public class MainMenu : MonoBehaviour {
     /// <summary>
     /// Runs every frame to update the GUI elements.
     /// </summary>
-    void OnGUI ()
+    void OnGUI()
     {
         switch (currentTab)
-         {
+        {
             //Switches back to sim tab UI elements if field browser is closed
             case Tab.FieldDir:
                 if (customfieldon && !fieldBrowser.Active)
@@ -102,7 +104,7 @@ public class MainMenu : MonoBehaviour {
                     customfieldon = false;
                 }
                 break;
-            
+
             //Switches back to sim tab UI elements if robot directory is closed
             case Tab.RobotDir:
                 if (customroboton && !robotBrowser.Active)
@@ -113,17 +115,17 @@ public class MainMenu : MonoBehaviour {
                     optionsTab.SetActive(false);
                     simTab.SetActive(true);
                     customroboton = false;
-                    }
+                }
                 break;
-         }
+        }
 
-         //Initializes and renders the Field Browser
-         if (fieldDirectory != null) InitFieldBrowser();
-         if (robotDirectory != null) InitRobotBrowser();
-        
-         //Renders the message manager which displays error messages
-         UserMessageManager.Render();
-         UserMessageManager.scale = canvas.scaleFactor;
+        //Initializes and renders the Field Browser
+        if (fieldDirectory != null) InitFieldBrowser();
+        if (robotDirectory != null) InitRobotBrowser();
+
+        //Renders the message manager which displays error messages
+        UserMessageManager.Render();
+        UserMessageManager.scale = canvas.scaleFactor;
     }
 
     /// <summary>
@@ -139,7 +141,7 @@ public class MainMenu : MonoBehaviour {
             optionsTab.SetActive(false);
             homeTab.SetActive(true);
         }
-        else UserMessageManager.Dispatch("You must select a directory or exit first!",3);
+        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
     /// <summary>
@@ -181,7 +183,7 @@ public class MainMenu : MonoBehaviour {
     {
         currentSim = Sim.Selection;
 
-        
+
         defaultSimulator.SetActive(false);
         driverPracticeMode.SetActive(false);
         localMultiplayer.SetActive(false);
@@ -191,6 +193,7 @@ public class MainMenu : MonoBehaviour {
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
         dpmConfiguration.SetActive(false);
+        quickSwapMode.SetActive(false);
 
         selectionPanel.SetActive(true);
 
@@ -227,6 +230,17 @@ public class MainMenu : MonoBehaviour {
 
         dpmRobotSelectText.GetComponent<Text>().text = dpmSelectedRobotName;
         dpmFieldSelectText.GetComponent<Text>().text = dpmSelectedFieldName;
+    }
+
+    /// <summary>
+    /// Switches to the quick swap menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
+    public void SwitchQuickSwap()
+    {
+        currentSim = Sim.QuickSwapMode;
+
+        selectionPanel.SetActive(false);
+        quickSwapMode.SetActive(true);
     }
 
     /// <summary>
@@ -340,7 +354,7 @@ public class MainMenu : MonoBehaviour {
             }
             else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
 
-  
+
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
@@ -369,6 +383,16 @@ public class MainMenu : MonoBehaviour {
             Application.LoadLevel("Scene");
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
+    }
+
+    public void StartSwapSim()
+    {
+        PlayerPrefs.SetString("simSelectedField", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\Fields\\2014 Aerial Assist");
+        PlayerPrefs.SetString("simSelectedFieldName", "2014 Aerial Assist");
+        PlayerPrefs.SetString("simSelectedRobot", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\RobotParts\\DriveBase2557");
+        PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
+        PlayerPrefs.Save();
+        Application.LoadLevel("Scene");
     }
 
     public void StartRobotConfiguration()
@@ -441,7 +465,8 @@ public class MainMenu : MonoBehaviour {
     //Exits the program
     public void Exit()
     {
-        if (!Application.isEditor) {
+        if (!Application.isEditor)
+        {
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
@@ -669,8 +694,9 @@ public class MainMenu : MonoBehaviour {
         }
     }
     #endregion
-    void Start () {
-        
+    void Start()
+    {
+
         FindAllGameObjects();
         splashScreen.SetActive(true);
         InitGraphicsSettings();
@@ -719,16 +745,17 @@ public class MainMenu : MonoBehaviour {
             SwitchTabHome();
             SwitchSimDefault();
         }
-        
-        
+
+
     }
-	 void FindAllGameObjects()
+    void FindAllGameObjects()
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
         selectionPanel = AuxFunctions.FindObject(gameObject, "SelectionPanel"); //The Mode Selection Tab GUI Objects
         defaultSimulator = AuxFunctions.FindObject(gameObject, "DefaultSimulator");
         driverPracticeMode = AuxFunctions.FindObject(gameObject, "DriverPracticeMode");
+        quickSwapMode = AuxFunctions.FindObject(gameObject, "QuickSwapMode");
         dpmConfiguration = AuxFunctions.FindObject(gameObject, "DPMConfiguration");
         localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
