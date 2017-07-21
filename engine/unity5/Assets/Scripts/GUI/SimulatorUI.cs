@@ -8,35 +8,42 @@ public class SimulatorUI : MonoBehaviour
 
     private int x = 0;
     public GameObject stateMachine;
-    private MainState mainState;
+    public MainState mainState;
+
+    private GameObject canvas;
 
     // Use this for initialization
     void Start()
     {
-        dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
+
+        canvas = GameObject.Find("Canvas");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (dynamicCamera == null)
+        {
+            dynamicCamera = GameObject.Find("Main Camera").AddComponent<DynamicCamera>();
+        }
         //dynamicCamera.cameraState
         //if (Input.GetKey(Controls.ControlKey[Controls.Control.CameraToggle])) {
-      //  if (dynamicCamera.cameraState ) { 
+        //  if (dynamicCamera.cameraState ) { 
 
 
 
-      //  }
+        //  }
     }
 
     public void showControlPanel(bool show)
     {
         if (show)
         {
-            AuxFunctions.FindObject("FullscreenPanel").GetComponent<RectTransform>().localScale = new Vector3(1, 1);
+            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(true);
         }
         else
         {
-            AuxFunctions.FindObject("FullscreenPanel").GetComponent<RectTransform>().localScale = new Vector3(0, 0);
+            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
         }
     }
 
@@ -56,20 +63,18 @@ public class SimulatorUI : MonoBehaviour
     //In game UI resets robot using UI icons
     public void resetRobotClick()
     {
-        mainState = stateMachine.GetComponent<StateMachine>().GetMainState();
+        mainState = stateMachine.GetComponent<StateMachine>().MainState;
         mainState.BeginReset(true);
         mainState.EndReset();
     }
 
     //In game UI switches view using UI icons
-  
-    public void switchViewClickMoreBetterer(int joe)
+    public void SwitchViewClickMoreBetterer(int joe)
     {
         switch (joe)
         {
             case 1:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
-                Debug.Log("go ahead and type out what you were going to type out");
                 break;
             case 2:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
@@ -80,5 +85,13 @@ public class SimulatorUI : MonoBehaviour
                 break;
         }
     }
+
+    //In game UI button opens tutorial link in browser
+   
+    public void toLink()
+    {
+        Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
+    }
+
 }
    
