@@ -27,12 +27,12 @@ public class Controls : MonoBehaviour
         ControlKey[(int)Control.pwm5Neg] = KeyCode.Alpha8;
         ControlKey[(int)Control.pwm6Plus] = KeyCode.Alpha9;
         ControlKey[(int)Control.pwm6Neg] = KeyCode.Alpha0;
-        ControlKey[(int)Control.PickupPrimary] = KeyCode.X;
-        ControlKey[(int)Control.ReleasePrimary] = KeyCode.E;
-        ControlKey[(int)Control.SpawnPrimary] = KeyCode.Q;
-        ControlKey[(int)Control.PickupSecondary] = KeyCode.X;
-        ControlKey[(int)Control.ReleaseSecondary] = KeyCode.E;
-        ControlKey[(int)Control.SpawnSecondary] = KeyCode.Q;
+        ControlKey[(int)Control.PickupPrimary] = KeyCode.LeftShift;
+        ControlKey[(int)Control.ReleasePrimary] = KeyCode.LeftControl;
+        ControlKey[(int)Control.SpawnPrimary] = KeyCode.LeftBracket;
+        ControlKey[(int)Control.PickupSecondary] = KeyCode.LeftShift;
+        ControlKey[(int)Control.ReleaseSecondary] = KeyCode.LeftControl;
+        ControlKey[(int)Control.SpawnSecondary] = KeyCode.RightBracket;
 
     }
 
