@@ -38,7 +38,11 @@ namespace BulletUnity {
         public List<string> gamepieceNames; //list of the identifiers of gamepieces
         public List<GameObject> spawnedGamepieces;
 
+<<<<<<< HEAD
         public List<bool> displayTrajectories; //projects gamepiece trajectories if true
+=======
+        public bool displayTrajectories = false; //projects gamepiece trajectories if true
+>>>>>>> Isabelle
         private List<LineRenderer> drawnTrajectory;
 
         public bool modeEnabled = false;
@@ -144,10 +148,13 @@ namespace BulletUnity {
             drawnTrajectory[1].startColor = Color.red;
             drawnTrajectory[1].endColor = Color.magenta;
 
+<<<<<<< HEAD
             displayTrajectories = new List<bool>();
             displayTrajectories.Add(false);
             displayTrajectories.Add(false);
 
+=======
+>>>>>>> Isabelle
             Load();
         }
 	
@@ -204,21 +211,41 @@ namespace BulletUnity {
 
                 if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
 
+<<<<<<< HEAD
                 for (int i = 0; i < 2; i++)
                 {
                     if (displayTrajectories[i])
                     {
+=======
+                if (displayTrajectories)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+
+>>>>>>> Isabelle
                         releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
                         if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
                         DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
                     }
+<<<<<<< HEAD
                     else
                     {
+=======
+                }
+                else
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+
+>>>>>>> Isabelle
                         if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
                     }
                 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> Isabelle
                 if (highlightTimer > 0) highlightTimer--;
                 else if (highlightTimer == 0) RevertHighlight();
 
@@ -441,10 +468,14 @@ namespace BulletUnity {
             {
                 try //In case the game piece somehow doens't exist in the scene
                 {
+<<<<<<< HEAD
                     GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
                     gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                     gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
                     spawnedGamepieces.Add(gameobject);
+=======
+                    spawnedGamepieces.Add(Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity));
+>>>>>>> Isabelle
                 }
                 catch
                 {
@@ -477,7 +508,12 @@ namespace BulletUnity {
                     {
                         spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                         spawnIndicator.name = "SpawnIndicator";
+<<<<<<< HEAD
                         Destroy(spawnIndicator.GetComponent<BRigidBody>());
+=======
+                        spawnIndicator.GetComponent<BRigidBody>().mass = 0;
+                        spawnIndicator.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
+>>>>>>> Isabelle
                         if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
                         Renderer render = spawnIndicator.GetComponentInChildren<Renderer>();
                         render.material.shader = Shader.Find("Transparent/Diffuse");
@@ -490,7 +526,11 @@ namespace BulletUnity {
 
                     DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
+<<<<<<< HEAD
                     dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+=======
+                    dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
+>>>>>>> Isabelle
 
                     MainState.ControlsDisabled = true;
                 }
@@ -504,7 +544,10 @@ namespace BulletUnity {
             int index = settingSpawn - 1;
             if (spawnIndicator != null)
             {
+<<<<<<< HEAD
                 ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
+=======
+>>>>>>> Isabelle
                 if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
                 if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
                 if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
@@ -850,9 +893,12 @@ namespace BulletUnity {
                     }
                 }
                 reader.Close();
+<<<<<<< HEAD
 
                 SetInteractor(intakeNode[0], 0);
                 SetInteractor(intakeNode[1], 1);
+=======
+>>>>>>> Isabelle
             }
         }
 
