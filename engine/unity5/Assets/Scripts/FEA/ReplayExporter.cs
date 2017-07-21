@@ -126,16 +126,20 @@ namespace Assets.Scripts.FEA
         /// <param name="contacts"></param>
         private static byte[] GetContactsBuffer(List<List<ContactDescriptor>> contacts, out int uncompressedLength)
         {
-            List<List<ContactDescriptor>> filteredContacts = contacts.Where(x => x != null && x.Count > 0).ToList();
-
             IFormatter formatter = new BinaryFormatter();
 
             using (BinaryWriter bw = new BinaryWriter(new MemoryStream()))
             {
-                bw.Write(filteredContacts.Count);
+                bw.Write(contacts.Count);
 
-                foreach (List<ContactDescriptor> l in filteredContacts)
+                foreach (List<ContactDescriptor> l in contacts)
                 {
+                    if (l == null || l.Count == 0)
+                    {
+                        bw.Write(0);
+                        continue;
+                    }
+
                     bw.Write(l.Count);
 
                     foreach (ContactDescriptor c in l)
@@ -147,7 +151,6 @@ namespace Assets.Scripts.FEA
                         int startIndex = name.IndexOf('_');
 
                         bw.Write(int.Parse(name.Substring(startIndex + 1, name.Length - startIndex - name.IndexOf('.'))));
-
                     }
                 }
 

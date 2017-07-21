@@ -430,7 +430,9 @@ namespace Assets.Scripts.FEA
             if (!circleHovered)
                 SelectedBody = null;
 
-            if (GUI.Button(new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight), string.Empty, saveStyle))
+            Rect saveRect = new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight);
+
+            if (GUI.Button(saveRect, string.Empty, saveStyle))
                 ReplayExporter.Write("test", PlayerPrefs.GetString("simSelectedField"), PlayerPrefs.GetString("simSelectedRobot"), trackers, contactPoints);
 
             if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))

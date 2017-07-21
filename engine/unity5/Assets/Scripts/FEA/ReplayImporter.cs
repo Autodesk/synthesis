@@ -150,7 +150,6 @@ namespace Assets.Scripts.FEA
             int stateSize = System.Runtime.InteropServices.Marshal.SizeOf(new StateDescriptor());
 
             MemoryStream ms = new MemoryStream(buffer);
-            ms.Position = 0;
 
             while (ms.Position < ms.Length)
             {
@@ -172,9 +171,36 @@ namespace Assets.Scripts.FEA
         /// <returns></returns>
         private static List<List<KeyValuePair<ContactDescriptor, int>>> ReadContactDescriptors(byte[] buffer)
         {
+            IFormatter formatter = new BinaryFormatter();
+
             List<List<KeyValuePair<ContactDescriptor, int>>> contacts = new List<List<KeyValuePair<ContactDescriptor, int>>>();
 
-            // TODO
+            BinaryReader reader = new BinaryReader(new MemoryStream(buffer));
+
+            int numContactLists = reader.ReadInt32();
+
+            for (int i = 0; i < numContactLists; i++)
+            {
+                int contactCount = reader.ReadInt32();
+
+                if (contactCount > 0)
+                {
+                    List<KeyValuePair<ContactDescriptor, int>> currentContacts = new List<KeyValuePair<ContactDescriptor, int>>();
+
+                    for (int j = 0; j < contactCount; j++)
+                    {
+                        ContactDescriptor contact = new ContactDescriptor
+                        {
+                            AppliedImpulse = reader.ReadSingle(),
+                            Position = (BulletSharp.Math.Vector3)formatter.Deserialize(reader.BaseStream)
+                        };
+
+                        currentContacts.Add(new KeyValuePair<ContactDescriptor, int>(contact, reader.ReadInt32()));
+                    }
+
+                    contacts.Add(currentContacts);
+                }
+            }
 
             return contacts;
         }
