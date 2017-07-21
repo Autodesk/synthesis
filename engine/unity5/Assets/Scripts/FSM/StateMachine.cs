@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.FSM
@@ -88,7 +87,8 @@ namespace Assets.Scripts.FSM
             if (CurrentState != null)
                 return;
 
-            string defaultStateName = EditorPrefs.GetString(StateMachineEditor.DefaultStateNameKey);
+            string defaultStateName = "MainState";
+
             Type defaultStateType = Type.GetType(defaultStateName);
 
             if (defaultStateType == null)

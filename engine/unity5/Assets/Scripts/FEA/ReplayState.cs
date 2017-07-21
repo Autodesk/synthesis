@@ -155,7 +155,7 @@ namespace Assets.Scripts.FEA
             active = false;
             contactThreshold = Mathf.Sqrt(30f);
 
-            camera = UnityEngine.Object.FindObjectOfType<Camera>();
+            camera = Resources.FindObjectsOfTypeAll<Camera>().First(x => x.gameObject.name == "Main Camera");
             DynamicCamera.MovingEnabled = true;
 
             Texture2D thumbTexture = (Texture2D)Resources.Load("Images/thumb");
@@ -230,7 +230,7 @@ namespace Assets.Scripts.FEA
                     LineRenderer lr = t.gameObject.AddComponent<LineRenderer>();
                     lr.startWidth = 0.01f;
                     lr.endWidth = 0.01f;
-                    lr.material = new Material(Shader.Find("Particles/Alpha Blended"));
+                    lr.material = (Material)Resources.Load("Materials/Alpha Blended", typeof(Material));
                     lr.startColor = new Color(0.0f, 0.75f, 0.0f, 1.0f);
                     lr.endColor = new Color(0.0f, 1.0f, 0.0f, 0.25f);
                     lr.positionCount = t.States.Length;

@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using BulletUnity.Debugging;
 using System.Linq;
+using Assets.Scripts.FSM;
 
 namespace BulletUnity {
     [AddComponentMenu("Physics Bullet/RigidBody")]
@@ -177,9 +178,10 @@ namespace BulletUnity {
 
                 if (settingSpawn != 0) UpdateGamepieceSpawn();
             }
+
             for (int i = 0; i < 2; i++)
             {
-                if (displayTrajectories[i])
+                if (displayTrajectories[i] && StateMachine.Instance.CurrentState is MainState)
                 {
                     releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
                     if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
