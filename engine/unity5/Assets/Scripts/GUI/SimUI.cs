@@ -27,12 +27,9 @@ public class SimUI : MonoBehaviour
 
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
-<<<<<<< HEAD
     GameObject robotCameraViewWindow;
     RenderTexture robotCameraView;
     RobotCamera robotCamera;
-=======
->>>>>>> Isabelle
 
     GameObject releaseVelocityPanel;
 
@@ -45,10 +42,6 @@ public class SimUI : MonoBehaviour
 
     GameObject lockPanel;
 
-<<<<<<< HEAD
-=======
-    
->>>>>>> Isabelle
 
 
     Text enableDPMText;
@@ -90,11 +83,8 @@ public class SimUI : MonoBehaviour
     bool isEditing = false;
     
     private bool freeroamWindowClosed = false;
-<<<<<<< HEAD
     private bool usingRobotView = false;
 
-=======
->>>>>>> Isabelle
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
     /// </summary>
@@ -108,10 +98,7 @@ public class SimUI : MonoBehaviour
         {
             main = transform.GetComponent<StateMachine>().MainState;
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
-<<<<<<< HEAD
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
-=======
->>>>>>> Isabelle
         }
         else if (dpm == null)
         {
@@ -125,13 +112,9 @@ public class SimUI : MonoBehaviour
             UpdateDPMValues();
             UpdateVectorConfiguration();
             UpdateWindows(); //please don't
-<<<<<<< HEAD
             UpdateCameraWindow();
             if (settingControl != 0) ListenControl();
            
-=======
-            if (settingControl != 0) ListenControl();
->>>>>>> Isabelle
         }
             
     }
@@ -183,10 +166,7 @@ public class SimUI : MonoBehaviour
 
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
-<<<<<<< HEAD
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
-=======
->>>>>>> Isabelle
     }
 
     /// <summary>
@@ -337,13 +317,10 @@ public class SimUI : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
     private void UpdateCameraView()
     {
         
     }
-=======
->>>>>>> Isabelle
     #region main button functions
     /// <summary>
     /// Resets the robot
@@ -457,7 +434,6 @@ public class SimUI : MonoBehaviour
     }
 
     /// <summary>
-<<<<<<< HEAD
     /// Toggles the display of primary gamepiece release trajectory.
     /// </summary>
     public void DisplayTrajectoryPrimary()
@@ -471,13 +447,6 @@ public class SimUI : MonoBehaviour
     public void DisplayTrajectorySecondary()
     {
         dpm.displayTrajectories[1] = !dpm.displayTrajectories[1];
-=======
-    /// Toggles the display of gamepiece release trajectories.
-    /// </summary>
-    public void DisplayTrajectories()
-    {
-        dpm.displayTrajectories = !dpm.displayTrajectories;
->>>>>>> Isabelle
     }
 
     /// <summary>
@@ -491,11 +460,8 @@ public class SimUI : MonoBehaviour
             configuringIndex = 0;
             configHeaderText.text = "Configuration Menu - Primary Gamepiece";
             configWindow.SetActive(true);
-<<<<<<< HEAD
             dpm.displayTrajectories[0] = true;
             dpm.displayTrajectories[1] = false;
-=======
->>>>>>> Isabelle
         }
         else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!",5);
     }
@@ -511,11 +477,8 @@ public class SimUI : MonoBehaviour
             configuringIndex = 1;
             configHeaderText.text = "Configuration Menu - Secondary Gamepiece";
             configWindow.SetActive(true);
-<<<<<<< HEAD
             dpm.displayTrajectories[0] = false;
             dpm.displayTrajectories[1] = true;
-=======
->>>>>>> Isabelle
         }
         else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
     }
@@ -542,10 +505,7 @@ public class SimUI : MonoBehaviour
     {
         configWindow.SetActive(false);
         configuring = false;
-<<<<<<< HEAD
         dpm.displayTrajectories[configuringIndex] = false;
-=======
->>>>>>> Isabelle
         dpm.Save();
     }
 
@@ -765,7 +725,6 @@ public class SimUI : MonoBehaviour
         }
     }
 
-<<<<<<< HEAD
     private void UpdateCameraWindow()
     {
         if (usingRobotView && main.dynamicCameraObject.activeSelf)
@@ -816,8 +775,6 @@ public class SimUI : MonoBehaviour
         }
     }
     
-=======
->>>>>>> Isabelle
     #endregion
 }
 
