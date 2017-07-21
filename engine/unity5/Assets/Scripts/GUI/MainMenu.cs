@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.IO;
+using UnityEngine.SceneManagement;
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
@@ -392,7 +393,7 @@ public class MainMenu : MonoBehaviour
         PlayerPrefs.SetString("simSelectedRobot", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\RobotParts\\DriveBase2557");
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
         PlayerPrefs.Save();
-        Application.LoadLevel("Scene");
+        SceneManager.LoadScene("QuickSwap");
     }
 
     public void StartRobotConfiguration()
