@@ -280,7 +280,7 @@ public class DynamicCamera : MonoBehaviour
     {
         Vector3 targetPosition;
         Vector3 rotationVector;
-        GameObject target;
+        public GameObject target;
 
         public SateliteState(MonoBehaviour mono)
         {
@@ -303,7 +303,6 @@ public class DynamicCamera : MonoBehaviour
 
             }
             mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
-            mono.transform.LookAt(targetPosition);
         }
 
         public override void End()
@@ -329,7 +328,8 @@ public class DynamicCamera : MonoBehaviour
     {
         if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
         else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
-        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
+        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this));
         if (_cameraState != null) _cameraState.Update();
     }
 
