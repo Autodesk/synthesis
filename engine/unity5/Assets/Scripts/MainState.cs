@@ -26,10 +26,10 @@ public class MainState : SimState
     private UnityPacket unityPacket;
 
     private DynamicCamera dynamicCamera;
-    private GameObject dynamicCameraObject;
+    public GameObject dynamicCameraObject;
 
     private RobotCamera robotCamera;
-    private GameObject robotCameraObject;
+    public GameObject robotCameraObject;
 
     //Testing camera location, can be deleted later
     private Vector3 robotCameraPosition = new Vector3(0f, 0.5f, 0f);
@@ -356,15 +356,7 @@ public class MainState : SimState
             {
                 //Switch to robot camera after overview (make sure robot camera exists first)
                 if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
-<<<<<<< HEAD
-<<<<<<< HEAD
                     && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null && GameObject.Find("RobotCameraPanel") == null)
-=======
-                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
->>>>>>> Isabelle
-=======
-                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
->>>>>>> parent of 51c372b8... Merge branch 'SplitCameraView'
                 {
                     ToRobotCamera();
                 }
@@ -401,11 +393,7 @@ public class MainState : SimState
 
             if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
-<<<<<<< HEAD
         
-=======
-
->>>>>>> Isabelle
         if (IsResetting)
         {
             Resetting();
@@ -512,7 +500,7 @@ public class MainState : SimState
         robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
 
-        robotCameraObject.SetActive(false);
+        robotCameraObject.SetActive(true);
 
 
         RotateRobot(robotStartOrientation);
@@ -603,11 +591,7 @@ public class MainState : SimState
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
     /// <param name="resetTransform"></param>
-<<<<<<< HEAD
     void BeginReset(bool resetTransform = true)
-=======
-    public void BeginReset(bool resetTransform = true)
->>>>>>> Isabelle
     {
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
@@ -679,11 +663,7 @@ public class MainState : SimState
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
-<<<<<<< HEAD
     void EndReset()
-=======
-    public void EndReset()
->>>>>>> Isabelle
     {
         IsResetting = false;
         isResettingOrientation = false;
@@ -750,7 +730,7 @@ public class MainState : SimState
     void ToDynamicCamera()
     {
         dynamicCameraObject.SetActive(true);
-        robotCameraObject.SetActive(false);
+        //robotCameraObject.SetActive(false);
         if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
         {
             robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(false);
@@ -760,7 +740,7 @@ public class MainState : SimState
     void ToRobotCamera()
     {
         dynamicCameraObject.SetActive(false);
-        robotCameraObject.SetActive(true);
+        //robotCameraObject.SetActive(true);
         if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
         {
             robotCameraObject.GetComponent<RobotCamera>().CurrentCamera.SetActive(true);
