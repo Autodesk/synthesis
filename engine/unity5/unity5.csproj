@@ -236,10 +236,7 @@
     <Compile Include="Assets\Scripts\GUI\Scrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
-<<<<<<< HEAD
-=======
     <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
->>>>>>> Isabelle
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
