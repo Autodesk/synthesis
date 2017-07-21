@@ -84,7 +84,7 @@ public class SimUI : MonoBehaviour
     private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
 
     bool isEditing = false;
-    
+
     private bool freeroamWindowClosed = false;
     private bool usingRobotView = false;
 
@@ -101,6 +101,7 @@ public class SimUI : MonoBehaviour
         {
             main = transform.GetComponent<StateMachine>().MainState;
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+            //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
         }
         else if (dpm == null)
@@ -108,18 +109,17 @@ public class SimUI : MonoBehaviour
             dpm = main.GetDriverPractice();
             FindElements();
 
-            
+
         }
         else
         {
             UpdateDPMValues();
             UpdateVectorConfiguration();
-            UpdateWindows(); //please don't
-            UpdateCameraWindow();
+            UpdateWindows();
             if (settingControl != 0) ListenControl();
-           
+
         }
-            
+
     }
 
     private void OnGUI()
@@ -169,10 +169,13 @@ public class SimUI : MonoBehaviour
 
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
+
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
 
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
+
+        robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
     }
 
     /// <summary>
@@ -219,38 +222,38 @@ public class SimUI : MonoBehaviour
     {
         if (holdCount > 0 && !isEditing) //This indicates that any of the configuration increment buttons are being pressed
         {
-                if (deltaOffsetX != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeOffsetX(deltaOffsetX, configuringIndex);
-                    else dpm.ChangeOffsetX(deltaOffsetX * 5, configuringIndex);
-                }
-                else if (deltaOffsetY != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeOffsetY(deltaOffsetY, configuringIndex);
-                    else dpm.ChangeOffsetY(deltaOffsetY * 5, configuringIndex);
-                }
-                else if (deltaOffsetZ != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeOffsetZ(deltaOffsetZ, configuringIndex);
-                    else dpm.ChangeOffsetZ(deltaOffsetZ * 5, configuringIndex);
-                }
-                else if (deltaReleaseSpeed != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeReleaseSpeed(deltaReleaseSpeed, configuringIndex);
-                    else dpm.ChangeReleaseSpeed(deltaReleaseSpeed * 5, configuringIndex);
-                }
-                else if (deltaReleaseHorizontal != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal, configuringIndex);
-                    else dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal * 5, configuringIndex);
-                }
-                else if (deltaReleaseVertical != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical, configuringIndex);
-                    else dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical * 5, configuringIndex);
-                }
-                holdCount++;
+            if (deltaOffsetX != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeOffsetX(deltaOffsetX, configuringIndex);
+                else dpm.ChangeOffsetX(deltaOffsetX * 5, configuringIndex);
             }
+            else if (deltaOffsetY != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeOffsetY(deltaOffsetY, configuringIndex);
+                else dpm.ChangeOffsetY(deltaOffsetY * 5, configuringIndex);
+            }
+            else if (deltaOffsetZ != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeOffsetZ(deltaOffsetZ, configuringIndex);
+                else dpm.ChangeOffsetZ(deltaOffsetZ * 5, configuringIndex);
+            }
+            else if (deltaReleaseSpeed != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeReleaseSpeed(deltaReleaseSpeed, configuringIndex);
+                else dpm.ChangeReleaseSpeed(deltaReleaseSpeed * 5, configuringIndex);
+            }
+            else if (deltaReleaseHorizontal != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal, configuringIndex);
+                else dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal * 5, configuringIndex);
+            }
+            else if (deltaReleaseVertical != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical, configuringIndex);
+                else dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical * 5, configuringIndex);
+            }
+            holdCount++;
+        }
 
         if (!isEditing)
         {
@@ -304,31 +307,15 @@ public class SimUI : MonoBehaviour
             }
         }
 
-        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed){
-            if (!freeroamWindowClosed)
-            {
-                freeroamCameraWindow.SetActive(true);
-            }
-            
-        }
-        else if(!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
-        {
-            freeroamCameraWindow.SetActive(false);
-        }
+        UpdateFreeroamWindow();
+        UpdateSpawnpointWindow();
+        UpdateCameraWindow();
 
-        if (main.IsResetting)
-        {
-            spawnpointWindow.SetActive(true);
-        }
-        else
-        {
-            spawnpointWindow.SetActive(false);
-        }
     }
 
     private void UpdateCameraView()
     {
-        
+
     }
     #region main button functions
     /// <summary>
@@ -433,7 +420,7 @@ public class SimUI : MonoBehaviour
                 dpm.displayTrajectories[0] = false;
                 dpm.displayTrajectories[1] = false;
             }
-            
+
         }
     }
 
@@ -475,7 +462,7 @@ public class SimUI : MonoBehaviour
             dpm.displayTrajectories[0] = true;
             dpm.displayTrajectories[1] = false;
         }
-        else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!",5);
+        else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
     }
 
     /// <summary>
@@ -689,7 +676,7 @@ public class SimUI : MonoBehaviour
     }
     #endregion
     #region control customization functions
-    
+
     public void ChangeIntakeControl()
     {
         settingControl = 1;
@@ -736,42 +723,62 @@ public class SimUI : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    /// <summary>
+    /// Updates the robot camera view window
+    /// </summary>
     private void UpdateCameraWindow()
     {
-        if (usingRobotView && main.dynamicCameraObject.activeSelf)
+        //Make sure robot camera exists first
+        if(robotCamera == null && AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>() != null)
         {
             robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
-            Debug.Log(robotCamera.CurrentCamera);
+        }
 
-            if (robotCamera.CurrentCamera != null)
+        if (robotCamera != null)
+        {
+            //Can use robot view when dynamicCamera is active
+            if (usingRobotView && main.dynamicCameraObject.activeSelf)
             {
-                robotCamera.CurrentCamera.SetActive(true);
-                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
-                if (Input.GetKeyDown(KeyCode.Q))
-                {
-                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
-                    robotCamera.ToggleCamera();
-                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
-
-                }
-                Debug.Log("Robot camera view is " + robotCameraView.name);
+                robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
                 Debug.Log(robotCamera.CurrentCamera);
-            }
-        }
-        else if (usingRobotView && !main.dynamicCameraObject.activeSelf)
-        {
-            UserMessageManager.Dispatch("You can only use robot view window when you are not in robot view mode!", 2f);
-            usingRobotView = false;
-            robotCameraViewWindow.SetActive(false);
-        }
-        else
-        {
-            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
 
+                //Make sure there is camera on robot
+                if (robotCamera.CurrentCamera != null)
+                {
+                    robotCamera.CurrentCamera.SetActive(true);
+                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+                    //Toggle the robot camera using Q (should be changed later)
+                    if (Input.GetKeyDown(KeyCode.Q))
+                    {
+                        robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                        robotCamera.ToggleCamera();
+                        robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+
+                    }
+                    //Debug.Log("Robot camera view is " + robotCameraView.name);
+                    //Debug.Log(robotCamera.CurrentCamera);
+                }
+            }
+            //Don't allow using robot view window when users are currently using one of the robot view
+            else if (usingRobotView && !main.dynamicCameraObject.activeSelf)
+            {
+                UserMessageManager.Dispatch("You can only use robot view window when you are not in robot view mode!", 2f);
+                usingRobotView = false;
+                robotCameraViewWindow.SetActive(false);
+            }
+            //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
+            else
+            {
+                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+            }
         }
     }
 
+    /// <summary>
+    /// Toggles the state of usingRobotView when the button "Toggle Robot Camera" is clicked
+    /// </summary>
     public void ToggleCameraWindow()
     {
         usingRobotView = !usingRobotView;
@@ -782,11 +789,44 @@ public class SimUI : MonoBehaviour
         }
         else
         {
+            //Free the target texture and disable the camera since robot camera has more depth than main camera
             robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
             robotCamera.CurrentCamera.SetActive(false);
         }
     }
-    
-    #endregion
+
+    /// <summary>
+    /// Pop reset instructions when main is in reset spawnpoint mode
+    /// </summary>
+    private void UpdateSpawnpointWindow()
+    {
+        if (main.IsResetting)
+        {
+            spawnpointWindow.SetActive(true);
+        }
+        else
+        {
+            spawnpointWindow.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
+    /// </summary>
+    private void UpdateFreeroamWindow()
+    {
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
+        {
+            if (!freeroamWindowClosed)
+            {
+                freeroamCameraWindow.SetActive(true);
+            }
+
+        }
+        else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        {
+            freeroamCameraWindow.SetActive(false);
+        }
+    }
 }
 
