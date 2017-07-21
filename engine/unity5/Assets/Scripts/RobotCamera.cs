@@ -79,8 +79,4 @@ public class RobotCamera : MonoBehaviour
         return robotCameraList.IndexOf(CurrentCamera) == robotCameraList.Count - 1;
     }
     
-    public List<GameObject> GetRobotCameraList()
-    {
-        return robotCameraList;
-    }
 }
