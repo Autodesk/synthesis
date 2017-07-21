@@ -4,7 +4,7 @@
 QualitySettings:
   m_ObjectHideFlags: 0
   serializedVersion: 5
-  m_CurrentQuality: 1
+  m_CurrentQuality: 0
   m_QualitySettings:
   - serializedVersion: 2
     name: Default
@@ -113,7 +113,7 @@ QualitySettings:
   - serializedVersion: 2
     name: Good
     pixelLightCount: 2
-    shadows: 2
+    shadows: 0
     shadowResolution: 1
     shadowProjection: 1
     shadowCascades: 2
@@ -139,7 +139,7 @@ QualitySettings:
   - serializedVersion: 2
     name: Beautiful
     pixelLightCount: 3
-    shadows: 2
+    shadows: 0
     shadowResolution: 2
     shadowProjection: 1
     shadowCascades: 2

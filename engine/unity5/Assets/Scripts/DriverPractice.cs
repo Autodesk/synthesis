@@ -114,8 +114,8 @@ namespace BulletUnity {
 
 
             gamepieceNames = new List<string>();
-            gamepieceNames.Add("WOAH");
-            gamepieceNames.Add("TEST");
+            gamepieceNames.Add("NOT CONFIGURED");
+            gamepieceNames.Add("NOT CONFIGURED");
 
             spawnedGamepieces = new List<List<GameObject>>();
             spawnedPrimary = new List<GameObject>();
@@ -908,7 +908,7 @@ namespace BulletUnity {
                 {
                     HoldGamepiece(0);
                 }
-                processingIndex = 1;
+                processingIndex = 0;
             }
 
             if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);

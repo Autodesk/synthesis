@@ -716,8 +716,8 @@ public class MainMenu : MonoBehaviour {
         }
         else
         {
-            SwitchTabHome();
             SwitchSimDefault();
+            SwitchTabHome();
         }
         
         
@@ -750,6 +750,8 @@ public class MainMenu : MonoBehaviour {
         configurationText = AuxFunctions.FindObject(dpmConfiguration, "ConfigurationText");
 
         inputConflict = AuxFunctions.FindObject(gameObject, "InputConflict");
+
+        AuxFunctions.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
     }
 
     void InitGraphicsSettings()
@@ -791,4 +793,12 @@ public class MainMenu : MonoBehaviour {
         else if (width == xresolution[9] && height == yresolution[9]) resolutionsetting = 9;
         else resolutionsetting = 2;
     }
+
+    public void ChangeQualitySettings()
+    {
+        if (QualitySettings.GetQualityLevel() < QualitySettings.names.Length - 1) QualitySettings.SetQualityLevel(QualitySettings.GetQualityLevel() + 1);
+        else QualitySettings.SetQualityLevel(0);
+        GameObject.Find("QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+
+    } 
 }
