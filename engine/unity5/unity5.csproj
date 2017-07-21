@@ -202,6 +202,7 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyRope.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
+    <Compile Include="Assets\LocalizationHelper.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BCylinderShapeX.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BCylinderShapeZ.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BGImpactCompoundShape.cs" />
@@ -235,9 +236,11 @@
     <Compile Include="Assets\Scripts\GUI\Scrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
+    <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
+    <Compile Include="Assets\Scripts\LocalizationHelperr.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MouseListener.cs" />
