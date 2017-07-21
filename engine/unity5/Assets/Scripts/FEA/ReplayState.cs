@@ -3,7 +3,10 @@ using BulletSharp;
 using BulletUnity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading;
 using UnityEngine;
@@ -523,6 +526,21 @@ namespace Assets.Scripts.FEA
 
                 r.WorldTransform = worldTransform;
             }
+
+            // THIS IS FOR TESTING, PLEASE REMOVE BEFORE DEPLOYMENT vvv
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                string fieldPath;
+                string robotPath;
+                List<FixedQueue<StateDescriptor>> fieldStates;
+                List<FixedQueue<StateDescriptor>> robotStates;
+                List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
+
+                ReplayImporter.Read("test", out fieldPath, out robotPath, out fieldStates, out robotStates, out contacts);
+            }
+
+            // THIS IS FOR TESTING, PLEASE REMOVE BEFORE DEPLOYMENT ^^^
 
             if (Input.GetKey(KeyCode.Return))
                 StateMachine.Instance.PopState();

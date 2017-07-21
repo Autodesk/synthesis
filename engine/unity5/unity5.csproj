@@ -216,6 +216,7 @@
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
     <Compile Include="Assets\Scripts\FEA\ReplayExporter.cs" />
+    <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
     <Compile Include="Assets\Scripts\FEA\ReplayState.cs" />
     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\Tracker.cs" />

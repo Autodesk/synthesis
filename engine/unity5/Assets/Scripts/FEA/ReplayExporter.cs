@@ -49,10 +49,15 @@ namespace Assets.Scripts.FEA
         /// <param name="trackers"></param>
         private static void WriteField(XmlWriter writer, string fieldPath, List<Tracker> trackers)
         {
+            int uncompressedLength;
+            byte[] trackersBuffer = GetTrackersBuffer(trackers, out uncompressedLength);
+
             writer.WriteStartElement("field");
             writer.WriteAttributeString("path", fieldPath);
+            writer.WriteAttributeString("ulength", uncompressedLength.ToString());
+            writer.WriteAttributeString("clength", trackersBuffer.Length.ToString());
 
-            WriteTrackers(writer, trackers);
+            writer.WriteBase64(trackersBuffer, 0, trackersBuffer.Length);
 
             writer.WriteEndElement();
         }
@@ -65,20 +70,43 @@ namespace Assets.Scripts.FEA
         /// <param name="trackers"></param>
         private static void WriteRobot(XmlWriter writer, string robotPath, List<Tracker> trackers)
         {
+            int uncompressedLength;
+            byte[] trackersBuffer = GetTrackersBuffer(trackers, out uncompressedLength);
+
             writer.WriteStartElement("robot");
             writer.WriteAttributeString("path", robotPath);
+            writer.WriteAttributeString("ulength", uncompressedLength.ToString());
+            writer.WriteAttributeString("clength", trackersBuffer.Length.ToString());
 
-            WriteTrackers(writer, trackers);
+            writer.WriteBase64(trackersBuffer, 0, trackersBuffer.Length);
 
             writer.WriteEndElement();
         }
 
         /// <summary>
-        /// Writes the Trackers using the provided XmlWriter.
+        /// Writes the given list of contacts with the provided XmlWriter.
         /// </summary>
         /// <param name="writer"></param>
+        /// <param name="contacts"></param>
+        private static void WriteContacts(XmlWriter writer, List<List<ContactDescriptor>> contacts)
+        {
+            int uncompressedLength;
+            byte[] contactsBuffer = GetContactsBuffer(contacts, out uncompressedLength);
+
+            writer.WriteStartElement("contacts");
+            writer.WriteAttributeString("ulength", uncompressedLength.ToString());
+            writer.WriteAttributeString("clength", contactsBuffer.Length.ToString());
+
+            writer.WriteBase64(contactsBuffer, 0, contactsBuffer.Length);
+
+            writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Returns a compressed byte buffer from the given List of Trackers.
+        /// </summary>
         /// <param name="trackers"></param>
-        private static void WriteTrackers(XmlWriter writer, List<Tracker> trackers)
+        private static byte[] GetTrackersBuffer(List<Tracker> trackers, out int uncompressedLength)
         {
             IFormatter formattter = new BinaryFormatter();
 
@@ -88,19 +116,16 @@ namespace Assets.Scripts.FEA
                     foreach (StateDescriptor s in t.States)
                         formattter.Serialize(bw.BaseStream, s);
 
-                WriteMemory(writer, (MemoryStream)bw.BaseStream);
+                return CompressMemoryStream((MemoryStream)bw.BaseStream, out uncompressedLength);
             }
         }
 
         /// <summary>
-        /// Writes the list of contacts with the given XmlWriter.
+        /// Returns a compressed byte buffer representing the contacts list.
         /// </summary>
-        /// <param name="writer"></param>
         /// <param name="contacts"></param>
-        private static void WriteContacts(XmlWriter writer, List<List<ContactDescriptor>> contacts)
+        private static byte[] GetContactsBuffer(List<List<ContactDescriptor>> contacts, out int uncompressedLength)
         {
-            writer.WriteStartElement("contacts");
-
             List<List<ContactDescriptor>> filteredContacts = contacts.Where(x => x != null && x.Count > 0).ToList();
 
             IFormatter formatter = new BinaryFormatter();
@@ -109,13 +134,9 @@ namespace Assets.Scripts.FEA
             {
                 bw.Write(filteredContacts.Count);
 
-                int i = 0;
-
                 foreach (List<ContactDescriptor> l in filteredContacts)
                 {
                     bw.Write(l.Count);
-
-                    int j = 0;
 
                     foreach (ContactDescriptor c in l)
                     {
@@ -127,35 +148,29 @@ namespace Assets.Scripts.FEA
 
                         bw.Write(int.Parse(name.Substring(startIndex + 1, name.Length - startIndex - name.IndexOf('.'))));
 
-                        j++;
                     }
-
-                    i++;
                 }
 
-                WriteMemory(writer, (MemoryStream)bw.BaseStream);
+                return CompressMemoryStream((MemoryStream)bw.BaseStream, out uncompressedLength);
             }
-
-            writer.WriteEndElement();
         }
 
         /// <summary>
-        /// Writes the given MemoryStream with the provided XmlWriter with compression and Base64 encoding.
+        /// Generates a byte buffer from the given MemoryStream with deflation compression.
         /// </summary>
-        /// <param name="writer"></param>
         /// <param name="ms"></param>
-        private static void WriteMemory(XmlWriter writer, MemoryStream ms)
+        private static byte[] CompressMemoryStream(MemoryStream ms, out int uncompressedLength)
         {
             byte[] uncompressedBuffer = ms.ToArray();
+
+            uncompressedLength = uncompressedBuffer.Length;
 
             MemoryStream result = new MemoryStream();
 
             using (DeflateStream ds = new DeflateStream(result, CompressionMode.Compress))
                 ds.Write(uncompressedBuffer, 0, uncompressedBuffer.Length);
 
-            byte[] compressedBuffer = result.ToArray();
-
-            writer.WriteBase64(compressedBuffer, 0, compressedBuffer.Length);
+            return result.ToArray();
         }
     }
 }
