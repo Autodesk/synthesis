@@ -59,6 +59,9 @@ public class SimUI : MonoBehaviour
     Text intakeMechanismText;
     Text releaseMechanismText;
 
+    Text primaryCountText;
+    Text secondaryCountText;
+
     public bool dpmWindowOn = false; //if the driver practice mode window is active
 
     public bool configuring = false; //if the configuration window is active
@@ -167,6 +170,9 @@ public class SimUI : MonoBehaviour
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
+
+        primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
+        secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
     }
 
     /// <summary>
@@ -179,6 +185,9 @@ public class SimUI : MonoBehaviour
 
         if (dpm.gamepieceNames[1] == null) secondaryGamepieceText.text = "Secondary Gamepiece:  NOT CONFIGURED";
         else secondaryGamepieceText.text = "Secondary Gamepiece:  " + dpm.gamepieceNames[1];
+
+        primaryCountText.text = "Spawned: " + dpm.spawnedPrimary.Count + "\nHeld: " + dpm.objectsHeld[0].Count;
+        secondaryCountText.text = "Spawned: " + dpm.spawnedSecondary.Count + "\nHeld: " + dpm.objectsHeld[1].Count;
 
         if (configuring)
         {
@@ -411,6 +420,7 @@ public class SimUI : MonoBehaviour
             dpm.modeEnabled = true;
             enableDPMText.text = "Disable Driver Practice Mode";
             lockPanel.SetActive(false);
+            
         }
         else
         {
@@ -420,6 +430,8 @@ public class SimUI : MonoBehaviour
                 enableDPMText.text = "Enable Driver Practice Mode";
                 dpm.modeEnabled = false;
                 lockPanel.SetActive(true);
+                dpm.displayTrajectories[0] = false;
+                dpm.displayTrajectories[1] = false;
             }
             
         }
@@ -444,7 +456,7 @@ public class SimUI : MonoBehaviour
     /// <summary>
     /// Toggles the display of primary gamepiece release trajectory.
     /// </summary>
-    public void DisplayTrajectorySecondary()
+    public void DisplayTrajectorySecondary()        
     {
         dpm.displayTrajectories[1] = !dpm.displayTrajectories[1];
     }
