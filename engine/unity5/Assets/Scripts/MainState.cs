@@ -428,12 +428,15 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
         tracking = true;
 
+        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = true;
+
         contactPoints.Clear(null);
     }
 
     public override void Pause()
     {
         tracking = false;
+        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = false;
 
         ToDynamicCamera();
     }
