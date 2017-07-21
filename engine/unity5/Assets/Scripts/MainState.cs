@@ -390,7 +390,7 @@ public class MainState : SimState
 
             if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
-        
+
         if (IsResetting)
         {
             Resetting();
@@ -505,11 +505,7 @@ public class MainState : SimState
         return true;
     }
 
-<<<<<<< HEAD
-    public void BeginReset(bool resetTransform = true)
-=======
     private void UpdateTrackers()
->>>>>>> master
     {
         int numSteps = physicsWorld.frameCount - lastFrameCount;
 
@@ -592,7 +588,7 @@ public class MainState : SimState
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
     /// <param name="resetTransform"></param>
-    void BeginReset(bool resetTransform = true)
+    public void BeginReset(bool resetTransform = true)
     {
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
@@ -661,14 +657,10 @@ public class MainState : SimState
         }
     }
 
-<<<<<<< HEAD
-    public void EndReset()
-=======
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
-    void EndReset()
->>>>>>> master
+    public void EndReset()
     {
         IsResetting = false;
         isResettingOrientation = false;
@@ -755,12 +747,9 @@ public class MainState : SimState
             UserMessageManager.Dispatch("No camera on robot", 2);
         }
     }
-<<<<<<< HEAD
-=======
 
     public DriverPractice GetDriverPractice()
     {
         return driverPractice;
     }
->>>>>>> master
 }

@@ -10,12 +10,6 @@ namespace Assets.Scripts.FSM
     public class StateMachine : MonoBehaviour
     {
         private Stack<SimState> activeStates;
-<<<<<<< HEAD
-        private SimState currentState;
-
-        private MainState mainState;
-        
-=======
 
         /// <summary>
         /// The current state in the StateMachine.
@@ -27,7 +21,6 @@ namespace Assets.Scripts.FSM
         /// <summary>
         /// The global StateMachine instance.
         /// </summary>
->>>>>>> master
         public static StateMachine Instance
         {
             get
@@ -105,11 +98,7 @@ namespace Assets.Scripts.FSM
             }
 
             SimState defaultState = Activator.CreateInstance(defaultStateType) as SimState;
-<<<<<<< HEAD
-            mainState = (MainState)defaultState;
-=======
             MainState = (MainState)defaultState;
->>>>>>> master
 
             if (defaultState == null)
                 Debug.LogError("\"" + defaultStateName + "\" does not extend SimState!");
@@ -162,11 +151,6 @@ namespace Assets.Scripts.FSM
         {
             if (CurrentState != null)
                 CurrentState.Awake();
-        }
-
-        public MainState GetMainState()
-        {
-            return mainState;
         }
     }
 }
