@@ -1,80 +1,34 @@
-CC = cl#/frc/bin/arm-frc-linux-gnueabi-g++.exe
-CCFLAGS = -fPIC -Iinclude -Ini-libraries/include -I$(FRC_PATH)/usr/include -Iwpiutil/include -Ilib -std=c++11
+CC = x86_64-w64-mingw32-g++
+AR = x86_64-w64-mingw32-ar
+TARGET = debug
+CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iwpilibc/shared/include -Iinclude -Ini-libraries/include -Iwpiutil/include -Ilib -Iwpilibc/athena/include -Intcore/include -std=c++14
+LDFLADS := -lws2_32
 
-SRC_FILES = \
-	lib/athena/Accelerometer.cpp \
-	lib/athena/AnalogAccumulator.cpp \
-	lib/athena/AnalogGyro.cpp \
-	lib/athena/AnalogInput.cpp \
-	lib/athena/AnalogInternal.cpp \
-	lib/athena/AnalogTrigger.cpp \
-	lib/athena/Compressor.cpp \
-	lib/athena/Constants.cpp \
-	lib/athena/Counter.cpp \
-	lib/athena/DigitalInternal.cpp \
-	lib/athena/DIO.cpp \
-	lib/athena/Encoder.cpp \
-	lib/athena/FPGAEncoder.cpp \
-	lib/athena/FRCDriverStation.cpp \
-	lib/athena/HAL.cpp \
-	lib/athena/I2C.cpp \
-	lib/athena/Interrupts.cpp \
-	lib/athena/Notifier.cpp \
-	lib/athena/OSSerialPort.cpp \
-	lib/athena/PCMInternal.cpp \
-	lib/athena/PDP.cpp \
-	lib/athena/Ports.cpp \
-	lib/athena/Power.cpp \
-	lib/athena/PWM.cpp \
-	lib/athena/Relay.cpp \
-	lib/athena/SerialPort.cpp \
-	lib/athena/Solenoid.cpp \
-	lib/athena/SPI.cpp \
-	lib/athena/Threads.cpp \
-	lib/athena/cpp/priority_mutex.cpp \
-	lib/athena/cpp/SerialHelper.cpp \
-	lib/StateNetwork/StateNetworkServer.cpp \
-	lib/OSAL/Synchronized.cpp \
-	lib/OSAL/System.cpp \
-	lib/OSAL/Task.cpp \
-	lib/crc32.cpp \
-	lib/ErrorBase.cpp \
-	lib/Error.cpp \
-	lib/Timer.cpp \
-	lib/Utility.cpp \
-	lib/ChipObject/NiFpga.cpp \
-	lib/ChipObject/NiFpgaState.cpp \
-	lib/ChipObject/NiIRQImpl.cpp \
-	lib/ChipObject/niLoadOut.cpp \
-	lib/ChipObject/NiRio.cpp \
-	lib/ChipObject/nUsageReporting.cpp \
-	lib/ChipObject/PWMDecoder.cpp \
-	lib/ChipObject/tAccumulatorImpl.cpp \
-	lib/ChipObject/tAIImpl.cpp \
-	lib/ChipObject/tAlarmImpl.cpp \
-	lib/ChipObject/tAnalogTriggerImpl.cpp \
-	lib/ChipObject/tCounterImpl.cpp \
-	lib/ChipObject/tDIOImpl.cpp \
-	lib/ChipObject/tEncoderImpl.cpp \
-	lib/ChipObject/tGlobalImpl.cpp \
-	lib/ChipObject/tInterruptImpl.cpp \
-	lib/ChipObject/tInterruptManager.cpp \
-	lib/ChipObject/tSolenoidImpl.cpp \
-	lib/ChipObject/tSystem.cpp \
-	lib/ChipObject/tWatchcatImpl.cpp 
+ifeq ($(TARGET), debug)
+	CCFLAGS += -O0 -g
+endif
+ifeq ($(TARGET), release)
+	CCflags += -O2
+endif
 
-OBJ_FILES = $(SRC_FILES:.cpp=.o)
-OUT = build/libHALAthena.so
+SRC_FILES := $(shell find . -name "*.cpp" -not -name "*priority_mutex.cpp" -not -wholename "*ctre/*" -not -name "*NiFpgaState.cpp" -not -name "VisionRunner.cpp")
+SRC_FILES := $(filter-out lib/athena/cpp/priority_mutex.cpp,$(SRC_FILES))
+OBJ_FILES := $(addprefix build/,$(patsubst %.cpp,%.o,$(SRC_FILES)))
+HEADER_FILES := $(shell find . -name "*.h")
+OUT := build/HAL.a
 
-!MESSAGE $(OBJ_FILES)
-.cpp.o:
-	$(CC) -c $*.cpp -o $@ $(CCFLAGS)
+$(OUT): $(OBJ_FILES) | Makefile $(HEADER_FILES)
+	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
+	@#$(CC) -static $^ -o $@ $(CCFLAGS) $(LDFLAGS)
+	@$(AR) rcs $@ $^
 
-$(OUT): $(OBJ_FILES)
-	$(CC) -shared $** -o $@ $(CCFLAGS)
+build/%.o: %.cpp Makefile $(HEADER_FILES)
+	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
+	@mkdir	-p $(dir $@)
+	@$(CC) -c $< -o $@ $(CCFLAGS)
 
 all: $(OUT)
 
 clean:
-	del $(OBJ_FILES)
-	del $(OUT)
+	rm -r $(OBJ_FILES)
+	rm -r $(OUT)

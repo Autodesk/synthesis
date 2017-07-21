@@ -11,7 +11,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#define NativeThreadHandle const HANDLE*
+#include <thread>
+#define NativeThreadHandle const std::thread::native_handle_type*
 #else
 #include <pthread.h>
 #define NativeThreadHandle const pthread_t*

@@ -9,6 +9,7 @@
 
 #if _WIN32
 
+#undef NOMINMAX
 #define NOMINMAX
 #define USE_WINAPI 1
 #define strdup _strdup
