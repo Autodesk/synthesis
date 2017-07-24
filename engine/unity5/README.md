@@ -1,6 +1,6 @@
-###How to set up:
+### How to set up:
 Open Assets/scene/stablescene in unity
-####Make sure:
+#### Make sure:
 *Init.cs should be attached to an empty GameObject
 
 In order to build the project properly, all shaders used in 
