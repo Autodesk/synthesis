@@ -1,6 +1,8 @@
 .vs
 [Dd]ebug
 [Rr]elease
+engine/unity5/Build_Data
 *.sou
 *.vxcproj.user
 tags
+*.exe

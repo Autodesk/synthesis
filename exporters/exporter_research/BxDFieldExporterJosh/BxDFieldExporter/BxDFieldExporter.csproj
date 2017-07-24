@@ -30,7 +30,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2017\Bin\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AppData\Roaming\Autodesk\Inventor 2018\Addins\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>

@@ -371,6 +371,12 @@ namespace BxDRobotExporter {
 
                 stdole.IPictureDisp EditLimitsIconSmall = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDRobotExporter.Resource.EditLimits16));
                 stdole.IPictureDisp EditLimitsIconLarge = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDRobotExporter.Resource.EditLimits32));
+
+                stdole.IPictureDisp TTDriverDropdown = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDRobotExporter.Resource.TTDriverDropdown));
+                stdole.IPictureDisp TTEditDrivers = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDRobotExporter.Resource.TTEditDrivers));
+                stdole.IPictureDisp TTLimitsDropdown = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDRobotExporter.Resource.TTLimitsDropdown));
+                stdole.IPictureDisp TTEditLimits = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDRobotExporter.Resource.TTEditLimits));
+                stdole.IPictureDisp TTExportRobot = PictureDispConverter.ToIPictureDisp(new Bitmap(BxDRobotExporter.Resource.TTExportRobot));
                 // Get the Environments collection
                 Environments oEnvironments = m_inventorApplication.UserInterfaceManager.Environments;
 
@@ -395,11 +401,19 @@ namespace BxDRobotExporter {
                 partPanel.Reposition("BxD:RobotExporter:ModelControls", false);
                 partPanel2.Reposition("BxD:RobotExporter:Joints", false);
                 partPanel3.Reposition("BxD:RobotExporter:Limits", false);
+
                 editDrivers = controlDefs.AddButtonDefinition("Edit Drivers", "BxD:RobotExporter:EditDrivers", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, EditDriversIconSmall, EditDriversIconLarge);
                 editDrivers.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditDrivers_OnExecute);
+                toolTip(editDrivers, "Edit properties of a joint.",
+                    "Select a joint so that it is highlighted blue, and then click \"Edit Drivers.\" Reconfigure joint properties including port number and type, joint friction, wheel type and gear ratio."+
+                    " \"Joint friction\" is the friction between the two parts that make up joint, with 0 as none and 100 as extreme.",
+                    TTEditDrivers, "Edit Driver");
 
                 editLimits = controlDefs.AddButtonDefinition("Edit Limits", "BxD:RobotExporter:editLimits", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, EditLimitsIconSmall, EditLimitsIconLarge);
                 editLimits.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(EditLimits_OnExecute);
+                toolTip(editLimits, "Edit rotational limits of a joint.",
+                    "If a joint has limits, reassigns the lower and upper rotation of a joint in radians.",
+                    TTEditLimits, "Edit Limits");
 
                 selectJointInsideJoint = controlDefs.AddButtonDefinition("Select Joint \n Inside a Subassembly", "BxD:RobotExporter:SelectJointInsideaJoint", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, SelectJointInsideJointIconSmall, SelectJointInsideJointIconLarge);
                 selectJointInsideJoint.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(selectJointInsideJoint_OnExecute);
@@ -409,6 +423,9 @@ namespace BxDRobotExporter {
 
                 exportRobot = controlDefs.AddButtonDefinition("Export Robot", "BxD:RobotExporter:ExportRobot", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null, exportRobotIconSmall, exportRobotIconLarge);
                 exportRobot.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(exportRobot_OnExecute);
+                toolTip(exportRobot, "Export the robot for use in the Synthesis Simulation.",
+                    "After assigning all joints, joint properties and limits, export the robot. The robot will be saved to Documents/Synthesis/Robots and can be accessed through Synthesis.",
+                    TTExportRobot, "Export the robot");
 
                 cancelExport = controlDefs.AddButtonDefinition("Cancel Export", "BxD:RobotExporter:CancelExport", CommandTypesEnum.kNonShapeEditCmdType, m_ClientId, null, null);
                 cancelExport.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(cancelExport_OnExecute);
@@ -417,7 +434,18 @@ namespace BxDRobotExporter {
                 test.OnExecute += new ButtonDefinitionSink_OnExecuteEventHandler(test_OnExecute);
 
                 JointsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Driver", "Autodesk:SimpleAddIn:Driver", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Driver", "Driver", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+                toolTip(JointsComboBox, "Assign a driver type and properties to a joint.",
+                   @"Select a joint so that it is highlighted blue. Then, select the driver type from this dropdown menu. Configure joint properties including port number and type, joint friction, wheel type and gear ratio. “Joint friction” is the friction between the two parts that make up joint, with 0 as none and 100 as extreme.
+
+If you do not have any joints, create some by navigating to Assemble> Joint. A joint is any component that moves, such as a wheel or arm.",
+                    TTDriverDropdown, "Select Driver");
+
                 LimitsComboBox = m_inventorApplication.CommandManager.ControlDefinitions.AddComboBoxDefinition("Has Limits", "Autodesk:SimpleAddIn:HasLimits", CommandTypesEnum.kShapeEditCmdType, 100, addInCLSIDString, "Has Limits", "Has Limits", Type.Missing, Type.Missing, ButtonDisplayEnum.kDisplayTextInLearningMode);
+                toolTip(LimitsComboBox, "Select whether a joint has a limit",
+                    @"Joints that can freely rotate, such as wheels, have no limits. Joints that cannot rotate freely, such as an arm, have limits.
+ 
+Select a joint so that it is highlighted blue. Then, select whether it has limits or no limits from this dropdown list. If there are limits, assign the lower and upper rotational limits in radians.",
+                    TTLimitsDropdown, "Select Limit");
 
                 //add some initial items to the comboboxes
                 JointsComboBox.AddItem("No Driver", 0);
@@ -483,6 +511,36 @@ namespace BxDRobotExporter {
                 MessageBox.Show(e.ToString());
             }
         }
+
+        //Sets the tool tips for a button
+        public void toolTip(ButtonDefinition button, String description, String expandedDescription, stdole.IPictureDisp picture, String title)
+        {
+            button.ProgressiveToolTip.Description = description;
+            button.ProgressiveToolTip.ExpandedDescription = expandedDescription;
+            button.ProgressiveToolTip.Image = picture;
+            button.ProgressiveToolTip.IsProgressive = true;
+            button.ProgressiveToolTip.Title = title;
+        }
+
+        //Sets the tool tips without the picture
+        public void toolTip(ButtonDefinition button, String description, String expandedDescription, String title)
+        {
+            button.ProgressiveToolTip.Description = description;
+            button.ProgressiveToolTip.ExpandedDescription = expandedDescription;
+            button.ProgressiveToolTip.IsProgressive = true;
+            button.ProgressiveToolTip.Title = title;
+        }
+        
+        //Sets the tool tips for a ComboBox
+        public void toolTip(ComboBoxDefinition comboBox, String description, String expandedDescription, stdole.IPictureDisp picture, String title)
+        {
+            comboBox.ProgressiveToolTip.Description = description;
+            comboBox.ProgressiveToolTip.ExpandedDescription = expandedDescription;
+            comboBox.ProgressiveToolTip.Image = picture;
+            comboBox.ProgressiveToolTip.IsProgressive = true;
+            comboBox.ProgressiveToolTip.Title = title;
+        }
+
         //reacts to a select event
         private void oUIEvents_OnSelect(ObjectsEnumerator JustSelectedEntities, ref ObjectCollection MoreSelectedEntities, SelectionDeviceEnum SelectionDevice, Inventor.Point ModelPosition, Point2d ViewPosition, Inventor.View View) {
             try {
@@ -1133,6 +1191,12 @@ namespace BxDRobotExporter {
         }
         // exports the robot
         public void exportRobot_OnExecute(Inventor.NameValueMap Context) {
+            if (jointList.Count == 0)
+            {
+                MessageBox.Show("ERROR: No Joints Defined!");
+                return;
+            }
+      
             try {
                 control.saveFile();// save the file
                 envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
