@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class DynamicCamera : MonoBehaviour
 {
     /// <summary>
     /// The scrolling enabled.
     /// </summary>
-    private static bool movingEnabled = true;
+    public static bool MovingEnabled { get; set; }
 
     /// <summary>
     /// The state of the camera.
@@ -121,10 +122,10 @@ public class DynamicCamera : MonoBehaviour
         {
             if (robot != null && robot.transform.childCount > 0)
             {
-                if (movingEnabled)
-                {
-                    targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
+                targetVector = robot.transform.GetChild(0).transform.position;//AuxFunctions.TotalCenterOfMass(robot);
 
+                if (MovingEnabled)
+                {
                     if (Input.GetMouseButton(0))
                     {
                         cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
@@ -133,21 +134,23 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         panValue = 0f;
-
+                        
                         if (Input.GetMouseButton(1))
                         {
-                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.1f);
+                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
+                            
                         }
+
                     }
-
-                    rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
-                    rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
-
-                    lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
-
-                    mono.transform.position = lagVector;
-                    mono.transform.LookAt(targetVector);
                 }
+
+                rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
+                rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+
+                lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+
+                mono.transform.position = lagVector;
+                mono.transform.LookAt(targetVector);
             }
             else
             {
@@ -193,6 +196,7 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
+            mono.transform.position = new Vector3(0f, 1f, 0f);
             positionVector = new Vector3(0f, 1f, 0f);
             lagPosVector = positionVector;
             rotationVector = Vector3.zero;
@@ -200,37 +204,31 @@ public class DynamicCamera : MonoBehaviour
             zoomValue = 60f;
             lagZoom = zoomValue;
             rotationSpeed = 3f;
-            transformSpeed = 0.25f;
+            transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
         }
 
         public override void Update()
         {
-            if (movingEnabled)
+            if (MovingEnabled)
             {
-                if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
-                {
-                    positionVector += (Input.GetAxis("Mouse Y") * mono.transform.up) * transformSpeed;
-                    positionVector += (Input.GetAxis("Mouse X") * mono.transform.right) * transformSpeed;
-                }
-                else if (Input.GetMouseButton(0))
-                {
-                    rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
-                    positionVector += (Input.GetAxis("Mouse Y") * mono.transform.forward) * transformSpeed;
-                }
-                else if (Input.GetMouseButton(1))
+                if (Input.GetMouseButton(1))
                 {
                     rotationVector.x -= Input.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
 
+                positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
+
                 zoomValue = Mathf.Max(Mathf.Min(zoomValue - Input.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
-                lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
+                //lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
                 lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);
                 lagZoom = CalculateLagScalar(lagZoom, zoomValue, lagResponsiveness);
 
-                mono.transform.position = lagPosVector;
+                mono.transform.position += positionVector;
+                positionVector = Vector3.zero;
                 mono.transform.eulerAngles = lagRotVector;
                 mono.GetComponent<Camera>().fieldOfView = lagZoom;
             }
@@ -243,24 +241,95 @@ public class DynamicCamera : MonoBehaviour
 
     }
 
+    //This state locates directly above the field and looks straight down on the field in order for robot positioning
+    //Not working well with 2016&2017 field because they are not centered
+    public class OverviewState : CameraState
+    {
+        Vector3 positionVector;
+        Vector3 rotationVector;
+        Vector3 fieldVector;
+        GameObject field;
+
+        public OverviewState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+            field = GameObject.Find("Field");
+            fieldVector = field.transform.position;
+        }
+
+        public override void Init()
+        {
+            positionVector = new Vector3(0f, 9f, 0f) + fieldVector;
+            mono.transform.position = positionVector;
+            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+        public override void Update()
+        {
+
+        }
+
+        public override void End()
+        {
+
+        }
+    }
+
+    //This state locates directly above the robot and follows it
+    public class SateliteState : CameraState
+    {
+        Vector3 targetPosition;
+        Vector3 rotationVector;
+        public GameObject target;
+
+        public SateliteState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+        }
+
+        public override void Init()
+        {
+            target = GameObject.Find("Robot");
+            targetPosition = target.transform.position;
+            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+
+        public override void Update()
+        {
+            if (target != null && target.transform.childCount > 0)
+            {
+                targetPosition = target.transform.GetChild(0).transform.position;
+
+            }
+            mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
+        }
+
+        public override void End()
+        {
+
+        }
+    }
     void Start()
     {
-        SwitchCameraState(new DriverStationState(this));
+        SwitchCameraState(new OrbitState(this));
     }
 
     void LateUpdate()
     {
-        if (movingEnabled)
-        {
-            // Will switch the camera state with the camera toggle button
-            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
-            {
-                if (cameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
-                else if (cameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
-                else if (cameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new DriverStationState(this));
-            }
-        }
+        if (_cameraState != null) _cameraState.Update();
+    }
 
+    /// <summary>
+    /// Switch to the next camera state
+    /// </summary>
+    /// <param name="currentCameraState"></param>
+    public void ToggleCameraState(CameraState currentCameraState)
+    {
+        if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
+        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this));
         if (_cameraState != null) _cameraState.Update();
     }
 
@@ -275,23 +344,6 @@ public class DynamicCamera : MonoBehaviour
         _cameraState.Init();
     }
 
-    /// <summary>
-    /// Enables the scrolling.
-    /// </summary>
-    public void EnableMoving()
-    {
-        movingEnabled = true;
-    }
-
-    /// <summary>
-    /// Disables the scrolling.
-    /// </summary>
-    public void DisableMoving()
-    {
-        movingEnabled = false;
-    }
-
-    /// <summary>
     /// Calculates the appropriate lag vector from the given current vector, target vector, and responsiveness constant.
     /// </summary>
     /// <param name="lagVector"></param>
@@ -326,5 +378,12 @@ public class DynamicCamera : MonoBehaviour
             lagScalar = targetScalar;
 
         return lagScalar;
+    }
+
+    public void SwitchCameraState(int type)
+    {
+        if (type == 0) SwitchCameraState(new FreeroamState(this));
+        else if (type == 1) SwitchCameraState(new OrbitState(this));
+        else SwitchCameraState(new DriverStationState(this));
     }
 }
