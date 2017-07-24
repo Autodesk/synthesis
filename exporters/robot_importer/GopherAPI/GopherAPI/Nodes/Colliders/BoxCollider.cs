@@ -7,15 +7,13 @@ namespace GopherAPI.Nodes.Colliders
     /// </summary>
     public class BoxCollider : GopherCollider_Base
     {
-        private Vec3 scale;
-
         /// <summary>
         /// A Vec3 containing the X, Y, and Z Scale of the Collider
         /// </summary>
-        public Vec3 Scale => scale;
-        public override AttribType GetAttribType()
+        public Vec3 Scale { get; internal set; }
+        public override ColliderType GetAttribType()
         {
-            return AttribType.BOX_COLLIDER;
+            return ColliderType.BOX_COLLIDER;
         }
     }
 }

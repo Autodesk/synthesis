@@ -5,9 +5,9 @@
     /// </summary>
     public class MeshCollider : GopherCollider_Base
     {
-        public override AttribType GetAttribType()
+        public override ColliderType GetAttribType()
         {
-            return AttribType.MESH_COLLIDER;
+            return ColliderType.MESH_COLLIDER;
         }
     }
 }

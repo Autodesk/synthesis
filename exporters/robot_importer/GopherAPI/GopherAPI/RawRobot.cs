@@ -13,20 +13,20 @@ namespace GopherAPI
     {
         private List<STLMesh> meshes = new List<STLMesh>();
         private List<GopherJoint_Base> joints = new List<GopherJoint_Base>();
-        private List<GopherDriver_Base> drivers = new List<GopherDriver_Base>();
+        private List<GopherDriver_Base> drivers = new List<GopherDriver_Base> { new NoDriver() };
 
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetMesh method.
         /// </summary>
-        internal List<STLMesh> Meshes => meshes;
+        internal List<STLMesh> Meshes { get => meshes; set => meshes = value; }
         /// <summary>
         /// IMPORTANT: JointID might not be the same as the index in the list. Use the GetJoint method.
         /// </summary>
-        internal List<GopherJoint_Base> Joints => joints;
-        ///// <summary>
-        ///// IMPORTANT: JointID might not be the same as the index in the list. Use the GetDriver method.
-        ///// </summary>
-        //internal List<GopherDriver_Base> Drivers => drivers;
+        internal List<GopherJoint_Base> Joints { get => joints; set => joints = value; }
+        /// <summary>
+        /// IMPORTANT: JointID might not be the same as the index in the list. Use the GetDriver method.
+        /// </summary>
+        internal List<GopherDriver_Base> Drivers { get => drivers; set => drivers = value; }
 
         /// <summary>
         /// Searches meshes for a mesh with the matching ID

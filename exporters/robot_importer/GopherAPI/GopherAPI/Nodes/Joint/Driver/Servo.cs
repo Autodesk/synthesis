@@ -2,15 +2,15 @@
 {
     public class Servo : GopherDriver_Base
     {
-        public GopherJoint_Base Joint;
+
 
         /// <summary>
         /// Always a CAN
         /// </summary>
-        public float MotorPort;
+        public float MotorPort { get; internal set; }
 
-        public bool HasLimits;
-        public Friction Friction;
+        public bool HasLimits { get; internal set; }
+        public Friction Friction { get; internal set; }
 
         public override Driver GetDriverType()
         {
@@ -27,15 +27,17 @@
             return Joint;
         }
 
-        public Servo(GopherJoint_Base joint, float motorPort, bool hasLimits, Friction friction)
-        {
-            Joint = joint;
-            MotorPort = motorPort;
-            HasLimits = hasLimits;
-            if (HasLimits)
-                Friction = friction;
-            else
-                Friction = Friction.NO_LIMITS;
-        }
+        public Servo() { }
+
+        //public Servo(GopherJoint_Base joint, float motorPort, bool hasLimits, Friction friction)
+        //{
+        //    Joint = joint;
+        //    MotorPort = motorPort;
+        //    HasLimits = hasLimits;
+        //    if (HasLimits)
+        //        Friction = friction;
+        //    else
+        //        Friction = Friction.NO_LIMITS;
+        //}
     }
 }

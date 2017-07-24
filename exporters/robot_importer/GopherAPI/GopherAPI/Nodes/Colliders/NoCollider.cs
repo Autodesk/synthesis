@@ -9,9 +9,14 @@
         new private bool IsDynamic;
         new private float Mass;
 
-        public override AttribType GetAttribType()
+        public override ColliderType GetAttribType()
         {
-            return AttribType.NO_COLLIDER;
+            return ColliderType.NO_COLLIDER;
+        }
+
+        public NoCollider()
+        {
+            Meta = new ColliderMeta(ColliderType.NO_COLLIDER, uint.MaxValue);
         }
     }
 }

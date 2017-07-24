@@ -16,21 +16,21 @@ namespace GopherAPI.Nodes.Joint
         /// <summary>
         /// Point of connection relative to the parent part
         /// </summary>
-        public Vec3 ConnectionPoint { get; }
-        
-        /// <summary>
-        /// Angular freedom of the joint
-        /// </summary>
-        Vec2 AngularFreedom1 { get; }
+        public Vec3 ConnectionPoint { get; internal set; }
 
         /// <summary>
-        /// Angular freedom of the joint
+        /// Angular freedom of the joint. There are three because a ball joint can move in all 3 directions. Each AngularFreedom object is a direction relative to the parent part.
         /// </summary>
-        Vec2 AngularFreedom2 { get; }
+        public Vec2 AngularFreedom1 { get; internal set; }
 
         /// <summary>
-        /// Angular freedom of the joint
+        /// Angular freedom of the joint. There are three because a ball joint can move in all 3 directions. Each AngularFreedom object is a direction relative to the parent part.
         /// </summary>
-        Vec2 AngularFreedom3 { get; }
+        public Vec2 AngularFreedom2 { get; internal set; }
+
+        /// <summary>
+        /// Angular freedom of the joint. There are three because a ball joint can move in all 3 directions. Each AngularFreedom object is a direction relative to the parent part.
+        /// </summary>
+        public Vec2 AngularFreedom3 { get; internal set; }
     }
 }

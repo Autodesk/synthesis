@@ -16,16 +16,16 @@ namespace GopherAPI.Nodes.Joint
         /// <summary>
         /// Vector parallel to movement
         /// </summary>
-        public Vec3 DefiningVector { get; }
+        public Vec3 DefiningVector { get; internal set; }
 
         /// <summary>
         /// Point of connection relative to parent part
         /// </summary>
-        public Vec3 ConnectionPoint { get; }
+        public Vec3 ConnectionPoint { get; internal set; }
 
         /// <summary>
         /// cm of freedom relative to the defining vector
         /// </summary>
-        public Vec2 LinearFreedomFactor;
-    }
+        public Vec2 LinearFreedomFactor { get; internal set; }
+}
 }

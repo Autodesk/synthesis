@@ -17,7 +17,8 @@ namespace GopherAPI.Nodes.Joint.Driver
 
     public class GopherDriver_Base
     {
-        public DriverMeta Meta { get; }
+        public GopherJoint_Base Joint { get; internal set; }
+        public DriverMeta Meta { get; internal set; }
         public virtual Driver GetDriverType()
         {
             return Driver.NULL;
@@ -26,6 +27,10 @@ namespace GopherAPI.Nodes.Joint.Driver
         {
             return false;
         }
+        /// <summary>
+        /// Gets the joint which the driver is attached to
+        /// </summary>
+        /// <returns></returns>
         public virtual GopherJoint_Base GetJoint()
         {
             return null;

@@ -11,10 +11,16 @@ namespace GopherAPI.Nodes.Colliders
     /// </summary>
     public class ColliderMeta
     {
-        public AttribType Type;
+        public ColliderType Type { get; internal set; }
         /// <summary>
         /// AttributeID is the ID that will be referenced by the Field/Robot class when getting Colliders for an object
         /// </summary>
-        public UInt32 AttributeID;
+        public UInt32 ColliderID { get; internal set; }
+
+        public ColliderMeta(ColliderType type, uint colliderID)
+        {
+            Type = type;
+            ColliderID = colliderID;
+        }
     }
 }

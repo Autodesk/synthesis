@@ -16,5 +16,12 @@ namespace GopherAPI.Nodes.Joint
 
         public readonly UInt32 ParentID;
         public readonly UInt32 ChildID;
+
+        internal JointMeta(uint jointID, uint parentID, uint childID)
+        {
+            JointID = jointID;
+            ParentID = parentID;
+            ChildID = childID;
+        }
     }
 }

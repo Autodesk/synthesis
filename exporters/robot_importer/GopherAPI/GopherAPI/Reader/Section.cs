@@ -6,16 +6,17 @@ namespace GopherAPI.Reader
     internal enum SectionType { IMAGE, STL, STL_ATTRIBUTE, JOINT, JOINT_ATTRIBUTE }
     internal struct Section
     {
-        public SectionType ID;
-        public byte[] Data;
-        public bool IsEmpty;
+        internal SectionType ID;
+        internal byte[] Data;
+        internal bool IsEmpty;
     }
 
     internal struct RawMesh
     {
-        public UInt32 MeshID;
-        public UInt32 FacetCount;
-        public TransformationMatrix TransMat;
-        public byte[] Facets;
+        internal UInt32 MeshID;
+        internal UInt32 FacetCount;
+        internal TransformationMatrix TransMat;
+        internal byte[] Facets;
+        internal UInt32 AttribID;
     }
 }

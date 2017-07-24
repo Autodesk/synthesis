@@ -40,10 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttribType.cs" />
     <Compile Include="FieldNodeGenerator.cs" />
     <Compile Include="Gopher.cs" />
     <Compile Include="Nodes\Colliders\BoxCollider.cs" />
+    <Compile Include="Nodes\Colliders\ColliderType.cs" />
     <Compile Include="Nodes\Colliders\GopherCollider_Base.cs" />
     <Compile Include="Nodes\Colliders\MeshCollider.cs" />
     <Compile Include="Nodes\Colliders\NoCollider.cs" />
@@ -70,6 +70,7 @@
     <Compile Include="Nodes\Joint\LinearJoint.cs" />
     <Compile Include="Nodes\Joint\PlanarJoint.cs" />
     <Compile Include="Nodes\Joint\RotationalJoint.cs" />
+    <Compile Include="Other\ColorConverter.cs" />
     <Compile Include="Other\Vec2.cs" />
     <Compile Include="Other\Vec3.cs" />
     <Compile Include="Nodes\Colliders\ColliderMeta.cs" />
@@ -77,7 +78,9 @@
     <Compile Include="Nodes\Joint\JointMeta.cs" />
     <Compile Include="RawField.cs" />
     <Compile Include="RawRobot.cs" />
+    <Compile Include="Reader\FieldReader.cs" />
     <Compile Include="Reader\GopherReader_Base.cs" />
+    <Compile Include="Reader\RobotReader.cs" />
     <Compile Include="Reader\Section.cs" />
     <Compile Include="RobotNodeGenerator.cs" />
     <Compile Include="STL\Facet.cs" />

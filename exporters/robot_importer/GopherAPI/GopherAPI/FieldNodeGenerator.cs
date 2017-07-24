@@ -15,6 +15,10 @@ namespace GopherAPI.Nodes
     {
         private RawField field = new RawField();
 
+        /// <summary>
+        /// Finds all of the nodes without a parent joint
+        /// </summary>
+        /// <returns></returns>
         private List<STLMesh> FindRoots()
         {
             var ret = new List<STLMesh>();
@@ -74,6 +78,10 @@ namespace GopherAPI.Nodes
                 return true;
         }
 
+        /// <summary>
+        /// Generates a GopherField from a RawField class.
+        /// </summary>
+        /// <returns></returns>
         private GopherField GenerateField()
         {
             Gopher.ProgressCallback("Generating field node tree...");
@@ -120,7 +128,7 @@ namespace GopherAPI.Nodes
                     var col = field.GetCollider(node.Mesh.AttributeID);
                     col.Nephews.Add(node);
                     node.Collider = col;
-                    ret.Colliders.Add(null);
+                    ret.Colliders.Add(col);
                 }
             }
             Gopher.ProgressCallback("Generating field node tree...DONE");

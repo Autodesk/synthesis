@@ -73,8 +73,24 @@ namespace GopherAPI.Nodes
                 return true;
         }
 
+        private void AssignDrivers()
+        {
+            foreach(var driver in robot.Drivers)
+            {
+                robot.GetJoint(driver.Meta.JointID).Driver = driver;
+            }
+            foreach(var joint in robot.Joints)
+            {
+                if(joint.Driver == null)
+                {
+                    joint.Driver = robot.Drivers[0];
+                }
+            }
+        }
+
         private GopherRobot GenerateRobot()
         {
+            AssignDrivers();
             Gopher.ProgressCallback("Generating robot node tree...");
             var rootMeshes = FindRoots();
             var rootNodes = new List<GopherRobotNode>();

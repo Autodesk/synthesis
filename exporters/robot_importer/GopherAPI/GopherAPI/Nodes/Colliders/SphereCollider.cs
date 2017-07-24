@@ -5,15 +5,13 @@
     /// </summary>
     public class SphereCollider : GopherCollider_Base
     {
-        private float scale;
-
-        public override AttribType GetAttribType()
+        public override ColliderType GetAttribType()
         {
-            return AttribType.SPHERE_COLLIDER;
+            return ColliderType.SPHERE_COLLIDER;
         }
         /// <summary>
         /// The scale of the SphereCollider
         /// </summary>
-        public float Scale => scale;
+        public float Scale { get; internal set; }
     }
 }

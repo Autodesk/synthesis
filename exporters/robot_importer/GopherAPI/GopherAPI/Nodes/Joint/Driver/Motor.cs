@@ -5,26 +5,26 @@ namespace GopherAPI.Nodes.Joint.Driver
     public class Motor : GopherDriver_Base
     {
 
-        public bool IsCAN;
+        public bool IsCAN { get; internal set; }
         public override GopherJoint_Base GetJoint()
         {
             return Joint;
         }
-        public GopherJoint_Base Joint;
+
 
         /// <summary>
         /// If IsCAN is false, this is a PWM port. Otherwise, its a CAN port.
         /// </summary>
-        public float MotorPort;
+        public float MotorPort { get; internal set; }
 
-        public bool HasLimits;
-        public Friction Friction;
+        public bool HasLimits { get; internal set; }
+        public Friction Friction { get; internal set; }
 
-        public bool IsDriveWheel;
-        public Wheel WheelType;
+        public bool IsDriveWheel { get; internal set; }
+        public Wheel WheelType { get; internal set; }
 
-        public UInt16 InputGear;
-        public UInt16 OutputGear;
+        public UInt16 InputGear { get; internal set; }
+        public UInt16 OutputGear { get; internal set; }
 
         public override Driver GetDriverType()
         {
@@ -35,21 +35,23 @@ namespace GopherAPI.Nodes.Joint.Driver
         {
             return IsDriveWheel;
         }
+
+        public Motor() { }
         
-        public Motor(GopherJoint_Base joint, bool isCAN, float motorPort, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
-        {
-            Joint = joint;
-            IsCAN = isCAN;
-            MotorPort = motorPort;
-            HasLimits = hasLimits;
-            if (HasLimits)
-                Friction = friction;
-            else
-                Friction = Friction.NO_LIMITS;
-            IsDriveWheel = isDriveWheel;
-            WheelType = wheelType;
-            InputGear = inputGear;
-            OutputGear = outputGear;
-        }
+        //public Motor(GopherJoint_Base joint, bool isCAN, float motorPort, bool hasLimits, Friction friction, bool isDriveWheel, Wheel wheelType, UInt16 inputGear, UInt16 outputGear)
+        //{
+        //    Joint = joint;
+        //    IsCAN = isCAN;
+        //    MotorPort = motorPort;
+        //    HasLimits = hasLimits;
+        //    if (HasLimits)
+        //        Friction = friction;
+        //    else
+        //        Friction = Friction.NO_LIMITS;
+        //    IsDriveWheel = isDriveWheel;
+        //    WheelType = wheelType;
+        //    InputGear = inputGear;
+        //    OutputGear = outputGear;
+        //}
     }
 }

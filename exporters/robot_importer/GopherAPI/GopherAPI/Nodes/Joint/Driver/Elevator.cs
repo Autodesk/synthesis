@@ -2,7 +2,7 @@
 {
     public class Elevator : GopherDriver_Base
     {
-        public GopherJoint_Base Joint;
+
 
         public override bool GetIsDriveWheel()
         {
@@ -14,48 +14,50 @@
             return Joint;
         }
 
-        public bool IsCAN;
+        public bool IsCAN { get; internal set; }
         /// <summary>
         /// If IsCAN is false, this is a PWM port. Otherwise, its a CAN port.
         /// </summary>
-        public float MotorPort;
+        public float MotorPort { get; internal set; }
 
-        public bool HasLimits;
-        public Friction Friction;
+        public bool HasLimits { get; internal set; }
+        public Friction Friction { get; internal set; }
 
-        public bool HasBrake;
-        public float BrakePortOne;
-        public float BrakePortTwo;
+        public bool HasBrake { get; internal set; }
+        public float BrakePortOne { get; internal set; }
+        public float BrakePortTwo { get; internal set; }
 
-        public Stages Stages;
-        public float InputGear;
-        public float OutputGear;
+        public Stages Stages { get; internal set; }
+        public float InputGear { get; internal set; }
+        public float OutputGear { get; internal set; }
 
         public override Driver GetDriverType()
         {
             return Driver.ELEVATOR;
         }
 
-        public Elevator(GopherJoint_Base joint, bool isCAN, float motorPort, bool hasLimits, Friction friction, bool hasBrake, float brakePortOne, float brakePortTwo, Stages stages, float inputGear, float outputGear)
-        {
-            Joint = joint;
-            IsCAN = isCAN;
-            MotorPort = motorPort;
-            HasLimits = hasLimits;
-            if (HasLimits)
-                Friction = friction;
-            else
-                Friction = Friction.NO_LIMITS;
+        public Elevator() { }
 
-            HasBrake = hasBrake;
-            BrakePortOne = brakePortOne;
-            BrakePortTwo = brakePortTwo;
+        //public Elevator(GopherJoint_Base joint, bool isCAN, float motorPort, bool hasLimits, Friction friction, bool hasBrake, float brakePortOne, float brakePortTwo, Stages stages, float inputGear, float outputGear)
+        //{
+        //    Joint = joint;
+        //    IsCAN = isCAN;
+        //    MotorPort = motorPort;
+        //    HasLimits = hasLimits;
+        //    if (HasLimits)
+        //        Friction = friction;
+        //    else
+        //        Friction = Friction.NO_LIMITS;
 
-            Stages = stages;
+        //    HasBrake = hasBrake;
+        //    BrakePortOne = brakePortOne;
+        //    BrakePortTwo = brakePortTwo;
 
-            InputGear = inputGear;
-            OutputGear = outputGear;
-        }
+        //    Stages = stages;
+
+        //    InputGear = inputGear;
+        //    OutputGear = outputGear;
+        //}
 
     }
 }

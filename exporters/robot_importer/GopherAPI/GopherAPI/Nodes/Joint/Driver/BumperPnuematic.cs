@@ -2,21 +2,21 @@
 {
     public class BumperPnuematic : GopherDriver_Base
     {
-        public GopherJoint_Base Joint;
+
 
         public override GopherJoint_Base GetJoint()
         {
             return Joint;
         }
 
-        public float SolenoidPortOne;
-        public float SolenoidPortTwo;
+        public float SolenoidPortOne { get; internal set; }
+        public float SolenoidPortTwo { get; internal set; }
 
-        public bool HasLimits;
-        public Friction Friction;
+        public bool HasLimits { get; internal set; }
+        public Friction Friction { get; internal set; }
 
-        public InternalDiameter InternalDiameter;
-        public Pressure Pressure;
+        public InternalDiameter InternalDiameter { get; internal set; }
+        public Pressure Pressure { get; internal set; }
 
         public override Driver GetDriverType()
         {
@@ -28,17 +28,18 @@
             return false;
         }
 
-        public BumperPnuematic(GopherJoint_Base joint, float solenoidPortOne, float solenoidPortTwo, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
-        {
-            Joint = joint;
-            SolenoidPortOne = solenoidPortOne;
-            SolenoidPortTwo = solenoidPortTwo;
+        public BumperPnuematic() { }
 
-            HasLimits = hasLimits;
-            Friction = friction;
+        //public BumperPnuematic(GopherJoint_Base joint, float solenoidPortOne, float solenoidPortTwo, bool hasLimits, Friction friction, InternalDiameter internalDiameter, Pressure pressure)
+        //{
+        //    Joint = joint;
+        //    SolenoidPortOne = solenoidPortOne;
+        //    SolenoidPortTwo = solenoidPortTwo;
 
-            InternalDiameter = internalDiameter;
-            Pressure = pressure;
-        }
+        //    HasLimits = hasLimits;
+        //    Friction = friction;
+
+        //    InternalDiameter = internalDiameter;
+        //    Pressure = pressure;
     }
 }

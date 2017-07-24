@@ -11,28 +11,24 @@ namespace GopherAPI.Nodes.Colliders
     /// </summary>
     public class GopherCollider_Base 
     {
-        protected float friction;
-        protected bool isDynamic;
-        protected float mass = 0;
-
         public ColliderMeta Meta;
 
         /// <summary>
         /// The friction value of the NodeAttribute
         /// </summary>
-        public float Friction => friction;
+        public float Friction { get; internal set; }
         /// <summary>
         /// Bool that states whether the Node is dynamic
         /// </summary>
-        public bool IsDynamic => isDynamic;
+        public bool IsDynamic { get; internal set; }
         /// <summary>
-        /// If the object is dynamic, this will be the mass of the object. This value defaults to 0 because nullables are gross
+        /// If the object is dynamic, this will be the mass of the object.
         /// </summary>
-        public float Mass => mass;
+        public float Mass { get; internal set; }
 
-        public virtual AttribType GetAttribType()
+        public virtual ColliderType GetAttribType()
         {
-            return AttribType.NO_COLLIDER;
+            return ColliderType.NO_COLLIDER;
         }
 
         /// <summary>

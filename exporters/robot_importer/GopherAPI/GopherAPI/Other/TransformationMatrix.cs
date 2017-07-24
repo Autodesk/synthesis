@@ -36,9 +36,13 @@ namespace GopherAPI.Other
             }
         }
 
-        public TransformationMatrix()
+        internal TransformationMatrix()
         {
             values = new float[] { -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1f };
+        }
+        internal TransformationMatrix(float[] val)
+        {
+            values = val;
         }
     }
 }

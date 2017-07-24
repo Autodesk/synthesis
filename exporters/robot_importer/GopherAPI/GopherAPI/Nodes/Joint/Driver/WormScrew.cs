@@ -2,21 +2,21 @@
 {
     public class WormScrew : GopherDriver_Base
     {
-        public GopherJoint_Base Joint;
+
         public override GopherJoint_Base GetJoint()
         {
             return Joint;
         }
 
 
-        public bool IsCAN;
+        public bool IsCAN { get; internal set; }
         /// <summary>
         /// If IsCAN is false, this is a PWM port. Otherwise, its a CAN port.
         /// </summary>
-        public float MotorPort;
+        public float MotorPort { get; internal set; }
 
-        public bool HasLimits;
-        public Friction Friction;
+        public bool HasLimits { get; internal set; }
+        public Friction Friction { get; internal set; }
 
         public override bool GetIsDriveWheel()
         {
@@ -27,16 +27,7 @@
         {
             return Driver.WORM_SCREW;
         }
-        public WormScrew(GopherJoint_Base joint, bool isCAN, float motorPort, bool hasLimits, Friction friction)
-        {
-            Joint = joint;
-            IsCAN = isCAN;
-            MotorPort = motorPort;
-            HasLimits = hasLimits;
-            if (HasLimits)
-                Friction = friction;
-            else
-                Friction = Friction.NO_LIMITS;
-        }
+
+        public WormScrew() { }
     }
 }

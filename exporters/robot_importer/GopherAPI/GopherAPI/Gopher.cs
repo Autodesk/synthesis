@@ -5,6 +5,7 @@ using System.Text;
 using System.Drawing;
 using GopherAPI.STL;
 using GopherAPI.Nodes;
+using GopherAPI.Reader;
 using GopherAPI.Nodes.Joint;
 using GopherAPI.Nodes.Colliders;
 using GopherAPI.Nodes.Joint.Driver;
@@ -35,7 +36,20 @@ namespace GopherAPI
         /// <returns></returns>
         public static GopherField ReadField(string path)
         {
-            throw new NotImplementedException();
+            ProgressCallback("Loading file into memory...");
+            var reader = new FieldReader(path);
+            ProgressCallback("Pre-Processing loaded file...");
+            reader.PreProcess();
+            ProgressCallback("Pre-Processing STL meshes...");
+            reader.PreProcessSTL();
+            ProgressCallback("Processing Meshes...");
+            reader.ProcessSTL();
+            ProgressCallback("Processing Joints...");
+            reader.ProcessJoints();
+            ProgressCallback("Processing colliders...");
+            reader.ProcessColliders();
+            ProgressCallback("Generating node tree...");
+            return FieldNodeGenerator.FieldFactory(reader.Field);
         }
 
         /// <summary>
@@ -45,7 +59,20 @@ namespace GopherAPI
         /// <returns></returns>
         public static GopherRobot ReadRobot(string path)
         {
-            throw new NotImplementedException();
+            ProgressCallback("Loading file into memory...");
+            var reader = new RobotReader(path);
+            ProgressCallback("Pre-Processing loaded file...");
+            reader.PreProcess();
+            ProgressCallback("Pre-Processing STL meshes...");
+            reader.PreProcessSTL();
+            ProgressCallback("Processing Meshes...");
+            reader.ProcessSTL();
+            ProgressCallback("Processing Joints...");
+            reader.ProcessJoints();
+            ProgressCallback("Processing joint drivers...");
+            reader.ProcessDrivers();
+            ProgressCallback("Generating node tree...");
+            return RobotNodeGenerator.RobotFactory(reader.Robot);
         }
 
         /// <summary>
@@ -55,8 +82,9 @@ namespace GopherAPI
         /// <returns>A Bitmap object</returns>
         public static Bitmap ReadThumbnail(string path)
         {
-            //TODO implement a streamlined version of the reader here
-            throw new NotImplementedException();
+            var reader = new GopherReader_Base(path);
+            reader.PreProcess();
+            return reader.ProcessThumbnail();
         }
     }
 }

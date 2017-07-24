@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using GopherAPI.Other;
 using System.IO;
+using System.Drawing;
 
 namespace GopherAPI.STL
 {
@@ -28,8 +29,21 @@ namespace GopherAPI.STL
         /// </summary>
         public readonly Vec3 Point3;
 
+        /// <summary>
+        /// Color of the facet
+        /// </summary>
+        public readonly Color FacetColor;
+
+        /// <summary>
+        /// if this is false, the color will revert to the default color of the bumper
+        /// </summary>
+        public readonly bool IsDefault;
+
+        /// <summary>
+        /// returns Point1, Point2, and Point3 in an array
+        /// </summary>
         public Vec3[] Verteces
-        { get { return new Vec3[] { Normal, Point1, Point2, Point3 }; } }
+        { get { return new Vec3[] { Point1, Point2, Point3 }; } }
 
         internal byte[] Binary
         {
@@ -57,12 +71,14 @@ namespace GopherAPI.STL
             }
         }
 
-        public Facet(Vec3 normal, Vec3 point1, Vec3 point2, Vec3 point3)
+        public Facet(Vec3 normal, Vec3 point1, Vec3 point2, Vec3 point3, Color color, bool isDefault)
         {
             Normal = normal;
             Point1 = point1;
             Point2 = point2;
             Point3 = point3;
+            FacetColor = color;
+            IsDefault = isDefault;
         }
     }
 }

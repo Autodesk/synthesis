@@ -21,15 +21,15 @@ namespace GopherAPI
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetMesh method.
         /// </summary>
-        internal List<STLMesh> Meshes { get => meshes; }
+        internal List<STLMesh> Meshes { get => meshes; set => meshes = value; }
         /// <summary>
         /// IMPORTANT: MeshID might not be the same as the index in the list. Use the GetAttribute method.
         /// </summary>
-        internal List<GopherCollider_Base> Colliders { get => colliders; }
+        internal List<GopherCollider_Base> Colliders { get => colliders; set => colliders = value; }
         /// <summary>
         /// IMPORTANT: JointID might not be the same as the index in the list. Use the GetJoint method.
         /// </summary>
-        internal List<GopherJoint_Base> Joints { get => joints; }
+        internal List<GopherJoint_Base> Joints { get => joints; set => joints = value; }
 
         /// <summary>
         /// Searches meshes for a mesh with the matching ID
@@ -55,7 +55,7 @@ namespace GopherAPI
         {
             foreach (var collider in colliders)
             {
-                if (collider.Meta.AttributeID == ColliderID)
+                if (collider.Meta.ColliderID == ColliderID)
                     return collider;
             }
             throw new Exception("ERROR: Collider not found");
