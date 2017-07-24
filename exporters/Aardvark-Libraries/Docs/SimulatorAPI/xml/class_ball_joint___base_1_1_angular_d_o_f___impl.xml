@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_ball_joint___base_1_1_angular_d_o_f___impl" kind="class" language="C#" prot="private">
+    <compoundname>BallJoint_Base::AngularDOF_Impl</compoundname>
+    <basecompoundref refid="interface_angular_d_o_f" prot="public" virt="non-virtual">AngularDOF</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1acb615ef08e83d45f61c74ecbb1e50c56" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="class_ball_joint___base" kindref="compound">BallJoint_Base</ref></type>
+        <definition>readonly BallJoint_Base BallJoint_Base.AngularDOF_Impl.bjb</definition>
+        <argsstring></argsstring>
+        <name>bjb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="9" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="9" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1aeccb07a3ea79b43f09334a9848cd1ca4" prot="private" static="no" mutable="no">
+        <type>readonly int</type>
+        <definition>readonly int BallJoint_Base.AngularDOF_Impl.axis</definition>
+        <argsstring></argsstring>
+        <name>axis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="10" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1a42ca8bb425f33fcbdeb2f669d728e3c7" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float BallJoint_Base.AngularDOF_Impl.currentPosition</definition>
+        <argsstring></argsstring>
+        <name>currentPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="17" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1aac0fac532274eef6225a8d37591080ea" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float BallJoint_Base.AngularDOF_Impl.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="25" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1a84c030ecb7b3f26b1bc03ae1a407bf8c" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float BallJoint_Base.AngularDOF_Impl.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="37" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1a3d0768ac6610202908c5a16c0fe34ec3" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BallJoint_Base.AngularDOF_Impl.rotationAxis</definition>
+        <argsstring></argsstring>
+        <name>rotationAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="49" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1ab0ce66e3a7d1f6707b369b02b8e86022" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BallJoint_Base.AngularDOF_Impl.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="61" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_ball_joint___base_1_1_angular_d_o_f___impl_1ab21b9493e99b25badd2b091929616eb0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BallJoint_Base.AngularDOF_Impl.AngularDOF_Impl</definition>
+        <argsstring>(BallJoint_Base bjb, int axis)</argsstring>
+        <name>AngularDOF_Impl</name>
+        <param>
+          <type><ref refid="class_ball_joint___base" kindref="compound">BallJoint_Base</ref></type>
+          <declname>bjb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>axis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="11" bodyend="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="11">
+        <label>AngularDOF</label>
+        <link refid="interface_angular_d_o_f"/>
+      </node>
+      <node id="10">
+        <label>BallJoint_Base.AngularDOF_Impl</label>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="13">
+        <label>AngularDOF</label>
+        <link refid="interface_angular_d_o_f"/>
+      </node>
+      <node id="12">
+        <label>BallJoint_Base.AngularDOF_Impl</label>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="7" bodyend="72"/>
+    <listofallmembers>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1ab21b9493e99b25badd2b091929616eb0" prot="public" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>AngularDOF_Impl</name></member>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1aeccb07a3ea79b43f09334a9848cd1ca4" prot="private" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>axis</name></member>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1ab0ce66e3a7d1f6707b369b02b8e86022" prot="public" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>basePoint</name></member>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1acb615ef08e83d45f61c74ecbb1e50c56" prot="private" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>bjb</name></member>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1a42ca8bb425f33fcbdeb2f669d728e3c7" prot="public" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>currentPosition</name></member>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1a84c030ecb7b3f26b1bc03ae1a407bf8c" prot="public" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>lowerLimit</name></member>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1a3d0768ac6610202908c5a16c0fe34ec3" prot="public" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>rotationAxis</name></member>
+      <member refid="class_ball_joint___base_1_1_angular_d_o_f___impl_1aac0fac532274eef6225a8d37591080ea" prot="public" virt="non-virtual"><scope>BallJoint_Base::AngularDOF_Impl</scope><name>upperLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

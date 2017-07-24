@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_91d69fa3202807379de2fb8f2e6c545b" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math</compoundname>
+    <innerfile refid="_b_x_d_box_8cs">BXDBox.cs</innerfile>
+    <innerfile refid="_b_x_d_quaternion_8cs">BXDQuaternion.cs</innerfile>
+    <innerfile refid="_b_x_d_vector3_8cs">BXDVector3.cs</innerfile>
+    <innerfile refid="_physical_properties_8cs">PhysicalProperties.cs</innerfile>
+    <innerfile refid="_polynomial_8cs">Polynomial.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/"/>
+  </compounddef>
+</doxygen>

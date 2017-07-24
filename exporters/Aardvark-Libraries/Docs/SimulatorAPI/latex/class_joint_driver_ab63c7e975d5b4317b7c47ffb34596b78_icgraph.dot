@@ -1,0 +1,19 @@
+digraph "JointDriver.GetDriveType"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node14 [label="JointDriver.GetDriveType",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node14 -> Node15 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node15 [label="BXDJSkeleton.WriteSkeleton",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#a51284ed9f19393c90ac2fb0f854880f4",tooltip="Writes out the skeleton file for the skeleton with the base provided to the path provided. "];
+  Node14 -> Node16 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node16 [label="JointDriver.SetLimits",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html#a1427fe9a653b2977ed487f140c3af32b",tooltip="Sets the limits for this driver. "];
+  Node14 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node17 [label="JointDriver.WriteBinaryData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html#a36d6deba7dec0475dc06ab5d87c3e7e2",tooltip="Writes the binary representation of this driver to the stream. "];
+  Node17 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node18 [label="SkeletalJoint_Base.Write\lBinaryJoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#a42df720cdd871ccad5930ae7977f7200",tooltip="Writes the backing information and ID for this joint to the output stream. "];
+  Node18 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node19 [label="SkeletalJoint_Base.ReadJoint\lFully",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#ae9f8e31a56644eb92cb901a4587a3d24",tooltip="Identifies the type of a joint, creates an instance, and reads that joint from the given input stream..."];
+  Node19 -> Node20 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node20 [label="BXDJSkeleton.ReadBinarySkeleton",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#aeacead12f7e921a9c77a588773901798",tooltip="Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton..."];
+}

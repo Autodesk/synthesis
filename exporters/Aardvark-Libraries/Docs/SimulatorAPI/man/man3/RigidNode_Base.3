@@ -1,0 +1,234 @@
+.TH "RigidNode_Base" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+RigidNode_Base \- Represents a node inside the hierarchy representing how a robot moves\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "delegate \fBRigidNode_Base\fP \fBRigidNodeFactory\fP (Guid guid)"
+.br
+.RI "Generic delegate for creating rigid node instances "
+.ti -1c
+.RI "\fBRigidNode_Base\fP (Guid guid)"
+.br
+.RI "Initializes a new instance of the \fBRigidNode_Base\fP class\&. "
+.ti -1c
+.RI "void \fBAddChild\fP (\fBSkeletalJoint_Base\fP joint, \fBRigidNode_Base\fP child)"
+.br
+.RI "Adds the given node as a child of this node\&. "
+.ti -1c
+.RI "\fBRigidNode_Base\fP \fBGetParent\fP ()"
+.br
+.RI "Gets the parent node for this node\&. "
+.ti -1c
+.RI "\fBSkeletalJoint_Base\fP \fBGetSkeletalJoint\fP ()"
+.br
+.RI "Gets the skeletal joint connecting this node to its parent\&. "
+.ti -1c
+.RI "virtual object \fBGetModel\fP ()"
+.br
+.RI "Gets the actual object visually representing this rigid node if such an item exists\&. "
+.ti -1c
+.RI "virtual string \fBGetModelID\fP ()"
+.br
+.RI "Gets a very verbose identifier that represents the element this node is in the overall structure\&. "
+.ti -1c
+.RI "override string \fBToString\fP ()"
+.br
+.ti -1c
+.RI "List< \fBRigidNode_Base\fP > \fBListAllNodes\fP ()"
+.br
+.RI "Gets a list of all the rigid nodes at or below this item in the tree\&. "
+.ti -1c
+.RI "void \fBListAllNodes\fP (List< \fBRigidNode_Base\fP > list)"
+.br
+.RI "Gets a list of all the rigid nodes at or below this item in the tree\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "string \fBModelFileName\fP"
+.br
+.RI "The name of the file holding this node's model\&. "
+.ti -1c
+.RI "string \fBModelFullID\fP"
+.br
+.RI "A very verbose identifier that represents the element this node is in the overall structure\&. "
+.ti -1c
+.RI "Dictionary< \fBSkeletalJoint_Base\fP, \fBRigidNode_Base\fP > \fBChildren\fP = new Dictionary<\fBSkeletalJoint_Base\fP, \fBRigidNode_Base\fP>()"
+.br
+.RI "A mapping between each child node of this node and the joint connection between the two\&. "
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static \fBRigidNodeFactory\fP \fBNODE_FACTORY\fP"
+.br
+.RI "By setting this to a custom value skeletons that are read using \fBBXDJSkeleton\&.ReadBinarySkeleton(string)\fP can be composed of a custom rigid node type\&. "
+.in -1c
+.SS "Protected Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBlevel\fP"
+.br
+.RI "How far down in the hierarchy this element is\&. The higher it is the farther from the root node\&. "
+.in -1c
+.SS "Properties"
+
+.in +1c
+.ti -1c
+.RI "Guid \fBGUID\fP\fC [get]\fP"
+.br
+.RI "The globally unique identifier\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Represents a node inside the hierarchy representing how a robot moves\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "RigidNode_Base\&.RigidNode_Base (Guid guid)"
+
+.PP
+Initializes a new instance of the \fBRigidNode_Base\fP class\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIguid\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void RigidNode_Base\&.AddChild (\fBSkeletalJoint_Base\fP joint, \fBRigidNode_Base\fP child)"
+
+.PP
+Adds the given node as a child of this node\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjoint\fP The joint connecting this node to the child
+.br
+\fIchild\fP The child node
+.RE
+.PP
+
+.SS "virtual object RigidNode_Base\&.GetModel ()\fC [virtual]\fP"
+
+.PP
+Gets the actual object visually representing this rigid node if such an item exists\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The representation, or null
+.RE
+.PP
+
+.SS "virtual string RigidNode_Base\&.GetModelID ()\fC [virtual]\fP"
+
+.PP
+Gets a very verbose identifier that represents the element this node is in the overall structure\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The model identifier
+.RE
+.PP
+
+.SS "\fBRigidNode_Base\fP RigidNode_Base\&.GetParent ()"
+
+.PP
+Gets the parent node for this node\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The parent node, or null if this node is a root node
+.RE
+.PP
+
+.SS "\fBSkeletalJoint_Base\fP RigidNode_Base\&.GetSkeletalJoint ()"
+
+.PP
+Gets the skeletal joint connecting this node to its parent\&. This should always be non-null when the current node isn't a root node\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The joint connection, or null if no connection exists\&.
+.RE
+.PP
+
+.SS "List<\fBRigidNode_Base\fP> RigidNode_Base\&.ListAllNodes ()"
+
+.PP
+Gets a list of all the rigid nodes at or below this item in the tree\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The list of nodes
+.RE
+.PP
+
+.SS "void RigidNode_Base\&.ListAllNodes (List< \fBRigidNode_Base\fP > list)"
+
+.PP
+Gets a list of all the rigid nodes at or below this item in the tree\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlist\fP The list to write the nodes to
+.RE
+.PP
+
+.SS "delegate \fBRigidNode_Base\fP RigidNode_Base\&.RigidNodeFactory (Guid guid)"
+
+.PP
+Generic delegate for creating rigid node instances 
+.SH "Member Data Documentation"
+.PP 
+.SS "Dictionary<\fBSkeletalJoint_Base\fP, \fBRigidNode_Base\fP> RigidNode_Base\&.Children = new Dictionary<\fBSkeletalJoint_Base\fP, \fBRigidNode_Base\fP>()"
+
+.PP
+A mapping between each child node of this node and the joint connection between the two\&. 
+.SS "int RigidNode_Base\&.level\fC [protected]\fP"
+
+.PP
+How far down in the hierarchy this element is\&. The higher it is the farther from the root node\&. 
+.SS "string RigidNode_Base\&.ModelFileName"
+
+.PP
+The name of the file holding this node's model\&. 
+.SS "string RigidNode_Base\&.ModelFullID"
+
+.PP
+A very verbose identifier that represents the element this node is in the overall structure\&. 
+.SS "\fBRigidNodeFactory\fP RigidNode_Base\&.NODE_FACTORY\fC [static]\fP"
+\fBInitial value:\fP
+.PP
+.nf
+= delegate(Guid guid)
+    {
+        return new RigidNode_Base(guid);
+    }
+.fi
+.PP
+By setting this to a custom value skeletons that are read using \fBBXDJSkeleton\&.ReadBinarySkeleton(string)\fP can be composed of a custom rigid node type\&. 
+.SH "Property Documentation"
+.PP 
+.SS "Guid RigidNode_Base\&.GUID\fC [get]\fP"
+
+.PP
+The globally unique identifier\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

@@ -1,0 +1,11 @@
+digraph "SkeletalJoint_Base.WriteBinaryJoint"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node34 [label="SkeletalJoint_Base.Write\lBinaryJoint",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node34 -> Node35 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node35 [label="SkeletalJoint_Base.ReadJoint\lFully",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#ae9f8e31a56644eb92cb901a4587a3d24",tooltip="Identifies the type of a joint, creates an instance, and reads that joint from the given input stream..."];
+  Node35 -> Node36 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node36 [label="BXDJSkeleton.ReadBinarySkeleton",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#aeacead12f7e921a9c77a588773901798",tooltip="Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton..."];
+}

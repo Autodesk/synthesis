@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_property_set_1_1_mesh_collider" kind="class" language="C#" prot="public">
+    <compoundname>PropertySet::MeshCollider</compoundname>
+    <basecompoundref refid="class_property_set_1_1_property_set_collider" prot="public" virt="non-virtual">PropertySet.PropertySetCollider</basecompoundref>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_property_set_1_1_mesh_collider_1a4888f42e196344977eae58654dddf265" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type>bool</type>
+        <definition>bool PropertySet.MeshCollider.Convex</definition>
+        <argsstring></argsstring>
+        <name>Convex</name>
+        <briefdescription>
+<para>Determines whether or not the <ref refid="class_property_set_1_1_mesh_collider" kindref="compound">MeshCollider</ref> is convex. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="103" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_property_set_1_1_mesh_collider_1a700e1c984f46aab9ef8eb989a2aa7545" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PropertySet.MeshCollider.MeshCollider</definition>
+        <argsstring>(bool convex)</argsstring>
+        <name>MeshCollider</name>
+        <param>
+          <type>bool</type>
+          <declname>convex</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_property_set_1_1_mesh_collider" kindref="compound">MeshCollider</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="112" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="112" bodyend="116"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="133">
+        <label>PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+      <node id="132">
+        <label>PropertySet.MeshCollider</label>
+        <link refid="class_property_set_1_1_mesh_collider"/>
+        <childnode refid="133" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="135">
+        <label>PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+      <node id="134">
+        <label>PropertySet.MeshCollider</label>
+        <link refid="class_property_set_1_1_mesh_collider"/>
+        <childnode refid="135" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="99" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="98" bodyend="117"/>
+    <listofallmembers>
+      <member refid="class_property_set_1_1_property_set_collider_1a68838b774adc4d08f1b07c819263f90b" prot="public" virt="non-virtual"><scope>PropertySet::MeshCollider</scope><name>CollisionType</name></member>
+      <member refid="class_property_set_1_1_mesh_collider_1a4888f42e196344977eae58654dddf265" prot="public" virt="non-virtual"><scope>PropertySet::MeshCollider</scope><name>Convex</name></member>
+      <member refid="class_property_set_1_1_mesh_collider_1a700e1c984f46aab9ef8eb989a2aa7545" prot="public" virt="non-virtual"><scope>PropertySet::MeshCollider</scope><name>MeshCollider</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a47197ffe129e18b56ee893e3f1a5832e" prot="public" virt="non-virtual"><scope>PropertySet::MeshCollider</scope><name>PropertySetCollider</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51e" prot="public" virt="non-virtual"><scope>PropertySet::MeshCollider</scope><name>PropertySetCollisionType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

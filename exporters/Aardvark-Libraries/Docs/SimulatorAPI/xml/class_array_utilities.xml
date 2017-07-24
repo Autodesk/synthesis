@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_array_utilities" kind="class" language="C#" prot="public">
+    <compoundname>ArrayUtilities</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_array_utilities_1ad2c612f67c0bbcca6fa70da574478c95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate T</type>
+        <definition>delegate T ArrayUtilities.MakeVector2&lt; T &gt;</definition>
+        <argsstring>(double x, double y)</argsstring>
+        <name>MakeVector2&lt; T &gt;</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" line="8" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_array_utilities_1a0370ee277798118b042f8a90f33e3763" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate T</type>
+        <definition>delegate T ArrayUtilities.MakeVector3&lt; T &gt;</definition>
+        <argsstring>(double x, double y, double z)</argsstring>
+        <name>MakeVector3&lt; T &gt;</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" line="9" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_array_utilities_1ae78f020d0ee37ed80077e6fcbddcb328" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate T</type>
+        <definition>delegate T ArrayUtilities.MakeColor&lt; T &gt;</definition>
+        <argsstring>(byte r, byte g, byte b, byte a)</argsstring>
+        <name>MakeColor&lt; T &gt;</name>
+        <param>
+          <type>byte</type>
+          <declname>r</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>g</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>b</declname>
+        </param>
+        <param>
+          <type>byte</type>
+          <declname>a</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" line="10" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_array_utilities_1a068706b8c82301a0902908ed58740f67" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T []</type>
+        <definition>static T [] ArrayUtilities.WrapArray&lt; T &gt;</definition>
+        <argsstring>(MakeVector2&lt; T &gt; maker, double[] array)</argsstring>
+        <name>WrapArray&lt; T &gt;</name>
+        <param>
+          <type>MakeVector2&lt; T &gt;</type>
+          <declname>maker</declname>
+        </param>
+        <param>
+          <type>double []</type>
+          <declname>array</declname>
+        </param>
+        <briefdescription>
+<para>Wraps the given array of 2D vector elements into an array of 2D vectors </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type to create</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>maker</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The delegate to create an instance</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>array</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The vector element array</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The wrapped array</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" line="19" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" bodystart="19" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="function" id="class_array_utilities_1ac24cf72faa81c79fa7f8d06aad8e098b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T []</type>
+        <definition>static T [] ArrayUtilities.WrapArray&lt; T &gt;</definition>
+        <argsstring>(MakeVector3&lt; T &gt; maker, double[] array)</argsstring>
+        <name>WrapArray&lt; T &gt;</name>
+        <param>
+          <type>MakeVector3&lt; T &gt;</type>
+          <declname>maker</declname>
+        </param>
+        <param>
+          <type>double []</type>
+          <declname>array</declname>
+        </param>
+        <briefdescription>
+<para>Wraps the given array of 3D vector elements into an array of 3D vectors </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type to create</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>maker</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The delegate to create an instance</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>array</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The vector element array</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The wrapped array</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" line="36" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" bodystart="36" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="class_array_utilities_1ac8824aadee75b2f0d64903876c666d19" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T []</type>
+        <definition>static T [] ArrayUtilities.WrapArray&lt; T &gt;</definition>
+        <argsstring>(MakeColor&lt; T &gt; maker, uint[] array)</argsstring>
+        <name>WrapArray&lt; T &gt;</name>
+        <param>
+          <type>MakeColor&lt; T &gt;</type>
+          <declname>maker</declname>
+        </param>
+        <param>
+          <type>uint []</type>
+          <declname>array</declname>
+        </param>
+        <briefdescription>
+<para>Wraps the given array of 4D color elements into an array of colors </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type to create</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>maker</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The delegate to create an instance</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>array</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The vector element array</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The wrapped array</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" line="53" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" bodystart="53" bodyend="62"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/ArrayUtilities.cs" bodystart="6" bodyend="63"/>
+    <listofallmembers>
+      <member refid="class_array_utilities_1ae78f020d0ee37ed80077e6fcbddcb328" prot="public" virt="non-virtual"><scope>ArrayUtilities</scope><name>MakeColor&lt; T &gt;</name></member>
+      <member refid="class_array_utilities_1ad2c612f67c0bbcca6fa70da574478c95" prot="public" virt="non-virtual"><scope>ArrayUtilities</scope><name>MakeVector2&lt; T &gt;</name></member>
+      <member refid="class_array_utilities_1a0370ee277798118b042f8a90f33e3763" prot="public" virt="non-virtual"><scope>ArrayUtilities</scope><name>MakeVector3&lt; T &gt;</name></member>
+      <member refid="class_array_utilities_1a068706b8c82301a0902908ed58740f67" prot="public" virt="non-virtual"><scope>ArrayUtilities</scope><name>WrapArray&lt; T &gt;</name></member>
+      <member refid="class_array_utilities_1ac24cf72faa81c79fa7f8d06aad8e098b" prot="public" virt="non-virtual"><scope>ArrayUtilities</scope><name>WrapArray&lt; T &gt;</name></member>
+      <member refid="class_array_utilities_1ac8824aadee75b2f0d64903876c666d19" prot="public" virt="non-virtual"><scope>ArrayUtilities</scope><name>WrapArray&lt; T &gt;</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

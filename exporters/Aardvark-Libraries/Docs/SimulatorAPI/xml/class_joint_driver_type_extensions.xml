@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_joint_driver_type_extensions" kind="class" language="C#" prot="public">
+    <compoundname>JointDriverTypeExtensions</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_joint_driver_type_extensions_1a9f8f88915ac23ecc19ed6d1ae4c2da5a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool JointDriverTypeExtensions.HasTwoPorts</definition>
+        <argsstring>(this JointDriverType type)</argsstring>
+        <name>HasTwoPorts</name>
+        <param>
+          <type>this JointDriverType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Checks if the given driver type requires two ports. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Driver type</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True is the given type requires two ports</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" line="22" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" bodystart="22" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_type_extensions_1a7c918622d72e4bc4d4dfc3de7ff23526" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>static string JointDriverTypeExtensions.GetPortType</definition>
+        <argsstring>(this JointDriverType type)</argsstring>
+        <name>GetPortType</name>
+        <param>
+          <type>this JointDriverType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Gets the string representation of the port for the given driver type. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Driver type</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Name of port type</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" line="32" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" bodystart="32" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_type_extensions_1a2434c129acd212f6d992951022caacec" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool JointDriverTypeExtensions.IsMotor</definition>
+        <argsstring>(this JointDriverType type)</argsstring>
+        <name>IsMotor</name>
+        <param>
+          <type>this JointDriverType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Checks if the given driver type is a motor. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Driver type</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Boolean</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" line="56" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" bodystart="56" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_type_extensions_1accb93b029aaecff9fe637c4b2287cf2c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool JointDriverTypeExtensions.IsElevator</definition>
+        <argsstring>(this JointDriverType type)</argsstring>
+        <name>IsElevator</name>
+        <param>
+          <type>this JointDriverType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" line="68" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" bodystart="68" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_type_extensions_1ab9169e7ef6dd3c9f995fe76b6e56b9c6" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool JointDriverTypeExtensions.IsPneumatic</definition>
+        <argsstring>(this JointDriverType type)</argsstring>
+        <name>IsPneumatic</name>
+        <param>
+          <type>this JointDriverType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Checks if the given driver type is pneumatic. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Driver type</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Boolean</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" line="77" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" bodystart="77" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_type_extensions_1a67965e5abd2eaaa161d6963e858cf73c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>static int JointDriverTypeExtensions.GetPortMax</definition>
+        <argsstring>(this JointDriverType type)</argsstring>
+        <name>GetPortMax</name>
+        <param>
+          <type>this JointDriverType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Gets the maximum port number for the given driver type. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Driver type</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Max port number</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" line="94" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" bodystart="94" bodyend="111"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverType.cs" bodystart="15" bodyend="112"/>
+    <listofallmembers>
+      <member refid="class_joint_driver_type_extensions_1a67965e5abd2eaaa161d6963e858cf73c" prot="public" virt="non-virtual"><scope>JointDriverTypeExtensions</scope><name>GetPortMax</name></member>
+      <member refid="class_joint_driver_type_extensions_1a7c918622d72e4bc4d4dfc3de7ff23526" prot="public" virt="non-virtual"><scope>JointDriverTypeExtensions</scope><name>GetPortType</name></member>
+      <member refid="class_joint_driver_type_extensions_1a9f8f88915ac23ecc19ed6d1ae4c2da5a" prot="public" virt="non-virtual"><scope>JointDriverTypeExtensions</scope><name>HasTwoPorts</name></member>
+      <member refid="class_joint_driver_type_extensions_1accb93b029aaecff9fe637c4b2287cf2c" prot="public" virt="non-virtual"><scope>JointDriverTypeExtensions</scope><name>IsElevator</name></member>
+      <member refid="class_joint_driver_type_extensions_1a2434c129acd212f6d992951022caacec" prot="public" virt="non-virtual"><scope>JointDriverTypeExtensions</scope><name>IsMotor</name></member>
+      <member refid="class_joint_driver_type_extensions_1ab9169e7ef6dd3c9f995fe76b6e56b9c6" prot="public" virt="non-virtual"><scope>JointDriverTypeExtensions</scope><name>IsPneumatic</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

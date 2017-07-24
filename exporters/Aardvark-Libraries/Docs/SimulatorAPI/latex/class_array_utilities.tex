@@ -1,0 +1,106 @@
+\hypertarget{class_array_utilities}{}\section{Array\+Utilities Class Reference}
+\label{class_array_utilities}\index{Array\+Utilities@{Array\+Utilities}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_array_utilities_ad2c612f67c0bbcca6fa70da574478c95}\label{class_array_utilities_ad2c612f67c0bbcca6fa70da574478c95}} 
+delegate T {\bfseries Make\+Vector2$<$ T $>$} (double x, double y)
+\item 
+\mbox{\Hypertarget{class_array_utilities_a0370ee277798118b042f8a90f33e3763}\label{class_array_utilities_a0370ee277798118b042f8a90f33e3763}} 
+delegate T {\bfseries Make\+Vector3$<$ T $>$} (double x, double y, double z)
+\item 
+\mbox{\Hypertarget{class_array_utilities_ae78f020d0ee37ed80077e6fcbddcb328}\label{class_array_utilities_ae78f020d0ee37ed80077e6fcbddcb328}} 
+delegate T {\bfseries Make\+Color$<$ T $>$} (byte r, byte g, byte b, byte a)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static T \mbox{[}$\,$\mbox{]} \hyperlink{class_array_utilities_a068706b8c82301a0902908ed58740f67}{Wrap\+Array$<$ T $>$} (Make\+Vector2$<$ T $>$ maker, double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em Wraps the given array of 2D vector elements into an array of 2D vectors \end{DoxyCompactList}\item 
+static T \mbox{[}$\,$\mbox{]} \hyperlink{class_array_utilities_ac24cf72faa81c79fa7f8d06aad8e098b}{Wrap\+Array$<$ T $>$} (Make\+Vector3$<$ T $>$ maker, double\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em Wraps the given array of 3D vector elements into an array of 3D vectors \end{DoxyCompactList}\item 
+static T \mbox{[}$\,$\mbox{]} \hyperlink{class_array_utilities_ac8824aadee75b2f0d64903876c666d19}{Wrap\+Array$<$ T $>$} (Make\+Color$<$ T $>$ maker, uint\mbox{[}$\,$\mbox{]} array)
+\begin{DoxyCompactList}\small\item\em Wraps the given array of 4D color elements into an array of colors \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_array_utilities_a068706b8c82301a0902908ed58740f67}\label{class_array_utilities_a068706b8c82301a0902908ed58740f67}} 
+\index{Array\+Utilities@{Array\+Utilities}!Wrap\+Array$<$ T $>$@{Wrap\+Array$<$ T $>$}}
+\index{Wrap\+Array$<$ T $>$@{Wrap\+Array$<$ T $>$}!Array\+Utilities@{Array\+Utilities}}
+\subsubsection{\texorpdfstring{Wrap\+Array$<$ T $>$()}{WrapArray< T >()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily static T \mbox{[}$\,$\mbox{]} Array\+Utilities.\+Wrap\+Array$<$ T $>$ (\begin{DoxyParamCaption}\item[{Make\+Vector2$<$ T $>$}]{maker,  }\item[{double \mbox{[}$\,$\mbox{]}}]{array }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Wraps the given array of 2D vector elements into an array of 2D vectors 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type to create\\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em maker} & The delegate to create an instance\\
+\hline
+{\em array} & The vector element array\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The wrapped array
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_array_utilities_ac24cf72faa81c79fa7f8d06aad8e098b}\label{class_array_utilities_ac24cf72faa81c79fa7f8d06aad8e098b}} 
+\index{Array\+Utilities@{Array\+Utilities}!Wrap\+Array$<$ T $>$@{Wrap\+Array$<$ T $>$}}
+\index{Wrap\+Array$<$ T $>$@{Wrap\+Array$<$ T $>$}!Array\+Utilities@{Array\+Utilities}}
+\subsubsection{\texorpdfstring{Wrap\+Array$<$ T $>$()}{WrapArray< T >()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily static T \mbox{[}$\,$\mbox{]} Array\+Utilities.\+Wrap\+Array$<$ T $>$ (\begin{DoxyParamCaption}\item[{Make\+Vector3$<$ T $>$}]{maker,  }\item[{double \mbox{[}$\,$\mbox{]}}]{array }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Wraps the given array of 3D vector elements into an array of 3D vectors 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type to create\\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em maker} & The delegate to create an instance\\
+\hline
+{\em array} & The vector element array\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The wrapped array
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_array_utilities_ac8824aadee75b2f0d64903876c666d19}\label{class_array_utilities_ac8824aadee75b2f0d64903876c666d19}} 
+\index{Array\+Utilities@{Array\+Utilities}!Wrap\+Array$<$ T $>$@{Wrap\+Array$<$ T $>$}}
+\index{Wrap\+Array$<$ T $>$@{Wrap\+Array$<$ T $>$}!Array\+Utilities@{Array\+Utilities}}
+\subsubsection{\texorpdfstring{Wrap\+Array$<$ T $>$()}{WrapArray< T >()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily static T \mbox{[}$\,$\mbox{]} Array\+Utilities.\+Wrap\+Array$<$ T $>$ (\begin{DoxyParamCaption}\item[{Make\+Color$<$ T $>$}]{maker,  }\item[{uint \mbox{[}$\,$\mbox{]}}]{array }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Wraps the given array of 4D color elements into an array of colors 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type to create\\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em maker} & The delegate to create an instance\\
+\hline
+{\em array} & The vector element array\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The wrapped array
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Utilities/Array\+Utilities.\+cs\end{DoxyCompactItemize}

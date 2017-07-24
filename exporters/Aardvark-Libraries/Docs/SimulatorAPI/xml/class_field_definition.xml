@@ -1,0 +1,360 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_field_definition" kind="class" language="C#" prot="public">
+    <compoundname>FieldDefinition</compoundname>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="class_field_definition_1a5913096820f688bc8e6642cc8714457d" prot="public" static="yes" mutable="no">
+        <type><ref refid="class_field_definition_1af50dfa2594c8b9ac6fcc592356c0117a" kindref="member">FieldDefinitionFactory</ref></type>
+        <definition>FieldDefinitionFactory FieldDefinition.Factory</definition>
+        <argsstring></argsstring>
+        <name>Factory</name>
+        <initializer>= delegate(Guid guid, string name)
+    {
+        return new <ref refid="class_field_definition" kindref="compound">FieldDefinition</ref>(guid, name);
+    }</initializer>
+        <briefdescription>
+<para>The default delegate for creating new <ref refid="class_field_definition" kindref="compound">FieldDefinition</ref> instances. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="20" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_field_definition_1aedeba7c34e3c6bc5a6a34cfd335aa75e" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type>Guid</type>
+        <definition>Guid FieldDefinition.GUID</definition>
+        <argsstring></argsstring>
+        <name>GUID</name>
+        <briefdescription>
+<para>The globally unique identifier. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="28" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="29" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+        <referencedby refid="class_field_definition_1a280ce8e3246dee627de3e0c1561f897d" compoundref="_field_definition_8cs" startline="57" endline="63">FieldDefinition</referencedby>
+      </memberdef>
+      <memberdef kind="property" id="class_field_definition_1aa65595b10037eab102872bcca4934ea3" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type><ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref></type>
+        <definition>FieldNodeGroup FieldDefinition.NodeGroup</definition>
+        <argsstring></argsstring>
+        <name>NodeGroup</name>
+        <briefdescription>
+<para>The group containing each child node. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="37" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="38" bodyend="-1"/>
+        <referencedby refid="class_field_definition_1a280ce8e3246dee627de3e0c1561f897d" compoundref="_field_definition_8cs" startline="57" endline="63">FieldDefinition</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_field_definition_1a6271de22deb61d7ea8ce1e9a114fdec8" prot="private" static="no" mutable="no">
+        <type>Dictionary&lt; string, <ref refid="struct_property_set" kindref="compound">PropertySet</ref> &gt;</type>
+        <definition>Dictionary&lt;string, PropertySet&gt; FieldDefinition.propertySets</definition>
+        <argsstring></argsstring>
+        <name>propertySets</name>
+        <briefdescription>
+<para>A dictionary containing each <ref refid="struct_property_set" kindref="compound">PropertySet</ref> and a string identifier. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="46" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_field_definition_1aeb2c3ad9cdc983c11fbe8cc05cf5f6e5" prot="private" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_a_mesh" kindref="compound">BXDAMesh</ref></type>
+        <definition>BXDAMesh FieldDefinition.mesh</definition>
+        <argsstring></argsstring>
+        <name>mesh</name>
+        <briefdescription>
+<para>The mesh to be exported. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="51" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_field_definition_1af50dfa2594c8b9ac6fcc592356c0117a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate <ref refid="class_field_definition" kindref="compound">FieldDefinition</ref></type>
+        <definition>delegate FieldDefinition FieldDefinition.FieldDefinitionFactory</definition>
+        <argsstring>(Guid guid, string name=BXDFProperties.BXDF_DEFAULT_NAME)</argsstring>
+        <name>FieldDefinitionFactory</name>
+        <param>
+          <type>Guid</type>
+          <declname>guid</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+          <defval><ref refid="class_b_x_d_f_properties_1a528bb431080585f72f9f74bd44a23932" kindref="member">BXDFProperties.BXDF_DEFAULT_NAME</ref></defval>
+        </param>
+        <briefdescription>
+<para>Used for creating new instances of a <ref refid="class_field_definition" kindref="compound">FieldDefinition</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>guid</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nodeGroupName</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="15" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_field_definition_1a60993e440fc55566badba6799f94310a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void FieldDefinition.AddPropertySet</definition>
+        <argsstring>(PropertySet group)</argsstring>
+        <name>AddPropertySet</name>
+        <param>
+          <type><ref refid="struct_property_set" kindref="compound">PropertySet</ref></type>
+          <declname>group</declname>
+        </param>
+        <briefdescription>
+<para>Adds a child PhysicsGroup to physicsGroups. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>group</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="70" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="70" bodyend="73"/>
+        <references refid="struct_property_set_1a8366cd9dd1ed6a6fccb6746f9e69e885" compoundref="_property_set_8cs" startline="122">PropertySet.PropertySetID</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_definition_1a46ad3d304c6caad10fa8cef5ddf0fe1f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Dictionary&lt; string, <ref refid="struct_property_set" kindref="compound">PropertySet</ref> &gt;</type>
+        <definition>Dictionary&lt;string, PropertySet&gt; FieldDefinition.GetPropertySets</definition>
+        <argsstring>()</argsstring>
+        <name>GetPropertySets</name>
+        <briefdescription>
+<para>Returns a Dictionary containing each PhysicsGroup. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="79" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="79" bodyend="82"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_field_definition_1ad2d85f2d301af51825dd119f15936357" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void FieldDefinition.AddSubMesh</definition>
+        <argsstring>(BXDAMesh.BXDASubMesh subMesh)</argsstring>
+        <name>AddSubMesh</name>
+        <param>
+          <type><ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh" kindref="compound">BXDAMesh.BXDASubMesh</ref></type>
+          <declname>subMesh</declname>
+        </param>
+        <briefdescription>
+<para>Used for adding a submesh and creating a sub mesh ID for the given node. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>subMesh</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="89" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="89" bodyend="92"/>
+        <references refid="class_b_x_d_a_mesh_1a2782cf37716d225b7dce7dc69bfe03e5" compoundref="_b_x_d_a_mesh_8cs" startline="40">BXDAMesh.meshes</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_definition_1a23223a256c66e90bdb4cd80af64ac36a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void FieldDefinition.AddCollisionMesh</definition>
+        <argsstring>(BXDAMesh.BXDASubMesh collisionMesh)</argsstring>
+        <name>AddCollisionMesh</name>
+        <param>
+          <type><ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh" kindref="compound">BXDAMesh.BXDASubMesh</ref></type>
+          <declname>collisionMesh</declname>
+        </param>
+        <briefdescription>
+<para>Used for adding a collision mesh and creating a collision mesh ID for the given node. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>collisionMesh</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="99" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="99" bodyend="102"/>
+        <references refid="class_b_x_d_a_mesh_1ab18fc3dc7b16c729b8ad690d8f89d20c" compoundref="_b_x_d_a_mesh_8cs" startline="49">BXDAMesh.colliders</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_definition_1a5d2494daeb5679568c157d8668ca3cd6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh" kindref="compound">BXDAMesh.BXDASubMesh</ref></type>
+        <definition>BXDAMesh.BXDASubMesh FieldDefinition.GetSubMesh</definition>
+        <argsstring>(int id)</argsstring>
+        <name>GetSubMesh</name>
+        <param>
+          <type>int</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Used for getting a submesh from the given ID. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="109" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="109" bodyend="112"/>
+        <references refid="class_b_x_d_a_mesh_1a2782cf37716d225b7dce7dc69bfe03e5" compoundref="_b_x_d_a_mesh_8cs" startline="40">BXDAMesh.meshes</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_definition_1aefa6070137fba9ec6bfb67f3b2639e68" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh" kindref="compound">BXDAMesh.BXDASubMesh</ref></type>
+        <definition>BXDAMesh.BXDASubMesh FieldDefinition.GetCollisionMesh</definition>
+        <argsstring>(int id)</argsstring>
+        <name>GetCollisionMesh</name>
+        <param>
+          <type>int</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Used for getting a collision mesh from the given ID. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="119" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="119" bodyend="122"/>
+        <references refid="class_b_x_d_a_mesh_1ab18fc3dc7b16c729b8ad690d8f89d20c" compoundref="_b_x_d_a_mesh_8cs" startline="49">BXDAMesh.colliders</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_definition_1a7d7ef7581f135c46488b48c79f3070fe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_a_mesh" kindref="compound">BXDAMesh</ref></type>
+        <definition>BXDAMesh FieldDefinition.GetMeshOutput</definition>
+        <argsstring>()</argsstring>
+        <name>GetMeshOutput</name>
+        <briefdescription>
+<para>Returns the mesh to be exported. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="128" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="128" bodyend="131"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_field_definition_1a280ce8e3246dee627de3e0c1561f897d" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>FieldDefinition.FieldDefinition</definition>
+        <argsstring>(Guid guid, string name)</argsstring>
+        <name>FieldDefinition</name>
+        <param>
+          <type>Guid</type>
+          <declname>guid</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Initailizes a new instance of the <ref refid="class_field_definition" kindref="compound">FieldDefinition</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>guid</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="57" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="57" bodyend="63"/>
+        <references refid="class_field_definition_1aedeba7c34e3c6bc5a6a34cfd335aa75e" compoundref="_field_definition_8cs" startline="29">GUID</references>
+        <references refid="class_field_definition_1aa65595b10037eab102872bcca4934ea3" compoundref="_field_definition_8cs" startline="38">NodeGroup</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldDefinition.cs" bodystart="7" bodyend="132"/>
+    <listofallmembers>
+      <member refid="class_field_definition_1a23223a256c66e90bdb4cd80af64ac36a" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>AddCollisionMesh</name></member>
+      <member refid="class_field_definition_1a60993e440fc55566badba6799f94310a" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>AddPropertySet</name></member>
+      <member refid="class_field_definition_1ad2d85f2d301af51825dd119f15936357" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>AddSubMesh</name></member>
+      <member refid="class_field_definition_1a5913096820f688bc8e6642cc8714457d" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>Factory</name></member>
+      <member refid="class_field_definition_1a280ce8e3246dee627de3e0c1561f897d" prot="protected" virt="non-virtual"><scope>FieldDefinition</scope><name>FieldDefinition</name></member>
+      <member refid="class_field_definition_1af50dfa2594c8b9ac6fcc592356c0117a" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>FieldDefinitionFactory</name></member>
+      <member refid="class_field_definition_1aefa6070137fba9ec6bfb67f3b2639e68" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>GetCollisionMesh</name></member>
+      <member refid="class_field_definition_1a7d7ef7581f135c46488b48c79f3070fe" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>GetMeshOutput</name></member>
+      <member refid="class_field_definition_1a46ad3d304c6caad10fa8cef5ddf0fe1f" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>GetPropertySets</name></member>
+      <member refid="class_field_definition_1a5d2494daeb5679568c157d8668ca3cd6" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>GetSubMesh</name></member>
+      <member refid="class_field_definition_1aedeba7c34e3c6bc5a6a34cfd335aa75e" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>GUID</name></member>
+      <member refid="class_field_definition_1aeb2c3ad9cdc983c11fbe8cc05cf5f6e5" prot="private" virt="non-virtual"><scope>FieldDefinition</scope><name>mesh</name></member>
+      <member refid="class_field_definition_1aa65595b10037eab102872bcca4934ea3" prot="public" virt="non-virtual"><scope>FieldDefinition</scope><name>NodeGroup</name></member>
+      <member refid="class_field_definition_1a6271de22deb61d7ea8ce1e9a114fdec8" prot="private" virt="non-virtual"><scope>FieldDefinition</scope><name>propertySets</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_quaternion" kind="class" language="C#" prot="public">
+    <compoundname>BXDQuaternion</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_b_x_d_quaternion_1a37535ef51676bd109b9c13049230696b" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDQuaternion.X</definition>
+        <argsstring></argsstring>
+        <name>X</name>
+        <briefdescription>
+<para>The X value of the <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="11" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_quaternion_1a372aeace6dc0ec9659e10da7ec95e793" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDQuaternion.Y</definition>
+        <argsstring></argsstring>
+        <name>Y</name>
+        <briefdescription>
+<para>The Y value of the <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="16" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_quaternion_1a8369bbd60061e761662281ad91ec0f6d" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDQuaternion.Z</definition>
+        <argsstring></argsstring>
+        <name>Z</name>
+        <briefdescription>
+<para>The Z value of the <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="21" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="21" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_quaternion_1a041db6f6882e5480d333bddb9bc2f4f1" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDQuaternion.W</definition>
+        <argsstring></argsstring>
+        <name>W</name>
+        <briefdescription>
+<para>The W value of the <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="26" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="26" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_b_x_d_quaternion_1a423e553992a00c9d4e1422516c200090" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDQuaternion.BXDQuaternion</definition>
+        <argsstring>()</argsstring>
+        <name>BXDQuaternion</name>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref> class with an identity value. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="31" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="31" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_quaternion_1a4dcf4ea887488e970b7fd53beef648e7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDQuaternion.BXDQuaternion</definition>
+        <argsstring>(float x, float y, float z, float w)</argsstring>
+        <name>BXDQuaternion</name>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>z</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>w</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref> class with the values given. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>w</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="43" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="43" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_quaternion_1a8fa8c074605296bcb4c7b6d3724dbbed" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override string</type>
+        <definition>override string BXDQuaternion.ToString</definition>
+        <argsstring>()</argsstring>
+        <name>ToString</name>
+        <briefdescription>
+<para>Returns a string containing labeled x, y, z, and w values. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="55" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="55" bodyend="58"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDQuaternion.cs" bodystart="6" bodyend="59"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_quaternion_1a423e553992a00c9d4e1422516c200090" prot="public" virt="non-virtual"><scope>BXDQuaternion</scope><name>BXDQuaternion</name></member>
+      <member refid="class_b_x_d_quaternion_1a4dcf4ea887488e970b7fd53beef648e7" prot="public" virt="non-virtual"><scope>BXDQuaternion</scope><name>BXDQuaternion</name></member>
+      <member refid="class_b_x_d_quaternion_1a8fa8c074605296bcb4c7b6d3724dbbed" prot="public" virt="non-virtual"><scope>BXDQuaternion</scope><name>ToString</name></member>
+      <member refid="class_b_x_d_quaternion_1a041db6f6882e5480d333bddb9bc2f4f1" prot="public" virt="non-virtual"><scope>BXDQuaternion</scope><name>W</name></member>
+      <member refid="class_b_x_d_quaternion_1a37535ef51676bd109b9c13049230696b" prot="public" virt="non-virtual"><scope>BXDQuaternion</scope><name>X</name></member>
+      <member refid="class_b_x_d_quaternion_1a372aeace6dc0ec9659e10da7ec95e793" prot="public" virt="non-virtual"><scope>BXDQuaternion</scope><name>Y</name></member>
+      <member refid="class_b_x_d_quaternion_1a8369bbd60061e761662281ad91ec0f6d" prot="public" virt="non-virtual"><scope>BXDQuaternion</scope><name>Z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

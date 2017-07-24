@@ -1,0 +1,123 @@
+\hypertarget{class_robot_sensor}{}\section{Robot\+Sensor Class Reference}
+\label{class_robot_sensor}\index{Robot\+Sensor@{Robot\+Sensor}}
+
+
+Inheritance diagram for Robot\+Sensor\+:
+% FIG 0
+
+
+Collaboration diagram for Robot\+Sensor\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_robot_sensor_a4685c35df7ea0bb8deabc3eaa001f06c}\label{class_robot_sensor_a4685c35df7ea0bb8deabc3eaa001f06c}} 
+{\bfseries Robot\+Sensor} (Robot\+Sensor\+Type type)
+\item 
+void \hyperlink{class_robot_sensor_aa1dc17e6028128cabb1ddbfdb1334b84}{Write\+Binary\+Data} (Binary\+Writer writer)
+\begin{DoxyCompactList}\small\item\em Serializes this object to the given stream \end{DoxyCompactList}\item 
+void \hyperlink{class_robot_sensor_ad847a256a5f297a3d4b1570a3ccbd97a}{Read\+Binary\+Data} (Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Deserializes this object from the given stream. \end{DoxyCompactList}\item 
+bool \hyperlink{class_robot_sensor_ad72161168e60cb70a19014de7d49ebc6}{Equals} (\hyperlink{class_robot_sensor}{Robot\+Sensor} other\+Sensor)
+\begin{DoxyCompactList}\small\item\em Compares two sensors, returns true if all fields are identical. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_robot_sensor_ae52c7f875ebbad333a4d412c38279cfa}\label{class_robot_sensor_ae52c7f875ebbad333a4d412c38279cfa}} 
+static Robot\+Sensor\+Type \mbox{[}$\,$\mbox{]} {\bfseries Get\+Allowed\+Sensors} (\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} joint)
+\item 
+\mbox{\Hypertarget{class_robot_sensor_a16dd86f41101b3eda4c5a4ac94bb4b3d}\label{class_robot_sensor_a16dd86f41101b3eda4c5a4ac94bb4b3d}} 
+static \hyperlink{class_robot_sensor}{Robot\+Sensor} {\bfseries Read\+Sensor\+Fully} (Binary\+Reader reader)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_robot_sensor_adcf031bd4ae11d7c3508e1d616221a82}\label{class_robot_sensor_adcf031bd4ae11d7c3508e1d616221a82}} 
+short {\bfseries module}
+\item 
+\mbox{\Hypertarget{class_robot_sensor_a3f99ada48ed6fc7d2c9578633885df4d}\label{class_robot_sensor_a3f99ada48ed6fc7d2c9578633885df4d}} 
+Robot\+Sensor\+Type {\bfseries type}
+\item 
+\mbox{\Hypertarget{class_robot_sensor_a68fc5a00526936c2e21130a672111513}\label{class_robot_sensor_a68fc5a00526936c2e21130a672111513}} 
+\hyperlink{class_polynomial}{Polynomial} {\bfseries equation}
+\item 
+bool \hyperlink{class_robot_sensor_ad6c16b11683315a18bd63117384d3692}{use\+Secondary\+Source} = false
+\begin{DoxyCompactList}\small\item\em If this is true source the secondary value from the joint. (Rotational instead of linear for cylindrical) \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_robot_sensor_ad72161168e60cb70a19014de7d49ebc6}\label{class_robot_sensor_ad72161168e60cb70a19014de7d49ebc6}} 
+\index{Robot\+Sensor@{Robot\+Sensor}!Equals@{Equals}}
+\index{Equals@{Equals}!Robot\+Sensor@{Robot\+Sensor}}
+\subsubsection{\texorpdfstring{Equals()}{Equals()}}
+{\footnotesize\ttfamily bool Robot\+Sensor.\+Equals (\begin{DoxyParamCaption}\item[{\hyperlink{class_robot_sensor}{Robot\+Sensor}}]{other\+Sensor }\end{DoxyParamCaption})}
+
+
+
+Compares two sensors, returns true if all fields are identical. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other\+Sensor} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_robot_sensor_ad847a256a5f297a3d4b1570a3ccbd97a}\label{class_robot_sensor_ad847a256a5f297a3d4b1570a3ccbd97a}} 
+\index{Robot\+Sensor@{Robot\+Sensor}!Read\+Binary\+Data@{Read\+Binary\+Data}}
+\index{Read\+Binary\+Data@{Read\+Binary\+Data}!Robot\+Sensor@{Robot\+Sensor}}
+\subsubsection{\texorpdfstring{Read\+Binary\+Data()}{ReadBinaryData()}}
+{\footnotesize\ttfamily void Robot\+Sensor.\+Read\+Binary\+Data (\begin{DoxyParamCaption}\item[{Binary\+Reader}]{reader }\end{DoxyParamCaption})}
+
+
+
+Deserializes this object from the given stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & Input stream\\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interface_binary_r_w_object_a2cd7d6b9aded677cffdb646b51328c5d}{Binary\+R\+W\+Object}.
+
+Here is the call graph for this function\+:
+% FIG 2
+Here is the caller graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{class_robot_sensor_aa1dc17e6028128cabb1ddbfdb1334b84}\label{class_robot_sensor_aa1dc17e6028128cabb1ddbfdb1334b84}} 
+\index{Robot\+Sensor@{Robot\+Sensor}!Write\+Binary\+Data@{Write\+Binary\+Data}}
+\index{Write\+Binary\+Data@{Write\+Binary\+Data}!Robot\+Sensor@{Robot\+Sensor}}
+\subsubsection{\texorpdfstring{Write\+Binary\+Data()}{WriteBinaryData()}}
+{\footnotesize\ttfamily void Robot\+Sensor.\+Write\+Binary\+Data (\begin{DoxyParamCaption}\item[{Binary\+Writer}]{writer }\end{DoxyParamCaption})}
+
+
+
+Serializes this object to the given stream 
+
+
+\begin{DoxyParams}{Parameters}
+{\em writer} & Output stream\\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interface_binary_r_w_object_a5e361e550b30dcd29759188cf67d177c}{Binary\+R\+W\+Object}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_robot_sensor_ad6c16b11683315a18bd63117384d3692}\label{class_robot_sensor_ad6c16b11683315a18bd63117384d3692}} 
+\index{Robot\+Sensor@{Robot\+Sensor}!use\+Secondary\+Source@{use\+Secondary\+Source}}
+\index{use\+Secondary\+Source@{use\+Secondary\+Source}!Robot\+Sensor@{Robot\+Sensor}}
+\subsubsection{\texorpdfstring{use\+Secondary\+Source}{useSecondarySource}}
+{\footnotesize\ttfamily bool Robot\+Sensor.\+use\+Secondary\+Source = false}
+
+
+
+If this is true source the secondary value from the joint. (Rotational instead of linear for cylindrical) 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Joints/\+Sensors/Robot\+Sensor.\+cs\end{DoxyCompactItemize}

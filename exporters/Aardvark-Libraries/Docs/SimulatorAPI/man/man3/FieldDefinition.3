@@ -1,0 +1,222 @@
+.TH "FieldDefinition" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FieldDefinition
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "delegate \fBFieldDefinition\fP \fBFieldDefinitionFactory\fP (Guid guid, string name=\fBBXDFProperties\&.BXDF_DEFAULT_NAME\fP)"
+.br
+.RI "Used for creating new instances of a \fBFieldDefinition\fP\&. "
+.ti -1c
+.RI "void \fBAddPropertySet\fP (\fBPropertySet\fP group)"
+.br
+.RI "Adds a child PhysicsGroup to physicsGroups\&. "
+.ti -1c
+.RI "Dictionary< string, \fBPropertySet\fP > \fBGetPropertySets\fP ()"
+.br
+.RI "Returns a Dictionary containing each PhysicsGroup\&. "
+.ti -1c
+.RI "void \fBAddSubMesh\fP (\fBBXDAMesh\&.BXDASubMesh\fP subMesh)"
+.br
+.RI "Used for adding a submesh and creating a sub mesh ID for the given node\&. "
+.ti -1c
+.RI "void \fBAddCollisionMesh\fP (\fBBXDAMesh\&.BXDASubMesh\fP collisionMesh)"
+.br
+.RI "Used for adding a collision mesh and creating a collision mesh ID for the given node\&. "
+.ti -1c
+.RI "\fBBXDAMesh\&.BXDASubMesh\fP \fBGetSubMesh\fP (int id)"
+.br
+.RI "Used for getting a submesh from the given ID\&. "
+.ti -1c
+.RI "\fBBXDAMesh\&.BXDASubMesh\fP \fBGetCollisionMesh\fP (int id)"
+.br
+.RI "Used for getting a collision mesh from the given ID\&. "
+.ti -1c
+.RI "\fBBXDAMesh\fP \fBGetMeshOutput\fP ()"
+.br
+.RI "Returns the mesh to be exported\&. "
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static \fBFieldDefinitionFactory\fP \fBFactory\fP"
+.br
+.RI "The default delegate for creating new \fBFieldDefinition\fP instances\&. "
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBFieldDefinition\fP (Guid guid, string name)"
+.br
+.RI "Initailizes a new instance of the \fBFieldDefinition\fP class\&. "
+.in -1c
+.SS "Properties"
+
+.in +1c
+.ti -1c
+.RI "Guid \fBGUID\fP\fC [get]\fP"
+.br
+.RI "The globally unique identifier\&. "
+.ti -1c
+.RI "\fBFieldNodeGroup\fP \fBNodeGroup\fP\fC [get]\fP"
+.br
+.RI "The group containing each child node\&. "
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "FieldDefinition\&.FieldDefinition (Guid guid, string name)\fC [protected]\fP"
+
+.PP
+Initailizes a new instance of the \fBFieldDefinition\fP class\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIguid\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void FieldDefinition\&.AddCollisionMesh (\fBBXDAMesh\&.BXDASubMesh\fP collisionMesh)"
+
+.PP
+Used for adding a collision mesh and creating a collision mesh ID for the given node\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcollisionMesh\fP 
+.br
+\fInode\fP 
+.RE
+.PP
+
+.SS "void FieldDefinition\&.AddPropertySet (\fBPropertySet\fP group)"
+
+.PP
+Adds a child PhysicsGroup to physicsGroups\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIname\fP 
+.br
+\fIgroup\fP 
+.RE
+.PP
+
+.SS "void FieldDefinition\&.AddSubMesh (\fBBXDAMesh\&.BXDASubMesh\fP subMesh)"
+
+.PP
+Used for adding a submesh and creating a sub mesh ID for the given node\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIsubMesh\fP 
+.br
+\fInode\fP 
+.RE
+.PP
+
+.SS "delegate \fBFieldDefinition\fP FieldDefinition\&.FieldDefinitionFactory (Guid guid, string name = \fC\fBBXDFProperties\&.BXDF_DEFAULT_NAME\fP\fP)"
+
+.PP
+Used for creating new instances of a \fBFieldDefinition\fP\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIguid\fP 
+.br
+\fInodeGroupName\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.SS "\fBBXDAMesh\&.BXDASubMesh\fP FieldDefinition\&.GetCollisionMesh (int id)"
+
+.PP
+Used for getting a collision mesh from the given ID\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIid\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.SS "\fBBXDAMesh\fP FieldDefinition\&.GetMeshOutput ()"
+
+.PP
+Returns the mesh to be exported\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.SS "Dictionary<string, \fBPropertySet\fP> FieldDefinition\&.GetPropertySets ()"
+
+.PP
+Returns a Dictionary containing each PhysicsGroup\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.SS "\fBBXDAMesh\&.BXDASubMesh\fP FieldDefinition\&.GetSubMesh (int id)"
+
+.PP
+Used for getting a submesh from the given ID\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIid\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "\fBFieldDefinitionFactory\fP FieldDefinition\&.Factory\fC [static]\fP"
+\fBInitial value:\fP
+.PP
+.nf
+= delegate(Guid guid, string name)
+    {
+        return new FieldDefinition(guid, name);
+    }
+.fi
+.PP
+The default delegate for creating new \fBFieldDefinition\fP instances\&. 
+.SH "Property Documentation"
+.PP 
+.SS "Guid FieldDefinition\&.GUID\fC [get]\fP"
+
+.PP
+The globally unique identifier\&. 
+.SS "\fBFieldNodeGroup\fP FieldDefinition\&.NodeGroup\fC [get]\fP"
+
+.PP
+The group containing each child node\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

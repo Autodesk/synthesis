@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_i_o_utilities" kind="class" language="C#" prot="public">
+    <compoundname>IOUtilities</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_i_o_utilities_1afa7c814fd3f509f8db503c67b1ba0493" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>IEnumerable&lt; string &gt;</type>
+        <definition>static IEnumerable&lt;string&gt; IOUtilities.AllElements</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>AllElements</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Used for easy access of all elements read by an XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/IOUtilities.cs" line="17" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/IOUtilities.cs" bodystart="17" bodyend="24"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Used for simplifying reading and writing operations. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/IOUtilities.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/IOUtilities.cs" bodystart="10" bodyend="25"/>
+    <listofallmembers>
+      <member refid="class_i_o_utilities_1afa7c814fd3f509f8db503c67b1ba0493" prot="public" virt="non-virtual"><scope>IOUtilities</scope><name>AllElements</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

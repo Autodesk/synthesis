@@ -1,0 +1,51 @@
+\hypertarget{class_joint_driver_meta}{}\section{Joint\+Driver\+Meta Class Reference}
+\label{class_joint_driver_meta}\index{Joint\+Driver\+Meta@{Joint\+Driver\+Meta}}
+
+
+Base class all joint metadata should inherit from.  
+
+
+
+
+Inheritance diagram for Joint\+Driver\+Meta\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_joint_driver_meta_ab05346b958156ad0cbb9f908c19fa838}\label{class_joint_driver_meta_ab05346b958156ad0cbb9f908c19fa838}} 
+int {\bfseries Get\+ID} ()
+\item 
+\mbox{\Hypertarget{class_joint_driver_meta_ac4b1c493843d20020a1ed43714c966c2}\label{class_joint_driver_meta_ac4b1c493843d20020a1ed43714c966c2}} 
+void {\bfseries Write\+Data} (Binary\+Writer writer)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_joint_driver_meta_adb75866d97a7f8b57f95cc5581e62860}\label{class_joint_driver_meta_adb75866d97a7f8b57f95cc5581e62860}} 
+static \hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta} {\bfseries Read\+Driver\+Meta} (Binary\+Reader reader)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_joint_driver_meta_aca600ea13be10ec808f61deee5f559f9}\label{class_joint_driver_meta_aca600ea13be10ec808f61deee5f559f9}} 
+static readonly Type \mbox{[}$\,$\mbox{]} {\bfseries J\+O\+I\+N\+T\+\_\+\+D\+R\+I\+V\+E\+R\+\_\+\+M\+E\+T\+A\+\_\+\+T\+Y\+P\+ES} = new Type\mbox{[}$\,$\mbox{]} \{ typeof(\hyperlink{class_wheel_driver_meta}{Wheel\+Driver\+Meta}), typeof(\hyperlink{class_pneumatic_driver_meta}{Pneumatic\+Driver\+Meta}), typeof(\hyperlink{class_elevator_driver_meta}{Elevator\+Driver\+Meta}) \}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_joint_driver_meta_adf4e26898611dfdce9cd65190100b4f5}\label{class_joint_driver_meta_adf4e26898611dfdce9cd65190100b4f5}} 
+abstract void {\bfseries Write\+Data\+Internal} (Binary\+Writer writer)
+\item 
+\mbox{\Hypertarget{class_joint_driver_meta_a3f0af9deabeff7ea433a7e43689ddfa6}\label{class_joint_driver_meta_a3f0af9deabeff7ea433a7e43689ddfa6}} 
+abstract void {\bfseries Read\+Data\+Internal} (Binary\+Reader reader)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Base class all joint metadata should inherit from. 
+
+If you inherit make sure to add your type to Joint\+Driver\+Meta.\+J\+O\+I\+N\+T\+\_\+\+D\+R\+I\+V\+E\+R\+\_\+\+M\+E\+T\+A\+\_\+\+T\+Y\+P\+ES, and make sure you have a public constructor that takes no arguments. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Joints/\+Driver/Joint\+Driver\+Meta.\+cs\end{DoxyCompactItemize}

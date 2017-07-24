@@ -1,0 +1,60 @@
+.TH "BinaryRWObject" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BinaryRWObject \- Interface for objects that can read/write binary data to files  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBBXDAMesh\fP, \fBBXDAMesh\fP, \fBBXDVector3\fP, \fBJointDriver\fP, \fBPhysicalProperties\fP, \fBPolynomial\fP, and \fBRobotSensor\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (BinaryWriter writer)"
+.br
+.RI "Serializes this object to the given stream "
+.ti -1c
+.RI "void \fBReadBinaryData\fP (BinaryReader reader)"
+.br
+.RI "Deserializes this object from the given stream\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Interface for objects that can read/write binary data to files 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void BinaryRWObject\&.ReadBinaryData (BinaryReader reader)"
+
+.PP
+Deserializes this object from the given stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP Input stream
+.RE
+.PP
+
+.PP
+Implemented in \fBBXDAMesh\fP, \fBRobotSensor\fP, and \fBPhysicalProperties\fP\&.
+.SS "void BinaryRWObject\&.WriteBinaryData (BinaryWriter writer)"
+
+.PP
+Serializes this object to the given stream 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwriter\fP Output stream
+.RE
+.PP
+
+.PP
+Implemented in \fBBXDAMesh\fP, \fBRobotSensor\fP, and \fBPhysicalProperties\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

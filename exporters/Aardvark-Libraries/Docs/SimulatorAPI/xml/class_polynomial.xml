@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_polynomial" kind="class" language="C#" prot="public">
+    <compoundname>Polynomial</compoundname>
+    <basecompoundref refid="interface_binary_r_w_object" prot="public" virt="non-virtual">BinaryRWObject</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_polynomial_1a91c3d9bdfef0ff967a36040b1755dac9" prot="public" static="no" mutable="no">
+        <type>float []</type>
+        <definition>float [] Polynomial.coeff</definition>
+        <argsstring></argsstring>
+        <name>coeff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_polynomial_1a91ce5c38a749068ec23e2388258aab59" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Polynomial.Polynomial</definition>
+        <argsstring>()</argsstring>
+        <name>Polynomial</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="10" bodyend="13"/>
+      </memberdef>
+      <memberdef kind="function" id="class_polynomial_1ad2d3944cfa448882204a0e698c2aa8c9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Polynomial.Polynomial</definition>
+        <argsstring>(params float[] coeff)</argsstring>
+        <name>Polynomial</name>
+        <param>
+          <type>params float []</type>
+          <declname>coeff</declname>
+        </param>
+        <briefdescription>
+<para>Coefficients are based on array indicies, so the first one is multiplied by 1, the second by x, the third by x^2... </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>coeff</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Coeffecients for the polynomial</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="19" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="19" bodyend="22"/>
+      </memberdef>
+      <memberdef kind="function" id="class_polynomial_1a69e0b58ea78e39523e9b5e450be65fac" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float Polynomial.Evaluate</definition>
+        <argsstring>(float x)</argsstring>
+        <name>Evaluate</name>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="24" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="24" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="class_polynomial_1a675380767e4a19b06e2633d93ddeb415" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Polynomial.WriteBinaryData</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryData</name>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="36" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="36" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="class_polynomial_1af7c4000b07055328c00e87979d7eee06" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void Polynomial.ReadBinaryData</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryData</name>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="41" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="41" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="class_polynomial_1a651a737e165ec271e9b8731021d1277f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override string</type>
+        <definition>override string Polynomial.ToString</definition>
+        <argsstring>()</argsstring>
+        <name>ToString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="46" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="46" bodyend="69"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="153">
+        <label>Polynomial</label>
+        <link refid="class_polynomial"/>
+        <childnode refid="154" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="154">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="155">
+        <label>Polynomial</label>
+        <link refid="class_polynomial"/>
+        <childnode refid="156" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="156">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/Polynomial.cs" bodystart="6" bodyend="70"/>
+    <listofallmembers>
+      <member refid="class_polynomial_1a91c3d9bdfef0ff967a36040b1755dac9" prot="public" virt="non-virtual"><scope>Polynomial</scope><name>coeff</name></member>
+      <member refid="class_polynomial_1a69e0b58ea78e39523e9b5e450be65fac" prot="public" virt="non-virtual"><scope>Polynomial</scope><name>Evaluate</name></member>
+      <member refid="class_polynomial_1a91ce5c38a749068ec23e2388258aab59" prot="public" virt="non-virtual"><scope>Polynomial</scope><name>Polynomial</name></member>
+      <member refid="class_polynomial_1ad2d3944cfa448882204a0e698c2aa8c9" prot="public" virt="non-virtual"><scope>Polynomial</scope><name>Polynomial</name></member>
+      <member refid="class_polynomial_1af7c4000b07055328c00e87979d7eee06" prot="public" virt="non-virtual"><scope>Polynomial</scope><name>ReadBinaryData</name></member>
+      <member refid="interface_binary_r_w_object_1a2cd7d6b9aded677cffdb646b51328c5d" prot="public" virt="non-virtual" ambiguityscope="BinaryRWObject."><scope>Polynomial</scope><name>ReadBinaryData</name></member>
+      <member refid="class_polynomial_1a651a737e165ec271e9b8731021d1277f" prot="public" virt="non-virtual"><scope>Polynomial</scope><name>ToString</name></member>
+      <member refid="class_polynomial_1a675380767e4a19b06e2633d93ddeb415" prot="public" virt="non-virtual"><scope>Polynomial</scope><name>WriteBinaryData</name></member>
+      <member refid="interface_binary_r_w_object_1a5e361e550b30dcd29759188cf67d177c" prot="public" virt="non-virtual" ambiguityscope="BinaryRWObject."><scope>Polynomial</scope><name>WriteBinaryData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

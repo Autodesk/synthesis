@@ -1,0 +1,69 @@
+\hypertarget{interface_binary_r_w_object}{}\section{Binary\+R\+W\+Object Interface Reference}
+\label{interface_binary_r_w_object}\index{Binary\+R\+W\+Object@{Binary\+R\+W\+Object}}
+
+
+Interface for objects that can read/write binary data to files  
+
+
+
+
+Inheritance diagram for Binary\+R\+W\+Object\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{interface_binary_r_w_object_a5e361e550b30dcd29759188cf67d177c}{Write\+Binary\+Data} (Binary\+Writer writer)
+\begin{DoxyCompactList}\small\item\em Serializes this object to the given stream \end{DoxyCompactList}\item 
+void \hyperlink{interface_binary_r_w_object_a2cd7d6b9aded677cffdb646b51328c5d}{Read\+Binary\+Data} (Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Deserializes this object from the given stream. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interface for objects that can read/write binary data to files 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{interface_binary_r_w_object_a2cd7d6b9aded677cffdb646b51328c5d}\label{interface_binary_r_w_object_a2cd7d6b9aded677cffdb646b51328c5d}} 
+\index{Binary\+R\+W\+Object@{Binary\+R\+W\+Object}!Read\+Binary\+Data@{Read\+Binary\+Data}}
+\index{Read\+Binary\+Data@{Read\+Binary\+Data}!Binary\+R\+W\+Object@{Binary\+R\+W\+Object}}
+\subsubsection{\texorpdfstring{Read\+Binary\+Data()}{ReadBinaryData()}}
+{\footnotesize\ttfamily void Binary\+R\+W\+Object.\+Read\+Binary\+Data (\begin{DoxyParamCaption}\item[{Binary\+Reader}]{reader }\end{DoxyParamCaption})}
+
+
+
+Deserializes this object from the given stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & Input stream\\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_b_x_d_a_mesh_a1178be877fb442e6a8137f045ccc3c20}{B\+X\+D\+A\+Mesh}, \hyperlink{class_robot_sensor_ad847a256a5f297a3d4b1570a3ccbd97a}{Robot\+Sensor}, and \hyperlink{class_physical_properties_a9d38ac741d7aae550b0adb7f48d09ad9}{Physical\+Properties}.
+
+\mbox{\Hypertarget{interface_binary_r_w_object_a5e361e550b30dcd29759188cf67d177c}\label{interface_binary_r_w_object_a5e361e550b30dcd29759188cf67d177c}} 
+\index{Binary\+R\+W\+Object@{Binary\+R\+W\+Object}!Write\+Binary\+Data@{Write\+Binary\+Data}}
+\index{Write\+Binary\+Data@{Write\+Binary\+Data}!Binary\+R\+W\+Object@{Binary\+R\+W\+Object}}
+\subsubsection{\texorpdfstring{Write\+Binary\+Data()}{WriteBinaryData()}}
+{\footnotesize\ttfamily void Binary\+R\+W\+Object.\+Write\+Binary\+Data (\begin{DoxyParamCaption}\item[{Binary\+Writer}]{writer }\end{DoxyParamCaption})}
+
+
+
+Serializes this object to the given stream 
+
+
+\begin{DoxyParams}{Parameters}
+{\em writer} & Output stream\\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{class_b_x_d_a_mesh_a5ee3b3956597c24da796eb6242bb9940}{B\+X\+D\+A\+Mesh}, \hyperlink{class_robot_sensor_aa1dc17e6028128cabb1ddbfdb1334b84}{Robot\+Sensor}, and \hyperlink{class_physical_properties_afcdfb13e380a0b9870af47fb7785d4de}{Physical\+Properties}.
+
+
+
+The documentation for this interface was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/Binary\+R\+W\+Object.\+cs\end{DoxyCompactItemize}

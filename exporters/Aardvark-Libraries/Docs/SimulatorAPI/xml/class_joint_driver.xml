@@ -1,0 +1,549 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_joint_driver" kind="class" language="C#" prot="public">
+    <compoundname>JointDriver</compoundname>
+    <basecompoundref refid="interface_binary_r_w_object" prot="public" virt="non-virtual">BinaryRWObject</basecompoundref>
+    <basecompoundref prot="public" virt="non-virtual">System::IComparable&lt; JointDriver &gt;</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_joint_driver_1a88c573f6c30d8b4761d27b0314f33543" prot="private" static="no" mutable="no">
+        <type>JointDriverType</type>
+        <definition>JointDriverType JointDriver.type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <briefdescription>
+<para>The type of this joint driver. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_joint_driver_1a3de9c2f34c1578a73d89246e89f46beb" prot="private" static="no" mutable="no">
+        <type>int</type>
+        <definition>int JointDriver.portB</definition>
+        <argsstring></argsstring>
+        <name>portB</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_joint_driver_1ae7f56f5dfc877dad3d6e4f382f0274ca" prot="private" static="no" mutable="no">
+        <type>float</type>
+        <definition>float JointDriver.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="24" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_joint_driver_1a8bd27164aad80347972763dd56c5b311" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int JointDriver.portA</definition>
+        <argsstring></argsstring>
+        <name>portA</name>
+        <briefdescription>
+<para>The port(s) that this joint driver uses. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="16" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_joint_driver_1ae1758d47d4b9142ce00e0b1b4da8a26d" compoundref="_joint_driver_8cs" startline="160" endline="164">SetPort</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_joint_driver_1a3a59a404a28d1d28c5f46379eadb1be2" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool JointDriver.isCan</definition>
+        <argsstring></argsstring>
+        <name>isCan</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="18" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_joint_driver_1a251b0eb937cd1007497acf4cfb594fe0" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float JointDriver.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+<para>The motion limits for this driver. For continuous rotation this is likely a force or velocity. For linear or limited movement it is motion limits. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="24" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="24" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type>Dictionary&lt; System.Type, <ref refid="class_joint_driver_meta" kindref="compound">JointDriverMeta</ref> &gt;</type>
+        <definition>Dictionary&lt;System.Type, JointDriverMeta&gt; JointDriver.MetaInfo</definition>
+        <argsstring></argsstring>
+        <name>MetaInfo</name>
+        <briefdescription>
+<para>Metadata information for this joint driver. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="29" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="30" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_joint_driver_1aa9024a29db9bdac4465e244544521718" compoundref="_joint_driver_8cs" startline="38" endline="41">JointDriver</referencedby>
+        <referencedby refid="class_joint_driver_1a7b35af4634caa4dbcbe3cd88ba365a68" compoundref="_joint_driver_8cs" startline="57" endline="69">AddInfo</referencedby>
+        <referencedby refid="class_joint_driver_1ac8981cc67c8ddc2c196717c31d109cc4" compoundref="_joint_driver_8cs" startline="77" endline="87">RemoveInfo&lt; T &gt;</referencedby>
+        <referencedby refid="class_joint_driver_1af4a1c0ffdb06dcd0dea4b2a7524fb1c8" compoundref="_joint_driver_8cs" startline="94" endline="103">GetInfo&lt; T &gt;</referencedby>
+        <referencedby refid="class_joint_driver_1ab791d90626a1821f03329d65ccbe3e74" compoundref="_joint_driver_8cs" startline="110" endline="118">GetInfo</referencedby>
+        <referencedby refid="class_joint_driver_1a1427fe9a653b2977ed487f140c3af32b" compoundref="_joint_driver_8cs" startline="176" endline="180">SetLimits</referencedby>
+        <referencedby refid="class_joint_driver_1a36d6deba7dec0475dc06ab5d87c3e7e2" compoundref="_joint_driver_8cs" startline="207" endline="220">WriteBinaryData</referencedby>
+        <referencedby refid="class_joint_driver_1a1db6f1668ea9122fb0e5d3f0aaa3f621" compoundref="_joint_driver_8cs" startline="226" endline="241">ReadBinaryData</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_joint_driver_1aa9024a29db9bdac4465e244544521718" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>JointDriver.JointDriver</definition>
+        <argsstring>()</argsstring>
+        <name>JointDriver</name>
+        <briefdescription>
+<para>Creates as joint driver with no type. This is mainly for IO </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="38" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="38" bodyend="41"/>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1a8fcc7584ca80fb8f69e855be6fbe488f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>JointDriver.JointDriver</definition>
+        <argsstring>(JointDriverType type)</argsstring>
+        <name>JointDriver</name>
+        <param>
+          <type>JointDriverType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Creates a joint driver with the given type. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Driver type</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="47" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="47" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1a7b35af4634caa4dbcbe3cd88ba365a68" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void JointDriver.AddInfo</definition>
+        <argsstring>(JointDriverMeta metaDriver)</argsstring>
+        <name>AddInfo</name>
+        <param>
+          <type><ref refid="class_joint_driver_meta" kindref="compound">JointDriverMeta</ref></type>
+          <declname>metaDriver</declname>
+        </param>
+        <briefdescription>
+<para>Adds the given joint driver metadata object to this driver, or replaces the existing metadata of the same type. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metaDriver</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The metadata</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="57" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="57" bodyend="69"/>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+        <referencedby refid="class_joint_driver_1a1db6f1668ea9122fb0e5d3f0aaa3f621" compoundref="_joint_driver_8cs" startline="226" endline="241">ReadBinaryData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1ac8981cc67c8ddc2c196717c31d109cc4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T</type>
+        <definition>T JointDriver.RemoveInfo&lt; T &gt;</definition>
+        <argsstring>()</argsstring>
+        <name>RemoveInfo&lt; T &gt;</name>
+        <briefdescription>
+<para>Removes the metadata of the given type stored in this joint driver and returns it, or null if no such metadata exists. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the metadata</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Metadata, or null</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="77" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="77" bodyend="87"/>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1af4a1c0ffdb06dcd0dea4b2a7524fb1c8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T</type>
+        <definition>T JointDriver.GetInfo&lt; T &gt;</definition>
+        <argsstring>()</argsstring>
+        <name>GetInfo&lt; T &gt;</name>
+        <briefdescription>
+<para>Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of the metadata</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Metadata, or null</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="94" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="94" bodyend="103"/>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1ab791d90626a1821f03329d65ccbe3e74" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_joint_driver_meta" kindref="compound">JointDriverMeta</ref></type>
+        <definition>JointDriverMeta JointDriver.GetInfo</definition>
+        <argsstring>(System.Type type)</argsstring>
+        <name>GetInfo</name>
+        <param>
+          <type>System.Type</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type to get info for</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Metadata, or null</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="110" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="110" bodyend="118"/>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1aa266e2618a7a89e242ff22dae9590666" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void JointDriver.CopyMetaInfo</definition>
+        <argsstring>(JointDriver toCopy)</argsstring>
+        <name>CopyMetaInfo</name>
+        <param>
+          <type><ref refid="class_joint_driver" kindref="compound">JointDriver</ref></type>
+          <declname>toCopy</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="120" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="120" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1ae1758d47d4b9142ce00e0b1b4da8a26d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void JointDriver.SetPort</definition>
+        <argsstring>(int portA, int portB=-1)</argsstring>
+        <name>SetPort</name>
+        <param>
+          <type>int</type>
+          <declname>portA</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>portB</declname>
+          <defval>-1</defval>
+        </param>
+        <briefdescription>
+<para>Sets the port(s) for this driver. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>portA</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First port</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>portB</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Option second port</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="160" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="160" bodyend="164"/>
+        <references refid="class_joint_driver_1a8bd27164aad80347972763dd56c5b311" compoundref="_joint_driver_8cs" startline="16">portA</references>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1a1427fe9a653b2977ed487f140c3af32b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void JointDriver.SetLimits</definition>
+        <argsstring>(float lower, float upper)</argsstring>
+        <name>SetLimits</name>
+        <param>
+          <type>float</type>
+          <declname>lower</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>upper</declname>
+        </param>
+        <briefdescription>
+<para>Sets the limits for this driver. </para>        </briefdescription>
+        <detaileddescription>
+<para>For all linear motion these represent the linear limits on that motion. For all limited angular motion these represent the angular limits on that motion. For all continuous angular motion these represent the force limits on that motion. </para><para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>lower</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Lower limit</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>upper</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Upper limit</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="176" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="176" bodyend="180"/>
+        <references refid="class_joint_driver_1ab63c7e975d5b4317b7c47ffb34596b78" compoundref="_joint_driver_8cs" startline="198" endline="201">GetDriveType</references>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1ae76d84f55920b4238b1f96038abaf5ce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override string</type>
+        <definition>override string JointDriver.ToString</definition>
+        <argsstring>()</argsstring>
+        <name>ToString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="182" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="182" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1ab63c7e975d5b4317b7c47ffb34596b78" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>JointDriverType</type>
+        <definition>JointDriverType JointDriver.GetDriveType</definition>
+        <argsstring>()</argsstring>
+        <name>GetDriveType</name>
+        <briefdescription>
+<para>Gets the type of this joint driver. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Driver type</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="198" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="198" bodyend="201"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_joint_driver_1a1427fe9a653b2977ed487f140c3af32b" compoundref="_joint_driver_8cs" startline="176" endline="180">SetLimits</referencedby>
+        <referencedby refid="class_joint_driver_1a36d6deba7dec0475dc06ab5d87c3e7e2" compoundref="_joint_driver_8cs" startline="207" endline="220">WriteBinaryData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1a36d6deba7dec0475dc06ab5d87c3e7e2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void JointDriver.WriteBinaryData</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryData</name>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Writes the binary representation of this driver to the stream. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="207" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="207" bodyend="220"/>
+        <references refid="class_joint_driver_1ab63c7e975d5b4317b7c47ffb34596b78" compoundref="_joint_driver_8cs" startline="198" endline="201">GetDriveType</references>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+        <referencedby refid="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" compoundref="_skeletal_joint___base_8cs" startline="81" endline="95">SkeletalJoint_Base.WriteBinaryJoint</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1a1db6f1668ea9122fb0e5d3f0aaa3f621" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void JointDriver.ReadBinaryData</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryData</name>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads the binary representation of this driver from the stream. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="226" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="226" bodyend="241"/>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">MetaInfo</references>
+        <references refid="class_joint_driver_1a7b35af4634caa4dbcbe3cd88ba365a68" compoundref="_joint_driver_8cs" startline="57" endline="69">AddInfo</references>
+        <referencedby refid="class_skeletal_joint___base_1a7f71e5afc3b791ffed1bd040425737ef" compoundref="_skeletal_joint___base_8cs" startline="102" endline="122">SkeletalJoint_Base.ReadBinaryJoint</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_1a81fbb4302489ef44481d0adc4f10ca16" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int JointDriver.CompareTo</definition>
+        <argsstring>(JointDriver driver)</argsstring>
+        <name>CompareTo</name>
+        <param>
+          <type><ref refid="class_joint_driver" kindref="compound">JointDriver</ref></type>
+          <declname>driver</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="243" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="243" bodyend="249"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_joint_driver_1adea8023e289a40e4d232cbac87e6a6e3" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>JointDriverType []</type>
+        <definition>static JointDriverType [] JointDriver.GetAllowedDrivers</definition>
+        <argsstring>(SkeletalJoint_Base joint)</argsstring>
+        <name>GetAllowedDrivers</name>
+        <param>
+          <type><ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <briefdescription>
+<para>Gets the possible types of joint drivers for the given skeletal joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Skeletal joint to get allowed types for</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Joint driver options</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="133" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="133" bodyend="153"/>
+        <references refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">SkeletalJoint_Base.GetJointType</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Generic class able to represent all types of joint drivers. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="97">
+        <label>IComparable&lt; JointDriver &gt;</label>
+      </node>
+      <node id="95">
+        <label>JointDriver</label>
+        <link refid="class_joint_driver"/>
+        <childnode refid="96" relation="public-inheritance">
+        </childnode>
+        <childnode refid="97" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="96">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="100">
+        <label>IComparable&lt; JointDriver &gt;</label>
+      </node>
+      <node id="98">
+        <label>JointDriver</label>
+        <link refid="class_joint_driver"/>
+        <childnode refid="99" relation="public-inheritance">
+        </childnode>
+        <childnode refid="100" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="99">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriver.cs" bodystart="6" bodyend="251"/>
+    <listofallmembers>
+      <member refid="class_joint_driver_1a7b35af4634caa4dbcbe3cd88ba365a68" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>AddInfo</name></member>
+      <member refid="class_joint_driver_1a81fbb4302489ef44481d0adc4f10ca16" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>CompareTo</name></member>
+      <member refid="class_joint_driver_1aa266e2618a7a89e242ff22dae9590666" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>CopyMetaInfo</name></member>
+      <member refid="class_joint_driver_1adea8023e289a40e4d232cbac87e6a6e3" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>GetAllowedDrivers</name></member>
+      <member refid="class_joint_driver_1ab63c7e975d5b4317b7c47ffb34596b78" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>GetDriveType</name></member>
+      <member refid="class_joint_driver_1ab791d90626a1821f03329d65ccbe3e74" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>GetInfo</name></member>
+      <member refid="class_joint_driver_1af4a1c0ffdb06dcd0dea4b2a7524fb1c8" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>GetInfo&lt; T &gt;</name></member>
+      <member refid="class_joint_driver_1a3a59a404a28d1d28c5f46379eadb1be2" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>isCan</name></member>
+      <member refid="class_joint_driver_1aa9024a29db9bdac4465e244544521718" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>JointDriver</name></member>
+      <member refid="class_joint_driver_1a8fcc7584ca80fb8f69e855be6fbe488f" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>JointDriver</name></member>
+      <member refid="class_joint_driver_1a251b0eb937cd1007497acf4cfb594fe0" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>lowerLimit</name></member>
+      <member refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>MetaInfo</name></member>
+      <member refid="class_joint_driver_1a8bd27164aad80347972763dd56c5b311" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>portA</name></member>
+      <member refid="class_joint_driver_1a3de9c2f34c1578a73d89246e89f46beb" prot="private" virt="non-virtual"><scope>JointDriver</scope><name>portB</name></member>
+      <member refid="class_joint_driver_1a1db6f1668ea9122fb0e5d3f0aaa3f621" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>ReadBinaryData</name></member>
+      <member refid="interface_binary_r_w_object_1a2cd7d6b9aded677cffdb646b51328c5d" prot="public" virt="non-virtual" ambiguityscope="BinaryRWObject."><scope>JointDriver</scope><name>ReadBinaryData</name></member>
+      <member refid="class_joint_driver_1ac8981cc67c8ddc2c196717c31d109cc4" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>RemoveInfo&lt; T &gt;</name></member>
+      <member refid="class_joint_driver_1a1427fe9a653b2977ed487f140c3af32b" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>SetLimits</name></member>
+      <member refid="class_joint_driver_1ae1758d47d4b9142ce00e0b1b4da8a26d" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>SetPort</name></member>
+      <member refid="class_joint_driver_1ae76d84f55920b4238b1f96038abaf5ce" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>ToString</name></member>
+      <member refid="class_joint_driver_1a88c573f6c30d8b4761d27b0314f33543" prot="private" virt="non-virtual"><scope>JointDriver</scope><name>type</name></member>
+      <member refid="class_joint_driver_1ae7f56f5dfc877dad3d6e4f382f0274ca" prot="private" virt="non-virtual"><scope>JointDriver</scope><name>upperLimit</name></member>
+      <member refid="class_joint_driver_1a36d6deba7dec0475dc06ab5d87c3e7e2" prot="public" virt="non-virtual"><scope>JointDriver</scope><name>WriteBinaryData</name></member>
+      <member refid="interface_binary_r_w_object_1a5e361e550b30dcd29759188cf67d177c" prot="public" virt="non-virtual" ambiguityscope="BinaryRWObject."><scope>JointDriver</scope><name>WriteBinaryData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_field_node" kind="class" language="C#" prot="public">
+    <compoundname>FieldNode</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_field_node_1a7d4f3453f91c082b7d5604c6e1581425" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string FieldNode.NodeID</definition>
+        <argsstring></argsstring>
+        <name>NodeID</name>
+        <briefdescription>
+<para>The string ID for the node. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="11" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+        <referencedby refid="class_field_node_group_1a28cf2a8b3f3bf5f98146d8ade421bdb7" compoundref="_field_node_group_8cs" startline="123" endline="127">FieldNodeGroup.AddNode</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_field_node_1a884d35ceb35d10ea8643cc7e36be5ff9" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 FieldNode.Position</definition>
+        <argsstring></argsstring>
+        <name>Position</name>
+        <briefdescription>
+<para>The initial position for the <ref refid="class_field_node" kindref="compound">FieldNode</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="16" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_field_node_1a39d5c7e9a136e334fd53b6e77a9964d4" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref></type>
+        <definition>BXDQuaternion FieldNode.Rotation</definition>
+        <argsstring></argsstring>
+        <name>Rotation</name>
+        <briefdescription>
+<para>The initial rotation for the <ref refid="class_field_node" kindref="compound">FieldNode</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="21" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="21" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_field_node_1ac77c2ba5af3848df490ac82bc1199d3d" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int FieldNode.SubMeshID</definition>
+        <argsstring></argsstring>
+        <name>SubMeshID</name>
+        <briefdescription>
+<para>The sub mesh ID for the <ref refid="class_field_node" kindref="compound">FieldNode</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="26" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="26" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_field_node_1aad132e7c9b9f540962bcefb4bb5f138c" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int FieldNode.CollisionMeshID</definition>
+        <argsstring></argsstring>
+        <name>CollisionMeshID</name>
+        <briefdescription>
+<para>The collision mesh ID for the <ref refid="class_field_node" kindref="compound">FieldNode</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="31" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="31" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_field_node_1ae1bc4426382f512a64980cd28a6f67cc" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string FieldNode.PropertySetID</definition>
+        <argsstring></argsstring>
+        <name>PropertySetID</name>
+        <briefdescription>
+<para>The string ID for the parent <ref refid="struct_property_set" kindref="compound">PropertySet</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="36" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="36" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_field_node_1a9c1ee44a247358c06f9df5c91dbcb1e4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>FieldNode.FieldNode</definition>
+        <argsstring>(string nodeID, string physicsGroupID=BXDFProperties.BXDF_DEFAULT_NAME)</argsstring>
+        <name>FieldNode</name>
+        <param>
+          <type>string</type>
+          <declname>nodeID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>physicsGroupID</declname>
+          <defval><ref refid="class_b_x_d_f_properties_1a528bb431080585f72f9f74bd44a23932" kindref="member">BXDFProperties.BXDF_DEFAULT_NAME</ref></defval>
+        </param>
+        <briefdescription>
+<para>Constructs a new instance of the <ref refid="class_field_node" kindref="compound">FieldNode</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nodeID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>physicsGroupID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="43" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="43" bodyend="51"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="86">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="87" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="85">
+        <label>FieldNode</label>
+        <link refid="class_field_node"/>
+        <childnode refid="86" relation="usage">
+          <edgelabel>Position</edgelabel>
+        </childnode>
+        <childnode refid="88" relation="usage">
+          <edgelabel>Rotation</edgelabel>
+        </childnode>
+      </node>
+      <node id="88">
+        <label>BXDQuaternion</label>
+        <link refid="class_b_x_d_quaternion"/>
+      </node>
+      <node id="87">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNode.cs" bodystart="6" bodyend="52"/>
+    <listofallmembers>
+      <member refid="class_field_node_1aad132e7c9b9f540962bcefb4bb5f138c" prot="public" virt="non-virtual"><scope>FieldNode</scope><name>CollisionMeshID</name></member>
+      <member refid="class_field_node_1a9c1ee44a247358c06f9df5c91dbcb1e4" prot="public" virt="non-virtual"><scope>FieldNode</scope><name>FieldNode</name></member>
+      <member refid="class_field_node_1a7d4f3453f91c082b7d5604c6e1581425" prot="public" virt="non-virtual"><scope>FieldNode</scope><name>NodeID</name></member>
+      <member refid="class_field_node_1a884d35ceb35d10ea8643cc7e36be5ff9" prot="public" virt="non-virtual"><scope>FieldNode</scope><name>Position</name></member>
+      <member refid="class_field_node_1ae1bc4426382f512a64980cd28a6f67cc" prot="public" virt="non-virtual"><scope>FieldNode</scope><name>PropertySetID</name></member>
+      <member refid="class_field_node_1a39d5c7e9a136e334fd53b6e77a9964d4" prot="public" virt="non-virtual"><scope>FieldNode</scope><name>Rotation</name></member>
+      <member refid="class_field_node_1ac77c2ba5af3848df490ac82bc1199d3d" prot="public" virt="non-virtual"><scope>FieldNode</scope><name>SubMeshID</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

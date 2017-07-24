@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="interface_linear_d_o_f" kind="interface" language="C#" prot="public">
+    <compoundname>LinearDOF</compoundname>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="interface_linear_d_o_f_1a2896b47985197900ddd4fbbbfa9a680f" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float LinearDOF.currentPosition</definition>
+        <argsstring></argsstring>
+        <name>currentPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="interface_linear_d_o_f_1a1258bf73e07e828b2eb04fcd2f79a938" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float LinearDOF.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="15" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="interface_linear_d_o_f_1a90467c4d698f19817e8a16c759c891a8" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float LinearDOF.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="20" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="interface_linear_d_o_f_1ae0b909200b01a51c5fe7a764f1152a8b" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 LinearDOF.translationalAxis</definition>
+        <argsstring></argsstring>
+        <name>translationalAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="26" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="27" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="interface_linear_d_o_f_1aeebfc4bd8f1197e8337c60957042e0ed" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 LinearDOF.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="31" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Contains information about a linear degree of freedom. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="9" bodyend="36"/>
+    <listofallmembers>
+      <member refid="interface_linear_d_o_f_1aeebfc4bd8f1197e8337c60957042e0ed" prot="public" virt="non-virtual"><scope>LinearDOF</scope><name>basePoint</name></member>
+      <member refid="interface_linear_d_o_f_1a2896b47985197900ddd4fbbbfa9a680f" prot="public" virt="non-virtual"><scope>LinearDOF</scope><name>currentPosition</name></member>
+      <member refid="interface_linear_d_o_f_1a90467c4d698f19817e8a16c759c891a8" prot="public" virt="non-virtual"><scope>LinearDOF</scope><name>lowerLimit</name></member>
+      <member refid="interface_linear_d_o_f_1ae0b909200b01a51c5fe7a764f1152a8b" prot="public" virt="non-virtual"><scope>LinearDOF</scope><name>translationalAxis</name></member>
+      <member refid="interface_linear_d_o_f_1a1258bf73e07e828b2eb04fcd2f79a938" prot="public" virt="non-virtual"><scope>LinearDOF</scope><name>upperLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

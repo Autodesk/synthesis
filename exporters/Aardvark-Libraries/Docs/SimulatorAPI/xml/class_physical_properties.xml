@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_physical_properties" kind="class" language="C#" prot="public">
+    <compoundname>PhysicalProperties</compoundname>
+    <basecompoundref refid="interface_binary_r_w_object" prot="public" virt="non-virtual">BinaryRWObject</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_physical_properties_1a94af2a99f595998dd11b7298dd39c66c" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PhysicalProperties.centerOfMass</definition>
+        <argsstring></argsstring>
+        <name>centerOfMass</name>
+        <initializer>= new <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref>()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" line="5" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" bodystart="5" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_physical_properties_1a9aa3ec9b1621d76b09d30b8870bf9291" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float PhysicalProperties.mass</definition>
+        <argsstring></argsstring>
+        <name>mass</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" line="6" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" bodystart="6" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_physical_properties_1a855105022fd04e170a1d0acc81cba788" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhysicalProperties.Add</definition>
+        <argsstring>(float addMass, BXDVector3 addCOM)</argsstring>
+        <name>Add</name>
+        <param>
+          <type>float</type>
+          <declname>addMass</declname>
+        </param>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>addCOM</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" bodystart="8" bodyend="14"/>
+      </memberdef>
+      <memberdef kind="function" id="class_physical_properties_1afcdfb13e380a0b9870af47fb7785d4de" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhysicalProperties.WriteBinaryData</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteBinaryData</name>
+        <reimplements refid="interface_binary_r_w_object_1a5e361e550b30dcd29759188cf67d177c">WriteBinaryData</reimplements>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Serializes this object to the given stream </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" bodystart="16" bodyend="20"/>
+        <referencedby refid="class_b_x_d_a_mesh_1a5ee3b3956597c24da796eb6242bb9940" compoundref="_b_x_d_a_mesh_8cs" startline="77" endline="86">BXDAMesh.WriteBinaryData</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_physical_properties_1a9d38ac741d7aae550b0adb7f48d09ad9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void PhysicalProperties.ReadBinaryData</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadBinaryData</name>
+        <reimplements refid="interface_binary_r_w_object_1a2cd7d6b9aded677cffdb646b51328c5d">ReadBinaryData</reimplements>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Deserializes this object from the given stream. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" line="22" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" bodystart="22" bodyend="26"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="136">
+        <label>PhysicalProperties</label>
+        <link refid="class_physical_properties"/>
+        <childnode refid="137" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="137">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="140">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="139" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="138">
+        <label>PhysicalProperties</label>
+        <link refid="class_physical_properties"/>
+        <childnode refid="139" relation="public-inheritance">
+        </childnode>
+        <childnode refid="140" relation="usage">
+          <edgelabel>centerOfMass</edgelabel>
+        </childnode>
+      </node>
+      <node id="139">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" line="4" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs" bodystart="3" bodyend="27"/>
+    <listofallmembers>
+      <member refid="class_physical_properties_1a855105022fd04e170a1d0acc81cba788" prot="public" virt="non-virtual"><scope>PhysicalProperties</scope><name>Add</name></member>
+      <member refid="class_physical_properties_1a94af2a99f595998dd11b7298dd39c66c" prot="public" virt="non-virtual"><scope>PhysicalProperties</scope><name>centerOfMass</name></member>
+      <member refid="class_physical_properties_1a9aa3ec9b1621d76b09d30b8870bf9291" prot="public" virt="non-virtual"><scope>PhysicalProperties</scope><name>mass</name></member>
+      <member refid="class_physical_properties_1a9d38ac741d7aae550b0adb7f48d09ad9" prot="public" virt="non-virtual"><scope>PhysicalProperties</scope><name>ReadBinaryData</name></member>
+      <member refid="class_physical_properties_1afcdfb13e380a0b9870af47fb7785d4de" prot="public" virt="non-virtual"><scope>PhysicalProperties</scope><name>WriteBinaryData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

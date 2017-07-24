@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_property_set_1_1_property_set_collider" kind="class" language="C#" prot="public">
+    <compoundname>PropertySet::PropertySetCollider</compoundname>
+    <derivedcompoundref refid="class_property_set_1_1_box_collider" prot="public" virt="non-virtual">PropertySet.BoxCollider</derivedcompoundref>
+    <derivedcompoundref refid="class_property_set_1_1_mesh_collider" prot="public" virt="non-virtual">PropertySet.MeshCollider</derivedcompoundref>
+    <derivedcompoundref refid="class_property_set_1_1_sphere_collider" prot="public" virt="non-virtual">PropertySet.SphereCollider</derivedcompoundref>
+      <sectiondef kind="public-type">
+      <memberdef kind="enum" id="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51e" prot="public" static="no">
+        <name>PropertySetCollisionType</name>
+        <enumvalue id="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51eae657cce1913c857166b0475f18668ef5" prot="public">
+          <name>BOX</name>
+          <briefdescription>
+<para>Used for approximating collision boundaries with a box. </para>          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51ea6f7cea7381e843e2ee0338b4a92b0d43" prot="public">
+          <name>SPHERE</name>
+          <briefdescription>
+<para>Used for approximating collision boundaries with a sphere. </para>          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51ea5b65fe46c5dd90ebcec69c472c3be1d9" prot="public">
+          <name>MESH</name>
+          <briefdescription>
+<para>Used for taking the object&apos;s visible mesh and simplifying it for collision. </para>          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Used for defining the type of collision for the <ref refid="class_property_set_1_1_property_set_collider" kindref="compound">PropertySetCollider</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="20" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="19" bodyend="35"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_property_set_1_1_property_set_collider_1a68838b774adc4d08f1b07c819263f90b" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type><ref refid="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51e" kindref="member">PropertySetCollisionType</ref></type>
+        <definition>PropertySetCollisionType PropertySet.PropertySetCollider.CollisionType</definition>
+        <argsstring></argsstring>
+        <name>CollisionType</name>
+        <briefdescription>
+<para>Stores the type of collision for the <ref refid="class_property_set_1_1_property_set_collider" kindref="compound">PropertySetCollider</ref> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="40" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="41" bodyend="-1"/>
+        <referencedby refid="class_property_set_1_1_property_set_collider_1a47197ffe129e18b56ee893e3f1a5832e" compoundref="_property_set_8cs" startline="50" endline="53">PropertySet.PropertySetCollider.PropertySetCollider</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_property_set_1_1_property_set_collider_1a47197ffe129e18b56ee893e3f1a5832e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PropertySet.PropertySetCollider.PropertySetCollider</definition>
+        <argsstring>(PropertySetCollisionType collisionType)</argsstring>
+        <name>PropertySetCollider</name>
+        <param>
+          <type><ref refid="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51e" kindref="member">PropertySetCollisionType</ref></type>
+          <declname>collisionType</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_property_set_1_1_property_set_collider" kindref="compound">PropertySetCollider</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>collisionType</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="50" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="50" bodyend="53"/>
+        <references refid="class_property_set_1_1_property_set_collider_1a68838b774adc4d08f1b07c819263f90b" compoundref="_property_set_8cs" startline="41">PropertySet.PropertySetCollider.CollisionType</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Stores collider information for a <ref refid="struct_property_set" kindref="compound">PropertySet</ref>. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="160">
+        <label>PropertySet.PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+      <node id="161">
+        <label>PropertySet.BoxCollider</label>
+        <link refid="class_property_set_1_1_box_collider"/>
+        <childnode refid="160" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="163">
+        <label>PropertySet.SphereCollider</label>
+        <link refid="class_property_set_1_1_sphere_collider"/>
+        <childnode refid="160" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="162">
+        <label>PropertySet.MeshCollider</label>
+        <link refid="class_property_set_1_1_mesh_collider"/>
+        <childnode refid="160" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="15" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="14" bodyend="54"/>
+    <listofallmembers>
+      <member refid="class_property_set_1_1_property_set_collider_1a68838b774adc4d08f1b07c819263f90b" prot="public" virt="non-virtual"><scope>PropertySet::PropertySetCollider</scope><name>CollisionType</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a47197ffe129e18b56ee893e3f1a5832e" prot="public" virt="non-virtual"><scope>PropertySet::PropertySetCollider</scope><name>PropertySetCollider</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51e" prot="public" virt="non-virtual"><scope>PropertySet::PropertySetCollider</scope><name>PropertySetCollisionType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

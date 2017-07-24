@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="_physical_properties_8cs" kind="file" language="C#">
+    <compoundname>PhysicalProperties.cs</compoundname>
+    <innerclass refid="class_physical_properties" prot="public">PhysicalProperties</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="namespace_system" kindref="compound">System</ref>.IO;</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="3" refid="class_physical_properties" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="class_physical_properties" kindref="compound">PhysicalProperties</ref><sp/>:<sp/><ref refid="interface_binary_r_w_object" kindref="compound">BinaryRWObject</ref></highlight></codeline>
+<codeline lineno="4"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref><sp/>centerOfMass<sp/>=<sp/></highlight><highlight class="keyword">new</highlight><highlight class="normal"><sp/><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref>();</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>mass;</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>Add(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>addMass,<sp/><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref><sp/>addCOM)</highlight></codeline>
+<codeline lineno="9"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="10"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this.centerOfMass.<ref refid="class_b_x_d_vector3_1a4fa123abdf042e9116c3c231b61c8668" kindref="member">Multiply</ref>(mass);</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this.centerOfMass.<ref refid="class_b_x_d_vector3_1a06be557b2f4f8a78b4fa30c766756264" kindref="member">Add</ref>(addCOM.<ref refid="class_b_x_d_vector3_1ab598b771db0c6a5e5a3e497ed4d9dfda" kindref="member">Copy</ref>().<ref refid="class_b_x_d_vector3_1a4fa123abdf042e9116c3c231b61c8668" kindref="member">Multiply</ref>(addMass));</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this.mass<sp/>+=<sp/>addMass;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>this.centerOfMass.<ref refid="class_b_x_d_vector3_1a4fa123abdf042e9116c3c231b61c8668" kindref="member">Multiply</ref>(1.0f<sp/>/<sp/>this.mass);</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="class_physical_properties_1afcdfb13e380a0b9870af47fb7785d4de" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_physical_properties_1afcdfb13e380a0b9870af47fb7785d4de" kindref="member">WriteBinaryData</ref>(BinaryWriter<sp/>writer)</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>writer.Write(centerOfMass);</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>writer.Write(mass);</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22" refid="class_physical_properties_1a9d38ac741d7aae550b0adb7f48d09ad9" refkind="member"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="class_physical_properties_1a9d38ac741d7aae550b0adb7f48d09ad9" kindref="member">ReadBinaryData</ref>(BinaryReader<sp/>reader)</highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>centerOfMass<sp/>=<sp/>reader.ReadRWObject&lt;<ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref>&gt;();</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>mass<sp/>=<sp/>reader.ReadSingle();</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/PhysicalProperties.cs"/>
+  </compounddef>
+</doxygen>

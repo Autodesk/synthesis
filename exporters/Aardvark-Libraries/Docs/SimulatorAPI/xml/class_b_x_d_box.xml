@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_box" kind="class" language="C#" prot="public">
+    <compoundname>BXDBox</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">System::IComparable&lt; BXDBox &gt;</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_b_x_d_box_1a8f016ae4643f4ea60087575ab30ec8a4" prot="private" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BXDBox.minPoint</definition>
+        <argsstring></argsstring>
+        <name>minPoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" bodystart="7" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_box_1afb24e27a37f4ca4b59bceed347d62015" prot="private" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BXDBox.maxPoint</definition>
+        <argsstring></argsstring>
+        <name>maxPoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_b_x_d_box_1ac2bb57b6ca8cd5867dc7c93afa7239e3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDBox.BXDBox</definition>
+        <argsstring>(double passMinX, double passMinY, double passMinZ, double passMaxX, double passMaxY, double passMaxZ)</argsstring>
+        <name>BXDBox</name>
+        <param>
+          <type>double</type>
+          <declname>passMinX</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>passMinY</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>passMinZ</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>passMaxX</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>passMaxY</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>passMaxZ</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" bodystart="10" bodyend="15"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_box_1a6ad011e71e94689163b1860479932e15" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDBox.BXDBox</definition>
+        <argsstring>(BXDVector3 passMinPoint, BXDVector3 passMaxPoint)</argsstring>
+        <name>BXDBox</name>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>passMinPoint</declname>
+        </param>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>passMaxPoint</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" line="17" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" bodystart="17" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_box_1afe2b95a6ef509d9062eab69515a5fb6b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float BXDBox.GetPossibleRadius</definition>
+        <argsstring>()</argsstring>
+        <name>GetPossibleRadius</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" line="23" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" bodystart="23" bodyend="26"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_box_1aa71e4042d3aca55a61e5ed557c643b9f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int BXDBox.CompareTo</definition>
+        <argsstring>(BXDBox other)</argsstring>
+        <name>CompareTo</name>
+        <param>
+          <type><ref refid="class_b_x_d_box" kindref="compound">BXDBox</ref></type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" line="28" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" bodystart="28" bodyend="45"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="54">
+        <label>BXDBox</label>
+        <link refid="class_b_x_d_box"/>
+        <childnode refid="55" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="55">
+        <label>System::IComparable&lt; BXDBox &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="56">
+        <label>BXDBox</label>
+        <link refid="class_b_x_d_box"/>
+        <childnode refid="57" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="57">
+        <label>System::IComparable&lt; BXDBox &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" line="6" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDBox.cs" bodystart="5" bodyend="46"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_box_1ac2bb57b6ca8cd5867dc7c93afa7239e3" prot="public" virt="non-virtual"><scope>BXDBox</scope><name>BXDBox</name></member>
+      <member refid="class_b_x_d_box_1a6ad011e71e94689163b1860479932e15" prot="public" virt="non-virtual"><scope>BXDBox</scope><name>BXDBox</name></member>
+      <member refid="class_b_x_d_box_1aa71e4042d3aca55a61e5ed557c643b9f" prot="public" virt="non-virtual"><scope>BXDBox</scope><name>CompareTo</name></member>
+      <member refid="class_b_x_d_box_1afe2b95a6ef509d9062eab69515a5fb6b" prot="public" virt="non-virtual"><scope>BXDBox</scope><name>GetPossibleRadius</name></member>
+      <member refid="class_b_x_d_box_1afb24e27a37f4ca4b59bceed347d62015" prot="private" virt="non-virtual"><scope>BXDBox</scope><name>maxPoint</name></member>
+      <member refid="class_b_x_d_box_1a8f016ae4643f4ea60087575ab30ec8a4" prot="private" virt="non-virtual"><scope>BXDBox</scope><name>minPoint</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

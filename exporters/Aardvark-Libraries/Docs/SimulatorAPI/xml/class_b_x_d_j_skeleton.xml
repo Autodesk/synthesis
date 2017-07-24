@@ -1,0 +1,1178 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_j_skeleton" kind="class" language="C#" prot="public">
+    <compoundname>BXDJSkeleton</compoundname>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_b_x_d_j_skeleton_1ad97c4569d397c29cc9949c7ff2be0bfd" prot="private" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string BXDJSkeleton.BXDJ_XSD_2_0</definition>
+        <argsstring></argsstring>
+        <name>BXDJ_XSD_2_0</name>
+        <briefdescription>
+<para>The XSD markup to ensure valid document reading. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="17" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="17" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_b_x_d_j_skeleton_1ac20054504ce9c44576816cdf9882bd0e" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string BXDJSkeleton.BXDJ_CURRENT_VERSION</definition>
+        <argsstring></argsstring>
+        <name>BXDJ_CURRENT_VERSION</name>
+        <initializer>= &quot;2.0.0&quot;</initializer>
+        <briefdescription>
+<para>Represents the current version of the BXDA file. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1af0faf14b4de0fd24df29edefced6914e" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+        <definition>static RigidNode_Base BXDJSkeleton.ReadSkeleton_2_0</definition>
+        <argsstring>(string path, bool useValidation=true)</argsstring>
+        <name>ReadSkeleton_2_0</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>useValidation</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Reads the skeleton contained in the XML BXDJ file specified and returns the corresponding <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>useValidation</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="315" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="315" bodyend="359"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a7908810692c01dcb2405dcf6d2c5c4e0" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.ReadNode_2_0</definition>
+        <argsstring>(XmlReader reader, List&lt; RigidNode_Base &gt; nodes, ref RigidNode_Base root)</argsstring>
+        <name>ReadNode_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>List&lt; <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref> &gt;</type>
+          <declname>nodes</declname>
+        </param>
+        <param>
+          <type>ref <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+          <declname>root</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref> with the given reader, list of nodes, and root node reference. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>nodes</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>root</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="367" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="367" bodyend="423"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a73df483931399432c872848fcecae28e" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_ball_joint___base" kindref="compound">BallJoint_Base</ref></type>
+        <definition>static BallJoint_Base BXDJSkeleton.ReadBallJoint_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadBallJoint_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_ball_joint___base" kindref="compound">BallJoint_Base</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="430" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="430" bodyend="447"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a6998577187143082ccdc4873fb5745dd" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_cylindrical_joint___base" kindref="compound">CylindricalJoint_Base</ref></type>
+        <definition>static CylindricalJoint_Base BXDJSkeleton.ReadCylindricalJoint_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadCylindricalJoint_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_cylindrical_joint___base" kindref="compound">CylindricalJoint_Base</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="454" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="454" bodyend="507"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1aa337f8245e5cae460b649240650ea2c0" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_linear_joint___base" kindref="compound">LinearJoint_Base</ref></type>
+        <definition>static LinearJoint_Base BXDJSkeleton.ReadLinearJoint_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadLinearJoint_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_linear_joint___base" kindref="compound">LinearJoint_Base</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="514" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="514" bodyend="554"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a45ff21a45654f11f0f43c01017952177" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref></type>
+        <definition>static PlanarJoint_Base BXDJSkeleton.ReadPlanarJoint_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadPlanarJoint_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="561" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="561" bodyend="587"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1abf31eb266f7d03d817e9a70b499cf810" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_rotational_joint___base" kindref="compound">RotationalJoint_Base</ref></type>
+        <definition>static RotationalJoint_Base BXDJSkeleton.ReadRotationalJoint_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadRotationalJoint_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_rotational_joint___base" kindref="compound">RotationalJoint_Base</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="594" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="594" bodyend="633"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1ac3a8201d51ce251d8a693987433bab69" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>static BXDVector3 BXDJSkeleton.ReadBXDVector3_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadBXDVector3_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref> with the given XmlReader and returns the reading. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="640" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="640" bodyend="664"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a9c9dc82c6111cc83ec4245cf072db92e" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_joint_driver" kindref="compound">JointDriver</ref></type>
+        <definition>static JointDriver BXDJSkeleton.ReadJointDriver_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadJointDriver_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_joint_driver" kindref="compound">JointDriver</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="671" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="671" bodyend="719"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a02f75146b822b133b88fa29328d5fbf4" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_elevator_driver_meta" kindref="compound">ElevatorDriverMeta</ref></type>
+        <definition>static ElevatorDriverMeta BXDJSkeleton.ReadElevatorDriverMeta_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadElevatorDriverMeta_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads an <ref refid="class_elevator_driver_meta" kindref="compound">ElevatorDriverMeta</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="726" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="726" bodyend="743"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a3f1baf0ec4d0cce8095d675ae0f69089" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_pneumatic_driver_meta" kindref="compound">PneumaticDriverMeta</ref></type>
+        <definition>static PneumaticDriverMeta BXDJSkeleton.ReadPneumaticDriverMeta_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadPneumaticDriverMeta_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_pneumatic_driver_meta" kindref="compound">PneumaticDriverMeta</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="750" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="750" bodyend="771"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a5358d6a2831b59645830409ca0adee88" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_wheel_driver_meta" kindref="compound">WheelDriverMeta</ref></type>
+        <definition>static WheelDriverMeta BXDJSkeleton.ReadWheelDriverMeta_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadWheelDriverMeta_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_wheel_driver_meta" kindref="compound">WheelDriverMeta</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="778" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="778" bodyend="843"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1ae0a8091a8ff66b7230308a69a053264f" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_robot_sensor" kindref="compound">RobotSensor</ref></type>
+        <definition>static RobotSensor BXDJSkeleton.ReadRobotSensor_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadRobotSensor_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Read a <ref refid="class_robot_sensor" kindref="compound">RobotSensor</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="850" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="850" bodyend="882"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1abb70d32bc36048363e1151b59939e517" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_polynomial" kindref="compound">Polynomial</ref></type>
+        <definition>static Polynomial BXDJSkeleton.ReadPolynomial_2_0</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadPolynomial_2_0</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_polynomial" kindref="compound">Polynomial</ref> from the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="889" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="889" bodyend="907"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a32a1d61ce8edad51184f1cbd5e755599" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteJoint</definition>
+        <argsstring>(SkeletalJoint_Base joint, XmlWriter writer)</argsstring>
+        <name>WriteJoint</name>
+        <param>
+          <type><ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Writes the backing information and ID for this joint with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="100" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="100" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1afee44ae51abcde44b35064bb23693c03" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteBallJoint</definition>
+        <argsstring>(BallJoint_Base joint, XmlWriter writer)</argsstring>
+        <name>WriteBallJoint</name>
+        <param>
+          <type><ref refid="class_ball_joint___base" kindref="compound">BallJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing the data of a <ref refid="class_ball_joint___base" kindref="compound">BallJoint_Base</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="137" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="137" bodyend="144"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a426e19dd4b1fcd33d12219334da160d7" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteCylindricalJoint</definition>
+        <argsstring>(CylindricalJoint_Base joint, XmlWriter writer)</argsstring>
+        <name>WriteCylindricalJoint</name>
+        <param>
+          <type><ref refid="class_cylindrical_joint___base" kindref="compound">CylindricalJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing the data of a <ref refid="class_cylindrical_joint___base" kindref="compound">CylindricalJoint_Base</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="151" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="151" bodyend="176"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1af0040c061128304ad367ec7c6dd8f295" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteLinearJoint</definition>
+        <argsstring>(LinearJoint_Base joint, XmlWriter writer)</argsstring>
+        <name>WriteLinearJoint</name>
+        <param>
+          <type><ref refid="class_linear_joint___base" kindref="compound">LinearJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing the data of a <ref refid="class_linear_joint___base" kindref="compound">LinearJoint_Base</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="183" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="183" bodyend="201"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1ab3ef5dd7c2abb18b47046d4ef6e15bee" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WritePlanarJoint</definition>
+        <argsstring>(PlanarJoint_Base joint, XmlWriter writer)</argsstring>
+        <name>WritePlanarJoint</name>
+        <param>
+          <type><ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing the data of a <ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="208" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="208" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a5924a492e02501df9a7858c53060cb3d" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteRotationalJoint</definition>
+        <argsstring>(RotationalJoint_Base joint, XmlWriter writer)</argsstring>
+        <name>WriteRotationalJoint</name>
+        <param>
+          <type><ref refid="class_rotational_joint___base" kindref="compound">RotationalJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing the data of a <ref refid="class_rotational_joint___base" kindref="compound">RotationalJoint_Base</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="223" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="223" bodyend="241"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a6b662b24b662935c16ec64ba78801acc" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteBXDVector3</definition>
+        <argsstring>(BXDVector3 vec, XmlWriter writer, string id)</argsstring>
+        <name>WriteBXDVector3</name>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>vec</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Writes the <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref> to an XML file with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vec</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="248" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="248" bodyend="259"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a07a66ad96b1edd7c1f7d6419301aaab1" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteJointDriver</definition>
+        <argsstring>(JointDriver driver, XmlWriter writer)</argsstring>
+        <name>WriteJointDriver</name>
+        <param>
+          <type><ref refid="class_joint_driver" kindref="compound">JointDriver</ref></type>
+          <declname>driver</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing joint driver data. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>driver</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="266" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="266" bodyend="283"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a175f78033e9b4d27ac83daeeb20185a6" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteJointDriverMeta</definition>
+        <argsstring>(JointDriverMeta meta, XmlWriter writer)</argsstring>
+        <name>WriteJointDriverMeta</name>
+        <param>
+          <type><ref refid="class_joint_driver_meta" kindref="compound">JointDriverMeta</ref></type>
+          <declname>meta</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing joint driver meta data. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>meta</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="290" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="290" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a105135444ea80648ab946c058b5972df" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteElevatorDriverMeta</definition>
+        <argsstring>(ElevatorDriverMeta meta, XmlWriter writer)</argsstring>
+        <name>WriteElevatorDriverMeta</name>
+        <param>
+          <type><ref refid="class_elevator_driver_meta" kindref="compound">ElevatorDriverMeta</ref></type>
+          <declname>meta</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing elevator driver meta data. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>meta</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="311" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="311" bodyend="320"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1acea472e067d1ebc5ed48bb08533b39f5" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WritePneumaticDriverMeta</definition>
+        <argsstring>(PneumaticDriverMeta meta, XmlWriter writer)</argsstring>
+        <name>WritePneumaticDriverMeta</name>
+        <param>
+          <type><ref refid="class_pneumatic_driver_meta" kindref="compound">PneumaticDriverMeta</ref></type>
+          <declname>meta</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing pneumatic driver meta data. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>meta</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="327" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="327" bodyend="337"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a2260173f32189c90d009cc7c58ea55ec" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteWheelDriverMeta</definition>
+        <argsstring>(WheelDriverMeta meta, XmlWriter writer)</argsstring>
+        <name>WriteWheelDriverMeta</name>
+        <param>
+          <type><ref refid="class_wheel_driver_meta" kindref="compound">WheelDriverMeta</ref></type>
+          <declname>meta</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing wheel driver meta data. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>meta</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="344" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="344" bodyend="367"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a625b5c08ca2d00c70d738ed0f565072d" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteRobotSensor</definition>
+        <argsstring>(RobotSensor sensor, XmlWriter writer)</argsstring>
+        <name>WriteRobotSensor</name>
+        <param>
+          <type><ref refid="class_robot_sensor" kindref="compound">RobotSensor</ref></type>
+          <declname>sensor</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing the data from a <ref refid="class_robot_sensor" kindref="compound">RobotSensor</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>sensor</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="374" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="374" bodyend="385"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1abe03be6363ab87421b757bb83bf81d39" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.SetupFileNames</definition>
+        <argsstring>(RigidNode_Base baseNode, bool overwrite=false)</argsstring>
+        <name>SetupFileNames</name>
+        <param>
+          <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+          <declname>baseNode</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>overwrite</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>baseNode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base node of the skeleton</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>overwrite</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Overwrite existing</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="21" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="21" bodyend="31"/>
+        <references refid="class_rigid_node___base_1aebef38e79a3b7a54dd769db5c6ae6a40" compoundref="_rigid_node___base_8cs" startline="148" endline="153">RigidNode_Base.ListAllNodes</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WriteSkeleton</definition>
+        <argsstring>(string path, RigidNode_Base baseNode)</argsstring>
+        <name>WriteSkeleton</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+          <declname>baseNode</declname>
+        </param>
+        <briefdescription>
+<para>Writes out the skeleton file for the skeleton with the base provided to the path provided. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>baseNode</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="38" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="38" bodyend="93"/>
+        <references refid="class_rigid_node___base_1aebef38e79a3b7a54dd769db5c6ae6a40" compoundref="_rigid_node___base_8cs" startline="148" endline="153">RigidNode_Base.ListAllNodes</references>
+        <references refid="class_file_utilities_1af971c071c7fb49c13e5183054b92a30d" compoundref="_file_utilities_8cs" startline="10" endline="17">FileUtilities.SanatizeFileName</references>
+        <references refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">SkeletalJoint_Base.GetJointType</references>
+        <references refid="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" compoundref="_skeletal_joint___base_8cs" startline="53">SkeletalJoint_Base.cDriver</references>
+        <references refid="class_skeletal_joint___base_1aaeb09af11a9640ec8d144f825f56c81a" compoundref="_skeletal_joint___base_8cs" startline="58">SkeletalJoint_Base.attachedSensors</references>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">BXDVector3.x</references>
+        <references refid="class_joint_driver_1ab63c7e975d5b4317b7c47ffb34596b78" compoundref="_joint_driver_8cs" startline="198" endline="201">JointDriver.GetDriveType</references>
+        <references refid="class_joint_driver_1a8bd27164aad80347972763dd56c5b311" compoundref="_joint_driver_8cs" startline="16">JointDriver.portA</references>
+        <references refid="class_joint_driver_1a251b0eb937cd1007497acf4cfb594fe0" compoundref="_joint_driver_8cs" startline="24">JointDriver.lowerLimit</references>
+        <references refid="class_joint_driver_1ac9ee45562c190ff7ac8fdb4a5cedb0ad" compoundref="_joint_driver_8cs" startline="30">JointDriver.MetaInfo</references>
+        <references refid="class_b_x_d_j_skeleton_1a19a49fdfc8bc3aca9b61adde4897900c" compoundref="_b_x_d_j_skeleton_8cs" startline="392" endline="402">WritePolynomial</references>
+        <references refid="class_robot_sensor_1ad6c16b11683315a18bd63117384d3692" compoundref="_robot_sensor_8cs" startline="26">RobotSensor.useSecondarySource</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a19a49fdfc8bc3aca9b61adde4897900c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.WritePolynomial</definition>
+        <argsstring>(Polynomial poly, XmlWriter writer)</argsstring>
+        <name>WritePolynomial</name>
+        <param>
+          <type><ref refid="class_polynomial" kindref="compound">Polynomial</ref></type>
+          <declname>poly</declname>
+        </param>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Used for writing a <ref refid="class_polynomial" kindref="compound">Polynomial</ref>&apos;s data. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>poly</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="392" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="392" bodyend="402"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">WriteSkeleton</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a36b0456f8c3439733374cf05bb91e41f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+        <definition>static RigidNode_Base BXDJSkeleton.ReadSkeleton</definition>
+        <argsstring>(string path)</argsstring>
+        <name>ReadSkeleton</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Reads the skeleton contained in the BXDJ XML file specified and returns the root node for that skeleton. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="409" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="409" bodyend="431"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+        <definition>static RigidNode_Base BXDJSkeleton.ReadBinarySkeleton</definition>
+        <argsstring>(string path)</argsstring>
+        <name>ReadBinarySkeleton</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input BXDJ file</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The root node of the skeleton</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="438" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="438" bodyend="501"/>
+        <references refid="class_b_x_d_i_o_1ae7803ce0f645dd421430706f86b35ebf" compoundref="_b_x_d_i_o_8cs" startline="39" endline="50">BXDIO.CheckReadVersion</references>
+        <references refid="class_rigid_node___base_1aeb0303b14b3ec98d88a667fe7b61faf5" compoundref="_rigid_node___base_8cs" startline="41">RigidNode_Base.ModelFileName</references>
+        <references refid="class_rigid_node___base_1a90a113d4a7ce35fb515ec7348f48c574" compoundref="_rigid_node___base_8cs" startline="55">RigidNode_Base.ModelFullID</references>
+        <references refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" compoundref="_skeletal_joint___base_8cs" startline="130" endline="136">SkeletalJoint_Base.ReadJointFully</references>
+        <references refid="class_rigid_node___base_1a287e7e27c6fc9d2b104e6f2578e96af8" compoundref="_rigid_node___base_8cs" startline="76" endline="82">RigidNode_Base.AddChild</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDJSkeleton.CloneDriversFromTo</definition>
+        <argsstring>(RigidNode_Base from, RigidNode_Base to, bool overwrite=false)</argsstring>
+        <name>CloneDriversFromTo</name>
+        <param>
+          <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+          <declname>from</declname>
+        </param>
+        <param>
+          <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+          <declname>to</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>overwrite</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+<para>Clones joint settings for matching skeletal joints from one skeleton to the other. This does not overwrite existing joint drivers. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>from</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Source skeleton</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>to</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Destination skeleton</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" line="508" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJSkeleton.cs" bodystart="508" bodyend="542"/>
+        <references refid="class_rigid_node___base_1aebef38e79a3b7a54dd769db5c6ae6a40" compoundref="_rigid_node___base_8cs" startline="148" endline="153">RigidNode_Base.ListAllNodes</references>
+        <references refid="class_rigid_node___base_1a98a362b9ae0cf05e4c1f9db70bcf89c5" compoundref="_rigid_node___base_8cs" startline="118" endline="121">RigidNode_Base.GetModelID</references>
+        <references refid="class_rigid_node___base_1a6f26d5cf2ff78a2066913e81df473abf" compoundref="_rigid_node___base_8cs" startline="100" endline="103">RigidNode_Base.GetSkeletalJoint</references>
+        <references refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">SkeletalJoint_Base.GetJointType</references>
+        <references refid="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" compoundref="_skeletal_joint___base_8cs" startline="53">SkeletalJoint_Base.cDriver</references>
+        <references refid="class_skeletal_joint___base_1aaeb09af11a9640ec8d144f825f56c81a" compoundref="_skeletal_joint___base_8cs" startline="58">SkeletalJoint_Base.attachedSensors</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Utility functions for reading/writing BXDJ files </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/BXDJReader_2_0.cs" bodystart="10" bodyend="908"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_j_skeleton_1ac20054504ce9c44576816cdf9882bd0e" prot="public" virt="non-virtual"><scope>BXDJSkeleton</scope><name>BXDJ_CURRENT_VERSION</name></member>
+      <member refid="class_b_x_d_j_skeleton_1ad97c4569d397c29cc9949c7ff2be0bfd" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>BXDJ_XSD_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" prot="public" virt="non-virtual"><scope>BXDJSkeleton</scope><name>CloneDriversFromTo</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a73df483931399432c872848fcecae28e" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadBallJoint_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" prot="public" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadBinarySkeleton</name></member>
+      <member refid="class_b_x_d_j_skeleton_1ac3a8201d51ce251d8a693987433bab69" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadBXDVector3_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a6998577187143082ccdc4873fb5745dd" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadCylindricalJoint_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a02f75146b822b133b88fa29328d5fbf4" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadElevatorDriverMeta_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a9c9dc82c6111cc83ec4245cf072db92e" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadJointDriver_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1aa337f8245e5cae460b649240650ea2c0" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadLinearJoint_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a7908810692c01dcb2405dcf6d2c5c4e0" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadNode_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a45ff21a45654f11f0f43c01017952177" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadPlanarJoint_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a3f1baf0ec4d0cce8095d675ae0f69089" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadPneumaticDriverMeta_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1abb70d32bc36048363e1151b59939e517" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadPolynomial_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1ae0a8091a8ff66b7230308a69a053264f" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadRobotSensor_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1abf31eb266f7d03d817e9a70b499cf810" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadRotationalJoint_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a36b0456f8c3439733374cf05bb91e41f" prot="public" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadSkeleton</name></member>
+      <member refid="class_b_x_d_j_skeleton_1af0faf14b4de0fd24df29edefced6914e" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadSkeleton_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a5358d6a2831b59645830409ca0adee88" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>ReadWheelDriverMeta_2_0</name></member>
+      <member refid="class_b_x_d_j_skeleton_1abe03be6363ab87421b757bb83bf81d39" prot="public" virt="non-virtual"><scope>BXDJSkeleton</scope><name>SetupFileNames</name></member>
+      <member refid="class_b_x_d_j_skeleton_1afee44ae51abcde44b35064bb23693c03" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteBallJoint</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a6b662b24b662935c16ec64ba78801acc" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteBXDVector3</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a426e19dd4b1fcd33d12219334da160d7" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteCylindricalJoint</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a105135444ea80648ab946c058b5972df" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteElevatorDriverMeta</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a32a1d61ce8edad51184f1cbd5e755599" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteJoint</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a07a66ad96b1edd7c1f7d6419301aaab1" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteJointDriver</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a175f78033e9b4d27ac83daeeb20185a6" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteJointDriverMeta</name></member>
+      <member refid="class_b_x_d_j_skeleton_1af0040c061128304ad367ec7c6dd8f295" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteLinearJoint</name></member>
+      <member refid="class_b_x_d_j_skeleton_1ab3ef5dd7c2abb18b47046d4ef6e15bee" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WritePlanarJoint</name></member>
+      <member refid="class_b_x_d_j_skeleton_1acea472e067d1ebc5ed48bb08533b39f5" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WritePneumaticDriverMeta</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a19a49fdfc8bc3aca9b61adde4897900c" prot="public" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WritePolynomial</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a625b5c08ca2d00c70d738ed0f565072d" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteRobotSensor</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a5924a492e02501df9a7858c53060cb3d" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteRotationalJoint</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" prot="public" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteSkeleton</name></member>
+      <member refid="class_b_x_d_j_skeleton_1a2260173f32189c90d009cc7c58ea55ec" prot="private" virt="non-virtual"><scope>BXDJSkeleton</scope><name>WriteWheelDriverMeta</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

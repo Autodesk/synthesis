@@ -1,0 +1,17 @@
+digraph "RotationalJoint_Base"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node2 [label="RotationalJoint_Base",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node3 [label="SkeletalJoint_Base",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html",tooltip="Represents a moving joint between two nodes. "];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" cDriver" ];
+  Node4 [label="JointDriver",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html",tooltip="Generic class able to represent all types of joint drivers. "];
+  Node5 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node5 [label="BinaryRWObject",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$interface_binary_r_w_object.html",tooltip="Interface for objects that can read/write binary data to files "];
+  Node6 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node6 [label="IComparable\< JointDriver \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node7 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" basePoint\naxis" ];
+  Node7 [label="BXDVector3",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_vector3.html"];
+  Node5 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+}

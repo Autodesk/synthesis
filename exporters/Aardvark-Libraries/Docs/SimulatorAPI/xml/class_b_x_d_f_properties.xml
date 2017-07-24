@@ -1,0 +1,733 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_f_properties" kind="class" language="C#" prot="public">
+    <compoundname>BXDFProperties</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_b_x_d_f_properties_1a3a3fb8d9965ad93678223400a278fd47" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string BXDFProperties.BXDF_CURRENT_VERSION</definition>
+        <argsstring></argsstring>
+        <name>BXDF_CURRENT_VERSION</name>
+        <initializer>= &quot;2.2.0&quot;</initializer>
+        <briefdescription>
+<para>Represents the current version of the BXDF file. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="15" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_f_properties_1a528bb431080585f72f9f74bd44a23932" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string BXDFProperties.BXDF_DEFAULT_NAME</definition>
+        <argsstring></argsstring>
+        <name>BXDF_DEFAULT_NAME</name>
+        <initializer>= &quot;UNDEFINED&quot;</initializer>
+        <briefdescription>
+<para>Represents the default name of any element. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="20" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="20" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_b_x_d_f_properties_1a4be4dffe43be95465aff74329fed34e5" prot="private" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string BXDFProperties.BXDF_XSD_2_2</definition>
+        <argsstring></argsstring>
+        <name>BXDF_XSD_2_2</name>
+        <briefdescription>
+<para>The XSD markup to ensure valid document reading. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_b_x_d_f_properties_1aaccec6c74c63d681230c9b08a1e8c4ea" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_definition" kindref="compound">FieldDefinition</ref></type>
+        <definition>static FieldDefinition BXDFProperties.ReadProperties</definition>
+        <argsstring>(string path)</argsstring>
+        <name>ReadProperties</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Reads the given BXDF file from the given path with the latest version possible. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="27" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="27" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a4690668063ed6c1162c495a7c3f9f0b4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_definition" kindref="compound">FieldDefinition</ref></type>
+        <definition>static FieldDefinition BXDFProperties.ReadProperties</definition>
+        <argsstring>(string path, out string result)</argsstring>
+        <name>ReadProperties</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>out string</type>
+          <declname>result</declname>
+        </param>
+        <briefdescription>
+<para>Reads the given BXDF file from the given path with the latest version possible. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="38" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="38" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteProperties</definition>
+        <argsstring>(string path, FieldDefinition fieldDefinition)</argsstring>
+        <name>WriteProperties</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type><ref refid="class_field_definition" kindref="compound">FieldDefinition</ref></type>
+          <declname>fieldDefinition</declname>
+        </param>
+        <briefdescription>
+<para>Writes out the properties file in XML format for the node with the base provided to the path provided. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fieldDefinition</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+<para>Writes the root element and its GUID. </para>        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="71" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="71" bodyend="118"/>
+        <references refid="class_field_definition_1aedeba7c34e3c6bc5a6a34cfd335aa75e" compoundref="_field_definition_8cs" startline="29">FieldDefinition.GUID</references>
+        <references refid="class_field_definition_1a46ad3d304c6caad10fa8cef5ddf0fe1f" compoundref="_field_definition_8cs" startline="79" endline="82">FieldDefinition.GetPropertySets</references>
+        <references refid="struct_property_set_1a8366cd9dd1ed6a6fccb6746f9e69e885" compoundref="_property_set_8cs" startline="122">PropertySet.PropertySetID</references>
+        <references refid="struct_property_set_1a0753ed952f5d39ee1a32abb276a79be2" compoundref="_property_set_8cs" startline="127">PropertySet.Collider</references>
+        <references refid="struct_property_set_1a4156108efef99bed9a69761482e9cb2f" compoundref="_property_set_8cs" startline="132">PropertySet.Friction</references>
+        <references refid="struct_property_set_1a39e7117921eaa970b4d6e4aeb19fd653" compoundref="_property_set_8cs" startline="137">PropertySet.Mass</references>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">BXDVector3.x</references>
+        <references refid="class_b_x_d_quaternion_1a37535ef51676bd109b9c13049230696b" compoundref="_b_x_d_quaternion_8cs" startline="11">BXDQuaternion.X</references>
+        <references refid="class_b_x_d_quaternion_1a372aeace6dc0ec9659e10da7ec95e793" compoundref="_b_x_d_quaternion_8cs" startline="16">BXDQuaternion.Y</references>
+        <references refid="class_b_x_d_quaternion_1a8369bbd60061e761662281ad91ec0f6d" compoundref="_b_x_d_quaternion_8cs" startline="21">BXDQuaternion.Z</references>
+        <references refid="class_b_x_d_quaternion_1a041db6f6882e5480d333bddb9bc2f4f1" compoundref="_b_x_d_quaternion_8cs" startline="26">BXDQuaternion.W</references>
+        <references refid="class_field_node_group_1ae9d21e6b498f2410b5a3c09f9bf3a0e8" compoundref="_field_node_group_8cs" startline="13">FieldNodeGroup.NodeGroupID</references>
+        <references refid="class_field_node_group_1a6ac9b5738d3f1931c01f2bd5bc4be5b5" compoundref="_field_node_group_8cs" startline="186" endline="192">FieldNodeGroup.EnumerateFieldNodes</references>
+        <references refid="class_field_node_1a7d4f3453f91c082b7d5604c6e1581425" compoundref="_field_node_8cs" startline="11">FieldNode.NodeID</references>
+        <references refid="class_field_node_1a884d35ceb35d10ea8643cc7e36be5ff9" compoundref="_field_node_8cs" startline="16">FieldNode.Position</references>
+        <references refid="class_field_node_1a39d5c7e9a136e334fd53b6e77a9964d4" compoundref="_field_node_8cs" startline="21">FieldNode.Rotation</references>
+        <references refid="class_field_node_1ac77c2ba5af3848df490ac82bc1199d3d" compoundref="_field_node_8cs" startline="26">FieldNode.SubMeshID</references>
+        <references refid="class_field_node_1aad132e7c9b9f540962bcefb4bb5f138c" compoundref="_field_node_8cs" startline="31">FieldNode.CollisionMeshID</references>
+        <references refid="class_field_node_1ae1bc4426382f512a64980cd28a6f67cc" compoundref="_field_node_8cs" startline="36">FieldNode.PropertySetID</references>
+        <references refid="class_field_node_group_1a63bf1917f33f192088828c1c13991e63" compoundref="_field_node_group_8cs" startline="198" endline="204">FieldNodeGroup.EnumerateFieldNodeGroups</references>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a12ef8096e0a06d0f385804fd46984d4d" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteBXDVector3</definition>
+        <argsstring>(XmlWriter writer, BXDVector3 vec, string id)</argsstring>
+        <name>WriteBXDVector3</name>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>vec</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Writes the <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref> to an XML file with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>vec</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="125" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="125" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a0185dbec629bbd1db95eb0177f4e965e" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteBXDQuaternion</definition>
+        <argsstring>(XmlWriter writer, BXDQuaternion quat, string id)</argsstring>
+        <name>WriteBXDQuaternion</name>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref></type>
+          <declname>quat</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Writes the <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref> to an XML file with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>quat</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>id</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="144" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="144" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1aa7f515328ccb29c49eac2b4e8f82523e" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteBoxCollider</definition>
+        <argsstring>(XmlWriter writer, PropertySet.BoxCollider boxCollider)</argsstring>
+        <name>WriteBoxCollider</name>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="class_property_set_1_1_box_collider" kindref="compound">PropertySet.BoxCollider</ref></type>
+          <declname>boxCollider</declname>
+        </param>
+        <briefdescription>
+<para>Write the BoxCollider to an XML file with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>boxCollider</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="163" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="163" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a44fa2b8e4dcd2b1a77faa5002375f8f1" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteSphereCollider</definition>
+        <argsstring>(XmlWriter writer, PropertySet.SphereCollider sphereCollider)</argsstring>
+        <name>WriteSphereCollider</name>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="class_property_set_1_1_sphere_collider" kindref="compound">PropertySet.SphereCollider</ref></type>
+          <declname>sphereCollider</declname>
+        </param>
+        <briefdescription>
+<para>Write the SphereCollider to an XML file with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sphereCollider</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="177" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="177" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1adcd450ed2be090ee03a34c26008e987f" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteMeshCollider</definition>
+        <argsstring>(XmlWriter writer, PropertySet.MeshCollider meshCollider)</argsstring>
+        <name>WriteMeshCollider</name>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="class_property_set_1_1_mesh_collider" kindref="compound">PropertySet.MeshCollider</ref></type>
+          <declname>meshCollider</declname>
+        </param>
+        <briefdescription>
+<para>Write the MeshCollider to an XML file with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>meshCollider</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="191" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="191" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a1cb15240faf135863cb0478c6dfbb642" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteCollider</definition>
+        <argsstring>(XmlWriter writer, PropertySet.PropertySetCollider propertySetCollider)</argsstring>
+        <name>WriteCollider</name>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="class_property_set_1_1_property_set_collider" kindref="compound">PropertySet.PropertySetCollider</ref></type>
+          <declname>propertySetCollider</declname>
+        </param>
+        <briefdescription>
+<para>Writes the given <ref refid="struct_property_set" kindref="compound">PropertySet</ref>&apos;s collider to an XML file with the given XmlWriter. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>propertySetCollider</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="205" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="205" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a951b701a32f792561e77ef64483dc69a" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.WriteFieldNodeGroup</definition>
+        <argsstring>(XmlWriter writer, FieldNodeGroup fieldNodeGroup)</argsstring>
+        <name>WriteFieldNodeGroup</name>
+        <param>
+          <type>XmlWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref></type>
+          <declname>fieldNodeGroup</declname>
+        </param>
+        <briefdescription>
+<para>Writes all the data included in a <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fieldNodeGroup</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="226" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="226" bodyend="271"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a0b246946cf7924e5ca87e0a35ca0a717" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_definition" kindref="compound">FieldDefinition</ref></type>
+        <definition>static FieldDefinition BXDFProperties.ReadProperties_2_2</definition>
+        <argsstring>(string path, out string result, bool useValidation=true)</argsstring>
+        <name>ReadProperties_2_2</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>out string</type>
+          <declname>result</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>useValidation</declname>
+          <defval>true</defval>
+        </param>
+        <briefdescription>
+<para>Reads the properties contained in the XML BXDF file specified and returns the corresponding <ref refid="class_field_definition" kindref="compound">FieldDefinition</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>useValidation</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="165" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="165" bodyend="221"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a51f7f879d11013a3535c2f65dec1e20a" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>static BXDVector3 BXDFProperties.ReadBXDVector3_2_2</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadBXDVector3_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref> with the given XmlReader and returns the reading. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="228" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="228" bodyend="252"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a7127682930835278fd9991eb38195ad4" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref></type>
+        <definition>static BXDQuaternion BXDFProperties.ReadBXDQuaternion_2_2</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadBXDQuaternion_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a <ref refid="class_b_x_d_quaternion" kindref="compound">BXDQuaternion</ref> with the given XmlReader and returns the reading. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="259" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="259" bodyend="287"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a94967f1b9571c623cb42fcfb6c0616ef" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_property_set_1_1_box_collider" kindref="compound">PropertySet.BoxCollider</ref></type>
+        <definition>static PropertySet.BoxCollider BXDFProperties.ReadBoxCollider_2_2</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadBoxCollider_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a BoxCollider with the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="294" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="294" bodyend="311"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a846d4cd58e44584c6d25874584cbb0a2" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_property_set_1_1_sphere_collider" kindref="compound">PropertySet.SphereCollider</ref></type>
+        <definition>static PropertySet.SphereCollider BXDFProperties.ReadSphereCollider_2_2</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadSphereCollider_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a SphereCollider with the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="318" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="318" bodyend="335"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a566553f694879208555b061d966cd2c4" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_property_set_1_1_mesh_collider" kindref="compound">PropertySet.MeshCollider</ref></type>
+        <definition>static PropertySet.MeshCollider BXDFProperties.ReadMeshCollider_2_2</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadMeshCollider_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads a MeshCollider with the given XmlReader. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="342" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="342" bodyend="359"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a8c08463d86d6212332ea9ac47063e1ea" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.ReadPropertySet_2_2</definition>
+        <argsstring>(XmlReader reader, FieldDefinition fieldDefinition)</argsstring>
+        <name>ReadPropertySet_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type><ref refid="class_field_definition" kindref="compound">FieldDefinition</ref></type>
+          <declname>fieldDefinition</declname>
+        </param>
+        <briefdescription>
+<para>Reads the subtree of a <ref refid="struct_property_set" kindref="compound">PropertySet</ref> element. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fieldDefinition</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="366" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="366" bodyend="404"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1ac6723f84ce8deb7676d3126bbdfb5d4a" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_node" kindref="compound">FieldNode</ref></type>
+        <definition>static FieldNode BXDFProperties.ReadFieldNode_2_2</definition>
+        <argsstring>(XmlReader reader)</argsstring>
+        <name>ReadFieldNode_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads the subtree of a <ref refid="class_field_node" kindref="compound">FieldNode</ref> and returns the result. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="411" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="411" bodyend="446"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_f_properties_1a73eda5a5a042ee731465dd76f1da5f1a" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDFProperties.ReadFieldNodeGroup_2_2</definition>
+        <argsstring>(XmlReader reader, FieldNodeGroup fieldNodeGroup)</argsstring>
+        <name>ReadFieldNodeGroup_2_2</name>
+        <param>
+          <type>XmlReader</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type><ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref></type>
+          <declname>fieldNodeGroup</declname>
+        </param>
+        <briefdescription>
+<para>Iterates through each child <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref> and adds all FieldNodes to the given <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref>. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fieldNodeGroup</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" line="453" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFReader_2_2.cs" bodystart="453" bodyend="484"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/BXDFProperties.cs" bodystart="10" bodyend="272"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_f_properties_1a3a3fb8d9965ad93678223400a278fd47" prot="public" virt="non-virtual"><scope>BXDFProperties</scope><name>BXDF_CURRENT_VERSION</name></member>
+      <member refid="class_b_x_d_f_properties_1a528bb431080585f72f9f74bd44a23932" prot="public" virt="non-virtual"><scope>BXDFProperties</scope><name>BXDF_DEFAULT_NAME</name></member>
+      <member refid="class_b_x_d_f_properties_1a4be4dffe43be95465aff74329fed34e5" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>BXDF_XSD_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1a94967f1b9571c623cb42fcfb6c0616ef" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadBoxCollider_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1a7127682930835278fd9991eb38195ad4" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadBXDQuaternion_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1a51f7f879d11013a3535c2f65dec1e20a" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadBXDVector3_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1ac6723f84ce8deb7676d3126bbdfb5d4a" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadFieldNode_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1a73eda5a5a042ee731465dd76f1da5f1a" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadFieldNodeGroup_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1a566553f694879208555b061d966cd2c4" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadMeshCollider_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1aaccec6c74c63d681230c9b08a1e8c4ea" prot="public" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadProperties</name></member>
+      <member refid="class_b_x_d_f_properties_1a4690668063ed6c1162c495a7c3f9f0b4" prot="public" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadProperties</name></member>
+      <member refid="class_b_x_d_f_properties_1a0b246946cf7924e5ca87e0a35ca0a717" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadProperties_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1a8c08463d86d6212332ea9ac47063e1ea" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadPropertySet_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1a846d4cd58e44584c6d25874584cbb0a2" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>ReadSphereCollider_2_2</name></member>
+      <member refid="class_b_x_d_f_properties_1aa7f515328ccb29c49eac2b4e8f82523e" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteBoxCollider</name></member>
+      <member refid="class_b_x_d_f_properties_1a0185dbec629bbd1db95eb0177f4e965e" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteBXDQuaternion</name></member>
+      <member refid="class_b_x_d_f_properties_1a12ef8096e0a06d0f385804fd46984d4d" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteBXDVector3</name></member>
+      <member refid="class_b_x_d_f_properties_1a1cb15240faf135863cb0478c6dfbb642" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteCollider</name></member>
+      <member refid="class_b_x_d_f_properties_1a951b701a32f792561e77ef64483dc69a" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteFieldNodeGroup</name></member>
+      <member refid="class_b_x_d_f_properties_1adcd450ed2be090ee03a34c26008e987f" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteMeshCollider</name></member>
+      <member refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" prot="public" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteProperties</name></member>
+      <member refid="class_b_x_d_f_properties_1a44fa2b8e4dcd2b1a77faa5002375f8f1" prot="private" virt="non-virtual"><scope>BXDFProperties</scope><name>WriteSphereCollider</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

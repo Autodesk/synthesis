@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_planar_joint___base" kind="class" language="C#" prot="public">
+    <compoundname>PlanarJoint_Base</compoundname>
+    <basecompoundref refid="class_skeletal_joint___base" prot="public" virt="non-virtual">SkeletalJoint_Base</basecompoundref>
+    <innerclass refid="class_planar_joint___base_1_1_angular_d_o_f___impl" prot="private">PlanarJoint_Base::AngularDOF_Impl</innerclass>
+    <innerclass refid="class_planar_joint___base_1_1_linear_d_o_f___impl" prot="private">PlanarJoint_Base::LinearDOF_Impl</innerclass>
+      <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="class_planar_joint___base_1aae206c3287974e53577d736477b2bacb" prot="private" static="yes" mutable="no">
+        <type>readonly <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>readonly BXDVector3 PlanarJoint_Base.PLANAR_JOINT_BASIS</definition>
+        <argsstring></argsstring>
+        <name>PLANAR_JOINT_BASIS</name>
+        <initializer>= new <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref>(1.12824E-7, 0.418275, 0.90832)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="9" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="9" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_planar_joint___base_1a1d16b25d6cbe9a2d4fc3d505bd5b0f93" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PlanarJoint_Base.normal</definition>
+        <argsstring></argsstring>
+        <name>normal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="151" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_planar_joint___base_1a701dc2eb0b0fed3cccb86727e2d2a73b" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PlanarJoint_Base.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="152" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="152" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_planar_joint___base_1a50f4938dbedd0ec8fae9a0fe20681b46" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="interface_angular_d_o_f" kindref="compound">AngularDOF</ref> []</type>
+        <definition>readonly AngularDOF [] PlanarJoint_Base.angularDOF</definition>
+        <argsstring></argsstring>
+        <name>angularDOF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="154" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_planar_joint___base_1a38054000c974a7868cc4890dbf5be6fa" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref> []</type>
+        <definition>readonly LinearDOF [] PlanarJoint_Base.linearDOF</definition>
+        <argsstring></argsstring>
+        <name>linearDOF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="155" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_planar_joint___base_1a894e0ebf007934567c6669a5ea2bcb66" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PlanarJoint_Base.PlanarJoint_Base</definition>
+        <argsstring>()</argsstring>
+        <name>PlanarJoint_Base</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="157" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="157" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="class_planar_joint___base_1ab4646593b8f3d4b0ef7ddd86e783405e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override SkeletalJointType</type>
+        <definition>override SkeletalJointType PlanarJoint_Base.GetJointType</definition>
+        <argsstring>()</argsstring>
+        <name>GetJointType</name>
+        <reimplements refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">GetJointType</reimplements>
+        <briefdescription>
+<para>The type of this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The joint type</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="163" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="163" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="class_planar_joint___base_1ad773d6e627d22530181faf6d8654161a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override IEnumerable&lt; <ref refid="interface_angular_d_o_f" kindref="compound">AngularDOF</ref> &gt;</type>
+        <definition>override IEnumerable&lt;AngularDOF&gt; PlanarJoint_Base.GetAngularDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetAngularDOF</name>
+        <reimplements refid="class_skeletal_joint___base_1abf96267052733ccf001e0b092c6582f8">GetAngularDOF</reimplements>
+        <briefdescription>
+<para>Gets all the angular degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The angular degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="180" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="180" bodyend="183"/>
+      </memberdef>
+      <memberdef kind="function" id="class_planar_joint___base_1a50dcc45fbe13093f40b7eeef117e8f16" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override IEnumerable&lt; <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref> &gt;</type>
+        <definition>override IEnumerable&lt;LinearDOF&gt; PlanarJoint_Base.GetLinearDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetLinearDOF</name>
+        <reimplements refid="class_skeletal_joint___base_1a14564d8c44dfeef8b7a10044f2392cde">GetLinearDOF</reimplements>
+        <briefdescription>
+<para>Gets all the linear degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The linear degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="185" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="185" bodyend="188"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_planar_joint___base_1a831827ed4d8f810611c0860446280285" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void PlanarJoint_Base.WriteBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryJointInternal</name>
+        <reimplements refid="class_skeletal_joint___base_1a2d98672b13221f6a7f95f24c121c6b10">WriteBinaryJointInternal</reimplements>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="168" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="168" bodyend="172"/>
+      </memberdef>
+      <memberdef kind="function" id="class_planar_joint___base_1a2b7306933fc260ea8dce40477adb367e" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void PlanarJoint_Base.ReadBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryJointInternal</name>
+        <reimplements refid="class_skeletal_joint___base_1aebacae4579db784149dcb6123820a4fb">ReadBinaryJointInternal</reimplements>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="174" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="174" bodyend="178"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Contains a joint with two degrees of linear freedom and one degree of rotational freedom. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="141">
+        <label>PlanarJoint_Base</label>
+        <link refid="class_planar_joint___base"/>
+        <childnode refid="142" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="142">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="147">
+        <label>IComparable&lt; JointDriver &gt;</label>
+      </node>
+      <node id="148">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="146" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="143">
+        <label>PlanarJoint_Base</label>
+        <link refid="class_planar_joint___base"/>
+        <childnode refid="144" relation="public-inheritance">
+        </childnode>
+        <childnode refid="148" relation="usage">
+          <edgelabel>basePoint</edgelabel>
+          <edgelabel>normal</edgelabel>
+        </childnode>
+      </node>
+      <node id="145">
+        <label>JointDriver</label>
+        <link refid="class_joint_driver"/>
+        <childnode refid="146" relation="public-inheritance">
+        </childnode>
+        <childnode refid="147" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="144">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+        <childnode refid="145" relation="usage">
+          <edgelabel>cDriver</edgelabel>
+        </childnode>
+      </node>
+      <node id="146">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="7" bodyend="189"/>
+    <listofallmembers>
+      <member refid="class_planar_joint___base_1a50f4938dbedd0ec8fae9a0fe20681b46" prot="private" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>angularDOF</name></member>
+      <member refid="class_skeletal_joint___base_1aaeb09af11a9640ec8d144f825f56c81a" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>attachedSensors</name></member>
+      <member refid="class_planar_joint___base_1a701dc2eb0b0fed3cccb86727e2d2a73b" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>basePoint</name></member>
+      <member refid="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>cDriver</name></member>
+      <member refid="class_planar_joint___base_1ad773d6e627d22530181faf6d8654161a" prot="public" virt="virtual"><scope>PlanarJoint_Base</scope><name>GetAngularDOF</name></member>
+      <member refid="class_planar_joint___base_1ab4646593b8f3d4b0ef7ddd86e783405e" prot="public" virt="virtual"><scope>PlanarJoint_Base</scope><name>GetJointType</name></member>
+      <member refid="class_planar_joint___base_1a50dcc45fbe13093f40b7eeef117e8f16" prot="public" virt="virtual"><scope>PlanarJoint_Base</scope><name>GetLinearDOF</name></member>
+      <member refid="class_skeletal_joint___base_1a590ba897b9331ad634a26101e27d18ed" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>JOINT_FACTORY</name></member>
+      <member refid="class_planar_joint___base_1a38054000c974a7868cc4890dbf5be6fa" prot="private" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>linearDOF</name></member>
+      <member refid="class_planar_joint___base_1a1d16b25d6cbe9a2d4fc3d505bd5b0f93" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>normal</name></member>
+      <member refid="class_planar_joint___base_1aae206c3287974e53577d736477b2bacb" prot="private" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>PLANAR_JOINT_BASIS</name></member>
+      <member refid="class_planar_joint___base_1a894e0ebf007934567c6669a5ea2bcb66" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>PlanarJoint_Base</name></member>
+      <member refid="class_skeletal_joint___base_1acf7787e56af14f0919e1d76008b6a19c" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>ReadBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a7f71e5afc3b791ffed1bd040425737ef" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>ReadBinaryJoint</name></member>
+      <member refid="class_planar_joint___base_1a2b7306933fc260ea8dce40477adb367e" prot="protected" virt="virtual"><scope>PlanarJoint_Base</scope><name>ReadBinaryJointInternal</name></member>
+      <member refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>ReadJointFully</name></member>
+      <member refid="class_skeletal_joint___base_1aac5116bb70fb19058943811a19951848" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>SkeletalJointFactory</name></member>
+      <member refid="class_skeletal_joint___base_1a0bf3f7cc69c3965e7f3beecc14bec4d0" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>ToString</name></member>
+      <member refid="class_skeletal_joint___base_1a3617349ae11146f48876525ed601c33e" prot="protected" virt="virtual"><scope>PlanarJoint_Base</scope><name>ToString_Internal</name></member>
+      <member refid="class_skeletal_joint___base_1a33a745c57346c6d67c52a7ad61816a09" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>WriteBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" prot="public" virt="non-virtual"><scope>PlanarJoint_Base</scope><name>WriteBinaryJoint</name></member>
+      <member refid="class_planar_joint___base_1a831827ed4d8f810611c0860446280285" prot="protected" virt="virtual"><scope>PlanarJoint_Base</scope><name>WriteBinaryJointInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

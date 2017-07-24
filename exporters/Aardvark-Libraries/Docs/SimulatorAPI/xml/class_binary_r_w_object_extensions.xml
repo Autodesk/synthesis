@@ -1,0 +1,214 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_binary_r_w_object_extensions" kind="class" language="C#" prot="public">
+    <compoundname>BinaryRWObjectExtensions</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_binary_r_w_object_extensions_1a201f58cd653c76ba54a507606a7ff3ce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate <ref refid="interface_binary_r_w_object" kindref="compound">BinaryRWObject</ref></type>
+        <definition>delegate BinaryRWObject BinaryRWObjectExtensions.ReadObjectFully</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadObjectFully</name>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Delegate function to read a RWObject from a binary stream </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Binary stream to read object from</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The created object</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="36" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_binary_r_w_object_extensions_1ab8a7784e15c12820ab307c010b1c87c4" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BinaryRWObjectExtensions.WriteToFile</definition>
+        <argsstring>(this BinaryRWObject obj, String path)</argsstring>
+        <name>WriteToFile</name>
+        <param>
+          <type>this <ref refid="interface_binary_r_w_object" kindref="compound">BinaryRWObject</ref></type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>String</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Writes this object to the given output path. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output path</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="42" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" bodystart="42" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="class_binary_r_w_object_extensions_1aadb1292d34b05b147344aa1f194ba762" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BinaryRWObjectExtensions.ReadFromFile</definition>
+        <argsstring>(this BinaryRWObject obj, String path, BXDIO.ProgressReporter progress=null)</argsstring>
+        <name>ReadFromFile</name>
+        <param>
+          <type>this <ref refid="interface_binary_r_w_object" kindref="compound">BinaryRWObject</ref></type>
+          <declname>obj</declname>
+        </param>
+        <param>
+          <type>String</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>BXDIO.ProgressReporter</type>
+          <declname>progress</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+<para>Reads this object from the given input path. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input path</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="54" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" bodystart="54" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="class_binary_r_w_object_extensions_1a2ceff5cf04c8cc6ebdb33e8295f3b24e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BinaryRWObjectExtensions.Write</definition>
+        <argsstring>(this BinaryWriter writer, BinaryRWObject obj)</argsstring>
+        <name>Write</name>
+        <param>
+          <type>this BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type><ref refid="interface_binary_r_w_object" kindref="compound">BinaryRWObject</ref></type>
+          <declname>obj</declname>
+        </param>
+        <briefdescription>
+<para>Serializes the object into this stream </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="84" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" bodystart="84" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="class_binary_r_w_object_extensions_1aacbe6ae317b4757d2e9ee1d2bd65a00f" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T</type>
+        <definition>static T BinaryRWObjectExtensions.ReadRWObject&lt; T &gt;</definition>
+        <argsstring>(this BinaryReader reader, BinaryRWObjectExtensions.ReadObjectFully readInternal=null)</argsstring>
+        <name>ReadRWObject&lt; T &gt;</name>
+        <param>
+          <type>this BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>BinaryRWObjectExtensions.ReadObjectFully</type>
+          <declname>readInternal</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+<para>Deserializes the object from this stream </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input stream</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>readInternal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional delegate to create the object</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="94" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" bodystart="94" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="function" id="class_binary_r_w_object_extensions_1a449854c54646087aaa4467373ae2b642" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T</type>
+        <definition>static T BinaryRWObjectExtensions.ReadRWInto&lt; T &gt;</definition>
+        <argsstring>(this BinaryReader reader, T t)</argsstring>
+        <name>ReadRWInto&lt; T &gt;</name>
+        <param>
+          <type>this BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>T</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+<para>Deserializes the object from this stream </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input stream</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>t</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Read into</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="122" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" bodystart="122" bodyend="126"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Extension functions for objects implementing the <ref refid="interface_binary_r_w_object" kindref="compound">BinaryRWObject</ref> interface </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="29" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" bodystart="28" bodyend="127"/>
+    <listofallmembers>
+      <member refid="class_binary_r_w_object_extensions_1aadb1292d34b05b147344aa1f194ba762" prot="public" virt="non-virtual"><scope>BinaryRWObjectExtensions</scope><name>ReadFromFile</name></member>
+      <member refid="class_binary_r_w_object_extensions_1a201f58cd653c76ba54a507606a7ff3ce" prot="public" virt="non-virtual"><scope>BinaryRWObjectExtensions</scope><name>ReadObjectFully</name></member>
+      <member refid="class_binary_r_w_object_extensions_1a449854c54646087aaa4467373ae2b642" prot="public" virt="non-virtual"><scope>BinaryRWObjectExtensions</scope><name>ReadRWInto&lt; T &gt;</name></member>
+      <member refid="class_binary_r_w_object_extensions_1aacbe6ae317b4757d2e9ee1d2bd65a00f" prot="public" virt="non-virtual"><scope>BinaryRWObjectExtensions</scope><name>ReadRWObject&lt; T &gt;</name></member>
+      <member refid="class_binary_r_w_object_extensions_1a2ceff5cf04c8cc6ebdb33e8295f3b24e" prot="public" virt="non-virtual"><scope>BinaryRWObjectExtensions</scope><name>Write</name></member>
+      <member refid="class_binary_r_w_object_extensions_1ab8a7784e15c12820ab307c010b1c87c4" prot="public" virt="non-virtual"><scope>BinaryRWObjectExtensions</scope><name>WriteToFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

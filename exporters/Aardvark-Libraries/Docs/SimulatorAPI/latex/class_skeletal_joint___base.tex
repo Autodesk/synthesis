@@ -1,0 +1,258 @@
+\hypertarget{class_skeletal_joint___base}{}\section{Skeletal\+Joint\+\_\+\+Base Class Reference}
+\label{class_skeletal_joint___base}\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+
+
+Represents a moving joint between two nodes.  
+
+
+
+
+Inheritance diagram for Skeletal\+Joint\+\_\+\+Base\+:
+% FIG 0
+
+
+Collaboration diagram for Skeletal\+Joint\+\_\+\+Base\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+delegate \hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} \hyperlink{class_skeletal_joint___base_aac5116bb70fb19058943811a19951848}{Skeletal\+Joint\+Factory} (Skeletal\+Joint\+Type type)
+\begin{DoxyCompactList}\small\item\em Generic delegate for creating skeletal joints from a joint type. \end{DoxyCompactList}\item 
+abstract Skeletal\+Joint\+Type \hyperlink{class_skeletal_joint___base_aee155cbd483cb512bf3fc0f9a8885335}{Get\+Joint\+Type} ()
+\begin{DoxyCompactList}\small\item\em The type of this joint. \end{DoxyCompactList}\item 
+abstract I\+Enumerable$<$ \hyperlink{interface_angular_d_o_f}{Angular\+D\+OF} $>$ \hyperlink{class_skeletal_joint___base_abf96267052733ccf001e0b092c6582f8}{Get\+Angular\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the angular degrees of freedom for this joint. \end{DoxyCompactList}\item 
+abstract I\+Enumerable$<$ \hyperlink{interface_linear_d_o_f}{Linear\+D\+OF} $>$ \hyperlink{class_skeletal_joint___base_a14564d8c44dfeef8b7a10044f2392cde}{Get\+Linear\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the linear degrees of freedom for this joint. \end{DoxyCompactList}\item 
+void \hyperlink{class_skeletal_joint___base_a42df720cdd871ccad5930ae7977f7200}{Write\+Binary\+Joint} (System.\+I\+O.\+Binary\+Writer writer)
+\begin{DoxyCompactList}\small\item\em Writes the backing information and ID for this joint to the output stream. \end{DoxyCompactList}\item 
+void \hyperlink{class_skeletal_joint___base_a7f71e5afc3b791ffed1bd040425737ef}{Read\+Binary\+Joint} (System.\+I\+O.\+Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Reads the backing information for this joint from the input stream. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_skeletal_joint___base_a0bf3f7cc69c3965e7f3beecc14bec4d0}\label{class_skeletal_joint___base_a0bf3f7cc69c3965e7f3beecc14bec4d0}} 
+override string {\bfseries To\+String} ()
+\item 
+\mbox{\Hypertarget{class_skeletal_joint___base_a33a745c57346c6d67c52a7ad61816a09}\label{class_skeletal_joint___base_a33a745c57346c6d67c52a7ad61816a09}} 
+void {\bfseries Write\+Binary\+Data} (System.\+I\+O.\+Binary\+Writer writer)
+\item 
+\mbox{\Hypertarget{class_skeletal_joint___base_acf7787e56af14f0919e1d76008b6a19c}\label{class_skeletal_joint___base_acf7787e56af14f0919e1d76008b6a19c}} 
+void {\bfseries Read\+Binary\+Data} (System.\+I\+O.\+Binary\+Reader reader)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} \hyperlink{class_skeletal_joint___base_ae9f8e31a56644eb92cb901a4587a3d24}{Read\+Joint\+Fully} (System.\+I\+O.\+Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Identifies the type of a joint, creates an instance, and reads that joint from the given input stream. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_joint_driver}{Joint\+Driver} \hyperlink{class_skeletal_joint___base_a69a85fe8ff6cee4d5773884798300fcf}{c\+Driver}
+\begin{DoxyCompactList}\small\item\em The joint driver for this joint. This can be null. \end{DoxyCompactList}\item 
+List$<$ \hyperlink{class_robot_sensor}{Robot\+Sensor} $>$ \hyperlink{class_skeletal_joint___base_aaeb09af11a9640ec8d144f825f56c81a}{attached\+Sensors} = new List$<$\hyperlink{class_robot_sensor}{Robot\+Sensor}$>$()
+\begin{DoxyCompactList}\small\item\em The sensors that read information from this joint. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{class_skeletal_joint___base_aac5116bb70fb19058943811a19951848}{Skeletal\+Joint\+Factory} \hyperlink{class_skeletal_joint___base_a590ba897b9331ad634a26101e27d18ed}{J\+O\+I\+N\+T\+\_\+\+F\+A\+C\+T\+O\+RY}
+\begin{DoxyCompactList}\small\item\em Factory object used to create skeletal joint objects when reading skeletons from a file. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_skeletal_joint___base_a2d98672b13221f6a7f95f24c121c6b10}\label{class_skeletal_joint___base_a2d98672b13221f6a7f95f24c121c6b10}} 
+abstract void {\bfseries Write\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Writer writer)
+\item 
+\mbox{\Hypertarget{class_skeletal_joint___base_aebacae4579db784149dcb6123820a4fb}\label{class_skeletal_joint___base_aebacae4579db784149dcb6123820a4fb}} 
+abstract void {\bfseries Read\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Reader reader)
+\item 
+\mbox{\Hypertarget{class_skeletal_joint___base_a3617349ae11146f48876525ed601c33e}\label{class_skeletal_joint___base_a3617349ae11146f48876525ed601c33e}} 
+virtual string {\bfseries To\+String\+\_\+\+Internal} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a moving joint between two nodes. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_skeletal_joint___base_abf96267052733ccf001e0b092c6582f8}\label{class_skeletal_joint___base_abf96267052733ccf001e0b092c6582f8}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}}
+\index{Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Angular\+D\+O\+F()}{GetAngularDOF()}}
+{\footnotesize\ttfamily abstract I\+Enumerable$<$\hyperlink{interface_angular_d_o_f}{Angular\+D\+OF}$>$ Skeletal\+Joint\+\_\+\+Base.\+Get\+Angular\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Gets all the angular degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The angular degrees of freedom
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{class_cylindrical_joint___base_a9eba59edd9ac877a3be28e652b364b59}{Cylindrical\+Joint\+\_\+\+Base}, \hyperlink{class_planar_joint___base_ad773d6e627d22530181faf6d8654161a}{Planar\+Joint\+\_\+\+Base}, \hyperlink{class_linear_joint___base_a4f814a5b27b53d3d01ad39adbcd2b0bf}{Linear\+Joint\+\_\+\+Base}, \hyperlink{class_rotational_joint___base_aead83dd768acf451c3761f49e393cc35}{Rotational\+Joint\+\_\+\+Base}, and \hyperlink{class_ball_joint___base_a9bf9eac2eee14ae92bb723aabf60caa9}{Ball\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_skeletal_joint___base_aee155cbd483cb512bf3fc0f9a8885335}\label{class_skeletal_joint___base_aee155cbd483cb512bf3fc0f9a8885335}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!Get\+Joint\+Type@{Get\+Joint\+Type}}
+\index{Get\+Joint\+Type@{Get\+Joint\+Type}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Joint\+Type()}{GetJointType()}}
+{\footnotesize\ttfamily abstract Skeletal\+Joint\+Type Skeletal\+Joint\+\_\+\+Base.\+Get\+Joint\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+The type of this joint. 
+
+\begin{DoxyReturn}{Returns}
+The joint type
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{class_cylindrical_joint___base_a1ee432bc31e0ee98266169233210e621}{Cylindrical\+Joint\+\_\+\+Base}, \hyperlink{class_planar_joint___base_ab4646593b8f3d4b0ef7ddd86e783405e}{Planar\+Joint\+\_\+\+Base}, \hyperlink{class_rotational_joint___base_a58b8ae858b3f342302b5a28412ecac6b}{Rotational\+Joint\+\_\+\+Base}, \hyperlink{class_linear_joint___base_aa162de1777f1daaa7ca2234fc6a913ab}{Linear\+Joint\+\_\+\+Base}, and \hyperlink{class_ball_joint___base_a8bbdf57f42fe5bf6045c7accfb72993c}{Ball\+Joint\+\_\+\+Base}.
+
+Here is the caller graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{class_skeletal_joint___base_a14564d8c44dfeef8b7a10044f2392cde}\label{class_skeletal_joint___base_a14564d8c44dfeef8b7a10044f2392cde}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}}
+\index{Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Linear\+D\+O\+F()}{GetLinearDOF()}}
+{\footnotesize\ttfamily abstract I\+Enumerable$<$\hyperlink{interface_linear_d_o_f}{Linear\+D\+OF}$>$ Skeletal\+Joint\+\_\+\+Base.\+Get\+Linear\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Gets all the linear degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The linear degrees of freedom
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{class_cylindrical_joint___base_a5e10f664ba08afb2788e2251831c8246}{Cylindrical\+Joint\+\_\+\+Base}, \hyperlink{class_planar_joint___base_a50dcc45fbe13093f40b7eeef117e8f16}{Planar\+Joint\+\_\+\+Base}, \hyperlink{class_linear_joint___base_ad506a9bf378650ab1d6cdedab91ed2a5}{Linear\+Joint\+\_\+\+Base}, \hyperlink{class_rotational_joint___base_a887b07a072831dd6af60ded53e3a461e}{Rotational\+Joint\+\_\+\+Base}, and \hyperlink{class_ball_joint___base_ae3bcfcc633282ab053048b39ba1c8b8d}{Ball\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_skeletal_joint___base_a7f71e5afc3b791ffed1bd040425737ef}\label{class_skeletal_joint___base_a7f71e5afc3b791ffed1bd040425737ef}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!Read\+Binary\+Joint@{Read\+Binary\+Joint}}
+\index{Read\+Binary\+Joint@{Read\+Binary\+Joint}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Read\+Binary\+Joint()}{ReadBinaryJoint()}}
+{\footnotesize\ttfamily void Skeletal\+Joint\+\_\+\+Base.\+Read\+Binary\+Joint (\begin{DoxyParamCaption}\item[{System.\+I\+O.\+Binary\+Reader}]{reader }\end{DoxyParamCaption})}
+
+
+
+Reads the backing information for this joint from the input stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & Input stream\\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 3
+Here is the caller graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{class_skeletal_joint___base_ae9f8e31a56644eb92cb901a4587a3d24}\label{class_skeletal_joint___base_ae9f8e31a56644eb92cb901a4587a3d24}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!Read\+Joint\+Fully@{Read\+Joint\+Fully}}
+\index{Read\+Joint\+Fully@{Read\+Joint\+Fully}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Read\+Joint\+Fully()}{ReadJointFully()}}
+{\footnotesize\ttfamily static \hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} Skeletal\+Joint\+\_\+\+Base.\+Read\+Joint\+Fully (\begin{DoxyParamCaption}\item[{System.\+I\+O.\+Binary\+Reader}]{reader }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Identifies the type of a joint, creates an instance, and reads that joint from the given input stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & Input stream\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The created joint
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+% FIG 5
+Here is the caller graph for this function\+:
+% FIG 6
+\mbox{\Hypertarget{class_skeletal_joint___base_aac5116bb70fb19058943811a19951848}\label{class_skeletal_joint___base_aac5116bb70fb19058943811a19951848}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!Skeletal\+Joint\+Factory@{Skeletal\+Joint\+Factory}}
+\index{Skeletal\+Joint\+Factory@{Skeletal\+Joint\+Factory}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Skeletal\+Joint\+Factory()}{SkeletalJointFactory()}}
+{\footnotesize\ttfamily delegate \hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} Skeletal\+Joint\+\_\+\+Base.\+Skeletal\+Joint\+Factory (\begin{DoxyParamCaption}\item[{Skeletal\+Joint\+Type}]{type }\end{DoxyParamCaption})}
+
+
+
+Generic delegate for creating skeletal joints from a joint type. 
+
+\mbox{\Hypertarget{class_skeletal_joint___base_a42df720cdd871ccad5930ae7977f7200}\label{class_skeletal_joint___base_a42df720cdd871ccad5930ae7977f7200}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!Write\+Binary\+Joint@{Write\+Binary\+Joint}}
+\index{Write\+Binary\+Joint@{Write\+Binary\+Joint}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Write\+Binary\+Joint()}{WriteBinaryJoint()}}
+{\footnotesize\ttfamily void Skeletal\+Joint\+\_\+\+Base.\+Write\+Binary\+Joint (\begin{DoxyParamCaption}\item[{System.\+I\+O.\+Binary\+Writer}]{writer }\end{DoxyParamCaption})}
+
+
+
+Writes the backing information and ID for this joint to the output stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em writer} & Output stream\\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 7
+Here is the caller graph for this function\+:
+% FIG 8
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_skeletal_joint___base_aaeb09af11a9640ec8d144f825f56c81a}\label{class_skeletal_joint___base_aaeb09af11a9640ec8d144f825f56c81a}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!attached\+Sensors@{attached\+Sensors}}
+\index{attached\+Sensors@{attached\+Sensors}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{attached\+Sensors}{attachedSensors}}
+{\footnotesize\ttfamily List$<$\hyperlink{class_robot_sensor}{Robot\+Sensor}$>$ Skeletal\+Joint\+\_\+\+Base.\+attached\+Sensors = new List$<$\hyperlink{class_robot_sensor}{Robot\+Sensor}$>$()}
+
+
+
+The sensors that read information from this joint. 
+
+\mbox{\Hypertarget{class_skeletal_joint___base_a69a85fe8ff6cee4d5773884798300fcf}\label{class_skeletal_joint___base_a69a85fe8ff6cee4d5773884798300fcf}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!c\+Driver@{c\+Driver}}
+\index{c\+Driver@{c\+Driver}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{c\+Driver}{cDriver}}
+{\footnotesize\ttfamily \hyperlink{class_joint_driver}{Joint\+Driver} Skeletal\+Joint\+\_\+\+Base.\+c\+Driver}
+
+
+
+The joint driver for this joint. This can be null. 
+
+\mbox{\Hypertarget{class_skeletal_joint___base_a590ba897b9331ad634a26101e27d18ed}\label{class_skeletal_joint___base_a590ba897b9331ad634a26101e27d18ed}} 
+\index{Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}!J\+O\+I\+N\+T\+\_\+\+F\+A\+C\+T\+O\+RY@{J\+O\+I\+N\+T\+\_\+\+F\+A\+C\+T\+O\+RY}}
+\index{J\+O\+I\+N\+T\+\_\+\+F\+A\+C\+T\+O\+RY@{J\+O\+I\+N\+T\+\_\+\+F\+A\+C\+T\+O\+RY}!Skeletal\+Joint\+\_\+\+Base@{Skeletal\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{J\+O\+I\+N\+T\+\_\+\+F\+A\+C\+T\+O\+RY}{JOINT\_FACTORY}}
+{\footnotesize\ttfamily \hyperlink{class_skeletal_joint___base_aac5116bb70fb19058943811a19951848}{Skeletal\+Joint\+Factory} Skeletal\+Joint\+\_\+\+Base.\+J\+O\+I\+N\+T\+\_\+\+F\+A\+C\+T\+O\+RY\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= delegate(SkeletalJointType type)
+    \{
+        \textcolor{keywordflow}{switch} (type)
+        \{
+            \textcolor{keywordflow}{case} SkeletalJointType.ROTATIONAL:
+                \textcolor{keywordflow}{return} \textcolor{keyword}{new} \hyperlink{class_rotational_joint___base}{RotationalJoint\_Base}();
+            \textcolor{keywordflow}{case} SkeletalJointType.LINEAR:
+                \textcolor{keywordflow}{return} \textcolor{keyword}{new} \hyperlink{class_linear_joint___base}{LinearJoint\_Base}();
+            \textcolor{keywordflow}{case} SkeletalJointType.CYLINDRICAL:
+                \textcolor{keywordflow}{return} \textcolor{keyword}{new} \hyperlink{class_cylindrical_joint___base}{CylindricalJoint\_Base}();
+            \textcolor{keywordflow}{case} SkeletalJointType.PLANAR:
+                \textcolor{keywordflow}{return} \textcolor{keyword}{new} \hyperlink{class_planar_joint___base}{PlanarJoint\_Base}();
+            \textcolor{keywordflow}{case} SkeletalJointType.BALL:
+                \textcolor{keywordflow}{return} \textcolor{keyword}{new} \hyperlink{class_ball_joint___base}{BallJoint\_Base}();
+            \textcolor{keywordflow}{default}:
+                \textcolor{keywordflow}{return} null;
+        \}
+    \}
+\end{DoxyCode}
+
+
+Factory object used to create skeletal joint objects when reading skeletons from a file. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Joints/Skeletal\+Joint\+\_\+\+Base.\+cs\end{DoxyCompactItemize}

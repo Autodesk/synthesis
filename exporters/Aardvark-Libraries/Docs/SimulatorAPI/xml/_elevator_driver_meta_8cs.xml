@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="_elevator_driver_meta_8cs" kind="file" language="C#">
+    <compoundname>ElevatorDriverMeta.cs</compoundname>
+    <innerclass refid="class_elevator_driver_meta" prot="public">ElevatorDriverMeta</innerclass>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="_elevator_driver_meta_8cs_1ae7d0bae1cafef7d5a8883a67d54739f2" prot="public" static="no">
+        <name>ElevatorType</name>
+        <enumvalue id="_elevator_driver_meta_8cs_1ae7d0bae1cafef7d5a8883a67d54739f2aa371355e1c76437e2abfde8c0cf69cb7" prot="public">
+          <name>NOT_MULTI</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_elevator_driver_meta_8cs_1ae7d0bae1cafef7d5a8883a67d54739f2a9dee6dae345db7898fb61545ea3a8abb" prot="public">
+          <name>CASCADING_STAGE_1</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_elevator_driver_meta_8cs_1ae7d0bae1cafef7d5a8883a67d54739f2a50e0885211934a457e5d06b342f7d086" prot="public">
+          <name>CASCADING_STAGE_2</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_elevator_driver_meta_8cs_1ae7d0bae1cafef7d5a8883a67d54739f2a605e2a9c687e088811b4821736b20b63" prot="public">
+          <name>CONTINUOUS_STAGE_1</name>
+          <initializer>= 3</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="_elevator_driver_meta_8cs_1ae7d0bae1cafef7d5a8883a67d54739f2ada93880ba98f063f360fc929cd7d4bf0" prot="public">
+          <name>CONTINUOUS_STAGE_2</name>
+          <initializer>= 4</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" line="3" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" bodystart="2" bodyend="9"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="keyword">using</highlight><highlight class="normal"><sp/><ref refid="namespace_system" kindref="compound">System</ref>.IO;</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>ElevatorType<sp/>:<sp/>byte</highlight></codeline>
+<codeline lineno="3"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="4"><highlight class="normal"><sp/><sp/><sp/><sp/>NOT_MULTI<sp/>=<sp/>0,<sp/></highlight><highlight class="comment">//Single<sp/>stage<sp/>elevator,<sp/>constitutes<sp/>most<sp/>frc<sp/>elevator</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"><sp/><sp/><sp/><sp/>CASCADING_STAGE_1<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="6"><highlight class="normal"><sp/><sp/><sp/><sp/>CASCADING_STAGE_2<sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="7"><highlight class="normal"><sp/><sp/><sp/><sp/>CONTINUOUS_STAGE_1<sp/>=<sp/>3,</highlight></codeline>
+<codeline lineno="8"><highlight class="normal"><sp/><sp/><sp/><sp/>CONTINUOUS_STAGE_2<sp/>=<sp/>4</highlight></codeline>
+<codeline lineno="9"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="10" refid="class_elevator_driver_meta" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="class_elevator_driver_meta" kindref="compound">ElevatorDriverMeta</ref><sp/>:<sp/><ref refid="class_joint_driver_meta" kindref="compound">JointDriverMeta</ref></highlight></codeline>
+<codeline lineno="11"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>ElevatorType<sp/>type;</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="class_elevator_driver_meta" kindref="compound">ElevatorDriverMeta</ref>()</highlight></codeline>
+<codeline lineno="15"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>WriteDataInternal(<ref refid="namespace_system" kindref="compound">System</ref>.IO.BinaryWriter<sp/>writer)</highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>writer.Write((byte)((</highlight><highlight class="keywordtype">int</highlight><highlight class="normal">)type));</highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>ReadDataInternal(<ref refid="namespace_system" kindref="compound">System</ref>.IO.BinaryReader<sp/>reader)</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>type<sp/>=<sp/>(ElevatorType)reader.ReadByte();</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs"/>
+  </compounddef>
+</doxygen>

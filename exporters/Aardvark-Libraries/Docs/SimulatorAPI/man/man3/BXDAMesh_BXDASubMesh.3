@@ -1,0 +1,75 @@
+.TH "BXDAMesh.BXDASubMesh" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BXDAMesh.BXDASubMesh \- Represents an indexed triangle mesh with normals and optional colors and texture coordinates\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBWriteData\fP (BinaryWriter writer)"
+.br
+.ti -1c
+.RI "void \fBReadData\fP (BinaryReader reader)"
+.br
+.ti -1c
+.RI "void \fBReadData_v0\fP (BinaryReader reader)"
+.br
+.RI "Reads \fBBXDASubMesh\fP data of v0\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "double [] \fBverts\fP"
+.br
+.RI "Vertex positions\&. Three values (X, Y, Z) per vertex\&. "
+.ti -1c
+.RI "double [] \fBnorms\fP"
+.br
+.RI "Vertex normals\&. Three values (X, Y, Z) composing one unit vector per vertex\&. "
+.ti -1c
+.RI "List< \fBBXDASurface\fP > \fBsurfaces\fP = new List<\fBBXDASurface\fP>()"
+.br
+.RI "A list of indexed surfaces that make up the mesh "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Represents an indexed triangle mesh with normals and optional colors and texture coordinates\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void BXDAMesh\&.BXDASubMesh\&.ReadData_v0 (BinaryReader reader)"
+
+.PP
+Reads \fBBXDASubMesh\fP data of v0\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "double [] BXDAMesh\&.BXDASubMesh\&.norms"
+
+.PP
+Vertex normals\&. Three values (X, Y, Z) composing one unit vector per vertex\&. 
+.SS "List<\fBBXDASurface\fP> BXDAMesh\&.BXDASubMesh\&.surfaces = new List<\fBBXDASurface\fP>()"
+
+.PP
+A list of indexed surfaces that make up the mesh 
+.SS "double [] BXDAMesh\&.BXDASubMesh\&.verts"
+
+.PP
+Vertex positions\&. Three values (X, Y, Z) per vertex\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

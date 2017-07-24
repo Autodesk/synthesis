@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh" kind="class" language="C#" prot="public">
+    <compoundname>BXDAMesh::BXDASubMesh</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a9380db1d5b44c04010de0d21a9dac79e" prot="public" static="no" mutable="no">
+        <type>double []</type>
+        <definition>double [] BXDAMesh.BXDASubMesh.verts</definition>
+        <argsstring></argsstring>
+        <name>verts</name>
+        <briefdescription>
+<para>Vertex positions. Three values (X, Y, Z) per vertex. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="127" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="127" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a3f50b41f51136f7662730d2037875c11" compoundref="_b_x_d_a_reader__v0_8cs" startline="55" endline="72">BXDAMesh.BXDASubMesh.ReadData_v0</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a098a0a069e7ed3e32caf3ca6bbfd752a" prot="public" static="no" mutable="no">
+        <type>double []</type>
+        <definition>double [] BXDAMesh.BXDASubMesh.norms</definition>
+        <argsstring></argsstring>
+        <name>norms</name>
+        <briefdescription>
+<para>Vertex normals. Three values (X, Y, Z) composing one unit vector per vertex. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="132" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="132" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a3f50b41f51136f7662730d2037875c11" compoundref="_b_x_d_a_reader__v0_8cs" startline="55" endline="72">BXDAMesh.BXDASubMesh.ReadData_v0</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a6b55f3c3beb64270a075b12cfa45143c" prot="public" static="no" mutable="no">
+        <type>List&lt; <ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface" kindref="compound">BXDASurface</ref> &gt;</type>
+        <definition>List&lt;BXDASurface&gt; BXDAMesh.BXDASubMesh.surfaces</definition>
+        <argsstring></argsstring>
+        <name>surfaces</name>
+        <initializer>= new List&lt;<ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface" kindref="compound">BXDASurface</ref>&gt;()</initializer>
+        <briefdescription>
+<para>A list of indexed surfaces that make up the mesh </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="137" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="137" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a3f50b41f51136f7662730d2037875c11" compoundref="_b_x_d_a_reader__v0_8cs" startline="55" endline="72">BXDAMesh.BXDASubMesh.ReadData_v0</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a8032ed099154adc3a1b9eb533858f514" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BXDAMesh.BXDASubMesh.WriteData</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteData</name>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="139" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="139" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a4fb22656afc7f6f6ca71b08b7b9f3b20" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BXDAMesh.BXDASubMesh.ReadData</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadData</name>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="158" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="158" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a3f50b41f51136f7662730d2037875c11" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BXDAMesh.BXDASubMesh.ReadData_v0</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadData_v0</name>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads <ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh" kindref="compound">BXDASubMesh</ref> data of v0. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAReader_v0.cs" line="55" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAReader_v0.cs" bodystart="55" bodyend="72"/>
+        <references refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a098a0a069e7ed3e32caf3ca6bbfd752a" compoundref="_b_x_d_a_mesh_8cs" startline="132">BXDAMesh.BXDASubMesh.norms</references>
+        <references refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a9380db1d5b44c04010de0d21a9dac79e" compoundref="_b_x_d_a_mesh_8cs" startline="127">BXDAMesh.BXDASubMesh.verts</references>
+        <references refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1a05ef413dafc79022f79763330340e61d" compoundref="_b_x_d_a_reader__v0_8cs" startline="84" endline="97">BXDAMesh.BXDASurface.ReadData_v0</references>
+        <references refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a6b55f3c3beb64270a075b12cfa45143c" compoundref="_b_x_d_a_mesh_8cs" startline="137">BXDAMesh.BXDASubMesh.surfaces</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Represents an indexed triangle mesh with normals and optional colors and texture coordinates. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="123" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="122" bodyend="162"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a098a0a069e7ed3e32caf3ca6bbfd752a" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASubMesh</scope><name>norms</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a4fb22656afc7f6f6ca71b08b7b9f3b20" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASubMesh</scope><name>ReadData</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a3f50b41f51136f7662730d2037875c11" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASubMesh</scope><name>ReadData_v0</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a6b55f3c3beb64270a075b12cfa45143c" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASubMesh</scope><name>surfaces</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a9380db1d5b44c04010de0d21a9dac79e" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASubMesh</scope><name>verts</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a8032ed099154adc3a1b9eb533858f514" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASubMesh</scope><name>WriteData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

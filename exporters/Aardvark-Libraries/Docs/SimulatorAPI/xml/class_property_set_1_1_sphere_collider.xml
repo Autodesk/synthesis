@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_property_set_1_1_sphere_collider" kind="class" language="C#" prot="public">
+    <compoundname>PropertySet::SphereCollider</compoundname>
+    <basecompoundref refid="class_property_set_1_1_property_set_collider" prot="public" virt="non-virtual">PropertySet.PropertySetCollider</basecompoundref>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_property_set_1_1_sphere_collider_1a1dbdd1e192db29b1a749679473cb4e5d" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type>float</type>
+        <definition>float PropertySet.SphereCollider.Scale</definition>
+        <argsstring></argsstring>
+        <name>Scale</name>
+        <briefdescription>
+<para>The scale of the <ref refid="class_property_set_1_1_sphere_collider" kindref="compound">SphereCollider</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="82" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_property_set_1_1_sphere_collider_1ae5483127a8dbe767f2d068233e304e30" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PropertySet.SphereCollider.SphereCollider</definition>
+        <argsstring>(float scale)</argsstring>
+        <name>SphereCollider</name>
+        <param>
+          <type>float</type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_property_set_1_1_sphere_collider" kindref="compound">SphereCollider</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="91" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="91" bodyend="95"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="191">
+        <label>PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+      <node id="190">
+        <label>PropertySet.SphereCollider</label>
+        <link refid="class_property_set_1_1_sphere_collider"/>
+        <childnode refid="191" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="193">
+        <label>PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+      <node id="192">
+        <label>PropertySet.SphereCollider</label>
+        <link refid="class_property_set_1_1_sphere_collider"/>
+        <childnode refid="193" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="78" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="77" bodyend="96"/>
+    <listofallmembers>
+      <member refid="class_property_set_1_1_property_set_collider_1a68838b774adc4d08f1b07c819263f90b" prot="public" virt="non-virtual"><scope>PropertySet::SphereCollider</scope><name>CollisionType</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a47197ffe129e18b56ee893e3f1a5832e" prot="public" virt="non-virtual"><scope>PropertySet::SphereCollider</scope><name>PropertySetCollider</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51e" prot="public" virt="non-virtual"><scope>PropertySet::SphereCollider</scope><name>PropertySetCollisionType</name></member>
+      <member refid="class_property_set_1_1_sphere_collider_1a1dbdd1e192db29b1a749679473cb4e5d" prot="public" virt="non-virtual"><scope>PropertySet::SphereCollider</scope><name>Scale</name></member>
+      <member refid="class_property_set_1_1_sphere_collider_1ae5483127a8dbe767f2d068233e304e30" prot="public" virt="non-virtual"><scope>PropertySet::SphereCollider</scope><name>SphereCollider</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

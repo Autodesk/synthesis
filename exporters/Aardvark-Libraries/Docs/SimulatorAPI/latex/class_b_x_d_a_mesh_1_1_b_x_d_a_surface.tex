@@ -1,0 +1,115 @@
+\hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{}\section{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface Class Reference}
+\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}\index{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface}}
+
+
+Index data representing a face with color, transparency, translucency, and specular  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ac39fb3d5e0f93394530fc8cdecf9874e}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ac39fb3d5e0f93394530fc8cdecf9874e}} 
+void {\bfseries Write\+Data} (Binary\+Writer writer)
+\item 
+void \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a05ef413dafc79022f79763330340e61d}{Read\+Data\+\_\+v0} (Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Reads \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{B\+X\+D\+A\+Surface} data of v0. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a5de55543d0a71780d35241d685a87512}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a5de55543d0a71780d35241d685a87512}} 
+bool {\bfseries has\+Color} = false
+\item 
+uint \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ae7b70c2da6c489de054138dfa083e98a}{color} = 0x\+F\+F\+F\+F\+F\+F\+FF
+\begin{DoxyCompactList}\small\item\em The color of the material packed as an unsigned integer \end{DoxyCompactList}\item 
+float \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ae3e709bd450bd2ef01c5acba177a617b}{transparency}
+\begin{DoxyCompactList}\small\item\em The transparency of the material. \mbox{[}0-\/1\mbox{]} \end{DoxyCompactList}\item 
+float \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_af19291640f35adcf6f9b6097184d1156}{translucency}
+\begin{DoxyCompactList}\small\item\em The translucency of the material. \mbox{[}0-\/1\mbox{]} \end{DoxyCompactList}\item 
+float \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_af72ca2963061dfe7004b73c9ad80a6ab}{specular} = 0
+\begin{DoxyCompactList}\small\item\em The specular intensity of the material. \mbox{[}0-\/1\mbox{]} \end{DoxyCompactList}\item 
+int \mbox{[}$\,$\mbox{]} \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a72348b4bb5ec3ee8927cc8ba93c6bd6e}{indicies}
+\begin{DoxyCompactList}\small\item\em The zero based index buffer for this specific surface of the mesh. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Index data representing a face with color, transparency, translucency, and specular 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a05ef413dafc79022f79763330340e61d}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a05ef413dafc79022f79763330340e61d}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}!Read\+Data\+\_\+v0@{Read\+Data\+\_\+v0}}
+\index{Read\+Data\+\_\+v0@{Read\+Data\+\_\+v0}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}}
+\subsubsection{\texorpdfstring{Read\+Data\+\_\+v0()}{ReadData\_v0()}}
+{\footnotesize\ttfamily void B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface.\+Read\+Data\+\_\+v0 (\begin{DoxyParamCaption}\item[{Binary\+Reader}]{reader }\end{DoxyParamCaption})}
+
+
+
+Reads \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{B\+X\+D\+A\+Surface} data of v0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & \\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 0
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ae7b70c2da6c489de054138dfa083e98a}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ae7b70c2da6c489de054138dfa083e98a}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}!color@{color}}
+\index{color@{color}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}}
+\subsubsection{\texorpdfstring{color}{color}}
+{\footnotesize\ttfamily uint B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface.\+color = 0x\+F\+F\+F\+F\+F\+F\+FF}
+
+
+
+The color of the material packed as an unsigned integer 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a72348b4bb5ec3ee8927cc8ba93c6bd6e}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_a72348b4bb5ec3ee8927cc8ba93c6bd6e}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}!indicies@{indicies}}
+\index{indicies@{indicies}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}}
+\subsubsection{\texorpdfstring{indicies}{indicies}}
+{\footnotesize\ttfamily int \mbox{[}$\,$\mbox{]} B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface.\+indicies}
+
+
+
+The zero based index buffer for this specific surface of the mesh. 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_af72ca2963061dfe7004b73c9ad80a6ab}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_af72ca2963061dfe7004b73c9ad80a6ab}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}!specular@{specular}}
+\index{specular@{specular}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}}
+\subsubsection{\texorpdfstring{specular}{specular}}
+{\footnotesize\ttfamily float B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface.\+specular = 0}
+
+
+
+The specular intensity of the material. \mbox{[}0-\/1\mbox{]} 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_af19291640f35adcf6f9b6097184d1156}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_af19291640f35adcf6f9b6097184d1156}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}!translucency@{translucency}}
+\index{translucency@{translucency}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}}
+\subsubsection{\texorpdfstring{translucency}{translucency}}
+{\footnotesize\ttfamily float B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface.\+translucency}
+
+
+
+The translucency of the material. \mbox{[}0-\/1\mbox{]} 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ae3e709bd450bd2ef01c5acba177a617b}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_surface_ae3e709bd450bd2ef01c5acba177a617b}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}!transparency@{transparency}}
+\index{transparency@{transparency}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Surface}}
+\subsubsection{\texorpdfstring{transparency}{transparency}}
+{\footnotesize\ttfamily float B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Surface.\+transparency}
+
+
+
+The transparency of the material. \mbox{[}0-\/1\mbox{]} 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/\+B\+X\+D\+A/B\+X\+D\+A\+Mesh.\+cs\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/\+B\+X\+D\+A/B\+X\+D\+A\+Reader\+\_\+v0.\+cs\end{DoxyCompactItemize}

@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_pneumatic_driver_meta" kind="class" language="C#" prot="public">
+    <compoundname>PneumaticDriverMeta</compoundname>
+    <basecompoundref refid="class_joint_driver_meta" prot="public" virt="non-virtual">JointDriverMeta</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_pneumatic_driver_meta_1a19b6b4cb0f2480b52f339330dd6c9f82" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float PneumaticDriverMeta.widthMM</definition>
+        <argsstring></argsstring>
+        <name>widthMM</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" line="24" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_pneumatic_driver_meta_1a30013defad51924eb3840287ee3ffc4a" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float PneumaticDriverMeta.pressurePSI</definition>
+        <argsstring></argsstring>
+        <name>pressurePSI</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" line="25" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_pneumatic_driver_meta_1a58656a767088fbd3812e684bada0458c" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>PneumaticDiameter</type>
+        <definition>PneumaticDiameter PneumaticDriverMeta.widthEnum</definition>
+        <argsstring></argsstring>
+        <name>widthEnum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" line="28" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_pneumatic_driver_meta_1a27744874856bfdfc01983442fe9a3f6d" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>PneumaticPressure</type>
+        <definition>PneumaticPressure PneumaticDriverMeta.pressureEnum</definition>
+        <argsstring></argsstring>
+        <name>pressureEnum</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" line="56" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_pneumatic_driver_meta_1aa233c2dfc6aa2378c9e0decdb2745f23" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void PneumaticDriverMeta.WriteDataInternal</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteDataInternal</name>
+        <reimplements refid="class_joint_driver_meta_1adf4e26898611dfdce9cd65190100b4f5">WriteDataInternal</reimplements>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" line="86" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" bodystart="86" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="class_pneumatic_driver_meta_1a355c4290eb11a470976812d86df71754" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void PneumaticDriverMeta.ReadDataInternal</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadDataInternal</name>
+        <reimplements refid="class_joint_driver_meta_1a3f0af9deabeff7ea433a7e43689ddfa6">ReadDataInternal</reimplements>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" line="91" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" bodystart="91" bodyend="95"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Stores the variables concerning a pneumatic cylinder. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="150">
+        <label>JointDriverMeta</label>
+        <link refid="class_joint_driver_meta"/>
+      </node>
+      <node id="149">
+        <label>PneumaticDriverMeta</label>
+        <link refid="class_pneumatic_driver_meta"/>
+        <childnode refid="150" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="152">
+        <label>JointDriverMeta</label>
+        <link refid="class_joint_driver_meta"/>
+      </node>
+      <node id="151">
+        <label>PneumaticDriverMeta</label>
+        <link refid="class_pneumatic_driver_meta"/>
+        <childnode refid="152" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" line="23" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/PneumaticDriverMeta.cs" bodystart="22" bodyend="96"/>
+    <listofallmembers>
+      <member refid="class_joint_driver_meta_1ab05346b958156ad0cbb9f908c19fa838" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>GetID</name></member>
+      <member refid="class_joint_driver_meta_1aca600ea13be10ec808f61deee5f559f9" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>JOINT_DRIVER_META_TYPES</name></member>
+      <member refid="class_pneumatic_driver_meta_1a27744874856bfdfc01983442fe9a3f6d" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>pressureEnum</name></member>
+      <member refid="class_pneumatic_driver_meta_1a30013defad51924eb3840287ee3ffc4a" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>pressurePSI</name></member>
+      <member refid="class_pneumatic_driver_meta_1a355c4290eb11a470976812d86df71754" prot="protected" virt="virtual"><scope>PneumaticDriverMeta</scope><name>ReadDataInternal</name></member>
+      <member refid="class_joint_driver_meta_1adb75866d97a7f8b57f95cc5581e62860" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>ReadDriverMeta</name></member>
+      <member refid="class_pneumatic_driver_meta_1a58656a767088fbd3812e684bada0458c" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>widthEnum</name></member>
+      <member refid="class_pneumatic_driver_meta_1a19b6b4cb0f2480b52f339330dd6c9f82" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>widthMM</name></member>
+      <member refid="class_joint_driver_meta_1ac4b1c493843d20020a1ed43714c966c2" prot="public" virt="non-virtual"><scope>PneumaticDriverMeta</scope><name>WriteData</name></member>
+      <member refid="class_pneumatic_driver_meta_1aa233c2dfc6aa2378c9e0decdb2745f23" prot="protected" virt="virtual"><scope>PneumaticDriverMeta</scope><name>WriteDataInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

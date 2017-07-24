@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_5d4db232a353d8c27f10a523b8c7df35" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO</compoundname>
+    <innerdir refid="dir_1c5236e5fe8dc9504abc41497668f6ed">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO</innerdir>
+    <innerdir refid="dir_a35a35a9e46d55dd14aebe88d9dd4936">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints</innerdir>
+    <innerdir refid="dir_91d69fa3202807379de2fb8f2e6c545b">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math</innerdir>
+    <innerdir refid="dir_b99efa492469c3d59b4e87cbe01b80e3">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree</innerdir>
+    <innerdir refid="dir_88c44ff7fdf7f75e0276e709807bd038">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Properties</innerdir>
+    <innerdir refid="dir_ac22d7198c95b9eedf1d6f8c2602c255">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/"/>
+  </compounddef>
+</doxygen>

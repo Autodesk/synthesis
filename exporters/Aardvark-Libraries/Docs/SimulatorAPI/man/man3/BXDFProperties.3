@@ -1,0 +1,95 @@
+.TH "BXDFProperties" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BXDFProperties
+.SH SYNOPSIS
+.br
+.PP
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBFieldDefinition\fP \fBReadProperties\fP (string path)"
+.br
+.RI "Reads the given BXDF file from the given path with the latest version possible\&. "
+.ti -1c
+.RI "static \fBFieldDefinition\fP \fBReadProperties\fP (string path, out string result)"
+.br
+.RI "Reads the given BXDF file from the given path with the latest version possible\&. "
+.ti -1c
+.RI "static void \fBWriteProperties\fP (string path, \fBFieldDefinition\fP fieldDefinition)"
+.br
+.RI "Writes out the properties file in XML format for the node with the base provided to the path provided\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "const string \fBBXDF_CURRENT_VERSION\fP = '2\&.2\&.0'"
+.br
+.RI "Represents the current version of the BXDF file\&. "
+.ti -1c
+.RI "const string \fBBXDF_DEFAULT_NAME\fP = 'UNDEFINED'"
+.br
+.RI "Represents the default name of any element\&. "
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "static \fBFieldDefinition\fP BXDFProperties\&.ReadProperties (string path)\fC [static]\fP"
+
+.PP
+Reads the given BXDF file from the given path with the latest version possible\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.SS "static \fBFieldDefinition\fP BXDFProperties\&.ReadProperties (string path, out string result)\fC [static]\fP"
+
+.PP
+Reads the given BXDF file from the given path with the latest version possible\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.SS "static void BXDFProperties\&.WriteProperties (string path, \fBFieldDefinition\fP fieldDefinition)\fC [static]\fP"
+
+.PP
+Writes out the properties file in XML format for the node with the base provided to the path provided\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP 
+.br
+\fIfieldDefinition\fP 
+.RE
+.PP
+Writes the root element and its GUID\&. 
+.SH "Member Data Documentation"
+.PP 
+.SS "const string BXDFProperties\&.BXDF_CURRENT_VERSION = '2\&.2\&.0'"
+
+.PP
+Represents the current version of the BXDF file\&. 
+.SS "const string BXDFProperties\&.BXDF_DEFAULT_NAME = 'UNDEFINED'"
+
+.PP
+Represents the default name of any element\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

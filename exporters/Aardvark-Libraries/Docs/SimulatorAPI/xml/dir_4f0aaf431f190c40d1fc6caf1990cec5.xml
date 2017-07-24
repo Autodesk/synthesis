@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_4f0aaf431f190c40d1fc6caf1990cec5" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF</compoundname>
+    <innerfile refid="_b_x_d_f_properties_8cs">BXDFProperties.cs</innerfile>
+    <innerfile refid="_b_x_d_f_reader__2__2_8cs">BXDFReader_2_2.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF/"/>
+  </compounddef>
+</doxygen>

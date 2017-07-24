@@ -40,25 +40,53 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DriveTrain.cs" />
-    <Compile Include="Field.cs" />
+    <Compile Include="AttribType.cs" />
+    <Compile Include="FieldNodeGenerator.cs" />
+    <Compile Include="Gopher.cs" />
+    <Compile Include="Nodes\Colliders\BoxCollider.cs" />
+    <Compile Include="Nodes\Colliders\GopherCollider_Base.cs" />
+    <Compile Include="Nodes\Colliders\MeshCollider.cs" />
+    <Compile Include="Nodes\Colliders\NoCollider.cs" />
+    <Compile Include="Nodes\Colliders\SphereCollider.cs" />
+    <Compile Include="Nodes\GopherField.cs" />
+    <Compile Include="Nodes\GopherFieldNode.cs" />
+    <Compile Include="Nodes\GopherNode_Base.cs" />
+    <Compile Include="Nodes\GopherRobot.cs" />
+    <Compile Include="Nodes\GopherRobotNode.cs" />
+    <Compile Include="Nodes\Joint\BallJoint.cs" />
+    <Compile Include="Nodes\Joint\CylindricalJoint.cs" />
+    <Compile Include="Nodes\Joint\Driver\BumperPnuematic.cs" />
+    <Compile Include="Nodes\Joint\Driver\DriverMeta.cs" />
+    <Compile Include="Nodes\Joint\Driver\DualMotor.cs" />
+    <Compile Include="Nodes\Joint\Driver\Elevator.cs" />
+    <Compile Include="Nodes\Joint\Driver\Motor.cs" />
+    <Compile Include="Nodes\Joint\Driver\NoDriver.cs" />
+    <Compile Include="Nodes\Joint\Driver\RelayPnuematic.cs" />
+    <Compile Include="Nodes\Joint\Driver\Servo.cs" />
+    <Compile Include="Nodes\Joint\Driver\WormScrew.cs" />
+    <Compile Include="Nodes\Joint\GopherJoint_Base.cs" />
+    <Compile Include="Nodes\Joint\Driver\GopherDriver_Base.cs" />
+    <Compile Include="Nodes\GopherNodeTree_Base.cs" />
+    <Compile Include="Nodes\Joint\LinearJoint.cs" />
+    <Compile Include="Nodes\Joint\PlanarJoint.cs" />
+    <Compile Include="Nodes\Joint\RotationalJoint.cs" />
+    <Compile Include="Other\Vec2.cs" />
     <Compile Include="Other\Vec3.cs" />
-    <Compile Include="Property\JointAttributes.cs" />
+    <Compile Include="Nodes\Colliders\ColliderMeta.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reader\FieldReader.cs" />
-    <Compile Include="Reader\RobotReader.cs" />
-    <Compile Include="Property\Attribute.cs" />
+    <Compile Include="Nodes\Joint\JointMeta.cs" />
+    <Compile Include="RawField.cs" />
+    <Compile Include="RawRobot.cs" />
+    <Compile Include="Reader\GopherReader_Base.cs" />
     <Compile Include="Reader\Section.cs" />
-    <Compile Include="Reader\STLReader.cs" />
-    <Compile Include="Robot.cs" />
+    <Compile Include="RobotNodeGenerator.cs" />
     <Compile Include="STL\Facet.cs" />
-    <Compile Include="Property\Joint.cs" />
     <Compile Include="STL\STLMesh.cs" />
     <Compile Include="Other\TransformationMatrix.cs" />
     <Compile Include="STL\STLFile.cs" />
-    <Compile Include="Wheel.cs" />
-    <Compile Include="Writer\GopherScribe.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Writer\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

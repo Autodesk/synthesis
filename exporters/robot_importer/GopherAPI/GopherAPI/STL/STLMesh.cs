@@ -6,9 +6,9 @@ using GopherAPI.Other;
 
 namespace GopherAPI.STL
 {
-    public struct STLMesh
+    public class STLMesh
     {
-        public readonly UInt32 MeshID;
+        internal readonly UInt32 MeshID;
 
         /// <summary>
         /// An array of all the facets of the mesh
@@ -59,7 +59,7 @@ namespace GopherAPI.STL
         /// Associates a mesh with a specific attribute (as of right now that just means hitboxes). 
         /// As it is not used for .robot files, the reader will always assign it to UInt32.MaxValue;
         /// </summary>
-        public readonly UInt32 AttributeID;
+        internal readonly UInt32 AttributeID;
 
         public readonly TransformationMatrix TransMat;
 

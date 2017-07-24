@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_ac22d7198c95b9eedf1d6f8c2602c255" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities</compoundname>
+    <innerfile refid="_array_utilities_8cs">ArrayUtilities.cs</innerfile>
+    <innerfile refid="_file_utilities_8cs">FileUtilities.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,423 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_field_node_group" kind="class" language="C#" prot="public">
+    <compoundname>FieldNodeGroup</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_field_node_group_1ae9d21e6b498f2410b5a3c09f9bf3a0e8" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string FieldNodeGroup.NodeGroupID</definition>
+        <argsstring></argsstring>
+        <name>NodeGroupID</name>
+        <briefdescription>
+<para>The string ID for the <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="13" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="13" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+        <referencedby refid="class_field_node_group_1ade2f0d484ad7c38ac0000d1ea7ecf405" compoundref="_field_node_group_8cs" startline="163" endline="167">AddNodeGroup</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_field_node_group_1ac8a12bc86e0797478c1eb7f6502a069b" prot="private" static="no" mutable="no">
+        <type>Dictionary&lt; string, <ref refid="class_field_node" kindref="compound">FieldNode</ref> &gt;</type>
+        <definition>Dictionary&lt;string, FieldNode&gt; FieldNodeGroup.childNodes</definition>
+        <argsstring></argsstring>
+        <name>childNodes</name>
+        <briefdescription>
+<para>A list containing each child <ref refid="class_field_node" kindref="compound">FieldNode</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="18" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_field_node_group_1aa59e81d8f5d2990fdde5daeb2b560ab1" prot="private" static="no" mutable="no">
+        <type>Dictionary&lt; string, <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref> &gt;</type>
+        <definition>Dictionary&lt;string, FieldNodeGroup&gt; FieldNodeGroup.childNodeGroups</definition>
+        <argsstring></argsstring>
+        <name>childNodeGroups</name>
+        <briefdescription>
+<para>A list containing each child <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="23" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_field_node_group_1a1d794aecafdb53386c2bbe91d3df805e" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_field_node" kindref="compound">FieldNode</ref></type>
+        <definition>FieldNode FieldNodeGroup.this[string path]</definition>
+        <argsstring></argsstring>
+        <name>this[string path]</name>
+        <briefdescription>
+<para>Used for setting or getting a <ref refid="class_field_node" kindref="compound">FieldNode</ref> from the path supplied. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="39" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="class_field_node_group_1a42da6c0e561ba92b3cd7985741a92d87" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate <ref refid="class_field_node" kindref="compound">FieldNode</ref></type>
+        <definition>delegate FieldNode FieldNodeGroup.HandleChildInfo</definition>
+        <argsstring>(string childName, string childPath, bool lastChild)</argsstring>
+        <name>HandleChildInfo</name>
+        <param>
+          <type>string</type>
+          <declname>childName</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>childPath</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>lastChild</declname>
+        </param>
+        <briefdescription>
+<para>Used for defining how a child will be processed while iterating through a node path. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>childName</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>childPath</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lastChild</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="32" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1a9813d04c6d2a8e42ed29d6cb1e7cb2f8" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_node" kindref="compound">FieldNode</ref></type>
+        <definition>FieldNode FieldNodeGroup.ProcessNextChild</definition>
+        <argsstring>(string path, HandleChildInfo Handle)</argsstring>
+        <name>ProcessNextChild</name>
+        <param>
+          <type>string</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>HandleChildInfo</type>
+          <declname>Handle</declname>
+        </param>
+        <briefdescription>
+<para>Used for processing the next child in a path string. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>Handle</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="232" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="232" bodyend="238"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_field_node_group_1ad8e8912ee75dc63292ea2b65bf5034c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>FieldNodeGroup.FieldNodeGroup</definition>
+        <argsstring>(string nodeGroupID)</argsstring>
+        <name>FieldNodeGroup</name>
+        <param>
+          <type>string</type>
+          <declname>nodeGroupID</declname>
+        </param>
+        <briefdescription>
+<para>Constructs a new instance of the <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nodeGroupID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="95" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="95" bodyend="100"/>
+        <referencedby refid="class_field_node_group_1a573db062478581073b88fff7c8f2c421" compoundref="_field_node_group_8cs" startline="146" endline="157">AddNodeGroup</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1afb8a937c5cafe84b04c29b87a5543f5e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_node" kindref="compound">FieldNode</ref></type>
+        <definition>FieldNode FieldNodeGroup.AddNode</definition>
+        <argsstring>(string nodeID, string physicsGroupID=BXDFProperties.BXDF_DEFAULT_NAME)</argsstring>
+        <name>AddNode</name>
+        <param>
+          <type>string</type>
+          <declname>nodeID</declname>
+        </param>
+        <param>
+          <type>string</type>
+          <declname>physicsGroupID</declname>
+          <defval><ref refid="class_b_x_d_f_properties_1a528bb431080585f72f9f74bd44a23932" kindref="member">BXDFProperties.BXDF_DEFAULT_NAME</ref></defval>
+        </param>
+        <briefdescription>
+<para>Adds a new node with the given ID and physicsGroupID to the childNodes Dictionary. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nodeID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="106" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="106" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1a28cf2a8b3f3bf5f98146d8ade421bdb7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void FieldNodeGroup.AddNode</definition>
+        <argsstring>(FieldNode node)</argsstring>
+        <name>AddNode</name>
+        <param>
+          <type><ref refid="class_field_node" kindref="compound">FieldNode</ref></type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Adds the given <ref refid="class_field_node" kindref="compound">FieldNode</ref> to the ChildNodes Dictionary. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="123" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="123" bodyend="127"/>
+        <references refid="class_field_node_1a7d4f3453f91c082b7d5604c6e1581425" compoundref="_field_node_8cs" startline="11">FieldNode.NodeID</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1a9eb2f827c87d034f403cbde900e2e1c7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_node" kindref="compound">FieldNode</ref></type>
+        <definition>FieldNode FieldNodeGroup.GetNode</definition>
+        <argsstring>(string nodeID)</argsstring>
+        <name>GetNode</name>
+        <param>
+          <type>string</type>
+          <declname>nodeID</declname>
+        </param>
+        <briefdescription>
+<para>Returns the child <ref refid="class_field_node" kindref="compound">FieldNode</ref> with the given nodeID. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nodeID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The <ref refid="class_field_node" kindref="compound">FieldNode</ref>.</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="134" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="134" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1a573db062478581073b88fff7c8f2c421" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref></type>
+        <definition>FieldNodeGroup FieldNodeGroup.AddNodeGroup</definition>
+        <argsstring>(string nodeGroupID)</argsstring>
+        <name>AddNodeGroup</name>
+        <param>
+          <type>string</type>
+          <declname>nodeGroupID</declname>
+        </param>
+        <briefdescription>
+<para>Adds a new <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref> with the given ID. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nodeGroupID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="146" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="146" bodyend="157"/>
+        <references refid="class_field_node_group_1ad8e8912ee75dc63292ea2b65bf5034c5" compoundref="_field_node_group_8cs" startline="95" endline="100">FieldNodeGroup</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1ade2f0d484ad7c38ac0000d1ea7ecf405" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void FieldNodeGroup.AddNodeGroup</definition>
+        <argsstring>(FieldNodeGroup nodeGroup)</argsstring>
+        <name>AddNodeGroup</name>
+        <param>
+          <type><ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref></type>
+          <declname>nodeGroup</declname>
+        </param>
+        <briefdescription>
+<para>Adds the given <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref> to the childNodeGroups Dictionary. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nodeGroup</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="163" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="163" bodyend="167"/>
+        <references refid="class_field_node_group_1ae9d21e6b498f2410b5a3c09f9bf3a0e8" compoundref="_field_node_group_8cs" startline="13">NodeGroupID</references>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1abe599247a37372fc997ad8bddb6dd6e1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref></type>
+        <definition>FieldNodeGroup FieldNodeGroup.GetNodeGroup</definition>
+        <argsstring>(string nodeGroupID)</argsstring>
+        <name>GetNodeGroup</name>
+        <param>
+          <type>string</type>
+          <declname>nodeGroupID</declname>
+        </param>
+        <briefdescription>
+<para>Returns the <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref> with the given nodeGroupID. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>nodeGroupID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref>.</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="174" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="174" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1a6ac9b5738d3f1931c01f2bd5bc4be5b5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>IEnumerable&lt; <ref refid="class_field_node" kindref="compound">FieldNode</ref> &gt;</type>
+        <definition>IEnumerable&lt;FieldNode&gt; FieldNodeGroup.EnumerateFieldNodes</definition>
+        <argsstring>()</argsstring>
+        <name>EnumerateFieldNodes</name>
+        <briefdescription>
+<para>Enumerates through all direct child FieldNodes. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="186" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="186" bodyend="192"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+        <referencedby refid="class_field_node_group_1a3451813e80e498e9614586b2480a7c1f" compoundref="_field_node_group_8cs" startline="210" endline="224">EnumerateAllLeafFieldNodes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1a63bf1917f33f192088828c1c13991e63" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>IEnumerable&lt; <ref refid="class_field_node_group" kindref="compound">FieldNodeGroup</ref> &gt;</type>
+        <definition>IEnumerable&lt;FieldNodeGroup&gt; FieldNodeGroup.EnumerateFieldNodeGroups</definition>
+        <argsstring>()</argsstring>
+        <name>EnumerateFieldNodeGroups</name>
+        <briefdescription>
+<para>Enumerates through all direct child FieldNodeGroups. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="198" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="198" bodyend="204"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+        <referencedby refid="class_field_node_group_1a3451813e80e498e9614586b2480a7c1f" compoundref="_field_node_group_8cs" startline="210" endline="224">EnumerateAllLeafFieldNodes</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_field_node_group_1a3451813e80e498e9614586b2480a7c1f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>IEnumerable&lt; <ref refid="class_field_node" kindref="compound">FieldNode</ref> &gt;</type>
+        <definition>IEnumerable&lt;FieldNode&gt; FieldNodeGroup.EnumerateAllLeafFieldNodes</definition>
+        <argsstring>()</argsstring>
+        <name>EnumerateAllLeafFieldNodes</name>
+        <briefdescription>
+<para>Enumerates through each child <ref refid="class_field_node" kindref="compound">FieldNode</ref> in all child FieldNodeGroups. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="210" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="210" bodyend="224"/>
+        <references refid="class_field_node_group_1a6ac9b5738d3f1931c01f2bd5bc4be5b5" compoundref="_field_node_group_8cs" startline="186" endline="192">EnumerateFieldNodes</references>
+        <references refid="class_field_node_group_1a63bf1917f33f192088828c1c13991e63" compoundref="_field_node_group_8cs" startline="198" endline="204">EnumerateFieldNodeGroups</references>
+        <references refid="class_field_node_group_1a3451813e80e498e9614586b2480a7c1f" compoundref="_field_node_group_8cs" startline="210" endline="224">EnumerateAllLeafFieldNodes</references>
+        <referencedby refid="class_field_node_group_1a3451813e80e498e9614586b2480a7c1f" compoundref="_field_node_group_8cs" startline="210" endline="224">EnumerateAllLeafFieldNodes</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" line="9" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/FieldNodeGroup.cs" bodystart="8" bodyend="239"/>
+    <listofallmembers>
+      <member refid="class_field_node_group_1afb8a937c5cafe84b04c29b87a5543f5e" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>AddNode</name></member>
+      <member refid="class_field_node_group_1a28cf2a8b3f3bf5f98146d8ade421bdb7" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>AddNode</name></member>
+      <member refid="class_field_node_group_1a573db062478581073b88fff7c8f2c421" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>AddNodeGroup</name></member>
+      <member refid="class_field_node_group_1ade2f0d484ad7c38ac0000d1ea7ecf405" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>AddNodeGroup</name></member>
+      <member refid="class_field_node_group_1aa59e81d8f5d2990fdde5daeb2b560ab1" prot="private" virt="non-virtual"><scope>FieldNodeGroup</scope><name>childNodeGroups</name></member>
+      <member refid="class_field_node_group_1ac8a12bc86e0797478c1eb7f6502a069b" prot="private" virt="non-virtual"><scope>FieldNodeGroup</scope><name>childNodes</name></member>
+      <member refid="class_field_node_group_1a3451813e80e498e9614586b2480a7c1f" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>EnumerateAllLeafFieldNodes</name></member>
+      <member refid="class_field_node_group_1a63bf1917f33f192088828c1c13991e63" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>EnumerateFieldNodeGroups</name></member>
+      <member refid="class_field_node_group_1a6ac9b5738d3f1931c01f2bd5bc4be5b5" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>EnumerateFieldNodes</name></member>
+      <member refid="class_field_node_group_1ad8e8912ee75dc63292ea2b65bf5034c5" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>FieldNodeGroup</name></member>
+      <member refid="class_field_node_group_1a9eb2f827c87d034f403cbde900e2e1c7" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>GetNode</name></member>
+      <member refid="class_field_node_group_1abe599247a37372fc997ad8bddb6dd6e1" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>GetNodeGroup</name></member>
+      <member refid="class_field_node_group_1a42da6c0e561ba92b3cd7985741a92d87" prot="private" virt="non-virtual"><scope>FieldNodeGroup</scope><name>HandleChildInfo</name></member>
+      <member refid="class_field_node_group_1ae9d21e6b498f2410b5a3c09f9bf3a0e8" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>NodeGroupID</name></member>
+      <member refid="class_field_node_group_1a9813d04c6d2a8e42ed29d6cb1e7cb2f8" prot="private" virt="non-virtual"><scope>FieldNodeGroup</scope><name>ProcessNextChild</name></member>
+      <member refid="class_field_node_group_1a1d794aecafdb53386c2bbe91d3df805e" prot="public" virt="non-virtual"><scope>FieldNodeGroup</scope><name>this[string path]</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

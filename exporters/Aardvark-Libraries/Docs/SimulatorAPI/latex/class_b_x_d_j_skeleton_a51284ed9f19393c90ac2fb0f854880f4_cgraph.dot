@@ -1,0 +1,17 @@
+digraph "BXDJSkeleton.WriteSkeleton"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node27 [label="BXDJSkeleton.WriteSkeleton",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node27 -> Node28 [color="midnightblue",fontsize="10",style="solid"];
+  Node28 [label="RigidNode_Base.ListAllNodes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_rigid_node___base.html#aebef38e79a3b7a54dd769db5c6ae6a40",tooltip="Gets a list of all the rigid nodes at or below this item in the tree. "];
+  Node27 -> Node29 [color="midnightblue",fontsize="10",style="solid"];
+  Node29 [label="FileUtilities.SanatizeFileName",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_file_utilities.html#af971c071c7fb49c13e5183054b92a30d",tooltip="Removes unsanitary characters from a file name and replaces them with sane ones. "];
+  Node27 -> Node30 [color="midnightblue",fontsize="10",style="solid"];
+  Node30 [label="SkeletalJoint_Base.GetJointType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#aee155cbd483cb512bf3fc0f9a8885335",tooltip="The type of this joint. "];
+  Node27 -> Node31 [color="midnightblue",fontsize="10",style="solid"];
+  Node31 [label="JointDriver.GetDriveType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html#ab63c7e975d5b4317b7c47ffb34596b78",tooltip="Gets the type of this joint driver. "];
+  Node27 -> Node32 [color="midnightblue",fontsize="10",style="solid"];
+  Node32 [label="BXDJSkeleton.WritePolynomial",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#a19a49fdfc8bc3aca9b61adde4897900c",tooltip="Used for writing a Polynomial&#39;s data. "];
+}

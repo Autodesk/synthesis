@@ -29,5 +29,9 @@ namespace GopherAPI.Other
         {
             values = new float[] { x, y, z };
         }
+
+        public float X { get => values[0]; set => values[0] = value; }
+        public float Y { get => values[1]; set => values[1] = value; }
+        public float Z { get => values[2]; set => values[2] = value; }
     }
 }

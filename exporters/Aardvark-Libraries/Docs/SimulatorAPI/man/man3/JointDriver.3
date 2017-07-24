@@ -1,0 +1,285 @@
+.TH "JointDriver" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+JointDriver \- Generic class able to represent all types of joint drivers\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBBinaryRWObject\fP, and IComparable< JointDriver >\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBJointDriver\fP ()"
+.br
+.RI "Creates as joint driver with no type\&. This is mainly for IO "
+.ti -1c
+.RI "\fBJointDriver\fP (JointDriverType type)"
+.br
+.RI "Creates a joint driver with the given type\&. "
+.ti -1c
+.RI "void \fBAddInfo\fP (\fBJointDriverMeta\fP metaDriver)"
+.br
+.RI "Adds the given joint driver metadata object to this driver, or replaces the existing metadata of the same type\&. "
+.ti -1c
+.RI "T \fBRemoveInfo< T >\fP ()"
+.br
+.RI "Removes the metadata of the given type stored in this joint driver and returns it, or null if no such metadata exists\&. "
+.ti -1c
+.RI "T \fBGetInfo< T >\fP ()"
+.br
+.RI "Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists\&. "
+.ti -1c
+.RI "\fBJointDriverMeta\fP \fBGetInfo\fP (System\&.Type type)"
+.br
+.RI "Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists\&. "
+.ti -1c
+.RI "void \fBCopyMetaInfo\fP (\fBJointDriver\fP toCopy)"
+.br
+.ti -1c
+.RI "void \fBSetPort\fP (int \fBportA\fP, int portB=\-1)"
+.br
+.RI "Sets the port(s) for this driver\&. "
+.ti -1c
+.RI "void \fBSetLimits\fP (float lower, float upper)"
+.br
+.RI "Sets the limits for this driver\&. "
+.ti -1c
+.RI "override string \fBToString\fP ()"
+.br
+.ti -1c
+.RI "JointDriverType \fBGetDriveType\fP ()"
+.br
+.RI "Gets the type of this joint driver\&. "
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (System\&.IO\&.BinaryWriter writer)"
+.br
+.RI "Writes the binary representation of this driver to the stream\&. "
+.ti -1c
+.RI "void \fBReadBinaryData\fP (System\&.IO\&.BinaryReader reader)"
+.br
+.RI "Reads the binary representation of this driver from the stream\&. "
+.ti -1c
+.RI "int \fBCompareTo\fP (\fBJointDriver\fP driver)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static JointDriverType [] \fBGetAllowedDrivers\fP (\fBSkeletalJoint_Base\fP joint)"
+.br
+.RI "Gets the possible types of joint drivers for the given skeletal joint\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "int \fBportA\fP"
+.br
+.RI "The port(s) that this joint driver uses\&. "
+.ti -1c
+.RI "bool \fBisCan\fP = false"
+.br
+.ti -1c
+.RI "float \fBlowerLimit\fP"
+.br
+.RI "The motion limits for this driver\&. For continuous rotation this is likely a force or velocity\&. For linear or limited movement it is motion limits\&. "
+.in -1c
+.SS "Properties"
+
+.in +1c
+.ti -1c
+.RI "Dictionary< System\&.Type, \fBJointDriverMeta\fP > \fBMetaInfo\fP\fC [get]\fP"
+.br
+.RI "Metadata information for this joint driver\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Generic class able to represent all types of joint drivers\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "JointDriver\&.JointDriver ()"
+
+.PP
+Creates as joint driver with no type\&. This is mainly for IO 
+.SS "JointDriver\&.JointDriver (JointDriverType type)"
+
+.PP
+Creates a joint driver with the given type\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItype\fP Driver type
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void JointDriver\&.AddInfo (\fBJointDriverMeta\fP metaDriver)"
+
+.PP
+Adds the given joint driver metadata object to this driver, or replaces the existing metadata of the same type\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fImetaDriver\fP The metadata
+.RE
+.PP
+
+.SS "static JointDriverType [] JointDriver\&.GetAllowedDrivers (\fBSkeletalJoint_Base\fP joint)\fC [static]\fP"
+
+.PP
+Gets the possible types of joint drivers for the given skeletal joint\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIjoint\fP Skeletal joint to get allowed types for
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Joint driver options
+.RE
+.PP
+
+.SS "JointDriverType JointDriver\&.GetDriveType ()"
+
+.PP
+Gets the type of this joint driver\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+Driver type
+.RE
+.PP
+
+.SS "\fBJointDriverMeta\fP JointDriver\&.GetInfo (System\&.Type type)"
+
+.PP
+Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fItype\fP The type to get info for
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Metadata, or null
+.RE
+.PP
+
+.SS "T \fBJointDriver\&.GetInfo\fP< T > ()"
+
+.PP
+Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists\&. 
+.PP
+\fBTemplate Parameters:\fP
+.RS 4
+\fIT\fP The type of the metadata
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Metadata, or null
+.RE
+.PP
+
+.PP
+\fBType Constraints\fP
+.TP
+\fIT\fP : \fI\fBJointDriverMeta\fP\fP
+.SS "void JointDriver\&.ReadBinaryData (System\&.IO\&.BinaryReader reader)"
+
+.PP
+Reads the binary representation of this driver from the stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP Input stream
+.RE
+.PP
+
+.SS "T JointDriver\&.RemoveInfo< T > ()"
+
+.PP
+Removes the metadata of the given type stored in this joint driver and returns it, or null if no such metadata exists\&. 
+.PP
+\fBTemplate Parameters:\fP
+.RS 4
+\fIT\fP The type of the metadata
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Metadata, or null
+.RE
+.PP
+
+.PP
+\fBType Constraints\fP
+.TP
+\fIT\fP : \fI\fBJointDriverMeta\fP\fP
+.SS "void JointDriver\&.SetLimits (float lower, float upper)"
+
+.PP
+Sets the limits for this driver\&. For all linear motion these represent the linear limits on that motion\&. For all limited angular motion these represent the angular limits on that motion\&. For all continuous angular motion these represent the force limits on that motion\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlower\fP Lower limit
+.br
+\fIupper\fP Upper limit
+.RE
+.PP
+
+.SS "void JointDriver\&.SetPort (int portA, int portB = \fC\-1\fP)"
+
+.PP
+Sets the port(s) for this driver\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIportA\fP First port
+.br
+\fIportB\fP Option second port
+.RE
+.PP
+
+.SS "void JointDriver\&.WriteBinaryData (System\&.IO\&.BinaryWriter writer)"
+
+.PP
+Writes the binary representation of this driver to the stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwriter\fP Output stream
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "float JointDriver\&.lowerLimit"
+
+.PP
+The motion limits for this driver\&. For continuous rotation this is likely a force or velocity\&. For linear or limited movement it is motion limits\&. 
+.SS "int JointDriver\&.portA"
+
+.PP
+The port(s) that this joint driver uses\&. 
+.SH "Property Documentation"
+.PP 
+.SS "Dictionary<System\&.Type, \fBJointDriverMeta\fP> JointDriver\&.MetaInfo\fC [get]\fP"
+
+.PP
+Metadata information for this joint driver\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

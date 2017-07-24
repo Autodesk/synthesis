@@ -1,0 +1,67 @@
+.TH "PhysicalProperties" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+PhysicalProperties
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBBinaryRWObject\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBAdd\fP (float addMass, \fBBXDVector3\fP addCOM)"
+.br
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (BinaryWriter writer)"
+.br
+.RI "Serializes this object to the given stream "
+.ti -1c
+.RI "void \fBReadBinaryData\fP (BinaryReader reader)"
+.br
+.RI "Deserializes this object from the given stream\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBBXDVector3\fP \fBcenterOfMass\fP = new \fBBXDVector3\fP()"
+.br
+.ti -1c
+.RI "float \fBmass\fP"
+.br
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "void PhysicalProperties\&.ReadBinaryData (BinaryReader reader)"
+
+.PP
+Deserializes this object from the given stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP Input stream
+.RE
+.PP
+
+.PP
+Implements \fBBinaryRWObject\fP\&.
+.SS "void PhysicalProperties\&.WriteBinaryData (BinaryWriter writer)"
+
+.PP
+Serializes this object to the given stream 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwriter\fP Output stream
+.RE
+.PP
+
+.PP
+Implements \fBBinaryRWObject\fP\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

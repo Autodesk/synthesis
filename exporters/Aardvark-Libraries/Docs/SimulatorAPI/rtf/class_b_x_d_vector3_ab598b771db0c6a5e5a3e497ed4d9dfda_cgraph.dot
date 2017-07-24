@@ -1,0 +1,9 @@
+digraph "BXDVector3.Copy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node10 [label="BXDVector3.Copy",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node10 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="BXDVector3.BXDVector3",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_vector3.html#a0e2a2ec4422390656dc569146bbceb5b",tooltip="Initializes a new instance of the BXDVector3 class. "];
+}

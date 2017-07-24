@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_planar_joint___base_1_1_angular_d_o_f___impl" kind="class" language="C#" prot="private">
+    <compoundname>PlanarJoint_Base::AngularDOF_Impl</compoundname>
+    <basecompoundref refid="interface_angular_d_o_f" prot="public" virt="non-virtual">AngularDOF</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_planar_joint___base_1_1_angular_d_o_f___impl_1a2603ea34098ffffb14180e6e985d9d91" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref></type>
+        <definition>readonly PlanarJoint_Base PlanarJoint_Base.AngularDOF_Impl.pjb</definition>
+        <argsstring></argsstring>
+        <name>pjb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_planar_joint___base_1_1_angular_d_o_f___impl_1a7e372818a8e444a9d53e76fffa66a992" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float PlanarJoint_Base.AngularDOF_Impl.currentPosition</definition>
+        <argsstring></argsstring>
+        <name>currentPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="20" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_angular_d_o_f___impl_1af9892b172287129ee108678bb75cfe05" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float PlanarJoint_Base.AngularDOF_Impl.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="28" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_angular_d_o_f___impl_1aff05c8fb140a261a74e99b7c0c361a7b" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float PlanarJoint_Base.AngularDOF_Impl.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="40" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_angular_d_o_f___impl_1a097e308071fa35338fc4d3918d86730a" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PlanarJoint_Base.AngularDOF_Impl.rotationAxis</definition>
+        <argsstring></argsstring>
+        <name>rotationAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="52" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_angular_d_o_f___impl_1a39c027e6250cc4d1201624efaf555811" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PlanarJoint_Base.AngularDOF_Impl.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="64" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_planar_joint___base_1_1_angular_d_o_f___impl_1a5f7dd0e18c5a76660b75ca5512dfd327" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PlanarJoint_Base.AngularDOF_Impl.AngularDOF_Impl</definition>
+        <argsstring>(PlanarJoint_Base pjb)</argsstring>
+        <name>AngularDOF_Impl</name>
+        <param>
+          <type><ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref></type>
+          <declname>pjb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="15" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="15" bodyend="18"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="15">
+        <label>AngularDOF</label>
+        <link refid="interface_angular_d_o_f"/>
+      </node>
+      <node id="14">
+        <label>PlanarJoint_Base.AngularDOF_Impl</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="17">
+        <label>AngularDOF</label>
+        <link refid="interface_angular_d_o_f"/>
+      </node>
+      <node id="16">
+        <label>PlanarJoint_Base.AngularDOF_Impl</label>
+        <childnode refid="17" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="13" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="12" bodyend="75"/>
+    <listofallmembers>
+      <member refid="class_planar_joint___base_1_1_angular_d_o_f___impl_1a5f7dd0e18c5a76660b75ca5512dfd327" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::AngularDOF_Impl</scope><name>AngularDOF_Impl</name></member>
+      <member refid="class_planar_joint___base_1_1_angular_d_o_f___impl_1a39c027e6250cc4d1201624efaf555811" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::AngularDOF_Impl</scope><name>basePoint</name></member>
+      <member refid="class_planar_joint___base_1_1_angular_d_o_f___impl_1a7e372818a8e444a9d53e76fffa66a992" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::AngularDOF_Impl</scope><name>currentPosition</name></member>
+      <member refid="class_planar_joint___base_1_1_angular_d_o_f___impl_1aff05c8fb140a261a74e99b7c0c361a7b" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::AngularDOF_Impl</scope><name>lowerLimit</name></member>
+      <member refid="class_planar_joint___base_1_1_angular_d_o_f___impl_1a2603ea34098ffffb14180e6e985d9d91" prot="private" virt="non-virtual"><scope>PlanarJoint_Base::AngularDOF_Impl</scope><name>pjb</name></member>
+      <member refid="class_planar_joint___base_1_1_angular_d_o_f___impl_1a097e308071fa35338fc4d3918d86730a" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::AngularDOF_Impl</scope><name>rotationAxis</name></member>
+      <member refid="class_planar_joint___base_1_1_angular_d_o_f___impl_1af9892b172287129ee108678bb75cfe05" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::AngularDOF_Impl</scope><name>upperLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

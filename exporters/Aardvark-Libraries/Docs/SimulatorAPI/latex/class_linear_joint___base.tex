@@ -1,0 +1,109 @@
+\hypertarget{class_linear_joint___base}{}\section{Linear\+Joint\+\_\+\+Base Class Reference}
+\label{class_linear_joint___base}\index{Linear\+Joint\+\_\+\+Base@{Linear\+Joint\+\_\+\+Base}}
+
+
+Inheritance diagram for Linear\+Joint\+\_\+\+Base\+:
+% FIG 0
+
+
+Collaboration diagram for Linear\+Joint\+\_\+\+Base\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override Skeletal\+Joint\+Type \hyperlink{class_linear_joint___base_aa162de1777f1daaa7ca2234fc6a913ab}{Get\+Joint\+Type} ()
+\begin{DoxyCompactList}\small\item\em The type of this joint. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_linear_joint___base_ad02d167a9450f88f621a786f20fc5a7f}\label{class_linear_joint___base_ad02d167a9450f88f621a786f20fc5a7f}} 
+void {\bfseries Enforce\+Order} ()
+\item 
+override I\+Enumerable$<$ \hyperlink{interface_angular_d_o_f}{Angular\+D\+OF} $>$ \hyperlink{class_linear_joint___base_a4f814a5b27b53d3d01ad39adbcd2b0bf}{Get\+Angular\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the angular degrees of freedom for this joint. \end{DoxyCompactList}\item 
+override I\+Enumerable$<$ \hyperlink{interface_linear_d_o_f}{Linear\+D\+OF} $>$ \hyperlink{class_linear_joint___base_ad506a9bf378650ab1d6cdedab91ed2a5}{Get\+Linear\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the linear degrees of freedom for this joint. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_linear_joint___base_af77df381d0982fc36cbc860c83a0369c}\label{class_linear_joint___base_af77df381d0982fc36cbc860c83a0369c}} 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} {\bfseries axis}
+\item 
+\mbox{\Hypertarget{class_linear_joint___base_ad47a28d207f59657b61459a159f3713e}\label{class_linear_joint___base_ad47a28d207f59657b61459a159f3713e}} 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} {\bfseries base\+Point}
+\item 
+\mbox{\Hypertarget{class_linear_joint___base_a47a73895af84d844551e4971b9cd9f2f}\label{class_linear_joint___base_a47a73895af84d844551e4971b9cd9f2f}} 
+float {\bfseries current\+Linear\+Position}
+\item 
+\mbox{\Hypertarget{class_linear_joint___base_ad31711ee82f570a735aa9f472411dc18}\label{class_linear_joint___base_ad31711ee82f570a735aa9f472411dc18}} 
+bool {\bfseries has\+Upper\+Limit}
+\item 
+\mbox{\Hypertarget{class_linear_joint___base_a196c4ea3d84b5e0c787a4668b4f7e682}\label{class_linear_joint___base_a196c4ea3d84b5e0c787a4668b4f7e682}} 
+float {\bfseries linear\+Limit\+Low}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_linear_joint___base_a132d39963128ea2f94e7c3de6065746b}\label{class_linear_joint___base_a132d39963128ea2f94e7c3de6065746b}} 
+override void {\bfseries Write\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Writer writer)
+\item 
+\mbox{\Hypertarget{class_linear_joint___base_ac2daa8ce486de04d24af7dc6cfc289d8}\label{class_linear_joint___base_ac2daa8ce486de04d24af7dc6cfc289d8}} 
+override void {\bfseries Read\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Reader reader)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_linear_joint___base_a4f814a5b27b53d3d01ad39adbcd2b0bf}\label{class_linear_joint___base_a4f814a5b27b53d3d01ad39adbcd2b0bf}} 
+\index{Linear\+Joint\+\_\+\+Base@{Linear\+Joint\+\_\+\+Base}!Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}}
+\index{Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}!Linear\+Joint\+\_\+\+Base@{Linear\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Angular\+D\+O\+F()}{GetAngularDOF()}}
+{\footnotesize\ttfamily override I\+Enumerable$<$\hyperlink{interface_angular_d_o_f}{Angular\+D\+OF}$>$ Linear\+Joint\+\_\+\+Base.\+Get\+Angular\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets all the angular degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The angular degrees of freedom
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_abf96267052733ccf001e0b092c6582f8}{Skeletal\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_linear_joint___base_aa162de1777f1daaa7ca2234fc6a913ab}\label{class_linear_joint___base_aa162de1777f1daaa7ca2234fc6a913ab}} 
+\index{Linear\+Joint\+\_\+\+Base@{Linear\+Joint\+\_\+\+Base}!Get\+Joint\+Type@{Get\+Joint\+Type}}
+\index{Get\+Joint\+Type@{Get\+Joint\+Type}!Linear\+Joint\+\_\+\+Base@{Linear\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Joint\+Type()}{GetJointType()}}
+{\footnotesize\ttfamily override Skeletal\+Joint\+Type Linear\+Joint\+\_\+\+Base.\+Get\+Joint\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+The type of this joint. 
+
+\begin{DoxyReturn}{Returns}
+The joint type
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_aee155cbd483cb512bf3fc0f9a8885335}{Skeletal\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_linear_joint___base_ad506a9bf378650ab1d6cdedab91ed2a5}\label{class_linear_joint___base_ad506a9bf378650ab1d6cdedab91ed2a5}} 
+\index{Linear\+Joint\+\_\+\+Base@{Linear\+Joint\+\_\+\+Base}!Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}}
+\index{Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}!Linear\+Joint\+\_\+\+Base@{Linear\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Linear\+D\+O\+F()}{GetLinearDOF()}}
+{\footnotesize\ttfamily override I\+Enumerable$<$\hyperlink{interface_linear_d_o_f}{Linear\+D\+OF}$>$ Linear\+Joint\+\_\+\+Base.\+Get\+Linear\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets all the linear degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The linear degrees of freedom
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_a14564d8c44dfeef8b7a10044f2392cde}{Skeletal\+Joint\+\_\+\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Joints/Linear\+Joint\+\_\+\+Base.\+cs\end{DoxyCompactItemize}

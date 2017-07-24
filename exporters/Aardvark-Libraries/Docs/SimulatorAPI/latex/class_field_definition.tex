@@ -1,0 +1,242 @@
+\hypertarget{class_field_definition}{}\section{Field\+Definition Class Reference}
+\label{class_field_definition}\index{Field\+Definition@{Field\+Definition}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+delegate \hyperlink{class_field_definition}{Field\+Definition} \hyperlink{class_field_definition_af50dfa2594c8b9ac6fcc592356c0117a}{Field\+Definition\+Factory} (Guid guid, string name=\hyperlink{class_b_x_d_f_properties_a528bb431080585f72f9f74bd44a23932}{B\+X\+D\+F\+Properties.\+B\+X\+D\+F\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+N\+A\+ME})
+\begin{DoxyCompactList}\small\item\em Used for creating new instances of a \hyperlink{class_field_definition}{Field\+Definition}. \end{DoxyCompactList}\item 
+void \hyperlink{class_field_definition_a60993e440fc55566badba6799f94310a}{Add\+Property\+Set} (\hyperlink{struct_property_set}{Property\+Set} group)
+\begin{DoxyCompactList}\small\item\em Adds a child Physics\+Group to physics\+Groups. \end{DoxyCompactList}\item 
+Dictionary$<$ string, \hyperlink{struct_property_set}{Property\+Set} $>$ \hyperlink{class_field_definition_a46ad3d304c6caad10fa8cef5ddf0fe1f}{Get\+Property\+Sets} ()
+\begin{DoxyCompactList}\small\item\em Returns a Dictionary containing each Physics\+Group. \end{DoxyCompactList}\item 
+void \hyperlink{class_field_definition_ad2d85f2d301af51825dd119f15936357}{Add\+Sub\+Mesh} (\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} sub\+Mesh)
+\begin{DoxyCompactList}\small\item\em Used for adding a submesh and creating a sub mesh ID for the given node. \end{DoxyCompactList}\item 
+void \hyperlink{class_field_definition_a23223a256c66e90bdb4cd80af64ac36a}{Add\+Collision\+Mesh} (\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} collision\+Mesh)
+\begin{DoxyCompactList}\small\item\em Used for adding a collision mesh and creating a collision mesh ID for the given node. \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} \hyperlink{class_field_definition_a5d2494daeb5679568c157d8668ca3cd6}{Get\+Sub\+Mesh} (int id)
+\begin{DoxyCompactList}\small\item\em Used for getting a submesh from the given ID. \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} \hyperlink{class_field_definition_aefa6070137fba9ec6bfb67f3b2639e68}{Get\+Collision\+Mesh} (int id)
+\begin{DoxyCompactList}\small\item\em Used for getting a collision mesh from the given ID. \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_a_mesh}{B\+X\+D\+A\+Mesh} \hyperlink{class_field_definition_a7d7ef7581f135c46488b48c79f3070fe}{Get\+Mesh\+Output} ()
+\begin{DoxyCompactList}\small\item\em Returns the mesh to be exported. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{class_field_definition_af50dfa2594c8b9ac6fcc592356c0117a}{Field\+Definition\+Factory} \hyperlink{class_field_definition_a5913096820f688bc8e6642cc8714457d}{Factory}
+\begin{DoxyCompactList}\small\item\em The default delegate for creating new \hyperlink{class_field_definition}{Field\+Definition} instances. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_field_definition_a280ce8e3246dee627de3e0c1561f897d}{Field\+Definition} (Guid guid, string name)
+\begin{DoxyCompactList}\small\item\em Initailizes a new instance of the \hyperlink{class_field_definition}{Field\+Definition} class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Guid \hyperlink{class_field_definition_aedeba7c34e3c6bc5a6a34cfd335aa75e}{G\+U\+ID}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The globally unique identifier. \end{DoxyCompactList}\item 
+\hyperlink{class_field_node_group}{Field\+Node\+Group} \hyperlink{class_field_definition_aa65595b10037eab102872bcca4934ea3}{Node\+Group}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The group containing each child node. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_field_definition_a280ce8e3246dee627de3e0c1561f897d}\label{class_field_definition_a280ce8e3246dee627de3e0c1561f897d}} 
+\index{Field\+Definition@{Field\+Definition}!Field\+Definition@{Field\+Definition}}
+\index{Field\+Definition@{Field\+Definition}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Field\+Definition()}{FieldDefinition()}}
+{\footnotesize\ttfamily Field\+Definition.\+Field\+Definition (\begin{DoxyParamCaption}\item[{Guid}]{guid,  }\item[{string}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Initailizes a new instance of the \hyperlink{class_field_definition}{Field\+Definition} class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em guid} & \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_field_definition_a23223a256c66e90bdb4cd80af64ac36a}\label{class_field_definition_a23223a256c66e90bdb4cd80af64ac36a}} 
+\index{Field\+Definition@{Field\+Definition}!Add\+Collision\+Mesh@{Add\+Collision\+Mesh}}
+\index{Add\+Collision\+Mesh@{Add\+Collision\+Mesh}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Add\+Collision\+Mesh()}{AddCollisionMesh()}}
+{\footnotesize\ttfamily void Field\+Definition.\+Add\+Collision\+Mesh (\begin{DoxyParamCaption}\item[{\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh}}]{collision\+Mesh }\end{DoxyParamCaption})}
+
+
+
+Used for adding a collision mesh and creating a collision mesh ID for the given node. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em collision\+Mesh} & \\
+\hline
+{\em node} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_field_definition_a60993e440fc55566badba6799f94310a}\label{class_field_definition_a60993e440fc55566badba6799f94310a}} 
+\index{Field\+Definition@{Field\+Definition}!Add\+Property\+Set@{Add\+Property\+Set}}
+\index{Add\+Property\+Set@{Add\+Property\+Set}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Add\+Property\+Set()}{AddPropertySet()}}
+{\footnotesize\ttfamily void Field\+Definition.\+Add\+Property\+Set (\begin{DoxyParamCaption}\item[{\hyperlink{struct_property_set}{Property\+Set}}]{group }\end{DoxyParamCaption})}
+
+
+
+Adds a child Physics\+Group to physics\+Groups. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & \\
+\hline
+{\em group} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_field_definition_ad2d85f2d301af51825dd119f15936357}\label{class_field_definition_ad2d85f2d301af51825dd119f15936357}} 
+\index{Field\+Definition@{Field\+Definition}!Add\+Sub\+Mesh@{Add\+Sub\+Mesh}}
+\index{Add\+Sub\+Mesh@{Add\+Sub\+Mesh}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Add\+Sub\+Mesh()}{AddSubMesh()}}
+{\footnotesize\ttfamily void Field\+Definition.\+Add\+Sub\+Mesh (\begin{DoxyParamCaption}\item[{\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh}}]{sub\+Mesh }\end{DoxyParamCaption})}
+
+
+
+Used for adding a submesh and creating a sub mesh ID for the given node. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em sub\+Mesh} & \\
+\hline
+{\em node} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_field_definition_af50dfa2594c8b9ac6fcc592356c0117a}\label{class_field_definition_af50dfa2594c8b9ac6fcc592356c0117a}} 
+\index{Field\+Definition@{Field\+Definition}!Field\+Definition\+Factory@{Field\+Definition\+Factory}}
+\index{Field\+Definition\+Factory@{Field\+Definition\+Factory}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Field\+Definition\+Factory()}{FieldDefinitionFactory()}}
+{\footnotesize\ttfamily delegate \hyperlink{class_field_definition}{Field\+Definition} Field\+Definition.\+Field\+Definition\+Factory (\begin{DoxyParamCaption}\item[{Guid}]{guid,  }\item[{string}]{name = {\ttfamily \hyperlink{class_b_x_d_f_properties_a528bb431080585f72f9f74bd44a23932}{B\+X\+D\+F\+Properties.\+B\+X\+D\+F\+\_\+\+D\+E\+F\+A\+U\+L\+T\+\_\+\+N\+A\+ME}} }\end{DoxyParamCaption})}
+
+
+
+Used for creating new instances of a \hyperlink{class_field_definition}{Field\+Definition}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em guid} & \\
+\hline
+{\em node\+Group\+Name} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_field_definition_aefa6070137fba9ec6bfb67f3b2639e68}\label{class_field_definition_aefa6070137fba9ec6bfb67f3b2639e68}} 
+\index{Field\+Definition@{Field\+Definition}!Get\+Collision\+Mesh@{Get\+Collision\+Mesh}}
+\index{Get\+Collision\+Mesh@{Get\+Collision\+Mesh}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Get\+Collision\+Mesh()}{GetCollisionMesh()}}
+{\footnotesize\ttfamily \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} Field\+Definition.\+Get\+Collision\+Mesh (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Used for getting a collision mesh from the given ID. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_field_definition_a7d7ef7581f135c46488b48c79f3070fe}\label{class_field_definition_a7d7ef7581f135c46488b48c79f3070fe}} 
+\index{Field\+Definition@{Field\+Definition}!Get\+Mesh\+Output@{Get\+Mesh\+Output}}
+\index{Get\+Mesh\+Output@{Get\+Mesh\+Output}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Get\+Mesh\+Output()}{GetMeshOutput()}}
+{\footnotesize\ttfamily \hyperlink{class_b_x_d_a_mesh}{B\+X\+D\+A\+Mesh} Field\+Definition.\+Get\+Mesh\+Output (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns the mesh to be exported. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_field_definition_a46ad3d304c6caad10fa8cef5ddf0fe1f}\label{class_field_definition_a46ad3d304c6caad10fa8cef5ddf0fe1f}} 
+\index{Field\+Definition@{Field\+Definition}!Get\+Property\+Sets@{Get\+Property\+Sets}}
+\index{Get\+Property\+Sets@{Get\+Property\+Sets}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Get\+Property\+Sets()}{GetPropertySets()}}
+{\footnotesize\ttfamily Dictionary$<$string, \hyperlink{struct_property_set}{Property\+Set}$>$ Field\+Definition.\+Get\+Property\+Sets (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Returns a Dictionary containing each Physics\+Group. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{class_field_definition_a5d2494daeb5679568c157d8668ca3cd6}\label{class_field_definition_a5d2494daeb5679568c157d8668ca3cd6}} 
+\index{Field\+Definition@{Field\+Definition}!Get\+Sub\+Mesh@{Get\+Sub\+Mesh}}
+\index{Get\+Sub\+Mesh@{Get\+Sub\+Mesh}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Get\+Sub\+Mesh()}{GetSubMesh()}}
+{\footnotesize\ttfamily \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} Field\+Definition.\+Get\+Sub\+Mesh (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Used for getting a submesh from the given ID. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_field_definition_a5913096820f688bc8e6642cc8714457d}\label{class_field_definition_a5913096820f688bc8e6642cc8714457d}} 
+\index{Field\+Definition@{Field\+Definition}!Factory@{Factory}}
+\index{Factory@{Factory}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Factory}{Factory}}
+{\footnotesize\ttfamily \hyperlink{class_field_definition_af50dfa2594c8b9ac6fcc592356c0117a}{Field\+Definition\+Factory} Field\+Definition.\+Factory\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= delegate(Guid guid, \textcolor{keywordtype}{string} name)
+    \{
+        \textcolor{keywordflow}{return} \textcolor{keyword}{new} \hyperlink{class_field_definition_a280ce8e3246dee627de3e0c1561f897d}{FieldDefinition}(guid, name);
+    \}
+\end{DoxyCode}
+
+
+The default delegate for creating new \hyperlink{class_field_definition}{Field\+Definition} instances. 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_field_definition_aedeba7c34e3c6bc5a6a34cfd335aa75e}\label{class_field_definition_aedeba7c34e3c6bc5a6a34cfd335aa75e}} 
+\index{Field\+Definition@{Field\+Definition}!G\+U\+ID@{G\+U\+ID}}
+\index{G\+U\+ID@{G\+U\+ID}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{G\+U\+ID}{GUID}}
+{\footnotesize\ttfamily Guid Field\+Definition.\+G\+U\+ID\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The globally unique identifier. 
+
+\mbox{\Hypertarget{class_field_definition_aa65595b10037eab102872bcca4934ea3}\label{class_field_definition_aa65595b10037eab102872bcca4934ea3}} 
+\index{Field\+Definition@{Field\+Definition}!Node\+Group@{Node\+Group}}
+\index{Node\+Group@{Node\+Group}!Field\+Definition@{Field\+Definition}}
+\subsubsection{\texorpdfstring{Node\+Group}{NodeGroup}}
+{\footnotesize\ttfamily \hyperlink{class_field_node_group}{Field\+Node\+Group} Field\+Definition.\+Node\+Group\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The group containing each child node. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Model\+Tree/Field\+Definition.\+cs\end{DoxyCompactItemize}

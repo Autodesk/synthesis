@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl" kind="class" language="C#" prot="private">
+    <compoundname>CylindricalJoint_Base::LinearDOF_Impl</compoundname>
+    <basecompoundref refid="interface_linear_d_o_f" prot="public" virt="non-virtual">LinearDOF</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a2f29ce1ef475fe2fd9b51da23a2c1b81" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="class_cylindrical_joint___base" kindref="compound">CylindricalJoint_Base</ref></type>
+        <definition>readonly CylindricalJoint_Base CylindricalJoint_Base.LinearDOF_Impl.cjb</definition>
+        <argsstring></argsstring>
+        <name>cjb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a2622388d61f27f04e33a7270884faae3" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.LinearDOF_Impl.currentPosition</definition>
+        <argsstring></argsstring>
+        <name>currentPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="17" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a29bc44210e87358bb39414678934c4d6" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.LinearDOF_Impl.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="25" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a877dbcf0723c1af88f4271374d5a616f" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.LinearDOF_Impl.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="39" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1ad3ccbc8e9d7f80f8ac863a16480df11d" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 CylindricalJoint_Base.LinearDOF_Impl.translationalAxis</definition>
+        <argsstring></argsstring>
+        <name>translationalAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="53" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1aebfd5e957f09fb37c36d841767021769" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 CylindricalJoint_Base.LinearDOF_Impl.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="65" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1acf7a5e07bce352636bc3b15c6ad9ec4e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>CylindricalJoint_Base.LinearDOF_Impl.LinearDOF_Impl</definition>
+        <argsstring>(CylindricalJoint_Base cjb)</argsstring>
+        <name>LinearDOF_Impl</name>
+        <param>
+          <type><ref refid="class_cylindrical_joint___base" kindref="compound">CylindricalJoint_Base</ref></type>
+          <declname>cjb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="12" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="12" bodyend="15"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="111">
+        <label>LinearDOF</label>
+        <link refid="interface_linear_d_o_f"/>
+      </node>
+      <node id="110">
+        <label>CylindricalJoint_Base.LinearDOF_Impl</label>
+        <childnode refid="111" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="113">
+        <label>LinearDOF</label>
+        <link refid="interface_linear_d_o_f"/>
+      </node>
+      <node id="112">
+        <label>CylindricalJoint_Base.LinearDOF_Impl</label>
+        <childnode refid="113" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="9" bodyend="76"/>
+    <listofallmembers>
+      <member refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1aebfd5e957f09fb37c36d841767021769" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base::LinearDOF_Impl</scope><name>basePoint</name></member>
+      <member refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a2f29ce1ef475fe2fd9b51da23a2c1b81" prot="private" virt="non-virtual"><scope>CylindricalJoint_Base::LinearDOF_Impl</scope><name>cjb</name></member>
+      <member refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a2622388d61f27f04e33a7270884faae3" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base::LinearDOF_Impl</scope><name>currentPosition</name></member>
+      <member refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1acf7a5e07bce352636bc3b15c6ad9ec4e" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base::LinearDOF_Impl</scope><name>LinearDOF_Impl</name></member>
+      <member refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a877dbcf0723c1af88f4271374d5a616f" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base::LinearDOF_Impl</scope><name>lowerLimit</name></member>
+      <member refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1ad3ccbc8e9d7f80f8ac863a16480df11d" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base::LinearDOF_Impl</scope><name>translationalAxis</name></member>
+      <member refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl_1a29bc44210e87358bb39414678934c4d6" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base::LinearDOF_Impl</scope><name>upperLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

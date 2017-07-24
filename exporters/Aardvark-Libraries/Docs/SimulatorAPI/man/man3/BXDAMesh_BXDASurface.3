@@ -1,0 +1,91 @@
+.TH "BXDAMesh.BXDASurface" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BXDAMesh.BXDASurface \- Index data representing a face with color, transparency, translucency, and specular  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBWriteData\fP (BinaryWriter writer)"
+.br
+.ti -1c
+.RI "void \fBReadData_v0\fP (BinaryReader reader)"
+.br
+.RI "Reads \fBBXDASurface\fP data of v0\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "bool \fBhasColor\fP = false"
+.br
+.ti -1c
+.RI "uint \fBcolor\fP = 0xFFFFFFFF"
+.br
+.RI "The color of the material packed as an unsigned integer "
+.ti -1c
+.RI "float \fBtransparency\fP"
+.br
+.RI "The transparency of the material\&. [0-1] "
+.ti -1c
+.RI "float \fBtranslucency\fP"
+.br
+.RI "The translucency of the material\&. [0-1] "
+.ti -1c
+.RI "float \fBspecular\fP = 0"
+.br
+.RI "The specular intensity of the material\&. [0-1] "
+.ti -1c
+.RI "int [] \fBindicies\fP"
+.br
+.RI "The zero based index buffer for this specific surface of the mesh\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Index data representing a face with color, transparency, translucency, and specular 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "void BXDAMesh\&.BXDASurface\&.ReadData_v0 (BinaryReader reader)"
+
+.PP
+Reads \fBBXDASurface\fP data of v0\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "uint BXDAMesh\&.BXDASurface\&.color = 0xFFFFFFFF"
+
+.PP
+The color of the material packed as an unsigned integer 
+.SS "int [] BXDAMesh\&.BXDASurface\&.indicies"
+
+.PP
+The zero based index buffer for this specific surface of the mesh\&. 
+.SS "float BXDAMesh\&.BXDASurface\&.specular = 0"
+
+.PP
+The specular intensity of the material\&. [0-1] 
+.SS "float BXDAMesh\&.BXDASurface\&.translucency"
+
+.PP
+The translucency of the material\&. [0-1] 
+.SS "float BXDAMesh\&.BXDASurface\&.transparency"
+
+.PP
+The transparency of the material\&. [0-1] 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

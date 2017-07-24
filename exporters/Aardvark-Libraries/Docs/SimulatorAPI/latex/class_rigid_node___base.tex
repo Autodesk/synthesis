@@ -1,0 +1,276 @@
+\hypertarget{class_rigid_node___base}{}\section{Rigid\+Node\+\_\+\+Base Class Reference}
+\label{class_rigid_node___base}\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+
+
+Represents a node inside the hierarchy representing how a robot moves.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+delegate \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} \hyperlink{class_rigid_node___base_ae13cbb7e730cd0e19c77efa84edbceca}{Rigid\+Node\+Factory} (Guid guid)
+\begin{DoxyCompactList}\small\item\em Generic delegate for creating rigid node instances \end{DoxyCompactList}\item 
+\hyperlink{class_rigid_node___base_ad717bbf1b9a1b28d24dbdf7242cf4a1b}{Rigid\+Node\+\_\+\+Base} (Guid guid)
+\begin{DoxyCompactList}\small\item\em Initializes a new instance of the \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} class. \end{DoxyCompactList}\item 
+void \hyperlink{class_rigid_node___base_a287e7e27c6fc9d2b104e6f2578e96af8}{Add\+Child} (\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} joint, \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} child)
+\begin{DoxyCompactList}\small\item\em Adds the given node as a child of this node. \end{DoxyCompactList}\item 
+\hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} \hyperlink{class_rigid_node___base_a8889037fe9b28dbebcdcf670899406b4}{Get\+Parent} ()
+\begin{DoxyCompactList}\small\item\em Gets the parent node for this node. \end{DoxyCompactList}\item 
+\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} \hyperlink{class_rigid_node___base_a6f26d5cf2ff78a2066913e81df473abf}{Get\+Skeletal\+Joint} ()
+\begin{DoxyCompactList}\small\item\em Gets the skeletal joint connecting this node to its parent. \end{DoxyCompactList}\item 
+virtual object \hyperlink{class_rigid_node___base_a68abee405ea4eb8185ec902791e085eb}{Get\+Model} ()
+\begin{DoxyCompactList}\small\item\em Gets the actual object visually representing this rigid node if such an item exists. \end{DoxyCompactList}\item 
+virtual string \hyperlink{class_rigid_node___base_a98a362b9ae0cf05e4c1f9db70bcf89c5}{Get\+Model\+ID} ()
+\begin{DoxyCompactList}\small\item\em Gets a very verbose identifier that represents the element this node is in the overall structure. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_rigid_node___base_afed92596ab670fc6cbbb67cb533cd180}\label{class_rigid_node___base_afed92596ab670fc6cbbb67cb533cd180}} 
+override string {\bfseries To\+String} ()
+\item 
+List$<$ \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} $>$ \hyperlink{class_rigid_node___base_aebef38e79a3b7a54dd769db5c6ae6a40}{List\+All\+Nodes} ()
+\begin{DoxyCompactList}\small\item\em Gets a list of all the rigid nodes at or below this item in the tree. \end{DoxyCompactList}\item 
+void \hyperlink{class_rigid_node___base_aef149d0976f10b042ee989c9854b441f}{List\+All\+Nodes} (List$<$ \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} $>$ list)
+\begin{DoxyCompactList}\small\item\em Gets a list of all the rigid nodes at or below this item in the tree. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+string \hyperlink{class_rigid_node___base_aeb0303b14b3ec98d88a667fe7b61faf5}{Model\+File\+Name}
+\begin{DoxyCompactList}\small\item\em The name of the file holding this node\textquotesingle{}s model. \end{DoxyCompactList}\item 
+string \hyperlink{class_rigid_node___base_a90a113d4a7ce35fb515ec7348f48c574}{Model\+Full\+ID}
+\begin{DoxyCompactList}\small\item\em A very verbose identifier that represents the element this node is in the overall structure. \end{DoxyCompactList}\item 
+Dictionary$<$ \hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base}, \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} $>$ \hyperlink{class_rigid_node___base_a16a5bf5e9b0b985e723da889daa1128d}{Children} = new Dictionary$<$\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base}, \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base}$>$()
+\begin{DoxyCompactList}\small\item\em A mapping between each child node of this node and the joint connection between the two. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{class_rigid_node___base_ae13cbb7e730cd0e19c77efa84edbceca}{Rigid\+Node\+Factory} \hyperlink{class_rigid_node___base_a3852bedd7b03e4ca9023dbc82bfc911c}{N\+O\+D\+E\+\_\+\+F\+A\+C\+T\+O\+RY}
+\begin{DoxyCompactList}\small\item\em By setting this to a custom value skeletons that are read using \hyperlink{class_b_x_d_j_skeleton_aeacead12f7e921a9c77a588773901798}{B\+X\+D\+J\+Skeleton.\+Read\+Binary\+Skeleton(string)} can be composed of a custom rigid node type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{class_rigid_node___base_a762f5fd81893ce03a8c9f28038f7acbe}{level}
+\begin{DoxyCompactList}\small\item\em How far down in the hierarchy this element is. The higher it is the farther from the root node. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Guid \hyperlink{class_rigid_node___base_aa4562673f4d55888f3dfa594b62bf7d1}{G\+U\+ID}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The globally unique identifier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a node inside the hierarchy representing how a robot moves. 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_rigid_node___base_ad717bbf1b9a1b28d24dbdf7242cf4a1b}\label{class_rigid_node___base_ad717bbf1b9a1b28d24dbdf7242cf4a1b}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Rigid\+Node\+\_\+\+Base()}{RigidNode\_Base()}}
+{\footnotesize\ttfamily Rigid\+Node\+\_\+\+Base.\+Rigid\+Node\+\_\+\+Base (\begin{DoxyParamCaption}\item[{Guid}]{guid }\end{DoxyParamCaption})}
+
+
+
+Initializes a new instance of the \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em guid} & \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_rigid_node___base_a287e7e27c6fc9d2b104e6f2578e96af8}\label{class_rigid_node___base_a287e7e27c6fc9d2b104e6f2578e96af8}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Add\+Child@{Add\+Child}}
+\index{Add\+Child@{Add\+Child}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Add\+Child()}{AddChild()}}
+{\footnotesize\ttfamily void Rigid\+Node\+\_\+\+Base.\+Add\+Child (\begin{DoxyParamCaption}\item[{\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base}}]{joint,  }\item[{\hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base}}]{child }\end{DoxyParamCaption})}
+
+
+
+Adds the given node as a child of this node. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em joint} & The joint connecting this node to the child\\
+\hline
+{\em child} & The child node\\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 0
+\mbox{\Hypertarget{class_rigid_node___base_a68abee405ea4eb8185ec902791e085eb}\label{class_rigid_node___base_a68abee405ea4eb8185ec902791e085eb}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Get\+Model@{Get\+Model}}
+\index{Get\+Model@{Get\+Model}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Model()}{GetModel()}}
+{\footnotesize\ttfamily virtual object Rigid\+Node\+\_\+\+Base.\+Get\+Model (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets the actual object visually representing this rigid node if such an item exists. 
+
+\begin{DoxyReturn}{Returns}
+The representation, or null
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_rigid_node___base_a98a362b9ae0cf05e4c1f9db70bcf89c5}\label{class_rigid_node___base_a98a362b9ae0cf05e4c1f9db70bcf89c5}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Get\+Model\+ID@{Get\+Model\+ID}}
+\index{Get\+Model\+ID@{Get\+Model\+ID}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Model\+I\+D()}{GetModelID()}}
+{\footnotesize\ttfamily virtual string Rigid\+Node\+\_\+\+Base.\+Get\+Model\+ID (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets a very verbose identifier that represents the element this node is in the overall structure. 
+
+\begin{DoxyReturn}{Returns}
+The model identifier
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{class_rigid_node___base_a8889037fe9b28dbebcdcf670899406b4}\label{class_rigid_node___base_a8889037fe9b28dbebcdcf670899406b4}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Get\+Parent@{Get\+Parent}}
+\index{Get\+Parent@{Get\+Parent}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Parent()}{GetParent()}}
+{\footnotesize\ttfamily \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} Rigid\+Node\+\_\+\+Base.\+Get\+Parent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the parent node for this node. 
+
+\begin{DoxyReturn}{Returns}
+The parent node, or null if this node is a root node
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_rigid_node___base_a6f26d5cf2ff78a2066913e81df473abf}\label{class_rigid_node___base_a6f26d5cf2ff78a2066913e81df473abf}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Get\+Skeletal\+Joint@{Get\+Skeletal\+Joint}}
+\index{Get\+Skeletal\+Joint@{Get\+Skeletal\+Joint}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Skeletal\+Joint()}{GetSkeletalJoint()}}
+{\footnotesize\ttfamily \hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} Rigid\+Node\+\_\+\+Base.\+Get\+Skeletal\+Joint (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the skeletal joint connecting this node to its parent. 
+
+This should always be non-\/null when the current node isn\textquotesingle{}t a root node. 
+
+\begin{DoxyReturn}{Returns}
+The joint connection, or null if no connection exists.
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{class_rigid_node___base_aebef38e79a3b7a54dd769db5c6ae6a40}\label{class_rigid_node___base_aebef38e79a3b7a54dd769db5c6ae6a40}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!List\+All\+Nodes@{List\+All\+Nodes}}
+\index{List\+All\+Nodes@{List\+All\+Nodes}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{List\+All\+Nodes()}{ListAllNodes()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily List$<$\hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base}$>$ Rigid\+Node\+\_\+\+Base.\+List\+All\+Nodes (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets a list of all the rigid nodes at or below this item in the tree. 
+
+\begin{DoxyReturn}{Returns}
+The list of nodes
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{class_rigid_node___base_aef149d0976f10b042ee989c9854b441f}\label{class_rigid_node___base_aef149d0976f10b042ee989c9854b441f}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!List\+All\+Nodes@{List\+All\+Nodes}}
+\index{List\+All\+Nodes@{List\+All\+Nodes}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{List\+All\+Nodes()}{ListAllNodes()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Rigid\+Node\+\_\+\+Base.\+List\+All\+Nodes (\begin{DoxyParamCaption}\item[{List$<$ \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} $>$}]{list }\end{DoxyParamCaption})}
+
+
+
+Gets a list of all the rigid nodes at or below this item in the tree. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em list} & The list to write the nodes to\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_rigid_node___base_ae13cbb7e730cd0e19c77efa84edbceca}\label{class_rigid_node___base_ae13cbb7e730cd0e19c77efa84edbceca}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Rigid\+Node\+Factory@{Rigid\+Node\+Factory}}
+\index{Rigid\+Node\+Factory@{Rigid\+Node\+Factory}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Rigid\+Node\+Factory()}{RigidNodeFactory()}}
+{\footnotesize\ttfamily delegate \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base} Rigid\+Node\+\_\+\+Base.\+Rigid\+Node\+Factory (\begin{DoxyParamCaption}\item[{Guid}]{guid }\end{DoxyParamCaption})}
+
+
+
+Generic delegate for creating rigid node instances 
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_rigid_node___base_a16a5bf5e9b0b985e723da889daa1128d}\label{class_rigid_node___base_a16a5bf5e9b0b985e723da889daa1128d}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Children@{Children}}
+\index{Children@{Children}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Children}{Children}}
+{\footnotesize\ttfamily Dictionary$<$\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base}, \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base}$>$ Rigid\+Node\+\_\+\+Base.\+Children = new Dictionary$<$\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base}, \hyperlink{class_rigid_node___base}{Rigid\+Node\+\_\+\+Base}$>$()}
+
+
+
+A mapping between each child node of this node and the joint connection between the two. 
+
+\mbox{\Hypertarget{class_rigid_node___base_a762f5fd81893ce03a8c9f28038f7acbe}\label{class_rigid_node___base_a762f5fd81893ce03a8c9f28038f7acbe}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!level@{level}}
+\index{level@{level}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{level}{level}}
+{\footnotesize\ttfamily int Rigid\+Node\+\_\+\+Base.\+level\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+How far down in the hierarchy this element is. The higher it is the farther from the root node. 
+
+\mbox{\Hypertarget{class_rigid_node___base_aeb0303b14b3ec98d88a667fe7b61faf5}\label{class_rigid_node___base_aeb0303b14b3ec98d88a667fe7b61faf5}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Model\+File\+Name@{Model\+File\+Name}}
+\index{Model\+File\+Name@{Model\+File\+Name}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Model\+File\+Name}{ModelFileName}}
+{\footnotesize\ttfamily string Rigid\+Node\+\_\+\+Base.\+Model\+File\+Name}
+
+
+
+The name of the file holding this node\textquotesingle{}s model. 
+
+\mbox{\Hypertarget{class_rigid_node___base_a90a113d4a7ce35fb515ec7348f48c574}\label{class_rigid_node___base_a90a113d4a7ce35fb515ec7348f48c574}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!Model\+Full\+ID@{Model\+Full\+ID}}
+\index{Model\+Full\+ID@{Model\+Full\+ID}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Model\+Full\+ID}{ModelFullID}}
+{\footnotesize\ttfamily string Rigid\+Node\+\_\+\+Base.\+Model\+Full\+ID}
+
+
+
+A very verbose identifier that represents the element this node is in the overall structure. 
+
+\mbox{\Hypertarget{class_rigid_node___base_a3852bedd7b03e4ca9023dbc82bfc911c}\label{class_rigid_node___base_a3852bedd7b03e4ca9023dbc82bfc911c}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!N\+O\+D\+E\+\_\+\+F\+A\+C\+T\+O\+RY@{N\+O\+D\+E\+\_\+\+F\+A\+C\+T\+O\+RY}}
+\index{N\+O\+D\+E\+\_\+\+F\+A\+C\+T\+O\+RY@{N\+O\+D\+E\+\_\+\+F\+A\+C\+T\+O\+RY}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{N\+O\+D\+E\+\_\+\+F\+A\+C\+T\+O\+RY}{NODE\_FACTORY}}
+{\footnotesize\ttfamily \hyperlink{class_rigid_node___base_ae13cbb7e730cd0e19c77efa84edbceca}{Rigid\+Node\+Factory} Rigid\+Node\+\_\+\+Base.\+N\+O\+D\+E\+\_\+\+F\+A\+C\+T\+O\+RY\hspace{0.3cm}{\ttfamily [static]}}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= delegate(Guid guid)
+    \{
+        \textcolor{keywordflow}{return} \textcolor{keyword}{new} \hyperlink{class_rigid_node___base_ad717bbf1b9a1b28d24dbdf7242cf4a1b}{RigidNode\_Base}(guid);
+    \}
+\end{DoxyCode}
+
+
+By setting this to a custom value skeletons that are read using \hyperlink{class_b_x_d_j_skeleton_aeacead12f7e921a9c77a588773901798}{B\+X\+D\+J\+Skeleton.\+Read\+Binary\+Skeleton(string)} can be composed of a custom rigid node type. 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_rigid_node___base_aa4562673f4d55888f3dfa594b62bf7d1}\label{class_rigid_node___base_aa4562673f4d55888f3dfa594b62bf7d1}} 
+\index{Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}!G\+U\+ID@{G\+U\+ID}}
+\index{G\+U\+ID@{G\+U\+ID}!Rigid\+Node\+\_\+\+Base@{Rigid\+Node\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{G\+U\+ID}{GUID}}
+{\footnotesize\ttfamily Guid Rigid\+Node\+\_\+\+Base.\+G\+U\+ID\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The globally unique identifier. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Model\+Tree/Rigid\+Node\+\_\+\+Base.\+cs\end{DoxyCompactItemize}

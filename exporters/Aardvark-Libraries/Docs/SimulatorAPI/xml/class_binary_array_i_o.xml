@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_binary_array_i_o" kind="class" language="C#" prot="public">
+    <compoundname>BinaryArrayIO</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_binary_array_i_o_1a2d644797cf0424299f551252cd4a9f2c" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BinaryArrayIO.WriteArray&lt; T &gt;</definition>
+        <argsstring>(this BinaryWriter writer, T[] arr, int off=0, int len=-1)</argsstring>
+        <name>WriteArray&lt; T &gt;</name>
+        <param>
+          <type>this BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <param>
+          <type>T []</type>
+          <declname>arr</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>off</declname>
+          <defval>0</defval>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>len</declname>
+          <defval>-1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryArrayIO.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryArrayIO.cs" bodystart="11" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="class_binary_array_i_o_1a69a383a1ee633d4eed7553e85b50cd50" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>T []</type>
+        <definition>static T [] BinaryArrayIO.ReadArray&lt; T &gt;</definition>
+        <argsstring>(this BinaryReader reader, BinaryRWObjectExtensions.ReadObjectFully readInternal=null)</argsstring>
+        <name>ReadArray&lt; T &gt;</name>
+        <param>
+          <type>this BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>BinaryRWObjectExtensions.ReadObjectFully</type>
+          <declname>readInternal</declname>
+          <defval>null</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryArrayIO.cs" line="47" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryArrayIO.cs" bodystart="47" bodyend="104"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryArrayIO.cs" line="9" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryArrayIO.cs" bodystart="8" bodyend="106"/>
+    <listofallmembers>
+      <member refid="class_binary_array_i_o_1a69a383a1ee633d4eed7553e85b50cd50" prot="public" virt="non-virtual"><scope>BinaryArrayIO</scope><name>ReadArray&lt; T &gt;</name></member>
+      <member refid="class_binary_array_i_o_1a2d644797cf0424299f551252cd4a9f2c" prot="public" virt="non-virtual"><scope>BinaryArrayIO</scope><name>WriteArray&lt; T &gt;</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

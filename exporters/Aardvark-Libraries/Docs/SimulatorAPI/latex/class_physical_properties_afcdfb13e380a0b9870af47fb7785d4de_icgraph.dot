@@ -1,0 +1,9 @@
+digraph "PhysicalProperties.WriteBinaryData"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node3 [label="PhysicalProperties.Write\lBinaryData",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node4 [label="BXDAMesh.WriteBinaryData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_a_mesh.html#a5ee3b3956597c24da796eb6242bb9940",tooltip="Writes all mesh data with the given BinaryWriter. "];
+}

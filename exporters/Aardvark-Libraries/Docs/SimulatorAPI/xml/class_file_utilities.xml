@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_file_utilities" kind="class" language="C#" prot="public">
+    <compoundname>FileUtilities</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_file_utilities_1af971c071c7fb49c13e5183054b92a30d" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>static string FileUtilities.SanatizeFileName</definition>
+        <argsstring>(string fileName, char sanity=&apos;_&apos;)</argsstring>
+        <name>SanatizeFileName</name>
+        <param>
+          <type>string</type>
+          <declname>fileName</declname>
+        </param>
+        <param>
+          <type>char</type>
+          <declname>sanity</declname>
+          <defval>&apos;_&apos;</defval>
+        </param>
+        <briefdescription>
+<para>Removes unsanitary characters from a file name and replaces them with sane ones. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>fileName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The filename</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>sanity</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The optional character to replace with</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The sane filename</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/FileUtilities.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/FileUtilities.cs" bodystart="10" bodyend="17"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/FileUtilities.cs" line="3" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Utilities/FileUtilities.cs" bodystart="2" bodyend="18"/>
+    <listofallmembers>
+      <member refid="class_file_utilities_1af971c071c7fb49c13e5183054b92a30d" prot="public" virt="non-virtual"><scope>FileUtilities</scope><name>SanatizeFileName</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

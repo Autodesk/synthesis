@@ -1,0 +1,13 @@
+digraph "BXDFProperties.WriteProperties"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node4 [label="BXDFProperties.WriteProperties",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node4 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="FieldDefinition.GetPropertySets",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_field_definition.html#a46ad3d304c6caad10fa8cef5ddf0fe1f",tooltip="Returns a Dictionary containing each PhysicsGroup. "];
+  Node4 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="FieldNodeGroup.Enumerate\lFieldNodes",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_field_node_group.html#a6ac9b5738d3f1931c01f2bd5bc4be5b5",tooltip="Enumerates through all direct child FieldNodes. "];
+  Node4 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="FieldNodeGroup.Enumerate\lFieldNodeGroups",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_field_node_group.html#a63bf1917f33f192088828c1c13991e63",tooltip="Enumerates through all direct child FieldNodeGroups. "];
+}

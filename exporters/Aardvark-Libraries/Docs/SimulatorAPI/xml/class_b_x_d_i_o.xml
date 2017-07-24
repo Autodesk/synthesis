@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_i_o" kind="class" language="C#" prot="public">
+    <compoundname>BXDIO</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_b_x_d_i_o_1a3345532f82bd3ecce237a33039a2f41e" prot="public" static="no" mutable="no">
+        <type>const byte</type>
+        <definition>const byte BXDIO.MAJOR_VERSION</definition>
+        <argsstring></argsstring>
+        <name>MAJOR_VERSION</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="11" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_i_o_1a56ad4c2b1e70f74ed8454d04edb9010b" prot="public" static="no" mutable="no">
+        <type>const byte</type>
+        <definition>const byte BXDIO.MINOR_VERSION</definition>
+        <argsstring></argsstring>
+        <name>MINOR_VERSION</name>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="12" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_i_o_1ad9c3c2e321a6f394b6851cb4734720c1" prot="public" static="no" mutable="no">
+        <type>const byte</type>
+        <definition>const byte BXDIO.REVISION_VERSION</definition>
+        <argsstring></argsstring>
+        <name>REVISION_VERSION</name>
+        <initializer>= 3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="13" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="13" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_i_o_1a001b81b7743e33fc2533d55959afe0f6" prot="public" static="no" mutable="no">
+        <type>const byte</type>
+        <definition>const byte BXDIO.REVISION_PORTION</definition>
+        <argsstring></argsstring>
+        <name>REVISION_PORTION</name>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_i_o_1a2ca0ee9e65acbf80101a960b75d36310" prot="public" static="no" mutable="no">
+        <type>const string</type>
+        <definition>const string BXDIO.ASSEMBLY_VERSION</definition>
+        <argsstring></argsstring>
+        <name>ASSEMBLY_VERSION</name>
+        <initializer>= &quot;0.3.3.1&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="16" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_i_o_1a5ab1de22d4eecd8734b698648875e972" prot="public" static="no" mutable="no">
+        <type>const uint</type>
+        <definition>const uint BXDIO.FORMAT_VERSION</definition>
+        <argsstring></argsstring>
+        <name>FORMAT_VERSION</name>
+        <initializer>= (MAJOR_VERSION &lt;&lt; 24) | (MINOR_VERSION &lt;&lt; 16) | (REVISION_VERSION &lt;&lt; 8) | REVISION_PORTION</initializer>
+        <briefdescription>
+<para>The version of the file format this file can read and write. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="23" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_b_x_d_i_o_1ace978077206667e2e20c5581a83222e2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate void</type>
+        <definition>delegate void BXDIO.ProgressReporter</definition>
+        <argsstring>(long progress, long total)</argsstring>
+        <name>ProgressReporter</name>
+        <param>
+          <type>long</type>
+          <declname>progress</declname>
+        </param>
+        <param>
+          <type>long</type>
+          <declname>total</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="18" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_b_x_d_i_o_1acb44b034d14e68cf66c3bcd4b0eb0fc0" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>static string BXDIO.VersionToString</definition>
+        <argsstring>(uint version)</argsstring>
+        <name>VersionToString</name>
+        <param>
+          <type>uint</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Converts the given version ID number to decimal notation. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Version ID</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Decimal notation of the version ID</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="30" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="30" bodyend="33"/>
+        <referencedby refid="class_b_x_d_i_o_1ae7803ce0f645dd421430706f86b35ebf" compoundref="_b_x_d_i_o_8cs" startline="39" endline="50">CheckReadVersion</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_i_o_1ae7803ce0f645dd421430706f86b35ebf" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void BXDIO.CheckReadVersion</definition>
+        <argsstring>(uint version)</argsstring>
+        <name>CheckReadVersion</name>
+        <param>
+          <type>uint</type>
+          <declname>version</declname>
+        </param>
+        <briefdescription>
+<para>Talks about compatibility. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>version</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The version to compare with</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="39" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="39" bodyend="50"/>
+        <references refid="class_b_x_d_i_o_1acb44b034d14e68cf66c3bcd4b0eb0fc0" compoundref="_b_x_d_i_o_8cs" startline="30" endline="33">VersionToString</references>
+        <referencedby refid="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" compoundref="_b_x_d_j_skeleton_8cs" startline="438" endline="501">BXDJSkeleton.ReadBinarySkeleton</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="class_b_x_d_i_o_1aeb7c4804f5a49cc2ec094b4e83000fe7" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDIO.BXDIO</definition>
+        <argsstring>()</argsstring>
+        <name>BXDIO</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="53" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="53" bodyend="55"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Utility functions for file I/O </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDIO.cs" bodystart="9" bodyend="56"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_i_o_1a2ca0ee9e65acbf80101a960b75d36310" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>ASSEMBLY_VERSION</name></member>
+      <member refid="class_b_x_d_i_o_1aeb7c4804f5a49cc2ec094b4e83000fe7" prot="private" virt="non-virtual"><scope>BXDIO</scope><name>BXDIO</name></member>
+      <member refid="class_b_x_d_i_o_1ae7803ce0f645dd421430706f86b35ebf" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>CheckReadVersion</name></member>
+      <member refid="class_b_x_d_i_o_1a5ab1de22d4eecd8734b698648875e972" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>FORMAT_VERSION</name></member>
+      <member refid="class_b_x_d_i_o_1a3345532f82bd3ecce237a33039a2f41e" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>MAJOR_VERSION</name></member>
+      <member refid="class_b_x_d_i_o_1a56ad4c2b1e70f74ed8454d04edb9010b" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>MINOR_VERSION</name></member>
+      <member refid="class_b_x_d_i_o_1ace978077206667e2e20c5581a83222e2" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>ProgressReporter</name></member>
+      <member refid="class_b_x_d_i_o_1a001b81b7743e33fc2533d55959afe0f6" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>REVISION_PORTION</name></member>
+      <member refid="class_b_x_d_i_o_1ad9c3c2e321a6f394b6851cb4734720c1" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>REVISION_VERSION</name></member>
+      <member refid="class_b_x_d_i_o_1acb44b034d14e68cf66c3bcd4b0eb0fc0" prot="public" virt="non-virtual"><scope>BXDIO</scope><name>VersionToString</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

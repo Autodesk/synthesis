@@ -1,0 +1,134 @@
+\hypertarget{class_cylindrical_joint___base}{}\section{Cylindrical\+Joint\+\_\+\+Base Class Reference}
+\label{class_cylindrical_joint___base}\index{Cylindrical\+Joint\+\_\+\+Base@{Cylindrical\+Joint\+\_\+\+Base}}
+
+
+Contains D\+OF information for a cylindrical joint. (1 angular and 1 linear)  
+
+
+
+
+Inheritance diagram for Cylindrical\+Joint\+\_\+\+Base\+:
+% FIG 0
+
+
+Collaboration diagram for Cylindrical\+Joint\+\_\+\+Base\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override Skeletal\+Joint\+Type \hyperlink{class_cylindrical_joint___base_a1ee432bc31e0ee98266169233210e621}{Get\+Joint\+Type} ()
+\begin{DoxyCompactList}\small\item\em The type of this joint. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a2d7031bde80932c01af131b341708e1a}\label{class_cylindrical_joint___base_a2d7031bde80932c01af131b341708e1a}} 
+void {\bfseries Enforce\+Order} ()
+\item 
+override I\+Enumerable$<$ \hyperlink{interface_angular_d_o_f}{Angular\+D\+OF} $>$ \hyperlink{class_cylindrical_joint___base_a9eba59edd9ac877a3be28e652b364b59}{Get\+Angular\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the angular degrees of freedom for this joint. \end{DoxyCompactList}\item 
+override I\+Enumerable$<$ \hyperlink{interface_linear_d_o_f}{Linear\+D\+OF} $>$ \hyperlink{class_cylindrical_joint___base_a5e10f664ba08afb2788e2251831c8246}{Get\+Linear\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the linear degrees of freedom for this joint. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_af65e56a4fea5034e30bc9a941f33d77f}\label{class_cylindrical_joint___base_af65e56a4fea5034e30bc9a941f33d77f}} 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} {\bfseries axis}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a11dcb60bbb23b4cc9fc7180c8b46ac06}\label{class_cylindrical_joint___base_a11dcb60bbb23b4cc9fc7180c8b46ac06}} 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} {\bfseries base\+Point}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_af5ae7e41ecd0a6bdbd6d0ae633a658c1}\label{class_cylindrical_joint___base_af5ae7e41ecd0a6bdbd6d0ae633a658c1}} 
+float {\bfseries current\+Linear\+Position}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_ab6203bc71fd612888e16b7afc9a3dd83}\label{class_cylindrical_joint___base_ab6203bc71fd612888e16b7afc9a3dd83}} 
+bool {\bfseries has\+Angular\+Limit}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_abf267b50e83a827258694283b9cb45cd}\label{class_cylindrical_joint___base_abf267b50e83a827258694283b9cb45cd}} 
+float {\bfseries angular\+Limit\+Low}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a9ae105db01afb6be9dbaddb09131d6eb}\label{class_cylindrical_joint___base_a9ae105db01afb6be9dbaddb09131d6eb}} 
+float {\bfseries angular\+Limit\+High}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a2e5e5d19c3efaa11f2fdbec471116f01}\label{class_cylindrical_joint___base_a2e5e5d19c3efaa11f2fdbec471116f01}} 
+bool {\bfseries has\+Linear\+Start\+Limit}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a521f572c3fd27cfb5e5a13cefbc1e966}\label{class_cylindrical_joint___base_a521f572c3fd27cfb5e5a13cefbc1e966}} 
+bool {\bfseries has\+Linear\+End\+Limit}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a7cb20f8cd4a158bbabcdf613ae22a6f5}\label{class_cylindrical_joint___base_a7cb20f8cd4a158bbabcdf613ae22a6f5}} 
+float {\bfseries linear\+Limit\+Start}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a10554ce2bb84a72c81c3b7191a1d6d17}\label{class_cylindrical_joint___base_a10554ce2bb84a72c81c3b7191a1d6d17}} 
+float {\bfseries linear\+Limit\+End}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_ade950608be33bd1a4d9986d1789067b9}\label{class_cylindrical_joint___base_ade950608be33bd1a4d9986d1789067b9}} 
+override void {\bfseries Write\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Writer writer)
+\item 
+\mbox{\Hypertarget{class_cylindrical_joint___base_a2c5b9f4e9be175b9dabaf55fb150235e}\label{class_cylindrical_joint___base_a2c5b9f4e9be175b9dabaf55fb150235e}} 
+override void {\bfseries Read\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Reader reader)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Contains D\+OF information for a cylindrical joint. (1 angular and 1 linear) 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_cylindrical_joint___base_a9eba59edd9ac877a3be28e652b364b59}\label{class_cylindrical_joint___base_a9eba59edd9ac877a3be28e652b364b59}} 
+\index{Cylindrical\+Joint\+\_\+\+Base@{Cylindrical\+Joint\+\_\+\+Base}!Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}}
+\index{Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}!Cylindrical\+Joint\+\_\+\+Base@{Cylindrical\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Angular\+D\+O\+F()}{GetAngularDOF()}}
+{\footnotesize\ttfamily override I\+Enumerable$<$\hyperlink{interface_angular_d_o_f}{Angular\+D\+OF}$>$ Cylindrical\+Joint\+\_\+\+Base.\+Get\+Angular\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets all the angular degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The angular degrees of freedom
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_abf96267052733ccf001e0b092c6582f8}{Skeletal\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_cylindrical_joint___base_a1ee432bc31e0ee98266169233210e621}\label{class_cylindrical_joint___base_a1ee432bc31e0ee98266169233210e621}} 
+\index{Cylindrical\+Joint\+\_\+\+Base@{Cylindrical\+Joint\+\_\+\+Base}!Get\+Joint\+Type@{Get\+Joint\+Type}}
+\index{Get\+Joint\+Type@{Get\+Joint\+Type}!Cylindrical\+Joint\+\_\+\+Base@{Cylindrical\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Joint\+Type()}{GetJointType()}}
+{\footnotesize\ttfamily override Skeletal\+Joint\+Type Cylindrical\+Joint\+\_\+\+Base.\+Get\+Joint\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+The type of this joint. 
+
+\begin{DoxyReturn}{Returns}
+The joint type
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_aee155cbd483cb512bf3fc0f9a8885335}{Skeletal\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_cylindrical_joint___base_a5e10f664ba08afb2788e2251831c8246}\label{class_cylindrical_joint___base_a5e10f664ba08afb2788e2251831c8246}} 
+\index{Cylindrical\+Joint\+\_\+\+Base@{Cylindrical\+Joint\+\_\+\+Base}!Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}}
+\index{Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}!Cylindrical\+Joint\+\_\+\+Base@{Cylindrical\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Linear\+D\+O\+F()}{GetLinearDOF()}}
+{\footnotesize\ttfamily override I\+Enumerable$<$\hyperlink{interface_linear_d_o_f}{Linear\+D\+OF}$>$ Cylindrical\+Joint\+\_\+\+Base.\+Get\+Linear\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets all the linear degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The linear degrees of freedom
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_a14564d8c44dfeef8b7a10044f2392cde}{Skeletal\+Joint\+\_\+\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Joints/Cylindrical\+Joint\+\_\+\+Base.\+cs\end{DoxyCompactItemize}

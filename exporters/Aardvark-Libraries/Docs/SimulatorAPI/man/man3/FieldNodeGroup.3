@@ -1,0 +1,219 @@
+.TH "FieldNodeGroup" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FieldNodeGroup
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBFieldNodeGroup\fP (string nodeGroupID)"
+.br
+.RI "Constructs a new instance of the \fBFieldNodeGroup\fP class\&. "
+.ti -1c
+.RI "\fBFieldNode\fP \fBAddNode\fP (string nodeID, string physicsGroupID=\fBBXDFProperties\&.BXDF_DEFAULT_NAME\fP)"
+.br
+.RI "Adds a new node with the given ID and physicsGroupID to the childNodes Dictionary\&. "
+.ti -1c
+.RI "void \fBAddNode\fP (\fBFieldNode\fP node)"
+.br
+.RI "Adds the given \fBFieldNode\fP to the ChildNodes Dictionary\&. "
+.ti -1c
+.RI "\fBFieldNode\fP \fBGetNode\fP (string nodeID)"
+.br
+.RI "Returns the child \fBFieldNode\fP with the given nodeID\&. "
+.ti -1c
+.RI "\fBFieldNodeGroup\fP \fBAddNodeGroup\fP (string nodeGroupID)"
+.br
+.RI "Adds a new \fBFieldNodeGroup\fP with the given ID\&. "
+.ti -1c
+.RI "void \fBAddNodeGroup\fP (\fBFieldNodeGroup\fP nodeGroup)"
+.br
+.RI "Adds the given \fBFieldNodeGroup\fP to the childNodeGroups Dictionary\&. "
+.ti -1c
+.RI "\fBFieldNodeGroup\fP \fBGetNodeGroup\fP (string nodeGroupID)"
+.br
+.RI "Returns the \fBFieldNodeGroup\fP with the given nodeGroupID\&. "
+.ti -1c
+.RI "IEnumerable< \fBFieldNode\fP > \fBEnumerateFieldNodes\fP ()"
+.br
+.RI "Enumerates through all direct child FieldNodes\&. "
+.ti -1c
+.RI "IEnumerable< \fBFieldNodeGroup\fP > \fBEnumerateFieldNodeGroups\fP ()"
+.br
+.RI "Enumerates through all direct child FieldNodeGroups\&. "
+.ti -1c
+.RI "IEnumerable< \fBFieldNode\fP > \fBEnumerateAllLeafFieldNodes\fP ()"
+.br
+.RI "Enumerates through each child \fBFieldNode\fP in all child FieldNodeGroups\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "string \fBNodeGroupID\fP"
+.br
+.RI "The string ID for the \fBFieldNodeGroup\fP\&. "
+.in -1c
+.SS "Properties"
+
+.in +1c
+.ti -1c
+.RI "\fBFieldNode\fP \fBthis[string path]\fP\fC [get, set]\fP"
+.br
+.RI "Used for setting or getting a \fBFieldNode\fP from the path supplied\&. "
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "FieldNodeGroup\&.FieldNodeGroup (string nodeGroupID)"
+
+.PP
+Constructs a new instance of the \fBFieldNodeGroup\fP class\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fInodeGroupID\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBFieldNode\fP FieldNodeGroup\&.AddNode (string nodeID, string physicsGroupID = \fC\fBBXDFProperties\&.BXDF_DEFAULT_NAME\fP\fP)"
+
+.PP
+Adds a new node with the given ID and physicsGroupID to the childNodes Dictionary\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fInodeID\fP 
+.RE
+.PP
+
+.SS "void FieldNodeGroup\&.AddNode (\fBFieldNode\fP node)"
+
+.PP
+Adds the given \fBFieldNode\fP to the ChildNodes Dictionary\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fInode\fP 
+.RE
+.PP
+
+.SS "\fBFieldNodeGroup\fP FieldNodeGroup\&.AddNodeGroup (string nodeGroupID)"
+
+.PP
+Adds a new \fBFieldNodeGroup\fP with the given ID\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fInodeGroupID\fP 
+.RE
+.PP
+
+.SS "void FieldNodeGroup\&.AddNodeGroup (\fBFieldNodeGroup\fP nodeGroup)"
+
+.PP
+Adds the given \fBFieldNodeGroup\fP to the childNodeGroups Dictionary\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fInodeGroup\fP 
+.RE
+.PP
+
+.SS "IEnumerable<\fBFieldNode\fP> FieldNodeGroup\&.EnumerateAllLeafFieldNodes ()"
+
+.PP
+Enumerates through each child \fBFieldNode\fP in all child FieldNodeGroups\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.SS "IEnumerable<\fBFieldNodeGroup\fP> FieldNodeGroup\&.EnumerateFieldNodeGroups ()"
+
+.PP
+Enumerates through all direct child FieldNodeGroups\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.SS "IEnumerable<\fBFieldNode\fP> FieldNodeGroup\&.EnumerateFieldNodes ()"
+
+.PP
+Enumerates through all direct child FieldNodes\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.SS "\fBFieldNode\fP FieldNodeGroup\&.GetNode (string nodeID)"
+
+.PP
+Returns the child \fBFieldNode\fP with the given nodeID\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fInodeID\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The \fBFieldNode\fP\&.
+.RE
+.PP
+
+.SS "\fBFieldNodeGroup\fP FieldNodeGroup\&.GetNodeGroup (string nodeGroupID)"
+
+.PP
+Returns the \fBFieldNodeGroup\fP with the given nodeGroupID\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fInodeGroupID\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The \fBFieldNodeGroup\fP\&.
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "string FieldNodeGroup\&.NodeGroupID"
+
+.PP
+The string ID for the \fBFieldNodeGroup\fP\&. 
+.SH "Property Documentation"
+.PP 
+.SS "\fBFieldNode\fP FieldNodeGroup\&.this[string path]\fC [get]\fP, \fC [set]\fP"
+
+.PP
+Used for setting or getting a \fBFieldNode\fP from the path supplied\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

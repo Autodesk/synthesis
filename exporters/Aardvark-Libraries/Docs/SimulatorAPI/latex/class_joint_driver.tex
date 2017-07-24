@@ -1,0 +1,336 @@
+\hypertarget{class_joint_driver}{}\section{Joint\+Driver Class Reference}
+\label{class_joint_driver}\index{Joint\+Driver@{Joint\+Driver}}
+
+
+Generic class able to represent all types of joint drivers.  
+
+
+
+
+Inheritance diagram for Joint\+Driver\+:
+% FIG 0
+
+
+Collaboration diagram for Joint\+Driver\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_joint_driver_aa9024a29db9bdac4465e244544521718}{Joint\+Driver} ()
+\begin{DoxyCompactList}\small\item\em Creates as joint driver with no type. This is mainly for IO \end{DoxyCompactList}\item 
+\hyperlink{class_joint_driver_a8fcc7584ca80fb8f69e855be6fbe488f}{Joint\+Driver} (Joint\+Driver\+Type type)
+\begin{DoxyCompactList}\small\item\em Creates a joint driver with the given type. \end{DoxyCompactList}\item 
+void \hyperlink{class_joint_driver_a7b35af4634caa4dbcbe3cd88ba365a68}{Add\+Info} (\hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta} meta\+Driver)
+\begin{DoxyCompactList}\small\item\em Adds the given joint driver metadata object to this driver, or replaces the existing metadata of the same type. \end{DoxyCompactList}\item 
+T \hyperlink{class_joint_driver_ac8981cc67c8ddc2c196717c31d109cc4}{Remove\+Info$<$ T $>$} ()
+\begin{DoxyCompactList}\small\item\em Removes the metadata of the given type stored in this joint driver and returns it, or null if no such metadata exists. \end{DoxyCompactList}\item 
+T \hyperlink{class_joint_driver_af4a1c0ffdb06dcd0dea4b2a7524fb1c8}{Get\+Info$<$ T $>$} ()
+\begin{DoxyCompactList}\small\item\em Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists. \end{DoxyCompactList}\item 
+\hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta} \hyperlink{class_joint_driver_ab791d90626a1821f03329d65ccbe3e74}{Get\+Info} (System.\+Type type)
+\begin{DoxyCompactList}\small\item\em Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_joint_driver_aa266e2618a7a89e242ff22dae9590666}\label{class_joint_driver_aa266e2618a7a89e242ff22dae9590666}} 
+void {\bfseries Copy\+Meta\+Info} (\hyperlink{class_joint_driver}{Joint\+Driver} to\+Copy)
+\item 
+void \hyperlink{class_joint_driver_ae1758d47d4b9142ce00e0b1b4da8a26d}{Set\+Port} (int \hyperlink{class_joint_driver_a8bd27164aad80347972763dd56c5b311}{portA}, int portB=-\/1)
+\begin{DoxyCompactList}\small\item\em Sets the port(s) for this driver. \end{DoxyCompactList}\item 
+void \hyperlink{class_joint_driver_a1427fe9a653b2977ed487f140c3af32b}{Set\+Limits} (float lower, float upper)
+\begin{DoxyCompactList}\small\item\em Sets the limits for this driver. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_joint_driver_ae76d84f55920b4238b1f96038abaf5ce}\label{class_joint_driver_ae76d84f55920b4238b1f96038abaf5ce}} 
+override string {\bfseries To\+String} ()
+\item 
+Joint\+Driver\+Type \hyperlink{class_joint_driver_ab63c7e975d5b4317b7c47ffb34596b78}{Get\+Drive\+Type} ()
+\begin{DoxyCompactList}\small\item\em Gets the type of this joint driver. \end{DoxyCompactList}\item 
+void \hyperlink{class_joint_driver_a36d6deba7dec0475dc06ab5d87c3e7e2}{Write\+Binary\+Data} (System.\+I\+O.\+Binary\+Writer writer)
+\begin{DoxyCompactList}\small\item\em Writes the binary representation of this driver to the stream. \end{DoxyCompactList}\item 
+void \hyperlink{class_joint_driver_a1db6f1668ea9122fb0e5d3f0aaa3f621}{Read\+Binary\+Data} (System.\+I\+O.\+Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Reads the binary representation of this driver from the stream. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_joint_driver_a81fbb4302489ef44481d0adc4f10ca16}\label{class_joint_driver_a81fbb4302489ef44481d0adc4f10ca16}} 
+int {\bfseries Compare\+To} (\hyperlink{class_joint_driver}{Joint\+Driver} driver)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static Joint\+Driver\+Type \mbox{[}$\,$\mbox{]} \hyperlink{class_joint_driver_adea8023e289a40e4d232cbac87e6a6e3}{Get\+Allowed\+Drivers} (\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base} joint)
+\begin{DoxyCompactList}\small\item\em Gets the possible types of joint drivers for the given skeletal joint. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{class_joint_driver_a8bd27164aad80347972763dd56c5b311}{portA}
+\begin{DoxyCompactList}\small\item\em The port(s) that this joint driver uses. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_joint_driver_a3a59a404a28d1d28c5f46379eadb1be2}\label{class_joint_driver_a3a59a404a28d1d28c5f46379eadb1be2}} 
+bool {\bfseries is\+Can} = false
+\item 
+float \hyperlink{class_joint_driver_a251b0eb937cd1007497acf4cfb594fe0}{lower\+Limit}
+\begin{DoxyCompactList}\small\item\em The motion limits for this driver. For continuous rotation this is likely a force or velocity. For linear or limited movement it is motion limits. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Dictionary$<$ System.\+Type, \hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta} $>$ \hyperlink{class_joint_driver_ac9ee45562c190ff7ac8fdb4a5cedb0ad}{Meta\+Info}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em Metadata information for this joint driver. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Generic class able to represent all types of joint drivers. 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_joint_driver_aa9024a29db9bdac4465e244544521718}\label{class_joint_driver_aa9024a29db9bdac4465e244544521718}} 
+\index{Joint\+Driver@{Joint\+Driver}!Joint\+Driver@{Joint\+Driver}}
+\index{Joint\+Driver@{Joint\+Driver}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Joint\+Driver()}{JointDriver()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily Joint\+Driver.\+Joint\+Driver (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates as joint driver with no type. This is mainly for IO 
+
+\mbox{\Hypertarget{class_joint_driver_a8fcc7584ca80fb8f69e855be6fbe488f}\label{class_joint_driver_a8fcc7584ca80fb8f69e855be6fbe488f}} 
+\index{Joint\+Driver@{Joint\+Driver}!Joint\+Driver@{Joint\+Driver}}
+\index{Joint\+Driver@{Joint\+Driver}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Joint\+Driver()}{JointDriver()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Joint\+Driver.\+Joint\+Driver (\begin{DoxyParamCaption}\item[{Joint\+Driver\+Type}]{type }\end{DoxyParamCaption})}
+
+
+
+Creates a joint driver with the given type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Driver type\\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_joint_driver_a7b35af4634caa4dbcbe3cd88ba365a68}\label{class_joint_driver_a7b35af4634caa4dbcbe3cd88ba365a68}} 
+\index{Joint\+Driver@{Joint\+Driver}!Add\+Info@{Add\+Info}}
+\index{Add\+Info@{Add\+Info}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Add\+Info()}{AddInfo()}}
+{\footnotesize\ttfamily void Joint\+Driver.\+Add\+Info (\begin{DoxyParamCaption}\item[{\hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta}}]{meta\+Driver }\end{DoxyParamCaption})}
+
+
+
+Adds the given joint driver metadata object to this driver, or replaces the existing metadata of the same type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em meta\+Driver} & The metadata\\
+\hline
+\end{DoxyParams}
+Here is the caller graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{class_joint_driver_adea8023e289a40e4d232cbac87e6a6e3}\label{class_joint_driver_adea8023e289a40e4d232cbac87e6a6e3}} 
+\index{Joint\+Driver@{Joint\+Driver}!Get\+Allowed\+Drivers@{Get\+Allowed\+Drivers}}
+\index{Get\+Allowed\+Drivers@{Get\+Allowed\+Drivers}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Get\+Allowed\+Drivers()}{GetAllowedDrivers()}}
+{\footnotesize\ttfamily static Joint\+Driver\+Type \mbox{[}$\,$\mbox{]} Joint\+Driver.\+Get\+Allowed\+Drivers (\begin{DoxyParamCaption}\item[{\hyperlink{class_skeletal_joint___base}{Skeletal\+Joint\+\_\+\+Base}}]{joint }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Gets the possible types of joint drivers for the given skeletal joint. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em joint} & Skeletal joint to get allowed types for\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Joint driver options
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{class_joint_driver_ab63c7e975d5b4317b7c47ffb34596b78}\label{class_joint_driver_ab63c7e975d5b4317b7c47ffb34596b78}} 
+\index{Joint\+Driver@{Joint\+Driver}!Get\+Drive\+Type@{Get\+Drive\+Type}}
+\index{Get\+Drive\+Type@{Get\+Drive\+Type}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Get\+Drive\+Type()}{GetDriveType()}}
+{\footnotesize\ttfamily Joint\+Driver\+Type Joint\+Driver.\+Get\+Drive\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the type of this joint driver. 
+
+\begin{DoxyReturn}{Returns}
+Driver type
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{class_joint_driver_ab791d90626a1821f03329d65ccbe3e74}\label{class_joint_driver_ab791d90626a1821f03329d65ccbe3e74}} 
+\index{Joint\+Driver@{Joint\+Driver}!Get\+Info@{Get\+Info}}
+\index{Get\+Info@{Get\+Info}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Get\+Info()}{GetInfo()}}
+{\footnotesize\ttfamily \hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta} Joint\+Driver.\+Get\+Info (\begin{DoxyParamCaption}\item[{System.\+Type}]{type }\end{DoxyParamCaption})}
+
+
+
+Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & The type to get info for\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Metadata, or null
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_joint_driver_af4a1c0ffdb06dcd0dea4b2a7524fb1c8}\label{class_joint_driver_af4a1c0ffdb06dcd0dea4b2a7524fb1c8}} 
+\index{Joint\+Driver@{Joint\+Driver}!Get\+Info$<$ T $>$@{Get\+Info$<$ T $>$}}
+\index{Get\+Info$<$ T $>$@{Get\+Info$<$ T $>$}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Get\+Info$<$ T $>$()}{GetInfo< T >()}}
+{\footnotesize\ttfamily T \hyperlink{class_joint_driver_ab791d90626a1821f03329d65ccbe3e74}{Joint\+Driver.\+Get\+Info}$<$ T $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the metadata of the given type stored in this joint driver, or null if no such metadata exists. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type of the metadata\\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+Metadata, or null
+\end{DoxyReturn}
+\begin{Desc}
+\item[Type Constraints]\begin{description}
+\item[{\em T} : {\em \hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta}}]\end{description}
+\end{Desc}
+\mbox{\Hypertarget{class_joint_driver_a1db6f1668ea9122fb0e5d3f0aaa3f621}\label{class_joint_driver_a1db6f1668ea9122fb0e5d3f0aaa3f621}} 
+\index{Joint\+Driver@{Joint\+Driver}!Read\+Binary\+Data@{Read\+Binary\+Data}}
+\index{Read\+Binary\+Data@{Read\+Binary\+Data}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Read\+Binary\+Data()}{ReadBinaryData()}}
+{\footnotesize\ttfamily void Joint\+Driver.\+Read\+Binary\+Data (\begin{DoxyParamCaption}\item[{System.\+I\+O.\+Binary\+Reader}]{reader }\end{DoxyParamCaption})}
+
+
+
+Reads the binary representation of this driver from the stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & Input stream\\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 5
+Here is the caller graph for this function\+:
+% FIG 6
+\mbox{\Hypertarget{class_joint_driver_ac8981cc67c8ddc2c196717c31d109cc4}\label{class_joint_driver_ac8981cc67c8ddc2c196717c31d109cc4}} 
+\index{Joint\+Driver@{Joint\+Driver}!Remove\+Info$<$ T $>$@{Remove\+Info$<$ T $>$}}
+\index{Remove\+Info$<$ T $>$@{Remove\+Info$<$ T $>$}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Remove\+Info$<$ T $>$()}{RemoveInfo< T >()}}
+{\footnotesize\ttfamily T Joint\+Driver.\+Remove\+Info$<$ T $>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Removes the metadata of the given type stored in this joint driver and returns it, or null if no such metadata exists. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & The type of the metadata\\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+Metadata, or null
+\end{DoxyReturn}
+\begin{Desc}
+\item[Type Constraints]\begin{description}
+\item[{\em T} : {\em \hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta}}]\end{description}
+\end{Desc}
+\mbox{\Hypertarget{class_joint_driver_a1427fe9a653b2977ed487f140c3af32b}\label{class_joint_driver_a1427fe9a653b2977ed487f140c3af32b}} 
+\index{Joint\+Driver@{Joint\+Driver}!Set\+Limits@{Set\+Limits}}
+\index{Set\+Limits@{Set\+Limits}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Set\+Limits()}{SetLimits()}}
+{\footnotesize\ttfamily void Joint\+Driver.\+Set\+Limits (\begin{DoxyParamCaption}\item[{float}]{lower,  }\item[{float}]{upper }\end{DoxyParamCaption})}
+
+
+
+Sets the limits for this driver. 
+
+For all linear motion these represent the linear limits on that motion. For all limited angular motion these represent the angular limits on that motion. For all continuous angular motion these represent the force limits on that motion. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lower} & Lower limit\\
+\hline
+{\em upper} & Upper limit\\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 7
+\mbox{\Hypertarget{class_joint_driver_ae1758d47d4b9142ce00e0b1b4da8a26d}\label{class_joint_driver_ae1758d47d4b9142ce00e0b1b4da8a26d}} 
+\index{Joint\+Driver@{Joint\+Driver}!Set\+Port@{Set\+Port}}
+\index{Set\+Port@{Set\+Port}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Set\+Port()}{SetPort()}}
+{\footnotesize\ttfamily void Joint\+Driver.\+Set\+Port (\begin{DoxyParamCaption}\item[{int}]{portA,  }\item[{int}]{portB = {\ttfamily -\/1} }\end{DoxyParamCaption})}
+
+
+
+Sets the port(s) for this driver. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em portA} & First port\\
+\hline
+{\em portB} & Option second port\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_joint_driver_a36d6deba7dec0475dc06ab5d87c3e7e2}\label{class_joint_driver_a36d6deba7dec0475dc06ab5d87c3e7e2}} 
+\index{Joint\+Driver@{Joint\+Driver}!Write\+Binary\+Data@{Write\+Binary\+Data}}
+\index{Write\+Binary\+Data@{Write\+Binary\+Data}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Write\+Binary\+Data()}{WriteBinaryData()}}
+{\footnotesize\ttfamily void Joint\+Driver.\+Write\+Binary\+Data (\begin{DoxyParamCaption}\item[{System.\+I\+O.\+Binary\+Writer}]{writer }\end{DoxyParamCaption})}
+
+
+
+Writes the binary representation of this driver to the stream. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em writer} & Output stream\\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 8
+Here is the caller graph for this function\+:
+% FIG 9
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_joint_driver_a251b0eb937cd1007497acf4cfb594fe0}\label{class_joint_driver_a251b0eb937cd1007497acf4cfb594fe0}} 
+\index{Joint\+Driver@{Joint\+Driver}!lower\+Limit@{lower\+Limit}}
+\index{lower\+Limit@{lower\+Limit}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{lower\+Limit}{lowerLimit}}
+{\footnotesize\ttfamily float Joint\+Driver.\+lower\+Limit}
+
+
+
+The motion limits for this driver. For continuous rotation this is likely a force or velocity. For linear or limited movement it is motion limits. 
+
+\mbox{\Hypertarget{class_joint_driver_a8bd27164aad80347972763dd56c5b311}\label{class_joint_driver_a8bd27164aad80347972763dd56c5b311}} 
+\index{Joint\+Driver@{Joint\+Driver}!portA@{portA}}
+\index{portA@{portA}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{portA}{portA}}
+{\footnotesize\ttfamily int Joint\+Driver.\+portA}
+
+
+
+The port(s) that this joint driver uses. 
+
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_joint_driver_ac9ee45562c190ff7ac8fdb4a5cedb0ad}\label{class_joint_driver_ac9ee45562c190ff7ac8fdb4a5cedb0ad}} 
+\index{Joint\+Driver@{Joint\+Driver}!Meta\+Info@{Meta\+Info}}
+\index{Meta\+Info@{Meta\+Info}!Joint\+Driver@{Joint\+Driver}}
+\subsubsection{\texorpdfstring{Meta\+Info}{MetaInfo}}
+{\footnotesize\ttfamily Dictionary$<$System.\+Type, \hyperlink{class_joint_driver_meta}{Joint\+Driver\+Meta}$>$ Joint\+Driver.\+Meta\+Info\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+Metadata information for this joint driver. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Joints/\+Driver/Joint\+Driver.\+cs\end{DoxyCompactItemize}

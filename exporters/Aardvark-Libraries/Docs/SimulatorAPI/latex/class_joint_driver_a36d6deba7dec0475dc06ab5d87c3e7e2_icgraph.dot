@@ -1,0 +1,13 @@
+digraph "JointDriver.WriteBinaryData"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node40 [label="JointDriver.WriteBinaryData",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node40 -> Node41 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node41 [label="SkeletalJoint_Base.Write\lBinaryJoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#a42df720cdd871ccad5930ae7977f7200",tooltip="Writes the backing information and ID for this joint to the output stream. "];
+  Node41 -> Node42 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node42 [label="SkeletalJoint_Base.ReadJoint\lFully",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#ae9f8e31a56644eb92cb901a4587a3d24",tooltip="Identifies the type of a joint, creates an instance, and reads that joint from the given input stream..."];
+  Node42 -> Node43 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node43 [label="BXDJSkeleton.ReadBinarySkeleton",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#aeacead12f7e921a9c77a588773901798",tooltip="Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton..."];
+}

@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_linear_joint___base_1_1_linear_d_o_f___impl" kind="class" language="C#" prot="private">
+    <compoundname>LinearJoint_Base::LinearDOF_Impl</compoundname>
+    <basecompoundref refid="interface_linear_d_o_f" prot="public" virt="non-virtual">LinearDOF</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_linear_joint___base_1_1_linear_d_o_f___impl_1ade03f95e3d742781ab51df1fc84ca2de" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="class_linear_joint___base" kindref="compound">LinearJoint_Base</ref></type>
+        <definition>readonly LinearJoint_Base LinearJoint_Base.LinearDOF_Impl.ljb</definition>
+        <argsstring></argsstring>
+        <name>ljb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_linear_joint___base_1_1_linear_d_o_f___impl_1a1e50d5fdad832859225dd0dd75094182" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float LinearJoint_Base.LinearDOF_Impl.currentPosition</definition>
+        <argsstring></argsstring>
+        <name>currentPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_linear_joint___base_1_1_linear_d_o_f___impl_1a9004653990c0673d568a3db363352ec8" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float LinearJoint_Base.LinearDOF_Impl.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="22" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_linear_joint___base_1_1_linear_d_o_f___impl_1a2d48e2f549f57955e1891667be798d9f" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float LinearJoint_Base.LinearDOF_Impl.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="36" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_linear_joint___base_1_1_linear_d_o_f___impl_1a75e622fc50ea4e08aae317db07581cce" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 LinearJoint_Base.LinearDOF_Impl.translationalAxis</definition>
+        <argsstring></argsstring>
+        <name>translationalAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="50" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_linear_joint___base_1_1_linear_d_o_f___impl_1afdd65c8af45c10330da9cec9bfb23e7e" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 LinearJoint_Base.LinearDOF_Impl.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="62" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="63" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_linear_joint___base_1_1_linear_d_o_f___impl_1ab85ff08f3194e40a832473d9739328ca" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>LinearJoint_Base.LinearDOF_Impl.LinearDOF_Impl</definition>
+        <argsstring>(LinearJoint_Base ljb)</argsstring>
+        <name>LinearDOF_Impl</name>
+        <param>
+          <type><ref refid="class_linear_joint___base" kindref="compound">LinearJoint_Base</ref></type>
+          <declname>ljb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="9" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="9" bodyend="12"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="115">
+        <label>LinearDOF</label>
+        <link refid="interface_linear_d_o_f"/>
+      </node>
+      <node id="114">
+        <label>LinearJoint_Base.LinearDOF_Impl</label>
+        <childnode refid="115" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="117">
+        <label>LinearDOF</label>
+        <link refid="interface_linear_d_o_f"/>
+      </node>
+      <node id="116">
+        <label>LinearJoint_Base.LinearDOF_Impl</label>
+        <childnode refid="117" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearJoint_Base.cs" bodystart="6" bodyend="73"/>
+    <listofallmembers>
+      <member refid="class_linear_joint___base_1_1_linear_d_o_f___impl_1afdd65c8af45c10330da9cec9bfb23e7e" prot="public" virt="non-virtual"><scope>LinearJoint_Base::LinearDOF_Impl</scope><name>basePoint</name></member>
+      <member refid="class_linear_joint___base_1_1_linear_d_o_f___impl_1a1e50d5fdad832859225dd0dd75094182" prot="public" virt="non-virtual"><scope>LinearJoint_Base::LinearDOF_Impl</scope><name>currentPosition</name></member>
+      <member refid="class_linear_joint___base_1_1_linear_d_o_f___impl_1ab85ff08f3194e40a832473d9739328ca" prot="public" virt="non-virtual"><scope>LinearJoint_Base::LinearDOF_Impl</scope><name>LinearDOF_Impl</name></member>
+      <member refid="class_linear_joint___base_1_1_linear_d_o_f___impl_1ade03f95e3d742781ab51df1fc84ca2de" prot="private" virt="non-virtual"><scope>LinearJoint_Base::LinearDOF_Impl</scope><name>ljb</name></member>
+      <member refid="class_linear_joint___base_1_1_linear_d_o_f___impl_1a2d48e2f549f57955e1891667be798d9f" prot="public" virt="non-virtual"><scope>LinearJoint_Base::LinearDOF_Impl</scope><name>lowerLimit</name></member>
+      <member refid="class_linear_joint___base_1_1_linear_d_o_f___impl_1a75e622fc50ea4e08aae317db07581cce" prot="public" virt="non-virtual"><scope>LinearJoint_Base::LinearDOF_Impl</scope><name>translationalAxis</name></member>
+      <member refid="class_linear_joint___base_1_1_linear_d_o_f___impl_1a9004653990c0673d568a3db363352ec8" prot="public" virt="non-virtual"><scope>LinearJoint_Base::LinearDOF_Impl</scope><name>upperLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

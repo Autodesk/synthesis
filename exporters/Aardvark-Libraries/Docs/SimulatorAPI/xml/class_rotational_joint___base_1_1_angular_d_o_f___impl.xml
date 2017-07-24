@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_rotational_joint___base_1_1_angular_d_o_f___impl" kind="class" language="C#" prot="private">
+    <compoundname>RotationalJoint_Base::AngularDOF_Impl</compoundname>
+    <basecompoundref refid="interface_angular_d_o_f" prot="public" virt="non-virtual">AngularDOF</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a06af525786faa719eda446b1abbce942" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="class_rotational_joint___base" kindref="compound">RotationalJoint_Base</ref></type>
+        <definition>readonly RotationalJoint_Base RotationalJoint_Base.AngularDOF_Impl.rjb</definition>
+        <argsstring></argsstring>
+        <name>rjb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="8" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a1c4da15270b4c754187331506130e3f1" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float RotationalJoint_Base.AngularDOF_Impl.currentPosition</definition>
+        <argsstring></argsstring>
+        <name>currentPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="13" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a8a4897bf7e1dbad37497a21da44f93e9" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float RotationalJoint_Base.AngularDOF_Impl.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="21" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="22" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a2856ed069c87d96831af218809efc899" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float RotationalJoint_Base.AngularDOF_Impl.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="35" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_rotational_joint___base_1_1_angular_d_o_f___impl_1aa84c29c621e621f157a806a7545faaf6" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 RotationalJoint_Base.AngularDOF_Impl.rotationAxis</definition>
+        <argsstring></argsstring>
+        <name>rotationAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="49" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a8e22f6d3a37a0b9f78f2beae3bb3cce7" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 RotationalJoint_Base.AngularDOF_Impl.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="61" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a7970aae6c2d2a9fecde2a33eefdb98ab" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>RotationalJoint_Base.AngularDOF_Impl.AngularDOF_Impl</definition>
+        <argsstring>(RotationalJoint_Base rjb)</argsstring>
+        <name>AngularDOF_Impl</name>
+        <param>
+          <type><ref refid="class_rotational_joint___base" kindref="compound">RotationalJoint_Base</ref></type>
+          <declname>rjb</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="9" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="9" bodyend="12"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="7">
+        <label>AngularDOF</label>
+        <link refid="interface_angular_d_o_f"/>
+      </node>
+      <node id="6">
+        <label>RotationalJoint_Base.AngularDOF_Impl</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="9">
+        <label>AngularDOF</label>
+        <link refid="interface_angular_d_o_f"/>
+      </node>
+      <node id="8">
+        <label>RotationalJoint_Base.AngularDOF_Impl</label>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/RotationalJoint_Base.cs" bodystart="6" bodyend="72"/>
+    <listofallmembers>
+      <member refid="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a7970aae6c2d2a9fecde2a33eefdb98ab" prot="public" virt="non-virtual"><scope>RotationalJoint_Base::AngularDOF_Impl</scope><name>AngularDOF_Impl</name></member>
+      <member refid="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a8e22f6d3a37a0b9f78f2beae3bb3cce7" prot="public" virt="non-virtual"><scope>RotationalJoint_Base::AngularDOF_Impl</scope><name>basePoint</name></member>
+      <member refid="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a1c4da15270b4c754187331506130e3f1" prot="public" virt="non-virtual"><scope>RotationalJoint_Base::AngularDOF_Impl</scope><name>currentPosition</name></member>
+      <member refid="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a2856ed069c87d96831af218809efc899" prot="public" virt="non-virtual"><scope>RotationalJoint_Base::AngularDOF_Impl</scope><name>lowerLimit</name></member>
+      <member refid="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a06af525786faa719eda446b1abbce942" prot="private" virt="non-virtual"><scope>RotationalJoint_Base::AngularDOF_Impl</scope><name>rjb</name></member>
+      <member refid="class_rotational_joint___base_1_1_angular_d_o_f___impl_1aa84c29c621e621f157a806a7545faaf6" prot="public" virt="non-virtual"><scope>RotationalJoint_Base::AngularDOF_Impl</scope><name>rotationAxis</name></member>
+      <member refid="class_rotational_joint___base_1_1_angular_d_o_f___impl_1a8a4897bf7e1dbad37497a21da44f93e9" prot="public" virt="non-virtual"><scope>RotationalJoint_Base::AngularDOF_Impl</scope><name>upperLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

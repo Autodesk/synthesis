@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_planar_joint___base_1_1_linear_d_o_f___impl" kind="class" language="C#" prot="private">
+    <compoundname>PlanarJoint_Base::LinearDOF_Impl</compoundname>
+    <basecompoundref refid="interface_linear_d_o_f" prot="public" virt="non-virtual">LinearDOF</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1a5ee73cdac285053dc025d52fe2fad298" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref></type>
+        <definition>readonly PlanarJoint_Base PlanarJoint_Base.LinearDOF_Impl.pjb</definition>
+        <argsstring></argsstring>
+        <name>pjb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="80" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1a67880c25e180f0efa4d341f9f01c275f" prot="private" static="no" mutable="no">
+        <type>readonly int</type>
+        <definition>readonly int PlanarJoint_Base.LinearDOF_Impl.axis</definition>
+        <argsstring></argsstring>
+        <name>axis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="81" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1af4a737badc4e644a5b45480eb44315e3" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float PlanarJoint_Base.LinearDOF_Impl.currentPosition</definition>
+        <argsstring></argsstring>
+        <name>currentPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="88" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1a22357cab4a2267956d8088ce2eb7dd95" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float PlanarJoint_Base.LinearDOF_Impl.upperLimit</definition>
+        <argsstring></argsstring>
+        <name>upperLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="96" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1aad7ffaaa68c9b209f245d13945926494" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type>float</type>
+        <definition>float PlanarJoint_Base.LinearDOF_Impl.lowerLimit</definition>
+        <argsstring></argsstring>
+        <name>lowerLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="108" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1ad98600242429d3a178b821ba8b63e99f" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PlanarJoint_Base.LinearDOF_Impl.translationalAxis</definition>
+        <argsstring></argsstring>
+        <name>translationalAxis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="120" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="property" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1a9e2f7db924019ee4f7f6053c0470aa95" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="yes" privatesettable="no" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PlanarJoint_Base.LinearDOF_Impl.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="137" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_planar_joint___base_1_1_linear_d_o_f___impl_1a890a2af4bc026a9964097cf697a88fbd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PlanarJoint_Base.LinearDOF_Impl.LinearDOF_Impl</definition>
+        <argsstring>(PlanarJoint_Base pjb, int axis)</argsstring>
+        <name>LinearDOF_Impl</name>
+        <param>
+          <type><ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref></type>
+          <declname>pjb</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>axis</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="82" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="82" bodyend="86"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="118">
+        <label>PlanarJoint_Base.LinearDOF_Impl</label>
+        <childnode refid="119" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="119">
+        <label>LinearDOF</label>
+        <link refid="interface_linear_d_o_f"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="120">
+        <label>PlanarJoint_Base.LinearDOF_Impl</label>
+        <childnode refid="121" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="121">
+        <label>LinearDOF</label>
+        <link refid="interface_linear_d_o_f"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" line="79" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/PlanarJoint_Base.cs" bodystart="78" bodyend="148"/>
+    <listofallmembers>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1a67880c25e180f0efa4d341f9f01c275f" prot="private" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>axis</name></member>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1a9e2f7db924019ee4f7f6053c0470aa95" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>basePoint</name></member>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1af4a737badc4e644a5b45480eb44315e3" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>currentPosition</name></member>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1a890a2af4bc026a9964097cf697a88fbd" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>LinearDOF_Impl</name></member>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1aad7ffaaa68c9b209f245d13945926494" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>lowerLimit</name></member>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1a5ee73cdac285053dc025d52fe2fad298" prot="private" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>pjb</name></member>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1ad98600242429d3a178b821ba8b63e99f" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>translationalAxis</name></member>
+      <member refid="class_planar_joint___base_1_1_linear_d_o_f___impl_1a22357cab4a2267956d8088ce2eb7dd95" prot="public" virt="non-virtual"><scope>PlanarJoint_Base::LinearDOF_Impl</scope><name>upperLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,383 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_cylindrical_joint___base" kind="class" language="C#" prot="public">
+    <compoundname>CylindricalJoint_Base</compoundname>
+    <basecompoundref refid="class_skeletal_joint___base" prot="public" virt="non-virtual">SkeletalJoint_Base</basecompoundref>
+    <innerclass refid="class_cylindrical_joint___base_1_1_angular_d_o_f___impl" prot="private">CylindricalJoint_Base::AngularDOF_Impl</innerclass>
+    <innerclass refid="class_cylindrical_joint___base_1_1_linear_d_o_f___impl" prot="private">CylindricalJoint_Base::LinearDOF_Impl</innerclass>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1af65e56a4fea5034e30bc9a941f33d77f" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 CylindricalJoint_Base.axis</definition>
+        <argsstring></argsstring>
+        <name>axis</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="148" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a11dcb60bbb23b4cc9fc7180c8b46ac06" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 CylindricalJoint_Base.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="149" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1af5ae7e41ecd0a6bdbd6d0ae633a658c1" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.currentLinearPosition</definition>
+        <argsstring></argsstring>
+        <name>currentLinearPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="151" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1ab6203bc71fd612888e16b7afc9a3dd83" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool CylindricalJoint_Base.hasAngularLimit</definition>
+        <argsstring></argsstring>
+        <name>hasAngularLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="153" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1abf267b50e83a827258694283b9cb45cd" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.angularLimitLow</definition>
+        <argsstring></argsstring>
+        <name>angularLimitLow</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="154" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a9ae105db01afb6be9dbaddb09131d6eb" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.angularLimitHigh</definition>
+        <argsstring></argsstring>
+        <name>angularLimitHigh</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="155" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a2e5e5d19c3efaa11f2fdbec471116f01" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool CylindricalJoint_Base.hasLinearStartLimit</definition>
+        <argsstring></argsstring>
+        <name>hasLinearStartLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="156" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a521f572c3fd27cfb5e5a13cefbc1e966" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool CylindricalJoint_Base.hasLinearEndLimit</definition>
+        <argsstring></argsstring>
+        <name>hasLinearEndLimit</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="157" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="157" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a7cb20f8cd4a158bbabcdf613ae22a6f5" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.linearLimitStart</definition>
+        <argsstring></argsstring>
+        <name>linearLimitStart</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="158" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="158" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a10554ce2bb84a72c81c3b7191a1d6d17" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.linearLimitEnd</definition>
+        <argsstring></argsstring>
+        <name>linearLimitEnd</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="159" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a6a8b033d4b4c953b0b84b772b7ac602d" prot="private" static="no" mutable="no">
+        <type>float</type>
+        <definition>float CylindricalJoint_Base.currentAngularPosition</definition>
+        <argsstring></argsstring>
+        <name>currentAngularPosition</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="151" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="151" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a6426cfc5074c43d99e3acda84f0befc5" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref> []</type>
+        <definition>readonly LinearDOF [] CylindricalJoint_Base.linearDOF</definition>
+        <argsstring></argsstring>
+        <name>linearDOF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="161" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="161" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_cylindrical_joint___base_1a48321686e28f2bd0df79d1b4513310b8" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="interface_angular_d_o_f" kindref="compound">AngularDOF</ref> []</type>
+        <definition>readonly AngularDOF [] CylindricalJoint_Base.angularDOF</definition>
+        <argsstring></argsstring>
+        <name>angularDOF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="162" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="162" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_cylindrical_joint___base_1a8fae9a0bb8577d858f91ccba283014fe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>CylindricalJoint_Base.CylindricalJoint_Base</definition>
+        <argsstring>()</argsstring>
+        <name>CylindricalJoint_Base</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="164" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="164" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="class_cylindrical_joint___base_1a1ee432bc31e0ee98266169233210e621" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override SkeletalJointType</type>
+        <definition>override SkeletalJointType CylindricalJoint_Base.GetJointType</definition>
+        <argsstring>()</argsstring>
+        <name>GetJointType</name>
+        <reimplements refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">GetJointType</reimplements>
+        <briefdescription>
+<para>The type of this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The joint type</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="170" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="170" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="function" id="class_cylindrical_joint___base_1a2d7031bde80932c01af131b341708e1a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void CylindricalJoint_Base.EnforceOrder</definition>
+        <argsstring>()</argsstring>
+        <name>EnforceOrder</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="234" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="234" bodyend="248"/>
+      </memberdef>
+      <memberdef kind="function" id="class_cylindrical_joint___base_1a9eba59edd9ac877a3be28e652b364b59" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override IEnumerable&lt; <ref refid="interface_angular_d_o_f" kindref="compound">AngularDOF</ref> &gt;</type>
+        <definition>override IEnumerable&lt;AngularDOF&gt; CylindricalJoint_Base.GetAngularDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetAngularDOF</name>
+        <reimplements refid="class_skeletal_joint___base_1abf96267052733ccf001e0b092c6582f8">GetAngularDOF</reimplements>
+        <briefdescription>
+<para>Gets all the angular degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The angular degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="250" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="250" bodyend="253"/>
+      </memberdef>
+      <memberdef kind="function" id="class_cylindrical_joint___base_1a5e10f664ba08afb2788e2251831c8246" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override IEnumerable&lt; <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref> &gt;</type>
+        <definition>override IEnumerable&lt;LinearDOF&gt; CylindricalJoint_Base.GetLinearDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetLinearDOF</name>
+        <reimplements refid="class_skeletal_joint___base_1a14564d8c44dfeef8b7a10044f2392cde">GetLinearDOF</reimplements>
+        <briefdescription>
+<para>Gets all the linear degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The linear degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="255" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="255" bodyend="258"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_cylindrical_joint___base_1ade950608be33bd1a4d9986d1789067b9" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void CylindricalJoint_Base.WriteBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryJointInternal</name>
+        <reimplements refid="class_skeletal_joint___base_1a2d98672b13221f6a7f95f24c121c6b10">WriteBinaryJointInternal</reimplements>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="175" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="175" bodyend="201"/>
+      </memberdef>
+      <memberdef kind="function" id="class_cylindrical_joint___base_1a2c5b9f4e9be175b9dabaf55fb150235e" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void CylindricalJoint_Base.ReadBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryJointInternal</name>
+        <reimplements refid="class_skeletal_joint___base_1aebacae4579db784149dcb6123820a4fb">ReadBinaryJointInternal</reimplements>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="203" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="203" bodyend="232"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Contains DOF information for a cylindrical joint. (1 angular and 1 linear) </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="71">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+      </node>
+      <node id="70">
+        <label>CylindricalJoint_Base</label>
+        <link refid="class_cylindrical_joint___base"/>
+        <childnode refid="71" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="76">
+        <label>IComparable&lt; JointDriver &gt;</label>
+      </node>
+      <node id="77">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="75" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="74">
+        <label>JointDriver</label>
+        <link refid="class_joint_driver"/>
+        <childnode refid="75" relation="public-inheritance">
+        </childnode>
+        <childnode refid="76" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="73">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+        <childnode refid="74" relation="usage">
+          <edgelabel>cDriver</edgelabel>
+        </childnode>
+      </node>
+      <node id="75">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+      <node id="72">
+        <label>CylindricalJoint_Base</label>
+        <link refid="class_cylindrical_joint___base"/>
+        <childnode refid="73" relation="public-inheritance">
+        </childnode>
+        <childnode refid="77" relation="usage">
+          <edgelabel>basePoint</edgelabel>
+          <edgelabel>axis</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" line="7" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/CylindricalJoint_Base.cs" bodystart="6" bodyend="259"/>
+    <listofallmembers>
+      <member refid="class_cylindrical_joint___base_1a48321686e28f2bd0df79d1b4513310b8" prot="private" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>angularDOF</name></member>
+      <member refid="class_cylindrical_joint___base_1a9ae105db01afb6be9dbaddb09131d6eb" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>angularLimitHigh</name></member>
+      <member refid="class_cylindrical_joint___base_1abf267b50e83a827258694283b9cb45cd" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>angularLimitLow</name></member>
+      <member refid="class_skeletal_joint___base_1aaeb09af11a9640ec8d144f825f56c81a" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>attachedSensors</name></member>
+      <member refid="class_cylindrical_joint___base_1af65e56a4fea5034e30bc9a941f33d77f" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>axis</name></member>
+      <member refid="class_cylindrical_joint___base_1a11dcb60bbb23b4cc9fc7180c8b46ac06" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>basePoint</name></member>
+      <member refid="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>cDriver</name></member>
+      <member refid="class_cylindrical_joint___base_1a6a8b033d4b4c953b0b84b772b7ac602d" prot="private" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>currentAngularPosition</name></member>
+      <member refid="class_cylindrical_joint___base_1af5ae7e41ecd0a6bdbd6d0ae633a658c1" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>currentLinearPosition</name></member>
+      <member refid="class_cylindrical_joint___base_1a8fae9a0bb8577d858f91ccba283014fe" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>CylindricalJoint_Base</name></member>
+      <member refid="class_cylindrical_joint___base_1a2d7031bde80932c01af131b341708e1a" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>EnforceOrder</name></member>
+      <member refid="class_cylindrical_joint___base_1a9eba59edd9ac877a3be28e652b364b59" prot="public" virt="virtual"><scope>CylindricalJoint_Base</scope><name>GetAngularDOF</name></member>
+      <member refid="class_cylindrical_joint___base_1a1ee432bc31e0ee98266169233210e621" prot="public" virt="virtual"><scope>CylindricalJoint_Base</scope><name>GetJointType</name></member>
+      <member refid="class_cylindrical_joint___base_1a5e10f664ba08afb2788e2251831c8246" prot="public" virt="virtual"><scope>CylindricalJoint_Base</scope><name>GetLinearDOF</name></member>
+      <member refid="class_cylindrical_joint___base_1ab6203bc71fd612888e16b7afc9a3dd83" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>hasAngularLimit</name></member>
+      <member refid="class_cylindrical_joint___base_1a521f572c3fd27cfb5e5a13cefbc1e966" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>hasLinearEndLimit</name></member>
+      <member refid="class_cylindrical_joint___base_1a2e5e5d19c3efaa11f2fdbec471116f01" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>hasLinearStartLimit</name></member>
+      <member refid="class_skeletal_joint___base_1a590ba897b9331ad634a26101e27d18ed" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>JOINT_FACTORY</name></member>
+      <member refid="class_cylindrical_joint___base_1a6426cfc5074c43d99e3acda84f0befc5" prot="private" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>linearDOF</name></member>
+      <member refid="class_cylindrical_joint___base_1a10554ce2bb84a72c81c3b7191a1d6d17" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>linearLimitEnd</name></member>
+      <member refid="class_cylindrical_joint___base_1a7cb20f8cd4a158bbabcdf613ae22a6f5" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>linearLimitStart</name></member>
+      <member refid="class_skeletal_joint___base_1acf7787e56af14f0919e1d76008b6a19c" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>ReadBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a7f71e5afc3b791ffed1bd040425737ef" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>ReadBinaryJoint</name></member>
+      <member refid="class_cylindrical_joint___base_1a2c5b9f4e9be175b9dabaf55fb150235e" prot="protected" virt="virtual"><scope>CylindricalJoint_Base</scope><name>ReadBinaryJointInternal</name></member>
+      <member refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>ReadJointFully</name></member>
+      <member refid="class_skeletal_joint___base_1aac5116bb70fb19058943811a19951848" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>SkeletalJointFactory</name></member>
+      <member refid="class_skeletal_joint___base_1a0bf3f7cc69c3965e7f3beecc14bec4d0" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>ToString</name></member>
+      <member refid="class_skeletal_joint___base_1a3617349ae11146f48876525ed601c33e" prot="protected" virt="virtual"><scope>CylindricalJoint_Base</scope><name>ToString_Internal</name></member>
+      <member refid="class_skeletal_joint___base_1a33a745c57346c6d67c52a7ad61816a09" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>WriteBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" prot="public" virt="non-virtual"><scope>CylindricalJoint_Base</scope><name>WriteBinaryJoint</name></member>
+      <member refid="class_cylindrical_joint___base_1ade950608be33bd1a4d9986d1789067b9" prot="protected" virt="virtual"><scope>CylindricalJoint_Base</scope><name>WriteBinaryJointInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

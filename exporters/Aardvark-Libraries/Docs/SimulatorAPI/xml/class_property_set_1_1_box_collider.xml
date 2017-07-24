@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_property_set_1_1_box_collider" kind="class" language="C#" prot="public">
+    <compoundname>PropertySet::BoxCollider</compoundname>
+    <basecompoundref refid="class_property_set_1_1_property_set_collider" prot="public" virt="non-virtual">PropertySet.PropertySetCollider</basecompoundref>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_property_set_1_1_box_collider_1aa77e5fea4e959ffde2763e74383ac70f" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 PropertySet.BoxCollider.Scale</definition>
+        <argsstring></argsstring>
+        <name>Scale</name>
+        <briefdescription>
+<para>The scale of the <ref refid="class_property_set_1_1_box_collider" kindref="compound">BoxCollider</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="61" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_property_set_1_1_box_collider_1af1689637045a1715e6bb07c83e7e7a65" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PropertySet.BoxCollider.BoxCollider</definition>
+        <argsstring>(BXDVector3 scale)</argsstring>
+        <name>BoxCollider</name>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>scale</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_property_set_1_1_box_collider" kindref="compound">BoxCollider</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="70" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="70" bodyend="74"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="42">
+        <label>PropertySet.BoxCollider</label>
+        <link refid="class_property_set_1_1_box_collider"/>
+        <childnode refid="43" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="44">
+        <label>PropertySet.BoxCollider</label>
+        <link refid="class_property_set_1_1_box_collider"/>
+        <childnode refid="45" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="57" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="56" bodyend="75"/>
+    <listofallmembers>
+      <member refid="class_property_set_1_1_box_collider_1af1689637045a1715e6bb07c83e7e7a65" prot="public" virt="non-virtual"><scope>PropertySet::BoxCollider</scope><name>BoxCollider</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a68838b774adc4d08f1b07c819263f90b" prot="public" virt="non-virtual"><scope>PropertySet::BoxCollider</scope><name>CollisionType</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a47197ffe129e18b56ee893e3f1a5832e" prot="public" virt="non-virtual"><scope>PropertySet::BoxCollider</scope><name>PropertySetCollider</name></member>
+      <member refid="class_property_set_1_1_property_set_collider_1a6c640ed4b9ab14dffc7da13b1e4bf51e" prot="public" virt="non-virtual"><scope>PropertySet::BoxCollider</scope><name>PropertySetCollisionType</name></member>
+      <member refid="class_property_set_1_1_box_collider_1aa77e5fea4e959ffde2763e74383ac70f" prot="public" virt="non-virtual"><scope>PropertySet::BoxCollider</scope><name>Scale</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

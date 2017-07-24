@@ -1,0 +1,437 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_skeletal_joint___base" kind="class" language="C#" prot="public" abstract="yes">
+    <compoundname>SkeletalJoint_Base</compoundname>
+    <derivedcompoundref refid="class_ball_joint___base" prot="public" virt="non-virtual">BallJoint_Base</derivedcompoundref>
+    <derivedcompoundref refid="class_cylindrical_joint___base" prot="public" virt="non-virtual">CylindricalJoint_Base</derivedcompoundref>
+    <derivedcompoundref refid="class_linear_joint___base" prot="public" virt="non-virtual">LinearJoint_Base</derivedcompoundref>
+    <derivedcompoundref refid="class_planar_joint___base" prot="public" virt="non-virtual">PlanarJoint_Base</derivedcompoundref>
+    <derivedcompoundref refid="class_rotational_joint___base" prot="public" virt="non-virtual">RotationalJoint_Base</derivedcompoundref>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="class_skeletal_joint___base_1a590ba897b9331ad634a26101e27d18ed" prot="public" static="yes" mutable="no">
+        <type><ref refid="class_skeletal_joint___base_1aac5116bb70fb19058943811a19951848" kindref="member">SkeletalJointFactory</ref></type>
+        <definition>SkeletalJointFactory SkeletalJoint_Base.JOINT_FACTORY</definition>
+        <argsstring></argsstring>
+        <name>JOINT_FACTORY</name>
+        <initializer>= delegate(SkeletalJointType type)
+    {
+        switch (type)
+        {
+            case SkeletalJointType.ROTATIONAL:
+                return new <ref refid="class_rotational_joint___base" kindref="compound">RotationalJoint_Base</ref>();
+            case SkeletalJointType.LINEAR:
+                return new <ref refid="class_linear_joint___base" kindref="compound">LinearJoint_Base</ref>();
+            case SkeletalJointType.CYLINDRICAL:
+                return new <ref refid="class_cylindrical_joint___base" kindref="compound">CylindricalJoint_Base</ref>();
+            case SkeletalJointType.PLANAR:
+                return new <ref refid="class_planar_joint___base" kindref="compound">PlanarJoint_Base</ref>();
+            case SkeletalJointType.BALL:
+                return new <ref refid="class_ball_joint___base" kindref="compound">BallJoint_Base</ref>();
+            default:
+                return null;
+        }
+    }</initializer>
+        <briefdescription>
+<para>Factory object used to create skeletal joint objects when reading skeletons from a file. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="31" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="31" bodyend="-1"/>
+        <referencedby refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" compoundref="_skeletal_joint___base_8cs" startline="130" endline="136">ReadJointFully</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" prot="public" static="no" mutable="no">
+        <type><ref refid="class_joint_driver" kindref="compound">JointDriver</ref></type>
+        <definition>JointDriver SkeletalJoint_Base.cDriver</definition>
+        <argsstring></argsstring>
+        <name>cDriver</name>
+        <briefdescription>
+<para>The joint driver for this joint. This can be null. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="53" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="53" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" compoundref="_b_x_d_j_skeleton_8cs" startline="508" endline="542">BXDJSkeleton.CloneDriversFromTo</referencedby>
+        <referencedby refid="class_rigid_node___base_1a98a362b9ae0cf05e4c1f9db70bcf89c5" compoundref="_rigid_node___base_8cs" startline="118" endline="121">RigidNode_Base.GetModelID</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_skeletal_joint___base_1aaeb09af11a9640ec8d144f825f56c81a" prot="public" static="no" mutable="no">
+        <type>List&lt; <ref refid="class_robot_sensor" kindref="compound">RobotSensor</ref> &gt;</type>
+        <definition>List&lt;RobotSensor&gt; SkeletalJoint_Base.attachedSensors</definition>
+        <argsstring></argsstring>
+        <name>attachedSensors</name>
+        <initializer>= new List&lt;<ref refid="class_robot_sensor" kindref="compound">RobotSensor</ref>&gt;()</initializer>
+        <briefdescription>
+<para>The sensors that read information from this joint. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="58" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="58" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" compoundref="_b_x_d_j_skeleton_8cs" startline="508" endline="542">BXDJSkeleton.CloneDriversFromTo</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_skeletal_joint___base_1aac5116bb70fb19058943811a19951848" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate <ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref></type>
+        <definition>delegate SkeletalJoint_Base SkeletalJoint_Base.SkeletalJointFactory</definition>
+        <argsstring>(SkeletalJointType type)</argsstring>
+        <name>SkeletalJointFactory</name>
+        <param>
+          <type>SkeletalJointType</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Generic delegate for creating skeletal joints from a joint type. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="26" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>abstract SkeletalJointType</type>
+        <definition>abstract SkeletalJointType SkeletalJoint_Base.GetJointType</definition>
+        <argsstring>()</argsstring>
+        <name>GetJointType</name>
+        <reimplementedby refid="class_ball_joint___base_1a8bbdf57f42fe5bf6045c7accfb72993c">GetJointType</reimplementedby>
+        <reimplementedby refid="class_linear_joint___base_1aa162de1777f1daaa7ca2234fc6a913ab">GetJointType</reimplementedby>
+        <reimplementedby refid="class_rotational_joint___base_1a58b8ae858b3f342302b5a28412ecac6b">GetJointType</reimplementedby>
+        <reimplementedby refid="class_planar_joint___base_1ab4646593b8f3d4b0ef7ddd86e783405e">GetJointType</reimplementedby>
+        <reimplementedby refid="class_cylindrical_joint___base_1a1ee432bc31e0ee98266169233210e621">GetJointType</reimplementedby>
+        <briefdescription>
+<para>The type of this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The joint type</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="64" column="1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" compoundref="_b_x_d_j_skeleton_8cs" startline="508" endline="542">BXDJSkeleton.CloneDriversFromTo</referencedby>
+        <referencedby refid="class_joint_driver_1adea8023e289a40e4d232cbac87e6a6e3" compoundref="_joint_driver_8cs" startline="133" endline="153">JointDriver.GetAllowedDrivers</referencedby>
+        <referencedby refid="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" compoundref="_skeletal_joint___base_8cs" startline="81" endline="95">WriteBinaryJoint</referencedby>
+        <referencedby refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" compoundref="_skeletal_joint___base_8cs" startline="130" endline="136">ReadJointFully</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1abf96267052733ccf001e0b092c6582f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>abstract IEnumerable&lt; <ref refid="interface_angular_d_o_f" kindref="compound">AngularDOF</ref> &gt;</type>
+        <definition>abstract IEnumerable&lt;AngularDOF&gt; SkeletalJoint_Base.GetAngularDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetAngularDOF</name>
+        <reimplementedby refid="class_ball_joint___base_1a9bf9eac2eee14ae92bb723aabf60caa9">GetAngularDOF</reimplementedby>
+        <reimplementedby refid="class_rotational_joint___base_1aead83dd768acf451c3761f49e393cc35">GetAngularDOF</reimplementedby>
+        <reimplementedby refid="class_linear_joint___base_1a4f814a5b27b53d3d01ad39adbcd2b0bf">GetAngularDOF</reimplementedby>
+        <reimplementedby refid="class_planar_joint___base_1ad773d6e627d22530181faf6d8654161a">GetAngularDOF</reimplementedby>
+        <reimplementedby refid="class_cylindrical_joint___base_1a9eba59edd9ac877a3be28e652b364b59">GetAngularDOF</reimplementedby>
+        <briefdescription>
+<para>Gets all the angular degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The angular degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="70" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1a14564d8c44dfeef8b7a10044f2392cde" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>abstract IEnumerable&lt; <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref> &gt;</type>
+        <definition>abstract IEnumerable&lt;LinearDOF&gt; SkeletalJoint_Base.GetLinearDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetLinearDOF</name>
+        <reimplementedby refid="class_ball_joint___base_1ae3bcfcc633282ab053048b39ba1c8b8d">GetLinearDOF</reimplementedby>
+        <reimplementedby refid="class_rotational_joint___base_1a887b07a072831dd6af60ded53e3a461e">GetLinearDOF</reimplementedby>
+        <reimplementedby refid="class_linear_joint___base_1ad506a9bf378650ab1d6cdedab91ed2a5">GetLinearDOF</reimplementedby>
+        <reimplementedby refid="class_planar_joint___base_1a50dcc45fbe13093f40b7eeef117e8f16">GetLinearDOF</reimplementedby>
+        <reimplementedby refid="class_cylindrical_joint___base_1a5e10f664ba08afb2788e2251831c8246">GetLinearDOF</reimplementedby>
+        <briefdescription>
+<para>Gets all the linear degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The linear degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="75" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkeletalJoint_Base.WriteBinaryJoint</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryJoint</name>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Writes the backing information and ID for this joint to the output stream. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="81" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="81" bodyend="95"/>
+        <references refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">GetJointType</references>
+        <references refid="class_joint_driver_1a36d6deba7dec0475dc06ab5d87c3e7e2" compoundref="_joint_driver_8cs" startline="207" endline="220">JointDriver.WriteBinaryData</references>
+        <referencedby refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" compoundref="_skeletal_joint___base_8cs" startline="130" endline="136">ReadJointFully</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1a7f71e5afc3b791ffed1bd040425737ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkeletalJoint_Base.ReadBinaryJoint</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryJoint</name>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads the backing information for this joint from the input stream. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="102" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="102" bodyend="122"/>
+        <references refid="class_joint_driver_1a1db6f1668ea9122fb0e5d3f0aaa3f621" compoundref="_joint_driver_8cs" startline="226" endline="241">JointDriver.ReadBinaryData</references>
+        <referencedby refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" compoundref="_skeletal_joint___base_8cs" startline="130" endline="136">ReadJointFully</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1a0bf3f7cc69c3965e7f3beecc14bec4d0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override string</type>
+        <definition>override string SkeletalJoint_Base.ToString</definition>
+        <argsstring>()</argsstring>
+        <name>ToString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="143" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="143" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1a33a745c57346c6d67c52a7ad61816a09" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkeletalJoint_Base.WriteBinaryData</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryData</name>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="153" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="153" bodyend="156"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1acf7787e56af14f0919e1d76008b6a19c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void SkeletalJoint_Base.ReadBinaryData</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryData</name>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="158" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="158" bodyend="161"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_skeletal_joint___base_1a2d98672b13221f6a7f95f24c121c6b10" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>abstract void</type>
+        <definition>abstract void SkeletalJoint_Base.WriteBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryJointInternal</name>
+        <reimplementedby refid="class_ball_joint___base_1ac724b4ce1a84059a337a67e7b2848bbe">WriteBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_linear_joint___base_1a132d39963128ea2f94e7c3de6065746b">WriteBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_rotational_joint___base_1a4d92febe9d2e4091063414aebe56088c">WriteBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_planar_joint___base_1a831827ed4d8f810611c0860446280285">WriteBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_cylindrical_joint___base_1ade950608be33bd1a4d9986d1789067b9">WriteBinaryJointInternal</reimplementedby>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="96" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1aebacae4579db784149dcb6123820a4fb" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>abstract void</type>
+        <definition>abstract void SkeletalJoint_Base.ReadBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryJointInternal</name>
+        <reimplementedby refid="class_ball_joint___base_1a5ee0a55d4209a3747b7cebbdb5eb9932">ReadBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_rotational_joint___base_1ac40e374dafc390b533e69ca4803453cf">ReadBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_linear_joint___base_1ac2daa8ce486de04d24af7dc6cfc289d8">ReadBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_planar_joint___base_1a2b7306933fc260ea8dce40477adb367e">ReadBinaryJointInternal</reimplementedby>
+        <reimplementedby refid="class_cylindrical_joint___base_1a2c5b9f4e9be175b9dabaf55fb150235e">ReadBinaryJointInternal</reimplementedby>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="123" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_skeletal_joint___base_1a3617349ae11146f48876525ed601c33e" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>string</type>
+        <definition>virtual string SkeletalJoint_Base.ToString_Internal</definition>
+        <argsstring>()</argsstring>
+        <name>ToString_Internal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="138" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="138" bodyend="141"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref></type>
+        <definition>static SkeletalJoint_Base SkeletalJoint_Base.ReadJointFully</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadJointFully</name>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Identifies the type of a joint, creates an instance, and reads that joint from the given input stream. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The created joint</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="130" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="130" bodyend="136"/>
+        <references refid="class_skeletal_joint___base_1a590ba897b9331ad634a26101e27d18ed" compoundref="_skeletal_joint___base_8cs" startline="31">JOINT_FACTORY</references>
+        <references refid="class_skeletal_joint___base_1a7f71e5afc3b791ffed1bd040425737ef" compoundref="_skeletal_joint___base_8cs" startline="102" endline="122">ReadBinaryJoint</references>
+        <references refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">GetJointType</references>
+        <references refid="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" compoundref="_skeletal_joint___base_8cs" startline="81" endline="95">WriteBinaryJoint</references>
+        <referencedby refid="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" compoundref="_b_x_d_j_skeleton_8cs" startline="438" endline="501">BXDJSkeleton.ReadBinarySkeleton</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Represents a moving joint between two nodes. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="185">
+        <label>RotationalJoint_Base</label>
+        <link refid="class_rotational_joint___base"/>
+        <childnode refid="180" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="183">
+        <label>LinearJoint_Base</label>
+        <link refid="class_linear_joint___base"/>
+        <childnode refid="180" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="184">
+        <label>PlanarJoint_Base</label>
+        <link refid="class_planar_joint___base"/>
+        <childnode refid="180" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="181">
+        <label>BallJoint_Base</label>
+        <link refid="class_ball_joint___base"/>
+        <childnode refid="180" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="180">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+      </node>
+      <node id="182">
+        <label>CylindricalJoint_Base</label>
+        <link refid="class_cylindrical_joint___base"/>
+        <childnode refid="180" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="189">
+        <label>IComparable&lt; JointDriver &gt;</label>
+      </node>
+      <node id="187">
+        <label>JointDriver</label>
+        <link refid="class_joint_driver"/>
+        <childnode refid="188" relation="public-inheritance">
+        </childnode>
+        <childnode refid="189" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="186">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+        <childnode refid="187" relation="usage">
+          <edgelabel>cDriver</edgelabel>
+        </childnode>
+      </node>
+      <node id="188">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" line="22" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/SkeletalJoint_Base.cs" bodystart="21" bodyend="162"/>
+    <listofallmembers>
+      <member refid="class_skeletal_joint___base_1aaeb09af11a9640ec8d144f825f56c81a" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>attachedSensors</name></member>
+      <member refid="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>cDriver</name></member>
+      <member refid="class_skeletal_joint___base_1abf96267052733ccf001e0b092c6582f8" prot="public" virt="pure-virtual"><scope>SkeletalJoint_Base</scope><name>GetAngularDOF</name></member>
+      <member refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335" prot="public" virt="pure-virtual"><scope>SkeletalJoint_Base</scope><name>GetJointType</name></member>
+      <member refid="class_skeletal_joint___base_1a14564d8c44dfeef8b7a10044f2392cde" prot="public" virt="pure-virtual"><scope>SkeletalJoint_Base</scope><name>GetLinearDOF</name></member>
+      <member refid="class_skeletal_joint___base_1a590ba897b9331ad634a26101e27d18ed" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>JOINT_FACTORY</name></member>
+      <member refid="class_skeletal_joint___base_1acf7787e56af14f0919e1d76008b6a19c" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>ReadBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a7f71e5afc3b791ffed1bd040425737ef" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>ReadBinaryJoint</name></member>
+      <member refid="class_skeletal_joint___base_1aebacae4579db784149dcb6123820a4fb" prot="protected" virt="pure-virtual"><scope>SkeletalJoint_Base</scope><name>ReadBinaryJointInternal</name></member>
+      <member refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>ReadJointFully</name></member>
+      <member refid="class_skeletal_joint___base_1aac5116bb70fb19058943811a19951848" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>SkeletalJointFactory</name></member>
+      <member refid="class_skeletal_joint___base_1a0bf3f7cc69c3965e7f3beecc14bec4d0" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>ToString</name></member>
+      <member refid="class_skeletal_joint___base_1a3617349ae11146f48876525ed601c33e" prot="protected" virt="virtual"><scope>SkeletalJoint_Base</scope><name>ToString_Internal</name></member>
+      <member refid="class_skeletal_joint___base_1a33a745c57346c6d67c52a7ad61816a09" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>WriteBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" prot="public" virt="non-virtual"><scope>SkeletalJoint_Base</scope><name>WriteBinaryJoint</name></member>
+      <member refid="class_skeletal_joint___base_1a2d98672b13221f6a7f95f24c121c6b10" prot="protected" virt="pure-virtual"><scope>SkeletalJoint_Base</scope><name>WriteBinaryJointInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

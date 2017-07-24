@@ -1,0 +1,216 @@
+.TH "SkeletalJoint_Base" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+SkeletalJoint_Base \- Represents a moving joint between two nodes\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBBallJoint_Base\fP, \fBCylindricalJoint_Base\fP, \fBLinearJoint_Base\fP, \fBPlanarJoint_Base\fP, and \fBRotationalJoint_Base\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "delegate \fBSkeletalJoint_Base\fP \fBSkeletalJointFactory\fP (SkeletalJointType type)"
+.br
+.RI "Generic delegate for creating skeletal joints from a joint type\&. "
+.ti -1c
+.RI "abstract SkeletalJointType \fBGetJointType\fP ()"
+.br
+.RI "The type of this joint\&. "
+.ti -1c
+.RI "abstract IEnumerable< \fBAngularDOF\fP > \fBGetAngularDOF\fP ()"
+.br
+.RI "Gets all the angular degrees of freedom for this joint\&. "
+.ti -1c
+.RI "abstract IEnumerable< \fBLinearDOF\fP > \fBGetLinearDOF\fP ()"
+.br
+.RI "Gets all the linear degrees of freedom for this joint\&. "
+.ti -1c
+.RI "void \fBWriteBinaryJoint\fP (System\&.IO\&.BinaryWriter writer)"
+.br
+.RI "Writes the backing information and ID for this joint to the output stream\&. "
+.ti -1c
+.RI "void \fBReadBinaryJoint\fP (System\&.IO\&.BinaryReader reader)"
+.br
+.RI "Reads the backing information for this joint from the input stream\&. "
+.ti -1c
+.RI "override string \fBToString\fP ()"
+.br
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (System\&.IO\&.BinaryWriter writer)"
+.br
+.ti -1c
+.RI "void \fBReadBinaryData\fP (System\&.IO\&.BinaryReader reader)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBSkeletalJoint_Base\fP \fBReadJointFully\fP (System\&.IO\&.BinaryReader reader)"
+.br
+.RI "Identifies the type of a joint, creates an instance, and reads that joint from the given input stream\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBJointDriver\fP \fBcDriver\fP"
+.br
+.RI "The joint driver for this joint\&. This can be null\&. "
+.ti -1c
+.RI "List< \fBRobotSensor\fP > \fBattachedSensors\fP = new List<\fBRobotSensor\fP>()"
+.br
+.RI "The sensors that read information from this joint\&. "
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static \fBSkeletalJointFactory\fP \fBJOINT_FACTORY\fP"
+.br
+.RI "Factory object used to create skeletal joint objects when reading skeletons from a file\&. "
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "abstract void \fBWriteBinaryJointInternal\fP (System\&.IO\&.BinaryWriter writer)"
+.br
+.ti -1c
+.RI "abstract void \fBReadBinaryJointInternal\fP (System\&.IO\&.BinaryReader reader)"
+.br
+.ti -1c
+.RI "virtual string \fBToString_Internal\fP ()"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Represents a moving joint between two nodes\&. 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "abstract IEnumerable<\fBAngularDOF\fP> SkeletalJoint_Base\&.GetAngularDOF ()\fC [pure virtual]\fP"
+
+.PP
+Gets all the angular degrees of freedom for this joint\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The angular degrees of freedom
+.RE
+.PP
+
+.PP
+Implemented in \fBCylindricalJoint_Base\fP, \fBPlanarJoint_Base\fP, \fBLinearJoint_Base\fP, \fBRotationalJoint_Base\fP, and \fBBallJoint_Base\fP\&.
+.SS "abstract SkeletalJointType SkeletalJoint_Base\&.GetJointType ()\fC [pure virtual]\fP"
+
+.PP
+The type of this joint\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The joint type
+.RE
+.PP
+
+.PP
+Implemented in \fBCylindricalJoint_Base\fP, \fBPlanarJoint_Base\fP, \fBRotationalJoint_Base\fP, \fBLinearJoint_Base\fP, and \fBBallJoint_Base\fP\&.
+.SS "abstract IEnumerable<\fBLinearDOF\fP> SkeletalJoint_Base\&.GetLinearDOF ()\fC [pure virtual]\fP"
+
+.PP
+Gets all the linear degrees of freedom for this joint\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The linear degrees of freedom
+.RE
+.PP
+
+.PP
+Implemented in \fBCylindricalJoint_Base\fP, \fBPlanarJoint_Base\fP, \fBLinearJoint_Base\fP, \fBRotationalJoint_Base\fP, and \fBBallJoint_Base\fP\&.
+.SS "void SkeletalJoint_Base\&.ReadBinaryJoint (System\&.IO\&.BinaryReader reader)"
+
+.PP
+Reads the backing information for this joint from the input stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP Input stream
+.RE
+.PP
+
+.SS "static \fBSkeletalJoint_Base\fP SkeletalJoint_Base\&.ReadJointFully (System\&.IO\&.BinaryReader reader)\fC [static]\fP"
+
+.PP
+Identifies the type of a joint, creates an instance, and reads that joint from the given input stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP Input stream
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The created joint
+.RE
+.PP
+
+.SS "delegate \fBSkeletalJoint_Base\fP SkeletalJoint_Base\&.SkeletalJointFactory (SkeletalJointType type)"
+
+.PP
+Generic delegate for creating skeletal joints from a joint type\&. 
+.SS "void SkeletalJoint_Base\&.WriteBinaryJoint (System\&.IO\&.BinaryWriter writer)"
+
+.PP
+Writes the backing information and ID for this joint to the output stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwriter\fP Output stream
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "List<\fBRobotSensor\fP> SkeletalJoint_Base\&.attachedSensors = new List<\fBRobotSensor\fP>()"
+
+.PP
+The sensors that read information from this joint\&. 
+.SS "\fBJointDriver\fP SkeletalJoint_Base\&.cDriver"
+
+.PP
+The joint driver for this joint\&. This can be null\&. 
+.SS "\fBSkeletalJointFactory\fP SkeletalJoint_Base\&.JOINT_FACTORY\fC [static]\fP"
+\fBInitial value:\fP
+.PP
+.nf
+= delegate(SkeletalJointType type)
+    {
+        switch (type)
+        {
+            case SkeletalJointType\&.ROTATIONAL:
+                return new RotationalJoint_Base();
+            case SkeletalJointType\&.LINEAR:
+                return new LinearJoint_Base();
+            case SkeletalJointType\&.CYLINDRICAL:
+                return new CylindricalJoint_Base();
+            case SkeletalJointType\&.PLANAR:
+                return new PlanarJoint_Base();
+            case SkeletalJointType\&.BALL:
+                return new BallJoint_Base();
+            default:
+                return null;
+        }
+    }
+.fi
+.PP
+Factory object used to create skeletal joint objects when reading skeletons from a file\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

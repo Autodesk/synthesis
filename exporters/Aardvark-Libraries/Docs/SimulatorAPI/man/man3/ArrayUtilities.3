@@ -1,0 +1,112 @@
+.TH "ArrayUtilities" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ArrayUtilities
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "delegate T \fBMakeVector2< T >\fP (double x, double y)"
+.br
+.ti -1c
+.RI "delegate T \fBMakeVector3< T >\fP (double x, double y, double z)"
+.br
+.ti -1c
+.RI "delegate T \fBMakeColor< T >\fP (byte r, byte g, byte b, byte a)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static T [] \fBWrapArray< T >\fP (MakeVector2< T > maker, double[] array)"
+.br
+.RI "Wraps the given array of 2D vector elements into an array of 2D vectors "
+.ti -1c
+.RI "static T [] \fBWrapArray< T >\fP (MakeVector3< T > maker, double[] array)"
+.br
+.RI "Wraps the given array of 3D vector elements into an array of 3D vectors "
+.ti -1c
+.RI "static T [] \fBWrapArray< T >\fP (MakeColor< T > maker, uint[] array)"
+.br
+.RI "Wraps the given array of 4D color elements into an array of colors "
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "static T [] ArrayUtilities\&.WrapArray< T > (MakeVector2< T > maker, double [] array)\fC [static]\fP"
+
+.PP
+Wraps the given array of 2D vector elements into an array of 2D vectors 
+.PP
+\fBTemplate Parameters:\fP
+.RS 4
+\fIT\fP The type to create
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImaker\fP The delegate to create an instance
+.br
+\fIarray\fP The vector element array
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The wrapped array
+.RE
+.PP
+
+.SS "static T [] ArrayUtilities\&.WrapArray< T > (MakeVector3< T > maker, double [] array)\fC [static]\fP"
+
+.PP
+Wraps the given array of 3D vector elements into an array of 3D vectors 
+.PP
+\fBTemplate Parameters:\fP
+.RS 4
+\fIT\fP The type to create
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImaker\fP The delegate to create an instance
+.br
+\fIarray\fP The vector element array
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The wrapped array
+.RE
+.PP
+
+.SS "static T [] ArrayUtilities\&.WrapArray< T > (MakeColor< T > maker, uint [] array)\fC [static]\fP"
+
+.PP
+Wraps the given array of 4D color elements into an array of colors 
+.PP
+\fBTemplate Parameters:\fP
+.RS 4
+\fIT\fP The type to create
+.RE
+.PP
+\fBParameters:\fP
+.RS 4
+\fImaker\fP The delegate to create an instance
+.br
+\fIarray\fP The vector element array
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The wrapped array
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

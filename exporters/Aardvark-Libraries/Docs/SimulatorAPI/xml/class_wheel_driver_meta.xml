@@ -1,0 +1,323 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_wheel_driver_meta" kind="class" language="C#" prot="public">
+    <compoundname>WheelDriverMeta</compoundname>
+    <basecompoundref refid="class_joint_driver_meta" prot="public" virt="non-virtual">JointDriverMeta</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a16174de8148d977c6de0fc368b8b02e9" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.radius</definition>
+        <argsstring></argsstring>
+        <name>radius</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="23" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="23" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a386599e30917a8d9e472463b6384b239" prot="public" static="no" mutable="no">
+        <type>WheelType</type>
+        <definition>WheelType WheelDriverMeta.type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="24" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="24" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1aa623e68e9b43b803a78303cac5211db4" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.width</definition>
+        <argsstring></argsstring>
+        <name>width</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="25" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1adef8c18107abe46e054349479483a40e" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 WheelDriverMeta.center</definition>
+        <argsstring></argsstring>
+        <name>center</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="26" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="26" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a58c022beb2895ef546500f6eddc0161e" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.forwardExtremeSlip</definition>
+        <argsstring></argsstring>
+        <name>forwardExtremeSlip</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="28" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="28" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1ace2d9eb1ce6a320769c08517ddf90fbe" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.forwardExtremeValue</definition>
+        <argsstring></argsstring>
+        <name>forwardExtremeValue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="29" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="29" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a203160f522232879c642d4f3a9ee86f5" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.forwardAsympSlip</definition>
+        <argsstring></argsstring>
+        <name>forwardAsympSlip</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="30" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a123f50475e52c681f91b43124f8922a9" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.forwardAsympValue</definition>
+        <argsstring></argsstring>
+        <name>forwardAsympValue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="31" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a30a32ce5668b64b1aae9afcb2b7772c9" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.sideExtremeSlip</definition>
+        <argsstring></argsstring>
+        <name>sideExtremeSlip</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="32" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a9a277e7fcb861de0411e9b8fb0fce455" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.sideExtremeValue</definition>
+        <argsstring></argsstring>
+        <name>sideExtremeValue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="33" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a15f21214d217d7e6fee5f71ebefc2a43" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.sideAsympSlip</definition>
+        <argsstring></argsstring>
+        <name>sideAsympSlip</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="34" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1a48cfe76c77087b20f77adb16e6376344" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float WheelDriverMeta.sideAsympValue</definition>
+        <argsstring></argsstring>
+        <name>sideAsympValue</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="35" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_wheel_driver_meta_1aa1a7a8ccf7c87d1f39e2ce11f739d983" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool WheelDriverMeta.isDriveWheel</definition>
+        <argsstring></argsstring>
+        <name>isDriveWheel</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="36" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_wheel_driver_meta_1a4e7448358acc54fb1d60c32997b64cce" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>WheelDriverMeta.WheelDriverMeta</definition>
+        <argsstring>()</argsstring>
+        <name>WheelDriverMeta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="37" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="37" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="class_wheel_driver_meta_1a030e792ff0478d5023ab3f65a6e982c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>string</type>
+        <definition>string WheelDriverMeta.GetTypeString</definition>
+        <argsstring>()</argsstring>
+        <name>GetTypeString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="82" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="82" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="class_wheel_driver_meta_1a42e0ef28c13d44c3825e947c5543f1b6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override string</type>
+        <definition>override string WheelDriverMeta.ToString</definition>
+        <argsstring>()</argsstring>
+        <name>ToString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="95" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="95" bodyend="98"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_wheel_driver_meta_1af16c093144351806dac1b82cf086accd" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void WheelDriverMeta.WriteDataInternal</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteDataInternal</name>
+        <reimplements refid="class_joint_driver_meta_1adf4e26898611dfdce9cd65190100b4f5">WriteDataInternal</reimplements>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="43" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="43" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="class_wheel_driver_meta_1abbe82770a8ba8730635ecf39490fd476" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void WheelDriverMeta.ReadDataInternal</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadDataInternal</name>
+        <reimplements refid="class_joint_driver_meta_1a3f0af9deabeff7ea433a7e43689ddfa6">ReadDataInternal</reimplements>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="63" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="63" bodyend="80"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Stores the variables concerning a wheel, such as its position (which may be removed later) and radius. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="194">
+        <label>WheelDriverMeta</label>
+        <link refid="class_wheel_driver_meta"/>
+        <childnode refid="195" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="195">
+        <label>JointDriverMeta</label>
+        <link refid="class_joint_driver_meta"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="196">
+        <label>WheelDriverMeta</label>
+        <link refid="class_wheel_driver_meta"/>
+        <childnode refid="197" relation="public-inheritance">
+        </childnode>
+        <childnode refid="198" relation="usage">
+          <edgelabel>center</edgelabel>
+        </childnode>
+      </node>
+      <node id="198">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="199" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="197">
+        <label>JointDriverMeta</label>
+        <link refid="class_joint_driver_meta"/>
+      </node>
+      <node id="199">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" line="22" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/WheelDriverMeta.cs" bodystart="21" bodyend="100"/>
+    <listofallmembers>
+      <member refid="class_wheel_driver_meta_1adef8c18107abe46e054349479483a40e" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>center</name></member>
+      <member refid="class_wheel_driver_meta_1a203160f522232879c642d4f3a9ee86f5" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>forwardAsympSlip</name></member>
+      <member refid="class_wheel_driver_meta_1a123f50475e52c681f91b43124f8922a9" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>forwardAsympValue</name></member>
+      <member refid="class_wheel_driver_meta_1a58c022beb2895ef546500f6eddc0161e" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>forwardExtremeSlip</name></member>
+      <member refid="class_wheel_driver_meta_1ace2d9eb1ce6a320769c08517ddf90fbe" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>forwardExtremeValue</name></member>
+      <member refid="class_joint_driver_meta_1ab05346b958156ad0cbb9f908c19fa838" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>GetID</name></member>
+      <member refid="class_wheel_driver_meta_1a030e792ff0478d5023ab3f65a6e982c1" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>GetTypeString</name></member>
+      <member refid="class_wheel_driver_meta_1aa1a7a8ccf7c87d1f39e2ce11f739d983" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>isDriveWheel</name></member>
+      <member refid="class_joint_driver_meta_1aca600ea13be10ec808f61deee5f559f9" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>JOINT_DRIVER_META_TYPES</name></member>
+      <member refid="class_wheel_driver_meta_1a16174de8148d977c6de0fc368b8b02e9" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>radius</name></member>
+      <member refid="class_wheel_driver_meta_1abbe82770a8ba8730635ecf39490fd476" prot="protected" virt="virtual"><scope>WheelDriverMeta</scope><name>ReadDataInternal</name></member>
+      <member refid="class_joint_driver_meta_1adb75866d97a7f8b57f95cc5581e62860" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>ReadDriverMeta</name></member>
+      <member refid="class_wheel_driver_meta_1a15f21214d217d7e6fee5f71ebefc2a43" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>sideAsympSlip</name></member>
+      <member refid="class_wheel_driver_meta_1a48cfe76c77087b20f77adb16e6376344" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>sideAsympValue</name></member>
+      <member refid="class_wheel_driver_meta_1a30a32ce5668b64b1aae9afcb2b7772c9" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>sideExtremeSlip</name></member>
+      <member refid="class_wheel_driver_meta_1a9a277e7fcb861de0411e9b8fb0fce455" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>sideExtremeValue</name></member>
+      <member refid="class_wheel_driver_meta_1a42e0ef28c13d44c3825e947c5543f1b6" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>ToString</name></member>
+      <member refid="class_wheel_driver_meta_1a386599e30917a8d9e472463b6384b239" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>type</name></member>
+      <member refid="class_wheel_driver_meta_1a4e7448358acc54fb1d60c32997b64cce" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>WheelDriverMeta</name></member>
+      <member refid="class_wheel_driver_meta_1aa623e68e9b43b803a78303cac5211db4" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>width</name></member>
+      <member refid="class_joint_driver_meta_1ac4b1c493843d20020a1ed43714c966c2" prot="public" virt="non-virtual"><scope>WheelDriverMeta</scope><name>WriteData</name></member>
+      <member refid="class_wheel_driver_meta_1af16c093144351806dac1b82cf086accd" prot="protected" virt="virtual"><scope>WheelDriverMeta</scope><name>WriteDataInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

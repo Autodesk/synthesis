@@ -1,0 +1,54 @@
+.TH "JointDriverMeta" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+JointDriverMeta \- Base class all joint metadata should inherit from\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBElevatorDriverMeta\fP, \fBPneumaticDriverMeta\fP, and \fBWheelDriverMeta\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBGetID\fP ()"
+.br
+.ti -1c
+.RI "void \fBWriteData\fP (BinaryWriter writer)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBJointDriverMeta\fP \fBReadDriverMeta\fP (BinaryReader reader)"
+.br
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static readonly Type [] \fBJOINT_DRIVER_META_TYPES\fP = new Type[] { typeof(\fBWheelDriverMeta\fP), typeof(\fBPneumaticDriverMeta\fP), typeof(\fBElevatorDriverMeta\fP) }"
+.br
+.in -1c
+.SS "Protected Member Functions"
+
+.in +1c
+.ti -1c
+.RI "abstract void \fBWriteDataInternal\fP (BinaryWriter writer)"
+.br
+.ti -1c
+.RI "abstract void \fBReadDataInternal\fP (BinaryReader reader)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Base class all joint metadata should inherit from\&. 
+
+If you inherit make sure to add your type to JointDriverMeta\&.JOINT_DRIVER_META_TYPES, and make sure you have a public constructor that takes no arguments\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

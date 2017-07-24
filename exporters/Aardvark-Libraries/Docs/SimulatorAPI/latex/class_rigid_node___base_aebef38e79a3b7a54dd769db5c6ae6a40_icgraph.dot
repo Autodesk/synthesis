@@ -1,0 +1,13 @@
+digraph "RigidNode_Base.ListAllNodes"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node16 [label="RigidNode_Base.ListAllNodes",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node16 -> Node17 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node17 [label="BXDJSkeleton.SetupFileNames",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#abe03be6363ab87421b757bb83bf81d39",tooltip="Ensures that every node is assigned a model file name by assigning all nodes without a file name a ge..."];
+  Node16 -> Node18 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node18 [label="BXDJSkeleton.WriteSkeleton",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#a51284ed9f19393c90ac2fb0f854880f4",tooltip="Writes out the skeleton file for the skeleton with the base provided to the path provided. "];
+  Node16 -> Node19 [dir="back",color="midnightblue",fontsize="10",style="solid"];
+  Node19 [label="BXDJSkeleton.CloneDrivers\lFromTo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_j_skeleton.html#a4db96cff0567e816d0f1c29426e0e70b",tooltip="Clones joint settings for matching skeletal joints from one skeleton to the other. This does not overwrite existing joint drivers. "];
+}

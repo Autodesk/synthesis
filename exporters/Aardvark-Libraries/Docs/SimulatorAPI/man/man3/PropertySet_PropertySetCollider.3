@@ -1,0 +1,81 @@
+.TH "PropertySet.PropertySetCollider" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+PropertySet.PropertySetCollider \- Stores collider information for a \fBPropertySet\fP\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherited by \fBPropertySet\&.BoxCollider\fP, \fBPropertySet\&.MeshCollider\fP, and \fBPropertySet\&.SphereCollider\fP\&.
+.SS "Public Types"
+
+.in +1c
+.ti -1c
+.RI "enum \fBPropertySetCollisionType\fP { \fBPropertySetCollisionType\&.BOX\fP, \fBPropertySetCollisionType\&.SPHERE\fP, \fBPropertySetCollisionType\&.MESH\fP }
+.RI "Used for defining the type of collision for the \fBPropertySetCollider\fP\&. ""
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBPropertySetCollider\fP (\fBPropertySetCollisionType\fP collisionType)"
+.br
+.RI "Initializes a new instance of the \fBPropertySetCollider\fP class\&. "
+.in -1c
+.SS "Properties"
+
+.in +1c
+.ti -1c
+.RI "\fBPropertySetCollisionType\fP \fBCollisionType\fP\fC [get]\fP"
+.br
+.RI "Stores the type of collision for the \fBPropertySetCollider\fP "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Stores collider information for a \fBPropertySet\fP\&. 
+
+
+.SH "Member Enumeration Documentation"
+.PP 
+.SS "enum \fBPropertySet\&.PropertySetCollider\&.PropertySetCollisionType\fP\fC [strong]\fP"
+
+.PP
+Used for defining the type of collision for the \fBPropertySetCollider\fP\&. 
+.PP
+\fBEnumerator\fP
+.in +1c
+.TP
+\fB\fIBOX \fP\fP
+Used for approximating collision boundaries with a box\&. 
+.TP
+\fB\fISPHERE \fP\fP
+Used for approximating collision boundaries with a sphere\&. 
+.TP
+\fB\fIMESH \fP\fP
+Used for taking the object's visible mesh and simplifying it for collision\&. 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "PropertySet\&.PropertySetCollider\&.PropertySetCollider (\fBPropertySetCollisionType\fP collisionType)"
+
+.PP
+Initializes a new instance of the \fBPropertySetCollider\fP class\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcollisionType\fP 
+.RE
+.PP
+
+.SH "Property Documentation"
+.PP 
+.SS "\fBPropertySetCollisionType\fP PropertySet\&.PropertySetCollider\&.CollisionType\fC [get]\fP"
+
+.PP
+Stores the type of collision for the \fBPropertySetCollider\fP 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

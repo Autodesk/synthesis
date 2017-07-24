@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_b99efa492469c3d59b4e87cbe01b80e3" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree</compoundname>
+    <innerfile refid="_field_definition_8cs">FieldDefinition.cs</innerfile>
+    <innerfile refid="_field_node_8cs">FieldNode.cs</innerfile>
+    <innerfile refid="_field_node_group_8cs">FieldNodeGroup.cs</innerfile>
+    <innerfile refid="_property_set_8cs">PropertySet.cs</innerfile>
+    <innerfile refid="_rigid_node___base_8cs">RigidNode_Base.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/"/>
+  </compounddef>
+</doxygen>

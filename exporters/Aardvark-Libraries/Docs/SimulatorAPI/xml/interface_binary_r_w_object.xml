@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="interface_binary_r_w_object" kind="interface" language="C#" prot="public">
+    <compoundname>BinaryRWObject</compoundname>
+    <derivedcompoundref refid="class_b_x_d_a_mesh" prot="public" virt="non-virtual">BXDAMesh</derivedcompoundref>
+    <derivedcompoundref refid="class_b_x_d_a_mesh" prot="public" virt="non-virtual">BXDAMesh</derivedcompoundref>
+    <derivedcompoundref refid="class_b_x_d_vector3" prot="public" virt="non-virtual">BXDVector3</derivedcompoundref>
+    <derivedcompoundref refid="class_joint_driver" prot="public" virt="non-virtual">JointDriver</derivedcompoundref>
+    <derivedcompoundref refid="class_physical_properties" prot="public" virt="non-virtual">PhysicalProperties</derivedcompoundref>
+    <derivedcompoundref refid="class_polynomial" prot="public" virt="non-virtual">Polynomial</derivedcompoundref>
+    <derivedcompoundref refid="class_robot_sensor" prot="public" virt="non-virtual">RobotSensor</derivedcompoundref>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="interface_binary_r_w_object_1a5e361e550b30dcd29759188cf67d177c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void BinaryRWObject.WriteBinaryData</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteBinaryData</name>
+        <reimplementedby refid="class_physical_properties_1afcdfb13e380a0b9870af47fb7785d4de">WriteBinaryData</reimplementedby>
+        <reimplementedby refid="class_robot_sensor_1aa1dc17e6028128cabb1ddbfdb1334b84">WriteBinaryData</reimplementedby>
+        <reimplementedby refid="class_b_x_d_a_mesh_1a5ee3b3956597c24da796eb6242bb9940">WriteBinaryData</reimplementedby>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+<para>Serializes this object to the given stream </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>writer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="16" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interface_binary_r_w_object_1a2cd7d6b9aded677cffdb646b51328c5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void BinaryRWObject.ReadBinaryData</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadBinaryData</name>
+        <reimplementedby refid="class_physical_properties_1a9d38ac741d7aae550b0adb7f48d09ad9">ReadBinaryData</reimplementedby>
+        <reimplementedby refid="class_robot_sensor_1ad847a256a5f297a3d4b1570a3ccbd97a">ReadBinaryData</reimplementedby>
+        <reimplementedby refid="class_b_x_d_a_mesh_1a1178be877fb442e6a8137f045ccc3c20">ReadBinaryData</reimplementedby>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Deserializes this object from the given stream. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Input stream</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="22" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Interface for objects that can read/write binary data to files </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="34">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>PhysicalProperties</label>
+        <link refid="class_physical_properties"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>Polynomial</label>
+        <link refid="class_polynomial"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>JointDriver</label>
+        <link refid="class_joint_driver"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>BXDAMesh</label>
+        <link refid="class_b_x_d_a_mesh"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+      <node id="38">
+        <label>RobotSensor</label>
+        <link refid="class_robot_sensor"/>
+        <childnode refid="32" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BinaryRWObject.cs" bodystart="10" bodyend="23"/>
+    <listofallmembers>
+      <member refid="interface_binary_r_w_object_1a2cd7d6b9aded677cffdb646b51328c5d" prot="public" virt="non-virtual"><scope>BinaryRWObject</scope><name>ReadBinaryData</name></member>
+      <member refid="interface_binary_r_w_object_1a5e361e550b30dcd29759188cf67d177c" prot="public" virt="non-virtual"><scope>BinaryRWObject</scope><name>WriteBinaryData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

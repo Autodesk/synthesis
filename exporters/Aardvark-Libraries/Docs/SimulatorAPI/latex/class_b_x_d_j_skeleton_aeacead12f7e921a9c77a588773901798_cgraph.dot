@@ -1,0 +1,30 @@
+digraph "BXDJSkeleton.ReadBinarySkeleton"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node6 [label="BXDJSkeleton.ReadBinarySkeleton",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid"];
+  Node7 [label="BXDIO.CheckReadVersion",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_i_o.html#ae7803ce0f645dd421430706f86b35ebf",tooltip="Talks about compatibility. "];
+  Node7 -> Node8 [color="midnightblue",fontsize="10",style="solid"];
+  Node8 [label="BXDIO.VersionToString",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_i_o.html#acb44b034d14e68cf66c3bcd4b0eb0fc0",tooltip="Converts the given version ID number to decimal notation. "];
+  Node6 -> Node9 [color="midnightblue",fontsize="10",style="solid"];
+  Node9 [label="SkeletalJoint_Base.ReadJoint\lFully",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#ae9f8e31a56644eb92cb901a4587a3d24",tooltip="Identifies the type of a joint, creates an instance, and reads that joint from the given input stream..."];
+  Node9 -> Node10 [color="midnightblue",fontsize="10",style="solid"];
+  Node10 [label="SkeletalJoint_Base.ReadBinary\lJoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#a7f71e5afc3b791ffed1bd040425737ef",tooltip="Reads the backing information for this joint from the input stream. "];
+  Node10 -> Node11 [color="midnightblue",fontsize="10",style="solid"];
+  Node11 [label="JointDriver.ReadBinaryData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html#a1db6f1668ea9122fb0e5d3f0aaa3f621",tooltip="Reads the binary representation of this driver from the stream. "];
+  Node11 -> Node12 [color="midnightblue",fontsize="10",style="solid"];
+  Node12 [label="JointDriver.AddInfo",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html#a7b35af4634caa4dbcbe3cd88ba365a68",tooltip="Adds the given joint driver metadata object to this driver, or replaces the existing metadata of the ..."];
+  Node9 -> Node13 [color="midnightblue",fontsize="10",style="solid"];
+  Node13 [label="SkeletalJoint_Base.GetJointType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#aee155cbd483cb512bf3fc0f9a8885335",tooltip="The type of this joint. "];
+  Node9 -> Node14 [color="midnightblue",fontsize="10",style="solid"];
+  Node14 [label="SkeletalJoint_Base.Write\lBinaryJoint",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_skeletal_joint___base.html#a42df720cdd871ccad5930ae7977f7200",tooltip="Writes the backing information and ID for this joint to the output stream. "];
+  Node14 -> Node13 [color="midnightblue",fontsize="10",style="solid"];
+  Node14 -> Node15 [color="midnightblue",fontsize="10",style="solid"];
+  Node15 [label="JointDriver.WriteBinaryData",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html#a36d6deba7dec0475dc06ab5d87c3e7e2",tooltip="Writes the binary representation of this driver to the stream. "];
+  Node15 -> Node16 [color="midnightblue",fontsize="10",style="solid"];
+  Node16 [label="JointDriver.GetDriveType",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_joint_driver.html#ab63c7e975d5b4317b7c47ffb34596b78",tooltip="Gets the type of this joint driver. "];
+  Node6 -> Node17 [color="midnightblue",fontsize="10",style="solid"];
+  Node17 [label="RigidNode_Base.AddChild",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_rigid_node___base.html#a287e7e27c6fc9d2b104e6f2578e96af8",tooltip="Adds the given node as a child of this node. "];
+}

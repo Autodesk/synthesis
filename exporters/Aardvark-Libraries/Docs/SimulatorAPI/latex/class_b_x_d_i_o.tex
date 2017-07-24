@@ -1,0 +1,105 @@
+\hypertarget{class_b_x_d_i_o}{}\section{B\+X\+D\+IO Class Reference}
+\label{class_b_x_d_i_o}\index{B\+X\+D\+IO@{B\+X\+D\+IO}}
+
+
+Utility functions for file I/O  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_b_x_d_i_o_ace978077206667e2e20c5581a83222e2}\label{class_b_x_d_i_o_ace978077206667e2e20c5581a83222e2}} 
+delegate void {\bfseries Progress\+Reporter} (long progress, long total)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static string \hyperlink{class_b_x_d_i_o_acb44b034d14e68cf66c3bcd4b0eb0fc0}{Version\+To\+String} (uint version)
+\begin{DoxyCompactList}\small\item\em Converts the given version ID number to decimal notation. \end{DoxyCompactList}\item 
+static void \hyperlink{class_b_x_d_i_o_ae7803ce0f645dd421430706f86b35ebf}{Check\+Read\+Version} (uint version)
+\begin{DoxyCompactList}\small\item\em Talks about compatibility. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_b_x_d_i_o_a3345532f82bd3ecce237a33039a2f41e}\label{class_b_x_d_i_o_a3345532f82bd3ecce237a33039a2f41e}} 
+const byte {\bfseries M\+A\+J\+O\+R\+\_\+\+V\+E\+R\+S\+I\+ON} = 0
+\item 
+\mbox{\Hypertarget{class_b_x_d_i_o_a56ad4c2b1e70f74ed8454d04edb9010b}\label{class_b_x_d_i_o_a56ad4c2b1e70f74ed8454d04edb9010b}} 
+const byte {\bfseries M\+I\+N\+O\+R\+\_\+\+V\+E\+R\+S\+I\+ON} = 3
+\item 
+\mbox{\Hypertarget{class_b_x_d_i_o_ad9c3c2e321a6f394b6851cb4734720c1}\label{class_b_x_d_i_o_ad9c3c2e321a6f394b6851cb4734720c1}} 
+const byte {\bfseries R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+V\+E\+R\+S\+I\+ON} = 3
+\item 
+\mbox{\Hypertarget{class_b_x_d_i_o_a001b81b7743e33fc2533d55959afe0f6}\label{class_b_x_d_i_o_a001b81b7743e33fc2533d55959afe0f6}} 
+const byte {\bfseries R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+P\+O\+R\+T\+I\+ON} = 1
+\item 
+\mbox{\Hypertarget{class_b_x_d_i_o_a2ca0ee9e65acbf80101a960b75d36310}\label{class_b_x_d_i_o_a2ca0ee9e65acbf80101a960b75d36310}} 
+const string {\bfseries A\+S\+S\+E\+M\+B\+L\+Y\+\_\+\+V\+E\+R\+S\+I\+ON} = \char`\"{}0.\+3.\+3.\+1\char`\"{}
+\item 
+const uint \hyperlink{class_b_x_d_i_o_a5ab1de22d4eecd8734b698648875e972}{F\+O\+R\+M\+A\+T\+\_\+\+V\+E\+R\+S\+I\+ON} = (M\+A\+J\+O\+R\+\_\+\+V\+E\+R\+S\+I\+ON $<$$<$ 24) $\vert$ (M\+I\+N\+O\+R\+\_\+\+V\+E\+R\+S\+I\+ON $<$$<$ 16) $\vert$ (R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+V\+E\+R\+S\+I\+ON $<$$<$ 8) $\vert$ R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+P\+O\+R\+T\+I\+ON
+\begin{DoxyCompactList}\small\item\em The version of the file format this file can read and write. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Utility functions for file I/O 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_b_x_d_i_o_ae7803ce0f645dd421430706f86b35ebf}\label{class_b_x_d_i_o_ae7803ce0f645dd421430706f86b35ebf}} 
+\index{B\+X\+D\+IO@{B\+X\+D\+IO}!Check\+Read\+Version@{Check\+Read\+Version}}
+\index{Check\+Read\+Version@{Check\+Read\+Version}!B\+X\+D\+IO@{B\+X\+D\+IO}}
+\subsubsection{\texorpdfstring{Check\+Read\+Version()}{CheckReadVersion()}}
+{\footnotesize\ttfamily static void B\+X\+D\+I\+O.\+Check\+Read\+Version (\begin{DoxyParamCaption}\item[{uint}]{version }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Talks about compatibility. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em version} & The version to compare with\\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 0
+Here is the caller graph for this function\+:
+% FIG 1
+\mbox{\Hypertarget{class_b_x_d_i_o_acb44b034d14e68cf66c3bcd4b0eb0fc0}\label{class_b_x_d_i_o_acb44b034d14e68cf66c3bcd4b0eb0fc0}} 
+\index{B\+X\+D\+IO@{B\+X\+D\+IO}!Version\+To\+String@{Version\+To\+String}}
+\index{Version\+To\+String@{Version\+To\+String}!B\+X\+D\+IO@{B\+X\+D\+IO}}
+\subsubsection{\texorpdfstring{Version\+To\+String()}{VersionToString()}}
+{\footnotesize\ttfamily static string B\+X\+D\+I\+O.\+Version\+To\+String (\begin{DoxyParamCaption}\item[{uint}]{version }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Converts the given version ID number to decimal notation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em version} & Version ID\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Decimal notation of the version ID
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+% FIG 2
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_b_x_d_i_o_a5ab1de22d4eecd8734b698648875e972}\label{class_b_x_d_i_o_a5ab1de22d4eecd8734b698648875e972}} 
+\index{B\+X\+D\+IO@{B\+X\+D\+IO}!F\+O\+R\+M\+A\+T\+\_\+\+V\+E\+R\+S\+I\+ON@{F\+O\+R\+M\+A\+T\+\_\+\+V\+E\+R\+S\+I\+ON}}
+\index{F\+O\+R\+M\+A\+T\+\_\+\+V\+E\+R\+S\+I\+ON@{F\+O\+R\+M\+A\+T\+\_\+\+V\+E\+R\+S\+I\+ON}!B\+X\+D\+IO@{B\+X\+D\+IO}}
+\subsubsection{\texorpdfstring{F\+O\+R\+M\+A\+T\+\_\+\+V\+E\+R\+S\+I\+ON}{FORMAT\_VERSION}}
+{\footnotesize\ttfamily const uint B\+X\+D\+I\+O.\+F\+O\+R\+M\+A\+T\+\_\+\+V\+E\+R\+S\+I\+ON = (M\+A\+J\+O\+R\+\_\+\+V\+E\+R\+S\+I\+ON $<$$<$ 24) $\vert$ (M\+I\+N\+O\+R\+\_\+\+V\+E\+R\+S\+I\+ON $<$$<$ 16) $\vert$ (R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+V\+E\+R\+S\+I\+ON $<$$<$ 8) $\vert$ R\+E\+V\+I\+S\+I\+O\+N\+\_\+\+P\+O\+R\+T\+I\+ON}
+
+
+
+The version of the file format this file can read and write. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/B\+X\+D\+I\+O.\+cs\end{DoxyCompactItemize}

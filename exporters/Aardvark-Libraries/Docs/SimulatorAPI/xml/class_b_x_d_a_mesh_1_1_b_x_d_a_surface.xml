@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface" kind="class" language="C#" prot="public">
+    <compoundname>BXDAMesh::BXDASurface</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1a5de55543d0a71780d35241d685a87512" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool BXDAMesh.BXDASurface.hasColor</definition>
+        <argsstring></argsstring>
+        <name>hasColor</name>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="169" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="169" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1ae7b70c2da6c489de054138dfa083e98a" prot="public" static="no" mutable="no">
+        <type>uint</type>
+        <definition>uint BXDAMesh.BXDASurface.color</definition>
+        <argsstring></argsstring>
+        <name>color</name>
+        <initializer>= 0xFFFFFFFF</initializer>
+        <briefdescription>
+<para>The color of the material packed as an unsigned integer </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="173" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="173" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1ae3e709bd450bd2ef01c5acba177a617b" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDAMesh.BXDASurface.transparency</definition>
+        <argsstring></argsstring>
+        <name>transparency</name>
+        <briefdescription>
+<para>The transparency of the material. [0-1] </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="178" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="178" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1af19291640f35adcf6f9b6097184d1156" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDAMesh.BXDASurface.translucency</definition>
+        <argsstring></argsstring>
+        <name>translucency</name>
+        <briefdescription>
+<para>The translucency of the material. [0-1] </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="183" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1af72ca2963061dfe7004b73c9ad80a6ab" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDAMesh.BXDASurface.specular</definition>
+        <argsstring></argsstring>
+        <name>specular</name>
+        <initializer>= 0</initializer>
+        <briefdescription>
+<para>The specular intensity of the material. [0-1] </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="188" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1a72348b4bb5ec3ee8927cc8ba93c6bd6e" prot="public" static="no" mutable="no">
+        <type>int []</type>
+        <definition>int [] BXDAMesh.BXDASurface.indicies</definition>
+        <argsstring></argsstring>
+        <name>indicies</name>
+        <briefdescription>
+<para>The zero based index buffer for this specific surface of the mesh. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="193" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1ac39fb3d5e0f93394530fc8cdecf9874e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BXDAMesh.BXDASurface.WriteData</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteData</name>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="195" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="195" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1a05ef413dafc79022f79763330340e61d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BXDAMesh.BXDASurface.ReadData_v0</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadData_v0</name>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+<para>Reads <ref refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface" kindref="compound">BXDASurface</ref> data of v0. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reader</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAReader_v0.cs" line="84" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAReader_v0.cs" bodystart="84" bodyend="97"/>
+        <referencedby refid="class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_1a3f50b41f51136f7662730d2037875c11" compoundref="_b_x_d_a_reader__v0_8cs" startline="55" endline="72">BXDAMesh.BXDASubMesh.ReadData_v0</referencedby>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Index data representing a face with color, transparency, translucency, and specular </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" line="168" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA/BXDAMesh.cs" bodystart="167" bodyend="211"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1ae7b70c2da6c489de054138dfa083e98a" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>color</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1a5de55543d0a71780d35241d685a87512" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>hasColor</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1a72348b4bb5ec3ee8927cc8ba93c6bd6e" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>indicies</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1a05ef413dafc79022f79763330340e61d" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>ReadData_v0</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1af72ca2963061dfe7004b73c9ad80a6ab" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>specular</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1af19291640f35adcf6f9b6097184d1156" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>translucency</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1ae3e709bd450bd2ef01c5acba177a617b" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>transparency</name></member>
+      <member refid="class_b_x_d_a_mesh_1_1_b_x_d_a_surface_1ac39fb3d5e0f93394530fc8cdecf9874e" prot="public" virt="non-virtual"><scope>BXDAMesh::BXDASurface</scope><name>WriteData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

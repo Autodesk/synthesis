@@ -1,0 +1,95 @@
+.TH "BXDIO" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BXDIO \- Utility functions for file I/O  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "delegate void \fBProgressReporter\fP (long progress, long total)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static string \fBVersionToString\fP (uint version)"
+.br
+.RI "Converts the given version ID number to decimal notation\&. "
+.ti -1c
+.RI "static void \fBCheckReadVersion\fP (uint version)"
+.br
+.RI "Talks about compatibility\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "const byte \fBMAJOR_VERSION\fP = 0"
+.br
+.ti -1c
+.RI "const byte \fBMINOR_VERSION\fP = 3"
+.br
+.ti -1c
+.RI "const byte \fBREVISION_VERSION\fP = 3"
+.br
+.ti -1c
+.RI "const byte \fBREVISION_PORTION\fP = 1"
+.br
+.ti -1c
+.RI "const string \fBASSEMBLY_VERSION\fP = '0\&.3\&.3\&.1'"
+.br
+.ti -1c
+.RI "const uint \fBFORMAT_VERSION\fP = (MAJOR_VERSION << 24) | (MINOR_VERSION << 16) | (REVISION_VERSION << 8) | REVISION_PORTION"
+.br
+.RI "The version of the file format this file can read and write\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Utility functions for file I/O 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "static void BXDIO\&.CheckReadVersion (uint version)\fC [static]\fP"
+
+.PP
+Talks about compatibility\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIversion\fP The version to compare with
+.RE
+.PP
+
+.SS "static string BXDIO\&.VersionToString (uint version)\fC [static]\fP"
+
+.PP
+Converts the given version ID number to decimal notation\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIversion\fP Version ID
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Decimal notation of the version ID
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "const uint BXDIO\&.FORMAT_VERSION = (MAJOR_VERSION << 24) | (MINOR_VERSION << 16) | (REVISION_VERSION << 8) | REVISION_PORTION"
+
+.PP
+The version of the file format this file can read and write\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

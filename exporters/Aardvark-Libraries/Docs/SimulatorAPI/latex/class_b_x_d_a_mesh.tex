@@ -1,0 +1,164 @@
+\hypertarget{class_b_x_d_a_mesh}{}\section{B\+X\+D\+A\+Mesh Class Reference}
+\label{class_b_x_d_a_mesh}\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+
+
+Represents a 3D object composed of one or more \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} and physical properties of the object.  
+
+
+
+
+Inheritance diagram for B\+X\+D\+A\+Mesh\+:
+% FIG 0
+
+
+Collaboration diagram for B\+X\+D\+A\+Mesh\+:
+% FIG 1
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Sub\+Mesh}
+\begin{DoxyCompactList}\small\item\em Represents an indexed triangle mesh with normals and optional colors and texture coordinates. \end{DoxyCompactList}\item 
+class \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{B\+X\+D\+A\+Surface}
+\begin{DoxyCompactList}\small\item\em Index data representing a face with color, transparency, translucency, and specular \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_b_x_d_a_mesh_a411296f78a7f36d3de715d1a8fff8e77}{B\+X\+D\+A\+Mesh} ()
+\begin{DoxyCompactList}\small\item\em Creates an empty B\+X\+DA Mesh. \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_a_mesh_a9ab1e7e2173e5e6a26bcd10bfce70635}{B\+X\+D\+A\+Mesh} (Guid guid)
+\begin{DoxyCompactList}\small\item\em Creates an empty B\+X\+DA Mesh. \end{DoxyCompactList}\item 
+void \hyperlink{class_b_x_d_a_mesh_a5ee3b3956597c24da796eb6242bb9940}{Write\+Binary\+Data} (Binary\+Writer writer)
+\begin{DoxyCompactList}\small\item\em Writes all mesh data with the given Binary\+Writer. \end{DoxyCompactList}\item 
+void \hyperlink{class_b_x_d_a_mesh_a1178be877fb442e6a8137f045ccc3c20}{Read\+Binary\+Data} (Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Reads with the given Binary\+Reader to generate mesh data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+Guid \hyperlink{class_b_x_d_a_mesh_a7544e5c82afe8c5522424505766be4c0}{G\+U\+ID}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The G\+U\+ID for identifying the \hyperlink{class_b_x_d_a_mesh}{B\+X\+D\+A\+Mesh}. \end{DoxyCompactList}\item 
+\hyperlink{class_physical_properties}{Physical\+Properties} \hyperlink{class_b_x_d_a_mesh_a37230df9968f8aadca60bb342b08ba1b}{physics}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em The physical properties of this object. \end{DoxyCompactList}\item 
+List$<$ \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Sub\+Mesh} $>$ \hyperlink{class_b_x_d_a_mesh_a2782cf37716d225b7dce7dc69bfe03e5}{meshes}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em This object\textquotesingle{}s sub meshes. \end{DoxyCompactList}\item 
+List$<$ \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Sub\+Mesh} $>$ \hyperlink{class_b_x_d_a_mesh_ab18fc3dc7b16c729b8ad690d8f89d20c}{colliders}\hspace{0.3cm}{\ttfamily  \mbox{[}get\mbox{]}}
+\begin{DoxyCompactList}\small\item\em This object\textquotesingle{}s collision meshes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a 3D object composed of one or more \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh} and physical properties of the object. 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_b_x_d_a_mesh_a411296f78a7f36d3de715d1a8fff8e77}\label{class_b_x_d_a_mesh_a411296f78a7f36d3de715d1a8fff8e77}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{B\+X\+D\+A\+Mesh()}{BXDAMesh()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Mesh (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates an empty B\+X\+DA Mesh. 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_a9ab1e7e2173e5e6a26bcd10bfce70635}\label{class_b_x_d_a_mesh_a9ab1e7e2173e5e6a26bcd10bfce70635}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{B\+X\+D\+A\+Mesh()}{BXDAMesh()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Mesh (\begin{DoxyParamCaption}\item[{Guid}]{guid }\end{DoxyParamCaption})}
+
+
+
+Creates an empty B\+X\+DA Mesh. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_b_x_d_a_mesh_a1178be877fb442e6a8137f045ccc3c20}\label{class_b_x_d_a_mesh_a1178be877fb442e6a8137f045ccc3c20}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!Read\+Binary\+Data@{Read\+Binary\+Data}}
+\index{Read\+Binary\+Data@{Read\+Binary\+Data}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{Read\+Binary\+Data()}{ReadBinaryData()}}
+{\footnotesize\ttfamily void B\+X\+D\+A\+Mesh.\+Read\+Binary\+Data (\begin{DoxyParamCaption}\item[{Binary\+Reader}]{reader }\end{DoxyParamCaption})}
+
+
+
+Reads with the given Binary\+Reader to generate mesh data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interface_binary_r_w_object_a2cd7d6b9aded677cffdb646b51328c5d}{Binary\+R\+W\+Object}.
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_a5ee3b3956597c24da796eb6242bb9940}\label{class_b_x_d_a_mesh_a5ee3b3956597c24da796eb6242bb9940}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!Write\+Binary\+Data@{Write\+Binary\+Data}}
+\index{Write\+Binary\+Data@{Write\+Binary\+Data}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{Write\+Binary\+Data()}{WriteBinaryData()}}
+{\footnotesize\ttfamily void B\+X\+D\+A\+Mesh.\+Write\+Binary\+Data (\begin{DoxyParamCaption}\item[{Binary\+Writer}]{writer }\end{DoxyParamCaption})}
+
+
+
+Writes all mesh data with the given Binary\+Writer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em writer} & \\
+\hline
+\end{DoxyParams}
+
+
+Implements \hyperlink{interface_binary_r_w_object_a5e361e550b30dcd29759188cf67d177c}{Binary\+R\+W\+Object}.
+
+Here is the call graph for this function\+:
+% FIG 2
+
+
+\subsection{Property Documentation}
+\mbox{\Hypertarget{class_b_x_d_a_mesh_ab18fc3dc7b16c729b8ad690d8f89d20c}\label{class_b_x_d_a_mesh_ab18fc3dc7b16c729b8ad690d8f89d20c}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!colliders@{colliders}}
+\index{colliders@{colliders}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{colliders}{colliders}}
+{\footnotesize\ttfamily List$<$\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Sub\+Mesh}$>$ B\+X\+D\+A\+Mesh.\+colliders\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+This object\textquotesingle{}s collision meshes. 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_a7544e5c82afe8c5522424505766be4c0}\label{class_b_x_d_a_mesh_a7544e5c82afe8c5522424505766be4c0}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!G\+U\+ID@{G\+U\+ID}}
+\index{G\+U\+ID@{G\+U\+ID}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{G\+U\+ID}{GUID}}
+{\footnotesize\ttfamily Guid B\+X\+D\+A\+Mesh.\+G\+U\+ID\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The G\+U\+ID for identifying the \hyperlink{class_b_x_d_a_mesh}{B\+X\+D\+A\+Mesh}. 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_a2782cf37716d225b7dce7dc69bfe03e5}\label{class_b_x_d_a_mesh_a2782cf37716d225b7dce7dc69bfe03e5}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!meshes@{meshes}}
+\index{meshes@{meshes}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{meshes}{meshes}}
+{\footnotesize\ttfamily List$<$\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Sub\+Mesh}$>$ B\+X\+D\+A\+Mesh.\+meshes\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+This object\textquotesingle{}s sub meshes. 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_a37230df9968f8aadca60bb342b08ba1b}\label{class_b_x_d_a_mesh_a37230df9968f8aadca60bb342b08ba1b}} 
+\index{B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}!physics@{physics}}
+\index{physics@{physics}!B\+X\+D\+A\+Mesh@{B\+X\+D\+A\+Mesh}}
+\subsubsection{\texorpdfstring{physics}{physics}}
+{\footnotesize\ttfamily \hyperlink{class_physical_properties}{Physical\+Properties} B\+X\+D\+A\+Mesh.\+physics\hspace{0.3cm}{\ttfamily [get]}}
+
+
+
+The physical properties of this object. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/\+B\+X\+D\+A/B\+X\+D\+A\+Mesh.\+cs\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/\+B\+X\+D\+A/B\+X\+D\+A\+Reader\+\_\+v0.\+cs\end{DoxyCompactItemize}

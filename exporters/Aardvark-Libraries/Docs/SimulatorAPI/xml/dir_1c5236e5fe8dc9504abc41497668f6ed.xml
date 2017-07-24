@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_1c5236e5fe8dc9504abc41497668f6ed" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO</compoundname>
+    <innerdir refid="dir_2624ab07283eac0c32039d17e3532032">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDA</innerdir>
+    <innerdir refid="dir_4f0aaf431f190c40d1fc6caf1990cec5">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDF</innerdir>
+    <innerdir refid="dir_e6ea51f8316117562b8aea6d290be818">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ</innerdir>
+    <innerfile refid="_binary_array_i_o_8cs">BinaryArrayIO.cs</innerfile>
+    <innerfile refid="_binary_r_w_object_8cs">BinaryRWObject.cs</innerfile>
+    <innerfile refid="_b_x_d_i_o_8cs">BXDIO.cs</innerfile>
+    <innerfile refid="_i_o_utilities_8cs">IOUtilities.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/"/>
+  </compounddef>
+</doxygen>

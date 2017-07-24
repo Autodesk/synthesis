@@ -1,0 +1,247 @@
+.TH "BXDVector3" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BXDVector3
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBBinaryRWObject\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBBXDVector3\fP ()"
+.br
+.RI "Initializes a new instance of the \fBBXDVector3\fP class\&. "
+.ti -1c
+.RI "\fBBXDVector3\fP (double \fBx\fP, double y, double z)"
+.br
+.RI "Initializes a new instance of the \fBBXDVector3\fP class from the given x, y, and z values\&. "
+.ti -1c
+.RI "\fBBXDVector3\fP (float \fBx\fP, float y, float z)"
+.br
+.RI "Initializes a new instance of the \fBBXDVector3\fP class from the given x, y, and z values\&. "
+.ti -1c
+.RI "override String \fBToString\fP ()"
+.br
+.RI "Converts the x, y, and z values to a string\&. "
+.ti -1c
+.RI "\fBBXDVector3\fP \fBMultiply\fP (float f)"
+.br
+.RI "Multiplies this vector by the given scalar and returns this object (for method chaining) "
+.ti -1c
+.RI "\fBBXDVector3\fP \fBAdd\fP (\fBBXDVector3\fP f)"
+.br
+.RI "Adds the given vector to this vector and returns this object\&. (For method chaining) "
+.ti -1c
+.RI "\fBBXDVector3\fP \fBSubtract\fP (\fBBXDVector3\fP f)"
+.br
+.RI "Subtracts the given vector from this vector and returns this object\&. (For method chaining) "
+.ti -1c
+.RI "float \fBMagnitude\fP ()"
+.br
+.RI "Gets the magnitude of this vector\&. "
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (System\&.IO\&.BinaryWriter w)"
+.br
+.ti -1c
+.RI "void \fBReadBinaryData\fP (System\&.IO\&.BinaryReader r)"
+.br
+.ti -1c
+.RI "\fBBXDVector3\fP \fBCopy\fP ()"
+.br
+.RI "Creates an identical copy of this vector\&. "
+.ti -1c
+.RI "override bool \fBEquals\fP (object obj)"
+.br
+.ti -1c
+.RI "override int \fBGetHashCode\fP ()"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBBXDVector3\fP \fBCrossProduct\fP (\fBBXDVector3\fP lhs, \fBBXDVector3\fP rhs)"
+.br
+.RI "Computes the cross product of two vectors\&. (lhs x rhs) "
+.ti -1c
+.RI "static float \fBDotProduct\fP (\fBBXDVector3\fP a, \fBBXDVector3\fP b)"
+.br
+.RI "Computes the dot product of two vectors\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "float \fBx\fP"
+.br
+.RI "The x, y, and z values for the \fBBXDVector3\fP\&. "
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "BXDVector3\&.BXDVector3 ()"
+
+.PP
+Initializes a new instance of the \fBBXDVector3\fP class\&. 
+.SS "BXDVector3\&.BXDVector3 (double x, double y, double z)"
+
+.PP
+Initializes a new instance of the \fBBXDVector3\fP class from the given x, y, and z values\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIx\fP 
+.br
+\fIy\fP 
+.br
+\fIz\fP 
+.RE
+.PP
+
+.SS "BXDVector3\&.BXDVector3 (float x, float y, float z)"
+
+.PP
+Initializes a new instance of the \fBBXDVector3\fP class from the given x, y, and z values\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIx\fP 
+.br
+\fIy\fP 
+.br
+\fIz\fP 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "\fBBXDVector3\fP BXDVector3\&.Add (\fBBXDVector3\fP f)"
+
+.PP
+Adds the given vector to this vector and returns this object\&. (For method chaining) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIf\fP The vector to add
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+This vector\&.
+.RE
+.PP
+
+.SS "\fBBXDVector3\fP BXDVector3\&.Copy ()"
+
+.PP
+Creates an identical copy of this vector\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The copy
+.RE
+.PP
+
+.SS "static \fBBXDVector3\fP BXDVector3\&.CrossProduct (\fBBXDVector3\fP lhs, \fBBXDVector3\fP rhs)\fC [static]\fP"
+
+.PP
+Computes the cross product of two vectors\&. (lhs x rhs) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIlhs\fP The left hand element
+.br
+\fIrhs\fP The right hand element
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+(lhs x rhs)
+.RE
+.PP
+
+.SS "static float BXDVector3\&.DotProduct (\fBBXDVector3\fP a, \fBBXDVector3\fP b)\fC [static]\fP"
+
+.PP
+Computes the dot product of two vectors\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIa\fP One vector
+.br
+\fIb\fP Another vector
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+(a · b)
+.RE
+.PP
+
+.SS "float BXDVector3\&.Magnitude ()"
+
+.PP
+Gets the magnitude of this vector\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+The magnitude of this vector
+.RE
+.PP
+
+.SS "\fBBXDVector3\fP BXDVector3\&.Multiply (float f)"
+
+.PP
+Multiplies this vector by the given scalar and returns this object (for method chaining) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIf\fP The scalar to multiply by
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+This vector\&.
+.RE
+.PP
+
+.SS "\fBBXDVector3\fP BXDVector3\&.Subtract (\fBBXDVector3\fP f)"
+
+.PP
+Subtracts the given vector from this vector and returns this object\&. (For method chaining) 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIf\fP The vector to subtract
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+This vector\&.
+.RE
+.PP
+
+.SS "override String BXDVector3\&.ToString ()"
+
+.PP
+Converts the x, y, and z values to a string\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "float BXDVector3\&.x"
+
+.PP
+The x, y, and z values for the \fBBXDVector3\fP\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

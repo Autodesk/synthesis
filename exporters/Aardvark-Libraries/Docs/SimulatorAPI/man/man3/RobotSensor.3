@@ -1,0 +1,105 @@
+.TH "RobotSensor" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+RobotSensor
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBBinaryRWObject\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBRobotSensor\fP (RobotSensorType type)"
+.br
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (BinaryWriter writer)"
+.br
+.RI "Serializes this object to the given stream "
+.ti -1c
+.RI "void \fBReadBinaryData\fP (BinaryReader reader)"
+.br
+.RI "Deserializes this object from the given stream\&. "
+.ti -1c
+.RI "bool \fBEquals\fP (\fBRobotSensor\fP otherSensor)"
+.br
+.RI "Compares two sensors, returns true if all fields are identical\&. "
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static RobotSensorType [] \fBGetAllowedSensors\fP (\fBSkeletalJoint_Base\fP joint)"
+.br
+.ti -1c
+.RI "static \fBRobotSensor\fP \fBReadSensorFully\fP (BinaryReader reader)"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "short \fBmodule\fP"
+.br
+.ti -1c
+.RI "RobotSensorType \fBtype\fP"
+.br
+.ti -1c
+.RI "\fBPolynomial\fP \fBequation\fP"
+.br
+.ti -1c
+.RI "bool \fBuseSecondarySource\fP = false"
+.br
+.RI "If this is true source the secondary value from the joint\&. (Rotational instead of linear for cylindrical) "
+.in -1c
+.SH "Member Function Documentation"
+.PP 
+.SS "bool RobotSensor\&.Equals (\fBRobotSensor\fP otherSensor)"
+
+.PP
+Compares two sensors, returns true if all fields are identical\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIotherSensor\fP 
+.RE
+.PP
+
+.SS "void RobotSensor\&.ReadBinaryData (BinaryReader reader)"
+
+.PP
+Deserializes this object from the given stream\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP Input stream
+.RE
+.PP
+
+.PP
+Implements \fBBinaryRWObject\fP\&.
+.SS "void RobotSensor\&.WriteBinaryData (BinaryWriter writer)"
+
+.PP
+Serializes this object to the given stream 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwriter\fP Output stream
+.RE
+.PP
+
+.PP
+Implements \fBBinaryRWObject\fP\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "bool RobotSensor\&.useSecondarySource = false"
+
+.PP
+If this is true source the secondary value from the joint\&. (Rotational instead of linear for cylindrical) 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

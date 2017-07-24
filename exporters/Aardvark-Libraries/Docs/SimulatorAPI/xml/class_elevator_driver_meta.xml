@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_elevator_driver_meta" kind="class" language="C#" prot="public">
+    <compoundname>ElevatorDriverMeta</compoundname>
+    <basecompoundref refid="class_joint_driver_meta" prot="public" virt="non-virtual">JointDriverMeta</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_elevator_driver_meta_1a3727ce3b4f7f46375448e76072dd3853" prot="public" static="no" mutable="no">
+        <type>ElevatorType</type>
+        <definition>ElevatorType ElevatorDriverMeta.type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" line="12" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" bodystart="12" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_elevator_driver_meta_1a54a4bf315aa2e0ea9bbbfc144beabbd8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>ElevatorDriverMeta.ElevatorDriverMeta</definition>
+        <argsstring>()</argsstring>
+        <name>ElevatorDriverMeta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" bodystart="14" bodyend="16"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_elevator_driver_meta_1a77718c76ce03bb5536ea0073f581cd26" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override void</type>
+        <definition>override void ElevatorDriverMeta.WriteDataInternal</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteDataInternal</name>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" line="18" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" bodystart="18" bodyend="21"/>
+      </memberdef>
+      <memberdef kind="function" id="class_elevator_driver_meta_1a05e88ef24e8ab8ed3e3c321af5bd7b62" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override void</type>
+        <definition>override void ElevatorDriverMeta.ReadDataInternal</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadDataInternal</name>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" line="23" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" bodystart="23" bodyend="26"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="78">
+        <label>ElevatorDriverMeta</label>
+        <link refid="class_elevator_driver_meta"/>
+        <childnode refid="79" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="79">
+        <label>JointDriverMeta</label>
+        <link refid="class_joint_driver_meta"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="80">
+        <label>ElevatorDriverMeta</label>
+        <link refid="class_elevator_driver_meta"/>
+        <childnode refid="81" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="81">
+        <label>JointDriverMeta</label>
+        <link refid="class_joint_driver_meta"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" line="11" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/ElevatorDriverMeta.cs" bodystart="10" bodyend="28"/>
+    <listofallmembers>
+      <member refid="class_elevator_driver_meta_1a54a4bf315aa2e0ea9bbbfc144beabbd8" prot="public" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>ElevatorDriverMeta</name></member>
+      <member refid="class_joint_driver_meta_1ab05346b958156ad0cbb9f908c19fa838" prot="public" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>GetID</name></member>
+      <member refid="class_joint_driver_meta_1aca600ea13be10ec808f61deee5f559f9" prot="public" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>JOINT_DRIVER_META_TYPES</name></member>
+      <member refid="class_elevator_driver_meta_1a05e88ef24e8ab8ed3e3c321af5bd7b62" prot="protected" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>ReadDataInternal</name></member>
+      <member refid="class_joint_driver_meta_1a3f0af9deabeff7ea433a7e43689ddfa6" prot="protected" virt="pure-virtual" ambiguityscope="JointDriverMeta."><scope>ElevatorDriverMeta</scope><name>ReadDataInternal</name></member>
+      <member refid="class_joint_driver_meta_1adb75866d97a7f8b57f95cc5581e62860" prot="public" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>ReadDriverMeta</name></member>
+      <member refid="class_elevator_driver_meta_1a3727ce3b4f7f46375448e76072dd3853" prot="public" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>type</name></member>
+      <member refid="class_joint_driver_meta_1ac4b1c493843d20020a1ed43714c966c2" prot="public" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>WriteData</name></member>
+      <member refid="class_elevator_driver_meta_1a77718c76ce03bb5536ea0073f581cd26" prot="protected" virt="non-virtual"><scope>ElevatorDriverMeta</scope><name>WriteDataInternal</name></member>
+      <member refid="class_joint_driver_meta_1adf4e26898611dfdce9cd65190100b4f5" prot="protected" virt="pure-virtual" ambiguityscope="JointDriverMeta."><scope>ElevatorDriverMeta</scope><name>WriteDataInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

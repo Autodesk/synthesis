@@ -1,0 +1,91 @@
+\hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{}\section{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh Class Reference}
+\label{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}\index{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh}}
+
+
+Represents an indexed triangle mesh with normals and optional colors and texture coordinates.  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a8032ed099154adc3a1b9eb533858f514}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a8032ed099154adc3a1b9eb533858f514}} 
+void {\bfseries Write\+Data} (Binary\+Writer writer)
+\item 
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a4fb22656afc7f6f6ca71b08b7b9f3b20}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a4fb22656afc7f6f6ca71b08b7b9f3b20}} 
+void {\bfseries Read\+Data} (Binary\+Reader reader)
+\item 
+void \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a3f50b41f51136f7662730d2037875c11}{Read\+Data\+\_\+v0} (Binary\+Reader reader)
+\begin{DoxyCompactList}\small\item\em Reads \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Sub\+Mesh} data of v0. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{[}$\,$\mbox{]} \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a9380db1d5b44c04010de0d21a9dac79e}{verts}
+\begin{DoxyCompactList}\small\item\em Vertex positions. Three values (X, Y, Z) per vertex. \end{DoxyCompactList}\item 
+double \mbox{[}$\,$\mbox{]} \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a098a0a069e7ed3e32caf3ca6bbfd752a}{norms}
+\begin{DoxyCompactList}\small\item\em Vertex normals. Three values (X, Y, Z) composing one unit vector per vertex. \end{DoxyCompactList}\item 
+List$<$ \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{B\+X\+D\+A\+Surface} $>$ \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a6b55f3c3beb64270a075b12cfa45143c}{surfaces} = new List$<$\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{B\+X\+D\+A\+Surface}$>$()
+\begin{DoxyCompactList}\small\item\em A list of indexed surfaces that make up the mesh \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents an indexed triangle mesh with normals and optional colors and texture coordinates. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a3f50b41f51136f7662730d2037875c11}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a3f50b41f51136f7662730d2037875c11}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}!Read\+Data\+\_\+v0@{Read\+Data\+\_\+v0}}
+\index{Read\+Data\+\_\+v0@{Read\+Data\+\_\+v0}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}}
+\subsubsection{\texorpdfstring{Read\+Data\+\_\+v0()}{ReadData\_v0()}}
+{\footnotesize\ttfamily void B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh.\+Read\+Data\+\_\+v0 (\begin{DoxyParamCaption}\item[{Binary\+Reader}]{reader }\end{DoxyParamCaption})}
+
+
+
+Reads \hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh}{B\+X\+D\+A\+Sub\+Mesh} data of v0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em reader} & \\
+\hline
+\end{DoxyParams}
+Here is the call graph for this function\+:
+% FIG 0
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a098a0a069e7ed3e32caf3ca6bbfd752a}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a098a0a069e7ed3e32caf3ca6bbfd752a}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}!norms@{norms}}
+\index{norms@{norms}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}}
+\subsubsection{\texorpdfstring{norms}{norms}}
+{\footnotesize\ttfamily double \mbox{[}$\,$\mbox{]} B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh.\+norms}
+
+
+
+Vertex normals. Three values (X, Y, Z) composing one unit vector per vertex. 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a6b55f3c3beb64270a075b12cfa45143c}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a6b55f3c3beb64270a075b12cfa45143c}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}!surfaces@{surfaces}}
+\index{surfaces@{surfaces}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}}
+\subsubsection{\texorpdfstring{surfaces}{surfaces}}
+{\footnotesize\ttfamily List$<$\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{B\+X\+D\+A\+Surface}$>$ B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh.\+surfaces = new List$<$\hyperlink{class_b_x_d_a_mesh_1_1_b_x_d_a_surface}{B\+X\+D\+A\+Surface}$>$()}
+
+
+
+A list of indexed surfaces that make up the mesh 
+
+\mbox{\Hypertarget{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a9380db1d5b44c04010de0d21a9dac79e}\label{class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh_a9380db1d5b44c04010de0d21a9dac79e}} 
+\index{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}!verts@{verts}}
+\index{verts@{verts}!B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh@{B\+X\+D\+A\+Mesh\+::\+B\+X\+D\+A\+Sub\+Mesh}}
+\subsubsection{\texorpdfstring{verts}{verts}}
+{\footnotesize\ttfamily double \mbox{[}$\,$\mbox{]} B\+X\+D\+A\+Mesh.\+B\+X\+D\+A\+Sub\+Mesh.\+verts}
+
+
+
+Vertex positions. Three values (X, Y, Z) per vertex. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/\+B\+X\+D\+A/B\+X\+D\+A\+Mesh.\+cs\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+I\+O/\+B\+X\+D\+A/B\+X\+D\+A\+Reader\+\_\+v0.\+cs\end{DoxyCompactItemize}

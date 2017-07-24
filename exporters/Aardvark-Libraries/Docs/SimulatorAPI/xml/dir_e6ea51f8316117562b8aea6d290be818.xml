@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_e6ea51f8316117562b8aea6d290be818" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ</compoundname>
+    <innerfile refid="_b_x_d_j_reader__2__0_8cs">BXDJReader_2_0.cs</innerfile>
+    <innerfile refid="_b_x_d_j_skeleton_8cs">BXDJSkeleton.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/IO/BXDJ/"/>
+  </compounddef>
+</doxygen>

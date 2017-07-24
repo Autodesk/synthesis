@@ -1,0 +1,7 @@
+digraph "Graphical Class Hierarchy"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node0 [label="BXDAMesh.BXDASubMesh",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$class_b_x_d_a_mesh_1_1_b_x_d_a_sub_mesh.html",tooltip="Represents an indexed triangle mesh with normals and optional colors and texture coordinates. "];
+}

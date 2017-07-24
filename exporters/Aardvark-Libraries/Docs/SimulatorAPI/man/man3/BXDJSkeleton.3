@@ -1,0 +1,145 @@
+.TH "BXDJSkeleton" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BXDJSkeleton \- Utility functions for reading/writing BXDJ files  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBSetupFileNames\fP (\fBRigidNode_Base\fP baseNode, bool overwrite=false)"
+.br
+.RI "Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name\&. "
+.ti -1c
+.RI "static void \fBWriteSkeleton\fP (string path, \fBRigidNode_Base\fP baseNode)"
+.br
+.RI "Writes out the skeleton file for the skeleton with the base provided to the path provided\&. "
+.ti -1c
+.RI "static void \fBWritePolynomial\fP (\fBPolynomial\fP poly, XmlWriter writer)"
+.br
+.RI "Used for writing a \fBPolynomial\fP's data\&. "
+.ti -1c
+.RI "static \fBRigidNode_Base\fP \fBReadSkeleton\fP (string path)"
+.br
+.RI "Reads the skeleton contained in the BXDJ XML file specified and returns the root node for that skeleton\&. "
+.ti -1c
+.RI "static \fBRigidNode_Base\fP \fBReadBinarySkeleton\fP (string path)"
+.br
+.RI "Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton\&. "
+.ti -1c
+.RI "static void \fBCloneDriversFromTo\fP (\fBRigidNode_Base\fP from, \fBRigidNode_Base\fP to, bool overwrite=false)"
+.br
+.RI "Clones joint settings for matching skeletal joints from one skeleton to the other\&. This does not overwrite existing joint drivers\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "const string \fBBXDJ_CURRENT_VERSION\fP = '2\&.0\&.0'"
+.br
+.RI "Represents the current version of the BXDA file\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Utility functions for reading/writing BXDJ files 
+
+
+.SH "Member Function Documentation"
+.PP 
+.SS "static void BXDJSkeleton\&.CloneDriversFromTo (\fBRigidNode_Base\fP from, \fBRigidNode_Base\fP to, bool overwrite = \fCfalse\fP)\fC [static]\fP"
+
+.PP
+Clones joint settings for matching skeletal joints from one skeleton to the other\&. This does not overwrite existing joint drivers\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIfrom\fP Source skeleton
+.br
+\fIto\fP Destination skeleton
+.RE
+.PP
+
+.SS "static \fBRigidNode_Base\fP BXDJSkeleton\&.ReadBinarySkeleton (string path)\fC [static]\fP"
+
+.PP
+Reads the skeleton contained in the BXDJ file specified and returns the root node for that skeleton\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP The input BXDJ file
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The root node of the skeleton
+.RE
+.PP
+
+.SS "static \fBRigidNode_Base\fP BXDJSkeleton\&.ReadSkeleton (string path)\fC [static]\fP"
+
+.PP
+Reads the skeleton contained in the BXDJ XML file specified and returns the root node for that skeleton\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.SS "static void BXDJSkeleton\&.SetupFileNames (\fBRigidNode_Base\fP baseNode, bool overwrite = \fCfalse\fP)\fC [static]\fP"
+
+.PP
+Ensures that every node is assigned a model file name by assigning all nodes without a file name a generated name\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbaseNode\fP The base node of the skeleton
+.br
+\fIoverwrite\fP Overwrite existing
+.RE
+.PP
+
+.SS "static void BXDJSkeleton\&.WritePolynomial (\fBPolynomial\fP poly, XmlWriter writer)\fC [static]\fP"
+
+.PP
+Used for writing a \fBPolynomial\fP's data\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpoly\fP 
+.br
+\fIwriter\fP 
+.RE
+.PP
+
+.SS "static void BXDJSkeleton\&.WriteSkeleton (string path, \fBRigidNode_Base\fP baseNode)\fC [static]\fP"
+
+.PP
+Writes out the skeleton file for the skeleton with the base provided to the path provided\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIpath\fP 
+.br
+\fIbaseNode\fP 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "const string BXDJSkeleton\&.BXDJ_CURRENT_VERSION = '2\&.0\&.0'"
+
+.PP
+Represents the current version of the BXDA file\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

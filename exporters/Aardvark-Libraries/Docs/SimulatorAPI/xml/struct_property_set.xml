@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="struct_property_set" kind="struct" language="C#" prot="public">
+    <compoundname>PropertySet</compoundname>
+    <innerclass refid="class_property_set_1_1_box_collider" prot="public">PropertySet::BoxCollider</innerclass>
+    <innerclass refid="class_property_set_1_1_mesh_collider" prot="public">PropertySet::MeshCollider</innerclass>
+    <innerclass refid="class_property_set_1_1_property_set_collider" prot="public">PropertySet::PropertySetCollider</innerclass>
+    <innerclass refid="class_property_set_1_1_sphere_collider" prot="public">PropertySet::SphereCollider</innerclass>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_property_set_1a8366cd9dd1ed6a6fccb6746f9e69e885" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string PropertySet.PropertySetID</definition>
+        <argsstring></argsstring>
+        <name>PropertySetID</name>
+        <briefdescription>
+<para>ID of the <ref refid="struct_property_set" kindref="compound">PropertySet</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="122" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="122" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+        <referencedby refid="class_field_definition_1a60993e440fc55566badba6799f94310a" compoundref="_field_definition_8cs" startline="70" endline="73">FieldDefinition.AddPropertySet</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_property_set_1a0753ed952f5d39ee1a32abb276a79be2" prot="public" static="no" mutable="no">
+        <type><ref refid="class_property_set_1_1_property_set_collider" kindref="compound">PropertySetCollider</ref></type>
+        <definition>PropertySetCollider PropertySet.Collider</definition>
+        <argsstring></argsstring>
+        <name>Collider</name>
+        <briefdescription>
+<para>Collider of the PhysicsGroup. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="127" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="127" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_property_set_1a4156108efef99bed9a69761482e9cb2f" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int PropertySet.Friction</definition>
+        <argsstring></argsstring>
+        <name>Friction</name>
+        <briefdescription>
+<para>Friction value of the PhysicsGroup. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="132" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="132" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="struct_property_set_1a39e7117921eaa970b4d6e4aeb19fd653" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float PropertySet.Mass</definition>
+        <argsstring></argsstring>
+        <name>Mass</name>
+        <briefdescription>
+<para>Stores the mass of the object. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="137" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="137" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="struct_property_set_1a428033b47a1de1ccf9bf9ef1d14359ed" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>PropertySet.PropertySet</definition>
+        <argsstring>(string physicsGroupID, PropertySetCollider collider, int friction, float mass=0.0f)</argsstring>
+        <name>PropertySet</name>
+        <param>
+          <type>string</type>
+          <declname>physicsGroupID</declname>
+        </param>
+        <param>
+          <type><ref refid="class_property_set_1_1_property_set_collider" kindref="compound">PropertySetCollider</ref></type>
+          <declname>collider</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>friction</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>mass</declname>
+          <defval>0.0f</defval>
+        </param>
+        <briefdescription>
+<para>Constructs a new PhysicsGroup with the specified values. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ID</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>type</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>frictionValue</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="145" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="145" bodyend="151"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Stores physical properties for a node or group of nodes. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="159">
+        <label>PropertySet.PropertySetCollider</label>
+        <link refid="class_property_set_1_1_property_set_collider"/>
+      </node>
+      <node id="158">
+        <label>PropertySet</label>
+        <link refid="struct_property_set"/>
+        <childnode refid="159" relation="usage">
+          <edgelabel>Collider</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" line="10" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/PropertySet.cs" bodystart="9" bodyend="152"/>
+    <listofallmembers>
+      <member refid="struct_property_set_1a0753ed952f5d39ee1a32abb276a79be2" prot="public" virt="non-virtual"><scope>PropertySet</scope><name>Collider</name></member>
+      <member refid="struct_property_set_1a4156108efef99bed9a69761482e9cb2f" prot="public" virt="non-virtual"><scope>PropertySet</scope><name>Friction</name></member>
+      <member refid="struct_property_set_1a39e7117921eaa970b4d6e4aeb19fd653" prot="public" virt="non-virtual"><scope>PropertySet</scope><name>Mass</name></member>
+      <member refid="struct_property_set_1a428033b47a1de1ccf9bf9ef1d14359ed" prot="public" virt="non-virtual"><scope>PropertySet</scope><name>PropertySet</name></member>
+      <member refid="struct_property_set_1a8366cd9dd1ed6a6fccb6746f9e69e885" prot="public" virt="non-virtual"><scope>PropertySet</scope><name>PropertySetID</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

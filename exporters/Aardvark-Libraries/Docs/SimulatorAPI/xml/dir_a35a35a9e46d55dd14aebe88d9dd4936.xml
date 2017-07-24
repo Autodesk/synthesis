@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_a35a35a9e46d55dd14aebe88d9dd4936" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints</compoundname>
+    <innerdir refid="dir_91aaf9ba2e6642d8b2bddf59c45b70b2">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver</innerdir>
+    <innerdir refid="dir_e735ec85e3a4758c5169f60acbd96956">C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Sensors</innerdir>
+    <innerfile refid="_angular_d_o_f_8cs">AngularDOF.cs</innerfile>
+    <innerfile refid="_ball_joint___base_8cs">BallJoint_Base.cs</innerfile>
+    <innerfile refid="_cylindrical_joint___base_8cs">CylindricalJoint_Base.cs</innerfile>
+    <innerfile refid="_linear_d_o_f_8cs">LinearDOF.cs</innerfile>
+    <innerfile refid="_linear_joint___base_8cs">LinearJoint_Base.cs</innerfile>
+    <innerfile refid="_planar_joint___base_8cs">PlanarJoint_Base.cs</innerfile>
+    <innerfile refid="_rotational_joint___base_8cs">RotationalJoint_Base.cs</innerfile>
+    <innerfile refid="_skeletal_joint___base_8cs">SkeletalJoint_Base.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/"/>
+  </compounddef>
+</doxygen>

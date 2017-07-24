@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_ball_joint___base" kind="class" language="C#" prot="public">
+    <compoundname>BallJoint_Base</compoundname>
+    <basecompoundref refid="class_skeletal_joint___base" prot="public" virt="non-virtual">SkeletalJoint_Base</basecompoundref>
+    <innerclass refid="class_ball_joint___base_1_1_angular_d_o_f___impl" prot="private">BallJoint_Base::AngularDOF_Impl</innerclass>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_ball_joint___base_1a06851691d970af7acef439d4c7346a75" prot="public" static="no" mutable="no">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BallJoint_Base.basePoint</definition>
+        <argsstring></argsstring>
+        <name>basePoint</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="75" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_ball_joint___base_1ace144cc3d52f2f9405838aa95a605554" prot="private" static="no" mutable="no">
+        <type>readonly <ref refid="interface_angular_d_o_f" kindref="compound">AngularDOF</ref> []</type>
+        <definition>readonly AngularDOF [] BallJoint_Base.angularDOF</definition>
+        <argsstring></argsstring>
+        <name>angularDOF</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="77" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_ball_joint___base_1ab242b9da7def5f5124c5d9ea605c6cd9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BallJoint_Base.BallJoint_Base</definition>
+        <argsstring>()</argsstring>
+        <name>BallJoint_Base</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="79" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="79" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ball_joint___base_1a8bbdf57f42fe5bf6045c7accfb72993c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override SkeletalJointType</type>
+        <definition>override SkeletalJointType BallJoint_Base.GetJointType</definition>
+        <argsstring>()</argsstring>
+        <name>GetJointType</name>
+        <reimplements refid="class_skeletal_joint___base_1aee155cbd483cb512bf3fc0f9a8885335">GetJointType</reimplements>
+        <briefdescription>
+<para>The type of this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The joint type</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="84" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="84" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ball_joint___base_1a9bf9eac2eee14ae92bb723aabf60caa9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override IEnumerable&lt; <ref refid="interface_angular_d_o_f" kindref="compound">AngularDOF</ref> &gt;</type>
+        <definition>override IEnumerable&lt;AngularDOF&gt; BallJoint_Base.GetAngularDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetAngularDOF</name>
+        <reimplements refid="class_skeletal_joint___base_1abf96267052733ccf001e0b092c6582f8">GetAngularDOF</reimplements>
+        <briefdescription>
+<para>Gets all the angular degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The angular degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="99" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="99" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ball_joint___base_1ae3bcfcc633282ab053048b39ba1c8b8d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override IEnumerable&lt; <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref> &gt;</type>
+        <definition>override IEnumerable&lt;LinearDOF&gt; BallJoint_Base.GetLinearDOF</definition>
+        <argsstring>()</argsstring>
+        <name>GetLinearDOF</name>
+        <reimplements refid="class_skeletal_joint___base_1a14564d8c44dfeef8b7a10044f2392cde">GetLinearDOF</reimplements>
+        <briefdescription>
+<para>Gets all the linear degrees of freedom for this joint. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The linear degrees of freedom</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="104" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="104" bodyend="107"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_ball_joint___base_1ac724b4ce1a84059a337a67e7b2848bbe" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void BallJoint_Base.WriteBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryWriter writer)</argsstring>
+        <name>WriteBinaryJointInternal</name>
+        <reimplements refid="class_skeletal_joint___base_1a2d98672b13221f6a7f95f24c121c6b10">WriteBinaryJointInternal</reimplements>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="89" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="89" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="class_ball_joint___base_1a5ee0a55d4209a3747b7cebbdb5eb9932" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>override void</type>
+        <definition>override void BallJoint_Base.ReadBinaryJointInternal</definition>
+        <argsstring>(System.IO.BinaryReader reader)</argsstring>
+        <name>ReadBinaryJointInternal</name>
+        <reimplements refid="class_skeletal_joint___base_1aebacae4579db784149dcb6123820a4fb">ReadBinaryJointInternal</reimplements>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="94" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="94" bodyend="97"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="22">
+        <label>BallJoint_Base</label>
+        <link refid="class_ball_joint___base"/>
+        <childnode refid="23" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="28">
+        <label>IComparable&lt; JointDriver &gt;</label>
+      </node>
+      <node id="29">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="27" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>BallJoint_Base</label>
+        <link refid="class_ball_joint___base"/>
+        <childnode refid="25" relation="public-inheritance">
+        </childnode>
+        <childnode refid="29" relation="usage">
+          <edgelabel>basePoint</edgelabel>
+        </childnode>
+      </node>
+      <node id="26">
+        <label>JointDriver</label>
+        <link refid="class_joint_driver"/>
+        <childnode refid="27" relation="public-inheritance">
+        </childnode>
+        <childnode refid="28" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>SkeletalJoint_Base</label>
+        <link refid="class_skeletal_joint___base"/>
+        <childnode refid="26" relation="usage">
+          <edgelabel>cDriver</edgelabel>
+        </childnode>
+      </node>
+      <node id="27">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" line="5" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/BallJoint_Base.cs" bodystart="4" bodyend="108"/>
+    <listofallmembers>
+      <member refid="class_ball_joint___base_1ace144cc3d52f2f9405838aa95a605554" prot="private" virt="non-virtual"><scope>BallJoint_Base</scope><name>angularDOF</name></member>
+      <member refid="class_skeletal_joint___base_1aaeb09af11a9640ec8d144f825f56c81a" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>attachedSensors</name></member>
+      <member refid="class_ball_joint___base_1ab242b9da7def5f5124c5d9ea605c6cd9" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>BallJoint_Base</name></member>
+      <member refid="class_ball_joint___base_1a06851691d970af7acef439d4c7346a75" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>basePoint</name></member>
+      <member refid="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>cDriver</name></member>
+      <member refid="class_ball_joint___base_1a9bf9eac2eee14ae92bb723aabf60caa9" prot="public" virt="virtual"><scope>BallJoint_Base</scope><name>GetAngularDOF</name></member>
+      <member refid="class_ball_joint___base_1a8bbdf57f42fe5bf6045c7accfb72993c" prot="public" virt="virtual"><scope>BallJoint_Base</scope><name>GetJointType</name></member>
+      <member refid="class_ball_joint___base_1ae3bcfcc633282ab053048b39ba1c8b8d" prot="public" virt="virtual"><scope>BallJoint_Base</scope><name>GetLinearDOF</name></member>
+      <member refid="class_skeletal_joint___base_1a590ba897b9331ad634a26101e27d18ed" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>JOINT_FACTORY</name></member>
+      <member refid="class_skeletal_joint___base_1acf7787e56af14f0919e1d76008b6a19c" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>ReadBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a7f71e5afc3b791ffed1bd040425737ef" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>ReadBinaryJoint</name></member>
+      <member refid="class_ball_joint___base_1a5ee0a55d4209a3747b7cebbdb5eb9932" prot="protected" virt="virtual"><scope>BallJoint_Base</scope><name>ReadBinaryJointInternal</name></member>
+      <member refid="class_skeletal_joint___base_1ae9f8e31a56644eb92cb901a4587a3d24" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>ReadJointFully</name></member>
+      <member refid="class_skeletal_joint___base_1aac5116bb70fb19058943811a19951848" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>SkeletalJointFactory</name></member>
+      <member refid="class_skeletal_joint___base_1a0bf3f7cc69c3965e7f3beecc14bec4d0" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>ToString</name></member>
+      <member refid="class_skeletal_joint___base_1a3617349ae11146f48876525ed601c33e" prot="protected" virt="virtual"><scope>BallJoint_Base</scope><name>ToString_Internal</name></member>
+      <member refid="class_skeletal_joint___base_1a33a745c57346c6d67c52a7ad61816a09" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>WriteBinaryData</name></member>
+      <member refid="class_skeletal_joint___base_1a42df720cdd871ccad5930ae7977f7200" prot="public" virt="non-virtual"><scope>BallJoint_Base</scope><name>WriteBinaryJoint</name></member>
+      <member refid="class_ball_joint___base_1ac724b4ce1a84059a337a67e7b2848bbe" prot="protected" virt="virtual"><scope>BallJoint_Base</scope><name>WriteBinaryJointInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

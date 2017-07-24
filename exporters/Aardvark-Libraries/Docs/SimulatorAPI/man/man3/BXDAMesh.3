@@ -1,0 +1,128 @@
+.TH "BXDAMesh" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+BXDAMesh \- Represents a 3D object composed of one or more \fBBXDAMesh\&.BXDASubMesh\fP and physical properties of the object\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBBinaryRWObject\fP, and \fBBinaryRWObject\fP\&.
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBBXDASubMesh\fP"
+.br
+.RI "Represents an indexed triangle mesh with normals and optional colors and texture coordinates\&. "
+.ti -1c
+.RI "class \fBBXDASurface\fP"
+.br
+.RI "Index data representing a face with color, transparency, translucency, and specular "
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBBXDAMesh\fP ()"
+.br
+.RI "Creates an empty BXDA Mesh\&. "
+.ti -1c
+.RI "\fBBXDAMesh\fP (Guid guid)"
+.br
+.RI "Creates an empty BXDA Mesh\&. "
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (BinaryWriter writer)"
+.br
+.RI "Writes all mesh data with the given BinaryWriter\&. "
+.ti -1c
+.RI "void \fBReadBinaryData\fP (BinaryReader reader)"
+.br
+.RI "Reads with the given BinaryReader to generate mesh data\&. "
+.in -1c
+.SS "Properties"
+
+.in +1c
+.ti -1c
+.RI "Guid \fBGUID\fP\fC [get]\fP"
+.br
+.RI "The GUID for identifying the \fBBXDAMesh\fP\&. "
+.ti -1c
+.RI "\fBPhysicalProperties\fP \fBphysics\fP\fC [get]\fP"
+.br
+.RI "The physical properties of this object\&. "
+.ti -1c
+.RI "List< \fBBXDASubMesh\fP > \fBmeshes\fP\fC [get]\fP"
+.br
+.RI "This object's sub meshes\&. "
+.ti -1c
+.RI "List< \fBBXDASubMesh\fP > \fBcolliders\fP\fC [get]\fP"
+.br
+.RI "This object's collision meshes\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Represents a 3D object composed of one or more \fBBXDAMesh\&.BXDASubMesh\fP and physical properties of the object\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "BXDAMesh\&.BXDAMesh ()"
+
+.PP
+Creates an empty BXDA Mesh\&. 
+.SS "BXDAMesh\&.BXDAMesh (Guid guid)"
+
+.PP
+Creates an empty BXDA Mesh\&. 
+.SH "Member Function Documentation"
+.PP 
+.SS "void BXDAMesh\&.ReadBinaryData (BinaryReader reader)"
+
+.PP
+Reads with the given BinaryReader to generate mesh data\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIreader\fP 
+.RE
+.PP
+
+.PP
+Implements \fBBinaryRWObject\fP\&.
+.SS "void BXDAMesh\&.WriteBinaryData (BinaryWriter writer)"
+
+.PP
+Writes all mesh data with the given BinaryWriter\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIwriter\fP 
+.RE
+.PP
+
+.PP
+Implements \fBBinaryRWObject\fP\&.
+.SH "Property Documentation"
+.PP 
+.SS "List<\fBBXDASubMesh\fP> BXDAMesh\&.colliders\fC [get]\fP"
+
+.PP
+This object's collision meshes\&. 
+.SS "Guid BXDAMesh\&.GUID\fC [get]\fP"
+
+.PP
+The GUID for identifying the \fBBXDAMesh\fP\&. 
+.SS "List<\fBBXDASubMesh\fP> BXDAMesh\&.meshes\fC [get]\fP"
+
+.PP
+This object's sub meshes\&. 
+.SS "\fBPhysicalProperties\fP BXDAMesh\&.physics\fC [get]\fP"
+
+.PP
+The physical properties of this object\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

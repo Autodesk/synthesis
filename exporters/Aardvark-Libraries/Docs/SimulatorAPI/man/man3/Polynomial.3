@@ -1,0 +1,54 @@
+.TH "Polynomial" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Polynomial
+.SH SYNOPSIS
+.br
+.PP
+.PP
+Inherits \fBBinaryRWObject\fP\&.
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBPolynomial\fP (params float[] coeff)"
+.br
+.RI "Coefficients are based on array indicies, so the first one is multiplied by 1, the second by x, the third by x^2\&.\&.\&. "
+.ti -1c
+.RI "float \fBEvaluate\fP (float x)"
+.br
+.ti -1c
+.RI "void \fBWriteBinaryData\fP (System\&.IO\&.BinaryWriter writer)"
+.br
+.ti -1c
+.RI "void \fBReadBinaryData\fP (System\&.IO\&.BinaryReader reader)"
+.br
+.ti -1c
+.RI "override string \fBToString\fP ()"
+.br
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "float [] \fBcoeff\fP"
+.br
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Polynomial\&.Polynomial (params float [] coeff)"
+
+.PP
+Coefficients are based on array indicies, so the first one is multiplied by 1, the second by x, the third by x^2\&.\&.\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIcoeff\fP Coeffecients for the polynomial
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

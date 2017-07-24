@@ -1,0 +1,503 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_b_x_d_vector3" kind="class" language="C#" prot="public">
+    <compoundname>BXDVector3</compoundname>
+    <basecompoundref refid="interface_binary_r_w_object" prot="public" virt="non-virtual">BinaryRWObject</basecompoundref>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_b_x_d_vector3_1a4d4ecb72e18854bd18f94c0c709efbd4" prot="private" static="no" mutable="no">
+        <type>const float</type>
+        <definition>const float BXDVector3.EPSILON</definition>
+        <argsstring></argsstring>
+        <name>EPSILON</name>
+        <initializer>= 1.0E-6F</initializer>
+        <briefdescription>
+<para>If two floating point values have an absolute difference less than this they are considered the same. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="9" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="9" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_vector3_1ab6f052e68ba61a321ed07d94459e33f7" prot="private" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDVector3.y</definition>
+        <argsstring></argsstring>
+        <name>y</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_b_x_d_vector3_1a274c9af621d901670b9f4aa9bcd1944a" prot="private" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDVector3.z</definition>
+        <argsstring></argsstring>
+        <name>z</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="14" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float BXDVector3.x</definition>
+        <argsstring></argsstring>
+        <name>x</name>
+        <briefdescription>
+<para>The x, y, and z values for the <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref>. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="14" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="14" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_f_properties_1ad03a0259c98a0a1f59ffec47d7688185" compoundref="_b_x_d_f_properties_8cs" startline="71" endline="118">BXDFProperties.WriteProperties</referencedby>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_b_x_d_vector3_1a587219cbfe9a71512df003856ad79b7a" compoundref="_b_x_d_vector3_8cs" startline="42" endline="47">BXDVector3</referencedby>
+        <referencedby refid="class_b_x_d_vector3_1a06be557b2f4f8a78b4fa30c766756264" compoundref="_b_x_d_vector3_8cs" startline="76" endline="82">Add</referencedby>
+        <referencedby refid="class_b_x_d_vector3_1abe5605287cb9f1fde60e6c1f4f3c0245" compoundref="_b_x_d_vector3_8cs" startline="89" endline="95">Subtract</referencedby>
+        <referencedby refid="class_b_x_d_vector3_1ae71ca5cd2508572c76c60ee21f702d3a" compoundref="_b_x_d_vector3_8cs" startline="112" endline="115">CrossProduct</referencedby>
+        <referencedby refid="class_b_x_d_vector3_1ad0b239d2be5d8b8a5845ed1030a1d1cb" compoundref="_b_x_d_vector3_8cs" startline="123" endline="126">DotProduct</referencedby>
+        <referencedby refid="class_b_x_d_vector3_1ab598b771db0c6a5e5a3e497ed4d9dfda" compoundref="_b_x_d_vector3_8cs" startline="146" endline="149">Copy</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_b_x_d_vector3_1a0e2a2ec4422390656dc569146bbceb5b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDVector3.BXDVector3</definition>
+        <argsstring>()</argsstring>
+        <name>BXDVector3</name>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="19" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="19" bodyend="21"/>
+        <referencedby refid="class_b_x_d_vector3_1ae71ca5cd2508572c76c60ee21f702d3a" compoundref="_b_x_d_vector3_8cs" startline="112" endline="115">CrossProduct</referencedby>
+        <referencedby refid="class_b_x_d_vector3_1ab598b771db0c6a5e5a3e497ed4d9dfda" compoundref="_b_x_d_vector3_8cs" startline="146" endline="149">Copy</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1a586261e067ed628788df3fede2d96427" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDVector3.BXDVector3</definition>
+        <argsstring>(double x, double y, double z)</argsstring>
+        <name>BXDVector3</name>
+        <param>
+          <type>double</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref> class from the given x, y, and z values. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="29" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="29" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1a587219cbfe9a71512df003856ad79b7a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>BXDVector3.BXDVector3</definition>
+        <argsstring>(float x, float y, float z)</argsstring>
+        <name>BXDVector3</name>
+        <param>
+          <type>float</type>
+          <declname>x</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>y</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>z</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref> class from the given x, y, and z values. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>x</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>y</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>z</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="42" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="42" bodyend="47"/>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">x</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1a2ab3c8442aada6617e4d779899e20b09" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override String</type>
+        <definition>override String BXDVector3.ToString</definition>
+        <argsstring>()</argsstring>
+        <name>ToString</name>
+        <briefdescription>
+<para>Converts the x, y, and z values to a string. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para></para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="53" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="53" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1a4fa123abdf042e9116c3c231b61c8668" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BXDVector3.Multiply</definition>
+        <argsstring>(float f)</argsstring>
+        <name>Multiply</name>
+        <param>
+          <type>float</type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+<para>Multiplies this vector by the given scalar and returns this object (for method chaining) </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>f</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The scalar to multiply by</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>This vector.</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="63" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="63" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1a06be557b2f4f8a78b4fa30c766756264" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BXDVector3.Add</definition>
+        <argsstring>(BXDVector3 f)</argsstring>
+        <name>Add</name>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+<para>Adds the given vector to this vector and returns this object. (For method chaining) </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>f</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The vector to add</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>This vector.</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="76" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="76" bodyend="82"/>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">x</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1abe5605287cb9f1fde60e6c1f4f3c0245" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BXDVector3.Subtract</definition>
+        <argsstring>(BXDVector3 f)</argsstring>
+        <name>Subtract</name>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>f</declname>
+        </param>
+        <briefdescription>
+<para>Subtracts the given vector from this vector and returns this object. (For method chaining) </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>f</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The vector to subtract</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>This vector.</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="89" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="89" bodyend="95"/>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">x</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1a3db16bd642a330d6ba53175aadcf28bd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>float BXDVector3.Magnitude</definition>
+        <argsstring>()</argsstring>
+        <name>Magnitude</name>
+        <briefdescription>
+<para>Gets the magnitude of this vector. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The magnitude of this vector</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="101" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="101" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1ae6eaf3260e01b57245209f6452f28b16" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BXDVector3.WriteBinaryData</definition>
+        <argsstring>(System.IO.BinaryWriter w)</argsstring>
+        <name>WriteBinaryData</name>
+        <param>
+          <type>System.IO.BinaryWriter</type>
+          <declname>w</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="128" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="128" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1a45b7d22842548db663319beb37f64b75" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void BXDVector3.ReadBinaryData</definition>
+        <argsstring>(System.IO.BinaryReader r)</argsstring>
+        <name>ReadBinaryData</name>
+        <param>
+          <type>System.IO.BinaryReader</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="135" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="135" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1ab598b771db0c6a5e5a3e497ed4d9dfda" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>BXDVector3 BXDVector3.Copy</definition>
+        <argsstring>()</argsstring>
+        <name>Copy</name>
+        <briefdescription>
+<para>Creates an identical copy of this vector. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The copy</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="146" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="146" bodyend="149"/>
+        <references refid="class_b_x_d_vector3_1a0e2a2ec4422390656dc569146bbceb5b" compoundref="_b_x_d_vector3_8cs" startline="19" endline="21">BXDVector3</references>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">x</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1aa7d53340156ece70489a4cb1b6fb879c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override bool</type>
+        <definition>override bool BXDVector3.Equals</definition>
+        <argsstring>(object obj)</argsstring>
+        <name>Equals</name>
+        <param>
+          <type>object</type>
+          <declname>obj</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="151" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="151" bodyend="159"/>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1adbbef15423b860b5f74264c970736892" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override int</type>
+        <definition>override int BXDVector3.GetHashCode</definition>
+        <argsstring>()</argsstring>
+        <name>GetHashCode</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="161" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="161" bodyend="170"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_b_x_d_vector3_1ae71ca5cd2508572c76c60ee21f702d3a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+        <definition>static BXDVector3 BXDVector3.CrossProduct</definition>
+        <argsstring>(BXDVector3 lhs, BXDVector3 rhs)</argsstring>
+        <name>CrossProduct</name>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Computes the cross product of two vectors. (lhs x rhs) </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>lhs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The left hand element</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>rhs</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The right hand element</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>(lhs x rhs)</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="112" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="112" bodyend="115"/>
+        <references refid="class_b_x_d_vector3_1a0e2a2ec4422390656dc569146bbceb5b" compoundref="_b_x_d_vector3_8cs" startline="19" endline="21">BXDVector3</references>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">x</references>
+      </memberdef>
+      <memberdef kind="function" id="class_b_x_d_vector3_1ad0b239d2be5d8b8a5845ed1030a1d1cb" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>float</type>
+        <definition>static float BXDVector3.DotProduct</definition>
+        <argsstring>(BXDVector3 a, BXDVector3 b)</argsstring>
+        <name>DotProduct</name>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>a</declname>
+        </param>
+        <param>
+          <type><ref refid="class_b_x_d_vector3" kindref="compound">BXDVector3</ref></type>
+          <declname>b</declname>
+        </param>
+        <briefdescription>
+<para>Computes the dot product of two vectors. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>a</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>One vector</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>b</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Another vector</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>(a · b)</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="123" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="123" bodyend="126"/>
+        <references refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" compoundref="_b_x_d_vector3_8cs" startline="14">x</references>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="66">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="67" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="67">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="68">
+        <label>BXDVector3</label>
+        <link refid="class_b_x_d_vector3"/>
+        <childnode refid="69" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="69">
+        <label>BinaryRWObject</label>
+        <link refid="interface_binary_r_w_object"/>
+      </node>
+    </collaborationgraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" line="5" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Math/BXDVector3.cs" bodystart="4" bodyend="171"/>
+    <listofallmembers>
+      <member refid="class_b_x_d_vector3_1a06be557b2f4f8a78b4fa30c766756264" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>Add</name></member>
+      <member refid="class_b_x_d_vector3_1a0e2a2ec4422390656dc569146bbceb5b" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>BXDVector3</name></member>
+      <member refid="class_b_x_d_vector3_1a586261e067ed628788df3fede2d96427" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>BXDVector3</name></member>
+      <member refid="class_b_x_d_vector3_1a587219cbfe9a71512df003856ad79b7a" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>BXDVector3</name></member>
+      <member refid="class_b_x_d_vector3_1ab598b771db0c6a5e5a3e497ed4d9dfda" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>Copy</name></member>
+      <member refid="class_b_x_d_vector3_1ae71ca5cd2508572c76c60ee21f702d3a" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>CrossProduct</name></member>
+      <member refid="class_b_x_d_vector3_1ad0b239d2be5d8b8a5845ed1030a1d1cb" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>DotProduct</name></member>
+      <member refid="class_b_x_d_vector3_1a4d4ecb72e18854bd18f94c0c709efbd4" prot="private" virt="non-virtual"><scope>BXDVector3</scope><name>EPSILON</name></member>
+      <member refid="class_b_x_d_vector3_1aa7d53340156ece70489a4cb1b6fb879c" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>Equals</name></member>
+      <member refid="class_b_x_d_vector3_1adbbef15423b860b5f74264c970736892" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>GetHashCode</name></member>
+      <member refid="class_b_x_d_vector3_1a3db16bd642a330d6ba53175aadcf28bd" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>Magnitude</name></member>
+      <member refid="class_b_x_d_vector3_1a4fa123abdf042e9116c3c231b61c8668" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>Multiply</name></member>
+      <member refid="class_b_x_d_vector3_1a45b7d22842548db663319beb37f64b75" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>ReadBinaryData</name></member>
+      <member refid="interface_binary_r_w_object_1a2cd7d6b9aded677cffdb646b51328c5d" prot="public" virt="non-virtual" ambiguityscope="BinaryRWObject."><scope>BXDVector3</scope><name>ReadBinaryData</name></member>
+      <member refid="class_b_x_d_vector3_1abe5605287cb9f1fde60e6c1f4f3c0245" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>Subtract</name></member>
+      <member refid="class_b_x_d_vector3_1a2ab3c8442aada6617e4d779899e20b09" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>ToString</name></member>
+      <member refid="class_b_x_d_vector3_1ae6eaf3260e01b57245209f6452f28b16" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>WriteBinaryData</name></member>
+      <member refid="interface_binary_r_w_object_1a5e361e550b30dcd29759188cf67d177c" prot="public" virt="non-virtual" ambiguityscope="BinaryRWObject."><scope>BXDVector3</scope><name>WriteBinaryData</name></member>
+      <member refid="class_b_x_d_vector3_1a46633bfd92ba8052494bc1918d1762a4" prot="public" virt="non-virtual"><scope>BXDVector3</scope><name>x</name></member>
+      <member refid="class_b_x_d_vector3_1ab6f052e68ba61a321ed07d94459e33f7" prot="private" virt="non-virtual"><scope>BXDVector3</scope><name>y</name></member>
+      <member refid="class_b_x_d_vector3_1a274c9af621d901670b9f4aa9bcd1944a" prot="private" virt="non-virtual"><scope>BXDVector3</scope><name>z</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

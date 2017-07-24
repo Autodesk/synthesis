@@ -1,0 +1,353 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_rigid_node___base" kind="class" language="C#" prot="public">
+    <compoundname>RigidNode_Base</compoundname>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="class_rigid_node___base_1a3852bedd7b03e4ca9023dbc82bfc911c" prot="public" static="yes" mutable="no">
+        <type><ref refid="class_rigid_node___base_1ae13cbb7e730cd0e19c77efa84edbceca" kindref="member">RigidNodeFactory</ref></type>
+        <definition>RigidNodeFactory RigidNode_Base.NODE_FACTORY</definition>
+        <argsstring></argsstring>
+        <name>NODE_FACTORY</name>
+        <initializer>= delegate(Guid guid)
+    {
+        return new <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref>(guid);
+    }</initializer>
+        <briefdescription>
+<para>By setting this to a custom value skeletons that are read using <ref refid="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" kindref="member">BXDJSkeleton.ReadBinarySkeleton(string)</ref> can be composed of a custom rigid node type. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="18" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="class_rigid_node___base_1a762f5fd81893ce03a8c9f28038f7acbe" prot="protected" static="no" mutable="no">
+        <type>int</type>
+        <definition>int RigidNode_Base.level</definition>
+        <argsstring></argsstring>
+        <name>level</name>
+        <briefdescription>
+<para>How far down in the hierarchy this element is. The higher it is the farther from the root node. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="26" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="26" bodyend="-1"/>
+        <referencedby refid="class_rigid_node___base_1a287e7e27c6fc9d2b104e6f2578e96af8" compoundref="_rigid_node___base_8cs" startline="76" endline="82">AddChild</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="class_rigid_node___base_1aa56fb3488be82c0a2537803e7ad71af9" prot="private" static="no" mutable="no">
+        <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+        <definition>RigidNode_Base RigidNode_Base.parent</definition>
+        <argsstring></argsstring>
+        <name>parent</name>
+        <briefdescription>
+<para>The node that represents the parent of this node. If this is null then this is a root node. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="31" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="class_rigid_node___base_1a84aa2f8620180707d351a749fb3ab00c" prot="private" static="no" mutable="no">
+        <type><ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref></type>
+        <definition>SkeletalJoint_Base RigidNode_Base.parentConnection</definition>
+        <argsstring></argsstring>
+        <name>parentConnection</name>
+        <briefdescription>
+<para>The joint that connects this node to its parent. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="36" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="class_rigid_node___base_1aeb0303b14b3ec98d88a667fe7b61faf5" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string RigidNode_Base.ModelFileName</definition>
+        <argsstring></argsstring>
+        <name>ModelFileName</name>
+        <briefdescription>
+<para>The name of the file holding this node&apos;s model. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="41" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="41" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" compoundref="_b_x_d_j_skeleton_8cs" startline="438" endline="501">BXDJSkeleton.ReadBinarySkeleton</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_rigid_node___base_1a90a113d4a7ce35fb515ec7348f48c574" prot="public" static="no" mutable="no">
+        <type>string</type>
+        <definition>string RigidNode_Base.ModelFullID</definition>
+        <argsstring></argsstring>
+        <name>ModelFullID</name>
+        <briefdescription>
+<para>A very verbose identifier that represents the element this node is in the overall structure. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="55" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="55" bodyend="-1"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" compoundref="_b_x_d_j_skeleton_8cs" startline="438" endline="501">BXDJSkeleton.ReadBinarySkeleton</referencedby>
+        <referencedby refid="class_rigid_node___base_1a98a362b9ae0cf05e4c1f9db70bcf89c5" compoundref="_rigid_node___base_8cs" startline="118" endline="121">GetModelID</referencedby>
+      </memberdef>
+      <memberdef kind="variable" id="class_rigid_node___base_1a16a5bf5e9b0b985e723da889daa1128d" prot="public" static="no" mutable="no">
+        <type>Dictionary&lt; <ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref>, <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref> &gt;</type>
+        <definition>Dictionary&lt;SkeletalJoint_Base, RigidNode_Base&gt; RigidNode_Base.Children</definition>
+        <argsstring></argsstring>
+        <name>Children</name>
+        <initializer>= new Dictionary&lt;<ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref>, <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref>&gt;()</initializer>
+        <briefdescription>
+<para>A mapping between each child node of this node and the joint connection between the two. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="60" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="property">
+      <memberdef kind="property" id="class_rigid_node___base_1aa4562673f4d55888f3dfa594b62bf7d1" prot="public" static="no" readable="no" writable="no" gettable="yes" privategettable="no" protectedgettable="no" settable="no" privatesettable="yes" protectedsettable="no">
+        <type>Guid</type>
+        <definition>Guid RigidNode_Base.GUID</definition>
+        <argsstring></argsstring>
+        <name>GUID</name>
+        <briefdescription>
+<para>The globally unique identifier. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="46" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="47" bodyend="-1"/>
+        <referencedby refid="class_rigid_node___base_1ad717bbf1b9a1b28d24dbdf7242cf4a1b" compoundref="_rigid_node___base_8cs" startline="66" endline="69">RigidNode_Base</referencedby>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_rigid_node___base_1ae13cbb7e730cd0e19c77efa84edbceca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>delegate <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+        <definition>delegate RigidNode_Base RigidNode_Base.RigidNodeFactory</definition>
+        <argsstring>(Guid guid)</argsstring>
+        <name>RigidNodeFactory</name>
+        <param>
+          <type>Guid</type>
+          <declname>guid</declname>
+        </param>
+        <briefdescription>
+<para>Generic delegate for creating rigid node instances </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="12" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1ad717bbf1b9a1b28d24dbdf7242cf4a1b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>RigidNode_Base.RigidNode_Base</definition>
+        <argsstring>(Guid guid)</argsstring>
+        <name>RigidNode_Base</name>
+        <param>
+          <type>Guid</type>
+          <declname>guid</declname>
+        </param>
+        <briefdescription>
+<para>Initializes a new instance of the <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref> class. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>guid</parametername>
+</parameternamelist>
+<parameterdescription>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="66" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="66" bodyend="69"/>
+        <references refid="class_rigid_node___base_1aa4562673f4d55888f3dfa594b62bf7d1" compoundref="_rigid_node___base_8cs" startline="47">GUID</references>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1a287e7e27c6fc9d2b104e6f2578e96af8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void RigidNode_Base.AddChild</definition>
+        <argsstring>(SkeletalJoint_Base joint, RigidNode_Base child)</argsstring>
+        <name>AddChild</name>
+        <param>
+          <type><ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref></type>
+          <declname>joint</declname>
+        </param>
+        <param>
+          <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+          <declname>child</declname>
+        </param>
+        <briefdescription>
+<para>Adds the given node as a child of this node. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>joint</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The joint connecting this node to the child</para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>child</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The child node</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="76" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="76" bodyend="82"/>
+        <references refid="class_rigid_node___base_1a762f5fd81893ce03a8c9f28038f7acbe" compoundref="_rigid_node___base_8cs" startline="26">level</references>
+        <referencedby refid="class_b_x_d_j_skeleton_1aeacead12f7e921a9c77a588773901798" compoundref="_b_x_d_j_skeleton_8cs" startline="438" endline="501">BXDJSkeleton.ReadBinarySkeleton</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1a8889037fe9b28dbebcdcf670899406b4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref></type>
+        <definition>RigidNode_Base RigidNode_Base.GetParent</definition>
+        <argsstring>()</argsstring>
+        <name>GetParent</name>
+        <briefdescription>
+<para>Gets the parent node for this node. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The parent node, or null if this node is a root node</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="88" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="88" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1a6f26d5cf2ff78a2066913e81df473abf" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_skeletal_joint___base" kindref="compound">SkeletalJoint_Base</ref></type>
+        <definition>SkeletalJoint_Base RigidNode_Base.GetSkeletalJoint</definition>
+        <argsstring>()</argsstring>
+        <name>GetSkeletalJoint</name>
+        <briefdescription>
+<para>Gets the skeletal joint connecting this node to its parent. </para>        </briefdescription>
+        <detaileddescription>
+<para>This should always be non-null when the current node isn&apos;t a root node. </para><para><simplesect kind="return"><para>The joint connection, or null if no connection exists.</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="100" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="100" bodyend="103"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" compoundref="_b_x_d_j_skeleton_8cs" startline="508" endline="542">BXDJSkeleton.CloneDriversFromTo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1a68abee405ea4eb8185ec902791e085eb" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>object</type>
+        <definition>virtual object RigidNode_Base.GetModel</definition>
+        <argsstring>()</argsstring>
+        <name>GetModel</name>
+        <briefdescription>
+<para>Gets the actual object visually representing this rigid node if such an item exists. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The representation, or null</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="109" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="109" bodyend="112"/>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1a98a362b9ae0cf05e4c1f9db70bcf89c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>string</type>
+        <definition>virtual string RigidNode_Base.GetModelID</definition>
+        <argsstring>()</argsstring>
+        <name>GetModelID</name>
+        <briefdescription>
+<para>Gets a very verbose identifier that represents the element this node is in the overall structure. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The model identifier</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="118" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="118" bodyend="121"/>
+        <references refid="class_rigid_node___base_1a90a113d4a7ce35fb515ec7348f48c574" compoundref="_rigid_node___base_8cs" startline="55">ModelFullID</references>
+        <references refid="class_skeletal_joint___base_1a69a85fe8ff6cee4d5773884798300fcf" compoundref="_skeletal_joint___base_8cs" startline="53">SkeletalJoint_Base.cDriver</references>
+        <referencedby refid="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" compoundref="_b_x_d_j_skeleton_8cs" startline="508" endline="542">BXDJSkeleton.CloneDriversFromTo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1afed92596ab670fc6cbbb67cb533cd180" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>override string</type>
+        <definition>override string RigidNode_Base.ToString</definition>
+        <argsstring>()</argsstring>
+        <name>ToString</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="123" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="123" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1aebef38e79a3b7a54dd769db5c6ae6a40" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>List&lt; <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref> &gt;</type>
+        <definition>List&lt;RigidNode_Base&gt; RigidNode_Base.ListAllNodes</definition>
+        <argsstring>()</argsstring>
+        <name>ListAllNodes</name>
+        <briefdescription>
+<para>Gets a list of all the rigid nodes at or below this item in the tree. </para>        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The list of nodes</para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="148" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="148" bodyend="153"/>
+        <referencedby refid="class_b_x_d_j_skeleton_1abe03be6363ab87421b757bb83bf81d39" compoundref="_b_x_d_j_skeleton_8cs" startline="21" endline="31">BXDJSkeleton.SetupFileNames</referencedby>
+        <referencedby refid="class_b_x_d_j_skeleton_1a51284ed9f19393c90ac2fb0f854880f4" compoundref="_b_x_d_j_skeleton_8cs" startline="38" endline="93">BXDJSkeleton.WriteSkeleton</referencedby>
+        <referencedby refid="class_b_x_d_j_skeleton_1a4db96cff0567e816d0f1c29426e0e70b" compoundref="_b_x_d_j_skeleton_8cs" startline="508" endline="542">BXDJSkeleton.CloneDriversFromTo</referencedby>
+      </memberdef>
+      <memberdef kind="function" id="class_rigid_node___base_1aef149d0976f10b042ee989c9854b441f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void RigidNode_Base.ListAllNodes</definition>
+        <argsstring>(List&lt; RigidNode_Base &gt; list)</argsstring>
+        <name>ListAllNodes</name>
+        <param>
+          <type>List&lt; <ref refid="class_rigid_node___base" kindref="compound">RigidNode_Base</ref> &gt;</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+<para>Gets a list of all the rigid nodes at or below this item in the tree. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>list</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The list to write the nodes to</para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="159" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="159" bodyend="166"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Represents a node inside the hierarchy representing how a robot moves. </para>    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" line="8" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/ModelTree/RigidNode_Base.cs" bodystart="7" bodyend="167"/>
+    <listofallmembers>
+      <member refid="class_rigid_node___base_1a287e7e27c6fc9d2b104e6f2578e96af8" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>AddChild</name></member>
+      <member refid="class_rigid_node___base_1a16a5bf5e9b0b985e723da889daa1128d" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>Children</name></member>
+      <member refid="class_rigid_node___base_1a68abee405ea4eb8185ec902791e085eb" prot="public" virt="virtual"><scope>RigidNode_Base</scope><name>GetModel</name></member>
+      <member refid="class_rigid_node___base_1a98a362b9ae0cf05e4c1f9db70bcf89c5" prot="public" virt="virtual"><scope>RigidNode_Base</scope><name>GetModelID</name></member>
+      <member refid="class_rigid_node___base_1a8889037fe9b28dbebcdcf670899406b4" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>GetParent</name></member>
+      <member refid="class_rigid_node___base_1a6f26d5cf2ff78a2066913e81df473abf" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>GetSkeletalJoint</name></member>
+      <member refid="class_rigid_node___base_1aa4562673f4d55888f3dfa594b62bf7d1" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>GUID</name></member>
+      <member refid="class_rigid_node___base_1a762f5fd81893ce03a8c9f28038f7acbe" prot="protected" virt="non-virtual"><scope>RigidNode_Base</scope><name>level</name></member>
+      <member refid="class_rigid_node___base_1aebef38e79a3b7a54dd769db5c6ae6a40" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>ListAllNodes</name></member>
+      <member refid="class_rigid_node___base_1aef149d0976f10b042ee989c9854b441f" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>ListAllNodes</name></member>
+      <member refid="class_rigid_node___base_1aeb0303b14b3ec98d88a667fe7b61faf5" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>ModelFileName</name></member>
+      <member refid="class_rigid_node___base_1a90a113d4a7ce35fb515ec7348f48c574" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>ModelFullID</name></member>
+      <member refid="class_rigid_node___base_1a3852bedd7b03e4ca9023dbc82bfc911c" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>NODE_FACTORY</name></member>
+      <member refid="class_rigid_node___base_1aa56fb3488be82c0a2537803e7ad71af9" prot="private" virt="non-virtual"><scope>RigidNode_Base</scope><name>parent</name></member>
+      <member refid="class_rigid_node___base_1a84aa2f8620180707d351a749fb3ab00c" prot="private" virt="non-virtual"><scope>RigidNode_Base</scope><name>parentConnection</name></member>
+      <member refid="class_rigid_node___base_1ad717bbf1b9a1b28d24dbdf7242cf4a1b" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>RigidNode_Base</name></member>
+      <member refid="class_rigid_node___base_1ae13cbb7e730cd0e19c77efa84edbceca" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>RigidNodeFactory</name></member>
+      <member refid="class_rigid_node___base_1afed92596ab670fc6cbbb67cb533cd180" prot="public" virt="non-virtual"><scope>RigidNode_Base</scope><name>ToString</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

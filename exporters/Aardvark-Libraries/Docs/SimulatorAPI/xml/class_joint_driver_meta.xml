@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_joint_driver_meta" kind="class" language="C#" prot="public" abstract="yes">
+    <compoundname>JointDriverMeta</compoundname>
+    <derivedcompoundref refid="class_elevator_driver_meta" prot="public" virt="non-virtual">ElevatorDriverMeta</derivedcompoundref>
+    <derivedcompoundref refid="class_pneumatic_driver_meta" prot="public" virt="non-virtual">PneumaticDriverMeta</derivedcompoundref>
+    <derivedcompoundref refid="class_wheel_driver_meta" prot="public" virt="non-virtual">WheelDriverMeta</derivedcompoundref>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="class_joint_driver_meta_1aca600ea13be10ec808f61deee5f559f9" prot="public" static="yes" mutable="no">
+        <type>readonly Type []</type>
+        <definition>readonly Type [] JointDriverMeta.JOINT_DRIVER_META_TYPES</definition>
+        <argsstring></argsstring>
+        <name>JOINT_DRIVER_META_TYPES</name>
+        <initializer>= new Type[] { typeof(<ref refid="class_wheel_driver_meta" kindref="compound">WheelDriverMeta</ref>), typeof(<ref refid="class_pneumatic_driver_meta" kindref="compound">PneumaticDriverMeta</ref>), typeof(<ref refid="class_elevator_driver_meta" kindref="compound">ElevatorDriverMeta</ref>) }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" line="15" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="protected-func">
+      <memberdef kind="function" id="class_joint_driver_meta_1adf4e26898611dfdce9cd65190100b4f5" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>abstract void</type>
+        <definition>abstract void JointDriverMeta.WriteDataInternal</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteDataInternal</name>
+        <reimplementedby refid="class_wheel_driver_meta_1af16c093144351806dac1b82cf086accd">WriteDataInternal</reimplementedby>
+        <reimplementedby refid="class_pneumatic_driver_meta_1aa233c2dfc6aa2378c9e0decdb2745f23">WriteDataInternal</reimplementedby>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" line="17" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_meta_1a3f0af9deabeff7ea433a7e43689ddfa6" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>abstract void</type>
+        <definition>abstract void JointDriverMeta.ReadDataInternal</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadDataInternal</name>
+        <reimplementedby refid="class_wheel_driver_meta_1abbe82770a8ba8730635ecf39490fd476">ReadDataInternal</reimplementedby>
+        <reimplementedby refid="class_pneumatic_driver_meta_1a355c4290eb11a470976812d86df71754">ReadDataInternal</reimplementedby>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" line="18" column="1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="class_joint_driver_meta_1ab05346b958156ad0cbb9f908c19fa838" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int</type>
+        <definition>int JointDriverMeta.GetID</definition>
+        <argsstring>()</argsstring>
+        <name>GetID</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" line="20" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" bodystart="20" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="class_joint_driver_meta_1ac4b1c493843d20020a1ed43714c966c2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void JointDriverMeta.WriteData</definition>
+        <argsstring>(BinaryWriter writer)</argsstring>
+        <name>WriteData</name>
+        <param>
+          <type>BinaryWriter</type>
+          <declname>writer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" line="36" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" bodystart="36" bodyend="40"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_joint_driver_meta_1adb75866d97a7f8b57f95cc5581e62860" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="class_joint_driver_meta" kindref="compound">JointDriverMeta</ref></type>
+        <definition>static JointDriverMeta JointDriverMeta.ReadDriverMeta</definition>
+        <argsstring>(BinaryReader reader)</argsstring>
+        <name>ReadDriverMeta</name>
+        <param>
+          <type>BinaryReader</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" line="42" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" bodystart="42" bodyend="48"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Base class all joint metadata should inherit from. </para>    </briefdescription>
+    <detaileddescription>
+<para>If you inherit make sure to add your type to JointDriverMeta.JOINT_DRIVER_META_TYPES, and make sure you have a public constructor that takes no arguments. </para>    </detaileddescription>
+    <inheritancegraph>
+      <node id="104">
+        <label>WheelDriverMeta</label>
+        <link refid="class_wheel_driver_meta"/>
+        <childnode refid="101" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="102">
+        <label>ElevatorDriverMeta</label>
+        <link refid="class_elevator_driver_meta"/>
+        <childnode refid="101" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="101">
+        <label>JointDriverMeta</label>
+        <link refid="class_joint_driver_meta"/>
+      </node>
+      <node id="103">
+        <label>PneumaticDriverMeta</label>
+        <link refid="class_pneumatic_driver_meta"/>
+        <childnode refid="101" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" line="13" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/JointDriverMeta.cs" bodystart="12" bodyend="49"/>
+    <listofallmembers>
+      <member refid="class_joint_driver_meta_1ab05346b958156ad0cbb9f908c19fa838" prot="public" virt="non-virtual"><scope>JointDriverMeta</scope><name>GetID</name></member>
+      <member refid="class_joint_driver_meta_1aca600ea13be10ec808f61deee5f559f9" prot="public" virt="non-virtual"><scope>JointDriverMeta</scope><name>JOINT_DRIVER_META_TYPES</name></member>
+      <member refid="class_joint_driver_meta_1a3f0af9deabeff7ea433a7e43689ddfa6" prot="protected" virt="pure-virtual"><scope>JointDriverMeta</scope><name>ReadDataInternal</name></member>
+      <member refid="class_joint_driver_meta_1adb75866d97a7f8b57f95cc5581e62860" prot="public" virt="non-virtual"><scope>JointDriverMeta</scope><name>ReadDriverMeta</name></member>
+      <member refid="class_joint_driver_meta_1ac4b1c493843d20020a1ed43714c966c2" prot="public" virt="non-virtual"><scope>JointDriverMeta</scope><name>WriteData</name></member>
+      <member refid="class_joint_driver_meta_1adf4e26898611dfdce9cd65190100b4f5" prot="protected" virt="pure-virtual"><scope>JointDriverMeta</scope><name>WriteDataInternal</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

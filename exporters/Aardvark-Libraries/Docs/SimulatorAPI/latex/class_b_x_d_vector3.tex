@@ -1,0 +1,266 @@
+\hypertarget{class_b_x_d_vector3}{}\section{B\+X\+D\+Vector3 Class Reference}
+\label{class_b_x_d_vector3}\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+
+
+Inheritance diagram for B\+X\+D\+Vector3\+:
+% FIG 0
+
+
+Collaboration diagram for B\+X\+D\+Vector3\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_b_x_d_vector3_a0e2a2ec4422390656dc569146bbceb5b}{B\+X\+D\+Vector3} ()
+\begin{DoxyCompactList}\small\item\em Initializes a new instance of the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} class. \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_vector3_a586261e067ed628788df3fede2d96427}{B\+X\+D\+Vector3} (double \hyperlink{class_b_x_d_vector3_a46633bfd92ba8052494bc1918d1762a4}{x}, double y, double z)
+\begin{DoxyCompactList}\small\item\em Initializes a new instance of the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} class from the given x, y, and z values. \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_vector3_a587219cbfe9a71512df003856ad79b7a}{B\+X\+D\+Vector3} (float \hyperlink{class_b_x_d_vector3_a46633bfd92ba8052494bc1918d1762a4}{x}, float y, float z)
+\begin{DoxyCompactList}\small\item\em Initializes a new instance of the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} class from the given x, y, and z values. \end{DoxyCompactList}\item 
+override String \hyperlink{class_b_x_d_vector3_a2ab3c8442aada6617e4d779899e20b09}{To\+String} ()
+\begin{DoxyCompactList}\small\item\em Converts the x, y, and z values to a string. \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} \hyperlink{class_b_x_d_vector3_a4fa123abdf042e9116c3c231b61c8668}{Multiply} (float f)
+\begin{DoxyCompactList}\small\item\em Multiplies this vector by the given scalar and returns this object (for method chaining) \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} \hyperlink{class_b_x_d_vector3_a06be557b2f4f8a78b4fa30c766756264}{Add} (\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} f)
+\begin{DoxyCompactList}\small\item\em Adds the given vector to this vector and returns this object. (For method chaining) \end{DoxyCompactList}\item 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} \hyperlink{class_b_x_d_vector3_abe5605287cb9f1fde60e6c1f4f3c0245}{Subtract} (\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} f)
+\begin{DoxyCompactList}\small\item\em Subtracts the given vector from this vector and returns this object. (For method chaining) \end{DoxyCompactList}\item 
+float \hyperlink{class_b_x_d_vector3_a3db16bd642a330d6ba53175aadcf28bd}{Magnitude} ()
+\begin{DoxyCompactList}\small\item\em Gets the magnitude of this vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_b_x_d_vector3_ae6eaf3260e01b57245209f6452f28b16}\label{class_b_x_d_vector3_ae6eaf3260e01b57245209f6452f28b16}} 
+void {\bfseries Write\+Binary\+Data} (System.\+I\+O.\+Binary\+Writer w)
+\item 
+\mbox{\Hypertarget{class_b_x_d_vector3_a45b7d22842548db663319beb37f64b75}\label{class_b_x_d_vector3_a45b7d22842548db663319beb37f64b75}} 
+void {\bfseries Read\+Binary\+Data} (System.\+I\+O.\+Binary\+Reader r)
+\item 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} \hyperlink{class_b_x_d_vector3_ab598b771db0c6a5e5a3e497ed4d9dfda}{Copy} ()
+\begin{DoxyCompactList}\small\item\em Creates an identical copy of this vector. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_b_x_d_vector3_aa7d53340156ece70489a4cb1b6fb879c}\label{class_b_x_d_vector3_aa7d53340156ece70489a4cb1b6fb879c}} 
+override bool {\bfseries Equals} (object obj)
+\item 
+\mbox{\Hypertarget{class_b_x_d_vector3_adbbef15423b860b5f74264c970736892}\label{class_b_x_d_vector3_adbbef15423b860b5f74264c970736892}} 
+override int {\bfseries Get\+Hash\+Code} ()
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} \hyperlink{class_b_x_d_vector3_ae71ca5cd2508572c76c60ee21f702d3a}{Cross\+Product} (\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} lhs, \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} rhs)
+\begin{DoxyCompactList}\small\item\em Computes the cross product of two vectors. (lhs x rhs) \end{DoxyCompactList}\item 
+static float \hyperlink{class_b_x_d_vector3_ad0b239d2be5d8b8a5845ed1030a1d1cb}{Dot\+Product} (\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} a, \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} b)
+\begin{DoxyCompactList}\small\item\em Computes the dot product of two vectors. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+float \hyperlink{class_b_x_d_vector3_a46633bfd92ba8052494bc1918d1762a4}{x}
+\begin{DoxyCompactList}\small\item\em The x, y, and z values for the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_b_x_d_vector3_a0e2a2ec4422390656dc569146bbceb5b}\label{class_b_x_d_vector3_a0e2a2ec4422390656dc569146bbceb5b}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{B\+X\+D\+Vector3()}{BXDVector3()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily B\+X\+D\+Vector3.\+B\+X\+D\+Vector3 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initializes a new instance of the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} class. 
+
+Here is the caller graph for this function\+:
+% FIG 2
+\mbox{\Hypertarget{class_b_x_d_vector3_a586261e067ed628788df3fede2d96427}\label{class_b_x_d_vector3_a586261e067ed628788df3fede2d96427}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{B\+X\+D\+Vector3()}{BXDVector3()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily B\+X\+D\+Vector3.\+B\+X\+D\+Vector3 (\begin{DoxyParamCaption}\item[{double}]{x,  }\item[{double}]{y,  }\item[{double}]{z }\end{DoxyParamCaption})}
+
+
+
+Initializes a new instance of the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} class from the given x, y, and z values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em z} & \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_b_x_d_vector3_a587219cbfe9a71512df003856ad79b7a}\label{class_b_x_d_vector3_a587219cbfe9a71512df003856ad79b7a}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{B\+X\+D\+Vector3()}{BXDVector3()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily B\+X\+D\+Vector3.\+B\+X\+D\+Vector3 (\begin{DoxyParamCaption}\item[{float}]{x,  }\item[{float}]{y,  }\item[{float}]{z }\end{DoxyParamCaption})}
+
+
+
+Initializes a new instance of the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} class from the given x, y, and z values. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & \\
+\hline
+{\em y} & \\
+\hline
+{\em z} & \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_b_x_d_vector3_a06be557b2f4f8a78b4fa30c766756264}\label{class_b_x_d_vector3_a06be557b2f4f8a78b4fa30c766756264}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!Add@{Add}}
+\index{Add@{Add}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{Add()}{Add()}}
+{\footnotesize\ttfamily \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} B\+X\+D\+Vector3.\+Add (\begin{DoxyParamCaption}\item[{\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}}]{f }\end{DoxyParamCaption})}
+
+
+
+Adds the given vector to this vector and returns this object. (For method chaining) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & The vector to add\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This vector.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_b_x_d_vector3_ab598b771db0c6a5e5a3e497ed4d9dfda}\label{class_b_x_d_vector3_ab598b771db0c6a5e5a3e497ed4d9dfda}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!Copy@{Copy}}
+\index{Copy@{Copy}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{Copy()}{Copy()}}
+{\footnotesize\ttfamily \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} B\+X\+D\+Vector3.\+Copy (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Creates an identical copy of this vector. 
+
+\begin{DoxyReturn}{Returns}
+The copy
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+% FIG 3
+\mbox{\Hypertarget{class_b_x_d_vector3_ae71ca5cd2508572c76c60ee21f702d3a}\label{class_b_x_d_vector3_ae71ca5cd2508572c76c60ee21f702d3a}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!Cross\+Product@{Cross\+Product}}
+\index{Cross\+Product@{Cross\+Product}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{Cross\+Product()}{CrossProduct()}}
+{\footnotesize\ttfamily static \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} B\+X\+D\+Vector3.\+Cross\+Product (\begin{DoxyParamCaption}\item[{\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}}]{lhs,  }\item[{\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}}]{rhs }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Computes the cross product of two vectors. (lhs x rhs) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em lhs} & The left hand element\\
+\hline
+{\em rhs} & The right hand element\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(lhs x rhs)
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+% FIG 4
+\mbox{\Hypertarget{class_b_x_d_vector3_ad0b239d2be5d8b8a5845ed1030a1d1cb}\label{class_b_x_d_vector3_ad0b239d2be5d8b8a5845ed1030a1d1cb}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!Dot\+Product@{Dot\+Product}}
+\index{Dot\+Product@{Dot\+Product}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{Dot\+Product()}{DotProduct()}}
+{\footnotesize\ttfamily static float B\+X\+D\+Vector3.\+Dot\+Product (\begin{DoxyParamCaption}\item[{\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}}]{a,  }\item[{\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Computes the dot product of two vectors. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & One vector\\
+\hline
+{\em b} & Another vector\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+(a · b)
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_b_x_d_vector3_a3db16bd642a330d6ba53175aadcf28bd}\label{class_b_x_d_vector3_a3db16bd642a330d6ba53175aadcf28bd}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!Magnitude@{Magnitude}}
+\index{Magnitude@{Magnitude}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{Magnitude()}{Magnitude()}}
+{\footnotesize\ttfamily float B\+X\+D\+Vector3.\+Magnitude (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the magnitude of this vector. 
+
+\begin{DoxyReturn}{Returns}
+The magnitude of this vector
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_b_x_d_vector3_a4fa123abdf042e9116c3c231b61c8668}\label{class_b_x_d_vector3_a4fa123abdf042e9116c3c231b61c8668}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!Multiply@{Multiply}}
+\index{Multiply@{Multiply}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{Multiply()}{Multiply()}}
+{\footnotesize\ttfamily \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} B\+X\+D\+Vector3.\+Multiply (\begin{DoxyParamCaption}\item[{float}]{f }\end{DoxyParamCaption})}
+
+
+
+Multiplies this vector by the given scalar and returns this object (for method chaining) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & The scalar to multiply by\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This vector.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_b_x_d_vector3_abe5605287cb9f1fde60e6c1f4f3c0245}\label{class_b_x_d_vector3_abe5605287cb9f1fde60e6c1f4f3c0245}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!Subtract@{Subtract}}
+\index{Subtract@{Subtract}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{Subtract()}{Subtract()}}
+{\footnotesize\ttfamily \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} B\+X\+D\+Vector3.\+Subtract (\begin{DoxyParamCaption}\item[{\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}}]{f }\end{DoxyParamCaption})}
+
+
+
+Subtracts the given vector from this vector and returns this object. (For method chaining) 
+
+
+\begin{DoxyParams}{Parameters}
+{\em f} & The vector to subtract\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+This vector.
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_b_x_d_vector3_a2ab3c8442aada6617e4d779899e20b09}\label{class_b_x_d_vector3_a2ab3c8442aada6617e4d779899e20b09}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!To\+String@{To\+String}}
+\index{To\+String@{To\+String}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{To\+String()}{ToString()}}
+{\footnotesize\ttfamily override String B\+X\+D\+Vector3.\+To\+String (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Converts the x, y, and z values to a string. 
+
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+\subsection{Member Data Documentation}
+\mbox{\Hypertarget{class_b_x_d_vector3_a46633bfd92ba8052494bc1918d1762a4}\label{class_b_x_d_vector3_a46633bfd92ba8052494bc1918d1762a4}} 
+\index{B\+X\+D\+Vector3@{B\+X\+D\+Vector3}!x@{x}}
+\index{x@{x}!B\+X\+D\+Vector3@{B\+X\+D\+Vector3}}
+\subsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily float B\+X\+D\+Vector3.\+x}
+
+
+
+The x, y, and z values for the \hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3}. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Math/B\+X\+D\+Vector3.\+cs\end{DoxyCompactItemize}

@@ -1,0 +1,98 @@
+.TH "PropertySet" 3 "Wed Jul 19 2017" "SimulatorAPI" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+PropertySet \- Stores physical properties for a node or group of nodes\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBBoxCollider\fP"
+.br
+.ti -1c
+.RI "class \fBMeshCollider\fP"
+.br
+.ti -1c
+.RI "class \fBPropertySetCollider\fP"
+.br
+.RI "Stores collider information for a \fBPropertySet\fP\&. "
+.ti -1c
+.RI "class \fBSphereCollider\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBPropertySet\fP (string physicsGroupID, \fBPropertySetCollider\fP collider, int friction, float mass=0\&.0f)"
+.br
+.RI "Constructs a new PhysicsGroup with the specified values\&. "
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "string \fBPropertySetID\fP"
+.br
+.RI "ID of the \fBPropertySet\fP\&. "
+.ti -1c
+.RI "\fBPropertySetCollider\fP \fBCollider\fP"
+.br
+.RI "Collider of the PhysicsGroup\&. "
+.ti -1c
+.RI "int \fBFriction\fP"
+.br
+.RI "Friction value of the PhysicsGroup\&. "
+.ti -1c
+.RI "float \fBMass\fP"
+.br
+.RI "Stores the mass of the object\&. "
+.in -1c
+.SH "Detailed Description"
+.PP 
+Stores physical properties for a node or group of nodes\&. 
+
+
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "PropertySet\&.PropertySet (string physicsGroupID, \fBPropertySetCollider\fP collider, int friction, float mass = \fC0\&.0f\fP)"
+
+.PP
+Constructs a new PhysicsGroup with the specified values\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIID\fP 
+.br
+\fItype\fP 
+.br
+\fIfrictionValue\fP 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "\fBPropertySetCollider\fP PropertySet\&.Collider"
+
+.PP
+Collider of the PhysicsGroup\&. 
+.SS "int PropertySet\&.Friction"
+
+.PP
+Friction value of the PhysicsGroup\&. 
+.SS "float PropertySet\&.Mass"
+
+.PP
+Stores the mass of the object\&. 
+.SS "string PropertySet\&.PropertySetID"
+
+.PP
+ID of the \fBPropertySet\fP\&. 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for SimulatorAPI from the source code\&.

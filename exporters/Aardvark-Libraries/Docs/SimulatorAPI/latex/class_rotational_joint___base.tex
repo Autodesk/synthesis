@@ -1,0 +1,112 @@
+\hypertarget{class_rotational_joint___base}{}\section{Rotational\+Joint\+\_\+\+Base Class Reference}
+\label{class_rotational_joint___base}\index{Rotational\+Joint\+\_\+\+Base@{Rotational\+Joint\+\_\+\+Base}}
+
+
+Inheritance diagram for Rotational\+Joint\+\_\+\+Base\+:
+% FIG 0
+
+
+Collaboration diagram for Rotational\+Joint\+\_\+\+Base\+:
+% FIG 1
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override Skeletal\+Joint\+Type \hyperlink{class_rotational_joint___base_a58b8ae858b3f342302b5a28412ecac6b}{Get\+Joint\+Type} ()
+\begin{DoxyCompactList}\small\item\em The type of this joint. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_rotational_joint___base_abb72f04b9e993b3da54353a81ef0b2ef}\label{class_rotational_joint___base_abb72f04b9e993b3da54353a81ef0b2ef}} 
+void {\bfseries Enforce\+Order} ()
+\item 
+override I\+Enumerable$<$ \hyperlink{interface_angular_d_o_f}{Angular\+D\+OF} $>$ \hyperlink{class_rotational_joint___base_aead83dd768acf451c3761f49e393cc35}{Get\+Angular\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the angular degrees of freedom for this joint. \end{DoxyCompactList}\item 
+override I\+Enumerable$<$ \hyperlink{interface_linear_d_o_f}{Linear\+D\+OF} $>$ \hyperlink{class_rotational_joint___base_a887b07a072831dd6af60ded53e3a461e}{Get\+Linear\+D\+OF} ()
+\begin{DoxyCompactList}\small\item\em Gets all the linear degrees of freedom for this joint. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_a563e367d610c700e84287c4e1e742184}\label{class_rotational_joint___base_a563e367d610c700e84287c4e1e742184}} 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} {\bfseries axis}
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_ad9e90a18bfc6ead93400082a6be881d1}\label{class_rotational_joint___base_ad9e90a18bfc6ead93400082a6be881d1}} 
+\hyperlink{class_b_x_d_vector3}{B\+X\+D\+Vector3} {\bfseries base\+Point}
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_a3100eacfde28fa7d60647a92f9918800}\label{class_rotational_joint___base_a3100eacfde28fa7d60647a92f9918800}} 
+float {\bfseries current\+Angular\+Position}
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_a27e6baae357d6fa69fcadb4e0598198e}\label{class_rotational_joint___base_a27e6baae357d6fa69fcadb4e0598198e}} 
+bool {\bfseries has\+Angular\+Limit}
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_a34bde1f9b9fe6712735c0b2a411d86f8}\label{class_rotational_joint___base_a34bde1f9b9fe6712735c0b2a411d86f8}} 
+float {\bfseries angular\+Limit\+Low}
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_acf2a487241c8789bcd95880878056530}\label{class_rotational_joint___base_acf2a487241c8789bcd95880878056530}} 
+float {\bfseries angular\+Limit\+High}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_a4d92febe9d2e4091063414aebe56088c}\label{class_rotational_joint___base_a4d92febe9d2e4091063414aebe56088c}} 
+override void {\bfseries Write\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Writer writer)
+\item 
+\mbox{\Hypertarget{class_rotational_joint___base_ac40e374dafc390b533e69ca4803453cf}\label{class_rotational_joint___base_ac40e374dafc390b533e69ca4803453cf}} 
+override void {\bfseries Read\+Binary\+Joint\+Internal} (System.\+I\+O.\+Binary\+Reader reader)
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_rotational_joint___base_aead83dd768acf451c3761f49e393cc35}\label{class_rotational_joint___base_aead83dd768acf451c3761f49e393cc35}} 
+\index{Rotational\+Joint\+\_\+\+Base@{Rotational\+Joint\+\_\+\+Base}!Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}}
+\index{Get\+Angular\+D\+OF@{Get\+Angular\+D\+OF}!Rotational\+Joint\+\_\+\+Base@{Rotational\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Angular\+D\+O\+F()}{GetAngularDOF()}}
+{\footnotesize\ttfamily override I\+Enumerable$<$\hyperlink{interface_angular_d_o_f}{Angular\+D\+OF}$>$ Rotational\+Joint\+\_\+\+Base.\+Get\+Angular\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets all the angular degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The angular degrees of freedom
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_abf96267052733ccf001e0b092c6582f8}{Skeletal\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_rotational_joint___base_a58b8ae858b3f342302b5a28412ecac6b}\label{class_rotational_joint___base_a58b8ae858b3f342302b5a28412ecac6b}} 
+\index{Rotational\+Joint\+\_\+\+Base@{Rotational\+Joint\+\_\+\+Base}!Get\+Joint\+Type@{Get\+Joint\+Type}}
+\index{Get\+Joint\+Type@{Get\+Joint\+Type}!Rotational\+Joint\+\_\+\+Base@{Rotational\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Joint\+Type()}{GetJointType()}}
+{\footnotesize\ttfamily override Skeletal\+Joint\+Type Rotational\+Joint\+\_\+\+Base.\+Get\+Joint\+Type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+The type of this joint. 
+
+\begin{DoxyReturn}{Returns}
+The joint type
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_aee155cbd483cb512bf3fc0f9a8885335}{Skeletal\+Joint\+\_\+\+Base}.
+
+\mbox{\Hypertarget{class_rotational_joint___base_a887b07a072831dd6af60ded53e3a461e}\label{class_rotational_joint___base_a887b07a072831dd6af60ded53e3a461e}} 
+\index{Rotational\+Joint\+\_\+\+Base@{Rotational\+Joint\+\_\+\+Base}!Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}}
+\index{Get\+Linear\+D\+OF@{Get\+Linear\+D\+OF}!Rotational\+Joint\+\_\+\+Base@{Rotational\+Joint\+\_\+\+Base}}
+\subsubsection{\texorpdfstring{Get\+Linear\+D\+O\+F()}{GetLinearDOF()}}
+{\footnotesize\ttfamily override I\+Enumerable$<$\hyperlink{interface_linear_d_o_f}{Linear\+D\+OF}$>$ Rotational\+Joint\+\_\+\+Base.\+Get\+Linear\+D\+OF (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Gets all the linear degrees of freedom for this joint. 
+
+\begin{DoxyReturn}{Returns}
+The linear degrees of freedom
+\end{DoxyReturn}
+
+
+Implements \hyperlink{class_skeletal_joint___base_a14564d8c44dfeef8b7a10044f2392cde}{Skeletal\+Joint\+\_\+\+Base}.
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/t\+\_\+howab/\+Documents/\+Git\+Hub/synthesis/exporters/\+Aardvark-\/\+Libraries/\+Simulator\+File\+I\+O/\+Joints/Rotational\+Joint\+\_\+\+Base.\+cs\end{DoxyCompactItemize}

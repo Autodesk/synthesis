@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="class_linear_d_o_f_extensions" kind="class" language="C#" prot="public">
+    <compoundname>LinearDOFExtensions</compoundname>
+      <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="class_linear_d_o_f_extensions_1a30d0ba1d9347300239d256f5ac016e0d" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool LinearDOFExtensions.hasUpperLinearLimit</definition>
+        <argsstring>(this LinearDOF dof)</argsstring>
+        <name>hasUpperLinearLimit</name>
+        <param>
+          <type>this <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref></type>
+          <declname>dof</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="40" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="40" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="class_linear_d_o_f_extensions_1a141aeec0b89b11956dd1b2f75949efbe" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool LinearDOFExtensions.hasLowerLinearLimit</definition>
+        <argsstring>(this LinearDOF dof)</argsstring>
+        <name>hasLowerLinearLimit</name>
+        <param>
+          <type>this <ref refid="interface_linear_d_o_f" kindref="compound">LinearDOF</ref></type>
+          <declname>dof</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="45" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="45" bodyend="48"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" line="39" column="1" bodyfile="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/LinearDOF.cs" bodystart="38" bodyend="49"/>
+    <listofallmembers>
+      <member refid="class_linear_d_o_f_extensions_1a141aeec0b89b11956dd1b2f75949efbe" prot="public" virt="non-virtual"><scope>LinearDOFExtensions</scope><name>hasLowerLinearLimit</name></member>
+      <member refid="class_linear_d_o_f_extensions_1a30d0ba1d9347300239d256f5ac016e0d" prot="public" virt="non-virtual"><scope>LinearDOFExtensions</scope><name>hasUpperLinearLimit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

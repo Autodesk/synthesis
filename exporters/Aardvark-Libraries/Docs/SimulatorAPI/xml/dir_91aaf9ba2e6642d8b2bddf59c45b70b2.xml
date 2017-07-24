@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.13">
+  <compounddef id="dir_91aaf9ba2e6642d8b2bddf59c45b70b2" kind="dir">
+    <compoundname>C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver</compoundname>
+    <innerfile refid="_elevator_driver_meta_8cs">ElevatorDriverMeta.cs</innerfile>
+    <innerfile refid="_joint_driver_8cs">JointDriver.cs</innerfile>
+    <innerfile refid="_joint_driver_meta_8cs">JointDriverMeta.cs</innerfile>
+    <innerfile refid="_joint_driver_type_8cs">JointDriverType.cs</innerfile>
+    <innerfile refid="_pneumatic_driver_meta_8cs">PneumaticDriverMeta.cs</innerfile>
+    <innerfile refid="_wheel_driver_meta_8cs">WheelDriverMeta.cs</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="C:/Users/t_howab/Documents/GitHub/synthesis/exporters/Aardvark-Libraries/SimulatorFileIO/Joints/Driver/"/>
+  </compounddef>
+</doxygen>
