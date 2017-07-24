@@ -6,3 +6,5 @@ engine/unity5/Build_Data
 *.vxcproj.user
 tags
 *.exe
+*.userprefs
+build/*
