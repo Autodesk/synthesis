@@ -78,7 +78,7 @@ public partial class BXDFProperties
         // Begins the document.
         writer.WriteStartDocument();
 
-        /// Writes the root element and its GUID.
+        // Writes the root element and its GUID.
         writer.WriteStartElement("BXDF");
         writer.WriteAttributeString("Version", BXDF_CURRENT_VERSION);
         writer.WriteAttributeString("GUID", fieldDefinition.GUID.ToString());

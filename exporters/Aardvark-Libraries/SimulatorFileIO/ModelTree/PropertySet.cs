@@ -139,9 +139,6 @@ public struct PropertySet
     /// <summary>
     /// Constructs a new PhysicsGroup with the specified values.
     /// </summary>
-    /// <param name="ID"></param>
-    /// <param name="type"></param>
-    /// <param name="frictionValue"></param>
     public PropertySet(string physicsGroupID, PropertySetCollider collider, int friction, float mass = 0.0f)
     {
         this.PropertySetID = physicsGroupID;

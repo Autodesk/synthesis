@@ -10,7 +10,7 @@ public class FieldDefinition
     /// Used for creating new instances of a FieldDefinition.
     /// </summary>
     /// <param name="guid"></param>
-    /// <param name="nodeGroupName"></param>
+    /// <param name="name"></param>
     /// <returns></returns>
     public delegate FieldDefinition FieldDefinitionFactory(Guid guid, string name = BXDFProperties.BXDF_DEFAULT_NAME);
 
@@ -65,7 +65,6 @@ public class FieldDefinition
     /// <summary>
     /// Adds a child PhysicsGroup to physicsGroups.
     /// </summary>
-    /// <param name="name"></param>
     /// <param name="group"></param>
     public void AddPropertySet(PropertySet group)
     {
@@ -85,7 +84,6 @@ public class FieldDefinition
     /// Used for adding a submesh and creating a sub mesh ID for the given node.
     /// </summary>
     /// <param name="subMesh"></param>
-    /// <param name="node"></param>
     public void AddSubMesh(BXDAMesh.BXDASubMesh subMesh)
     {
         mesh.meshes.Add(subMesh);
@@ -95,7 +93,6 @@ public class FieldDefinition
     /// Used for adding a collision mesh and creating a collision mesh ID for the given node.
     /// </summary>
     /// <param name="collisionMesh"></param>
-    /// <param name="node"></param>
     public void AddCollisionMesh(BXDAMesh.BXDASubMesh collisionMesh)
     {
         mesh.colliders.Add(collisionMesh);

@@ -87,9 +87,8 @@
     <Compile Include="STL\STLMesh.cs" />
     <Compile Include="Other\TransformationMatrix.cs" />
     <Compile Include="STL\STLFile.cs" />
+    <Compile Include="Writer\GopherWriter.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Writer\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
