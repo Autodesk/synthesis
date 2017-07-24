@@ -15,9 +15,9 @@ public class PlayerScript : MonoBehaviour
     {
         Vector3 movement = new Vector3();
 
-        movement.x = InputControl.GetAxis(Controls.axes.horizontal) * 5;
+        movement.x = InputControl.GetAxis(DemoControls.axes.horizontal) * 5;
 
-        if (InputControl.GetButton(Controls.buttons.jump))
+        if (InputControl.GetButton(DemoControls.buttons.jump))
         {
             movement.y = 5;
         }
@@ -26,7 +26,7 @@ public class PlayerScript : MonoBehaviour
             movement.y = -5;
         }
 
-        movement.z = InputControl.GetAxis(Controls.axes.vertical) * 5;
+        movement.z = InputControl.GetAxis(DemoControls.axes.vertical) * 5;
 
         controller.Move(movement * Time.deltaTime);
     }

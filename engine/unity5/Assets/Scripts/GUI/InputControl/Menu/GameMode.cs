@@ -4,7 +4,6 @@
 public class GameMode : MonoBehaviour
 {
     public GameObject settingsMode;
-    //public InputControlDemo_PlayerScript playerScript;
 
     // Update is called once per frame
     void Update()
@@ -13,8 +12,6 @@ public class GameMode : MonoBehaviour
         {
             settingsMode.SetActive(true);
             gameObject.SetActive(false);
-
-            //playerScript.enabled = false;
         }
     }
 }
