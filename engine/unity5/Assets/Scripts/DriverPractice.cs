@@ -8,6 +8,7 @@ using System.IO;
 using System.Text;
 using BulletUnity.Debugging;
 using System.Linq;
+using Assets.Scripts.FSM;
 
 namespace BulletUnity {
     [AddComponentMenu("Physics Bullet/RigidBody")]
@@ -36,7 +37,9 @@ namespace BulletUnity {
         public List<GameObject> secondaryHeld;
 
         public List<string> gamepieceNames; //list of the identifiers of gamepieces
-        public List<GameObject> spawnedGamepieces;
+        public List<List<GameObject>> spawnedGamepieces;
+        public List<GameObject> spawnedPrimary;
+        public List<GameObject> spawnedSecondary;
 
         public List<bool> displayTrajectories; //projects gamepiece trajectories if true
         private List<LineRenderer> drawnTrajectory;
@@ -114,7 +117,11 @@ namespace BulletUnity {
             gamepieceNames.Add("WOAH");
             gamepieceNames.Add("TEST");
 
-            spawnedGamepieces = new List<GameObject>();
+            spawnedGamepieces = new List<List<GameObject>>();
+            spawnedPrimary = new List<GameObject>();
+            spawnedSecondary = new List<GameObject>();
+            spawnedGamepieces.Add(spawnedPrimary);
+            spawnedGamepieces.Add(spawnedSecondary);
 
             holdingLimit = new List<int>();
             holdingLimit.Add(30);
@@ -155,44 +162,7 @@ namespace BulletUnity {
 	    void Update () {
             if (modeEnabled)
             {
-                if (processingIndex == 0)
-                {
-                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
-                    {
-                        Intake(0);
-                        Intake(1);
-                    }
-                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
-                    {
-                        ReleaseGamepiece(0);
-                        ReleaseGamepiece(1);
-                    }
-                    else
-                    {
-                        HoldGamepiece(0);
-                        HoldGamepiece(1);
-                    }
-                    processingIndex = 1;
-                }
-                else
-                {
-                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
-                    {
-                        Intake(1);
-                        Intake(0);
-                    }
-                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
-                    {
-                        ReleaseGamepiece(1);
-                        ReleaseGamepiece(0);
-                    }
-                    else
-                    {
-                        HoldGamepiece(1);
-                        HoldGamepiece(0);
-                    }
-                    processingIndex = 0;
-                }
+                ProcessControls();
 
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -202,29 +172,27 @@ namespace BulletUnity {
 
                 if (definingIntake || definingRelease) SelectingNode();
 
-                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
-
-                for (int i = 0; i < 2; i++)
-                {
-                    if (displayTrajectories[i])
-                    {
-                        releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
-                        if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
-                        DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
-                    }
-                    else
-                    {
-                        if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
-                    }
-                }
-
 
                 if (highlightTimer > 0) highlightTimer--;
                 else if (highlightTimer == 0) RevertHighlight();
 
                 if (settingSpawn != 0) UpdateGamepieceSpawn();
             }
-	    }
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (displayTrajectories[i] && StateMachine.Instance.CurrentState is MainState)
+                {
+                    releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
+                    if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
+                    DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
+                }
+                else
+                {
+                    if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
+                }
+            }
+        }
 
         private void OnGUI()
         {
@@ -444,7 +412,7 @@ namespace BulletUnity {
                     GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
                     gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                     gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-                    spawnedGamepieces.Add(gameobject);
+                    spawnedGamepieces[index].Add(gameobject);
                 }
                 catch
                 {
@@ -459,9 +427,12 @@ namespace BulletUnity {
         /// </summary>
         public void ClearGamepieces()
         {
-            foreach (GameObject g in spawnedGamepieces)
+            for (int i = 0; i < spawnedGamepieces.Count; i++)
             {
-                Destroy(g);
+                foreach (GameObject g in spawnedGamepieces[i])
+                {
+                    Destroy(g);
+                }
             }
         }
 
@@ -877,6 +848,71 @@ namespace BulletUnity {
                 result[i] = float.Parse(values[i]);
             }
             return result;
+        }
+
+        private void ProcessControls()
+        {
+            if (processingIndex == 0)
+            {
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
+                {
+                   
+                    Intake(0);
+                }
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupSecondary]))
+                {
+                    Intake(1);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
+                {
+                    ReleaseGamepiece(0);
+                }
+                else
+                {
+                    HoldGamepiece(0);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleaseSecondary]))
+                {
+                    ReleaseGamepiece(1);
+                }
+                else
+                {
+                    HoldGamepiece(1);
+                }
+                processingIndex = 1;
+            }
+            else
+            {
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupSecondary]))
+                {
+
+                    Intake(1);
+                }
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
+                {
+                    Intake(0);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleaseSecondary]))
+                {
+                    ReleaseGamepiece(1);
+                }
+                else
+                {
+                    HoldGamepiece(1);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
+                {
+                    ReleaseGamepiece(0);
+                }
+                else
+                {
+                    HoldGamepiece(0);
+                }
+                processingIndex = 1;
+            }
+
+            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
+            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnSecondary])) SpawnGamepiece(1);
         }
 
 

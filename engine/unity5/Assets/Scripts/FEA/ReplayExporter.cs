@@ -113,7 +113,7 @@ namespace Assets.Scripts.FEA
             using (BinaryWriter bw = new BinaryWriter(new MemoryStream()))
             {
                 foreach (Tracker t in trackers)
-                    foreach (StateDescriptor s in t.States)
+                    foreach (StateDescriptor s in t.States.Reverse())
                         formattter.Serialize(bw.BaseStream, s);
 
                 return CompressMemoryStream((MemoryStream)bw.BaseStream, out uncompressedLength);
@@ -132,7 +132,7 @@ namespace Assets.Scripts.FEA
             {
                 bw.Write(contacts.Count);
 
-                foreach (List<ContactDescriptor> l in contacts)
+                foreach (List<ContactDescriptor> l in contacts.AsEnumerable().Reverse())
                 {
                     if (l == null || l.Count == 0)
                     {

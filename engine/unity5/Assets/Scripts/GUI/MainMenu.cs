@@ -2,13 +2,16 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.IO;
+using Assets.Scripts.FEA;
+using System.Collections.Generic;
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
-public class MainMenu : MonoBehaviour {
+public class MainMenu : MonoBehaviour
+{
 
     //This refers to what tab the main menu is currently in.
-    public enum Tab { Main, Sim, Options, FieldDir, RobotDir};
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
@@ -18,7 +21,11 @@ public class MainMenu : MonoBehaviour {
     public GameObject optionsTab;
 
     //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
-    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
+    public enum Sim
+    {
+        Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot,
+        SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration, SimLoadReplay
+    }
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -31,6 +38,7 @@ public class MainMenu : MonoBehaviour {
     private GameObject localMultiplayer;
     private GameObject simLoadField;
     private GameObject simLoadRobot;
+    private GameObject simLoadReplay;
     private GameObject dpmLoadField;
     private GameObject dpmLoadRobot;
     private GameObject multiplayerLoadField;
@@ -39,6 +47,7 @@ public class MainMenu : MonoBehaviour {
     //We alter these to reflect the user's selected fields and robots.
     private GameObject simRobotSelectText;
     private GameObject simFieldSelectText;
+    private GameObject simReplaySelectText;
     private GameObject dpmRobotSelectText;
     private GameObject dpmFieldSelectText;
 
@@ -86,10 +95,10 @@ public class MainMenu : MonoBehaviour {
     /// <summary>
     /// Runs every frame to update the GUI elements.
     /// </summary>
-    void OnGUI ()
+    void OnGUI()
     {
         switch (currentTab)
-         {
+        {
             //Switches back to sim tab UI elements if field browser is closed
             case Tab.FieldDir:
                 if (customfieldon && !fieldBrowser.Active)
@@ -102,7 +111,7 @@ public class MainMenu : MonoBehaviour {
                     customfieldon = false;
                 }
                 break;
-            
+
             //Switches back to sim tab UI elements if robot directory is closed
             case Tab.RobotDir:
                 if (customroboton && !robotBrowser.Active)
@@ -113,17 +122,17 @@ public class MainMenu : MonoBehaviour {
                     optionsTab.SetActive(false);
                     simTab.SetActive(true);
                     customroboton = false;
-                    }
+                }
                 break;
-         }
+        }
 
-         //Initializes and renders the Field Browser
-         if (fieldDirectory != null) InitFieldBrowser();
-         if (robotDirectory != null) InitRobotBrowser();
-        
-         //Renders the message manager which displays error messages
-         UserMessageManager.Render();
-         UserMessageManager.scale = canvas.scaleFactor;
+        //Initializes and renders the Field Browser
+        if (fieldDirectory != null) InitFieldBrowser();
+        if (robotDirectory != null) InitRobotBrowser();
+
+        //Renders the message manager which displays error messages
+        UserMessageManager.Render();
+        UserMessageManager.scale = canvas.scaleFactor;
     }
 
     /// <summary>
@@ -139,7 +148,7 @@ public class MainMenu : MonoBehaviour {
             optionsTab.SetActive(false);
             homeTab.SetActive(true);
         }
-        else UserMessageManager.Dispatch("You must select a directory or exit first!",3);
+        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
     /// <summary>
@@ -181,7 +190,7 @@ public class MainMenu : MonoBehaviour {
     {
         currentSim = Sim.Selection;
 
-        
+
         defaultSimulator.SetActive(false);
         driverPracticeMode.SetActive(false);
         localMultiplayer.SetActive(false);
@@ -190,6 +199,7 @@ public class MainMenu : MonoBehaviour {
         dpmLoadRobot.SetActive(false);
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
+        simLoadReplay.SetActive(false);
         dpmConfiguration.SetActive(false);
 
         selectionPanel.SetActive(true);
@@ -206,6 +216,7 @@ public class MainMenu : MonoBehaviour {
         selectionPanel.SetActive(false);
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
+        simLoadReplay.SetActive(false);
         defaultSimulator.SetActive(true);
 
         simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
@@ -262,6 +273,17 @@ public class MainMenu : MonoBehaviour {
 
         defaultSimulator.SetActive(false);
         simLoadField.SetActive(true);
+    }
+
+    /// <summary>
+    /// Switches to the load replay menu for the default simulator and activates its respective UI elements.
+    /// </summary>
+    public void SwitchSimLoadReplay()
+    {
+        currentSim = Sim.SimLoadReplay;
+
+        defaultSimulator.SetActive(false);
+        simLoadReplay.SetActive(true);
     }
 
     /// <summary>
@@ -340,7 +362,7 @@ public class MainMenu : MonoBehaviour {
             }
             else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
 
-  
+
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
@@ -361,6 +383,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (Directory.Exists(simSelectedField) && Directory.Exists(simSelectedRobot))
         {
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedField", simSelectedField);
             PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
@@ -441,7 +464,8 @@ public class MainMenu : MonoBehaviour {
     //Exits the program
     public void Exit()
     {
-        if (!Application.isEditor) {
+        if (!Application.isEditor)
+        {
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
@@ -637,6 +661,20 @@ public class MainMenu : MonoBehaviour {
         }
     }
 
+    public void SelectSimReplay()
+    {
+        GameObject replayList = GameObject.Find("SimLoadReplayList");
+        string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+
+        if (entry != null)
+        {
+            PlayerPrefs.SetString("simSelectedReplay", entry);
+
+            PlayerPrefs.Save();
+            Application.LoadLevel("Scene");
+        }
+    }
+
     public void SelectDPMField()
     {
         GameObject fieldList = GameObject.Find("DPMLoadFieldList");
@@ -669,8 +707,9 @@ public class MainMenu : MonoBehaviour {
         }
     }
     #endregion
-    void Start () {
-        
+    void Start()
+    {
+
         FindAllGameObjects();
         splashScreen.SetActive(true);
         InitGraphicsSettings();
@@ -719,10 +758,10 @@ public class MainMenu : MonoBehaviour {
             SwitchTabHome();
             SwitchSimDefault();
         }
-        
-        
+
+
     }
-	 void FindAllGameObjects()
+    void FindAllGameObjects()
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
@@ -733,6 +772,7 @@ public class MainMenu : MonoBehaviour {
         localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
         simLoadRobot = AuxFunctions.FindObject(gameObject, "SimLoadRobot");
+        simLoadReplay = AuxFunctions.FindObject(gameObject, "SimLoadReplay");
         dpmLoadField = AuxFunctions.FindObject(gameObject, "DPMLoadField");
         dpmLoadRobot = AuxFunctions.FindObject(gameObject, "DPMLoadRobot");
         multiplayerLoadField = AuxFunctions.FindObject(gameObject, "MultiplayerLoadField");
@@ -744,6 +784,7 @@ public class MainMenu : MonoBehaviour {
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");
+        simReplaySelectText = AuxFunctions.FindObject(defaultSimulator, "SimReplaySelectText");
         dpmFieldSelectText = AuxFunctions.FindObject(driverPracticeMode, "DPMFieldSelectText");
         dpmRobotSelectText = AuxFunctions.FindObject(driverPracticeMode, "DPMRobotSelectText");
 

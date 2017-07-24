@@ -19,7 +19,7 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// The collection of states stored by the Tracker.
         /// </summary>
-        public FixedQueue<StateDescriptor> States { get; private set; }
+        public FixedQueue<StateDescriptor> States { get; set; }
 
         /// <summary>
         /// The number of seconds the tracker keeps any given state.
@@ -72,7 +72,7 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Called when the Tracker is initialized.
         /// </summary>
-        void Start()
+        void Awake()
         {
             physicsWorld = BPhysicsWorld.Get();
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();

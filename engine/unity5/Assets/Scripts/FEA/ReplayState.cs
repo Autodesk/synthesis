@@ -433,7 +433,7 @@ namespace Assets.Scripts.FEA
             Rect saveRect = new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight);
 
             if (GUI.Button(saveRect, string.Empty, saveStyle))
-                ReplayExporter.Write("test", PlayerPrefs.GetString("simSelectedField"), PlayerPrefs.GetString("simSelectedRobot"), trackers, contactPoints);
+                StateMachine.Instance.PushState(new SaveReplayState(trackers, contactPoints));
 
             if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))
                 StateMachine.Instance.PopState();
@@ -528,21 +528,6 @@ namespace Assets.Scripts.FEA
 
                 r.WorldTransform = worldTransform;
             }
-
-            // THIS IS FOR TESTING, PLEASE REMOVE BEFORE DEPLOYMENT vvv
-
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                string fieldPath;
-                string robotPath;
-                List<FixedQueue<StateDescriptor>> fieldStates;
-                List<FixedQueue<StateDescriptor>> robotStates;
-                List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
-
-                ReplayImporter.Read("test", out fieldPath, out robotPath, out fieldStates, out robotStates, out contacts);
-            }
-
-            // THIS IS FOR TESTING, PLEASE REMOVE BEFORE DEPLOYMENT ^^^
 
             if (Input.GetKey(KeyCode.Return))
                 StateMachine.Instance.PopState();

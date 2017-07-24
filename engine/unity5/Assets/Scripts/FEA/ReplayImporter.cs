@@ -200,6 +200,10 @@ namespace Assets.Scripts.FEA
 
                     contacts.Add(currentContacts);
                 }
+                else
+                {
+                    contacts.Add(null);
+                }
             }
 
             return contacts;
