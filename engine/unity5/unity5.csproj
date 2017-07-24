@@ -247,6 +247,11 @@
     <Compile Include="Assets\Scripts\InputControl\Demo\InputControlDemo_KeyButtonScript.cs" />
     <Compile Include="Assets\Scripts\InputControl\Demo\InputControlDemo_PlayerScript.cs" />
     <Compile Include="Assets\Scripts\InputControl\Demo\InputControlDemo_SettingsModeScript.cs" />
+    <Compile Include="Assets\Scripts\InputControl\DemoImplementation\CreateButton.cs" />
+    <Compile Include="Assets\Scripts\InputControl\DemoImplementation\GameMode.cs" />
+    <Compile Include="Assets\Scripts\InputControl\DemoImplementation\KeyButton.cs" />
+    <Compile Include="Assets\Scripts\InputControl\DemoImplementation\PlayerScript.cs" />
+    <Compile Include="Assets\Scripts\InputControl\DemoImplementation\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\InputControl\Enums\InputDevice.cs" />
     <Compile Include="Assets\Scripts\InputControl\Enums\Joystick.cs" />
     <Compile Include="Assets\Scripts\InputControl\Enums\JoystickAxis.cs" />

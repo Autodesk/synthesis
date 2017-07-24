@@ -80,30 +80,55 @@ public class DriveJoints : MonoBehaviour
         return MathfExt.ToDegrees(Mathf.Acos(Vector3.Dot(childUp, parentUp) / (childUp.magnitude * parentUp.magnitude)));
     }
 
+    //public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, bool joystickControl)
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules)
     {
+        bool joystickControl = true;
+
         float[] pwm = dioModules[0].pwmValues;
         float[] can = dioModules[0].canValues;
 
-        if (Input.anyKey)
-        {
-            pwm[0] +=
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Backward]) ? -SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? -SPEED_ARROW_PWM : 0.0f);
-            pwm[1] +=
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? -SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Backward]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? -SPEED_ARROW_PWM : 0.0f);
+        //if (joystickControl)
+        //{
+        //    pwm[0] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
+        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
 
-            pwm[2] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm2Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm2Neg]) ? -SPEED_ARROW_PWM : 0f;
-            pwm[3] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -SPEED_ARROW_PWM : 0f;
-            pwm[4] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Neg]) ? -SPEED_ARROW_PWM : 0f;
-            pwm[5] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -SPEED_ARROW_PWM : 0f;
-            pwm[6] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? -SPEED_ARROW_PWM : 0f;
-        }
+        //    pwm[1] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
+        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
+        //}
+
+        pwm[0] +=
+            (InputControl.GetButton(Controls.buttons.forward) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.backward) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
+
+        pwm[1] +=
+            (InputControl.GetButton(Controls.buttons.forward) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.backward) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.left) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.right) ? -SPEED_ARROW_PWM : 0.0f);
+
+        //Old ControlKeys; accessing keys assigned in ResetDefaults() method in Controls.cs script
+        //pwm[0] +=
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? SPEED_ARROW_PWM : 0.0f) +
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Backward]) ? -SPEED_ARROW_PWM : 0.0f) +
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? SPEED_ARROW_PWM : 0.0f) +
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? -SPEED_ARROW_PWM : 0.0f);
+        //pwm[1] +=
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? -SPEED_ARROW_PWM : 0.0f) +
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Backward]) ? SPEED_ARROW_PWM : 0.0f) +
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? SPEED_ARROW_PWM : 0.0f) +
+        //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? -SPEED_ARROW_PWM : 0.0f);
+
+        pwm[2] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm2Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm2Neg]) ? -SPEED_ARROW_PWM : 0f;
+        pwm[3] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -SPEED_ARROW_PWM : 0f;
+        pwm[4] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Neg]) ? -SPEED_ARROW_PWM : 0f;
+        pwm[5] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -SPEED_ARROW_PWM : 0f;
+        pwm[6] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? -SPEED_ARROW_PWM : 0f;
+
 
         List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(listOfSubNodes);

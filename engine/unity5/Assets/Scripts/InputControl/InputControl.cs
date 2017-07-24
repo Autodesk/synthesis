@@ -154,7 +154,7 @@ public static class InputControl
 
     static InputControl()
     {
-        Controls.init();
+        Controls.Init();
     }
 
     #region Setup keys
