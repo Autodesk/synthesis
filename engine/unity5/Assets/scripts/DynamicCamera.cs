@@ -138,11 +138,6 @@ public class DynamicCamera : MonoBehaviour
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
-<<<<<<< HEAD
-                            
-=======
-
->>>>>>> Isabelle
                         }
 
                     }

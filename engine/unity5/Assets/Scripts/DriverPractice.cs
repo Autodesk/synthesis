@@ -8,15 +8,18 @@ using System.IO;
 using System.Text;
 using BulletUnity.Debugging;
 using System.Linq;
+using Assets.Scripts.FSM;
 
-namespace BulletUnity {
+namespace BulletUnity
+{
     [AddComponentMenu("Physics Bullet/RigidBody")]
     /// <summary>
     /// This is a class that handles everything associated with the driver practice mode.
     /// It 'cheats physics' to overcome the limitations that our current simulation has to create a beter environment for drivers to practice and interact with game objects.
     /// 
     /// </summary>
-    public class DriverPractice : MonoBehaviour {
+    public class DriverPractice : MonoBehaviour
+    {
 
         public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
         public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
@@ -36,13 +39,11 @@ namespace BulletUnity {
         public List<GameObject> secondaryHeld;
 
         public List<string> gamepieceNames; //list of the identifiers of gamepieces
-        public List<GameObject> spawnedGamepieces;
+        public List<List<GameObject>> spawnedGamepieces;
+        public List<GameObject> spawnedPrimary;
+        public List<GameObject> spawnedSecondary;
 
-<<<<<<< HEAD
         public List<bool> displayTrajectories; //projects gamepiece trajectories if true
-=======
-        public bool displayTrajectories = false; //projects gamepiece trajectories if true
->>>>>>> Isabelle
         private List<LineRenderer> drawnTrajectory;
 
         public bool modeEnabled = false;
@@ -115,10 +116,14 @@ namespace BulletUnity {
 
 
             gamepieceNames = new List<string>();
-            gamepieceNames.Add("WOAH");
-            gamepieceNames.Add("TEST");
+            gamepieceNames.Add("NOT CONFIGURED");
+            gamepieceNames.Add("NOT CONFIGURED");
 
-            spawnedGamepieces = new List<GameObject>();
+            spawnedGamepieces = new List<List<GameObject>>();
+            spawnedPrimary = new List<GameObject>();
+            spawnedSecondary = new List<GameObject>();
+            spawnedGamepieces.Add(spawnedPrimary);
+            spawnedGamepieces.Add(spawnedSecondary);
 
             holdingLimit = new List<int>();
             holdingLimit.Add(30);
@@ -128,10 +133,10 @@ namespace BulletUnity {
             SetInteractor(intakeNode[1], 1);
 
             gamepieceSpawn = new List<UnityEngine.Vector3>();
-            gamepieceSpawn.Add(new UnityEngine.Vector3(0f,3f,0f));
+            gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
             gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
 
-            UpdateVelocities();
+
 
             drawnTrajectory = new List<LineRenderer>();
             drawnTrajectory.Add(gameObject.AddComponent<LineRenderer>());
@@ -148,58 +153,19 @@ namespace BulletUnity {
             drawnTrajectory[1].startColor = Color.red;
             drawnTrajectory[1].endColor = Color.magenta;
 
-<<<<<<< HEAD
             displayTrajectories = new List<bool>();
             displayTrajectories.Add(false);
             displayTrajectories.Add(false);
 
-=======
->>>>>>> Isabelle
             Load();
         }
-	
-	    // Update is called once per frame
-	    void Update () {
+
+        // Update is called once per frame
+        void Update()
+        {
             if (modeEnabled)
             {
-                if (processingIndex == 0)
-                {
-                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
-                    {
-                        Intake(0);
-                        Intake(1);
-                    }
-                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
-                    {
-                        ReleaseGamepiece(0);
-                        ReleaseGamepiece(1);
-                    }
-                    else
-                    {
-                        HoldGamepiece(0);
-                        HoldGamepiece(1);
-                    }
-                    processingIndex = 1;
-                }
-                else
-                {
-                    if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
-                    {
-                        Intake(1);
-                        Intake(0);
-                    }
-                    if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
-                    {
-                        ReleaseGamepiece(1);
-                        ReleaseGamepiece(0);
-                    }
-                    else
-                    {
-                        HoldGamepiece(1);
-                        HoldGamepiece(0);
-                    }
-                    processingIndex = 0;
-                }
+                ProcessControls();
 
                 if (Input.GetMouseButtonDown(0))
                 {
@@ -209,52 +175,27 @@ namespace BulletUnity {
 
                 if (definingIntake || definingRelease) SelectingNode();
 
-                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
 
-<<<<<<< HEAD
-                for (int i = 0; i < 2; i++)
-                {
-                    if (displayTrajectories[i])
-                    {
-<<<<<<< HEAD
-=======
-=======
-                if (displayTrajectories)
-                {
-                    for (int i = 0; i < 2; i++)
-                    {
-
->>>>>>> Isabelle
-                        releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
->>>>>>> 2d73522f987d5d996efadcedb7b81384de8283e2
-                        if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
-                        DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
-                    }
-<<<<<<< HEAD
-                    else
-                    {
-=======
-                }
-                else
-                {
-                    for (int i = 0; i < 2; i++)
-                    {
-
->>>>>>> Isabelle
-                        if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
-                    }
-                }
-
-<<<<<<< HEAD
-
-=======
->>>>>>> Isabelle
                 if (highlightTimer > 0) highlightTimer--;
                 else if (highlightTimer == 0) RevertHighlight();
 
                 if (settingSpawn != 0) UpdateGamepieceSpawn();
             }
-	    }
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (displayTrajectories[i] && StateMachine.Instance.CurrentState is MainState)
+                {
+                    releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
+                    if (!drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = true;
+                    DrawTrajectory(releaseNode[i].transform.position + releaseNode[i].GetComponent<BRigidBody>().transform.rotation * positionOffset[i], releaseNode[i].GetComponent<BRigidBody>().velocity + releaseNode[i].transform.rotation * releaseVelocityVector[i], drawnTrajectory[i]);
+                }
+                else
+                {
+                    if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
+                }
+            }
+        }
 
         private void OnGUI()
         {
@@ -308,9 +249,9 @@ namespace BulletUnity {
 
                 for (int i = 0; i < objectsHeld[index].Count; i++)
                 {
-                  orb = objectsHeld[index][i].GetComponent<BRigidBody>();
-                  orb.velocity = nrb.velocity;
-                  orb.SetPosition(nrb.transform.position + nrb.transform.rotation * positionOffset[index]);
+                    orb = objectsHeld[index][i].GetComponent<BRigidBody>();
+                    orb.velocity = nrb.velocity;
+                    orb.SetPosition(nrb.transform.position + nrb.transform.rotation * positionOffset[index]);
                     orb.angularVelocity = UnityEngine.Vector3.zero;
                     orb.angularFactor = UnityEngine.Vector3.zero;
 
@@ -327,9 +268,9 @@ namespace BulletUnity {
             {
                 BRigidBody orb = objectsHeld[index][0].GetComponent<BRigidBody>();
                 orb.collisionFlags = BulletSharp.CollisionFlags.None;
-                StartCoroutine(UnIgnoreCollision(objectsHeld[index][0]));
                 orb.velocity += releaseNode[index].transform.rotation * releaseVelocityVector[index];
                 orb.angularFactor = UnityEngine.Vector3.one;
+                StartCoroutine(UnIgnoreCollision(objectsHeld[index][0]));
                 intakeInteractor[index].heldGamepieces.Remove(objectsHeld[index][0]);
                 objectsHeld[index].RemoveAt(0);
             }
@@ -364,7 +305,7 @@ namespace BulletUnity {
 
             UnityEngine.Quaternion rotation = UnityEngine.Quaternion.Euler(verAngle, horAngle, 0);
 
-            finalVector = (UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.forward,UnityEngine.Vector3.up) * horVector * verVector) * UnityEngine.Vector3.forward * speed;
+            finalVector = (UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.forward, UnityEngine.Vector3.up) * horVector * verVector) * UnityEngine.Vector3.forward * speed;
 
             return (finalVector);
 
@@ -424,16 +365,16 @@ namespace BulletUnity {
                 else if (GameObject.Find(name) == null)
                 {
                     Debug.Log("DPM: Game object not found");
-                    
+
                 }
                 else if (GameObject.Find(name).transform.parent != null && GameObject.Find(name).transform.parent.name == "Robot")
                 {
                     UserMessageManager.Dispatch("You cannot select a robot part as a gamepiece!", 3);
                 }
                 else
-                {   
-                    gamepieceNames[index] = name.Replace("(Clone)",""); //gets rid of the clone tag given to spawned gamepieces 
-                    intakeInteractor[index].SetKeyword(gamepieceNames[index],index);
+                {
+                    gamepieceNames[index] = name.Replace("(Clone)", ""); //gets rid of the clone tag given to spawned gamepieces 
+                    intakeInteractor[index].SetKeyword(gamepieceNames[index], index);
                     GameObject gamepiece = GameObject.Find(name);
 
                     UserMessageManager.Dispatch(name + " has been selected as the gamepiece", 2);
@@ -442,7 +383,7 @@ namespace BulletUnity {
             }
             else
             {
-                
+
             }
         }
 
@@ -451,7 +392,7 @@ namespace BulletUnity {
             if (modeEnabled)
             {
                 if (definingIntake || definingRelease) UserMessageManager.Dispatch("You must select a robot part first!", 5);
-                else if (settingSpawn != 0) UserMessageManager.Dispatch("You must set the gamepiece spawnpoint first! Press enter to save your the current position",5);
+                else if (settingSpawn != 0) UserMessageManager.Dispatch("You must set the gamepiece spawnpoint first! Press enter to save your the current position", 5);
                 else
                 {
                     UserMessageManager.Dispatch("Click on a dynamic object to add it as a gamepiece", 5);
@@ -471,14 +412,10 @@ namespace BulletUnity {
             {
                 try //In case the game piece somehow doens't exist in the scene
                 {
-<<<<<<< HEAD
                     GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
                     gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                     gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
-                    spawnedGamepieces.Add(gameobject);
-=======
-                    spawnedGamepieces.Add(Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity));
->>>>>>> Isabelle
+                    spawnedGamepieces[index].Add(gameobject);
                 }
                 catch
                 {
@@ -493,9 +430,12 @@ namespace BulletUnity {
         /// </summary>
         public void ClearGamepieces()
         {
-            foreach (GameObject g in spawnedGamepieces)
+            for (int i = 0; i < spawnedGamepieces.Count; i++)
             {
-                Destroy(g);
+                foreach (GameObject g in spawnedGamepieces[i])
+                {
+                    Destroy(g);
+                }
             }
         }
 
@@ -511,12 +451,7 @@ namespace BulletUnity {
                     {
                         spawnIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
                         spawnIndicator.name = "SpawnIndicator";
-<<<<<<< HEAD
                         Destroy(spawnIndicator.GetComponent<BRigidBody>());
-=======
-                        spawnIndicator.GetComponent<BRigidBody>().mass = 0;
-                        spawnIndicator.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.NoContactResponse;
->>>>>>> Isabelle
                         if (spawnIndicator.transform.GetChild(0) != null) spawnIndicator.transform.GetChild(0).name = "SpawnIndicatorMesh";
                         Renderer render = spawnIndicator.GetComponentInChildren<Renderer>();
                         render.material.shader = Shader.Find("Transparent/Diffuse");
@@ -529,11 +464,7 @@ namespace BulletUnity {
 
                     DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
-<<<<<<< HEAD
                     dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
-=======
-                    dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
->>>>>>> Isabelle
 
                     MainState.ControlsDisabled = true;
                 }
@@ -547,10 +478,7 @@ namespace BulletUnity {
             int index = settingSpawn - 1;
             if (spawnIndicator != null)
             {
-<<<<<<< HEAD
                 ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
-=======
->>>>>>> Isabelle
                 if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
                 if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
                 if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
@@ -617,7 +545,7 @@ namespace BulletUnity {
                         SetInteractor(intakeNode[index], index);
 
                         UserMessageManager.Dispatch(name + " has been selected as intake node", 5);
-                        
+
                         definingIntake = false;
                     }
                     else
@@ -731,7 +659,7 @@ namespace BulletUnity {
             highlightedNode = GameObject.Find(node);
             ChangeNodeColors(highlightedNode, highlightColor, originalColors);
             highlightTimer = 80;
- 
+
 
         }
         public void RevertHighlight()
@@ -761,23 +689,14 @@ namespace BulletUnity {
         public void ChangeReleaseSpeed(float amount, int index)
         {
             releaseVelocity[index][0] += amount;
-            UpdateVelocities();
         }
         public void ChangeReleaseHorizontalAngle(float amount, int index)
         {
             releaseVelocity[index][1] += amount;
-            UpdateVelocities();
         }
         public void ChangeReleaseVerticalAngle(float amount, int index)
         {
             releaseVelocity[index][2] += amount;
-            UpdateVelocities();
-        }
-
-        private void UpdateVelocities()
-        {
-            for (int i = 0; i < releaseVelocityVector.Count; i++)
-                releaseVelocityVector[i] = VelocityToVector3(releaseVelocity[i][0], releaseVelocity[i][1], releaseVelocity[i][2]);
         }
         #endregion
 
@@ -905,16 +824,9 @@ namespace BulletUnity {
                     }
                 }
                 reader.Close();
-<<<<<<< HEAD
 
                 SetInteractor(intakeNode[0], 0);
                 SetInteractor(intakeNode[1], 1);
-<<<<<<< HEAD
-                UpdateVelocities(); 
-=======
-=======
->>>>>>> Isabelle
->>>>>>> 2d73522f987d5d996efadcedb7b81384de8283e2
             }
         }
 
@@ -939,6 +851,71 @@ namespace BulletUnity {
                 result[i] = float.Parse(values[i]);
             }
             return result;
+        }
+
+        private void ProcessControls()
+        {
+            if (processingIndex == 0)
+            {
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
+                {
+
+                    Intake(0);
+                }
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupSecondary]))
+                {
+                    Intake(1);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
+                {
+                    ReleaseGamepiece(0);
+                }
+                else
+                {
+                    HoldGamepiece(0);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleaseSecondary]))
+                {
+                    ReleaseGamepiece(1);
+                }
+                else
+                {
+                    HoldGamepiece(1);
+                }
+                processingIndex = 1;
+            }
+            else
+            {
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupSecondary]))
+                {
+
+                    Intake(1);
+                }
+                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
+                {
+                    Intake(0);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleaseSecondary]))
+                {
+                    ReleaseGamepiece(1);
+                }
+                else
+                {
+                    HoldGamepiece(1);
+                }
+                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
+                {
+                    ReleaseGamepiece(0);
+                }
+                else
+                {
+                    HoldGamepiece(0);
+                }
+                processingIndex = 0;
+            }
+
+            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
+            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnSecondary])) SpawnGamepiece(1);
         }
 
 
