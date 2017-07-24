@@ -48,6 +48,11 @@ public class MainMenu : MonoBehaviour {
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
 
+    //==========================================================
+    private GameObject settingsMode;
+    private GameObject gameMode;
+    //==========================================================
+
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
     private ArrayList fields; //ArrayList of field folders to select
@@ -353,8 +358,16 @@ public class MainMenu : MonoBehaviour {
 
     public void SwitchInput()
     {
+
+        //gameObject = GameObject.Find("InputPanel");
+        //gameMode = gameObject.AddComponent<GameMode>();
+        //gameObject.SetActive(true);
         graphics.SetActive(false);
         input.SetActive(true);
+        //settingsMode = AuxFunctions.FindObject("SettingsMode");
+        settingsMode.SetActive(true);
+
+        //gameMode.SetActive(false);
     }
 
     public void StartDefaultSim()
@@ -741,6 +754,11 @@ public class MainMenu : MonoBehaviour {
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
         input = AuxFunctions.FindObject(gameObject, "Input");
+
+        //========================================================
+        settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
+        gameMode = AuxFunctions.FindObject(gameObject, "GameMode");
+        //========================================================
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");

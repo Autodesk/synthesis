@@ -591,7 +591,7 @@ public class MainState : SimState
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
     /// <param name="resetTransform"></param>
-    void BeginReset(bool resetTransform = true)
+    public void BeginReset(bool resetTransform = true)
     {
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
@@ -663,7 +663,7 @@ public class MainState : SimState
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
-    void EndReset()
+    public void EndReset()
     {
         IsResetting = false;
         isResettingOrientation = false;
