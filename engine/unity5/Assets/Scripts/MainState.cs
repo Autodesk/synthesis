@@ -331,11 +331,13 @@ public class MainState : SimState
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
-        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
+        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) || (InputControl.GetButton(Controls.buttons.resetRobot)) 
+                                                                                    && !IsResetting)
         {
             keyDownTime = Time.time;
         }
-        if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
+        if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) || (InputControl.GetButton(Controls.buttons.resetRobot))
+                                                                                  && !IsResetting)
         {
             if (Time.time - keyDownTime > HOLD_TIME)
             {

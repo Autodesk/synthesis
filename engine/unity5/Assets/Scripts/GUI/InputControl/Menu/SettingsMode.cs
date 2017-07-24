@@ -1,11 +1,8 @@
 ﻿using UnityEngine;
 
-
-
 public class SettingsMode : MonoBehaviour
 {
     public GameObject gameMode;
-    //public PlayerScript playerScript;
 
     // Update is called once per frame
     void Update()
@@ -18,8 +15,6 @@ public class SettingsMode : MonoBehaviour
         {
             gameMode.SetActive(true);
             gameObject.SetActive(false);
-
-            //playerScript.enabled = true;
         }
     }
 

@@ -37,12 +37,12 @@ public class InputControlDemo_SettingsModeScript : MonoBehaviour
 
     public void OnSaveClick()
     {
-        Controls.Save();
+        DemoControls.Save();
     }
 
     public void OnLoadClick()
     {
-        Controls.Load();
+        DemoControls.Load();
 
         InputControlDemo_KeyButtonScript[] keyButtons = GetComponentsInChildren<InputControlDemo_KeyButtonScript>();
 

@@ -2,8 +2,6 @@
 using UnityEngine.UI;
 using System.Collections.ObjectModel;
 
-
-
 public class CreateButton : MonoBehaviour
 {
     public GameObject keyNamePrefab;
@@ -12,16 +10,11 @@ public class CreateButton : MonoBehaviour
     private Transform namesTransform;
     private Transform keysTransform;
 
-
-
     // Use this for initialization
     void Start()
     {
         namesTransform = transform.Find("Names");
         keysTransform = transform.Find("Keys");
-
-        Debug.Log(namesTransform);
-        Debug.Log(keysTransform);
 
         float maxNameWidth = 0;
         float contentHeight = 4;
@@ -63,7 +56,7 @@ public class CreateButton : MonoBehaviour
 
             for (int i = 0; i < 3; ++i)
             {
-                InputControlDemo_KeyButtonScript buttonScript = keyButtons.transform.GetChild(i).GetComponent<InputControlDemo_KeyButtonScript>();
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
 
                 buttonScript.keyMapping = key;
                 buttonScript.keyIndex = i;
@@ -75,18 +68,9 @@ public class CreateButton : MonoBehaviour
             contentHeight += 28;
         }
 
-        //Rect rect = GetComponent<RectTransform>().rect;
-        //Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
-
-        //float scale = GameObject.Find("MainMenuCanvas").GetComponent<Canvas>().scaleFactor;
-        //Rect position = new Rect(p.x, Screen.height - p.y, rect.width * scale, rect.height * scale);
-
         RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
         RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
         RectTransform rectTransform = GetComponent<RectTransform>();
-
-        Debug.Log(namesTransform);
-        Debug.Log(keysTransform);
 
         namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
         keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);

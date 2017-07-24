@@ -129,7 +129,6 @@ public class DriveJoints : MonoBehaviour
         pwm[5] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -SPEED_ARROW_PWM : 0f;
         pwm[6] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? -SPEED_ARROW_PWM : 0f;
 
-
         List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(listOfSubNodes);
 

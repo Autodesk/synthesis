@@ -31,7 +31,6 @@ public class InputScrollable : MonoBehaviour
         nameStyle.alignment = TextAnchor.MiddleLeft;
         nameStyle.normal.textColor = Color.white;
 
-
         keyStyle = new GUIStyle(nameStyle);
         keyStyle.alignment = TextAnchor.MiddleCenter;
         keyHighlightStyle = new GUIStyle(keyStyle);
@@ -45,7 +44,6 @@ public class InputScrollable : MonoBehaviour
         {
             inputNames.Add(Controls.ControlName[i]);
         }
-
     }
 
     // Update is called once per frame
@@ -73,7 +71,6 @@ public class InputScrollable : MonoBehaviour
         GUILayout.BeginArea(new Rect(position.x, position.y * 1.01f, position.width, rect.height * scale * .95f));
         scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
-
         string entry = SelectList(inputNames, inputKeys, selectedEntry) as string;
         if (entry != null)
         {
@@ -82,7 +79,6 @@ public class InputScrollable : MonoBehaviour
 
         GUILayout.EndScrollView();
         GUILayout.EndArea();
-
     }
 
     void Update()
