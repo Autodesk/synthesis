@@ -617,6 +617,7 @@ public class MainMenu : MonoBehaviour {
         Controls.ResetDefaults();
         Controls.SaveControls();
         GameObject.Find("InputPanel").GetComponent<InputScrollable>().UpdateControlList();
+        Controls.Save();
     }
     public void SelectSimField()
     {
