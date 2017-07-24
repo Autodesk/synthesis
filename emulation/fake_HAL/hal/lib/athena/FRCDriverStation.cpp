@@ -23,7 +23,7 @@
 #include "HAL/DriverStation.h"
 #include "HAL/cpp/priority_condition_variable.h"
 #include "HAL/cpp/priority_mutex.h"
-#include "DriverStation.h"
+#include "DriverStationInternal.h"
 #include "crc32.h"
 
 #undef min

@@ -15,7 +15,7 @@
  * WPI task is a wrapper for the native Task object.
  * All WPILib tasks are managed by a static task manager for simplified cleanup.
  **/
-class NTTask: public ErrorBase {
+class NTTask: public frc::ErrorBase {
 public:
 	enum NTTaskPriority {
 		kBackgroundBegin = 0x00010000,

@@ -79,8 +79,8 @@ void Error::Report() {
 #endif
   locStream << ":" << m_lineNumber << "]";
 
-  DriverStation::ReportError(true, m_code, m_message, locStream.str(),
-                             GetStackTrace(4));
+  //DriverStation::ReportError(true, m_code, m_message, locStream.str(),
+  //                           GetStackTrace(4));
 }
 
 void Error::Clear() {
