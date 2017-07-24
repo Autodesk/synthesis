@@ -175,6 +175,7 @@ public class MainMenu : MonoBehaviour {
             homeTab.SetActive(false);
             simTab.SetActive(false);
             optionsTab.SetActive(true);
+            settingsMode.SetActive(true);
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
