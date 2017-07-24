@@ -409,6 +409,7 @@ namespace Assets.Scripts.FEA
                                     else
                                     {
                                         rewindTime = keyframeTime;
+                                        playbackMode = PlaybackMode.Paused;
                                     }
                                 }
 

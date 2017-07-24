@@ -595,14 +595,13 @@ public class MainState : SimState
     {
         int numSteps = physicsWorld.frameCount - lastFrameCount;
 
-        if (tracking)
+        if (tracking && numSteps > 0)
         {
-            // numSteps should only == 1 or 0, but if it's ever > 1 the system won't break.
-            for (int i = 0; i < numSteps; i++)
-            {
-                foreach (Tracker t in Trackers)
-                    t.AddState();
+            foreach (Tracker t in Trackers)
+                t.AddState(numSteps);
 
+            for (int i = numSteps; i > 0; i--)
+            {
                 List<ContactDescriptor> frameContacts = null;
 
                 int numManifolds = physicsWorld.world.Dispatcher.NumManifolds;
@@ -616,43 +615,30 @@ public class MainState : SimState
                     if (!obA.gameObject.name.StartsWith("node") && !obB.gameObject.name.StartsWith("node"))
                         continue;
 
-                    List<ContactDescriptor> manifoldContacts = new List<ContactDescriptor>();
+                    ManifoldPoint mp = null;
 
                     int numContacts = contactManifold.NumContacts;
 
-                    if (numContacts == 0)
-                        continue;
-
                     for (int k = 0; k < numContacts; k++)
                     {
-                        ManifoldPoint cp = contactManifold.GetContactPoint(k);
+                        mp = contactManifold.GetContactPoint(k);
 
-                        manifoldContacts.Add(new ContactDescriptor
-                        {
-                            AppliedImpulse = cp.AppliedImpulse,
-                            Position = (cp.PositionWorldOnA + cp.PositionWorldOnB) * 0.5f
-                        });
+                        if (mp.LifeTime == i)
+                            break;
                     }
 
-                    ContactDescriptor consolidatedContact;
-
-                    consolidatedContact = new ContactDescriptor
-                    {
-                        RobotBody = obA.name.StartsWith("node") ? obA : obB
-                    };
-
-                    foreach (ContactDescriptor cd in manifoldContacts)
-                    {
-                        consolidatedContact.AppliedImpulse += cd.AppliedImpulse;
-                        consolidatedContact.Position += cd.Position;
-                    }
-
-                    consolidatedContact.Position /= numContacts;
+                    if (mp == null)
+                        continue;
 
                     if (frameContacts == null)
                         frameContacts = new List<ContactDescriptor>();
 
-                    frameContacts.Add(consolidatedContact);
+                    frameContacts.Add(new ContactDescriptor
+                    {
+                        AppliedImpulse = mp.AppliedImpulse,
+                        Position = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f,
+                        RobotBody = obA.name.StartsWith("node") ? obA : obB
+                    });
                 }
 
                 contactPoints.Add(frameContacts);
