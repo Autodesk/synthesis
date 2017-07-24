@@ -79,7 +79,7 @@ public class MainState : SimState
 
     //Flags to tell different types of reset
     private bool isResettingOrientation;
-    public bool IsResetting { get; private set; }
+    public bool IsResetting { get; set; }
 
     private DriverPractice driverPractice;
 
@@ -272,7 +272,6 @@ public class MainState : SimState
                     robotStartOrientation = BulletSharp.Math.Matrix.Identity;
                     robotStartPosition = new Vector3(0f, 1f, 0f);
                     EndReset();
-
                     break;
             }
         });
