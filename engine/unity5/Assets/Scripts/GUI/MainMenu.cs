@@ -608,10 +608,10 @@ public class MainMenu : MonoBehaviour {
     public void SelectSimField()
     {
         GameObject fieldList = GameObject.Find("SimLoadFieldList");
-        string entry = (fieldList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (fieldList.GetComponent<SelectFieldScrollable>().selectedEntry);
         if (entry != null)
         {
-            simSelectedFieldName = fieldList.GetComponent<ScrollableList>().selectedEntry;
+            simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
             SwitchSimDefault();
         }
@@ -624,10 +624,10 @@ public class MainMenu : MonoBehaviour {
     public void SelectSimRobot()
     {
         GameObject robotList = GameObject.Find("SimLoadRobotList");
-        string entry = (robotList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (robotList.GetComponent<SelectRobotScrollable>().selectedEntry);
         if (entry != null)
         {
-            simSelectedRobotName = robotList.GetComponent<ScrollableList>().selectedEntry;
+            simSelectedRobotName = robotList.GetComponent<SelectRobotScrollable>().selectedEntry;
             simSelectedRobot = robotDirectory + "\\" + simSelectedRobotName + "\\";
             SwitchSimDefault();
         }
@@ -640,10 +640,10 @@ public class MainMenu : MonoBehaviour {
     public void SelectDPMField()
     {
         GameObject fieldList = GameObject.Find("DPMLoadFieldList");
-        string entry = (fieldList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (fieldList.GetComponent<ScrollablePanel>().selectedEntry);
         if (entry != null)
         {
-            dpmSelectedFieldName = fieldList.GetComponent<ScrollableList>().selectedEntry;
+            dpmSelectedFieldName = fieldList.GetComponent<ScrollablePanel>().selectedEntry;
             dpmSelectedField = fieldDirectory + "\\" + dpmSelectedFieldName + "\\";
             SwitchDriverPractice();
         }
@@ -656,10 +656,10 @@ public class MainMenu : MonoBehaviour {
     public void SelectDPMRobot()
     {
         GameObject robotList = GameObject.Find("DPMLoadRobotList");
-        string entry = (robotList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (robotList.GetComponent<ScrollablePanel>().selectedEntry);
         if (entry != null)
         {
-            dpmSelectedRobotName = robotList.GetComponent<ScrollableList>().selectedEntry;
+            dpmSelectedRobotName = robotList.GetComponent<ScrollablePanel>().selectedEntry;
             dpmSelectedRobot = robotDirectory + "\\" + dpmSelectedRobotName + "\\";
             SwitchDriverPractice();
         }
