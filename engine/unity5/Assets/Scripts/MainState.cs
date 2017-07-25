@@ -540,12 +540,13 @@ public class MainState : SimState
     {
         List<FixedQueue<StateDescriptor>> fieldStates;
         List<FixedQueue<StateDescriptor>> robotStates;
+        Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates;
         List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
 
         string simSelectedField;
         string simSelectedRobot;
 
-        ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out contacts);
+        ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
         LoadField(simSelectedField);
         LoadRobot(simSelectedRobot);
@@ -567,6 +568,21 @@ public class MainState : SimState
         {
             t.States = robotStates[i];
             i++;
+        }
+
+        foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> k in gamePieceStates)
+        {
+            GameObject referenceObject = GameObject.Find(k.Key);
+
+            if (referenceObject == null)
+                continue;
+
+            foreach (FixedQueue<StateDescriptor> f in k.Value)
+            {
+                GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
+                currentPiece.name = "clone_" + k.Key;
+                currentPiece.GetComponent<Tracker>().States = f;
+            }
         }
 
         foreach (var c in contacts)
@@ -626,7 +642,7 @@ public class MainState : SimState
                         if (mp.LifeTime == i)
                             break;
                     }
-
+                    
                     if (mp == null)
                         continue;
 

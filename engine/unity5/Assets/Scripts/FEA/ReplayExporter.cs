@@ -31,10 +31,12 @@ namespace Assets.Scripts.FEA
                 writer.WriteAttributeString("length", Tracker.Length.ToString());
 
                 List<Tracker> robotTrackers = trackers.Where(x => x.transform.parent != null && x.transform.parent.name.Equals("Robot")).ToList();
-                List<Tracker> fieldTrackers = trackers.Except(robotTrackers).ToList();
+                List<Tracker> gamePieceTrackers = trackers.Where(x => x.gameObject.name.StartsWith("clone_")).ToList();
+                List<Tracker> fieldTrackers = trackers.Except(robotTrackers).Except(gamePieceTrackers).ToList();
 
                 WriteField(writer, fieldPath, fieldTrackers);
                 WriteRobot(writer, robotPath, robotTrackers);
+                WriteGamePieces(writer, gamePieceTrackers);
                 WriteContacts(writer, contacts);
 
                 writer.WriteEndElement();
@@ -81,6 +83,41 @@ namespace Assets.Scripts.FEA
             writer.WriteBase64(trackersBuffer, 0, trackersBuffer.Length);
 
             writer.WriteEndElement();
+        }
+
+        /// <summary>
+        /// Writes game piece information with the given XmlWriter and Trackers.
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="trackers"></param>
+        private static void WriteGamePieces(XmlWriter writer, List<Tracker> trackers)
+        {
+            Dictionary<string, List<Tracker>> sortedTrackers = new Dictionary<string, List<Tracker>>();
+
+            foreach (Tracker t in trackers)
+            {
+                string name = t.gameObject.name.Substring(t.gameObject.name.IndexOf('_') + 1);
+
+                if (!sortedTrackers.ContainsKey(name))
+                    sortedTrackers[name] = new List<Tracker>();
+
+                sortedTrackers[name].Add(t);
+            }
+            
+            foreach (KeyValuePair<string, List<Tracker>> k in sortedTrackers)
+            {
+                int uncompressedLength;
+                byte[] trackersBuffer = GetTrackersBuffer(k.Value, out uncompressedLength);
+
+                writer.WriteStartElement("gamepiece");
+                writer.WriteAttributeString("name", k.Key);
+                writer.WriteAttributeString("ulength", uncompressedLength.ToString());
+                writer.WriteAttributeString("clength", trackersBuffer.Length.ToString());
+
+                writer.WriteBase64(trackersBuffer, 0, trackersBuffer.Length);
+
+                writer.WriteEndElement();
+            }
         }
 
         /// <summary>

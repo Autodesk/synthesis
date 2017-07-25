@@ -410,6 +410,7 @@ namespace BulletUnity {
                 try //In case the game piece somehow doens't exist in the scene
                 {
                     GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                    gameobject.name = "clone_" + gamepieceNames[index];
                     gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                     gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
                     spawnedGamepieces[index].Add(gameobject);

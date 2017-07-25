@@ -24,12 +24,13 @@ namespace Assets.Scripts.FEA
         /// <param name="contacts"></param>
         public static void Read(string fileName, out string fieldPath, out string robotPath,
             out List<FixedQueue<StateDescriptor>> fieldStates, out List<FixedQueue<StateDescriptor>> robotStates,
-            out List<List<KeyValuePair<ContactDescriptor, int>>> contacts)
+            out Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates, out List<List<KeyValuePair<ContactDescriptor, int>>> contacts)
         {
             fieldPath = string.Empty;
             robotPath = string.Empty;
             fieldStates = new List<FixedQueue<StateDescriptor>>();
             robotStates = new List<FixedQueue<StateDescriptor>>();
+            gamePieceStates = new Dictionary<string, List<FixedQueue<StateDescriptor>>>();
             contacts = new List<List<KeyValuePair<ContactDescriptor, int>>>();
 
             using (XmlReader reader = XmlReader.Create(
@@ -44,6 +45,9 @@ namespace Assets.Scripts.FEA
                             break;
                         case "robot":
                             ReadRobotStates(reader.ReadSubtree(), out robotStates, out robotPath);
+                            break;
+                        case "gamepiece":
+                            ReadGamePieces(reader.ReadSubtree(), gamePieceStates);
                             break;
                         case "contacts":
                             ReadContacts(reader.ReadSubtree(), out contacts);
@@ -109,6 +113,34 @@ namespace Assets.Scripts.FEA
             }
 
             robotStates = ReadStates(DecompressBuffer(uncompressedLength, compressedBuffer));
+        }
+
+        /// <summary>
+        /// Generates game piece state information from the given XmlReader.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="gamePieceStates"></param>
+        private static void ReadGamePieces(XmlReader reader, Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates)
+        {
+            string pieceName = string.Empty;
+
+            int uncompressedLength = 0;
+            byte[] compressedBuffer = null;
+
+            foreach (string name in AllElements(reader))
+            {
+                switch (name)
+                {
+                    case "gamepiece":
+                        pieceName = reader["name"];
+                        uncompressedLength = int.Parse(reader["ulength"]);
+                        compressedBuffer = new byte[int.Parse(reader["clength"])];
+                        reader.ReadElementContentAsBase64(compressedBuffer, 0, compressedBuffer.Length);
+                        break;
+                }
+            }
+
+            gamePieceStates[pieceName] = ReadStates(DecompressBuffer(uncompressedLength, compressedBuffer));
         }
 
         /// <summary>
