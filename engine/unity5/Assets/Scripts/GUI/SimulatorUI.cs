@@ -14,14 +14,18 @@ public class SimulatorUI : MonoBehaviour
 
     private GameObject canvas;
     private GameObject cameraToolTip;
-    private GUIController gui;
-
+    private GameObject orientWindow;
+    private bool isOrienting;
+    private GameObject resetDropdown;
     // Use this for initialization
     void Start()
     {
-
+        stateMachine = GameObject.Find("StateMachine");
         canvas = GameObject.Find("Canvas");
         cameraToolTip = GameObject.Find("TooltipText (9)");
+        orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
+        resetDropdown = GameObject.Find("Reset Robot Dropdown");
+        isOrienting = false;
     }
 
     // Update is called once per frame
@@ -31,7 +35,7 @@ public class SimulatorUI : MonoBehaviour
         {
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
-        if (mainState == null)
+        if(mainState == null)
         {
             mainState = stateMachine.GetComponent<StateMachine>().MainState;
         }
@@ -65,7 +69,6 @@ public class SimulatorUI : MonoBehaviour
     //In game UI resets robot using UI icons
     public void ResetRobotClick()
     {
-        //mainState = stateMachine.GetComponent<StateMachine>().MainState;
         mainState.BeginReset();
         mainState.EndReset();
     }
@@ -105,10 +108,7 @@ public class SimulatorUI : MonoBehaviour
     public void CameraToolTips()
     {
         if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
-        {
             cameraToolTip.GetComponent<Text>().text = "Driver Station";
-            Debug.Log(cameraToolTip.GetComponent<Text>().text);
-        }
         else if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
             cameraToolTip.GetComponent<Text>().text = "Freeroam";
         else if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
@@ -117,32 +117,65 @@ public class SimulatorUI : MonoBehaviour
             cameraToolTip.GetComponent<Text>().text = "Overview";
     }
 
-    public void ResetToolTips()
-    {
-        
-    }
-
     public void ChooseResetMode(int i)
     {
-        //mainState = stateMachine.GetComponent<StateMachine>().MainState;
-        //Debug.Log("Choosing reset mode " + i);
         switch (i)
         {
             case 1:
                 mainState.BeginReset();
                 mainState.EndReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
             case 2:
                 mainState.IsResetting = true;
                 mainState.BeginReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
                 break; 
         }
     }
 
-    //public void CreateOrientWindow()
-    //{
+    public void ToggleOrientWindow()
+    {
+        isOrienting = !isOrienting;
+        orientWindow.SetActive(isOrienting);
+        if (isOrienting) mainState.BeginReset();
+        else mainState.EndReset();
+    }
 
-    //    mainState.CreateOrientWindow();
-    //}
+    public void OrientLeft()
+    {
+        mainState.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientRight()
+    {
+        mainState.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientForward()
+    {
+        mainState.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+    }
+    public void OrientBackward()
+    {
+        mainState.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
+    }
+
+    public void DefaultOrientation()
+    {
+        mainState.ResetRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
+
+    public void SaveOrientation()
+    {
+        mainState.SaveRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
+
+    public void CloseOrientWindow()
+    {
+        isOrienting = false;
+        orientWindow.SetActive(isOrienting);
+        mainState.EndReset();
+    }
 }
    
