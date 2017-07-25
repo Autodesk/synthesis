@@ -372,26 +372,28 @@ public class DriverPractice : MonoBehaviour {
         //If there is a collision object and it is dynamic and not a robot part, change the gamepiece to that
         if (rayResult.CollisionObject != null)
         {
-            string name = (rayResult.CollisionObject.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
-            Debug.Log(name);
+            GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
             if (rayResult.CollisionObject.CollisionFlags == BulletSharp.CollisionFlags.StaticObject)
             {
                 UserMessageManager.Dispatch("The gamepiece must be a dynamic object!", 3);
             }
-            else if (GameObject.Find(name) == null)
+            else if (selectedObject == null)
             {
                 Debug.Log("DPM: Game object not found");
                     
             }
-            else if (GameObject.Find(name).transform.parent != null && GameObject.Find(name).transform.parent.name == "Robot")
+            else if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
             {
                 UserMessageManager.Dispatch("You cannot select a robot part as a gamepiece!", 3);
             }
             else
             {   
-                gamepieceNames[index] = name.Replace("(Clone)",""); //gets rid of the clone tag given to spawned gamepieces 
+                name = name.Replace("clone_",""); //gets rid of the clone tag given to spawned gamepieces
+                if (name.IndexOf(":") > 0) name = name.Substring(0, name.IndexOf(":"));
+
+                gamepieceNames[index] = name;
+
                 intakeInteractor[index].SetKeyword(gamepieceNames[index],index);
-                GameObject gamepiece = GameObject.Find(name);
 
                 UserMessageManager.Dispatch(name + " has been selected as the gamepiece", 2);
                 addingGamepiece = false;
@@ -433,7 +435,7 @@ public class DriverPractice : MonoBehaviour {
             try //In case the game piece somehow doens't exist in the scene
             {
                 GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
-                gameobject.name = "clone_" + gamepieceNames[index] + gamepieceCounter;
+                gameobject.name = "clone_" + gamepieceNames[index] + ":" + gamepieceCounter;
                 gamepieceCounter++;
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
@@ -458,8 +460,9 @@ public class DriverPractice : MonoBehaviour {
             {
                 Destroy(g);
             }
+            spawnedGamepieces[i].Clear();
         }
-        spawnedGamepieces.Clear();
+        
     }
 
     /// <summary>
@@ -563,22 +566,21 @@ public class DriverPractice : MonoBehaviour {
         //If there is a collision object and it is a robot part, then define it as the mechanism
         if (rayResult.CollisionObject != null)
         {
-            string name = (rayResult.CollisionObject.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
-            Debug.Log(name);
+            GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
             if (rayResult.CollisionObject.CollisionFlags == BulletSharp.CollisionFlags.StaticObject)
             {
                 UserMessageManager.Dispatch("Please click on a robot part", 3);
             }
-            else if (GameObject.Find(name) == null)
+            else if (selectedObject == null)
             {
                 Debug.Log("DPM: Game object not found");
 
             }
-            else if (GameObject.Find(name).transform.parent != null && GameObject.Find(name).transform.parent.name == "Robot")
+            else if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
             {
                 if (definingIntake)
                 {
-                    intakeNode[index] = GameObject.Find(name);
+                    intakeNode[index] = selectedObject;
                     SetInteractor(intakeNode[index], index);
 
                     UserMessageManager.Dispatch(name + " has been selected as intake node", 5);
@@ -587,7 +589,7 @@ public class DriverPractice : MonoBehaviour {
                 }
                 else
                 {
-                    releaseNode[index] = GameObject.Find(name);
+                    releaseNode[index] = selectedObject;
                     SetInteractor(releaseNode[index], index);
 
                     UserMessageManager.Dispatch(name + " has been selected as release node", 5);
@@ -628,25 +630,24 @@ public class DriverPractice : MonoBehaviour {
         //If there is a collision object and it is dynamic and not a robot part, change the gamepiece to that
         if (rayResult.CollisionObject != null)
         {
-            string name = (rayResult.CollisionObject.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
-            Debug.Log(name);
+            GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
+
             if (rayResult.CollisionObject.CollisionFlags == BulletSharp.CollisionFlags.StaticObject)
             {
                 RevertNodeColors(hoveredNode, hoveredColors);
             }
-            else if (GameObject.Find(name) == null)
+            else if (selectedObject == null)
             {
                 Debug.Log("DPM: Game object not found");
                 RevertNodeColors(hoveredNode, hoveredColors);
             }
-            else if (GameObject.Find(name).transform.parent != null && GameObject.Find(name).transform.parent.name == "Robot")
+            else if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
             {
-                if (hoveredNode != GameObject.Find(name))
+                if (hoveredNode != selectedObject)
                 {
                     RevertNodeColors(hoveredNode, hoveredColors);
-                }
-
-                hoveredNode = GameObject.Find(name);
+                    hoveredNode = selectedObject;
+                }           
 
                 ChangeNodeColors(hoveredNode, hoverColor, hoveredColors);
 
