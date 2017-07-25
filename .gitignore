@@ -7,4 +7,4 @@ engine/unity5/Build_Data
 tags
 *.exe
 *.userprefs
-build/*
+build/
