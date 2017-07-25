@@ -501,9 +501,13 @@ public class MainState : SimState
 
         nodeToRobotOffset = robotObject.transform.GetChild(0).transform.position - robotObject.transform.position;
         //Robot camera feature
-        robotCameraObject = GameObject.Find("RobotCameraList");
-        robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+        if (robotCamera == null)
+        {
+            robotCameraObject = GameObject.Find("RobotCameraList");
+            robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+        }
 
+        robotCamera.RemoveCameras();
         //The camera data should be read here as a foreach loop and included in robot file
         //Attached to main frame and face the front
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
@@ -518,6 +522,12 @@ public class MainState : SimState
         RotateRobot(robotStartOrientation);
 
         return true;
+    }
+
+    public bool ChangeRobot(string directory)
+    {
+        if (GameObject.Find("Robot") != null) GameObject.Destroy(GameObject.Find("Robot"));
+        return LoadRobot(directory);
     }
 
     private void UpdateTrackers()

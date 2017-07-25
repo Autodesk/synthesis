@@ -325,6 +325,11 @@ public class SimUI : MonoBehaviour
     //{
     //    main.ResetRobot();
     //}
+    public void ChangeRobot()
+    {
+        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + GameObject.Find("RobotListPanel").GetComponent<ChangeRobotScrollable>().selectedEntry;
+        main.ChangeRobot(directory);
+    }
     #endregion
     #region camera button functions
     //Camera Functions
@@ -771,7 +776,8 @@ public class SimUI : MonoBehaviour
             //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
             else
             {
-                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                if (robotCamera.CurrentCamera != null)
+                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
             }
         }
     }
