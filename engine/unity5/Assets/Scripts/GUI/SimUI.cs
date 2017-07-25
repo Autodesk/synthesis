@@ -42,6 +42,8 @@ public class SimUI : MonoBehaviour
 
     GameObject lockPanel;
 
+    GameObject robotCameraList;
+
 
 
     Text enableDPMText;
@@ -175,6 +177,7 @@ public class SimUI : MonoBehaviour
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
 
+        robotCameraList = AuxFunctions.FindObject(canvas, "RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
     }
 
@@ -189,8 +192,8 @@ public class SimUI : MonoBehaviour
         if (dpm.gamepieceNames[1] == null) secondaryGamepieceText.text = "Secondary Gamepiece:  NOT CONFIGURED";
         else secondaryGamepieceText.text = "Secondary Gamepiece:  " + dpm.gamepieceNames[1];
 
-        primaryCountText.text = "Spawned: " + dpm.spawnedPrimary.Count + "\nHeld: " + dpm.objectsHeld[0].Count;
-        secondaryCountText.text = "Spawned: " + dpm.spawnedSecondary.Count + "\nHeld: " + dpm.objectsHeld[1].Count;
+        primaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[0].Count + "\nHeld: " + dpm.objectsHeld[0].Count;
+        secondaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[1].Count + "\nHeld: " + dpm.objectsHeld[1].Count;
 
         if (configuring)
         {
@@ -741,9 +744,9 @@ public class SimUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Make sure robot camera exists first
-        if(robotCamera == null && AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>() != null)
+        if(robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
         {
-            robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
+            robotCamera = robotCameraList.GetComponent<RobotCamera>();
         }
 
         if (robotCamera != null)
@@ -751,7 +754,7 @@ public class SimUI : MonoBehaviour
             //Can use robot view when dynamicCamera is active
             if (usingRobotView && main.dynamicCameraObject.activeSelf)
             {
-                robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
+                robotCamera = robotCameraList.GetComponent<RobotCamera>();
                 Debug.Log(robotCamera.CurrentCamera);
 
                 //Make sure there is camera on robot
