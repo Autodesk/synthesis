@@ -79,7 +79,7 @@ public class MainState : SimState
 
     //Flags to tell different types of reset
     private bool isResettingOrientation;
-    public bool IsResetting { get; private set; }
+    public bool IsResetting { get; set; }
 
     private DriverPractice driverPractice;
 
@@ -272,7 +272,6 @@ public class MainState : SimState
                     robotStartOrientation = BulletSharp.Math.Matrix.Identity;
                     robotStartPosition = new Vector3(0f, 1f, 0f);
                     EndReset();
-
                     break;
             }
         });
@@ -695,7 +694,7 @@ public class MainState : SimState
         }
     }
 
-    void TransposeRobot(Vector3 transposition)
+    public void TransposeRobot(Vector3 transposition)
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -707,7 +706,7 @@ public class MainState : SimState
         }
     }
 
-    void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
+    public void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
     {
         BulletSharp.Math.Vector3? origin = null;
 
@@ -732,7 +731,7 @@ public class MainState : SimState
         }
     }
 
-    void RotateRobot(Vector3 rotation)
+    public void RotateRobot(Vector3 rotation)
     {
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
     }
@@ -766,5 +765,19 @@ public class MainState : SimState
     public DriverPractice GetDriverPractice()
     {
         return driverPractice;
+    }
+
+    public void ResetRobotOrientation()
+    {
+        robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+        BeginReset();
+        EndReset();
+    }
+    
+    public void SaveRobotOrientation()
+    {
+        robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+        robotStartOrientation.ToUnity();
+        EndReset();
     }
 }
