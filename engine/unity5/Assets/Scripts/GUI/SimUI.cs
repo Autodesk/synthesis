@@ -180,7 +180,7 @@ public class SimUI : MonoBehaviour
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
 
-        robotCameraList = AuxFunctions.FindObject(canvas, "RobotCameraList");
+        robotCameraList = GameObject.Find("RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
 
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
@@ -353,6 +353,7 @@ public class SimUI : MonoBehaviour
 
     public void ToggleChangeRobotPanel()
     {
+        changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(!changeRobotPanel.activeSelf);
     }
 
@@ -375,6 +376,7 @@ public class SimUI : MonoBehaviour
 
     public void ToggleChangeFieldPanel()
     {
+        changeRobotPanel.SetActive(false);
         changeFieldPanel.SetActive(!changeFieldPanel.activeSelf);
     }
     #endregion
