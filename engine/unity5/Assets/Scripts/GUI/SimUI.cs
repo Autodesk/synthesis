@@ -42,6 +42,8 @@ public class SimUI : MonoBehaviour
 
     GameObject lockPanel;
 
+    GameObject robotCameraList;
+
 
 
     Text enableDPMText;
@@ -175,6 +177,7 @@ public class SimUI : MonoBehaviour
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
 
+        robotCameraList = AuxFunctions.FindObject(canvas, "RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
     }
 
@@ -731,9 +734,9 @@ public class SimUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Make sure robot camera exists first
-        if(robotCamera == null && AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>() != null)
+        if(robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
         {
-            robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
+            robotCamera = robotCameraList.GetComponent<RobotCamera>();
         }
 
         if (robotCamera != null)
@@ -741,7 +744,7 @@ public class SimUI : MonoBehaviour
             //Can use robot view when dynamicCamera is active
             if (usingRobotView && main.dynamicCameraObject.activeSelf)
             {
-                robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
+                robotCamera = robotCameraList.GetComponent<RobotCamera>();
                 Debug.Log(robotCamera.CurrentCamera);
 
                 //Make sure there is camera on robot
