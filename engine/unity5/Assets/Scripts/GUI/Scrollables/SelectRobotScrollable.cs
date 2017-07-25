@@ -6,23 +6,24 @@ using System.Collections.Generic;
 
 
 /// <summary>
-/// Meant to be used for changing robots within the simulator
+/// Meant to be used for selecting a robot in the main menu
 /// </summary>
-public class ChangeRobotScrollable : ScrollablePanel
+public class SelectRobotScrollable : ScrollablePanel
 {
-    private string directory;
+
+    private MainMenu mainMenu;
 
     // Use this for initialization
     protected override void Start()
     {
-
         base.Start();
         errorMessage = "No robots found in directory!";
+
+        mainMenu = canvas.GetComponent<MainMenu>();
     }
 
     void OnEnable()
     {
-        directory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
         items = new List<string>();
         items.Clear();
 
@@ -31,9 +32,9 @@ public class ChangeRobotScrollable : ScrollablePanel
     // Update is called once per frame
     protected override void OnGUI()
     {
-        if (directory != null && items.Count == 0)
+        if (mainMenu.robotDirectory != null && items.Count == 0)
         {
-            string[] folders = System.IO.Directory.GetDirectories(directory);
+            string[] folders = System.IO.Directory.GetDirectories(mainMenu.robotDirectory);
             foreach (string robot in folders)
             {
                 if (File.Exists(robot + "\\skeleton.bxdj")) items.Add(new DirectoryInfo(robot).Name);
@@ -41,7 +42,7 @@ public class ChangeRobotScrollable : ScrollablePanel
             if (items.Count > 0) selectedEntry = items[0];
         }
 
-        position = GetComponent<RectTransform>().position;
+        position = Camera.main.WorldToScreenPoint(transform.position);
 
         base.OnGUI();
 

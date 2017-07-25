@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 
 /// <summary>
-/// Meant to be used for changing robots within the simulator
+/// Meant to be used for changing fields within the simulator
 /// </summary>
-public class ChangeRobotScrollable : ScrollablePanel
+public class ChangeFieldScrollable : ScrollablePanel
 {
     private string directory;
 
@@ -17,12 +17,12 @@ public class ChangeRobotScrollable : ScrollablePanel
     {
 
         base.Start();
-        errorMessage = "No robots found in directory!";
+        errorMessage = "No fields found in directory!";
     }
 
     void OnEnable()
     {
-        directory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
+        directory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//fields"));
         items = new List<string>();
         items.Clear();
 
@@ -34,9 +34,9 @@ public class ChangeRobotScrollable : ScrollablePanel
         if (directory != null && items.Count == 0)
         {
             string[] folders = System.IO.Directory.GetDirectories(directory);
-            foreach (string robot in folders)
+            foreach (string field in folders)
             {
-                if (File.Exists(robot + "\\skeleton.bxdj")) items.Add(new DirectoryInfo(robot).Name);
+                if (File.Exists(field + "\\definition.bxdf")) items.Add(new DirectoryInfo(field).Name);
             }
             if (items.Count > 0) selectedEntry = items[0];
         }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using BulletUnity;
 using Assets.Scripts.FSM;
+using System.IO;
 
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
@@ -44,6 +45,8 @@ public class SimUI : MonoBehaviour
 
     GameObject robotCameraList;
 
+    GameObject changeRobotPanel;
+    GameObject changeFieldPanel;
 
 
     Text enableDPMText;
@@ -179,6 +182,9 @@ public class SimUI : MonoBehaviour
 
         robotCameraList = AuxFunctions.FindObject(canvas, "RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
+
+        changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
+        changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
     }
 
     /// <summary>
@@ -330,13 +336,46 @@ public class SimUI : MonoBehaviour
     //}
     public void ChangeRobot()
     {
-        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + GameObject.Find("RobotListPanel").GetComponent<ChangeRobotScrollable>().selectedEntry;
-        main.ChangeRobot(directory);
+        GameObject panel = GameObject.Find("RobotListPanel");
+        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
+        if (Directory.Exists(directory))
+        {
+            PlayerPrefs.SetString("simSelectedRobot", directory);
+            PlayerPrefs.SetString("simSelectedRObotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            main.ChangeRobot(directory);
+            ToggleChangeRobotPanel();
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Robot directory not found!", 5);
+        }
     }
 
     public void ToggleChangeRobotPanel()
     {
+        changeRobotPanel.SetActive(!changeRobotPanel.activeSelf);
+    }
 
+    public void ChangeField()
+    {
+        GameObject panel = GameObject.Find("FieldListPanel");
+        string directory = PlayerPrefs.GetString("FieldDirectory") + "\\" + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
+        if (Directory.Exists(directory))
+        {
+            PlayerPrefs.SetString("simSelectedField", directory);
+            PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
+            PlayerPrefs.Save();
+            Application.LoadLevel("Scene");
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Field directory not found!", 5);
+        }
+    }
+
+    public void ToggleChangeFieldPanel()
+    {
+        changeFieldPanel.SetActive(!changeFieldPanel.activeSelf);
     }
     #endregion
     #region camera button functions
@@ -579,68 +618,42 @@ public class SimUI : MonoBehaviour
 
 
 
-
-    public void AddOffsetX()
+    public void ChangeOffsetX(int sign)
     {
-        deltaOffsetX = offsetIncrement;
-        holdCount++;
-    }
-    public void SubstractOffsetX()
-    {
-        deltaOffsetX = -offsetIncrement;
-        holdCount++;
-    }
-    public void AddOffsetY()
-    {
-        deltaOffsetY = offsetIncrement;
-        holdCount++;
-    }
-    public void SubstractOffsetY()
-    {
-        deltaOffsetY = -offsetIncrement;
-        holdCount++;
-    }
-    public void AddOffsetZ()
-    {
-        deltaOffsetZ = offsetIncrement;
-        holdCount++;
-    }
-    public void SubtractOffsetZ()
-    {
-        deltaOffsetZ = -offsetIncrement;
+        deltaOffsetX = offsetIncrement * sign;
         holdCount++;
     }
 
-    public void AddReleaseSpeed()
+    public void ChangeOffsetY(int sign)
     {
-        deltaReleaseSpeed = speedIncrement;
+        deltaOffsetY = offsetIncrement * sign;
         holdCount++;
     }
-    public void SubtractReleaseSpeed()
+
+    public void ChangeOffsetZ(int sign)
     {
-        deltaReleaseSpeed = -speedIncrement;
+        deltaOffsetZ = offsetIncrement * sign;
         holdCount++;
     }
-    public void AddReleaseHorizontalAngle()
+
+    public void ChangeReleaseSpeed(int sign)
     {
-        deltaReleaseHorizontal = angleIncrement;
+        deltaReleaseSpeed = speedIncrement * sign;
         holdCount++;
     }
-    public void SubtractReleaseHorizontalAngle()
+
+    public void ChangeHorizontalAngle(int sign)
     {
-        deltaReleaseHorizontal = -angleIncrement;
+        deltaReleaseHorizontal = angleIncrement * sign;
         holdCount++;
     }
-    public void AddReleaseVerticalAngle()
+
+    public void ChangeVerticalAngle(int sign)
     {
-        deltaReleaseVertical = angleIncrement;
+        deltaReleaseVertical = angleIncrement * sign;
         holdCount++;
     }
-    public void SubtractReleaseVerticalAngle()
-    {
-        deltaReleaseVertical = -angleIncrement;
-        holdCount++;
-    }
+
     public void ReleaseConfigurationButton()
     {
         deltaOffsetX = 0;
@@ -690,19 +703,9 @@ public class SimUI : MonoBehaviour
     #endregion
     #region control customization functions
 
-    public void ChangeIntakeControl()
+    public void SetNewControl(int index)
     {
-        settingControl = 1;
-    }
-
-    public void ChangeReleaseControl()
-    {
-        settingControl = 2;
-    }
-
-    public void ChangeSpawnControl()
-    {
-        settingControl = 3;
+        settingControl = index;
     }
 
     private void ListenControl()
