@@ -42,6 +42,7 @@ public class DriverPractice : MonoBehaviour {
     public List<List<GameObject>> spawnedGamepieces;
     private List<GameObject> spawnedPrimary;
     private List<GameObject> spawnedSecondary;
+    private int gamepieceCounter = 0; //number to add at the end of each gamepiece name so that no two gamepieces have the same name
 
     public List<bool> displayTrajectories; //projects gamepiece trajectories if true
     private List<LineRenderer> drawnTrajectory; //a series of lines that projects a trajectory calculated from the robot's speed and the velocity vectors
@@ -432,6 +433,8 @@ public class DriverPractice : MonoBehaviour {
             try //In case the game piece somehow doens't exist in the scene
             {
                 GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
+                gameobject.name = "Clone - " + gamepieceNames[index] + gamepieceCounter;
+                gamepieceCounter++;
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
                 spawnedGamepieces[index].Add(gameobject);
