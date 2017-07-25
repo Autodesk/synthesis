@@ -13,7 +13,7 @@ this code is highly out of date. badly written and not reviewed.
 this is decrapcated project.
 
 
-###fake-Hal 
+### fake-Hal 
 #### old research development.
 fake-Hal is an attempt to rewrite the hal section of the official wpilib to allow  
 the simulator to understand commands from code. this would be alot simpler and avoid
@@ -22,7 +22,7 @@ the need for any fpga simulatation than fake wpilib.
 
 
 
-###Emulator
+### Emulator
 #### official project for emulation
 this is the newest attempt at getting the code emulatation working. 
 it makes the code run in a "virtual machine".
