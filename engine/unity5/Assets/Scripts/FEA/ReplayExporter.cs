@@ -30,7 +30,7 @@ namespace Assets.Scripts.FEA
                 writer.WriteStartElement("replay");
                 writer.WriteAttributeString("length", Tracker.Length.ToString());
 
-                List<Tracker> robotTrackers = trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
+                List<Tracker> robotTrackers = trackers.Where(x => x.transform.parent != null && x.transform.parent.name.Equals("Robot")).ToList();
                 List<Tracker> fieldTrackers = trackers.Except(robotTrackers).ToList();
 
                 WriteField(writer, fieldPath, fieldTrackers);

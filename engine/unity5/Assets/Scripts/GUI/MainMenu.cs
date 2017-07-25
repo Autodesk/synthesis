@@ -4,6 +4,7 @@ using System.Collections;
 using System.IO;
 using Assets.Scripts.FEA;
 using System.Collections.Generic;
+using System;
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
@@ -672,6 +673,19 @@ public class MainMenu : MonoBehaviour
 
             PlayerPrefs.Save();
             Application.LoadLevel("Scene");
+        }
+    }
+
+    public void SelectDeleteReplay()
+    {
+        GameObject replayList = GameObject.Find("SimLoadReplayList");
+        string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+
+        if (entry != null)
+        {
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\" + entry + ".replay");
+            replayList.SetActive(false);
+            replayList.SetActive(true);
         }
     }
 

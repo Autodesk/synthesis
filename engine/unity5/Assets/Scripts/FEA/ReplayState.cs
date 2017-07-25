@@ -460,17 +460,25 @@ namespace Assets.Scripts.FEA
             }
             else if (Input.GetKeyDown(KeyCode.Space))
             {
-                switch (playbackMode)
+                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
                 {
-                    case PlaybackMode.Paused:
-                        if (rewindTime == 0.0f)
-                            rewindTime = Tracker.Lifetime;
-                        playbackMode = PlaybackMode.Play;
-                        break;
-                    case PlaybackMode.Play:
-                    case PlaybackMode.Rewind:
-                        playbackMode = PlaybackMode.Paused;
-                        break;
+                    rewindTime = Tracker.Lifetime;
+                    playbackMode = PlaybackMode.Play;
+                }
+                else
+                {
+                    switch (playbackMode)
+                    {
+                        case PlaybackMode.Paused:
+                            if (rewindTime == 0f)
+                                rewindTime = Tracker.Lifetime;
+                            playbackMode = PlaybackMode.Play;
+                            break;
+                        case PlaybackMode.Play:
+                        case PlaybackMode.Rewind:
+                            playbackMode = PlaybackMode.Paused;
+                            break;
+                    }
                 }
             }
 
