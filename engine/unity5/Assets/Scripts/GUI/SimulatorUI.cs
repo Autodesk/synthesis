@@ -14,6 +14,7 @@ public class SimulatorUI : MonoBehaviour
 
     private GameObject canvas;
     private GameObject cameraToolTip;
+    private GUIController gui;
 
     // Use this for initialization
     void Start()
@@ -30,10 +31,10 @@ public class SimulatorUI : MonoBehaviour
         {
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
-        //if (mainState == null)
-        //{
-        //    mainState = transform.GetComponent<StateMachine>().MainState;
-        //}
+        if (mainState == null)
+        {
+            mainState = stateMachine.GetComponent<StateMachine>().MainState;
+        }
     }
 
     public void showControlPanel(bool show)
@@ -64,7 +65,7 @@ public class SimulatorUI : MonoBehaviour
     //In game UI resets robot using UI icons
     public void ResetRobotClick()
     {
-        mainState = stateMachine.GetComponent<StateMachine>().MainState;
+        //mainState = stateMachine.GetComponent<StateMachine>().MainState;
         mainState.BeginReset();
         mainState.EndReset();
     }
@@ -72,6 +73,7 @@ public class SimulatorUI : MonoBehaviour
     //In game UI switches view using UI icons
     public void SwitchViewClickMoreBetterer(int joe)
     {
+        Debug.Log(joe);
         switch (joe)
         {
             case 1:
@@ -122,17 +124,25 @@ public class SimulatorUI : MonoBehaviour
 
     public void ChooseResetMode(int i)
     {
+        //mainState = stateMachine.GetComponent<StateMachine>().MainState;
+        //Debug.Log("Choosing reset mode " + i);
         switch (i)
         {
-            case 0:
+            case 1:
                 mainState.BeginReset();
                 mainState.EndReset();
                 break;
-            case 1:
+            case 2:
                 mainState.IsResetting = true;
                 mainState.BeginReset();
                 break; 
         }
     }
+
+    //public void CreateOrientWindow()
+    //{
+
+    //    mainState.CreateOrientWindow();
+    //}
 }
    
