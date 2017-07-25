@@ -2,20 +2,12 @@
 
 public class SettingsMode : MonoBehaviour
 {
-    public GameObject gameMode;
+    public GameObject settingsMode;
 
     // Update is called once per frame
     void Update()
     {
-        if (
-            KeyButton.selectedButton == null
-            &&
-            InputControl.GetKeyDown(KeyCode.Escape)
-           )
-        {
-            gameMode.SetActive(true);
-            gameObject.SetActive(false);
-        }
+
     }
 
     public void OnIgnoreMouseMovementChanged(bool on)
@@ -31,6 +23,7 @@ public class SettingsMode : MonoBehaviour
     public void OnSaveClick()
     {
         Controls.Save();
+        UserMessageManager.Dispatch("Player preferances saved.", 5);
     }
 
     public void OnLoadClick()

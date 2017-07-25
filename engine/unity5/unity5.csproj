@@ -250,9 +250,7 @@
     <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\MouseInput.cs" />
     <Compile Include="Assets\Scripts\GUI\InputControl\KeyMapping.cs" />
     <Compile Include="Assets\Scripts\GUI\InputControl\Menu\CreateButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\GameMode.cs" />
     <Compile Include="Assets\Scripts\GUI\InputControl\Menu\KeyButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\PlayerScript.cs" />
     <Compile Include="Assets\Scripts\GUI\InputControl\Menu\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\GUI\InputScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />

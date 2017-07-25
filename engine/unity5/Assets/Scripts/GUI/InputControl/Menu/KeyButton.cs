@@ -12,55 +12,34 @@ public class KeyButton : MonoBehaviour
 
     private Text mKeyText;
 
-    private RectTransform rectTransform;
-    private Vector2 scrollPosition;
-
-    private GUIStyle nameStyle;
-    private GUIStyle keyStyle;
-    private GUIStyle keyHighlightStyle;
-
     // Use this for initialization
     void Start()
     {
         GetComponent<Button>().onClick.AddListener(OnClick);
 
-        nameStyle = new GUIStyle("button");
-        nameStyle.normal.background = new Texture2D(0, 0);
-        nameStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-        nameStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
-        nameStyle.alignment = TextAnchor.MiddleLeft;
-        nameStyle.normal.textColor = Color.white;
+        //nameStyle = new GUIStyle("button");
+        //nameStyle.normal.background = new Texture2D(0, 0);
+        //nameStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
+        //nameStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
+        //nameStyle.alignment = TextAnchor.MiddleLeft;
+        //nameStyle.normal.textColor = Color.white;
 
-        keyStyle = new GUIStyle(nameStyle);
-        keyStyle.alignment = TextAnchor.MiddleCenter;
-        keyHighlightStyle = new GUIStyle(keyStyle);
-        keyHighlightStyle.normal.background = nameStyle.active.background;
-        keyHighlightStyle.hover.background = keyHighlightStyle.normal.background;
+        //keyStyle = new GUIStyle(nameStyle);
+        //keyStyle.alignment = TextAnchor.MiddleCenter;
+        //keyHighlightStyle = new GUIStyle(keyStyle);
+        //keyHighlightStyle.normal.background = nameStyle.active.background;
+        //keyHighlightStyle.hover.background = keyHighlightStyle.normal.background;
+
+        //inputNames = new List<string>();
+        //inputKeys = new List<KeyCode>();
     }
 
     // Update is called once per frame
     void OnGUI()
     {
-        Rect rect = GetComponent<RectTransform>().rect;
-        Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
+        //Implement assets (most assets are configured in Unity: OptionsTab > Canvas > SettingsMode
+        mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
 
-        float scale = GameObject.Find("MainMenuCanvas").GetComponent<Canvas>().scaleFactor;
-        Rect position = new Rect(p.x, Screen.height - p.y, rect.width * scale, rect.height * scale);
-
-        nameStyle.fontSize = Mathf.RoundToInt(20 * scale);
-        keyStyle.fontSize = nameStyle.fontSize;
-        keyHighlightStyle.fontSize = nameStyle.fontSize;
-
-        nameStyle.fixedWidth = position.width * .7f;
-        keyStyle.fixedWidth = position.width * .2f;
-        keyHighlightStyle.fixedWidth = position.width * .2f;
-
-        nameStyle.fixedHeight = 50 * scale;
-        keyStyle.fixedHeight = nameStyle.fixedHeight;
-        keyHighlightStyle.fixedHeight = nameStyle.fixedHeight;
-
-        GUILayout.BeginArea(new Rect(position.x, position.y * 1.01f, position.width, rect.height * scale * .95f));
-        scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
         if (selectedButton == this)
         {
@@ -84,9 +63,6 @@ public class KeyButton : MonoBehaviour
                 }
             }
         }
-
-        GUILayout.EndScrollView();
-        GUILayout.EndArea();
     }
 
     public void updateText()
@@ -98,16 +74,16 @@ public class KeyButton : MonoBehaviour
 
         switch (keyIndex)
         {
-            
+
             case 0:
                 mKeyText.text = keyMapping.primaryInput.ToString();
                 break;
             case 1:
                 mKeyText.text = keyMapping.secondaryInput.ToString();
                 break;
-            case 2:
-                mKeyText.text = keyMapping.thirdInput.ToString();
-                break;
+                //case 2:
+                //    mKeyText.text = keyMapping.thirdInput.ToString();
+                //    break;
         }
     }
 
@@ -115,7 +91,6 @@ public class KeyButton : MonoBehaviour
     {
         if (selectedButton != null)
         {
-            GUILayout.Label(mKeyText.text, nameStyle);
             selectedButton.updateText();
         }
 
@@ -139,9 +114,9 @@ public class KeyButton : MonoBehaviour
             case 1:
                 keyMapping.secondaryInput = input;
                 break;
-            case 2:
-                keyMapping.thirdInput = input;
-                break;
+                //case 2:
+                //    keyMapping.thirdInput = input;
+                //    break;
         }
 
         updateText();

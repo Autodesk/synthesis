@@ -359,16 +359,9 @@ public class MainMenu : MonoBehaviour {
 
     public void SwitchInput()
     {
-
-        //gameObject = GameObject.Find("InputPanel");
-        //gameMode = gameObject.AddComponent<GameMode>();
-        //gameObject.SetActive(true);
         graphics.SetActive(false);
         input.SetActive(true);
-        //settingsMode = AuxFunctions.FindObject("SettingsMode");
         settingsMode.SetActive(true);
-
-        //gameMode.SetActive(false);
     }
 
     public void StartDefaultSim()
@@ -618,9 +611,9 @@ public class MainMenu : MonoBehaviour {
         //Controls.ResetDefaults();
         //Controls.SaveControls();
         //GameObject.Find("InputPanel").GetComponent<InputScrollable>().UpdateControlList();
+        Controls.Reset();
         Controls.Load();
-        Controls.Save();
-        GameObject.Find("InputPanel").GetComponent<SettingsMode>();
+        GameObject.Find("SettingsPanel").GetComponent<SettingsMode>();
 
     }
     public void SelectSimField()
