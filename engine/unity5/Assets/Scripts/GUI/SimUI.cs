@@ -189,8 +189,8 @@ public class SimUI : MonoBehaviour
         if (dpm.gamepieceNames[1] == null) secondaryGamepieceText.text = "Secondary Gamepiece:  NOT CONFIGURED";
         else secondaryGamepieceText.text = "Secondary Gamepiece:  " + dpm.gamepieceNames[1];
 
-        primaryCountText.text = "Spawned: " + dpm.spawnedPrimary.Count + "\nHeld: " + dpm.objectsHeld[0].Count;
-        secondaryCountText.text = "Spawned: " + dpm.spawnedSecondary.Count + "\nHeld: " + dpm.objectsHeld[1].Count;
+        primaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[0].Count + "\nHeld: " + dpm.objectsHeld[0].Count;
+        secondaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[1].Count + "\nHeld: " + dpm.objectsHeld[1].Count;
 
         if (configuring)
         {
