@@ -23,6 +23,9 @@ public class CreateButton : MonoBehaviour
 
         foreach (KeyMapping key in keys)
         {
+            //Key Text vs Key Buttons
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
             #region Key text
             GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
             keyNameText.name = key.name;
@@ -54,7 +57,7 @@ public class CreateButton : MonoBehaviour
             keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
             keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
 
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 2; ++i)
             {
                 KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
 

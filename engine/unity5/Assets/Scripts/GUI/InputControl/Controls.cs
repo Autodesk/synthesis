@@ -170,32 +170,32 @@ public class Controls
     static Controls()
     {
         //Basic robot controls
-        buttons.forward = InputControl.setKey("Forward", KeyCode.UpArrow, KeyCode.None, new JoystickInput(JoystickAxis.Axis2Negative));
-        buttons.backward = InputControl.setKey("Backward", KeyCode.DownArrow, KeyCode.None, new JoystickInput(JoystickAxis.Axis2Positive));
-        buttons.left = InputControl.setKey("Left", KeyCode.LeftArrow, KeyCode.None, new JoystickInput(JoystickAxis.Axis4Negative));
-        buttons.right = InputControl.setKey("Right", KeyCode.RightArrow, KeyCode.None, new JoystickInput(JoystickAxis.Axis4Positive));
+        buttons.forward = InputControl.setKey("Forward", KeyCode.UpArrow, new JoystickInput(JoystickAxis.Axis2Negative));
+        buttons.backward = InputControl.setKey("Backward", KeyCode.DownArrow, new JoystickInput(JoystickAxis.Axis2Positive));
+        buttons.left = InputControl.setKey("Left", KeyCode.LeftArrow, new JoystickInput(JoystickAxis.Axis4Negative));
+        buttons.right = InputControl.setKey("Right", KeyCode.RightArrow, new JoystickInput(JoystickAxis.Axis4Positive));
 
         //Remaining PWM controls
-        buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, KeyCode.None, new JoystickInput(JoystickAxis.Axis3Positive));
-        buttons.pwm2Neg = InputControl.setKey("PWM 2 Negative", KeyCode.Alpha2, KeyCode.None, new JoystickInput(JoystickAxis.Axis3Negative));
-        buttons.pwm3Plus = InputControl.setKey("PWM 3 Positive", KeyCode.Alpha3, KeyCode.None, new JoystickInput(JoystickAxis.Axis5Positive));
-        buttons.pwm3Neg = InputControl.setKey("PWM 3 Negative", KeyCode.Alpha4, KeyCode.None, new JoystickInput(JoystickAxis.Axis5Negative));
-        buttons.pwm4Plus = InputControl.setKey("PWM 4 Positive", KeyCode.Alpha5, KeyCode.None, new JoystickInput(JoystickAxis.Axis6Positive));
-        buttons.pwm4Neg = InputControl.setKey("PWM 4 Negative", KeyCode.Alpha6, KeyCode.None, new JoystickInput(JoystickAxis.Axis6Negative));
-        buttons.pwm5Plus = InputControl.setKey("PWM 5 Positive", KeyCode.Alpha7, KeyCode.None, new JoystickInput(JoystickAxis.Axis7Positive));
-        buttons.pwm5Neg = InputControl.setKey("PWM 5 Negative", KeyCode.Alpha8, KeyCode.None, new JoystickInput(JoystickAxis.Axis7Negative));
-        buttons.pwm6Plus = InputControl.setKey("PWM 6 Positive", KeyCode.Alpha9, KeyCode.None, new JoystickInput(JoystickAxis.Axis8Positive));
-        buttons.pwm6Neg = InputControl.setKey("PWM 6 Negative", KeyCode.Alpha0, KeyCode.None, new JoystickInput(JoystickAxis.Axis8Negative));
+        buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, new JoystickInput(JoystickAxis.Axis3Positive));
+        buttons.pwm2Neg = InputControl.setKey("PWM 2 Negative", KeyCode.Alpha2, new JoystickInput(JoystickAxis.Axis3Negative));
+        buttons.pwm3Plus = InputControl.setKey("PWM 3 Positive", KeyCode.Alpha3, new JoystickInput(JoystickAxis.Axis5Positive));
+        buttons.pwm3Neg = InputControl.setKey("PWM 3 Negative", KeyCode.Alpha4, new JoystickInput(JoystickAxis.Axis5Negative));
+        buttons.pwm4Plus = InputControl.setKey("PWM 4 Positive", KeyCode.Alpha5, new JoystickInput(JoystickAxis.Axis6Positive));
+        buttons.pwm4Neg = InputControl.setKey("PWM 4 Negative", KeyCode.Alpha6, new JoystickInput(JoystickAxis.Axis6Negative));
+        buttons.pwm5Plus = InputControl.setKey("PWM 5 Positive", KeyCode.Alpha7, new JoystickInput(JoystickAxis.Axis7Positive));
+        buttons.pwm5Neg = InputControl.setKey("PWM 5 Negative", KeyCode.Alpha8, new JoystickInput(JoystickAxis.Axis7Negative));
+        buttons.pwm6Plus = InputControl.setKey("PWM 6 Positive", KeyCode.Alpha9, new JoystickInput(JoystickAxis.Axis8Positive));
+        buttons.pwm6Neg = InputControl.setKey("PWM 6 Negative", KeyCode.Alpha0, new JoystickInput(JoystickAxis.Axis8Negative));
 
         //Other Controls
-        buttons.resetRobot = InputControl.setKey("Reset Robot", KeyCode.R, KeyCode.None, new JoystickInput(JoystickButton.Button1));
-        buttons.cameraToggle = InputControl.setKey("Camera Toggle", KeyCode.C, KeyCode.None, new JoystickInput(JoystickButton.Button2));
-        buttons.pickupPrimary = InputControl.setKey("Pick Up Primary Gamepiece", KeyCode.X, KeyCode.None, new JoystickInput(JoystickButton.Button3));
-        buttons.releasePrimary = InputControl.setKey("Release Primary Gamepiece", KeyCode.E, KeyCode.None, new JoystickInput(JoystickButton.Button4));
-        buttons.spawnPrimary = InputControl.setKey("Spawn Primary Gamepiece", KeyCode.Q, KeyCode.None, new JoystickInput(JoystickButton.Button5));
-        buttons.pickupSecondary = InputControl.setKey("Pick Up Secondary Gamepiece", KeyCode.X, KeyCode.None, new JoystickInput(JoystickButton.Button3));
-        buttons.releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, KeyCode.None, new JoystickInput(JoystickButton.Button4));
-        buttons.spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, KeyCode.None, new JoystickInput(JoystickButton.Button5));
+        buttons.resetRobot = InputControl.setKey("Reset Robot", KeyCode.R, new JoystickInput(JoystickButton.Button1));
+        buttons.cameraToggle = InputControl.setKey("Camera Toggle", KeyCode.C, new JoystickInput(JoystickButton.Button2));
+        buttons.pickupPrimary = InputControl.setKey("Pick Up Primary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3));
+        buttons.releasePrimary = InputControl.setKey("Release Primary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4));
+        buttons.spawnPrimary = InputControl.setKey("Spawn Primary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5));
+        buttons.pickupSecondary = InputControl.setKey("Pick Up Secondary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3));
+        buttons.releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4));
+        buttons.spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5));
 
         //Set axes
         axes.horizontal = InputControl.setAxis("Horizontal", buttons.left, buttons.right);
@@ -217,7 +217,6 @@ public class Controls
     /// </summary>
     public static void Save()
     {
-        // It is just an example. You may remove it or modify it if you want
         ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
 
         foreach (KeyMapping key in keys)
@@ -235,7 +234,6 @@ public class Controls
     /// </summary>
     public static void Load()
     {
-        // It is just an example. You may remove it or modify it if you want
         ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
 
         foreach (KeyMapping key in keys)
@@ -263,6 +261,15 @@ public class Controls
                 key.thirdInput = customInputFromString(inputStr);
             }
         }
+    }
+
+    /// <summary>
+    /// Reset to default controls.
+    /// </summary>
+    public static void Reset()
+    {
+        //=================================DOES NOT RESET YET============
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
     }
 
     /// <summary>
