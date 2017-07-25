@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
+using Assets.Scripts.BUExtensions;
 
 public partial class RigidNode : RigidNode_Base
 {
@@ -31,16 +32,12 @@ public partial class RigidNode : RigidNode_Base
 
                 RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
 
-                BHingedConstraint hc = (BHingedConstraint)(joint = ConfigJoint<BHingedConstraint>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
+                BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
                 Vector3 rAxis = rNode.axis.AsV3().normalized;
+                
+                hc.axisInA = rAxis;
+                hc.axisInB = rAxis;
 
-                //if (rAxis.x < 0) rAxis.x *= -1f;
-                //if (rAxis.y < 0) rAxis.y *= -1f;
-                //if (rAxis.z < 0) rAxis.z *= -1f;
-
-                hc.localConstraintAxisX = rAxis;
-                hc.localConstraintAxisY = new Vector3(rAxis.y, rAxis.z, rAxis.x); // This is the closeset thing to working, so keep it until better solution found.
-                //hc.localConstraintAxisY = new Vector3(Math.Abs(rAxis.y), rAxis.x, rAxis.z); // So very close...
                 if (hc.setLimit = rNode.hasAngularLimit)
                 {
                     hc.lowLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitHigh;

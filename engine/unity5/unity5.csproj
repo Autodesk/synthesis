@@ -204,10 +204,7 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
     <Compile Include="Assets\LocalizationHelper.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BCylinderShapeX.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BCylinderShapeZ.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BGImpactCompoundShape.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BGImpactMeshShape.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
