@@ -330,6 +330,11 @@ public class SimUI : MonoBehaviour
         string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + GameObject.Find("RobotListPanel").GetComponent<ChangeRobotScrollable>().selectedEntry;
         main.ChangeRobot(directory);
     }
+
+    public void ToggleChangeRobotPanel()
+    {
+
+    }
     #endregion
     #region camera button functions
     //Camera Functions

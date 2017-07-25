@@ -6413,7 +6413,7 @@ GameObject:
   - component: {fileID: 748348013}
   - component: {fileID: 748348012}
   m_Layer: 5
-  m_Name: DPMText
+  m_Name: Header Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9417,7 +9417,7 @@ GameObject:
   - component: {fileID: 950036151}
   - component: {fileID: 950036150}
   m_Layer: 5
-  m_Name: DPMHeader
+  m_Name: Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13540,7 +13540,7 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1500428351}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000038147}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1648424710}
@@ -13551,7 +13551,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -10.75, y: 0.00000023842}
   m_SizeDelta: {x: 462.2, y: 277.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1500428353
@@ -15048,7 +15048,7 @@ GameObject:
   - component: {fileID: 1648424712}
   - component: {fileID: 1648424711}
   m_Layer: 5
-  m_Name: ClearGamepiecesButton
+  m_Name: ChangeRobotButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16118,7 +16118,7 @@ GameObject:
   - component: {fileID: 1709109840}
   - component: {fileID: 1709109839}
   m_Layer: 5
-  m_Name: CloseDPMButton
+  m_Name: CloseButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
