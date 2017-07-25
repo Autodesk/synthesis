@@ -70,6 +70,16 @@ public class RobotCamera : MonoBehaviour
         return newCamera;
     }
 
+    public void RemoveCameras()
+    {
+        foreach (GameObject robotCamera in robotCameraList)
+        {
+            Destroy(robotCamera);
+        }
+        CurrentCamera = null;
+        robotCameraList.Clear();
+    }
+
     /// <summary>
     /// Return true if the current camera is the last on the list
     /// </summary>

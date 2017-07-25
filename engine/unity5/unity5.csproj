@@ -233,6 +233,7 @@
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
+    <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
     <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
