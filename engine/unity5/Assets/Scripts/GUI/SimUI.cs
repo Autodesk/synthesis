@@ -48,6 +48,7 @@ public class SimUI : MonoBehaviour
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
 
+    GameObject driverStationPanel;
 
     Text enableDPMText;
 
@@ -92,6 +93,8 @@ public class SimUI : MonoBehaviour
 
     private bool freeroamWindowClosed = false;
     private bool usingRobotView = false;
+
+    private bool oppositeSide = false;
 
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
@@ -185,6 +188,8 @@ public class SimUI : MonoBehaviour
 
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
+
+        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
     }
 
     /// <summary>
@@ -319,9 +324,10 @@ public class SimUI : MonoBehaviour
         UpdateFreeroamWindow();
         UpdateSpawnpointWindow();
         UpdateCameraWindow();
-
+        UpdateDriverStationPanel();
     }
 
+    
     private void UpdateCameraView()
     {
 
@@ -846,6 +852,23 @@ public class SimUI : MonoBehaviour
         {
             freeroamCameraWindow.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// Activate driver station panel if the main camera is in driver station state
+    /// </summary>
+    private void UpdateDriverStationPanel()
+    {
+        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+    }
+
+    /// <summary>
+    /// Change to driver station view to the opposite side
+    /// </summary>
+    public void ToggleDriverStation()
+    {
+        oppositeSide = !oppositeSide;
+        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 }
 
