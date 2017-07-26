@@ -361,6 +361,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (Directory.Exists(simSelectedField) && Directory.Exists(simSelectedRobot))
         {
+            splashScreen.SetActive(true);
             PlayerPrefs.SetString("simSelectedField", simSelectedField);
             PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
@@ -375,6 +376,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))
         {
+            
             PlayerPrefs.SetString("dpmSelectedField", dpmSelectedField);
             PlayerPrefs.SetString("dpmSelectedFieldName", dpmSelectedFieldName);
             PlayerPrefs.SetString("dpmSelectedRobot", dpmSelectedRobot);
