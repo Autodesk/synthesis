@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 using System.IO;
 using Assets.Scripts.FEA;
 using Assets.Scripts.FSM;
+using System.Linq;
 
 public class MainState : SimState
 {
@@ -19,6 +20,7 @@ public class MainState : SimState
     private int lastFrameCount;
 
     private bool tracking;
+    private bool awaitingReplay;
 
     private UnityPacket unityPacket;
 
@@ -89,6 +91,7 @@ public class MainState : SimState
 
     public override void Awake()
     {
+        Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
         GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
         BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
         BPhysicsWorld.Get().DoDebugDraw = false;
@@ -294,16 +297,9 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
 
         Trackers = new List<Tracker>();
-        tracking = true;
 
         unityPacket = new UnityPacket();
         unityPacket.Start();
-
-        Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
-        Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
-
-        dynamicCameraObject = GameObject.Find("Main Camera");
-        dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
 
         extraElements = new List<GameObject>();
 
@@ -322,6 +318,23 @@ public class MainState : SimState
         isResettingOrientation = false;
 
         Controls.LoadControls();
+
+        string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
+
+        if (string.IsNullOrEmpty(selectedReplay))
+        {
+            tracking = true;
+            Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
+            Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+        }
+        else
+        {
+            awaitingReplay = true;
+            LoadReplay(selectedReplay);
+        }
+
+        dynamicCameraObject = GameObject.Find("Main Camera");
+        dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
 
         DynamicCamera.MovingEnabled = true;
     }
@@ -385,12 +398,22 @@ public class MainState : SimState
             }
         }
 
+        BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
+
+        if (!rigidBody.GetCollisionObject().IsActive)
+            rigidBody.GetCollisionObject().Activate();
+
+        if (!IsResetting && Input.GetKey(KeyCode.Space))
+        {
+            contactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
+        }
+
         UpdateTrackers();
     }
 
     public override void FixedUpdate()
     {
-
         if (rootNode != null)
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
@@ -403,23 +426,19 @@ public class MainState : SimState
             Resetting();
         }
 
-        BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
-
-
-        if (!rigidBody.GetCollisionObject().IsActive)
-            rigidBody.GetCollisionObject().Activate();
-
-
-        if (!IsResetting && Input.GetKey(KeyCode.Space))
-        {
-            contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
-        }
-
         //This line is essential for the reset to work accurately
         robotCameraObject.transform.position = robotObject.transform.GetChild(0).transform.position;
 
         UpdateTrackers();
+    }
+
+    public override void LateUpdate()
+    {
+        if (awaitingReplay)
+        {
+            awaitingReplay = false;
+            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
+        }
     }
 
     public override void Resume()
@@ -523,6 +542,77 @@ public class MainState : SimState
         return true;
     }
 
+    void LoadReplay(string name)
+    {
+        List<FixedQueue<StateDescriptor>> fieldStates;
+        List<FixedQueue<StateDescriptor>> robotStates;
+        Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates;
+        List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
+
+        string simSelectedField;
+        string simSelectedRobot;
+
+        ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
+
+        LoadField(simSelectedField);
+        LoadRobot(simSelectedRobot);
+
+        List<Tracker> robotTrackers = Trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
+        List<Tracker> fieldTrackers = Trackers.Except(robotTrackers).ToList();
+
+        int i = 0;
+
+        foreach (Tracker t in fieldTrackers)
+        {
+            t.States = fieldStates[i];
+            i++;
+        }
+
+        i = 0;
+
+        foreach (Tracker t in robotTrackers)
+        {
+            t.States = robotStates[i];
+            i++;
+        }
+
+        foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> k in gamePieceStates)
+        {
+            GameObject referenceObject = GameObject.Find(k.Key);
+
+            if (referenceObject == null)
+                continue;
+
+            foreach (FixedQueue<StateDescriptor> f in k.Value)
+            {
+                GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
+                currentPiece.name = "clone_" + k.Key;
+                currentPiece.GetComponent<Tracker>().States = f;
+            }
+        }
+
+        foreach (var c in contacts)
+        {
+            if (c != null)
+            {
+                List<ContactDescriptor> currentContacts = new List<ContactDescriptor>();
+
+                foreach (var d in c)
+                {
+                    ContactDescriptor currentContact = d.Key;
+                    currentContact.RobotBody = robotTrackers[d.Value].GetComponent<BRigidBody>();
+                    currentContacts.Add(currentContact);
+                }
+
+                contactPoints.Add(currentContacts);
+            }
+            else
+            {
+                contactPoints.Add(null);
+            }
+        }
+    }
+
     public bool ChangeRobot(string directory)
     {
         if (GameObject.Find("Robot") != null) GameObject.Destroy(GameObject.Find("Robot"));
@@ -533,14 +623,13 @@ public class MainState : SimState
     {
         int numSteps = physicsWorld.frameCount - lastFrameCount;
 
-        if (tracking)
+        if (tracking && numSteps > 0)
         {
-            // numSteps should only == 1 or 0, but if it's ever > 1 the system won't break.
-            for (int i = 0; i < numSteps; i++)
-            {
-                foreach (Tracker t in Trackers)
-                    t.AddState();
+            foreach (Tracker t in Trackers)
+                t.AddState(numSteps);
 
+            for (int i = numSteps; i > 0; i--)
+            {
                 List<ContactDescriptor> frameContacts = null;
 
                 int numManifolds = physicsWorld.world.Dispatcher.NumManifolds;
@@ -554,51 +643,30 @@ public class MainState : SimState
                     if (!obA.gameObject.name.StartsWith("node") && !obB.gameObject.name.StartsWith("node"))
                         continue;
 
-                    List<ContactDescriptor> manifoldContacts = new List<ContactDescriptor>();
+                    ManifoldPoint mp = null;
 
                     int numContacts = contactManifold.NumContacts;
 
-                    if (numContacts == 0)
-                        continue;
-
                     for (int k = 0; k < numContacts; k++)
                     {
-                        ManifoldPoint cp = contactManifold.GetContactPoint(k);
+                        mp = contactManifold.GetContactPoint(k);
 
-                        manifoldContacts.Add(new ContactDescriptor
-                        {
-                            AppliedImpulse = cp.AppliedImpulse,
-                            Position = (cp.PositionWorldOnA + cp.PositionWorldOnB) * 0.5f
-                        });
+                        if (mp.LifeTime == i)
+                            break;
                     }
 
-                    ContactDescriptor consolidatedContact;
-
-                    if (obA.gameObject.name.StartsWith("node"))
-                        consolidatedContact = new ContactDescriptor
-                        {
-                            RobotBody = obA,
-                            OtherBody = obB,
-                        };
-                    else
-                        consolidatedContact = new ContactDescriptor
-                        {
-                            RobotBody = obB,
-                            OtherBody = obA
-                        };
-
-                    foreach (ContactDescriptor cd in manifoldContacts)
-                    {
-                        consolidatedContact.AppliedImpulse += cd.AppliedImpulse;
-                        consolidatedContact.Position += cd.Position;
-                    }
-
-                    consolidatedContact.Position /= numContacts;
+                    if (mp == null)
+                        continue;
 
                     if (frameContacts == null)
                         frameContacts = new List<ContactDescriptor>();
 
-                    frameContacts.Add(consolidatedContact);
+                    frameContacts.Add(new ContactDescriptor
+                    {
+                        AppliedImpulse = mp.AppliedImpulse,
+                        Position = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f,
+                        RobotBody = obA.name.StartsWith("node") ? obA : obB
+                    });
                 }
 
                 contactPoints.Add(frameContacts);
@@ -682,9 +750,7 @@ public class MainState : SimState
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
-
     public void EndReset()
-
     {
         IsResetting = false;
         isResettingOrientation = false;
