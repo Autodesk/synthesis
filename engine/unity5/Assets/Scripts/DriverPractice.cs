@@ -387,7 +387,8 @@ public class DriverPractice : MonoBehaviour {
                 UserMessageManager.Dispatch("You cannot select a robot part as a gamepiece!", 3);
             }
             else
-            {   
+            {
+                string name = selectedObject.name;
                 name = name.Replace("clone_",""); //gets rid of the clone tag given to spawned gamepieces
                 if (name.IndexOf(":") > 0) name = name.Substring(0, name.IndexOf(":"));
 
@@ -435,7 +436,7 @@ public class DriverPractice : MonoBehaviour {
             try //In case the game piece somehow doens't exist in the scene
             {
                 GameObject gameobject = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, gamepieceSpawn[index], UnityEngine.Quaternion.identity);
-                gameobject.name = "clone_" + gamepieceNames[index] + ":" + gamepieceCounter;
+                gameobject.name = "clone_" + gamepieceNames[index];
                 gamepieceCounter++;
                 gameobject.GetComponent<BRigidBody>().collisionFlags = BulletSharp.CollisionFlags.None;
                 gameobject.GetComponent<BRigidBody>().velocity = UnityEngine.Vector3.zero;
