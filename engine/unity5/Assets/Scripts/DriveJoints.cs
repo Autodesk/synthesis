@@ -88,15 +88,15 @@ public class DriveJoints : MonoBehaviour
         if (Input.anyKey)
         {
             pwm[0] +=
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Backward]) ? -SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? -SPEED_ARROW_PWM : 0.0f);
-            pwm[1] +=
                 (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? -SPEED_ARROW_PWM : 0.0f) +
                 (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Backward]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? SPEED_ARROW_PWM : 0.0f) +
-                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? -SPEED_ARROW_PWM : 0.0f);
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? -SPEED_ARROW_PWM : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? SPEED_ARROW_PWM : 0.0f);
+            pwm[1] +=
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? SPEED_ARROW_PWM : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Backward]) ? -SPEED_ARROW_PWM : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Left]) ? -SPEED_ARROW_PWM : 0.0f) +
+                (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Right]) ? SPEED_ARROW_PWM : 0.0f);
 
             pwm[2] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm2Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm2Neg]) ? -SPEED_ARROW_PWM : 0f;
             pwm[3] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm3Neg]) ? -SPEED_ARROW_PWM : 0f;

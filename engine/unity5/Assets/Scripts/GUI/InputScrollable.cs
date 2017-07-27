@@ -55,7 +55,7 @@ public class InputScrollable : MonoBehaviour
         Rect rect = GetComponent<RectTransform>().rect;
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
 
-        float scale = GameObject.Find("Canvas").GetComponent<Canvas>().scaleFactor;
+        float scale = GameObject.Find("MainMenuCanvas").GetComponent<Canvas>().scaleFactor;
         Rect position = new Rect(p.x, Screen.height - p.y, rect.width * scale, rect.height * scale);
 
         nameStyle.fontSize = Mathf.RoundToInt(20 * scale);

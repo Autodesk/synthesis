@@ -37,7 +37,7 @@ public class SimulatorUI : MonoBehaviour
         }
         if(mainState == null)
         {
-            mainState = stateMachine.GetComponent<StateMachine>().MainState;
+            mainState = stateMachine.GetComponent<StateMachine>().CurrentState as MainState;
         }
     }
 
