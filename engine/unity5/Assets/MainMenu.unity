@@ -232,6 +232,7 @@ MonoBehaviour:
   keyNamePrefab: {fileID: 162476, guid: 490f8e896bf73924c80d01f7f15856d3, type: 2}
   keyButtonsPrefab: {fileID: 1333336039312162, guid: e36ab41e950298146a764caf526475bc,
     type: 2}
+  keyButtonList: []
 --- !u!1 &15500246
 GameObject:
   m_ObjectHideFlags: 0
@@ -2557,6 +2558,7 @@ GameObject:
   m_Component:
   - component: {fileID: 226983040}
   - component: {fileID: 226983039}
+  - component: {fileID: 226983041}
   m_Layer: 0
   m_Name: SettingsObject
   m_TagString: Untagged
@@ -2588,6 +2590,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &226983041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 226983038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5d5862af00ad9e4c873836063567c12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settingsMode: {fileID: 830522987}
 --- !u!1 &263403240
 GameObject:
   m_ObjectHideFlags: 0
@@ -2603,7 +2617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &263403241
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4573,7 +4587,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 5a359d6f12ad80e4d93791e4edbb6139, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9c756e6041db6604eb36b12f635252a7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

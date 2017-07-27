@@ -29,7 +29,11 @@ public class SettingsMode : MonoBehaviour
     public void OnLoadClick()
     {
         Controls.Load();
+        UpdateAllText();
+    }
 
+    public void UpdateAllText()
+    {
         KeyButton[] keyButtons = GetComponentsInChildren<KeyButton>();
 
         foreach (KeyButton keyButton in keyButtons)

@@ -322,7 +322,7 @@ public class MainState : SimState
         contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         isResettingOrientation = false;
 
-        Controls.LoadControls();
+        Controls.Load();
     }
 
     public override void Update()
@@ -331,13 +331,14 @@ public class MainState : SimState
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
-        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) || (InputControl.GetButton(Controls.buttons.resetRobot)) 
-                                                                                    && !IsResetting)
+        //(InputControl.GetButton(Controls.buttons.pwm5Plus))
+        //Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]
+
+        if ((InputControl.GetButtonDown(Controls.buttons.resetRobot)) && !IsResetting)
         {
             keyDownTime = Time.time;
         }
-        if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) || (InputControl.GetButton(Controls.buttons.resetRobot))
-                                                                                  && !IsResetting)
+        if ((InputControl.GetButtonUp(Controls.buttons.resetRobot)) && !IsResetting)
         {
             if (Time.time - keyDownTime > HOLD_TIME)
             {
@@ -352,7 +353,7 @@ public class MainState : SimState
         }
 
         // Will switch the camera state with the camera toggle button
-        if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+        if ((InputControl.GetButtonDown(Controls.buttons.cameraToggle)))
         {
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {

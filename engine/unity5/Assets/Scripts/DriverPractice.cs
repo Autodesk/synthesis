@@ -857,16 +857,16 @@ namespace BulletUnity
         {
             if (processingIndex == 0)
             {
-                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
+                if ((InputControl.GetButton(Controls.buttons.pickupPrimary)))
                 {
 
                     Intake(0);
                 }
-                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupSecondary]))
+                if ((InputControl.GetButton(Controls.buttons.pickupSecondary)))
                 {
                     Intake(1);
                 }
-                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
+                if ((InputControl.GetButtonDown(Controls.buttons.releasePrimary)))
                 {
                     ReleaseGamepiece(0);
                 }
@@ -874,7 +874,7 @@ namespace BulletUnity
                 {
                     HoldGamepiece(0);
                 }
-                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleaseSecondary]))
+                if ((InputControl.GetButtonDown(Controls.buttons.releaseSecondary)))
                 {
                     ReleaseGamepiece(1);
                 }
@@ -886,16 +886,16 @@ namespace BulletUnity
             }
             else
             {
-                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupSecondary]))
+                if ((InputControl.GetButton(Controls.buttons.pickupSecondary)))
                 {
 
                     Intake(1);
                 }
-                if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
+                if ((InputControl.GetButton(Controls.buttons.pickupPrimary)))
                 {
                     Intake(0);
                 }
-                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleaseSecondary]))
+                if ((InputControl.GetButtonDown(Controls.buttons.releaseSecondary)))
                 {
                     ReleaseGamepiece(1);
                 }
@@ -903,7 +903,7 @@ namespace BulletUnity
                 {
                     HoldGamepiece(1);
                 }
-                if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ReleasePrimary]))
+                if ((InputControl.GetButtonDown(Controls.buttons.releasePrimary)))
                 {
                     ReleaseGamepiece(0);
                 }
@@ -914,12 +914,9 @@ namespace BulletUnity
                 processingIndex = 0;
             }
 
-            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnPrimary])) SpawnGamepiece(0);
-            if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.SpawnSecondary])) SpawnGamepiece(1);
+            if ((InputControl.GetButtonDown(Controls.buttons.spawnPrimary))) SpawnGamepiece(0);
+            if ((InputControl.GetButtonDown(Controls.buttons.spawnPrimary))) SpawnGamepiece(1);
         }
-
-
-
     }
 
 
