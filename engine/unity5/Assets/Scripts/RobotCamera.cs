@@ -45,7 +45,7 @@ public class RobotCamera : MonoBehaviour
         newCamera.transform.localRotation = Quaternion.Euler(rotationOffset);
 
         newCamera.SetActive(false);
-        if(robotCameraList.Count == 0)
+        if (robotCameraList.Count == 0)
             CurrentCamera = newCamera;
 
         robotCameraList.Add(newCamera);
@@ -90,7 +90,7 @@ public class RobotCamera : MonoBehaviour
     {
         return robotCameraList.IndexOf(CurrentCamera) == robotCameraList.Count - 1;
     }
-    
+
     public List<GameObject> GetRobotCameraList()
     {
         return robotCameraList;
@@ -99,7 +99,7 @@ public class RobotCamera : MonoBehaviour
     public void Start()
     {
         robotCameraListObject = GameObject.Find("RobotCameraList");
-        if(CameraIndicator == null)
+        if (CameraIndicator == null)
         {
             CameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
         }
