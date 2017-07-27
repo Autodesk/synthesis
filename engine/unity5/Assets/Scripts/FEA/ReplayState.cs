@@ -576,7 +576,7 @@ namespace Assets.Scripts.FEA
             contacts.Remove(start);
 
             List<ContactDescriptor> removedContacts = new List<ContactDescriptor>();
-            
+
             BulletSharp.Math.Vector3 lastPoint = start.Position;
 
             int startIndex = contactPoints.IndexOf(contacts);

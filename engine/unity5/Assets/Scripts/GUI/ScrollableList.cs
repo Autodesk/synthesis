@@ -24,7 +24,7 @@ public class ScrollableList : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        mainMenuCanvas = GameObject.Find("MainMenuCanvas");
+        mainMenuCanvas = GameObject.Find("Canvas");
         mainMenu = mainMenuCanvas.GetComponent<MainMenu>();
 
         listStyle = new GUIStyle("button");
@@ -90,7 +90,7 @@ public class ScrollableList : MonoBehaviour
 
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
 
-        float scale = GameObject.Find("MainMenuCanvas").GetComponent<Canvas>().scaleFactor;
+        float scale = GameObject.Find("Canvas").GetComponent<Canvas>().scaleFactor;
         Rect rect = GetComponent<RectTransform>().rect;
         listStyle.fontSize = Mathf.RoundToInt(16 * scale);
         highlightStyle.fontSize = Mathf.RoundToInt(20 * scale);

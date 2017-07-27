@@ -77,8 +77,10 @@ namespace Assets.Scripts.BUExtensions
         internal override bool _BuildConstraint()
         {
             BPhysicsWorld world = BPhysicsWorld.Get();
-            if (m_constraintPtr != null) {
-                if (m_isInWorld && world != null) {
+            if (m_constraintPtr != null)
+            {
+                if (m_isInWorld && world != null)
+                {
                     m_isInWorld = false;
                     world.RemoveConstraint(m_constraintPtr);
                 }
@@ -98,8 +100,9 @@ namespace Assets.Scripts.BUExtensions
                 Debug.LogError("Constaint axis cannot be zero vector");
                 return false;
             }
-            RigidBody rba = (RigidBody) targetRigidBodyA.GetCollisionObject();
-            if (rba == null) {
+            RigidBody rba = (RigidBody)targetRigidBodyA.GetCollisionObject();
+            if (rba == null)
+            {
                 Debug.LogError("Constraint could not get bullet RigidBody from target rigid body");
                 return false;
             }
@@ -114,7 +117,7 @@ namespace Assets.Scripts.BUExtensions
                 {
                     world.AddRigidBody(m_otherRigidBody);
                 }
-                RigidBody rbb = (RigidBody) m_otherRigidBody.GetCollisionObject();
+                RigidBody rbb = (RigidBody)m_otherRigidBody.GetCollisionObject();
                 if (rbb == null)
                 {
                     Debug.LogError("Constraint could not get bullet RigidBody from target rigid body");
@@ -125,7 +128,8 @@ namespace Assets.Scripts.BUExtensions
                     m_otherRigidBody.transform.InverseTransformPoint(transform.TransformPoint(m_localConstraintPoint)).ToBullet(),
                     m_axisInA.ToBullet(), m_axisInB.ToBullet());
             }
-            else {
+            else
+            {
                 m_constraintPtr = new HingeConstraint(rba, m_localConstraintPoint.ToBullet(), m_axisInA.ToBullet(), false);
             }
             if (m_enableMotor)

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using BulletUnity;
 using Assets.Scripts.FSM;
+using System.IO;
 
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
@@ -42,7 +43,12 @@ public class SimUI : MonoBehaviour
 
     GameObject lockPanel;
 
+    GameObject robotCameraList;
 
+    GameObject changeRobotPanel;
+    GameObject changeFieldPanel;
+
+    GameObject driverStationPanel;
 
     Text enableDPMText;
 
@@ -87,6 +93,8 @@ public class SimUI : MonoBehaviour
 
     private bool freeroamWindowClosed = false;
     private bool usingRobotView = false;
+
+    private bool oppositeSide = false;
 
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
@@ -175,7 +183,13 @@ public class SimUI : MonoBehaviour
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
 
+        robotCameraList = GameObject.Find("RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
+
+        changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
+        changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
+
+        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
     }
 
     /// <summary>
@@ -189,8 +203,8 @@ public class SimUI : MonoBehaviour
         if (dpm.gamepieceNames[1] == null) secondaryGamepieceText.text = "Secondary Gamepiece:  NOT CONFIGURED";
         else secondaryGamepieceText.text = "Secondary Gamepiece:  " + dpm.gamepieceNames[1];
 
-        primaryCountText.text = "Spawned: " + dpm.spawnedPrimary.Count + "\nHeld: " + dpm.objectsHeld[0].Count;
-        secondaryCountText.text = "Spawned: " + dpm.spawnedSecondary.Count + "\nHeld: " + dpm.objectsHeld[1].Count;
+        primaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[0].Count + "\nHeld: " + dpm.objectsHeld[0].Count;
+        secondaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[1].Count + "\nHeld: " + dpm.objectsHeld[1].Count;
 
         if (configuring)
         {
@@ -310,9 +324,10 @@ public class SimUI : MonoBehaviour
         UpdateFreeroamWindow();
         UpdateSpawnpointWindow();
         UpdateCameraWindow();
-
+        UpdateDriverStationPanel();
     }
 
+    
     private void UpdateCameraView()
     {
 
@@ -325,6 +340,51 @@ public class SimUI : MonoBehaviour
     //{
     //    main.ResetRobot();
     //}
+    public void ChangeRobot()
+    {
+        GameObject panel = GameObject.Find("RobotListPanel");
+        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
+        if (Directory.Exists(directory))
+        {
+            PlayerPrefs.SetString("simSelectedRobot", directory);
+            PlayerPrefs.SetString("simSelectedRObotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            main.ChangeRobot(directory);
+            ToggleChangeRobotPanel();
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Robot directory not found!", 5);
+        }
+    }
+
+    public void ToggleChangeRobotPanel()
+    {
+        changeFieldPanel.SetActive(false);
+        changeRobotPanel.SetActive(!changeRobotPanel.activeSelf);
+    }
+
+    public void ChangeField()
+    {
+        GameObject panel = GameObject.Find("FieldListPanel");
+        string directory = PlayerPrefs.GetString("FieldDirectory") + "\\" + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
+        if (Directory.Exists(directory))
+        {
+            PlayerPrefs.SetString("simSelectedField", directory);
+            PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
+            PlayerPrefs.Save();
+            Application.LoadLevel("Scene");
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Field directory not found!", 5);
+        }
+    }
+
+    public void ToggleChangeFieldPanel()
+    {
+        changeRobotPanel.SetActive(false);
+        changeFieldPanel.SetActive(!changeFieldPanel.activeSelf);
+    }
     #endregion
     #region camera button functions
     //Camera Functions
@@ -566,68 +626,42 @@ public class SimUI : MonoBehaviour
 
 
 
-
-    public void AddOffsetX()
+    public void ChangeOffsetX(int sign)
     {
-        deltaOffsetX = offsetIncrement;
-        holdCount++;
-    }
-    public void SubstractOffsetX()
-    {
-        deltaOffsetX = -offsetIncrement;
-        holdCount++;
-    }
-    public void AddOffsetY()
-    {
-        deltaOffsetY = offsetIncrement;
-        holdCount++;
-    }
-    public void SubstractOffsetY()
-    {
-        deltaOffsetY = -offsetIncrement;
-        holdCount++;
-    }
-    public void AddOffsetZ()
-    {
-        deltaOffsetZ = offsetIncrement;
-        holdCount++;
-    }
-    public void SubtractOffsetZ()
-    {
-        deltaOffsetZ = -offsetIncrement;
+        deltaOffsetX = offsetIncrement * sign;
         holdCount++;
     }
 
-    public void AddReleaseSpeed()
+    public void ChangeOffsetY(int sign)
     {
-        deltaReleaseSpeed = speedIncrement;
+        deltaOffsetY = offsetIncrement * sign;
         holdCount++;
     }
-    public void SubtractReleaseSpeed()
+
+    public void ChangeOffsetZ(int sign)
     {
-        deltaReleaseSpeed = -speedIncrement;
+        deltaOffsetZ = offsetIncrement * sign;
         holdCount++;
     }
-    public void AddReleaseHorizontalAngle()
+
+    public void ChangeReleaseSpeed(int sign)
     {
-        deltaReleaseHorizontal = angleIncrement;
+        deltaReleaseSpeed = speedIncrement * sign;
         holdCount++;
     }
-    public void SubtractReleaseHorizontalAngle()
+
+    public void ChangeHorizontalAngle(int sign)
     {
-        deltaReleaseHorizontal = -angleIncrement;
+        deltaReleaseHorizontal = angleIncrement * sign;
         holdCount++;
     }
-    public void AddReleaseVerticalAngle()
+
+    public void ChangeVerticalAngle(int sign)
     {
-        deltaReleaseVertical = angleIncrement;
+        deltaReleaseVertical = angleIncrement * sign;
         holdCount++;
     }
-    public void SubtractReleaseVerticalAngle()
-    {
-        deltaReleaseVertical = -angleIncrement;
-        holdCount++;
-    }
+
     public void ReleaseConfigurationButton()
     {
         deltaOffsetX = 0;
@@ -677,19 +711,9 @@ public class SimUI : MonoBehaviour
     #endregion
     #region control customization functions
 
-    public void ChangeIntakeControl()
+    public void SetNewControl(int index)
     {
-        settingControl = 1;
-    }
-
-    public void ChangeReleaseControl()
-    {
-        settingControl = 2;
-    }
-
-    public void ChangeSpawnControl()
-    {
-        settingControl = 3;
+        settingControl = index;
     }
 
     private void ListenControl()
@@ -731,9 +755,9 @@ public class SimUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Make sure robot camera exists first
-        if(robotCamera == null && AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>() != null)
+        if(robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
         {
-            robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
+            robotCamera = robotCameraList.GetComponent<RobotCamera>();
         }
 
         if (robotCamera != null)
@@ -741,7 +765,7 @@ public class SimUI : MonoBehaviour
             //Can use robot view when dynamicCamera is active
             if (usingRobotView && main.dynamicCameraObject.activeSelf)
             {
-                robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
+                robotCamera = robotCameraList.GetComponent<RobotCamera>();
                 Debug.Log(robotCamera.CurrentCamera);
 
                 //Make sure there is camera on robot
@@ -771,7 +795,8 @@ public class SimUI : MonoBehaviour
             //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
             else
             {
-                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                if (robotCamera.CurrentCamera != null)
+                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
             }
         }
     }
@@ -827,6 +852,23 @@ public class SimUI : MonoBehaviour
         {
             freeroamCameraWindow.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// Activate driver station panel if the main camera is in driver station state
+    /// </summary>
+    private void UpdateDriverStationPanel()
+    {
+        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+    }
+
+    /// <summary>
+    /// Change to driver station view to the opposite side
+    /// </summary>
+    public void ToggleDriverStation()
+    {
+        oppositeSide = !oppositeSide;
+        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 }
 

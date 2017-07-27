@@ -81,7 +81,7 @@ public class MainState : SimState
 
     //Flags to tell different types of reset
     private bool isResettingOrientation;
-    public bool IsResetting { get; private set; }
+    public bool IsResetting { get; set; }
 
     private DriverPractice driverPractice;
 
@@ -275,7 +275,6 @@ public class MainState : SimState
                     robotStartOrientation = BulletSharp.Math.Matrix.Identity;
                     robotStartPosition = new Vector3(0f, 1f, 0f);
                     EndReset();
-
                     break;
             }
         });
@@ -298,6 +297,7 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
 
         Trackers = new List<Tracker>();
+        //tracking = true;
 
         unityPacket = new UnityPacket();
         unityPacket.Start();
@@ -503,10 +503,13 @@ public class MainState : SimState
                 UnityEngine.Object.Destroy(robotObject);
                 return false;
             }
-            
+
             node.CreateJoint();
 
             node.MainObject.AddComponent<Tracker>().Trace = true;
+
+            Tracker t = node.MainObject.GetComponent<Tracker>();
+            Debug.Log(t);
         }
 
         driverPractice = robotObject.AddComponent<DriverPractice>();
@@ -517,9 +520,13 @@ public class MainState : SimState
 
         nodeToRobotOffset = robotObject.transform.GetChild(0).transform.position - robotObject.transform.position;
         //Robot camera feature
-        robotCameraObject = GameObject.Find("RobotCameraList");
-        robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+        if (robotCamera == null)
+        {
+            robotCameraObject = GameObject.Find("RobotCameraList");
+            robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+        }
 
+        robotCamera.RemoveCameras();
         //The camera data should be read here as a foreach loop and included in robot file
         //Attached to main frame and face the front
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
@@ -607,6 +614,12 @@ public class MainState : SimState
         }
     }
 
+    public bool ChangeRobot(string directory)
+    {
+        if (GameObject.Find("Robot") != null) GameObject.Destroy(GameObject.Find("Robot"));
+        return LoadRobot(directory);
+    }
+
     private void UpdateTrackers()
     {
         int numSteps = physicsWorld.frameCount - lastFrameCount;
@@ -642,7 +655,7 @@ public class MainState : SimState
                         if (mp.LifeTime == i)
                             break;
                     }
-                    
+
                     if (mp == null)
                         continue;
 
@@ -738,9 +751,7 @@ public class MainState : SimState
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
-
     public void EndReset()
-
     {
         IsResetting = false;
         isResettingOrientation = false;
@@ -760,7 +771,7 @@ public class MainState : SimState
         }
     }
 
-    void TransposeRobot(Vector3 transposition)
+    public void TransposeRobot(Vector3 transposition)
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -772,7 +783,7 @@ public class MainState : SimState
         }
     }
 
-    void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
+    public void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
     {
         BulletSharp.Math.Vector3? origin = null;
 
@@ -797,7 +808,7 @@ public class MainState : SimState
         }
     }
 
-    void RotateRobot(Vector3 rotation)
+    public void RotateRobot(Vector3 rotation)
     {
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
     }
@@ -831,5 +842,19 @@ public class MainState : SimState
     public DriverPractice GetDriverPractice()
     {
         return driverPractice;
+    }
+
+    public void ResetRobotOrientation()
+    {
+        robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+        BeginReset();
+        EndReset();
+    }
+    
+    public void SaveRobotOrientation()
+    {
+        robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+        robotStartOrientation.ToUnity();
+        EndReset();
     }
 }

@@ -82,7 +82,7 @@ namespace Assets.Scripts.FEA
                         break;
                 }
             }
-            
+
             fieldStates = ReadStates(DecompressBuffer(uncompressedLength, compressedBuffer));
         }
 
@@ -265,8 +265,8 @@ namespace Assets.Scripts.FEA
             byte[] decompressedBuffer = new byte[uncompressedLength];
 
             using (MemoryStream compressedStream = new MemoryStream(compressedBuffer))
-                using (DeflateStream ds = new DeflateStream(compressedStream, CompressionMode.Decompress))
-                    ds.Read(decompressedBuffer, 0, decompressedBuffer.Length);
+            using (DeflateStream ds = new DeflateStream(compressedStream, CompressionMode.Decompress))
+                ds.Read(decompressedBuffer, 0, decompressedBuffer.Length);
 
             return decompressedBuffer;
         }

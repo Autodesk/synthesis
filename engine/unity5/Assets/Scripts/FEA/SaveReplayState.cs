@@ -40,7 +40,7 @@ namespace Assets.Scripts.FEA
 
             saveButton = GameObject.Find("SaveButton").GetComponent<Button>();
             saveButton.onClick.AddListener(Save);
-            
+
             cancelButton = GameObject.Find("CancelButton").GetComponent<Button>();
             cancelButton.onClick.AddListener(Cancel);
 

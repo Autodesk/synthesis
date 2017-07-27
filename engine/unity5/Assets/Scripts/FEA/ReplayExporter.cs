@@ -103,7 +103,7 @@ namespace Assets.Scripts.FEA
 
                 sortedTrackers[name].Add(t);
             }
-            
+
             foreach (KeyValuePair<string, List<Tracker>> k in sortedTrackers)
             {
                 int uncompressedLength;

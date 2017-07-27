@@ -28,7 +28,7 @@ public partial class RigidNode : RigidNode_Base
             case SkeletalJointType.ROTATIONAL:
 
                 WheelType wheelType = WheelType.NOT_A_WHEEL;
-                
+
                 if (this.HasDriverMeta<WheelDriverMeta>())
                 {
                     OrientWheelNormals();
@@ -39,25 +39,9 @@ public partial class RigidNode : RigidNode_Base
 
                 BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
                 Vector3 rAxis = rNode.axis.AsV3().normalized;
-                
+
                 hc.axisInA = rAxis;
                 hc.axisInB = rAxis;
-
-                // TODO: Mecanum wheel implementation.
-                /*
-                if (wheelType == WheelType.MECANUM)
-                {
-                    float xDif = MainObject.transform.position.x - MainObject.transform.parent.GetChild(0).transform.position.x;
-                    float zDif = MainObject.transform.position.z - MainObject.transform.parent.GetChild(0).transform.position.z;
-                    float product = xDif * zDif;
-
-                    hc.axisInB = Quaternion.AngleAxis(product > 0 ? 45 : -45, Vector3.up) * rAxis;
-                }
-                else
-                {
-                    hc.axisInB = rAxis;
-                }
-                */
 
                 if (hc.setLimit = rNode.hasAngularLimit)
                 {
@@ -66,10 +50,10 @@ public partial class RigidNode : RigidNode_Base
                 }
 
                 hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
-                
+
                 break;
             case SkeletalJointType.CYLINDRICAL:
-                
+
                 CylindricalJoint_Base cNode = (CylindricalJoint_Base)GetSkeletalJoint();
 
                 B6DOFConstraint bc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(cNode.basePoint.AsV3() - ComOffset, cNode.axis.AsV3(), AxisType.X));
@@ -81,7 +65,7 @@ public partial class RigidNode : RigidNode_Base
 
                 break;
             case SkeletalJointType.LINEAR:
-                
+
                 LinearJoint_Base lNode = (LinearJoint_Base)GetSkeletalJoint();
 
                 Vector3 lAxis = lNode.axis.AsV3().normalized;
@@ -112,7 +96,7 @@ public partial class RigidNode : RigidNode_Base
                         MainObject.GetComponent<BRigidBody>().mass *= 2f;
                     }
                 }
-                
+
                 break;
         }
     }

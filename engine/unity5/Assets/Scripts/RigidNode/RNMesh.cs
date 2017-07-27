@@ -17,7 +17,7 @@ public partial class RigidNode : RigidNode_Base
             return false;
 
         List<GameObject> meshObjects = new List<GameObject>();
-        
+
         AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             GameObject meshObject = new GameObject(MainObject.name + "_mesh");
@@ -80,7 +80,7 @@ public partial class RigidNode : RigidNode_Base
         {
             rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
         }
-        
+
         if (this.HasDriverMeta<WheelDriverMeta>())
             UpdateWheelMass(); // 'tis a wheel, so needs more mass for joints to work correctly.
 
