@@ -728,6 +728,9 @@ public class MainMenu : MonoBehaviour {
         fields = new ArrayList();
         robots = new ArrayList();
 
+        FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\");
+        file.Directory.Create();
+
         robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
