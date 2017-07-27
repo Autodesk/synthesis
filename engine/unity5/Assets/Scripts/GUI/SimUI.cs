@@ -81,7 +81,7 @@ public class SimUI : MonoBehaviour
     private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
 
     bool isEditing = false;
-    
+
     private bool freeroamWindowClosed = false;
     private bool usingRobotView = false;
 
@@ -105,7 +105,7 @@ public class SimUI : MonoBehaviour
             dpm = main.GetDriverPractice();
             FindElements();
 
-            
+
         }
         else
         {
@@ -114,9 +114,9 @@ public class SimUI : MonoBehaviour
             UpdateWindows(); //please don't
             UpdateCameraWindow();
             if (settingControl != 0) ListenControl();
-           
+
         }
-            
+
     }
 
     private void OnGUI()
@@ -190,15 +190,15 @@ public class SimUI : MonoBehaviour
 
             if (configuringIndex == 0)
             {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupPrimary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleasePrimary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnPrimary].ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupPrimary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releasePrimary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnPrimary).ToString();
             }
             else
             {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupSecondary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleaseSecondary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnSecondary].ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupSecondary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releaseSecondary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnSecondary).ToString();
             }
         }
     }
@@ -210,38 +210,38 @@ public class SimUI : MonoBehaviour
     {
         if (holdCount > 0 && !isEditing) //This indicates that any of the configuration increment buttons are being pressed
         {
-                if (deltaOffsetX != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeOffsetX(deltaOffsetX, configuringIndex);
-                    else dpm.ChangeOffsetX(deltaOffsetX * 5, configuringIndex);
-                }
-                else if (deltaOffsetY != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeOffsetY(deltaOffsetY, configuringIndex);
-                    else dpm.ChangeOffsetY(deltaOffsetY * 5, configuringIndex);
-                }
-                else if (deltaOffsetZ != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeOffsetZ(deltaOffsetZ, configuringIndex);
-                    else dpm.ChangeOffsetZ(deltaOffsetZ * 5, configuringIndex);
-                }
-                else if (deltaReleaseSpeed != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeReleaseSpeed(deltaReleaseSpeed, configuringIndex);
-                    else dpm.ChangeReleaseSpeed(deltaReleaseSpeed * 5, configuringIndex);
-                }
-                else if (deltaReleaseHorizontal != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal, configuringIndex);
-                    else dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal * 5, configuringIndex);
-                }
-                else if (deltaReleaseVertical != 0)
-                {
-                    if (holdCount < holdThreshold) dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical, configuringIndex);
-                    else dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical * 5, configuringIndex);
-                }
-                holdCount++;
+            if (deltaOffsetX != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeOffsetX(deltaOffsetX, configuringIndex);
+                else dpm.ChangeOffsetX(deltaOffsetX * 5, configuringIndex);
             }
+            else if (deltaOffsetY != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeOffsetY(deltaOffsetY, configuringIndex);
+                else dpm.ChangeOffsetY(deltaOffsetY * 5, configuringIndex);
+            }
+            else if (deltaOffsetZ != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeOffsetZ(deltaOffsetZ, configuringIndex);
+                else dpm.ChangeOffsetZ(deltaOffsetZ * 5, configuringIndex);
+            }
+            else if (deltaReleaseSpeed != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeReleaseSpeed(deltaReleaseSpeed, configuringIndex);
+                else dpm.ChangeReleaseSpeed(deltaReleaseSpeed * 5, configuringIndex);
+            }
+            else if (deltaReleaseHorizontal != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal, configuringIndex);
+                else dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal * 5, configuringIndex);
+            }
+            else if (deltaReleaseVertical != 0)
+            {
+                if (holdCount < holdThreshold) dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical, configuringIndex);
+                else dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical * 5, configuringIndex);
+            }
+            holdCount++;
+        }
 
         if (!isEditing)
         {
@@ -295,14 +295,15 @@ public class SimUI : MonoBehaviour
             }
         }
 
-        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed){
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
+        {
             if (!freeroamWindowClosed)
             {
                 freeroamCameraWindow.SetActive(true);
             }
-            
+
         }
-        else if(!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
         {
             freeroamCameraWindow.SetActive(false);
         }
@@ -319,7 +320,7 @@ public class SimUI : MonoBehaviour
 
     private void UpdateCameraView()
     {
-        
+
     }
     #region main button functions
     /// <summary>
@@ -421,7 +422,7 @@ public class SimUI : MonoBehaviour
                 dpm.modeEnabled = false;
                 lockPanel.SetActive(true);
             }
-            
+
         }
     }
 
@@ -463,7 +464,7 @@ public class SimUI : MonoBehaviour
             dpm.displayTrajectories[0] = true;
             dpm.displayTrajectories[1] = false;
         }
-        else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!",5);
+        else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
     }
 
     /// <summary>
@@ -677,7 +678,7 @@ public class SimUI : MonoBehaviour
     }
     #endregion
     #region control customization functions
-    
+
     public void ChangeIntakeControl()
     {
         settingControl = 1;
@@ -700,29 +701,60 @@ public class SimUI : MonoBehaviour
             settingControl = 0;
             return;
         }
-        foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+
+        KeyMapping[] keys = GetComponentsInChildren<KeyMapping>();
+
+        foreach (KeyMapping key in keys)
         {
-            if (Input.GetKeyDown(vKey))
+            if (InputControl.GetButtonDown(key))
             {
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
                     {
-                        Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+                        InputControl.GetButton(Controls.buttons.pickupPrimary);
                     }
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.pickupPrimary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
                 else
                 {
-                    if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+                    if (settingControl == 1) InputControl.GetButton(Controls.buttons.pickupSecondary);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.releaseSecondary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
-                Controls.SaveControls();
+                Controls.Save();
                 settingControl = 0;
             }
         }
+
+
+        //OLD; remove once the new one is tested 7/27/2017
+        //foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+        //{
+        //    if (Input.GetKeyDown(vKey))
+        //    {
+        //        if (configuringIndex == 0)
+        //        {
+        //            if (settingControl == 1)
+        //            {
+        //                //Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+        //                InputControl.GetButton(Controls.buttons.pickupPrimary);
+        //                Controls.Load();
+        //            }
+        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
+        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+        //        }
+        //        else
+        //        {
+        //            if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
+        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
+        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+        //        }
+        //        Controls.SaveControls();
+        //        settingControl = 0;
+        //    }
+        //}
     }
 
     private void UpdateCameraWindow()
@@ -774,7 +806,7 @@ public class SimUI : MonoBehaviour
             robotCamera.CurrentCamera.SetActive(false);
         }
     }
-    
+
     #endregion
 }
 

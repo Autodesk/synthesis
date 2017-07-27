@@ -7,14 +7,12 @@ public class Settings : MonoBehaviour {
 	void Start () {
         DontDestroyOnLoad(this);
         //gameObject.AddComponent<Controls>();
-        Controls.ResetDefaults();
-        Controls.LoadControls();
-
         Controls.Load();
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 	    
 	}
 }

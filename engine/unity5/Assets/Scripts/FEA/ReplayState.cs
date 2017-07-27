@@ -420,7 +420,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public override void Update()
         {
-            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+            if ((InputControl.GetButton(Controls.buttons.cameraToggle)))
             {
                 if (dynamicCamera == null)
                     dynamicCamera = UnityEngine.Object.FindObjectOfType<DynamicCamera>();

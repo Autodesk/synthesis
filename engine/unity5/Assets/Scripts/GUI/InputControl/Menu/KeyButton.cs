@@ -16,22 +16,6 @@ public class KeyButton : MonoBehaviour
     void Start()
     {
         GetComponent<Button>().onClick.AddListener(OnClick);
-
-        //nameStyle = new GUIStyle("button");
-        //nameStyle.normal.background = new Texture2D(0, 0);
-        //nameStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
-        //nameStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
-        //nameStyle.alignment = TextAnchor.MiddleLeft;
-        //nameStyle.normal.textColor = Color.white;
-
-        //keyStyle = new GUIStyle(nameStyle);
-        //keyStyle.alignment = TextAnchor.MiddleCenter;
-        //keyHighlightStyle = new GUIStyle(keyStyle);
-        //keyHighlightStyle.normal.background = nameStyle.active.background;
-        //keyHighlightStyle.hover.background = keyHighlightStyle.normal.background;
-
-        //inputNames = new List<string>();
-        //inputKeys = new List<KeyCode>();
     }
 
     // Update is called once per frame
@@ -39,7 +23,7 @@ public class KeyButton : MonoBehaviour
     {
         //Implement assets (most assets are configured in Unity: OptionsTab > Canvas > SettingsMode
         mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
-
+        mKeyText.color = Color.white;
 
         if (selectedButton == this)
         {
@@ -66,7 +50,7 @@ public class KeyButton : MonoBehaviour
     }
 
     public void updateText()
-    {
+    { 
         if (mKeyText == null)
         {
             mKeyText = GetComponentInChildren<Text>();
@@ -81,9 +65,6 @@ public class KeyButton : MonoBehaviour
             case 1:
                 mKeyText.text = keyMapping.secondaryInput.ToString();
                 break;
-                //case 2:
-                //    mKeyText.text = keyMapping.thirdInput.ToString();
-                //    break;
         }
     }
 
@@ -114,9 +95,6 @@ public class KeyButton : MonoBehaviour
             case 1:
                 keyMapping.secondaryInput = input;
                 break;
-                //case 2:
-                //    keyMapping.thirdInput = input;
-                //    break;
         }
 
         updateText();

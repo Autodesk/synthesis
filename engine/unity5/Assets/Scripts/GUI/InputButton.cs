@@ -56,18 +56,36 @@ public class InputButton : MonoBehaviour
 
         if (active)
         {
-            foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+            KeyMapping[] keys = GetComponentsInChildren<KeyMapping>();
+
+            foreach (KeyMapping key in keys)
             {
-                if (Input.GetKeyDown(vKey) && tick)
+
+                if (InputControl.GetButtonDown(key) && tick)
                 {
-                    Controls.SetControl(controlKey, vKey);
+                    Controls.Load();
                     active = false;
                     isEditing = false;
-                    Controls.SaveControls();
+                    Controls.Save();
 
-                    if (Controls.CheckConflict()) MainMenu.inputConflict.SetActive(true);
-                    else MainMenu.inputConflict.SetActive(false);
+                    //if (Controls.CheckConflict()) MainMenu.inputConflict.SetActive(true);
+                    //else MainMenu.inputConflict.SetActive(false);
                 }
+
+                //OLD/BackUp DO NOT REMOVE until testing is completed. 7/27/2017
+                //foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+                //{
+                //    if (Input.GetKeyDown(vKey) && tick)
+                //    {
+                //        Controls.SetControl(controlKey, vKey);
+                //        active = false;
+                //        isEditing = false;
+                //        Controls.SaveControls();
+
+                //        if (Controls.CheckConflict()) MainMenu.inputConflict.SetActive(true);
+                //        else MainMenu.inputConflict.SetActive(false);
+                //    }
+                //}
             }
         }
     }

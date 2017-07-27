@@ -47,11 +47,8 @@ public class MainMenu : MonoBehaviour {
 
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
+    private GameObject settingsMode; //The InputManager Objects
 
-    //==========================================================
-    private GameObject settingsMode;
-    private GameObject gameMode;
-    //==========================================================
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
@@ -565,7 +562,7 @@ public class MainMenu : MonoBehaviour {
     #region Other Methods
     public void InputDefaultPressed()
     {
-        Controls.ResetDefaults();
+        Controls.Reset();
     }
 
     public void ApplyGraphics()
@@ -612,8 +609,8 @@ public class MainMenu : MonoBehaviour {
         //Controls.SaveControls();
         //GameObject.Find("InputPanel").GetComponent<InputScrollable>().UpdateControlList();
         Controls.Reset();
-        Controls.Load();
-        GameObject.Find("SettingsPanel").GetComponent<SettingsMode>();
+        Controls.Save();
+        //GameObject.Find("SettingsPanel").GetComponent<SettingsMode>();
 
     }
     public void SelectSimField()
@@ -752,11 +749,7 @@ public class MainMenu : MonoBehaviour {
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
         input = AuxFunctions.FindObject(gameObject, "Input");
-
-        //========================================================
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
-        gameMode = AuxFunctions.FindObject(gameObject, "GameMode");
-        //========================================================
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");
