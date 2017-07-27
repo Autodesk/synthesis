@@ -5,8 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class ScrollableList : MonoBehaviour {
-
+public class ScrollableList : MonoBehaviour
+{
     public string listType;
 
     private RectTransform rectTransform;
@@ -21,13 +21,14 @@ public class ScrollableList : MonoBehaviour {
     private GUIStyle listStyle;
     private GUIStyle highlightStyle;
 
-	// Use this for initialization
-	void Start () {
-        mainMenuCanvas = GameObject.Find("MainMenuCanvas");
+    // Use this for initialization
+    void Start()
+    {
+        mainMenuCanvas = GameObject.Find("Canvas");
         mainMenu = mainMenuCanvas.GetComponent<MainMenu>();
 
         listStyle = new GUIStyle("button");
-        listStyle.normal.background = new Texture2D(0,0);
+        listStyle.normal.background = new Texture2D(0, 0);
         listStyle.hover.background = Resources.Load("Images/darksquaretexture") as Texture2D;
         listStyle.active.background = Resources.Load("images/highlightsquaretexture") as Texture2D;
         listStyle.alignment = TextAnchor.MiddleLeft;
@@ -43,9 +44,10 @@ public class ScrollableList : MonoBehaviour {
         items = new List<string>();
         items.Clear();
     }
-	
-	// Update is called once per frame
-	void OnGUI () {
+
+    // Update is called once per frame
+    void OnGUI()
+    {
         if (listType.Equals("Fields") && mainMenu.fieldDirectory != null && items.Count == 0)
         {
             string[] folders = System.IO.Directory.GetDirectories(mainMenu.fieldDirectory);
@@ -56,7 +58,7 @@ public class ScrollableList : MonoBehaviour {
             if (items.Count > 0) selectedEntry = items[0];
         }
 
-       else if (listType.Equals("Robots") && mainMenu.robotDirectory != null && items.Count == 0)
+        else if (listType.Equals("Robots") && mainMenu.robotDirectory != null && items.Count == 0)
         {
             string[] folders = System.IO.Directory.GetDirectories(mainMenu.robotDirectory);
             foreach (string robot in folders)
@@ -64,6 +66,16 @@ public class ScrollableList : MonoBehaviour {
                 if (File.Exists(robot + "\\skeleton.bxdj")) items.Add(new DirectoryInfo(robot).Name);
             }
             if (items.Count > 0) selectedEntry = items[0];
+        }
+        else if (listType.Equals("Replays") && items.Count == 0)
+        {
+            string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\", "*.replay");
+
+            foreach (string file in files)
+                items.Add(new FileInfo(file).Name.Split('.')[0]);
+
+            if (items.Count > 0)
+                selectedEntry = items[0];
         }
 
         else if (listType.Equals("DPMFields") && mainMenu.fieldDirectory != null && items.Count == 0)
@@ -78,7 +90,7 @@ public class ScrollableList : MonoBehaviour {
 
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
 
-        float scale = GameObject.Find("MainMenuCanvas").GetComponent<Canvas>().scaleFactor;
+        float scale = GameObject.Find("Canvas").GetComponent<Canvas>().scaleFactor;
         Rect rect = GetComponent<RectTransform>().rect;
         listStyle.fontSize = Mathf.RoundToInt(16 * scale);
         highlightStyle.fontSize = Mathf.RoundToInt(20 * scale);
@@ -116,7 +128,6 @@ public class ScrollableList : MonoBehaviour {
             string entry = o.ToString();
             if (highlight != null && highlight.Equals(entry))
             {
-                Debug.Log(entry);
                 if (GUILayout.Button(entry, highlightStyle))
                 {
                     selected = o;

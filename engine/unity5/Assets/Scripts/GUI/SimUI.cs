@@ -12,7 +12,6 @@ using System.IO;
 /// </summary>
 public class SimUI : MonoBehaviour
 {
-
     MainState main;
     DynamicCamera camera;
     DriverPractice dpm;
@@ -110,7 +109,7 @@ public class SimUI : MonoBehaviour
     {
         if (main == null)
         {
-            main = transform.GetComponent<StateMachine>().MainState;
+            main = transform.GetComponent<StateMachine>().CurrentState as MainState;
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
@@ -188,11 +187,11 @@ public class SimUI : MonoBehaviour
 
         robotCameraList = GameObject.Find("RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
-        robotCameraIndicator = AuxFunctions.FindObject(robotCameraList, "CameraIndicator");
-        showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
 
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
+        robotCameraIndicator = AuxFunctions.FindObject(robotCameraList, "CameraIndicator");
+        showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
     }
@@ -771,7 +770,7 @@ public class SimUI : MonoBehaviour
             if (usingRobotView && main.dynamicCameraObject.activeSelf)
             {
                 robotCamera = robotCameraList.GetComponent<RobotCamera>();
-                //Debug.Log(robotCamera.CurrentCamera);
+                Debug.Log(robotCamera.CurrentCamera);
 
                 //Make sure there is camera on robot
                 if (robotCamera.CurrentCamera != null)
