@@ -116,13 +116,14 @@ public class SimUI : MonoBehaviour
         if (main == null)
         {
             main = transform.GetComponent<StateMachine>().MainState;
-            camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+            
             //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
             toolkit = GetComponent<Toolkit>();
         }
         else if (dpm == null)
         {
+            camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             dpm = main.GetDriverPractice();
             FindElements();
 
@@ -373,8 +374,15 @@ public class SimUI : MonoBehaviour
 
     public void ToggleChangeRobotPanel()
     {
-        changeFieldPanel.SetActive(false);
-        changeRobotPanel.SetActive(!changeRobotPanel.activeSelf);
+        if (changeRobotPanel.activeSelf)
+        {
+            changeRobotPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            changeRobotPanel.SetActive(true);
+        }
     }
 
     public void ChangeField()
@@ -396,8 +404,34 @@ public class SimUI : MonoBehaviour
 
     public void ToggleChangeFieldPanel()
     {
-        changeRobotPanel.SetActive(false);
-        changeFieldPanel.SetActive(!changeFieldPanel.activeSelf);
+        if (changeFieldPanel.activeSelf)
+        {
+            changeFieldPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            changeFieldPanel.SetActive(true);
+        }
+        
+    }
+
+    public void ChooseResetMode(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                main.BeginReset();
+                main.EndReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 2:
+                EndOtherProcesses();
+                main.IsResetting = true;
+                main.BeginReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+        }
     }
 
     /// <summary>
@@ -407,7 +441,16 @@ public class SimUI : MonoBehaviour
     {
         changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
-        
+        CloseOrientWindow();
+        main.IsResetting = false;
+        if (configuring)
+        {
+            CancelDefineGamepiece();
+            CancelDefineIntake();
+            CancelDefineRelease();
+            CancelGamepieceSpawn();
+        }
+        toolkit.DisableRuler();
     }
     #endregion
     #region camera button functions
@@ -431,10 +474,18 @@ public class SimUI : MonoBehaviour
 
     public void ToggleOrientWindow()
     {
-        isOrienting = !isOrienting;
+        if (isOrienting)
+        {
+            isOrienting = false;
+            main.EndReset();
+        }
+        else
+        {
+            EndOtherProcesses();
+            isOrienting = true;
+            main.BeginReset();
+        }
         orientWindow.SetActive(isOrienting);
-        if (isOrienting) main.BeginReset();
-        else main.EndReset();
     }
 
     public void OrientLeft()
@@ -480,7 +531,16 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void DPMToggleWindow()
     {
-        dpmWindowOn = !dpmWindowOn;
+        if (dpmWindowOn)
+        {
+            dpmWindowOn = false;
+            
+        }
+        else
+        {
+            EndOtherProcesses();
+            dpmWindowOn = true;
+        }
         dpmWindow.SetActive(dpmWindowOn);
     }
 
@@ -542,6 +602,7 @@ public class SimUI : MonoBehaviour
     {
         if (dpm.modeEnabled)
         {
+            EndOtherProcesses();
             configuring = true;
             configuringIndex = 0;
             configHeaderText.text = "Configuration Menu - Primary Gamepiece";
@@ -559,6 +620,7 @@ public class SimUI : MonoBehaviour
     {
         if (dpm.modeEnabled)
         {
+            EndOtherProcesses();
             configuring = true;
             configuringIndex = 1;
             configHeaderText.text = "Configuration Menu - Secondary Gamepiece";
@@ -597,6 +659,7 @@ public class SimUI : MonoBehaviour
 
     public void DefineGamepiece()
     {
+        EndOtherProcesses();
         dpm.DefineGamepiece(configuringIndex);
     }
 
@@ -607,6 +670,7 @@ public class SimUI : MonoBehaviour
 
     public void DefineIntake()
     {
+        EndOtherProcesses();
         dpm.DefineIntake(configuringIndex);
     }
 
@@ -628,6 +692,7 @@ public class SimUI : MonoBehaviour
 
     public void DefineRelease()
     {
+        EndOtherProcesses();
         dpm.DefineRelease(configuringIndex);
     }
 
@@ -643,6 +708,7 @@ public class SimUI : MonoBehaviour
 
     public void SetGamepieceSpawn()
     {
+        EndOtherProcesses();
         dpm.StartGamepieceSpawn(configuringIndex);
     }
 
@@ -910,6 +976,19 @@ public class SimUI : MonoBehaviour
             showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
         }
         robotCameraIndicator.SetActive(indicatorActive);
+    }
+
+    public void ShowControlPanel(bool show)
+    {
+        if (show)
+        {
+            EndOtherProcesses();
+            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(true);
+        }
+        else
+        {
+            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
+        }
     }
 }
 
