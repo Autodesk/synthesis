@@ -642,7 +642,7 @@ public class MainMenu : MonoBehaviour {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
     }
-
+    
     public void SelectSimRobot()
     {
         GameObject robotList = GameObject.Find("SimLoadRobotList");
