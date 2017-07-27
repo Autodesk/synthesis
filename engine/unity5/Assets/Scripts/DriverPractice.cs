@@ -19,7 +19,8 @@ using Assets.Scripts.FSM;
 /// 
 /// This class is only to be attached to the Robot parent GameObject
 /// </summary>
-public class DriverPractice : MonoBehaviour {
+public class DriverPractice : MonoBehaviour
+{
 
     public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
     public List<float[]> releaseVelocity; //release velocity values for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
@@ -133,7 +134,7 @@ public class DriverPractice : MonoBehaviour {
         SetInteractor(intakeNode[1], 1);
 
         gamepieceSpawn = new List<UnityEngine.Vector3>();
-        gamepieceSpawn.Add(new UnityEngine.Vector3(0f,3f,0f));
+        gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
         gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
 
 
@@ -164,13 +165,14 @@ public class DriverPractice : MonoBehaviour {
 
         Load(); //Loads pre-existing configuration if they exist
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
         if (modeEnabled)
         {
             ProcessControls();
-            
+
             //Allows the user to click on a dynamic object or robot node to define it as a gamepiece or mechanism
             if (Input.GetMouseButtonDown(0))
             {
@@ -315,13 +317,13 @@ public class DriverPractice : MonoBehaviour {
         UnityEngine.Quaternion horQuaternion;
         UnityEngine.Quaternion verQuaternion;
         UnityEngine.Vector3 finalVector = UnityEngine.Vector3.zero;
-        
+
         //Converts each angle into a quaternion to be multiplied by
         horQuaternion = UnityEngine.Quaternion.AngleAxis(horAngle, UnityEngine.Vector3.up);
         verQuaternion = UnityEngine.Quaternion.AngleAxis(verAngle, UnityEngine.Vector3.right);
 
         //multiplies a reference quaternion (facing forward and standing straight) by the two quaternions made earlier and then multiplies it by a vector 
-        finalVector = (UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.forward,UnityEngine.Vector3.up) * horQuaternion * verQuaternion) * UnityEngine.Vector3.forward * speed;
+        finalVector = (UnityEngine.Quaternion.LookRotation(UnityEngine.Vector3.forward, UnityEngine.Vector3.up) * horQuaternion * verQuaternion) * UnityEngine.Vector3.forward * speed;
 
         return (finalVector);
 
@@ -380,7 +382,7 @@ public class DriverPractice : MonoBehaviour {
             else if (selectedObject == null)
             {
                 Debug.Log("DPM: Game object not found");
-                    
+
             }
             else if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
             {
@@ -389,12 +391,12 @@ public class DriverPractice : MonoBehaviour {
             else
             {
                 string name = selectedObject.name;
-                name = name.Replace("clone_",""); //gets rid of the clone tag given to spawned gamepieces
-                if (name.IndexOf(":") > 0) name = name.Substring(0, name.IndexOf(":"));
+                name = name.Replace("clone_", ""); //gets rid of the clone tag given to spawned gamepieces
+                //if (name.IndexOf(":") > 0) name = name.Substring(0, name.IndexOf(":"));
 
                 gamepieceNames[index] = name;
 
-                intakeInteractor[index].SetKeyword(gamepieceNames[index],index);
+                intakeInteractor[index].SetKeyword(gamepieceNames[index], index);
 
                 UserMessageManager.Dispatch(name + " has been selected as the gamepiece", 2);
                 addingGamepiece = false;
@@ -402,7 +404,7 @@ public class DriverPractice : MonoBehaviour {
         }
         else
         {
-                
+
         }
     }
 
@@ -415,7 +417,7 @@ public class DriverPractice : MonoBehaviour {
         if (modeEnabled)
         {
             if (definingIntake || definingRelease) UserMessageManager.Dispatch("You must select a robot part first!", 5);
-            else if (settingSpawn != 0) UserMessageManager.Dispatch("You must set the gamepiece spawnpoint first! Press enter to save your the current position",5);
+            else if (settingSpawn != 0) UserMessageManager.Dispatch("You must set the gamepiece spawnpoint first! Press enter to save your the current position", 5);
             else
             {
                 UserMessageManager.Dispatch("Click on a dynamic object to add it as a gamepiece", 5);
@@ -463,7 +465,7 @@ public class DriverPractice : MonoBehaviour {
             }
             spawnedGamepieces[i].Clear();
         }
-        
+
     }
 
     /// <summary>
@@ -477,7 +479,7 @@ public class DriverPractice : MonoBehaviour {
             if (GameObject.Find(gamepieceNames[index]) != null) //if gamepiece actually exists in the field
             {
                 if (spawnIndicator != null) Destroy(spawnIndicator);
-                
+
                 //creates a movable gameobject that is a slightly transparent version of the defined gamepiece to represent the new spawn location
                 if (spawnIndicator == null)
                 {
@@ -590,7 +592,7 @@ public class DriverPractice : MonoBehaviour {
                     SetInteractor(intakeNode[index], index);
 
                     UserMessageManager.Dispatch(name + " has been selected as intake node", 5);
-                        
+
                     definingIntake = false;
                 }
                 else
@@ -653,7 +655,7 @@ public class DriverPractice : MonoBehaviour {
                 {
                     RevertNodeColors(hoveredNode, hoveredColors);
                     hoveredNode = selectedObject;
-                }           
+                }
 
                 ChangeNodeColors(hoveredNode, hoverColor, hoveredColors);
 
@@ -724,7 +726,7 @@ public class DriverPractice : MonoBehaviour {
         highlightedNode = GameObject.Find(node);
         ChangeNodeColors(highlightedNode, highlightColor, originalColors);
         highlightTimer = 80;
- 
+
     }
 
     /// <summary>
@@ -955,7 +957,7 @@ public class DriverPractice : MonoBehaviour {
         {
             if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupPrimary]))
             {
-                   
+
                 Intake(0);
             }
             if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.PickupSecondary]))

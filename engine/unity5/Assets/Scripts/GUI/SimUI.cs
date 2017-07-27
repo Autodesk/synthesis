@@ -12,7 +12,6 @@ using System.IO;
 /// </summary>
 public class SimUI : MonoBehaviour
 {
-
     MainState main;
     DynamicCamera camera;
     DriverPractice dpm;
@@ -115,8 +114,13 @@ public class SimUI : MonoBehaviour
     {
         if (main == null)
         {
+<<<<<<< HEAD
             main = transform.GetComponent<StateMachine>().MainState;
             
+=======
+            main = transform.GetComponent<StateMachine>().CurrentState as MainState;
+            camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+>>>>>>> master
             //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
             toolkit = GetComponent<Toolkit>();
@@ -195,11 +199,11 @@ public class SimUI : MonoBehaviour
 
         robotCameraList = GameObject.Find("RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
-        robotCameraIndicator = AuxFunctions.FindObject(robotCameraList, "CameraIndicator");
-        showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
 
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
+        robotCameraIndicator = AuxFunctions.FindObject(robotCameraList, "CameraIndicator");
+        showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
 
@@ -343,10 +347,6 @@ public class SimUI : MonoBehaviour
     }
 
     
-    private void UpdateCameraView()
-    {
-
-    }
     #region main button functions
     /// <summary>
     /// Resets the robot
@@ -678,13 +678,7 @@ public class SimUI : MonoBehaviour
     {
         dpm.definingIntake = false;
     }
-
-    public void CloseFreeroamWindow()
-    {
-        freeroamCameraWindow.SetActive(false);
-        freeroamWindowClosed = true;
-    }
-
+    
     public void HighlightIntake()
     {
         dpm.HighlightNode(dpm.intakeNode[configuringIndex].name);
@@ -842,6 +836,7 @@ public class SimUI : MonoBehaviour
     }
     #endregion
 
+    #region robot camera functions
     /// <summary>
     /// Updates the robot camera view window
     /// </summary>
@@ -859,7 +854,7 @@ public class SimUI : MonoBehaviour
             if (usingRobotView && main.dynamicCameraObject.activeSelf)
             {
                 robotCamera = robotCameraList.GetComponent<RobotCamera>();
-                //Debug.Log(robotCamera.CurrentCamera);
+                Debug.Log(robotCamera.CurrentCamera);
 
                 //Make sure there is camera on robot
                 if (robotCamera.CurrentCamera != null)
@@ -914,6 +909,27 @@ public class SimUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Toggles the state of showing or hiding the robot indicator
+    /// </summary>
+    public void ToggleCameraIndicator()
+    {
+        indicatorActive = !indicatorActive;
+        if (indicatorActive)
+        {
+            showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
+        }
+        else
+        {
+            showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
+        }
+        robotCameraIndicator.SetActive(indicatorActive);
+    }
+
+
+    #endregion
+
+
+    /// <summary>
     /// Pop reset instructions when main is in reset spawnpoint mode
     /// </summary>
     private void UpdateSpawnpointWindow()
@@ -947,6 +963,13 @@ public class SimUI : MonoBehaviour
         }
     }
 
+
+    public void CloseFreeroamWindow()
+    {
+        freeroamCameraWindow.SetActive(false);
+        freeroamWindowClosed = true;
+    }
+
     /// <summary>
     /// Activate driver station panel if the main camera is in driver station state
     /// </summary>
@@ -964,6 +987,7 @@ public class SimUI : MonoBehaviour
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 
+<<<<<<< HEAD
     public void ToggleCameraIndicator()
     {
         indicatorActive = !indicatorActive;
@@ -990,5 +1014,8 @@ public class SimUI : MonoBehaviour
             AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
         }
     }
+=======
+    
+>>>>>>> master
 }
 
