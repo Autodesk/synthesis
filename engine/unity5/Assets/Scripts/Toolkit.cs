@@ -70,7 +70,7 @@ public class Toolkit : MonoBehaviour
                 else
                 {
                     secondPoint = rayResult.HitPointWorld;
-                    EndRuler();
+                    FinishRuler();
                 }
             }
 
@@ -87,17 +87,21 @@ public class Toolkit : MonoBehaviour
         }
     }
 
-    private void EndRuler()
+    private void FinishRuler()
     {
         ignoreClick = true;
-        usingRuler = false;
         float distance = BulletSharp.Math.Vector3.Distance(firstPoint, secondPoint) * 3.28084f;
         UserMessageManager.Dispatch("Distance is: " + distance + " feet.", 10f);
         firstPoint = BulletSharp.Math.Vector3.Zero;
+        DisableRuler();
+    }
+
+    public void DisableRuler()
+    {
+        usingRuler = false;
         rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
         rulerStartPoint.SetActive(false);
         rulerEndPoint.SetActive(false);
     }
-
-
+  
 }
