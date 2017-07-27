@@ -537,11 +537,16 @@ public class DriverPractice : MonoBehaviour
     /// </summary>
     public void FinishGamepieceSpawn()
     {
-        settingSpawn = 0;
-        if (spawnIndicator != null) Destroy(spawnIndicator);
-        DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
-        dynamicCamera.SwitchCameraState(lastCameraState);
-        MainState.ControlsDisabled = false;
+        if (settingSpawn != 0)
+        {
+            settingSpawn = 0;
+            if (spawnIndicator != null) Destroy(spawnIndicator);
+            DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+            if (lastCameraState != null)
+            dynamicCamera.SwitchCameraState(lastCameraState);
+            lastCameraState = null;
+            MainState.ControlsDisabled = false;
+        }
     }
 
     #endregion
