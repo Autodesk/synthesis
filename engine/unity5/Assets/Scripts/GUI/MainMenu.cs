@@ -386,16 +386,6 @@ public class MainMenu : MonoBehaviour
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
 
-    public void StartSwapSim()
-    {
-        PlayerPrefs.SetString("simSelectedField", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\Fields\\2014 Aerial Assist");
-        PlayerPrefs.SetString("simSelectedFieldName", "2014 Aerial Assist");
-        PlayerPrefs.SetString("simSelectedRobot", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\RobotParts\\DriveBase2557");
-        PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
-        PlayerPrefs.Save();
-        SceneManager.LoadScene("QuickSwap");
-    }
-
     public void StartRobotConfiguration()
     {
         if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))

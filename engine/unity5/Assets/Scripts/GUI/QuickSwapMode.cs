@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class QuickSwapMode : MonoBehaviour
@@ -11,17 +12,20 @@ public class QuickSwapMode : MonoBehaviour
     //Wheel options
     private GameObject tractionWheel;
     private GameObject colsonWheel;
-    private GameObject mecanumWheel;
     private GameObject omniWheel;
     List<GameObject> wheels;
+    int selectedWheel;
 
     //Drive Base options
     private GameObject defaultDrive;
+    private GameObject mecanumDrive;
     List<GameObject> bases;
+    int selectedDriveBase;
 
     //Manipulator Options
     private GameObject defaultManipulator;
     List<GameObject> manipulators;
+    int selectedManipulator;
 
     // Use this for initialization
     void Start()
@@ -43,15 +47,16 @@ public class QuickSwapMode : MonoBehaviour
         //Find wheel objects
         tractionWheel = GameObject.Find("TractionWheel");
         colsonWheel = GameObject.Find("ColsonWheel");
-        mecanumWheel = GameObject.Find("MecanumWheel");
         omniWheel = GameObject.Find("OmniWheel");
         //Put all the wheels in the wheels list
-        wheels = new List<GameObject> { tractionWheel, colsonWheel, mecanumWheel, omniWheel };
+        wheels = new List<GameObject> { tractionWheel, colsonWheel, omniWheel };
+        
 
         //Find drive base objects
         defaultDrive = GameObject.Find("DefaultBase");
+        mecanumDrive = GameObject.Find("MecanumBase");
         //Put all the drive bases in the bases list
-        bases = new List<GameObject> { defaultDrive };
+        bases = new List<GameObject> { defaultDrive, mecanumDrive };
 
         //Find manipulator objects
         defaultManipulator = GameObject.Find("DefaultManipulator");
@@ -92,6 +97,7 @@ public class QuickSwapMode : MonoBehaviour
 
         //selects the wheel that is clicked
         SetColor(wheels[wheel], purple);
+        selectedWheel = wheel;
     }
 
     /// <summary>
@@ -110,6 +116,7 @@ public class QuickSwapMode : MonoBehaviour
         
         //selects the wheel that is clicked
         SetColor(bases[driveBase], purple);
+        selectedDriveBase = driveBase;
     }
 
     /// <summary>
@@ -128,6 +135,33 @@ public class QuickSwapMode : MonoBehaviour
 
         //selects the wheel that is clicked
         SetColor(manipulators[manipulator], purple);
+        selectedManipulator = manipulator;
     }
 
+    ///<summary>
+    ///Returns the string destination path of a drive base
+    /// </summary>
+    /// 
+    public string getDriveBase(int baseID)
+    {
+        switch (baseID)
+        {
+            case 0: //Default Drive Base
+                return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\DriveBases\\DriveBase2557";
+            case 1: //Mech Drive Base
+                return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\DriveBases\\MechDrive";
+        }
+
+        return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\DriveBases\\DriveBase2557";
+    }
+
+    public void StartSwapSim()
+    {
+        PlayerPrefs.SetString("simSelectedField", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\Fields\\2014 Aerial Assist");
+        PlayerPrefs.SetString("simSelectedFieldName", "2014 Aerial Assist");
+        PlayerPrefs.SetString("simSelectedRobot", getDriveBase(selectedDriveBase));
+        PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("QuickSwap");
+    }
 }
