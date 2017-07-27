@@ -165,6 +165,20 @@ public class Controls
         }
     }
 
+    //public static void CheckConflict()
+    //{
+    //    ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
+
+    //    foreach (KeyMapping key in keys)
+    //    {
+    //        string inputStr;
+
+    //        inputStr = PlayerPrefs.GetString("Controls." + key.name + ".primary");
+
+    //        //if (inputStr != "")
+    //    }
+    //}
+
     /// <summary>
     /// Resets to default controls.
     /// </summary>
@@ -281,18 +295,18 @@ public class Controls
     //    PlayerPrefs.Save();
     //}
 
-    public static bool SetControl(int control, KeyCode key)
-    {
-        ControlKey[control] = key;
-        for (int i = 0; i < ControlKey.Length; i++)
-        {
-            if (i != control && ControlKey[i] == key)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
+    //public static bool SetControl(int control, KeyCode key)
+    //{
+    //    ControlKey[control] = key;
+    //    for (int i = 0; i < ControlKey.Length; i++)
+    //    {
+    //        if (i != control && ControlKey[i] == key)
+    //        {
+    //            return false;
+    //        }
+    //    }
+    //    return true;
+    //}
 
     //public static bool CheckConflict()
     //{
@@ -303,12 +317,6 @@ public class Controls
     //            if (j != i && ControlKey[i] == ControlKey[j]) return true;
     //        }
     //    }
-    //    return false;
-    //}
-
-    //public static bool CheckConflict()
-    //{
-    //    if(PlayerPrefs.HasKey)
     //    return false;
     //}
 
