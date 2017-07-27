@@ -5332,7 +5332,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1004531418
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6820,7 +6820,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1191838552
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8612,7 +8612,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 860403445}
-        m_MethodName: SelectSimRobot
+        m_MethodName: SwitchSimLoadRobot
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -9165,7 +9165,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 860403445}
-        m_MethodName: SelectSimField
+        m_MethodName: SwitchSimLoadField
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
