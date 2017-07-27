@@ -21,6 +21,7 @@ public class QuickSwapMode : MonoBehaviour
     private GameObject mecanumDrive;
     List<GameObject> bases;
     int selectedDriveBase;
+    public static bool isMecanum = false;
 
     //Manipulator Options
     private GameObject defaultManipulator;
@@ -117,6 +118,12 @@ public class QuickSwapMode : MonoBehaviour
         //selects the wheel that is clicked
         SetColor(bases[driveBase], purple);
         selectedDriveBase = driveBase;
+        if (selectedDriveBase == 1) isMecanum = true; 
+    }
+
+    public static bool getMecanum()
+    {
+        return isMecanum;
     }
 
     /// <summary>

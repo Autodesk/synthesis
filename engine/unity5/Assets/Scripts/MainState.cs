@@ -373,7 +373,7 @@ public class MainState : SimState
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
 
-            DriveJoints.UpdateAllMotors(rootNode, packet.dio);
+            DriveJoints.UpdateAllMotors(rootNode, packet.dio, QuickSwapMode.getMecanum());
         }
 
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
