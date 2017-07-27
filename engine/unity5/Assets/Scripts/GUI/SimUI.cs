@@ -16,6 +16,7 @@ public class SimUI : MonoBehaviour
     MainState main;
     DynamicCamera camera;
     DriverPractice dpm;
+    Toolkit toolkit;
 
     GameObject canvas;
 
@@ -51,6 +52,10 @@ public class SimUI : MonoBehaviour
     GameObject changeFieldPanel;
 
     GameObject driverStationPanel;
+
+    GameObject orientWindow;
+    bool isOrienting = false;
+    GameObject resetDropdown;
 
     Text enableDPMText;
 
@@ -114,6 +119,7 @@ public class SimUI : MonoBehaviour
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
+            toolkit = GetComponent<Toolkit>();
         }
         else if (dpm == null)
         {
@@ -195,6 +201,9 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
+
+        orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
+        resetDropdown = GameObject.Find("Reset Robot Dropdown");
     }
 
     /// <summary>
@@ -390,6 +399,16 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         changeFieldPanel.SetActive(!changeFieldPanel.activeSelf);
     }
+
+    /// <summary>
+    /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
+    /// </summary>
+    public void EndOtherProcesses()
+    {
+        changeFieldPanel.SetActive(false);
+        changeRobotPanel.SetActive(false);
+        
+    }
     #endregion
     #region camera button functions
     //Camera Functions
@@ -410,46 +429,49 @@ public class SimUI : MonoBehaviour
     #endregion
     #region orient button functions
 
-    ////Orient Robot Functions
-    //public void OrientStart()
-    //{
-    //    main.StartOrient();
-    //}
+    public void ToggleOrientWindow()
+    {
+        isOrienting = !isOrienting;
+        orientWindow.SetActive(isOrienting);
+        if (isOrienting) main.BeginReset();
+        else main.EndReset();
+    }
 
-    //public void OrientLeft()
-    //{
-    //    main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-    //}
+    public void OrientLeft()
+    {
+        main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientRight()
+    {
+        main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientForward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+    }
+    public void OrientBackward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
+    }
 
-    //public void OrientRight()
-    //{
-    //    main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-    //}
+    public void DefaultOrientation()
+    {
+        main.ResetRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
 
-    //public void OrientForward()
-    //{
-    //    main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-    //}
+    public void SaveOrientation()
+    {
+        main.SaveRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
 
-    //public void OrientBackward()
-    //{
-    //    main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-    //}
-
-    //public void OrientSave()
-    //{
-    //    main.SaveOrientation();
-    //}
-
-    //public void OrientEnd()
-    //{
-    //    //To be filled in later when UI work has been done
-    //}
-
-    //public void OrientDefault()
-    //{
-    //    main.ResetOrientation();
-    //}
+    public void CloseOrientWindow()
+    {
+        isOrienting = false;
+        orientWindow.SetActive(isOrienting);
+        main.EndReset();
+    }
 
     #endregion
     #region driver practice mode button functions

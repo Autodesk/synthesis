@@ -96,5 +96,11 @@ public class Toolkit : MonoBehaviour {
         rulerEndPoint.SetActive(false);
     }
 
+    public bool IsBusy()
+    {
+        if (usingRuler) return false;
+        else return true;
+    }
+
     
 }
