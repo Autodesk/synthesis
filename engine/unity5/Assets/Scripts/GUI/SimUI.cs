@@ -333,10 +333,6 @@ public class SimUI : MonoBehaviour
     }
 
     
-    private void UpdateCameraView()
-    {
-
-    }
     #region main button functions
     /// <summary>
     /// Resets the robot
@@ -592,13 +588,7 @@ public class SimUI : MonoBehaviour
     {
         dpm.definingIntake = false;
     }
-
-    public void CloseFreeroamWindow()
-    {
-        freeroamCameraWindow.SetActive(false);
-        freeroamWindowClosed = true;
-    }
-
+    
     public void HighlightIntake()
     {
         dpm.HighlightNode(dpm.intakeNode[configuringIndex].name);
@@ -754,6 +744,7 @@ public class SimUI : MonoBehaviour
     }
     #endregion
 
+    #region robot camera functions
     /// <summary>
     /// Updates the robot camera view window
     /// </summary>
@@ -826,6 +817,27 @@ public class SimUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Toggles the state of showing or hiding the robot indicator
+    /// </summary>
+    public void ToggleCameraIndicator()
+    {
+        indicatorActive = !indicatorActive;
+        if (indicatorActive)
+        {
+            showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
+        }
+        else
+        {
+            showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
+        }
+        robotCameraIndicator.SetActive(indicatorActive);
+    }
+
+
+    #endregion
+
+
+    /// <summary>
     /// Pop reset instructions when main is in reset spawnpoint mode
     /// </summary>
     private void UpdateSpawnpointWindow()
@@ -859,6 +871,13 @@ public class SimUI : MonoBehaviour
         }
     }
 
+
+    public void CloseFreeroamWindow()
+    {
+        freeroamCameraWindow.SetActive(false);
+        freeroamWindowClosed = true;
+    }
+
     /// <summary>
     /// Activate driver station panel if the main camera is in driver station state
     /// </summary>
@@ -876,18 +895,6 @@ public class SimUI : MonoBehaviour
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 
-    public void ToggleCameraIndicator()
-    {
-        indicatorActive = !indicatorActive;
-        if (indicatorActive)
-        {
-            showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
-        }
-        else
-        {
-            showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
-        }
-        robotCameraIndicator.SetActive(indicatorActive);
-    }
+    
 }
 
