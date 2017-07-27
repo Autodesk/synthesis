@@ -44,6 +44,8 @@ public class SimUI : MonoBehaviour
     GameObject lockPanel;
 
     GameObject robotCameraList;
+    GameObject robotCameraIndicator;
+    GameObject showCameraButton;
 
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
@@ -95,6 +97,7 @@ public class SimUI : MonoBehaviour
     private bool usingRobotView = false;
 
     private bool oppositeSide = false;
+    private bool indicatorActive = false;
 
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
@@ -185,6 +188,8 @@ public class SimUI : MonoBehaviour
 
         robotCameraList = GameObject.Find("RobotCameraList");
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
+        robotCameraIndicator = AuxFunctions.FindObject(robotCameraList, "CameraIndicator");
+        showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
 
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
@@ -766,7 +771,7 @@ public class SimUI : MonoBehaviour
             if (usingRobotView && main.dynamicCameraObject.activeSelf)
             {
                 robotCamera = robotCameraList.GetComponent<RobotCamera>();
-                Debug.Log(robotCamera.CurrentCamera);
+                //Debug.Log(robotCamera.CurrentCamera);
 
                 //Make sure there is camera on robot
                 if (robotCamera.CurrentCamera != null)
@@ -869,6 +874,20 @@ public class SimUI : MonoBehaviour
     {
         oppositeSide = !oppositeSide;
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
+    }
+
+    public void ToggleCameraIndicator()
+    {
+        indicatorActive = !indicatorActive;
+        if (indicatorActive)
+        {
+            showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
+        }
+        else
+        {
+            showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
+        }
+        robotCameraIndicator.SetActive(indicatorActive);
     }
 }
 
