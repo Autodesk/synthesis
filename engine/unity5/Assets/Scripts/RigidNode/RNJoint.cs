@@ -17,7 +17,7 @@ public partial class RigidNode : RigidNode_Base
         X,
         Y
     }
-    
+
     public void CreateJoint()
     {
         if (joint != null || GetSkeletalJoint() == null)
@@ -27,8 +27,13 @@ public partial class RigidNode : RigidNode_Base
         {
             case SkeletalJointType.ROTATIONAL:
 
+                WheelType wheelType = WheelType.NOT_A_WHEEL;
+                
                 if (this.HasDriverMeta<WheelDriverMeta>())
+                {
                     OrientWheelNormals();
+                    wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
+                }
 
                 RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
 
@@ -37,6 +42,22 @@ public partial class RigidNode : RigidNode_Base
                 
                 hc.axisInA = rAxis;
                 hc.axisInB = rAxis;
+
+                // TODO: Mecanum wheel implementation.
+                /*
+                if (wheelType == WheelType.MECANUM)
+                {
+                    float xDif = MainObject.transform.position.x - MainObject.transform.parent.GetChild(0).transform.position.x;
+                    float zDif = MainObject.transform.position.z - MainObject.transform.parent.GetChild(0).transform.position.z;
+                    float product = xDif * zDif;
+
+                    hc.axisInB = Quaternion.AngleAxis(product > 0 ? 45 : -45, Vector3.up) * rAxis;
+                }
+                else
+                {
+                    hc.axisInB = rAxis;
+                }
+                */
 
                 if (hc.setLimit = rNode.hasAngularLimit)
                 {

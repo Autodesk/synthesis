@@ -17,7 +17,7 @@ public partial class RigidNode : RigidNode_Base
             return false;
 
         List<GameObject> meshObjects = new List<GameObject>();
-
+        
         AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             GameObject meshObject = new GameObject(MainObject.name + "_mesh");
@@ -36,7 +36,6 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.rotation = root.rotation;
 
             ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
-
         });
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];

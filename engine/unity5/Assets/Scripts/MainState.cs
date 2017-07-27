@@ -503,7 +503,7 @@ public class MainState : SimState
                 UnityEngine.Object.Destroy(robotObject);
                 return false;
             }
-
+            
             node.CreateJoint();
 
             node.MainObject.AddComponent<Tracker>().Trace = true;
