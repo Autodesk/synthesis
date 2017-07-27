@@ -12,31 +12,31 @@ public class Toolkit : MonoBehaviour {
     private bool ignoreClick = true;
 
     private bool usingRuler;
-    private BulletSharp.Math.Vector3 firstPoint;
+    private BulletSharp.Math.Vector3 firstPoint = BulletSharp.Math.Vector3.Zero;
     private BulletSharp.Math.Vector3 secondPoint;
+
+    private GameObject rulerStartPoint;
+    private GameObject rulerEndPoint;
 
 	// Use this for initialization
 	void Start () {
-		
+        rulerStartPoint = GameObject.Find("RulerStartPoint");
+        rulerEndPoint = GameObject.Find("RulerEndPoint");
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetMouseButtonDown(0) && usingRuler)
+        if (usingRuler)
         {
             if (ignoreClick) ignoreClick = false;
             else ClickRuler();
         }
-
-        if (usingRuler && firstPoint != null)
-        {
-            Debug.DrawLine(firstPoint.ToUnity(), Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        }   
 	}
 
     public void BeginRuler()
     {
         usingRuler = true;
+        rulerStartPoint.SetActive(true);
     }
 
     private void ClickRuler()
@@ -53,15 +53,33 @@ public class Toolkit : MonoBehaviour {
         BPhysicsWorld world = BPhysicsWorld.Get();
         world.world.RayTest(start, end, rayResult);
 
-        if (rayResult.HasHit)
+        if (rayResult.CollisionObject != null)
         {
-            GameObject indicator = new GameObject("point");
-            indicator.transform.position = rayResult.HitPointWorld.ToUnity();
-            if (firstPoint == null) firstPoint = rayResult.HitPointWorld;
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (firstPoint == BulletSharp.Math.Vector3.Zero)
+                {
+                    rulerStartPoint.GetComponent<LineRenderer>().enabled = true;
+                    rulerStartPoint.GetComponent<LineRenderer>().SetPosition(0, rulerStartPoint.transform.position);
+                    rulerEndPoint.SetActive(true);
+                    firstPoint = rayResult.HitPointWorld;
+                }
+                else
+                {
+                    secondPoint = rayResult.HitPointWorld;
+                    EndRuler();
+                }
+            }
+            
+            if (firstPoint != null) Debug.DrawRay(firstPoint.ToUnity(), Vector3.up);
+            if (firstPoint == BulletSharp.Math.Vector3.Zero)
+            {
+                rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
+            }
             else
             {
-                secondPoint = rayResult.HitPointWorld;
-                EndRuler();
+                rulerEndPoint.transform.position = rayResult.HitPointWorld.ToUnity();
+                rulerStartPoint.GetComponent<LineRenderer>().SetPosition(1, rulerEndPoint.transform.position);
             }
         }
     }
@@ -72,6 +90,10 @@ public class Toolkit : MonoBehaviour {
         usingRuler = false;
         float distance = BulletSharp.Math.Vector3.Distance(firstPoint, secondPoint) * 3.28084f;
         UserMessageManager.Dispatch("Distance is: " + distance + " feet.", 10f);
+        firstPoint = BulletSharp.Math.Vector3.Zero;
+        rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
+        rulerStartPoint.SetActive(false);
+        rulerEndPoint.SetActive(false);
     }
 
     
