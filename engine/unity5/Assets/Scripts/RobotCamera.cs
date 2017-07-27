@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 public class RobotCamera : MonoBehaviour
 {
-    private List<GameObject> robotCameraList = new List<GameObject>();
+    public List<GameObject> robotCameraList = new List<GameObject>();
     public GameObject CurrentCamera { get; set; }
-    
+    public GameObject CameraIndicator;
+    private GameObject robotCameraListObject;
 
     /// <summary>
     /// Switching between different cameras on robot given the specific camera
@@ -25,6 +26,7 @@ public class RobotCamera : MonoBehaviour
     public void ToggleCamera()
     {
         SwitchCamera(robotCameraList[(robotCameraList.IndexOf(CurrentCamera) + 1) % robotCameraList.Count]);
+        //CameraIndicator.SetActive(CurrentCamera.activeSelf);
     }
 
     /// <summary>
@@ -92,5 +94,24 @@ public class RobotCamera : MonoBehaviour
     public List<GameObject> GetRobotCameraList()
     {
         return robotCameraList;
+    }
+
+    public void Start()
+    {
+        robotCameraListObject = GameObject.Find("RobotCameraList");
+        if(CameraIndicator == null)
+        {
+            CameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
+        }
+    }
+    public void Update()
+    {
+        if (CameraIndicator.activeSelf)
+        {
+            CameraIndicator.transform.position = CurrentCamera.transform.position;
+            CameraIndicator.transform.rotation = CurrentCamera.transform.rotation;
+
+            CameraIndicator.transform.parent = CurrentCamera.transform;
+        }
     }
 }
