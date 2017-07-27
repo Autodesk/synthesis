@@ -114,13 +114,8 @@ public class SimUI : MonoBehaviour
     {
         if (main == null)
         {
-<<<<<<< HEAD
-            main = transform.GetComponent<StateMachine>().MainState;
-            
-=======
             main = transform.GetComponent<StateMachine>().CurrentState as MainState;
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
->>>>>>> master
             //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
             toolkit = GetComponent<Toolkit>();
@@ -987,21 +982,6 @@ public class SimUI : MonoBehaviour
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 
-<<<<<<< HEAD
-    public void ToggleCameraIndicator()
-    {
-        indicatorActive = !indicatorActive;
-        if (indicatorActive)
-        {
-            showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
-        }
-        else
-        {
-            showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
-        }
-        robotCameraIndicator.SetActive(indicatorActive);
-    }
-
     public void ShowControlPanel(bool show)
     {
         if (show)
@@ -1014,8 +994,5 @@ public class SimUI : MonoBehaviour
             AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
         }
     }
-=======
-    
->>>>>>> master
 }
 
