@@ -57,7 +57,7 @@ all: cpp java hal
 
 $(OUT_JAVA): $(LIB_JAVA) | build/java_class_files Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
-	@$(JAR) cf $@ $(shell find ./build/java -name "*.class")
+	@$(JAR) cf $@ -C build/java/class .
 
 $(LIB_JAVA): $(OBJ_FILES_JAVA) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mLD \e[39m$@\e[0m"
@@ -81,7 +81,7 @@ $(LIB_NTCORE_JAVA): $(OBJ_FILES_NTCORE_JAVA) | build/ntcore_java_class_files $(O
 
 $(OUT_NTCORE_JAVA): | $(LIB_NTCORE_JAVA) build/ntcore_java_class_files $(OUT_NTCORE) Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mJAR \e[39m$@\e[0m"
-	@$(JAR) cf $@ $(shell find ./build/ntcore/java -name "*.class")
+	@$(JAR) cf $@ -C build/ntcore/java/class .
 
 build/cpp/%.o: %.cpp Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[32mCC \e[39m$<\e[0m"
