@@ -30,7 +30,7 @@ public class SimUI : MonoBehaviour
     GameObject robotCameraViewWindow;
     RenderTexture robotCameraView;
     RobotCamera robotCamera;
-
+    
     GameObject releaseVelocityPanel;
 
     GameObject xOffsetEntry;
@@ -45,6 +45,10 @@ public class SimUI : MonoBehaviour
     GameObject robotCameraList;
     GameObject robotCameraIndicator;
     GameObject showCameraButton;
+    GameObject configureRobotCameraButton;
+    GameObject cameraConfigurationModeButton;
+    GameObject changeCameraNodeButton;
+    GameObject configureCameraPanel;
 
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
@@ -68,6 +72,8 @@ public class SimUI : MonoBehaviour
 
     Text primaryCountText;
     Text secondaryCountText;
+
+    Text cameraNodeText;
 
     public bool dpmWindowOn = false; //if the driver practice mode window is active
 
@@ -94,7 +100,7 @@ public class SimUI : MonoBehaviour
 
     private bool freeroamWindowClosed = false;
     private bool usingRobotView = false;
-
+    
     private bool oppositeSide = false;
     private bool indicatorActive = false;
 
@@ -118,8 +124,6 @@ public class SimUI : MonoBehaviour
         {
             dpm = main.GetDriverPractice();
             FindElements();
-
-
         }
         else
         {
@@ -127,7 +131,6 @@ public class SimUI : MonoBehaviour
             UpdateVectorConfiguration();
             UpdateWindows();
             if (settingControl != 0) ListenControl();
-
         }
 
     }
@@ -192,8 +195,13 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
         robotCameraIndicator = AuxFunctions.FindObject(robotCameraList, "CameraIndicator");
         showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
-
+        configureRobotCameraButton = AuxFunctions.FindObject(canvas, "CameraConfigurationButton");
+        changeCameraNodeButton = AuxFunctions.FindObject(canvas, "ChangeNodeButton");
+        configureCameraPanel = AuxFunctions.FindObject(canvas, "CameraConfigurationPanel");
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
+
+        cameraConfigurationModeButton = AuxFunctions.FindObject(canvas, "ConfigurationMode");
+        cameraNodeText = AuxFunctions.FindObject(canvas, "NodeText").GetComponent<Text>();
     }
 
     /// <summary>
@@ -284,6 +292,8 @@ public class SimUI : MonoBehaviour
             releaseHorizontalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][1].ToString();
             releaseVerticalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][2].ToString();
         }
+
+
     }
 
     private void UpdateWindows()
@@ -824,15 +834,65 @@ public class SimUI : MonoBehaviour
         if (indicatorActive)
         {
             showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
+            configureRobotCameraButton.SetActive(true);
+            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
         }
         else
         {
             showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
+            configureRobotCameraButton.SetActive(false);
+            configureCameraPanel.SetActive(false);
+            robotCamera.IsChangingHeight = robotCamera.SelectingNode = robotCamera.ChangingCameraPosition = false;
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+
         }
         robotCameraIndicator.SetActive(indicatorActive);
     }
 
+    public void ConfigureCameraPosition()
+    {
+        robotCamera.ChangingCameraPosition = !robotCamera.ChangingCameraPosition;
+        configureCameraPanel.SetActive(robotCamera.ChangingCameraPosition);
+        if (robotCamera.ChangingCameraPosition)
+        {
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "End Configuration";
+        }
+        else
+        {
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+        }
+    }
+    
+    public void ToggleConfigurationMode()
+    {
+        robotCamera.IsChangingHeight = !robotCamera.IsChangingHeight;
+        if (robotCamera.IsChangingHeight)
+        {
+            cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
+        }
+        else
+        {
+            cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+        }
+    }
 
+    public void ToggleChangeNode()
+    {
+        if (!robotCamera.SelectingNode && robotCamera.SelectedNode == null)
+        {
+            robotCamera.DefineNode();
+            changeCameraNodeButton.GetComponentInChildren<Text>().text = "Confirm";
+        }
+        else if (robotCamera.SelectingNode && robotCamera.SelectedNode != null)
+        {
+            robotCamera.SelectingNode = false;
+            robotCamera.ChangeNodeAttachment();
+            robotCamera.SelectedNode = null;
+            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+            changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+        }
+            
+    }
     #endregion
 
 

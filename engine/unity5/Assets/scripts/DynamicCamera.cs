@@ -94,7 +94,10 @@ public class DynamicCamera : MonoBehaviour
             {
                 robot = GameObject.Find("Robot");
             }
-            currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+            if (MovingEnabled)
+            {
+                currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+            }
             mono.transform.rotation = currentRotation;
             mono.transform.position = currentPosition;
         }
