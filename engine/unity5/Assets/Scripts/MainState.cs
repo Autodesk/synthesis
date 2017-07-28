@@ -554,6 +554,9 @@ public class MainState : SimState
 
         ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
+        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+        PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+
         LoadField(simSelectedField);
         LoadRobot(simSelectedRobot);
 
