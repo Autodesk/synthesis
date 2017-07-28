@@ -9,14 +9,15 @@ public class RobotCamera : MonoBehaviour
     public GameObject CurrentCamera { get; set; }
     public GameObject CameraIndicator;
     private GameObject robotCameraListObject;
-    private GameObject selectedNode;
-    private bool selectingNode = false;
-    public bool DefiningCameraNode = false;
-    private Vector3 currentPosition = new Vector3(0, 0, 0);
-    private Vector3 currentRotation = new Vector3(0, 0, 0);
-    private static float rotateOffsetAmount = 0.5f;
-    private static float positionOffsetAmount = 0.5f;
-    //x rotates up and down (+up), y rotates left and right (+left), z tilts to left and right (+left)
+    public GameObject SelectedNode;
+
+    public bool SelectingNode {get; set;}
+
+    public bool ChangingCameraPosition { get; set; }
+    public bool IsChangingHeight { get; set; }
+
+    private static float positionSpeed = 0.5f;
+    private static float rotationSpeed = 25;
 
     /// <summary>
     /// Switching between different cameras on robot given the specific camera
@@ -124,27 +125,34 @@ public class RobotCamera : MonoBehaviour
             CameraIndicator.transform.parent = CurrentCamera.transform;
         }
 
-        if (DefiningCameraNode)
+        //Enable selecting node state, and users can left click on a node to choose it
+        if (SelectingNode)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (selectingNode) SetNode();
+                SetNode();
+                Debug.Log("Selecting node");
+
             }
         }
-    }
 
-    public void DefinePosition()
-    {
-        currentPosition = CurrentCamera.transform.localPosition;
-        currentRotation = CurrentCamera.transform.localRotation.ToEuler();
+        ConfigurateCameraPosition();
+        
     }
-
+    
+    /// <summary>
+    /// Initialize robot node selection
+    /// </summary>
     public void DefineNode()
     {
         UserMessageManager.Dispatch("Click on a robot node to set it as the attachment node", 5);
-        selectingNode = true;
+        SelectingNode = true;
+        //SelectedNode = null;
     }
 
+    /// <summary>
+    /// Set the node where the camera will be attached to
+    /// </summary>
     public void SetNode()
     {
         //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
@@ -159,7 +167,8 @@ public class RobotCamera : MonoBehaviour
         BPhysicsWorld world = BPhysicsWorld.Get();
         world.world.RayTest(start, end, rayResult);
 
-        //If there is a collision object and it is dynamic and not a robot part, change the gamepiece to that
+        Debug.Log("Selected:" + rayResult.CollisionObject);
+        //If there is a collision object and it is a robot part, set that to be new attachment point
         if (rayResult.CollisionObject != null)
         {
             GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
@@ -167,79 +176,46 @@ public class RobotCamera : MonoBehaviour
             {
                 string name = selectedObject.name;
 
-                selectedNode = selectedObject;
+                SelectedNode = selectedObject;
 
-                UserMessageManager.Dispatch(name + " has been selected as the node for attachment", 2);
-                selectingNode = false;
+                UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
             }
             else
             {
-                UserMessageManager.Dispatch("Please select a robot node", 2);
+                UserMessageManager.Dispatch("Please select a robot node", 3);
             }
         }
     }
 
-    public void RotateLeft()
+    /// <summary>
+    /// Update the attachment point to be the selected node and toggle the state back
+    /// </summary>
+    public void ChangeNodeAttachment()
     {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.y += rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
-    }
-    public void RotateRight()
-    {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.y -= rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
-    }
-    public void RotateUp()
-    {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.x += rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
-    }
-    public void RotateDown()
-    {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.x -= rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
+        CurrentCamera.transform.parent = SelectedNode.transform;
+        SelectingNode = false;
+        SelectedNode = null;
     }
 
-    public void MoveUp()
+    /// <summary>
+    /// Use WASD and right mouse to change the position, rotation of camera
+    /// </summary>
+    private void ConfigurateCameraPosition()
     {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.y -= positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-    public void MoveDown()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.y += positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-    public void MoveLeft()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.x -= positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-    public void MoveRight()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.y += positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-
-    public void MoveBack()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.z += positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-
-    public void MoveForward()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.z -= positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
+        if (ChangingCameraPosition)
+        {
+            if (Input.GetMouseButton(1)) //Control rotation
+            {
+                CurrentCamera.transform.Rotate(new Vector3(-Input.GetAxis("CameraVertical") * rotationSpeed, Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
+            }
+            else if (!IsChangingHeight) //Control horizontal plane transform
+            {
+                CurrentCamera.transform.Translate(new Vector3(Input.GetAxis("CameraHorizontal") * positionSpeed, 0, Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
+            }
+            else //Control height transform
+            {
+                CurrentCamera.transform.Translate(new Vector3(0, Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
+            }
+        }
     }
 }

@@ -46,6 +46,11 @@ public class SimUI : MonoBehaviour
     GameObject robotCameraList;
     GameObject robotCameraIndicator;
     GameObject showCameraButton;
+    GameObject configureRobotCameraButton;
+    GameObject cameraConfigurationModeButton;
+    GameObject changeCameraNodeButton;
+    GameObject configureCameraPanel;
+    GameObject cancelNodeSelectionButton;
 
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
@@ -73,6 +78,8 @@ public class SimUI : MonoBehaviour
 
     Text primaryCountText;
     Text secondaryCountText;
+
+    Text cameraNodeText;
 
     public bool dpmWindowOn = false; //if the driver practice mode window is active
 
@@ -125,8 +132,6 @@ public class SimUI : MonoBehaviour
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             dpm = main.GetDriverPractice();
             FindElements();
-
-
         }
         else
         {
@@ -134,7 +139,6 @@ public class SimUI : MonoBehaviour
             UpdateVectorConfiguration();
             UpdateWindows();
             if (settingControl != 0) ListenControl();
-
         }
 
     }
@@ -199,11 +203,19 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
         robotCameraIndicator = AuxFunctions.FindObject(robotCameraList, "CameraIndicator");
         showCameraButton = AuxFunctions.FindObject(canvas, "ShowCameraButton");
-
+        configureRobotCameraButton = AuxFunctions.FindObject(canvas, "CameraConfigurationButton");
+        changeCameraNodeButton = AuxFunctions.FindObject(canvas, "ChangeNodeButton");
+        configureCameraPanel = AuxFunctions.FindObject(canvas, "CameraConfigurationPanel");
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
+
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
+
+        cameraConfigurationModeButton = AuxFunctions.FindObject(canvas, "ConfigurationMode");
+        cameraNodeText = AuxFunctions.FindObject(canvas, "NodeText").GetComponent<Text>();
+        cancelNodeSelectionButton = AuxFunctions.FindObject(canvas, "CancelNodeSelectionButton");
+
     }
 
     /// <summary>
@@ -294,6 +306,8 @@ public class SimUI : MonoBehaviour
             releaseHorizontalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][1].ToString();
             releaseVerticalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][2].ToString();
         }
+
+
     }
 
     private void UpdateWindows()
@@ -341,7 +355,7 @@ public class SimUI : MonoBehaviour
         UpdateDriverStationPanel();
     }
 
-    
+
     #region main button functions
     /// <summary>
     /// Resets the robot
@@ -551,7 +565,7 @@ public class SimUI : MonoBehaviour
             dpm.modeEnabled = true;
             enableDPMText.text = "Disable Driver Practice Mode";
             lockPanel.SetActive(false);
-            
+
         }
         else
         {
@@ -587,7 +601,7 @@ public class SimUI : MonoBehaviour
     /// <summary>
     /// Toggles the display of primary gamepiece release trajectory.
     /// </summary>
-    public void DisplayTrajectorySecondary()        
+    public void DisplayTrajectorySecondary()
     {
         dpm.displayTrajectories[1] = !dpm.displayTrajectories[1];
     }
@@ -675,7 +689,7 @@ public class SimUI : MonoBehaviour
     {
         dpm.definingIntake = false;
     }
-    
+
     public void HighlightIntake()
     {
         dpm.HighlightNode(dpm.intakeNode[configuringIndex].name);
@@ -832,7 +846,6 @@ public class SimUI : MonoBehaviour
         }
     }
     #endregion
-
     #region robot camera functions
     /// <summary>
     /// Updates the robot camera view window
@@ -840,7 +853,7 @@ public class SimUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Make sure robot camera exists first
-        if(robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
+        if (robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
         {
             robotCamera = robotCameraList.GetComponent<RobotCamera>();
         }
@@ -913,18 +926,90 @@ public class SimUI : MonoBehaviour
         indicatorActive = !indicatorActive;
         if (indicatorActive)
         {
+            //Only allow the camera configuration when the indicator is active
             showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
+            configureRobotCameraButton.SetActive(true);
         }
         else
         {
             showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
+            configureRobotCameraButton.SetActive(false);
+            //Close the panel when indicator is not active and stop all configuration
+            configureCameraPanel.SetActive(false);
+            robotCamera.IsChangingHeight = robotCamera.SelectingNode = robotCamera.ChangingCameraPosition = false;
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+            robotCamera.SelectingNode = false;
+            robotCamera.SelectedNode = null;
         }
         robotCameraIndicator.SetActive(indicatorActive);
     }
 
+    /// <summary>
+    /// Activate the configure camera panel and start position configuration
+    /// </summary>
+    public void ConfigureCameraPosition()
+    {
+        robotCamera.ChangingCameraPosition = !robotCamera.ChangingCameraPosition;
+        configureCameraPanel.SetActive(robotCamera.ChangingCameraPosition);
+        if (robotCamera.ChangingCameraPosition)
+        {
+            //Update the node where current camera is attached to
+            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "End Configuration";
+        }
+        else
+        {
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+        }
+    }
 
+    /// <summary>
+    /// Toggle between changing position along horizontal plane or changing height
+    /// </summary>
+    public void ToggleConfigurationMode()
+    {
+        robotCamera.IsChangingHeight = !robotCamera.IsChangingHeight;
+        if (robotCamera.IsChangingHeight)
+        {
+            cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Horizontal Plane";
+        }
+        else
+        {
+            cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+        }
+    }
+
+    /// <summary>
+    /// Going into the state of selecting a new node and confirming it
+    /// </summary>
+    public void ToggleChangeNode()
+    {
+        if (!robotCamera.SelectingNode && robotCamera.SelectedNode == null)
+        {
+            robotCamera.DefineNode(); //Start selecting a new node
+            changeCameraNodeButton.GetComponentInChildren<Text>().text = "Confirm";
+            cancelNodeSelectionButton.SetActive(true);
+        }
+        else if (robotCamera.SelectingNode && robotCamera.SelectedNode != null)
+        {
+            //Change the node where camera is attached to, clear selected node, and update name of current node
+            robotCamera.ChangeNodeAttachment();
+            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+            changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+            cancelNodeSelectionButton.SetActive(false);
+
+        }
+    }
+
+    public void CancelNodeSelection()
+    {
+        robotCamera.SelectedNode = null;
+        robotCamera.SelectingNode = false;
+        cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+        changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+        cancelNodeSelectionButton.SetActive(false);
+    }
     #endregion
-
 
     /// <summary>
     /// Pop reset instructions when main is in reset spawnpoint mode
@@ -983,6 +1068,7 @@ public class SimUI : MonoBehaviour
         oppositeSide = !oppositeSide;
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
+
 
     public void ShowControlPanel(bool show)
     {
