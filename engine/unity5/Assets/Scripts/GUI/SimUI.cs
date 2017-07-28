@@ -30,7 +30,7 @@ public class SimUI : MonoBehaviour
     GameObject robotCameraViewWindow;
     RenderTexture robotCameraView;
     RobotCamera robotCamera;
-    
+
     GameObject releaseVelocityPanel;
 
     GameObject xOffsetEntry;
@@ -49,6 +49,7 @@ public class SimUI : MonoBehaviour
     GameObject cameraConfigurationModeButton;
     GameObject changeCameraNodeButton;
     GameObject configureCameraPanel;
+    GameObject cancelNodeSelectionButton;
 
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
@@ -100,7 +101,7 @@ public class SimUI : MonoBehaviour
 
     private bool freeroamWindowClosed = false;
     private bool usingRobotView = false;
-    
+
     private bool oppositeSide = false;
     private bool indicatorActive = false;
 
@@ -202,6 +203,7 @@ public class SimUI : MonoBehaviour
 
         cameraConfigurationModeButton = AuxFunctions.FindObject(canvas, "ConfigurationMode");
         cameraNodeText = AuxFunctions.FindObject(canvas, "NodeText").GetComponent<Text>();
+        cancelNodeSelectionButton = AuxFunctions.FindObject(canvas, "CancelNodeSelectionButton");
     }
 
     /// <summary>
@@ -341,7 +343,7 @@ public class SimUI : MonoBehaviour
         UpdateDriverStationPanel();
     }
 
-    
+
     #region main button functions
     /// <summary>
     /// Resets the robot
@@ -477,7 +479,7 @@ public class SimUI : MonoBehaviour
             dpm.modeEnabled = true;
             enableDPMText.text = "Disable Driver Practice Mode";
             lockPanel.SetActive(false);
-            
+
         }
         else
         {
@@ -513,7 +515,7 @@ public class SimUI : MonoBehaviour
     /// <summary>
     /// Toggles the display of primary gamepiece release trajectory.
     /// </summary>
-    public void DisplayTrajectorySecondary()        
+    public void DisplayTrajectorySecondary()
     {
         dpm.displayTrajectories[1] = !dpm.displayTrajectories[1];
     }
@@ -597,7 +599,7 @@ public class SimUI : MonoBehaviour
     {
         dpm.definingIntake = false;
     }
-    
+
     public void HighlightIntake()
     {
         dpm.HighlightNode(dpm.intakeNode[configuringIndex].name);
@@ -752,7 +754,6 @@ public class SimUI : MonoBehaviour
         }
     }
     #endregion
-
     #region robot camera functions
     /// <summary>
     /// Updates the robot camera view window
@@ -760,7 +761,7 @@ public class SimUI : MonoBehaviour
     private void UpdateCameraWindow()
     {
         //Make sure robot camera exists first
-        if(robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
+        if (robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
         {
             robotCamera = robotCameraList.GetComponent<RobotCamera>();
         }
@@ -833,28 +834,35 @@ public class SimUI : MonoBehaviour
         indicatorActive = !indicatorActive;
         if (indicatorActive)
         {
+            //Only allow the camera configuration when the indicator is active
             showCameraButton.GetComponentInChildren<Text>().text = "Hide Camera";
             configureRobotCameraButton.SetActive(true);
-            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
         }
         else
         {
             showCameraButton.GetComponentInChildren<Text>().text = "Show Camera";
             configureRobotCameraButton.SetActive(false);
+            //Close the panel when indicator is not active and stop all configuration
             configureCameraPanel.SetActive(false);
             robotCamera.IsChangingHeight = robotCamera.SelectingNode = robotCamera.ChangingCameraPosition = false;
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
-
+            robotCamera.SelectingNode = false;
+            robotCamera.SelectedNode = null;
         }
         robotCameraIndicator.SetActive(indicatorActive);
     }
 
+    /// <summary>
+    /// Activate the configure camera panel and start position configuration
+    /// </summary>
     public void ConfigureCameraPosition()
     {
         robotCamera.ChangingCameraPosition = !robotCamera.ChangingCameraPosition;
         configureCameraPanel.SetActive(robotCamera.ChangingCameraPosition);
         if (robotCamera.ChangingCameraPosition)
         {
+            //Update the node where current camera is attached to
+            cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "End Configuration";
         }
         else
@@ -862,7 +870,10 @@ public class SimUI : MonoBehaviour
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
         }
     }
-    
+
+    /// <summary>
+    /// Toggle between changing position along horizontal plane or changing height
+    /// </summary>
     public void ToggleConfigurationMode()
     {
         robotCamera.IsChangingHeight = !robotCamera.IsChangingHeight;
@@ -876,25 +887,37 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Going into the state of selecting a new node and confirming it
+    /// </summary>
     public void ToggleChangeNode()
     {
         if (!robotCamera.SelectingNode && robotCamera.SelectedNode == null)
         {
-            robotCamera.DefineNode();
+            robotCamera.DefineNode(); //Start selecting a new node
             changeCameraNodeButton.GetComponentInChildren<Text>().text = "Confirm";
+            cancelNodeSelectionButton.SetActive(true);
         }
         else if (robotCamera.SelectingNode && robotCamera.SelectedNode != null)
         {
-            robotCamera.SelectingNode = false;
+            //Change the node where camera is attached to, clear selected node, and update name of current node
             robotCamera.ChangeNodeAttachment();
-            robotCamera.SelectedNode = null;
             cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
             changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+            cancelNodeSelectionButton.SetActive(false);
+
         }
-            
+    }
+
+    public void CancelNodeSelection()
+    {
+        robotCamera.SelectedNode = null;
+        robotCamera.SelectingNode = false;
+        cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
+        changeCameraNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
+        cancelNodeSelectionButton.SetActive(false);
     }
     #endregion
-
 
     /// <summary>
     /// Pop reset instructions when main is in reset spawnpoint mode
@@ -954,6 +977,6 @@ public class SimUI : MonoBehaviour
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 
-    
+
 }
 
