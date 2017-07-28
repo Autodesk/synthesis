@@ -9,13 +9,14 @@ public class RobotCamera : MonoBehaviour
     public GameObject CurrentCamera { get; set; }
     public GameObject CameraIndicator;
     private GameObject robotCameraListObject;
-    private GameObject selectedNode;
-    private bool selectingNode = false;
+    public GameObject SelectedNode;
+
+    public bool SelectingNode = false;
     public bool DefiningCameraNode = false;
-    private Vector3 currentPosition = new Vector3(0, 0, 0);
-    private Vector3 currentRotation = new Vector3(0, 0, 0);
-    private static float rotateOffsetAmount = 0.5f;
-    private static float positionOffsetAmount = 0.5f;
+
+    public bool ChangingCameraPosition = false;
+    public bool IsChangingHeight = false;
+
     //x rotates up and down (+up), y rotates left and right (+left), z tilts to left and right (+left)
 
     /// <summary>
@@ -124,25 +125,39 @@ public class RobotCamera : MonoBehaviour
             CameraIndicator.transform.parent = CurrentCamera.transform;
         }
 
-        if (DefiningCameraNode)
+        if (SelectingNode)
         {
             if (Input.GetMouseButtonDown(0))
             {
-                if (selectingNode) SetNode();
+                SetNode();
+                Debug.Log("Selecting node");
+
+            }
+        }
+
+        if (ChangingCameraPosition)
+        {
+            
+            if (Input.GetMouseButton(1))
+            {
+                CurrentCamera.transform.Rotate(new Vector3(-Input.GetAxis("CameraVertical") * 10, Input.GetAxis("CameraHorizontal") * 10, 0) * Time.deltaTime);
+            }
+            else if(!IsChangingHeight)
+            {
+                CurrentCamera.transform.Translate(new Vector3(Input.GetAxis("CameraHorizontal"), 0, Input.GetAxis("CameraVertical")) * Time.deltaTime);
+            }
+            else
+            {
+                CurrentCamera.transform.Translate(new Vector3(0, Input.GetAxis("CameraVertical"), 0) * Time.deltaTime);
             }
         }
     }
-
-    public void DefinePosition()
-    {
-        currentPosition = CurrentCamera.transform.localPosition;
-        currentRotation = CurrentCamera.transform.localRotation.ToEuler();
-    }
-
+    
     public void DefineNode()
     {
         UserMessageManager.Dispatch("Click on a robot node to set it as the attachment node", 5);
-        selectingNode = true;
+        SelectingNode = true;
+        //SelectedNode = null;
     }
 
     public void SetNode()
@@ -159,6 +174,7 @@ public class RobotCamera : MonoBehaviour
         BPhysicsWorld world = BPhysicsWorld.Get();
         world.world.RayTest(start, end, rayResult);
 
+        Debug.Log("Selected:" + rayResult.CollisionObject);
         //If there is a collision object and it is dynamic and not a robot part, change the gamepiece to that
         if (rayResult.CollisionObject != null)
         {
@@ -167,10 +183,9 @@ public class RobotCamera : MonoBehaviour
             {
                 string name = selectedObject.name;
 
-                selectedNode = selectedObject;
+                SelectedNode = selectedObject;
 
-                UserMessageManager.Dispatch(name + " has been selected as the node for attachment", 2);
-                selectingNode = false;
+                UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 2);
             }
             else
             {
@@ -179,67 +194,9 @@ public class RobotCamera : MonoBehaviour
         }
     }
 
-    public void RotateLeft()
+    public void ChangeNodeAttachment()
     {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.y += rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
-    }
-    public void RotateRight()
-    {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.y -= rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
-    }
-    public void RotateUp()
-    {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.x += rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
-    }
-    public void RotateDown()
-    {
-        Vector3 temp = CurrentCamera.transform.rotation.ToEuler();
-        temp.x -= rotateOffsetAmount;
-        CurrentCamera.transform.localRotation = Quaternion.Euler(temp);
+        CurrentCamera.transform.parent = SelectedNode.transform;
     }
 
-    public void MoveUp()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.y -= positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-    public void MoveDown()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.y += positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-    public void MoveLeft()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.x -= positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-    public void MoveRight()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.y += positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-
-    public void MoveBack()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.z += positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
-
-    public void MoveForward()
-    {
-        Vector3 temp = CurrentCamera.transform.position;
-        temp.z -= positionOffsetAmount;
-        CurrentCamera.transform.localPosition = temp;
-    }
 }
