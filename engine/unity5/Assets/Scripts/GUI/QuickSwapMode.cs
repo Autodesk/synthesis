@@ -24,7 +24,8 @@ public class QuickSwapMode : MonoBehaviour
     public static bool isMecanum = false;
 
     //Manipulator Options
-    private GameObject defaultManipulator;
+    private GameObject noManipulator;
+    private GameObject syntheClaw;
     List<GameObject> manipulators;
     int selectedManipulator;
 
@@ -60,9 +61,10 @@ public class QuickSwapMode : MonoBehaviour
         bases = new List<GameObject> { defaultDrive, mecanumDrive };
 
         //Find manipulator objects
-        defaultManipulator = GameObject.Find("DefaultManipulator");
+        noManipulator = GameObject.Find("NoManipulator");
+        syntheClaw = GameObject.Find("SyntheClaw");
         //Put all the manipulators in the manipulators list
-        manipulators = new List<GameObject> { defaultManipulator };
+        manipulators = new List<GameObject> { noManipulator, syntheClaw };
     }
 
     public void StartQuickSwap()
@@ -130,7 +132,7 @@ public class QuickSwapMode : MonoBehaviour
     /// Selects a manipulator, as referenced by its index in the manipualtors list
     /// </summary>
     /// <param name="manipulator"></param>
-    public void SelectManipulator(int manipulator) //Drive Bases are indexed in the list bases
+    public void SelectManipulator(int manipulator) // Manipulators are indexed in the list bases
     {
         Color purple = new Color(0.757f, 0.200f, 0.757f);
 
@@ -162,6 +164,18 @@ public class QuickSwapMode : MonoBehaviour
         return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\DriveBases\\DriveBase2557";
     }
 
+    /// <summary>
+    /// Returns the string destination path of a manipulator
+    /// </summary>
+    public string getManipulator(int manipulatorID)
+    {
+        switch (manipulatorID)
+        {
+            case 1: //SyntheClaw
+                return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\Manipulators\\Claw\\SyntheClaw";
+        }
+        return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\Manipulators\\Claw\\SyntheClaw";
+    }
     public void StartSwapSim()
     {
         PlayerPrefs.SetString("simSelectedField", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\Fields\\2014 Aerial Assist");
