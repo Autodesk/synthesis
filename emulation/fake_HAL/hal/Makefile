@@ -32,7 +32,7 @@ JAVA_FILES_NTCORE_JAVA := $(shell find ./ntcore/java -name "*.java")
 
 SRC_FILES_CPP := $(shell find ./wpilibc -name "*.cpp" -not -name "VisionRunner.cpp")
 
-SRC_FILES_JAVA := $(shell find ./wpilibj -name "*.cpp")
+SRC_FILES_JAVA := $(shell find ./wpilibj -name "*.cpp" -not -name "CANJNI.cpp")
 
 JAVA_FILES_JAVA := $(shell find ./wpilibj -name "*.java" -not -wholename "*sim/*" -not -wholename "*test/*" -not -name "CameraServer.java" -not -name "Vision*.java")
 
