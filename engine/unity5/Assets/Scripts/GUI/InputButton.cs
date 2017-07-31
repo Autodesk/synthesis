@@ -44,15 +44,15 @@ public class InputButton : MonoBehaviour
         buttonStyle.active.background = buttonSelected;
 
         tick = !tick;
-        buttonContent = Controls.ControlKey[controlKey].ToString();
+        //buttonContent = Controls.ControlKey[controlKey].ToString();
 
-        Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
-        Rect rect = GetComponent<RectTransform>().rect;
-        if (GUI.Button(new Rect(p.x - rect.width / 2 - 0.5f, Screen.height - p.y - rect.height / 2 - 0.5f, rect.width - 0.5f, rect.height - 0.5f), buttonContent, buttonStyle) && (!isEditing))
-        {
-            isEditing = true;
-            active = true;
-        }
+        //Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
+        //Rect rect = GetComponent<RectTransform>().rect;
+        //if (GUI.Button(new Rect(p.x - rect.width / 2 - 0.5f, Screen.height - p.y - rect.height / 2 - 0.5f, rect.width - 0.5f, rect.height - 0.5f), buttonContent, buttonStyle) && (!isEditing))
+        //{
+        //    isEditing = true;
+        //    active = true;
+        //}
 
         if (active)
         {
