@@ -10,6 +10,8 @@ public class UIDrag : MonoBehaviour
     {
         offsetX = transform.parent.position.x - Input.mousePosition.x;
         offsetY = transform.parent.position.y - Input.mousePosition.y;
+
+        MainState.draggingWindow = true;
     }
 
     public void OnDrag()
@@ -26,5 +28,10 @@ public class UIDrag : MonoBehaviour
         {
             transform.parent.position = lastPos;
         }
+    }
+
+    public void EndDrag()
+    {
+        MainState.draggingWindow = false;
     }
 }
