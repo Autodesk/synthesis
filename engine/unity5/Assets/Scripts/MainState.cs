@@ -61,21 +61,6 @@ public class MainState : SimState
 
     private List<GameObject> extraElements;
 
-    private Texture2D buttonTexture;
-    private Texture2D buttonSelected;
-    private Texture2D greyWindowTexture;
-    private Texture2D darkGreyWindowTexture;
-    private Texture2D lightGreyWindowTexture;
-    private Texture2D transparentWindowTexture;
-
-    private Font gravityRegular;
-    private Font russoOne;
-
-    private GUIController gui;
-
-    private GUIStyle menuWindow;
-    private GUIStyle menuButton;
-
     private OverlayWindow oWindow;
 
     private System.Random random;
@@ -105,196 +90,8 @@ public class MainState : SimState
     }
 
     public override void OnGUI()
-    {
-        if (gui == null)
-        {
-            //Custom style for windows
-            menuWindow = new GUIStyle(GUI.skin.window);
-            menuWindow.normal.background = transparentWindowTexture;
-            menuWindow.onNormal.background = transparentWindowTexture;
-            menuWindow.font = russoOne;
-
-            //Custom style for buttons
-            menuButton = new GUIStyle(GUI.skin.button);
-            menuButton.font = russoOne;
-            menuButton.normal.background = buttonTexture;
-            menuButton.hover.background = buttonSelected;
-            menuButton.active.background = buttonSelected;
-            menuButton.onNormal.background = buttonSelected;
-            menuButton.onHover.background = buttonSelected;
-            menuButton.onActive.background = buttonSelected;
-
-            gui = new GUIController();
-            gui.hideGuiCallback = HideGUI;
-            gui.showGuiCallback = ShowGUI;
-
-            gui.AddWindow("Reset Robot", new DialogWindow("Reset Robot", "Quick Reset", "Reset Spawnpoint"), (object o) =>
-            {
-                HideGUI();
-                switch ((int)o)
-                {
-                    case 0:
-                        BeginReset();
-                        EndReset();
-                        break;
-                    case 1:
-                        IsResetting = true;
-                        BeginReset();
-                        break;
-
-                }
-
-            });
-
-            CreateOrientWindow();
-
-            //Added a robot view to toggle among cameras on robot
-            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Overview", "Robot view"), (object o) =>
-            {
-                HideGUI();
-
-                switch ((int)o)
-                {
-                    case 0:
-                        ToDynamicCamera();
-                        dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
-                        break;
-                    case 1:
-                        ToDynamicCamera();
-                        dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
-                        DynamicCamera.MovingEnabled = true;
-                        break;
-                    case 2:
-                        ToDynamicCamera();
-                        dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
-                        break;
-                    case 3:
-                        ToDynamicCamera();
-                        dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
-                        break;
-                    case 4:
-                        if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
-                        {
-                            ToRobotCamera();
-                        }
-                        break;
-
-                }
-            });
-
-
-            gui.AddWindow("Quit to Main Menu", new DialogWindow("Quit to Main Menu?", "Yes", "No"), (object o) =>
-            {
-                if ((int)o == 0)
-                    SceneManager.LoadScene("MainMenu");
-            });
-
-            gui.AddWindow("Quit to Desktop", new DialogWindow("Quit to Desktop?", "Yes", "No"), (object o) =>
-            {
-                if ((int)o == 0)
-                    Application.Quit();
-            });
-        }
-
-        if (Input.GetMouseButtonUp(0) && !gui.ClickedInsideWindow())
-        {
-            HideGUI();
-            gui.HideAllWindows();
-        }
-
-        GUI.Window(1, new Rect(0, 0, gui.GetSidebarWidth(), 25), (int windowID) =>
-        {
-            if (GUI.Button(new Rect(0, 0, gui.GetSidebarWidth(), 25), "Menu", menuButton))
-                gui.EscPressed();
-        },
-            "",
-            menuWindow
-        );
-
-        gui.Render();
+    { 
         UserMessageManager.Render();
-    }
-
-    void CreateOrientWindow()
-    {
-        List<string> titles = new List<string>();
-        titles.Add("Left");
-        titles.Add("Right");
-        titles.Add("Forward");
-        titles.Add("Back");
-        titles.Add("Save Orientation");
-        titles.Add("Close");
-        titles.Add("Default");
-
-        List<Rect> rects = new List<Rect>();
-        rects.Add(new Rect(40, 200, 105, 35));
-        rects.Add(new Rect(245, 200, 105, 35));
-        rects.Add(new Rect(147, 155, 105, 35));
-        rects.Add(new Rect(147, 245, 105, 35));
-        rects.Add(new Rect(110, 95, 190, 35));
-        rects.Add(new Rect(270, 50, 90, 35));
-        rects.Add(new Rect(50, 50, 90, 35));
-
-        oWindow = new TextWindow("Orient Robot", new Rect((Screen.width / 2) - 150, (Screen.height / 2) - 125, 400, 300),
-                                             new string[0], new Rect[0], titles.ToArray(), rects.ToArray());
-        //The directional buttons lift the robot to avoid collison with objects, rotates it, and saves the applied rotation to a vector3
-        gui.AddWindow("Orient Robot", oWindow, (object o) =>
-        {
-            if (!isResettingOrientation)
-            {
-                BeginReset();
-                TransposeRobot(new Vector3(0f, 1f, 0f));
-                isResettingOrientation = true;
-            }
-
-            switch ((int)o)
-            {
-                case 0:
-                    RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-
-                    break;
-                case 1:
-                    RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-
-                    break;
-                case 2:
-                    RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-
-                    break;
-                case 3:
-                    RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-
-                    break;
-                case 4:
-                    robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-                    robotStartOrientation.ToUnity();
-                    EndReset();
-
-                    break;
-                case 5:
-                    BeginReset();
-                    oWindow.Active = false;
-                    EndReset();
-
-                    break;
-                case 6:
-                    robotStartOrientation = BulletSharp.Math.Matrix.Identity;
-                    robotStartPosition = new Vector3(0f, 1f, 0f);
-                    EndReset();
-                    break;
-            }
-        });
-    }
-
-    void HideGUI()
-    {
-        gui.guiVisible = false;
-        DynamicCamera.MovingEnabled = true;
-    }
-
-    void ShowGUI()
-    {
-        DynamicCamera.MovingEnabled = false;
     }
 
     public override void Start()
@@ -310,15 +107,6 @@ public class MainState : SimState
         extraElements = new List<GameObject>();
 
         random = new System.Random();
-
-        buttonTexture = Resources.Load("Images/greyButton") as Texture2D;
-        buttonSelected = Resources.Load("Images/selectedbuttontexture") as Texture2D;
-        gravityRegular = Resources.Load("Fonts/Gravity-Regular") as Font;
-        russoOne = Resources.Load("Fonts/Russo_One") as Font;
-        greyWindowTexture = Resources.Load("Images/greyBackground") as Texture2D;
-        darkGreyWindowTexture = Resources.Load("Images/darkGreyBackground") as Texture2D;
-        lightGreyWindowTexture = Resources.Load("Images/lightGreyBackground") as Texture2D;
-        transparentWindowTexture = Resources.Load("Images/transparentBackground") as Texture2D;
 
         contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         isResettingOrientation = false;
@@ -347,8 +135,6 @@ public class MainState : SimState
 
     public override void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
         //Reset hot key, start counting time whenever it's pressed down

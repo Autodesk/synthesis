@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using BulletSharp;
 using BulletUnity;
 
@@ -14,16 +15,34 @@ public class Toolkit : MonoBehaviour
 
     private bool usingRuler;
     private BulletSharp.Math.Vector3 firstPoint = BulletSharp.Math.Vector3.Zero;
-    private BulletSharp.Math.Vector3 secondPoint;
 
+    private GameObject canvas;
+
+    private GameObject toolkitWindow;
+
+    private GameObject rulerWindow;
     private GameObject rulerStartPoint;
     private GameObject rulerEndPoint;
+    private Text rulerText;
+    private Text rulerXText;
+    private Text rulerYText;
+    private Text rulerZText;
 
     // Use this for initialization
     void Start()
     {
+        canvas = GameObject.Find("Canvas");
+        toolkitWindow = AuxFunctions.FindObject(canvas,"ToolkitPanel");
+
+        //Ruler Objects
         rulerStartPoint = GameObject.Find("RulerStartPoint");
         rulerEndPoint = GameObject.Find("RulerEndPoint");
+        rulerWindow = AuxFunctions.FindObject(canvas, "RulerPanel");
+        rulerText = AuxFunctions.FindObject(canvas, "RulerText").GetComponent<Text>();
+        rulerXText = AuxFunctions.FindObject(canvas, "RulerXAxisText").GetComponent<Text>();
+        rulerYText = AuxFunctions.FindObject(canvas, "RulerYAxisText").GetComponent<Text>();
+        rulerZText = AuxFunctions.FindObject(canvas, "RulerZAxisText").GetComponent<Text>();
+
     }
 
     // Update is called once per frame
@@ -36,10 +55,38 @@ public class Toolkit : MonoBehaviour
         }
     }
 
+    public void ToggleToolkitWindow(bool show)
+    {
+        if (show)
+        {
+            toolkitWindow.SetActive(true);
+        }
+        else
+        {
+            ToggleRulerWindow(false);
+            toolkitWindow.SetActive(false);
+        }
+    }
+
+
+
+    #region Ruler Functions
+    public void ToggleRulerWindow(bool show)
+    {
+        if (show) rulerWindow.SetActive(true);
+        else
+        {
+            rulerWindow.SetActive(false);
+            DisableRuler();
+        }
+    }
+
     public void BeginRuler()
     {
         usingRuler = true;
         rulerStartPoint.SetActive(true);
+        AuxFunctions.FindObject(canvas, "RulerBeginButton").SetActive(false);
+        AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(true);
     }
 
     private void ClickRuler()
@@ -69,8 +116,7 @@ public class Toolkit : MonoBehaviour
                 }
                 else
                 {
-                    secondPoint = rayResult.HitPointWorld;
-                    FinishRuler();
+                    DisableRuler();
                 }
             }
 
@@ -81,27 +127,26 @@ public class Toolkit : MonoBehaviour
             }
             else
             {
+                rulerText.text = BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 3.28084f + "ft";
+                rulerXText.text = Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 3.28084f + "ft";
+                rulerYText.text = Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 3.28084f + "ft";
+                rulerZText.text = Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 3.28084f + "ft";
                 rulerEndPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 rulerStartPoint.GetComponent<LineRenderer>().SetPosition(1, rulerEndPoint.transform.position);
             }
         }
     }
 
-    private void FinishRuler()
-    {
-        ignoreClick = true;
-        float distance = BulletSharp.Math.Vector3.Distance(firstPoint, secondPoint) * 3.28084f;
-        UserMessageManager.Dispatch("Distance is: " + distance + " feet.", 10f);
-        firstPoint = BulletSharp.Math.Vector3.Zero;
-        DisableRuler();
-    }
-
     public void DisableRuler()
     {
+        ignoreClick = true;
+        firstPoint = BulletSharp.Math.Vector3.Zero;
         usingRuler = false;
         rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
         rulerStartPoint.SetActive(false);
         rulerEndPoint.SetActive(false);
+        AuxFunctions.FindObject(canvas, "RulerBeginButton").SetActive(true);
+        AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(false);
     }
-  
+    #endregion
 }
