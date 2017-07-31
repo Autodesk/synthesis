@@ -89,6 +89,9 @@ public class MainState : SimState
 
     public static bool ControlsDisabled = false;
 
+    private string fieldPath;
+    private string robotPath;
+
     public override void Awake()
     {
         Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
@@ -406,7 +409,7 @@ public class MainState : SimState
         if (!IsResetting && Input.GetKey(KeyCode.Space))
         {
             contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
         }
 
         UpdateTrackers();
@@ -437,7 +440,7 @@ public class MainState : SimState
         if (awaitingReplay)
         {
             awaitingReplay = false;
-            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
         }
     }
 
@@ -461,6 +464,8 @@ public class MainState : SimState
 
     bool LoadField(string directory)
     {
+        fieldPath = directory;
+
         fieldObject = new GameObject("Field");
 
         FieldDefinition.Factory = delegate (Guid guid, string name)
@@ -478,6 +483,8 @@ public class MainState : SimState
 
     bool LoadRobot(string directory)
     {
+        robotPath = directory;
+
         robotObject = new GameObject("Robot");
         robotObject.transform.position = robotStartPosition;
 
@@ -553,9 +560,6 @@ public class MainState : SimState
         string simSelectedRobot;
 
         ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
-
-        PlayerPrefs.SetString("simSelectedField", simSelectedField);
-        PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
 
         LoadField(simSelectedField);
         LoadRobot(simSelectedRobot);
