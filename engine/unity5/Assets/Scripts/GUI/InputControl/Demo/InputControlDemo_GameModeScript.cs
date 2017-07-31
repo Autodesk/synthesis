@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 
 
 public class InputControlDemo_GameModeScript : MonoBehaviour
 {
-    public GameObject                    settingsMode;
+    public GameObject settingsMode;
     public InputControlDemo_PlayerScript playerScript;
 
 

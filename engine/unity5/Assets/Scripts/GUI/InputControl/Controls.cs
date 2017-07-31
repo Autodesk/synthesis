@@ -243,6 +243,7 @@ public class Controls
     }
 }
 #region Old Controls: 2016 and Older
+
 //public static void ResetDefaults()
 //{
 //    ControlKey[(int)Control.Forward] = KeyCode.UpArrow;

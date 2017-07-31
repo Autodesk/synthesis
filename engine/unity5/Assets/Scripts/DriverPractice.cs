@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using BulletSharp;
 using BulletSharp.Math;
-using System.Collections;
 using System.IO;
 using System.Text;
 using BulletUnity.Debugging;

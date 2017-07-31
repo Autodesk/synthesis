@@ -50,7 +50,7 @@ public class KeyButton : MonoBehaviour
     }
 
     public void updateText()
-    { 
+    {
         if (mKeyText == null)
         {
             mKeyText = GetComponentInChildren<Text>();

@@ -28,7 +28,7 @@ public static class InputControl
     private static float                          mSmoothCoefficient = 5f; // Smooth looks the same as in Input.GetAxis() with this value
 
     // Joystick options
-    private static float                          mJoystickThreshold = 0.3f;
+    private static float                          mJoystickThreshold = 0.2f;
 
     // Mouse options
     private static float                          mMouseSensitivity  = 1f;

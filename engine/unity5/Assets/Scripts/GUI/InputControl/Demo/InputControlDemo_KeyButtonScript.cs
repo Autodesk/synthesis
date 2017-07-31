@@ -1,20 +1,20 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 
 
 public class InputControlDemo_KeyButtonScript : MonoBehaviour
 {
-    public static InputControlDemo_KeyButtonScript selectedButton      = null;
-    public static bool                             ignoreMouseMovement = true;
-    public static bool                             useKeyModifiers     = false;
+    public static InputControlDemo_KeyButtonScript selectedButton = null;
+    public static bool ignoreMouseMovement = true;
+    public static bool useKeyModifiers = false;
 
 
 
     public KeyMapping keyMapping;
-    public int        keyIndex;
+    public int keyIndex;
 
-    private Text      mKeyText;
+    private Text mKeyText;
 
 
 
@@ -62,13 +62,13 @@ public class InputControlDemo_KeyButtonScript : MonoBehaviour
         {
             case 0:
                 mKeyText.text = keyMapping.primaryInput.ToString();
-            break;
+                break;
             case 1:
                 mKeyText.text = keyMapping.secondaryInput.ToString();
-            break;
+                break;
             case 2:
                 mKeyText.text = keyMapping.thirdInput.ToString();
-            break;
+                break;
         }
     }
 
@@ -95,13 +95,13 @@ public class InputControlDemo_KeyButtonScript : MonoBehaviour
         {
             case 0:
                 keyMapping.primaryInput = input;
-            break;
+                break;
             case 1:
                 keyMapping.secondaryInput = input;
-            break;
+                break;
             case 2:
                 keyMapping.thirdInput = input;
-            break;
+                break;
         }
 
         updateText();

@@ -245,10 +245,10 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>call "%25VS140COMNTOOLS%25vsvars32"
+    <PostBuildEvent>call "%25VS141COMNTOOLS%25vsvars32"
 			mt.exe -manifest "$(ProjectDir)BxDFieldExporter.X.manifest" -outputresource:"$(TargetPath)";#2
-			XCopy "$(TargetPath)" "%AppData%\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
-		    XCopy "$(ProjectDir)Autodesk.BxDFieldExporter.Inventor.addin" "%AppData%\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
+			XCopy "$(TargetPath)" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
+		    XCopy "$(ProjectDir)Autodesk.BxDFieldExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
 	</PostBuildEvent>
   </PropertyGroup>
 </Project>
