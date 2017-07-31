@@ -115,16 +115,12 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void OnDestroy()
         {
-<<<<<<< HEAD
             StateMachine sm = StateMachine.Instance;
 
             if (sm == null)
                 return;
 
             MainState mainState = sm.CurrentState as MainState;
-=======
-            MainState mainState = StateMachine.Instance.CurrentState as MainState;
->>>>>>> Isabelle
 
             if (mainState != null)
                 mainState.Trackers.Remove(this);

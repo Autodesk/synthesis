@@ -58,18 +58,29 @@ public class DynamicCamera : MonoBehaviour
         Quaternion startRotation;
         Quaternion lookingRotation;
         Quaternion currentRotation;
+        static Vector3 position1Vector = new Vector3(0f, 1.5f, -9.5f);
+        static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
+        Vector3 currentPosition;
 
-        public DriverStationState(MonoBehaviour mono)
+        float transformSpeed;
+        bool opposite;
+
+        public DriverStationState(MonoBehaviour mono, bool oppositeSide = false)
         {
             this.mono = mono;
+            this.opposite = oppositeSide;
         }
 
         public override void Init()
         {
             robot = GameObject.Find("Robot");
-            mono.transform.position = new Vector3(0f, 1.5f, -9f);
+            if (opposite) currentPosition = position2Vector;
+            else currentPosition = position1Vector;
+            mono.transform.position = currentPosition;
+
             startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
+            transformSpeed = 2.5f;
         }
 
         public override void Update()
@@ -83,9 +94,14 @@ public class DynamicCamera : MonoBehaviour
             {
                 robot = GameObject.Find("Robot");
             }
-
+            if (MovingEnabled)
+            {
+                currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+            }
             mono.transform.rotation = currentRotation;
+            mono.transform.position = currentPosition;
         }
+
 
         public override void End()
         {
@@ -138,14 +154,14 @@ public class DynamicCamera : MonoBehaviour
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
-<<<<<<< HEAD
-                            
-=======
 
->>>>>>> Isabelle
                         }
 
                     }
+                }
+                else
+                {
+                    panValue = 0f;
                 }
 
                 rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
@@ -246,7 +262,7 @@ public class DynamicCamera : MonoBehaviour
     }
 
     //This state locates directly above the field and looks straight down on the field in order for robot positioning
-    //Not working with 2016&2017 field because they are not centered
+    //Not working well with 2016&2017 field because they are not centered
     public class OverviewState : CameraState
     {
         Vector3 positionVector;
@@ -333,7 +349,7 @@ public class DynamicCamera : MonoBehaviour
         if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
         else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
         else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
-        else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this));
+        else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this, false));
         if (_cameraState != null) _cameraState.Update();
     }
 
@@ -388,6 +404,6 @@ public class DynamicCamera : MonoBehaviour
     {
         if (type == 0) SwitchCameraState(new FreeroamState(this));
         else if (type == 1) SwitchCameraState(new OrbitState(this));
-        else SwitchCameraState(new DriverStationState(this));
+        else SwitchCameraState(new DriverStationState(this, false));
     }
 }
