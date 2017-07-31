@@ -17,8 +17,9 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
-    <RootNamespace></RootNamespace>
-    <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
+    <RootNamespace>
+    </RootNamespace>
+    <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -75,6 +76,9 @@
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
@@ -203,10 +207,7 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\BSoftBodyWMesh.cs" />
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
     <Compile Include="Assets\LocalizationHelper.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BCylinderShapeX.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BCylinderShapeZ.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BGImpactCompoundShape.cs" />
-    <Compile Include="Assets\Scripts\BUExtensions\BGImpactMeshShape.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
@@ -215,15 +216,16 @@
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
+    <Compile Include="Assets\Scripts\FEA\ReplayExporter.cs" />
+    <Compile Include="Assets\Scripts\FEA\ReplayImporter.cs" />
     <Compile Include="Assets\Scripts\FEA\ReplayState.cs" />
+    <Compile Include="Assets\Scripts\FEA\SaveReplayState.cs" />
     <Compile Include="Assets\Scripts\FEA\StateDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\Tracker.cs" />
     <Compile Include="Assets\Scripts\FSM\SimState.cs" />
     <Compile Include="Assets\Scripts\FSM\StateMachine.cs" />
-    <Compile Include="Assets\Scripts\FSM\StateMachineEditor.cs" />
     <Compile Include="Assets\Scripts\Fun\Rainbow.cs" />
     <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
-    <Compile Include="Assets\Scripts\GUI\EditorWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Extensions.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
@@ -235,6 +237,11 @@
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
+    <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
+    <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
+    <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
+    <Compile Include="Assets\Scripts\GUI\Scrollables\SelectFieldScrollable.cs" />
+    <Compile Include="Assets\Scripts\GUI\Scrollables\SelectRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
     <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
@@ -257,6 +264,7 @@
     <Compile Include="Assets\Scripts\Settings\Settings.cs" />
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
+    <Compile Include="Assets\Scripts\Toolkit.cs" />
     <Compile Include="Assets\Scripts\UnityExtensions.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
     <Compile Include="Assets\Scripts\auxFunctions.cs" />
