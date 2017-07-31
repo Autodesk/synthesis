@@ -467,7 +467,6 @@ public class SimUI : MonoBehaviour
             CancelDefineRelease();
             CancelGamepieceSpawn();
         }
-        toolkit.DisableRuler();
     }
     #endregion
     #region camera button functions
