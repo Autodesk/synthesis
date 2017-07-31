@@ -13,6 +13,9 @@ using System.Linq;
 
 public class MainState : SimState
 {
+
+    public static bool draggingWindow = false;
+
     const float ResetVelocity = 0.05f;
     private const int SolverIterations = 100;
 

@@ -543,7 +543,7 @@ public class DriverPractice : MonoBehaviour
             if (spawnIndicator != null) Destroy(spawnIndicator);
             DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
             if (lastCameraState != null)
-            dynamicCamera.SwitchCameraState(lastCameraState);
+                dynamicCamera.SwitchCameraState(lastCameraState);
             lastCameraState = null;
             MainState.ControlsDisabled = false;
         }
