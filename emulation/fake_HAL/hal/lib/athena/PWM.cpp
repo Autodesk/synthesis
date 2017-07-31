@@ -146,7 +146,7 @@ extern "C" {
 		port->minPwm = minPwm;
 		port->configSet = true;
 
-    printf("%d %d\n", minPwm, maxPwm);
+    //printf("%d %d\n", minPwm, maxPwm);
 	}
 
 	void HAL_SetPWMConfigRaw(HAL_DigitalHandle pwmPortHandle, int32_t maxPwm,
@@ -478,7 +478,7 @@ extern "C" {
 
 		OutputStatePacket packet;
 		while (true) {
-      printf("%f %f %f %f\n", pwmValues[0], pwmValues[1], pwmValues[2], pwmValues[3]);
+      //printf("%f %f %f %f\n", pwmValues[0], pwmValues[1], pwmValues[2], pwmValues[3]);
 			std::copy(pwmValues, pwmValues + 10, packet.dio[0].pwmValues);
 			stateNetwork.SendStatePacket(packet);
 			std::this_thread::sleep_for(std::chrono::milliseconds(5));
