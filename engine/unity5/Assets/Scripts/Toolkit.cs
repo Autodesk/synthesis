@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.FSM;
 using BulletSharp;
 using BulletUnity;
 
@@ -16,9 +17,10 @@ public class Toolkit : MonoBehaviour
 
 
     private GameObject canvas;
-
+    private MainState mainState;
     private GameObject toolkitWindow;
 
+    //ruler variables
     private GameObject rulerWindow;
     private GameObject rulerStartPoint;
     private GameObject rulerEndPoint;
@@ -30,6 +32,7 @@ public class Toolkit : MonoBehaviour
     private bool usingRuler;
     private BulletSharp.Math.Vector3 firstPoint = BulletSharp.Math.Vector3.Zero;
 
+    //stopwatch variables
     private GameObject stopwatchWindow;
     private Text stopwatchText;
     private Text stopwatchStartButtonText;
@@ -38,6 +41,12 @@ public class Toolkit : MonoBehaviour
     private bool stopwatchOn;
     private bool stopwatchPaused;
     private float stopwatchTime;
+
+    //dummy robot variables
+    private GameObject dummyWindow;
+    private DummyScrollable dummyList;
+    bool controllingDummy = false;
+    private GameObject dummyIndicator;
 
     // Use this for initialization
     void Start()
@@ -60,11 +69,17 @@ public class Toolkit : MonoBehaviour
         stopwatchStartButtonText = AuxFunctions.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
         stopwatchPauseButtonText = AuxFunctions.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
 
+        //Dummy Robot Objects
+        dummyWindow = AuxFunctions.FindObject(canvas, "DummyRobotPanel");
+        dummyList = AuxFunctions.FindObject(canvas, "DummyList").GetComponent<DummyScrollable>();
+        dummyIndicator = GameObject.Find("DummyIndicator");
+        dummyIndicator.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (mainState == null) mainState = ((MainState)StateMachine.Instance.CurrentState);
         if (usingRuler)
         {
             if (ignoreClick) ignoreClick = false;
@@ -72,6 +87,8 @@ public class Toolkit : MonoBehaviour
         }
 
         UpdateStopwatch();
+
+        UpdateControlIndicator();
 
     }
 
@@ -93,7 +110,11 @@ public class Toolkit : MonoBehaviour
     #region Ruler Functions
     public void ToggleRulerWindow(bool show)
     {
-        if (show) rulerWindow.SetActive(true);
+        if (show)
+        {
+            rulerWindow.SetActive(true);
+            ToggleStopwatchWindow(false);
+        }
         else
         {
             rulerWindow.SetActive(false);
@@ -147,10 +168,10 @@ public class Toolkit : MonoBehaviour
             }
             else
             {
-                rulerText.text = BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 3.28084f + "ft";
-                rulerXText.text = Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 3.28084f + "ft";
-                rulerYText.text = Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 3.28084f + "ft";
-                rulerZText.text = Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 3.28084f + "ft";
+                rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f)/100 + "ft";
+                rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f)/100  + "ft";
+                rulerYText.text = Mathf.Round(Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 328.084f)/100 + "ft";
+                rulerZText.text = Mathf.Round(Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 328.084f)/100 + "ft";
                 rulerEndPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 rulerStartPoint.GetComponent<LineRenderer>().SetPosition(1, rulerEndPoint.transform.position);
             }
@@ -172,7 +193,16 @@ public class Toolkit : MonoBehaviour
     #region Stopwatch Functions
     public void ToggleStopwatchWindow(bool show)
     {
-        stopwatchWindow.SetActive(show);
+        if (show)
+        {
+            ToggleRulerWindow(false);
+            stopwatchWindow.SetActive(true);
+        }
+        else
+        {
+            stopwatchWindow.SetActive(false);
+        }
+
     }
 
     public void ToggleStopwatch()
@@ -182,6 +212,8 @@ public class Toolkit : MonoBehaviour
             stopwatchTime = 0f;
             stopwatchStartButtonText.text = "Stop";
             stopwatchOn = true;
+            stopwatchPauseButtonText.text = "Pause";
+            stopwatchPaused = false;
         }
         else
         {
@@ -211,6 +243,7 @@ public class Toolkit : MonoBehaviour
     public void ResetStopwatch()
     {
         stopwatchTime = 0f;
+        stopwatchText.text = (Mathf.Round(stopwatchTime * 100) / 100).ToString();
     }
 
     private void UpdateStopwatch()
@@ -222,6 +255,41 @@ public class Toolkit : MonoBehaviour
         }
     }
 
+
+    #endregion
+    #region Dummy Robot
+
+    public void SpawnDummyRobot()
+    {
+        dummyList.AddDummy();
+    }
+
+    public void ControlDummyRobot()
+    {
+        dummyList.ControlDummy();
+        dummyIndicator.SetActive(true);
+        controllingDummy = true;
+    }
+
+    public void ControlMainRobot()
+    {
+        mainState.activeRobot = mainState.GetRootNode();
+        dummyIndicator.SetActive(false);
+        controllingDummy = false;
+    }
+
+    public void DeleteDummyRobot()
+    {
+        dummyList.DeleteDummy();
+    }
+
+    private void UpdateControlIndicator()
+    {
+        if (controllingDummy)
+        {
+            dummyIndicator.transform.position = ((RigidNode)mainState.activeRobot).MainObject.transform.position + new Vector3(0, 1f) ;
+        }
+    }
 
     #endregion
 }

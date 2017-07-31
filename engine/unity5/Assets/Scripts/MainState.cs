@@ -80,6 +80,9 @@ public class MainState : SimState
     private string fieldPath;
     private string robotPath;
 
+    public RigidNode_Base activeRobot;
+    public List<RigidNode_Base> dummyRootNodes = new List<RigidNode_Base>();
+
     public override void Awake()
     {
         Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
@@ -90,7 +93,7 @@ public class MainState : SimState
     }
 
     public override void OnGUI()
-    { 
+    {
         UserMessageManager.Render();
     }
 
@@ -206,13 +209,13 @@ public class MainState : SimState
 
     public override void FixedUpdate()
     {
-        if (rootNode != null)
+        if (activeRobot != null)
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
 
-            if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
+            if (!ControlsDisabled) DriveJoints.UpdateAllMotors(activeRobot, packet.dio);
         }
-        
+
         if (IsResetting)
         {
             Resetting();
@@ -335,6 +338,7 @@ public class MainState : SimState
 
         RotateRobot(robotStartOrientation);
 
+        activeRobot = rootNode;
         return true;
     }
 
@@ -487,7 +491,7 @@ public class MainState : SimState
             RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
             r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
-            
+
             BulletSharp.Math.Matrix newTransform = r.WorldTransform;
             newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
@@ -645,11 +649,56 @@ public class MainState : SimState
         BeginReset();
         EndReset();
     }
-    
+
     public void SaveRobotOrientation()
     {
         robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
         robotStartOrientation.ToUnity();
         EndReset();
+    }
+
+    public bool SpawnDummyRobot(string directory)
+    {
+
+        GameObject dummyObject = new GameObject("DummyRobot");
+        dummyObject.transform.position = robotStartPosition;
+
+        RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
+        {
+            return new RigidNode(guid);
+        };
+
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        //Read .robot instead. Maybe need a RobotSkeleton class
+        RigidNode_Base dummyRootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
+        
+        dummyRootNode.ListAllNodes(nodes);
+        dummyRootNodes.Add(dummyRootNode);
+        foreach (RigidNode_Base n in nodes)
+        {
+            RigidNode node = (RigidNode)n;
+            node.CreateTransform(dummyObject.transform);
+
+            if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+            {
+                Debug.Log("Robot not loaded!");
+                UnityEngine.Object.Destroy(dummyObject);
+                return false;
+            }
+
+            node.CreateJoint();
+
+            node.MainObject.AddComponent<Tracker>().Trace = true;
+
+            Tracker t = node.MainObject.GetComponent<Tracker>();
+            Debug.Log(t);
+        }
+        activeRobot = dummyRootNode;
+        return true;
+    }
+
+    public RigidNode_Base GetRootNode()
+    {
+        return rootNode;
     }
 }
