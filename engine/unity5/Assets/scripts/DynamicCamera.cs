@@ -232,16 +232,16 @@ public class DynamicCamera : MonoBehaviour
         {
             if (MovingEnabled)
             {
-                if (Input.GetMouseButton(1))
+                if (InputControl.GetMouseButton(1))
                 {
-                    rotationVector.x -= Input.GetAxis("Mouse Y") * rotationSpeed;
+                    rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
 
-                positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
-                positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("Camera Horizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("Camera Vertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
 
-                zoomValue = Mathf.Max(Mathf.Min(zoomValue - Input.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
+                zoomValue = Mathf.Max(Mathf.Min(zoomValue - InputControl.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
                 //lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
                 lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);

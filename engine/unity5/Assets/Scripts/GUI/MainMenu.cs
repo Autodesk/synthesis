@@ -6,10 +6,11 @@ using System;
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
-public class MainMenu : MonoBehaviour {
+public class MainMenu : MonoBehaviour
+{
 
     //This refers to what tab the main menu is currently in.
-    public enum Tab { Main, Sim, Options, FieldDir, RobotDir};
+    public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
@@ -53,6 +54,7 @@ public class MainMenu : MonoBehaviour {
 
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
+    private GameObject settingsMode; //The InputManager Objects
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
@@ -92,10 +94,10 @@ public class MainMenu : MonoBehaviour {
     /// <summary>
     /// Runs every frame to update the GUI elements.
     /// </summary>
-    void OnGUI ()
+    void OnGUI()
     {
         switch (currentTab)
-         {
+        {
             //Switches back to sim tab UI elements if field browser is closed
             case Tab.FieldDir:
                 if (customfieldon && !fieldBrowser.Active)
@@ -108,7 +110,7 @@ public class MainMenu : MonoBehaviour {
                     customfieldon = false;
                 }
                 break;
-            
+
             //Switches back to sim tab UI elements if robot directory is closed
             case Tab.RobotDir:
                 if (customroboton && !robotBrowser.Active)
@@ -119,17 +121,17 @@ public class MainMenu : MonoBehaviour {
                     optionsTab.SetActive(false);
                     simTab.SetActive(true);
                     customroboton = false;
-                    }
+                }
                 break;
-         }
+        }
 
-         //Initializes and renders the Field Browser
-         if (fieldDirectory != null) InitFieldBrowser();
-         if (robotDirectory != null) InitRobotBrowser();
-        
-         //Renders the message manager which displays error messages
-         UserMessageManager.Render();
-         UserMessageManager.scale = canvas.scaleFactor;
+        //Initializes and renders the Field Browser
+        if (fieldDirectory != null) InitFieldBrowser();
+        if (robotDirectory != null) InitRobotBrowser();
+
+        //Renders the message manager which displays error messages
+        UserMessageManager.Render();
+        UserMessageManager.scale = canvas.scaleFactor;
     }
 
     /// <summary>
@@ -145,7 +147,7 @@ public class MainMenu : MonoBehaviour {
             optionsTab.SetActive(false);
             homeTab.SetActive(true);
         }
-        else UserMessageManager.Dispatch("You must select a directory or exit first!",3);
+        else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
 
     /// <summary>
@@ -176,6 +178,7 @@ public class MainMenu : MonoBehaviour {
             homeTab.SetActive(false);
             simTab.SetActive(false);
             optionsTab.SetActive(true);
+            settingsMode.SetActive(true);
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -187,7 +190,7 @@ public class MainMenu : MonoBehaviour {
     {
         currentSim = Sim.Selection;
 
-        
+
         defaultSimulator.SetActive(false);
         driverPracticeMode.SetActive(false);
         localMultiplayer.SetActive(false);
@@ -218,7 +221,7 @@ public class MainMenu : MonoBehaviour {
 
         PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
         PlayerPrefs.SetString("simSelectedField", simSelectedField);
-        
+
 
         simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
         simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
@@ -363,7 +366,7 @@ public class MainMenu : MonoBehaviour {
             }
             else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
 
-  
+
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
@@ -378,6 +381,7 @@ public class MainMenu : MonoBehaviour {
     {
         graphics.SetActive(false);
         input.SetActive(true);
+        settingsMode.SetActive(true);
     }
 
     public void StartDefaultSim()
@@ -391,7 +395,7 @@ public class MainMenu : MonoBehaviour {
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
-            Application.LoadLevel("Scene(WithUIToolbar)");
+            Application.LoadLevel("Scene");
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
@@ -400,7 +404,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))
         {
-            
+
             PlayerPrefs.SetString("dpmSelectedField", dpmSelectedField);
             PlayerPrefs.SetString("dpmSelectedFieldName", dpmSelectedFieldName);
             PlayerPrefs.SetString("dpmSelectedRobot", dpmSelectedRobot);
@@ -467,7 +471,8 @@ public class MainMenu : MonoBehaviour {
     //Exits the program
     public void Exit()
     {
-        if (!Application.isEditor) {
+        if (!Application.isEditor)
+        {
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
@@ -584,7 +589,7 @@ public class MainMenu : MonoBehaviour {
     #region Other Methods
     public void InputDefaultPressed()
     {
-        Controls.ResetDefaults();
+        Controls.Reset();
     }
 
     public void ApplyGraphics()
@@ -627,9 +632,8 @@ public class MainMenu : MonoBehaviour {
     }
     public void ResetControls()
     {
-        Controls.ResetDefaults();
-        Controls.SaveControls();
-        GameObject.Find("InputPanel").GetComponent<InputScrollable>().UpdateControlList();
+        Controls.Reset();
+        Controls.Save();
     }
     public void SelectSimField()
     {
@@ -646,7 +650,7 @@ public class MainMenu : MonoBehaviour {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
     }
-    
+
     public void SelectSimRobot()
     {
         GameObject robotList = GameObject.Find("SimLoadRobotList");
@@ -724,8 +728,9 @@ public class MainMenu : MonoBehaviour {
         }
     }
     #endregion
-    void Start () {
-        
+    void Start()
+    {
+
         FindAllGameObjects();
         splashScreen.SetActive(true);
         InitGraphicsSettings();
@@ -777,10 +782,10 @@ public class MainMenu : MonoBehaviour {
             SwitchSimDefault();
             SwitchTabHome();
         }
-        
-        
+
+
     }
-	 void FindAllGameObjects()
+    void FindAllGameObjects()
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
@@ -800,6 +805,7 @@ public class MainMenu : MonoBehaviour {
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
         input = AuxFunctions.FindObject(gameObject, "Input");
+        settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");
@@ -859,5 +865,5 @@ public class MainMenu : MonoBehaviour {
         else QualitySettings.SetQualityLevel(0);
         GameObject.Find("QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
 
-    } 
+    }
 }
