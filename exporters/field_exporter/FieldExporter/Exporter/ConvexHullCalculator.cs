@@ -353,33 +353,41 @@ public class ConvexHullCalculator
     /// <returns></returns>
     public static BXDAMesh.BXDASubMesh GetHull(BXDAMesh.BXDASubMesh subMesh)
     {
-        List<int> indices = new List<int>();
-
-        foreach (BXDAMesh.BXDASurface surface in subMesh.surfaces)
+        try
         {
-            indices.AddRange(surface.indicies);
+            List<int> indices = new List<int>();
+
+            foreach (BXDAMesh.BXDASurface surface in subMesh.surfaces)
+            {
+                indices.AddRange(surface.indicies);
+            }
+
+            IVHACD decomposer = new IVHACD();
+
+            ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
+
+            parameters.m_depth = 1;
+            parameters.m_concavity = 1;
+
+            if (!decomposer.Compute(Array.ConvertAll<double, float>(subMesh.verts, (d) => (float)d),
+                3, (uint)subMesh.verts.Length / 3, indices.ToArray(), 3, (uint)indices.Count / 3, parameters))
+                return null;
+
+            ConvexLibraryWrapper.ConvexHull result = decomposer.GetConvexHull(0);
+
+            BXDAMesh.BXDASubMesh resultMesh = ExportSubMesh(Array.ConvertAll<double, float>(result.m_points, (d) => (float)d), result.m_nPoints,
+                Array.ConvertAll<int, uint>(result.m_triangles, (i) => (uint)i), result.m_nTriangles);
+
+            decomposer.Cancel();
+            decomposer.Clean();
+            decomposer.Release();
+
+            return resultMesh;
         }
-
-        IVHACD decomposer = new IVHACD();
-
-        ConvexLibraryWrapper.Parameters parameters = new ConvexLibraryWrapper.Parameters();
-
-        parameters.m_depth = 1;
-        parameters.m_concavity = 1;
-
-        if (!decomposer.Compute(Array.ConvertAll<double, float>(subMesh.verts, (d) => (float)d),
-            3, (uint)subMesh.verts.Length / 3, indices.ToArray(), 3, (uint)indices.Count / 3, parameters))
-            return null;
-
-        ConvexLibraryWrapper.ConvexHull result = decomposer.GetConvexHull(0);
-
-        BXDAMesh.BXDASubMesh resultMesh = ExportSubMesh(Array.ConvertAll<double, float>(result.m_points, (d) => (float)d), result.m_nPoints,
-            Array.ConvertAll<int, uint>(result.m_triangles, (i) => (uint)i), result.m_nTriangles);
-
-        decomposer.Cancel();
-        decomposer.Clean();
-        decomposer.Release();
-
-        return resultMesh;
+        catch (Exception e)
+        {
+            Type t = e.GetType();
+            throw;
+        }
     }
 }
