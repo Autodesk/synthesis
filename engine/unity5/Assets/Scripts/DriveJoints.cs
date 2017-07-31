@@ -86,14 +86,14 @@ public class DriveJoints : MonoBehaviour
         float[] can = dioModules[0].canValues;
 
         pwm[0] +=
-            (InputControl.GetButton(Controls.buttons.forward) ? -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.backward) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.forward) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.backward) ? -SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
 
         pwm[1] +=
-            (InputControl.GetButton(Controls.buttons.forward) ? SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.backward) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.forward) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.backward) ? SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
 
