@@ -9,6 +9,7 @@ namespace Assets.Scripts.FEA
     /// <summary>
     /// Used for describing the state of a RigidBody for a given frame.
     /// </summary>
+    [Serializable]
     public struct StateDescriptor
     {
         /// <summary>

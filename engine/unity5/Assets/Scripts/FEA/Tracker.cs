@@ -19,7 +19,7 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// The collection of states stored by the Tracker.
         /// </summary>
-        public FixedQueue<StateDescriptor> States { get; private set; }
+        public FixedQueue<StateDescriptor> States { get; set; }
 
         /// <summary>
         /// The number of seconds the tracker keeps any given state.
@@ -64,15 +64,38 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Adds the current state to the states queue.
         /// </summary>
-        public void AddState()
+        public void AddState(int numSteps)
         {
-            States.Add(State);
+            StateDescriptor nextState = State;
+
+            if (numSteps == 1) // This will be the case the vast majority of the time
+            {
+                States.Add(State);
+            }
+            else // If there's some random lag spike
+            {
+                StateDescriptor lastState = States.Front;
+                float lerpAmount = 1f / numSteps;
+
+                for (int i = 0; i < numSteps; i++)
+                {
+                    float percent = (i + 1) * lerpAmount;
+
+                    States.Add(new StateDescriptor
+                    {
+                        Position = BulletSharp.Math.Vector3.Lerp(lastState.Position, nextState.Position, percent),
+                        Rotation = BulletSharp.Math.Matrix.Lerp(lastState.Rotation, nextState.Rotation, percent),
+                        LinearVelocity = BulletSharp.Math.Vector3.Lerp(lastState.LinearVelocity, nextState.LinearVelocity, percent),
+                        AngularVelocity = BulletSharp.Math.Vector3.Lerp(lastState.AngularVelocity, nextState.AngularVelocity, percent)
+                    });
+                }
+            }
         }
 
         /// <summary>
         /// Called when the Tracker is initialized.
         /// </summary>
-        void Start()
+        void Awake()
         {
             physicsWorld = BPhysicsWorld.Get();
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();

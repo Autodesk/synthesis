@@ -1,14 +1,15 @@
-###How to set up:
-Open Assets/scene/stablescene in unity
-####Make sure:
-*Init.cs should be attached to an empty GameObject
+### Requirements:
+- Unity 5.6.2
 
-In order to build the project properly, all shaders used in 
-runtime must also be present in the Unity scene. 
-Current shaders used in runtime: 
-* Diffuse
-* Specular
-* Transparent/Diffuse
-* Transparent/Specular
+## Setup Instructions
+* Open 'unity5' project in Unity (synthesis/engine/unity5)
 
-To keep these on build, attach them to any textured primitive.
+### Bullet Physics
+* On the navigation bar, go to Window -> Asset Store
+* Search 'Bullet Physics' and download and import 'Bullet Physics for Unity'
+* Import all included assets and ignore warning message
+* Bullet Physics should now be integrated within the project!
+
+### Setting up Scene
+* Open Assets/MainMenu.unity
+* You should now be able to run the simulator by pressing play

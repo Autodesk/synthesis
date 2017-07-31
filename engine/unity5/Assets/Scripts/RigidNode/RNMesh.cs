@@ -36,7 +36,6 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.rotation = root.rotation;
 
             ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
-
         });
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
@@ -81,7 +80,7 @@ public partial class RigidNode : RigidNode_Base
         {
             rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
         }
-        
+
         if (this.HasDriverMeta<WheelDriverMeta>())
             UpdateWheelMass(); // 'tis a wheel, so needs more mass for joints to work correctly.
 

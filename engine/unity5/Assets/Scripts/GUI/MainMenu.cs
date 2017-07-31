@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.IO;
+using System;
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
@@ -18,7 +19,11 @@ public class MainMenu : MonoBehaviour {
     public GameObject optionsTab;
 
     //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
-    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration}
+    public enum Sim
+    {
+        Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot,
+        SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration, SimLoadReplay
+    }
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -31,6 +36,7 @@ public class MainMenu : MonoBehaviour {
     private GameObject localMultiplayer;
     private GameObject simLoadField;
     private GameObject simLoadRobot;
+    private GameObject simLoadReplay;
     private GameObject dpmLoadField;
     private GameObject dpmLoadRobot;
     private GameObject multiplayerLoadField;
@@ -190,6 +196,7 @@ public class MainMenu : MonoBehaviour {
         dpmLoadRobot.SetActive(false);
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
+        simLoadReplay.SetActive(false);
         dpmConfiguration.SetActive(false);
 
         selectionPanel.SetActive(true);
@@ -206,7 +213,12 @@ public class MainMenu : MonoBehaviour {
         selectionPanel.SetActive(false);
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
+        simLoadReplay.SetActive(false);
         defaultSimulator.SetActive(true);
+
+        PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+        
 
         simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
         simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
@@ -262,6 +274,17 @@ public class MainMenu : MonoBehaviour {
 
         defaultSimulator.SetActive(false);
         simLoadField.SetActive(true);
+    }
+
+    /// <summary>
+    /// Switches to the load replay menu for the default simulator and activates its respective UI elements.
+    /// </summary>
+    public void SwitchSimLoadReplay()
+    {
+        currentSim = Sim.SimLoadReplay;
+
+        defaultSimulator.SetActive(false);
+        simLoadReplay.SetActive(true);
     }
 
     /// <summary>
@@ -361,6 +384,8 @@ public class MainMenu : MonoBehaviour {
     {
         if (Directory.Exists(simSelectedField) && Directory.Exists(simSelectedRobot))
         {
+            splashScreen.SetActive(true);
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedField", simSelectedField);
             PlayerPrefs.SetString("simSelectedFieldName", simSelectedFieldName);
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
@@ -375,6 +400,7 @@ public class MainMenu : MonoBehaviour {
     {
         if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))
         {
+            
             PlayerPrefs.SetString("dpmSelectedField", dpmSelectedField);
             PlayerPrefs.SetString("dpmSelectedFieldName", dpmSelectedFieldName);
             PlayerPrefs.SetString("dpmSelectedRobot", dpmSelectedRobot);
@@ -608,10 +634,10 @@ public class MainMenu : MonoBehaviour {
     public void SelectSimField()
     {
         GameObject fieldList = GameObject.Find("SimLoadFieldList");
-        string entry = (fieldList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (fieldList.GetComponent<SelectFieldScrollable>().selectedEntry);
         if (entry != null)
         {
-            simSelectedFieldName = fieldList.GetComponent<ScrollableList>().selectedEntry;
+            simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
             SwitchSimDefault();
         }
@@ -620,14 +646,14 @@ public class MainMenu : MonoBehaviour {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
     }
-
+    
     public void SelectSimRobot()
     {
         GameObject robotList = GameObject.Find("SimLoadRobotList");
-        string entry = (robotList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (robotList.GetComponent<SelectRobotScrollable>().selectedEntry);
         if (entry != null)
         {
-            simSelectedRobotName = robotList.GetComponent<ScrollableList>().selectedEntry;
+            simSelectedRobotName = robotList.GetComponent<SelectRobotScrollable>().selectedEntry;
             simSelectedRobot = robotDirectory + "\\" + simSelectedRobotName + "\\";
             SwitchSimDefault();
         }
@@ -637,13 +663,42 @@ public class MainMenu : MonoBehaviour {
         }
     }
 
+    public void SelectSimReplay()
+    {
+        GameObject replayList = GameObject.Find("SimLoadReplayList");
+        string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+
+        if (entry != null)
+        {
+            simLoadReplay.SetActive(false);
+            splashScreen.SetActive(true);
+            PlayerPrefs.SetString("simSelectedReplay", entry);
+
+            PlayerPrefs.Save();
+            Application.LoadLevel("Scene");
+        }
+    }
+
+    public void SelectDeleteReplay()
+    {
+        GameObject replayList = GameObject.Find("SimLoadReplayList");
+        string entry = replayList.GetComponent<ScrollableList>().selectedEntry;
+
+        if (entry != null)
+        {
+            File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\" + entry + ".replay");
+            replayList.SetActive(false);
+            replayList.SetActive(true);
+        }
+    }
+
     public void SelectDPMField()
     {
         GameObject fieldList = GameObject.Find("DPMLoadFieldList");
-        string entry = (fieldList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (fieldList.GetComponent<ScrollablePanel>().selectedEntry);
         if (entry != null)
         {
-            dpmSelectedFieldName = fieldList.GetComponent<ScrollableList>().selectedEntry;
+            dpmSelectedFieldName = fieldList.GetComponent<ScrollablePanel>().selectedEntry;
             dpmSelectedField = fieldDirectory + "\\" + dpmSelectedFieldName + "\\";
             SwitchDriverPractice();
         }
@@ -656,10 +711,10 @@ public class MainMenu : MonoBehaviour {
     public void SelectDPMRobot()
     {
         GameObject robotList = GameObject.Find("DPMLoadRobotList");
-        string entry = (robotList.GetComponent<ScrollableList>().selectedEntry);
+        string entry = (robotList.GetComponent<ScrollablePanel>().selectedEntry);
         if (entry != null)
         {
-            dpmSelectedRobotName = robotList.GetComponent<ScrollableList>().selectedEntry;
+            dpmSelectedRobotName = robotList.GetComponent<ScrollablePanel>().selectedEntry;
             dpmSelectedRobot = robotDirectory + "\\" + dpmSelectedRobotName + "\\";
             SwitchDriverPractice();
         }
@@ -676,6 +731,9 @@ public class MainMenu : MonoBehaviour {
         InitGraphicsSettings();
         fields = new ArrayList();
         robots = new ArrayList();
+
+        FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\");
+        file.Directory.Create();
 
         robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
@@ -716,8 +774,8 @@ public class MainMenu : MonoBehaviour {
         }
         else
         {
-            SwitchTabHome();
             SwitchSimDefault();
+            SwitchTabHome();
         }
         
         
@@ -733,6 +791,7 @@ public class MainMenu : MonoBehaviour {
         localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
         simLoadRobot = AuxFunctions.FindObject(gameObject, "SimLoadRobot");
+        simLoadReplay = AuxFunctions.FindObject(gameObject, "SimLoadReplay");
         dpmLoadField = AuxFunctions.FindObject(gameObject, "DPMLoadField");
         dpmLoadRobot = AuxFunctions.FindObject(gameObject, "DPMLoadRobot");
         multiplayerLoadField = AuxFunctions.FindObject(gameObject, "MultiplayerLoadField");
@@ -750,6 +809,8 @@ public class MainMenu : MonoBehaviour {
         configurationText = AuxFunctions.FindObject(dpmConfiguration, "ConfigurationText");
 
         inputConflict = AuxFunctions.FindObject(gameObject, "InputConflict");
+
+        AuxFunctions.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
     }
 
     void InitGraphicsSettings()
@@ -791,4 +852,12 @@ public class MainMenu : MonoBehaviour {
         else if (width == xresolution[9] && height == yresolution[9]) resolutionsetting = 9;
         else resolutionsetting = 2;
     }
+
+    public void ChangeQualitySettings()
+    {
+        if (QualitySettings.GetQualityLevel() < QualitySettings.names.Length - 1) QualitySettings.SetQualityLevel(QualitySettings.GetQualityLevel() + 1);
+        else QualitySettings.SetQualityLevel(0);
+        GameObject.Find("QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+
+    } 
 }
