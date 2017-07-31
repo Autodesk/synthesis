@@ -28,12 +28,11 @@ HAL_CompressorHandle HAL_InitializeCompressor(int32_t module, int32_t* status) {
   // handle with the module number as the index.
 
   return (HAL_CompressorHandle)createHandle(static_cast<int16_t>(module),
-                                            HAL_HandleEnum::Compressor);
+                                            HAL_HandleEnum::Compressor);*/
 }
 
 HAL_Bool HAL_CheckCompressorModule(int32_t module) {
   return module < kNumPCMModules && module >= 0;
-  */
 
 	return 0;
 }
