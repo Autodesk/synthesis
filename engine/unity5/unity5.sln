@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2017
+# Visual Studio 2015
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5.Plugins", "unity5.Plugins.csproj", "{44BD8F36-FDA8-BD3C-99E5-E7A1DDDA6A4F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "unity5", "unity5.csproj", "{8A074DDC-8B16-5D68-FA46-5508858F8CE7}"
