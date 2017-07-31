@@ -82,21 +82,8 @@ public class DriveJoints : MonoBehaviour
 
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules)
     {
-        bool joystickControl = true;
-
         float[] pwm = dioModules[0].pwmValues;
         float[] can = dioModules[0].canValues;
-
-        //if (joystickControl)
-        //{
-        //    pwm[0] +=
-        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
-        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
-
-        //    pwm[1] +=
-        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
-        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
-        //}
 
         pwm[0] +=
             (InputControl.GetButton(Controls.buttons.forward) ? SPEED_ARROW_PWM : 0.0f) +
@@ -130,7 +117,7 @@ public class DriveJoints : MonoBehaviour
             (InputControl.GetButton(Controls.buttons.pwm6Plus)) ? SPEED_ARROW_PWM :
             (InputControl.GetButton(Controls.buttons.pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
 
-
+        #region Old Controls: 2017 and Older
         //Old ControlKeys; accessing keys assigned in ResetDefaults() method in Controls.cs script
         //pwm[0] +=
         //    (Input.GetKey(Controls.ControlKey[(int)Controls.Control.Forward]) ? SPEED_ARROW_PWM : 0.0f) +
@@ -148,6 +135,7 @@ public class DriveJoints : MonoBehaviour
         //pwm[4] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm4Neg]) ? -SPEED_ARROW_PWM : 0f;
         //pwm[5] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm5Plus]) ? -SPEED_ARROW_PWM : 0f;
         //pwm[6] += Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? SPEED_ARROW_PWM : Input.GetKey(Controls.ControlKey[(int)Controls.Control.pwm6Plus]) ? -SPEED_ARROW_PWM : 0f;
+#endregion
 
         List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
         skeleton.ListAllNodes(listOfSubNodes);

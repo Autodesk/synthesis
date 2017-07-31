@@ -7,7 +7,7 @@ public class Settings : MonoBehaviour {
 	void Start () {
         DontDestroyOnLoad(this);
         //gameObject.AddComponent<Controls>();
-        Controls.Reset();
+        //Controls.Reset();
         Controls.Load();
 	}
 	
