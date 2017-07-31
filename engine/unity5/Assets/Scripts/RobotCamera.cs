@@ -1,11 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using BulletUnity;
+using BulletSharp;
 
 public class RobotCamera : MonoBehaviour
 {
-    private List<GameObject> robotCameraList = new List<GameObject>();
+    public List<GameObject> robotCameraList = new List<GameObject>();
     public GameObject CurrentCamera { get; set; }
-    
+    public GameObject CameraIndicator;
+    private GameObject robotCameraListObject;
+    public GameObject SelectedNode;
+
+    public bool SelectingNode {get; set;}
+
+    public bool ChangingCameraPosition { get; set; }
+    public bool IsChangingHeight { get; set; }
+
+    private static float positionSpeed = 0.5f;
+    private static float rotationSpeed = 25;
 
     /// <summary>
     /// Switching between different cameras on robot given the specific camera
@@ -25,6 +37,7 @@ public class RobotCamera : MonoBehaviour
     public void ToggleCamera()
     {
         SwitchCamera(robotCameraList[(robotCameraList.IndexOf(CurrentCamera) + 1) % robotCameraList.Count]);
+        //CameraIndicator.SetActive(CurrentCamera.activeSelf);
     }
 
     /// <summary>
@@ -43,7 +56,7 @@ public class RobotCamera : MonoBehaviour
         newCamera.transform.localRotation = Quaternion.Euler(rotationOffset);
 
         newCamera.SetActive(false);
-        if(robotCameraList.Count == 0)
+        if (robotCameraList.Count == 0)
             CurrentCamera = newCamera;
 
         robotCameraList.Add(newCamera);
@@ -70,6 +83,16 @@ public class RobotCamera : MonoBehaviour
         return newCamera;
     }
 
+    public void RemoveCameras()
+    {
+        foreach (GameObject robotCamera in robotCameraList)
+        {
+            Destroy(robotCamera);
+        }
+        CurrentCamera = null;
+        robotCameraList.Clear();
+    }
+
     /// <summary>
     /// Return true if the current camera is the last on the list
     /// </summary>
@@ -78,9 +101,121 @@ public class RobotCamera : MonoBehaviour
     {
         return robotCameraList.IndexOf(CurrentCamera) == robotCameraList.Count - 1;
     }
-    
+
     public List<GameObject> GetRobotCameraList()
     {
         return robotCameraList;
+    }
+
+    public void Start()
+    {
+        robotCameraListObject = GameObject.Find("RobotCameraList");
+        if (CameraIndicator == null)
+        {
+            CameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
+        }
+    }
+    public void Update()
+    {
+        if (CameraIndicator.activeSelf)
+        {
+            CameraIndicator.transform.position = CurrentCamera.transform.position;
+            CameraIndicator.transform.rotation = CurrentCamera.transform.rotation;
+
+            CameraIndicator.transform.parent = CurrentCamera.transform;
+        }
+
+        //Enable selecting node state, and users can left click on a node to choose it
+        if (SelectingNode)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                SetNode();
+                Debug.Log("Selecting node");
+
+            }
+        }
+
+        ConfigurateCameraPosition();
+        
+    }
+    
+    /// <summary>
+    /// Initialize robot node selection
+    /// </summary>
+    public void DefineNode()
+    {
+        UserMessageManager.Dispatch("Click on a robot node to set it as the attachment node", 5);
+        SelectingNode = true;
+        //SelectedNode = null;
+    }
+
+    /// <summary>
+    /// Set the node where the camera will be attached to
+    /// </summary>
+    public void SetNode()
+    {
+        //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
+        BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
+
+        //Creates a callback result that will be updated if we do a ray test with it
+        ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
+
+        //Retrieves the bullet physics world and does a ray test with the given coordinates and updates the callback object
+        BPhysicsWorld world = BPhysicsWorld.Get();
+        world.world.RayTest(start, end, rayResult);
+
+        Debug.Log("Selected:" + rayResult.CollisionObject);
+        //If there is a collision object and it is a robot part, set that to be new attachment point
+        if (rayResult.CollisionObject != null)
+        {
+            GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
+            if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
+            {
+                string name = selectedObject.name;
+
+                SelectedNode = selectedObject;
+
+                UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
+            }
+            else
+            {
+                UserMessageManager.Dispatch("Please select a robot node", 3);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Update the attachment point to be the selected node and toggle the state back
+    /// </summary>
+    public void ChangeNodeAttachment()
+    {
+        CurrentCamera.transform.parent = SelectedNode.transform;
+        SelectingNode = false;
+        SelectedNode = null;
+    }
+
+    /// <summary>
+    /// Use WASD and right mouse to change the position, rotation of camera
+    /// </summary>
+    private void ConfigurateCameraPosition()
+    {
+        if (ChangingCameraPosition)
+        {
+            if (Input.GetMouseButton(1)) //Control rotation
+            {
+                CurrentCamera.transform.Rotate(new Vector3(-Input.GetAxis("CameraVertical") * rotationSpeed, Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
+            }
+            else if (!IsChangingHeight) //Control horizontal plane transform
+            {
+                CurrentCamera.transform.Translate(new Vector3(Input.GetAxis("CameraHorizontal") * positionSpeed, 0, Input.GetAxis("CameraVertical") * positionSpeed) * Time.deltaTime);
+            }
+            else //Control height transform
+            {
+                CurrentCamera.transform.Translate(new Vector3(0, Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
+            }
+        }
     }
 }

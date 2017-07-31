@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 using System.IO;
 using Assets.Scripts.FEA;
 using Assets.Scripts.FSM;
+using System.Linq;
 
 public class MainState : SimState
 {
@@ -22,6 +23,7 @@ public class MainState : SimState
     private int lastFrameCount;
 
     private bool tracking;
+    private bool awaitingReplay;
 
     private UnityPacket unityPacket;
 
@@ -82,7 +84,7 @@ public class MainState : SimState
 
     //Flags to tell different types of reset
     private bool isResettingOrientation;
-    public bool IsResetting { get; private set; }
+    public bool IsResetting { get; set; }
 
     private DriverPractice driverPractice;
 
@@ -90,8 +92,12 @@ public class MainState : SimState
 
     public static bool ControlsDisabled = false;
 
+    private string fieldPath;
+    private string robotPath;
+
     public override void Awake()
     {
+        Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
         GImpactCollisionAlgorithm.RegisterAlgorithm((CollisionDispatcher)BPhysicsWorld.Get().world.Dispatcher);
         BPhysicsWorld.Get().DebugDrawMode = DebugDrawModes.DrawWireframe | DebugDrawModes.DrawConstraints | DebugDrawModes.DrawConstraintLimits;
         BPhysicsWorld.Get().DoDebugDraw = false;
@@ -143,7 +149,7 @@ public class MainState : SimState
             CreateOrientWindow();
 
             //Added a robot view to toggle among cameras on robot
-            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Robot view"), (object o) =>
+            gui.AddWindow("Switch View", new DialogWindow("Switch View", "Driver Station", "Orbit Robot", "Freeroam", "Overview", "Robot view"), (object o) =>
             {
                 HideGUI();
 
@@ -163,6 +169,10 @@ public class MainState : SimState
                         dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
                         break;
                     case 3:
+                        ToDynamicCamera();
+                        dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
+                        break;
+                    case 4:
                         if (robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
                         {
                             ToRobotCamera();
@@ -271,8 +281,6 @@ public class MainState : SimState
                     robotStartOrientation = BulletSharp.Math.Matrix.Identity;
                     robotStartPosition = new Vector3(0f, 1f, 0f);
                     EndReset();
-                    //BeginReset();
-
                     break;
             }
         });
@@ -295,16 +303,9 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
 
         Trackers = new List<Tracker>();
-        tracking = true;
 
         unityPacket = new UnityPacket();
         unityPacket.Start();
-
-        Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
-        Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
-
-        dynamicCameraObject = GameObject.Find("Main Camera");
-        dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
 
         extraElements = new List<GameObject>();
 
@@ -323,6 +324,25 @@ public class MainState : SimState
         isResettingOrientation = false;
 
         Controls.LoadControls();
+
+        string selectedReplay = PlayerPrefs.GetString("simSelectedReplay");
+
+        if (string.IsNullOrEmpty(selectedReplay))
+        {
+            tracking = true;
+            Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
+            Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+        }
+        else
+        {
+            awaitingReplay = true;
+            LoadReplay(selectedReplay);
+        }
+
+        dynamicCameraObject = GameObject.Find("Main Camera");
+        dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
+
+        DynamicCamera.MovingEnabled = true;
     }
 
     public override void Update()
@@ -331,12 +351,15 @@ public class MainState : SimState
             gui.EscPressed();
         //Debug.Log(ultraSensor.ReturnOutput());
 
+        //Reset hot key, start counting time whenever it's pressed down
         if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
         {
             keyDownTime = Time.time;
         }
+
         if (Input.GetKeyUp(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !IsResetting)
         {
+            //Enter reset spawnpoint mode when long hold reset key
             if (Time.time - keyDownTime > HOLD_TIME)
             {
                 IsResetting = true;
@@ -381,12 +404,22 @@ public class MainState : SimState
             }
         }
 
+        BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
+
+        if (!rigidBody.GetCollisionObject().IsActive)
+            rigidBody.GetCollisionObject().Activate();
+
+        if (!IsResetting && Input.GetKey(KeyCode.Space))
+        {
+            contactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+        }
+
         UpdateTrackers();
     }
 
     public override void FixedUpdate()
     {
-
         if (rootNode != null)
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
@@ -399,22 +432,19 @@ public class MainState : SimState
             Resetting();
         }
 
-        BRigidBody rigidBody = robotObject.GetComponentInChildren<BRigidBody>();
-
-
-        if (!rigidBody.GetCollisionObject().IsActive)
-            rigidBody.GetCollisionObject().Activate();
-
-
-        if (!IsResetting && Input.GetKey(KeyCode.Space))
-        {
-            contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
-        }
-
+        //This line is essential for the reset to work accurately
         robotCameraObject.transform.position = robotObject.transform.GetChild(0).transform.position;
 
         UpdateTrackers();
+    }
+
+    public override void LateUpdate()
+    {
+        if (awaitingReplay)
+        {
+            awaitingReplay = false;
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+        }
     }
 
     public override void Resume()
@@ -422,18 +452,23 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
         tracking = true;
 
+        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = true;
+
         contactPoints.Clear(null);
     }
 
     public override void Pause()
     {
         tracking = false;
+        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = false;
 
         ToDynamicCamera();
     }
 
     bool LoadField(string directory)
     {
+        fieldPath = directory;
+
         fieldObject = new GameObject("Field");
 
         FieldDefinition.Factory = delegate (Guid guid, string name)
@@ -451,6 +486,8 @@ public class MainState : SimState
 
     bool LoadRobot(string directory)
     {
+        robotPath = directory;
+
         robotObject = new GameObject("Robot");
         robotObject.transform.position = robotStartPosition;
 
@@ -492,12 +529,19 @@ public class MainState : SimState
 
         nodeToRobotOffset = robotObject.transform.GetChild(0).transform.position - robotObject.transform.position;
         //Robot camera feature
-        robotCameraObject = GameObject.Find("RobotCameraList");
-        robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+        if (robotCamera == null)
+        {
+            robotCameraObject = GameObject.Find("RobotCameraList");
+            robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+        }
 
+        robotCamera.RemoveCameras();
         //The camera data should be read here as a foreach loop and included in robot file
+        //Attached to main frame and face the front
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
+        //Attached to the first node and face the front
         robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
+        //Attached to main frame and face the back
         robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
 
         robotCameraObject.SetActive(true);
@@ -508,18 +552,94 @@ public class MainState : SimState
         return true;
     }
 
+    void LoadReplay(string name)
+    {
+        List<FixedQueue<StateDescriptor>> fieldStates;
+        List<FixedQueue<StateDescriptor>> robotStates;
+        Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates;
+        List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
+
+        string simSelectedField;
+        string simSelectedRobot;
+
+        ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
+
+        LoadField(simSelectedField);
+        LoadRobot(simSelectedRobot);
+
+        List<Tracker> robotTrackers = Trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
+        List<Tracker> fieldTrackers = Trackers.Except(robotTrackers).ToList();
+
+        int i = 0;
+
+        foreach (Tracker t in fieldTrackers)
+        {
+            t.States = fieldStates[i];
+            i++;
+        }
+
+        i = 0;
+
+        foreach (Tracker t in robotTrackers)
+        {
+            t.States = robotStates[i];
+            i++;
+        }
+
+        foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> k in gamePieceStates)
+        {
+            GameObject referenceObject = GameObject.Find(k.Key);
+
+            if (referenceObject == null)
+                continue;
+
+            foreach (FixedQueue<StateDescriptor> f in k.Value)
+            {
+                GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
+                currentPiece.name = "clone_" + k.Key;
+                currentPiece.GetComponent<Tracker>().States = f;
+            }
+        }
+
+        foreach (var c in contacts)
+        {
+            if (c != null)
+            {
+                List<ContactDescriptor> currentContacts = new List<ContactDescriptor>();
+
+                foreach (var d in c)
+                {
+                    ContactDescriptor currentContact = d.Key;
+                    currentContact.RobotBody = robotTrackers[d.Value].GetComponent<BRigidBody>();
+                    currentContacts.Add(currentContact);
+                }
+
+                contactPoints.Add(currentContacts);
+            }
+            else
+            {
+                contactPoints.Add(null);
+            }
+        }
+    }
+
+    public bool ChangeRobot(string directory)
+    {
+        if (GameObject.Find("Robot") != null) GameObject.Destroy(GameObject.Find("Robot"));
+        return LoadRobot(directory);
+    }
+
     private void UpdateTrackers()
     {
         int numSteps = physicsWorld.frameCount - lastFrameCount;
 
-        if (tracking)
+        if (tracking && numSteps > 0)
         {
-            // numSteps should only == 1 or 0, but if it's ever > 1 the system won't break.
-            for (int i = 0; i < numSteps; i++)
-            {
-                foreach (Tracker t in Trackers)
-                    t.AddState();
+            foreach (Tracker t in Trackers)
+                t.AddState(numSteps);
 
+            for (int i = numSteps; i > 0; i--)
+            {
                 List<ContactDescriptor> frameContacts = null;
 
                 int numManifolds = physicsWorld.world.Dispatcher.NumManifolds;
@@ -533,51 +653,30 @@ public class MainState : SimState
                     if (!obA.gameObject.name.StartsWith("node") && !obB.gameObject.name.StartsWith("node"))
                         continue;
 
-                    List<ContactDescriptor> manifoldContacts = new List<ContactDescriptor>();
+                    ManifoldPoint mp = null;
 
                     int numContacts = contactManifold.NumContacts;
 
-                    if (numContacts == 0)
-                        continue;
-
                     for (int k = 0; k < numContacts; k++)
                     {
-                        ManifoldPoint cp = contactManifold.GetContactPoint(k);
+                        mp = contactManifold.GetContactPoint(k);
 
-                        manifoldContacts.Add(new ContactDescriptor
-                        {
-                            AppliedImpulse = cp.AppliedImpulse,
-                            Position = (cp.PositionWorldOnA + cp.PositionWorldOnB) * 0.5f
-                        });
+                        if (mp.LifeTime == i)
+                            break;
                     }
 
-                    ContactDescriptor consolidatedContact;
-
-                    if (obA.gameObject.name.StartsWith("node"))
-                        consolidatedContact = new ContactDescriptor
-                        {
-                            RobotBody = obA,
-                            OtherBody = obB,
-                        };
-                    else
-                        consolidatedContact = new ContactDescriptor
-                        {
-                            RobotBody = obB,
-                            OtherBody = obA
-                        };
-
-                    foreach (ContactDescriptor cd in manifoldContacts)
-                    {
-                        consolidatedContact.AppliedImpulse += cd.AppliedImpulse;
-                        consolidatedContact.Position += cd.Position;
-                    }
-
-                    consolidatedContact.Position /= numContacts;
+                    if (mp == null)
+                        continue;
 
                     if (frameContacts == null)
                         frameContacts = new List<ContactDescriptor>();
 
-                    frameContacts.Add(consolidatedContact);
+                    frameContacts.Add(new ContactDescriptor
+                    {
+                        AppliedImpulse = mp.AppliedImpulse,
+                        Position = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f,
+                        RobotBody = obA.name.StartsWith("node") ? obA : obB
+                    });
                 }
 
                 contactPoints.Add(frameContacts);
@@ -591,7 +690,8 @@ public class MainState : SimState
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
     /// <param name="resetTransform"></param>
-    void BeginReset(bool resetTransform = true)
+
+    public void BeginReset()
     {
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
@@ -601,10 +701,7 @@ public class MainState : SimState
             RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
             r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
-
-            if (!resetTransform)
-                continue;
-
+            
             BulletSharp.Math.Matrix newTransform = r.WorldTransform;
             newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
@@ -663,7 +760,7 @@ public class MainState : SimState
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
-    void EndReset()
+    public void EndReset()
     {
         IsResetting = false;
         isResettingOrientation = false;
@@ -683,7 +780,7 @@ public class MainState : SimState
         }
     }
 
-    void TransposeRobot(Vector3 transposition)
+    public void TransposeRobot(Vector3 transposition)
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -695,7 +792,7 @@ public class MainState : SimState
         }
     }
 
-    void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
+    public void RotateRobot(BulletSharp.Math.Matrix rotationMatrix)
     {
         BulletSharp.Math.Vector3? origin = null;
 
@@ -720,7 +817,7 @@ public class MainState : SimState
         }
     }
 
-    void RotateRobot(Vector3 rotation)
+    public void RotateRobot(Vector3 rotation)
     {
         RotateRobot(BulletSharp.Math.Matrix.RotationYawPitchRoll(rotation.y, rotation.z, rotation.x));
     }
@@ -754,5 +851,19 @@ public class MainState : SimState
     public DriverPractice GetDriverPractice()
     {
         return driverPractice;
+    }
+
+    public void ResetRobotOrientation()
+    {
+        robotStartOrientation = BulletSharp.Math.Matrix.Identity;
+        BeginReset();
+        EndReset();
+    }
+    
+    public void SaveRobotOrientation()
+    {
+        robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
+        robotStartOrientation.ToUnity();
+        EndReset();
     }
 }

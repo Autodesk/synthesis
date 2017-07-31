@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.FSM
@@ -15,8 +14,6 @@ namespace Assets.Scripts.FSM
         /// The current state in the StateMachine.
         /// </summary>
         public SimState CurrentState { get; private set; }
-
-        public MainState MainState { get; private set; }
 
         /// <summary>
         /// The global StateMachine instance.
@@ -52,7 +49,6 @@ namespace Assets.Scripts.FSM
             CurrentState = state;
 
             CurrentState.Start();
-            CurrentState.Resume();
         }
 
         /// <summary>
@@ -70,7 +66,7 @@ namespace Assets.Scripts.FSM
 
             if (activeStates.Count > 0)
             {
-                CurrentState = activeStates.Last();
+                CurrentState = activeStates.First();
 
                 CurrentState.Resume();
             }
@@ -88,23 +84,7 @@ namespace Assets.Scripts.FSM
             if (CurrentState != null)
                 return;
 
-            string defaultStateName = EditorPrefs.GetString(StateMachineEditor.DefaultStateNameKey);
-            Type defaultStateType = Type.GetType(defaultStateName);
-
-            if (defaultStateType == null)
-            {
-                Debug.LogError("\"" + defaultStateName + "\" is not a valid type!");
-                return;
-            }
-
-            SimState defaultState = Activator.CreateInstance(defaultStateType) as SimState;
-            MainState = (MainState)defaultState;
-
-            if (defaultState == null)
-                Debug.LogError("\"" + defaultStateName + "\" does not extend SimState!");
-            else
-                PushState(defaultState);
-
+            PushState(new MainState());
         }
 
         /// <summary>

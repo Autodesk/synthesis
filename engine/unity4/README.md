@@ -1,6 +1,6 @@
 # Aardvark-Unity
 
-##How to Setup:
+## How to Setup:
 
 The project is done in Unity 4.7.2. It will not work in Unity 5 so make sure you have the proper version of Unity.
 All scripts are done in C# and it is recommended you use Visual Studio 15.
