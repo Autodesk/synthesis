@@ -67,7 +67,7 @@ $(OUT_HAL): $(OBJ_FILES_HAL) | Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
 	@$(AR) rcs $@ $^
 
-$(OUT_CPP): $(OBJ_FILES_CPP) $(OUT_HAL) |	Makefile $(HEADER_FILES)
+$(OUT_CPP): $(OBJ_FILES_CPP) $(OUT_HAL) $(OUT_NTCORE) |	Makefile $(HEADER_FILES)
 	@echo -e "\e[1m\e[34mAR \e[39m$@\e[0m"
 	@$(AR) rcs $@ $^
 
