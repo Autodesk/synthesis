@@ -57,6 +57,8 @@ public class SimUI : MonoBehaviour
 
     GameObject driverStationPanel;
 
+    GameObject exitPanel;
+
     GameObject orientWindow;
     bool isOrienting = false;
     GameObject resetDropdown;
@@ -215,6 +217,8 @@ public class SimUI : MonoBehaviour
         cameraConfigurationModeButton = AuxFunctions.FindObject(canvas, "ConfigurationMode");
         cameraNodeText = AuxFunctions.FindObject(canvas, "NodeText").GetComponent<Text>();
         cancelNodeSelectionButton = AuxFunctions.FindObject(canvas, "CancelNodeSelectionButton");
+
+        exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
 
     }
 
@@ -452,8 +456,10 @@ public class SimUI : MonoBehaviour
     {
         changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
+        exitPanel.SetActive(false);
         CloseOrientWindow();
         main.IsResetting = false;
+        toolkit.ToggleRulerWindow(false);
         if (configuring)
         {
             CancelDefineGamepiece();
@@ -461,7 +467,6 @@ public class SimUI : MonoBehaviour
             CancelDefineRelease();
             CancelGamepieceSpawn();
         }
-        toolkit.DisableRuler();
     }
     #endregion
     #region camera button functions
@@ -1113,5 +1118,24 @@ public class SimUI : MonoBehaviour
         {
             AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
         }
+    }
+
+    public void MainMenuExit(string option)
+    {
+        EndOtherProcesses();
+        switch (option)
+        {
+            case "open":
+                exitPanel.SetActive(true);
+                break;
+            case "exit":
+                Application.LoadLevel("MainMenu");
+                break;
+
+            case "cancel":
+                exitPanel.SetActive(false);
+                break;
+        }
+
     }
 }
