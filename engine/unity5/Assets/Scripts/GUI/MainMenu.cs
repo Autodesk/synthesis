@@ -216,6 +216,10 @@ public class MainMenu : MonoBehaviour {
         simLoadReplay.SetActive(false);
         defaultSimulator.SetActive(true);
 
+        PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+        
+
         simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
         simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
     }
