@@ -238,8 +238,8 @@ public class DynamicCamera : MonoBehaviour
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
 
-                positionVector += Input.GetAxis("Camera Horizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
-                positionVector += Input.GetAxis("Camera Vertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
+                positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
 
                 zoomValue = Mathf.Max(Mathf.Min(zoomValue - InputControl.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 

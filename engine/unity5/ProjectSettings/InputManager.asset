@@ -70,7 +70,7 @@ InputManager:
     axis: 1
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Camera Horizontal
+    m_Name: CameraHorizontal
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: a
@@ -86,7 +86,7 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
-    m_Name: Camera Vertical
+    m_Name: CameraVertical
     descriptiveName: 
     descriptiveNegativeName: 
     negativeButton: s
