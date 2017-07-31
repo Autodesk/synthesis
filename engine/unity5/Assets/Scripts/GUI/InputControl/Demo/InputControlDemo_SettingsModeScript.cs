@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 
 
 public class InputControlDemo_SettingsModeScript : MonoBehaviour
 {
-    public GameObject                    gameMode;
+    public GameObject gameMode;
     public InputControlDemo_PlayerScript playerScript;
 
 
@@ -46,7 +46,7 @@ public class InputControlDemo_SettingsModeScript : MonoBehaviour
 
         InputControlDemo_KeyButtonScript[] keyButtons = GetComponentsInChildren<InputControlDemo_KeyButtonScript>();
 
-        foreach(InputControlDemo_KeyButtonScript keyButton in keyButtons)
+        foreach (InputControlDemo_KeyButtonScript keyButton in keyButtons)
         {
             keyButton.updateText();
         }

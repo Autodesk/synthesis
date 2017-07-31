@@ -197,9 +197,9 @@ class FileBrowser : OverlayWindow
         object selected = null;
         foreach (T o in items)
         {
-            string entry = stringify != null ? stringify(o) : o.ToString();;
+            string entry = stringify != null ? stringify(o) : o.ToString(); ;
 
-            if(tempSelection != null && entry.Equals(tempSelection.Name))
+            if (tempSelection != null && entry.Equals(tempSelection.Name))
             {
                 if (GUILayout.Button(entry, highlightStyle))
                 {
