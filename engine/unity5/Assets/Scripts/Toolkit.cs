@@ -13,8 +13,7 @@ public class Toolkit : MonoBehaviour
 
     private bool ignoreClick = true;
 
-    private bool usingRuler;
-    private BulletSharp.Math.Vector3 firstPoint = BulletSharp.Math.Vector3.Zero;
+
 
     private GameObject canvas;
 
@@ -27,6 +26,18 @@ public class Toolkit : MonoBehaviour
     private Text rulerXText;
     private Text rulerYText;
     private Text rulerZText;
+
+    private bool usingRuler;
+    private BulletSharp.Math.Vector3 firstPoint = BulletSharp.Math.Vector3.Zero;
+
+    private GameObject stopwatchWindow;
+    private Text stopwatchText;
+    private Text stopwatchStartButtonText;
+    private Text stopwatchPauseButtonText;
+
+    private bool stopwatchOn;
+    private bool stopwatchPaused;
+    private float stopwatchTime;
 
     // Use this for initialization
     void Start()
@@ -43,6 +54,12 @@ public class Toolkit : MonoBehaviour
         rulerYText = AuxFunctions.FindObject(canvas, "RulerYAxisText").GetComponent<Text>();
         rulerZText = AuxFunctions.FindObject(canvas, "RulerZAxisText").GetComponent<Text>();
 
+        //Stopwatch Objects
+        stopwatchWindow = AuxFunctions.FindObject(canvas, "StopwatchPanel");
+        stopwatchText = AuxFunctions.FindObject(canvas, "StopwatchText").GetComponent<Text>();
+        stopwatchStartButtonText = AuxFunctions.FindObject(canvas, "StopwatchStartText").GetComponent<Text>();
+        stopwatchPauseButtonText = AuxFunctions.FindObject(canvas, "StopwatchPauseText").GetComponent<Text>();
+
     }
 
     // Update is called once per frame
@@ -53,6 +70,9 @@ public class Toolkit : MonoBehaviour
             if (ignoreClick) ignoreClick = false;
             else ClickRuler();
         }
+
+        UpdateStopwatch();
+
     }
 
     public void ToggleToolkitWindow(bool show)
@@ -81,11 +101,11 @@ public class Toolkit : MonoBehaviour
         }
     }
 
-    public void BeginRuler()
+    public void StartRuler()
     {
         usingRuler = true;
         rulerStartPoint.SetActive(true);
-        AuxFunctions.FindObject(canvas, "RulerBeginButton").SetActive(false);
+        AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(false);
         AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(true);
     }
 
@@ -137,7 +157,7 @@ public class Toolkit : MonoBehaviour
         }
     }
 
-    public void DisableRuler()
+    private void DisableRuler()
     {
         ignoreClick = true;
         firstPoint = BulletSharp.Math.Vector3.Zero;
@@ -145,8 +165,63 @@ public class Toolkit : MonoBehaviour
         rulerStartPoint.GetComponent<LineRenderer>().enabled = false;
         rulerStartPoint.SetActive(false);
         rulerEndPoint.SetActive(false);
-        AuxFunctions.FindObject(canvas, "RulerBeginButton").SetActive(true);
+        AuxFunctions.FindObject(canvas, "RulerStartButton").SetActive(true);
         AuxFunctions.FindObject(canvas, "RulerTooltipText").SetActive(false);
     }
+    #endregion
+    #region Stopwatch Functions
+    public void ToggleStopwatchWindow(bool show)
+    {
+        stopwatchWindow.SetActive(show);
+    }
+
+    public void ToggleStopwatch()
+    {
+        if (!stopwatchOn)
+        {
+            stopwatchTime = 0f;
+            stopwatchStartButtonText.text = "Stop";
+            stopwatchOn = true;
+        }
+        else
+        {
+            stopwatchStartButtonText.text = "Start";
+            stopwatchOn = false;
+        }
+        
+    }
+
+    public void PauseStopwatch()
+    {
+        if (stopwatchOn)
+        {
+            if (!stopwatchPaused)
+            {
+                stopwatchPauseButtonText.text = "Resume";
+                stopwatchPaused = true;
+            }
+            else
+            {
+                stopwatchPauseButtonText.text = "Pause";
+                stopwatchPaused = false;
+            }
+        }
+    }
+
+    public void ResetStopwatch()
+    {
+        stopwatchTime = 0f;
+    }
+
+    private void UpdateStopwatch()
+    {
+        if (stopwatchOn && !stopwatchPaused)
+        {
+            stopwatchTime += Time.deltaTime;
+            stopwatchText.text = (Mathf.Round( stopwatchTime  * 100) / 100).ToString();
+        }
+    }
+
+
     #endregion
 }
