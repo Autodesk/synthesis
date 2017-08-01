@@ -235,7 +235,7 @@
     <value>5</value>
   </data>
   <data name="fExporterButton.Text" xml:space="preserve">
-    <value>Field Exporter</value>
+    <value>Field Exporter (Legacy)</value>
   </data>
   <data name="&gt;&gt;fExporterButton.Name" xml:space="preserve">
     <value>fExporterButton</value>
