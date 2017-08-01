@@ -747,6 +747,11 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
         // edits the properties of the Component
         public static void EditComponentProperites_OnExecute(NameValueMap Context)
         {
+            if(!CheckComponentsSel())
+            {
+                MessageBox.Show("ERROR: No component is selected", "Edit Component Properties");
+                return;
+            }
             SetAllButtons(false);
             //read from the temp save the proper field values
             form.readFromData(selectedComponent);
@@ -1195,7 +1200,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             removePart.Enabled = Enabled;
         }
 
-        private bool CheckComponentsSel()
+        private static bool CheckComponentsSel()
         {
             foreach(BrowserNode node in oPane.TopNode.BrowserNodes)
             {
