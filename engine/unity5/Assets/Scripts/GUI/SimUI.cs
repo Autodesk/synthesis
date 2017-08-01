@@ -141,6 +141,16 @@ public class SimUI : MonoBehaviour
             UpdateVectorConfiguration();
             UpdateWindows();
             if (settingControl != 0) ListenControl();
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
+                {
+                    if (!exitPanel.activeSelf) MainMenuExit("open");
+                    else MainMenuExit("cancel");
+                }
+            }
+
         }
 
     }
