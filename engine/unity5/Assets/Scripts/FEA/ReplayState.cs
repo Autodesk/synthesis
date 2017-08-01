@@ -543,7 +543,7 @@ namespace Assets.Scripts.FEA
                 r.WorldTransform = worldTransform;
             }
 
-            if (Input.GetKey(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Tab))
                 StateMachine.Instance.PopState();
         }
 
