@@ -9,6 +9,8 @@ using UnityEngine.SceneManagement;
 using System.IO;
 using Assets.Scripts.FEA;
 using Assets.Scripts.FSM;
+using UnityEngine.UI;
+
 
 public class MainState : SimState
 {
@@ -86,6 +88,8 @@ public class MainState : SimState
     public List<Tracker> Trackers { get; private set; }
 
     public static bool ControlsDisabled = false;
+
+    private Button replayButton;
 
     public override void Awake()
     {
@@ -319,6 +323,8 @@ public class MainState : SimState
         contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         isResettingOrientation = false;
 
+        replayButton = AuxFunctions.FindObject("ReplayModeButton").GetComponent<Button>();
+
         Controls.LoadControls();
     }
 
@@ -353,11 +359,12 @@ public class MainState : SimState
             {
                 //Switch to robot camera after overview (make sure robot camera exists first)
                 if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
-<<<<<<< HEAD
-                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null)
-=======
+                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null && GameObject.Find("RobotCameraPanel") == null
+
+                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null
+
                     && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null && GameObject.Find("RobotCameraPanel") == null)
->>>>>>> master
+
                 {
                     ToRobotCamera();
                 }
@@ -394,11 +401,7 @@ public class MainState : SimState
 
             if (!ControlsDisabled) DriveJoints.UpdateAllMotors(rootNode, packet.dio);
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> master
         if (IsResetting)
         {
             Resetting();
@@ -409,7 +412,6 @@ public class MainState : SimState
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
-
 
         if (!IsResetting && Input.GetKey(KeyCode.Space))
         {
@@ -596,11 +598,11 @@ public class MainState : SimState
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
     /// <param name="resetTransform"></param>
-<<<<<<< HEAD
+
+    
+
     public void BeginReset(bool resetTransform = true)
-=======
-    void BeginReset(bool resetTransform = true)
->>>>>>> master
+
     {
         foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
             t.Clear();
@@ -672,11 +674,10 @@ public class MainState : SimState
     /// <summary>
     /// Put robot back down and switch back to normal state
     /// </summary>
-<<<<<<< HEAD
+
+
     public void EndReset()
-=======
-    void EndReset()
->>>>>>> master
+
     {
         IsResetting = false;
         isResettingOrientation = false;
@@ -767,5 +768,14 @@ public class MainState : SimState
     public DriverPractice GetDriverPractice()
     {
         return driverPractice;
+    }
+
+    public void StartReplay()
+    {
+        if (!IsResetting)
+        {
+            contactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(contactPoints, Trackers));
+        }
     }
 }

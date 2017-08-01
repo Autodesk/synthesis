@@ -27,6 +27,9 @@ public class SimUI : MonoBehaviour
 
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
+    GameObject robotCameraViewWindow;
+    RenderTexture robotCameraView;
+    RobotCamera robotCamera;
 
     GameObject releaseVelocityPanel;
 
@@ -39,7 +42,6 @@ public class SimUI : MonoBehaviour
 
     GameObject lockPanel;
 
-    
 
 
     Text enableDPMText;
@@ -81,6 +83,8 @@ public class SimUI : MonoBehaviour
     bool isEditing = false;
     
     private bool freeroamWindowClosed = false;
+    private bool usingRobotView = false;
+
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
     /// </summary>
@@ -94,6 +98,7 @@ public class SimUI : MonoBehaviour
         {
             main = transform.GetComponent<StateMachine>().MainState;
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+            robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
         }
         else if (dpm == null)
         {
@@ -107,7 +112,9 @@ public class SimUI : MonoBehaviour
             UpdateDPMValues();
             UpdateVectorConfiguration();
             UpdateWindows(); //please don't
+            UpdateCameraWindow();
             if (settingControl != 0) ListenControl();
+           
         }
             
     }
@@ -159,6 +166,7 @@ public class SimUI : MonoBehaviour
 
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
+        robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
     }
 
     /// <summary>
@@ -309,6 +317,10 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    private void UpdateCameraView()
+    {
+        
+    }
     #region main button functions
     /// <summary>
     /// Resets the robot
@@ -422,11 +434,19 @@ public class SimUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Toggles the display of gamepiece release trajectories.
+    /// Toggles the display of primary gamepiece release trajectory.
     /// </summary>
-    public void DisplayTrajectories()
+    public void DisplayTrajectoryPrimary()
     {
-        dpm.displayTrajectories = !dpm.displayTrajectories;
+        dpm.displayTrajectories[0] = !dpm.displayTrajectories[0];
+    }
+
+    /// <summary>
+    /// Toggles the display of primary gamepiece release trajectory.
+    /// </summary>
+    public void DisplayTrajectorySecondary()
+    {
+        dpm.displayTrajectories[1] = !dpm.displayTrajectories[1];
     }
 
     /// <summary>
@@ -440,6 +460,8 @@ public class SimUI : MonoBehaviour
             configuringIndex = 0;
             configHeaderText.text = "Configuration Menu - Primary Gamepiece";
             configWindow.SetActive(true);
+            dpm.displayTrajectories[0] = true;
+            dpm.displayTrajectories[1] = false;
         }
         else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!",5);
     }
@@ -455,6 +477,8 @@ public class SimUI : MonoBehaviour
             configuringIndex = 1;
             configHeaderText.text = "Configuration Menu - Secondary Gamepiece";
             configWindow.SetActive(true);
+            dpm.displayTrajectories[0] = false;
+            dpm.displayTrajectories[1] = true;
         }
         else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
     }
@@ -481,6 +505,7 @@ public class SimUI : MonoBehaviour
     {
         configWindow.SetActive(false);
         configuring = false;
+        dpm.displayTrajectories[configuringIndex] = false;
         dpm.Save();
     }
 
@@ -700,6 +725,56 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    private void UpdateCameraWindow()
+    {
+        if (usingRobotView && main.dynamicCameraObject.activeSelf)
+        {
+            robotCamera = AuxFunctions.FindObject("RobotCameraList").GetComponent<RobotCamera>();
+            Debug.Log(robotCamera.CurrentCamera);
+
+            if (robotCamera.CurrentCamera != null)
+            {
+                robotCamera.CurrentCamera.SetActive(true);
+                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+                    robotCamera.ToggleCamera();
+                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+
+                }
+                Debug.Log("Robot camera view is " + robotCameraView.name);
+                Debug.Log(robotCamera.CurrentCamera);
+            }
+        }
+        else if (usingRobotView && !main.dynamicCameraObject.activeSelf)
+        {
+            UserMessageManager.Dispatch("You can only use robot view window when you are not in robot view mode!", 2f);
+            usingRobotView = false;
+            robotCameraViewWindow.SetActive(false);
+        }
+        else
+        {
+            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+
+        }
+    }
+
+    public void ToggleCameraWindow()
+    {
+        usingRobotView = !usingRobotView;
+        robotCameraViewWindow.SetActive(usingRobotView);
+        if (usingRobotView)
+        {
+            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
+        }
+        else
+        {
+            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
+            robotCamera.CurrentCamera.SetActive(false);
+        }
+    }
+    
     #endregion
 }
 

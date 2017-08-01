@@ -134,11 +134,11 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         panValue = 0f;
-
+                        
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
-
+                            
                         }
 
                     }
@@ -280,7 +280,7 @@ public class DynamicCamera : MonoBehaviour
     {
         Vector3 targetPosition;
         Vector3 rotationVector;
-        GameObject target;
+        public GameObject target;
 
         public SateliteState(MonoBehaviour mono)
         {
@@ -303,7 +303,6 @@ public class DynamicCamera : MonoBehaviour
 
             }
             mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
-            mono.transform.LookAt(targetPosition);
         }
 
         public override void End()
