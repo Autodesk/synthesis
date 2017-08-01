@@ -68,6 +68,9 @@ public class QuickSwapMode : MonoBehaviour
         manipulators = new List<GameObject> { noManipulator, syntheClaw };
     }
 
+    /// <summary>
+    /// Called when the QuickSwap Configuration tab is opened from the main menu. 
+    /// </summary>
     public void StartQuickSwap()
     {
         //Selects the traction wheel (default)  
@@ -80,13 +83,18 @@ public class QuickSwapMode : MonoBehaviour
         SelectManipulator(0);
     }
 
+    /// <summary>
+    /// Sets the color for selecting/unselecting parts.
+    /// </summary>
+    /// <param name="part"></param>
+    /// <param name="color"></param>
     public void SetColor(GameObject part, Color color)
     {
         part.GetComponent<Image>().color = color;
     }
 
     /// <summary>
-    /// Selects a wheel, as referenced by its index in the wheels list
+    /// Selects a wheel, as referenced by its index in the wheels list.
     /// </summary>
     /// <param name="wheel"></param>
     public void SelectWheel(int wheel) 
@@ -108,7 +116,7 @@ public class QuickSwapMode : MonoBehaviour
     /// Selects a drive base, as referenced by its index in the bases list
     /// </summary>
     /// <param name="driveBase"></param>
-    public void SelectDriveBase(int driveBase) //Drive Bases are indexed in the list bases
+    public void SelectDriveBase(int driveBase) 
     {
         Color purple = new Color(0.757f, 0.200f, 0.757f);
         
@@ -124,16 +132,16 @@ public class QuickSwapMode : MonoBehaviour
         if (selectedDriveBase == 1) isMecanum = true; 
     }
 
-    public static bool getMecanum()
+    public static bool GetMecanum()
     {
         return isMecanum;
     }
 
     /// <summary>
-    /// Selects a manipulator, as referenced by its index in the manipualtors list
+    /// Selects a manipulator, as referenced by its index in the manipualtors list.
     /// </summary>
     /// <param name="manipulator"></param>
-    public void SelectManipulator(int manipulator) // Manipulators are indexed in the list bases
+    public void SelectManipulator(int manipulator) 
     {
         Color purple = new Color(0.757f, 0.200f, 0.757f);
 
@@ -150,10 +158,10 @@ public class QuickSwapMode : MonoBehaviour
     }
 
     ///<summary>
-    ///Returns the string destination path of a drive base
+    ///Returns the string destination path of a drive base.
     /// </summary>
-    /// 
-    public string getDriveBase(int baseID)
+    /// <param name="baseID"></param>
+    public string GetDriveBase(int baseID)
     {
         switch (baseID)
         {
@@ -167,13 +175,13 @@ public class QuickSwapMode : MonoBehaviour
     }
 
     /// <summary>
-    /// Returns the string destination path of a manipulator
+    /// Returns the string destination path of a manipulator.
     /// </summary>
-    public string getManipulator(int manipulatorID)
+    public string GetManipulator(int manipulatorID)
     {
         switch (manipulatorID)
         {
-            case 0:
+            case 0: //No manipulator
                 hasManipulator = false;
                 break;
             case 1: //SyntheClaw
@@ -182,13 +190,17 @@ public class QuickSwapMode : MonoBehaviour
         }
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
     }
+
+    /// <summary>
+    /// Sets the destination paths of the selected field, robot base and manipulator to be used by MainState. Starts the simulation in Quick Swap Mode. 
+    /// </summary>
     public void StartSwapSim()
     {
         PlayerPrefs.SetString("simSelectedField", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\Fields\\2014 Aerial Assist");
         PlayerPrefs.SetString("simSelectedFieldName", "2014 Aerial Assist");
-        PlayerPrefs.SetString("simSelectedRobot", getDriveBase(selectedDriveBase));
+        PlayerPrefs.SetString("simSelectedRobot", GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
-        PlayerPrefs.SetString("simSelectedManipulator", getManipulator(selectedManipulator));
+        PlayerPrefs.SetString("simSelectedManipulator", GetManipulator(selectedManipulator));
         PlayerPrefs.Save();
         SceneManager.LoadScene("QuickSwap");
     }
