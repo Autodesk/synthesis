@@ -104,7 +104,6 @@ namespace BxDFieldExporter
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
             }
         }
         // called when the inventor is shutting down the add in
@@ -258,7 +257,6 @@ namespace BxDFieldExporter
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
             }
         }
 
@@ -436,7 +434,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
             }
         }
 
@@ -572,7 +569,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
             }
         }
 
@@ -685,7 +681,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
             }
             return def;// returns the browsernodedef
         }
@@ -819,8 +814,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
-                throw;
+
             }
             partSet.Clear(); //Clears the highlighted set
 
@@ -1006,7 +1000,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
             }
         }
 
@@ -1078,7 +1071,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
             }
             try
             {// try to write the data to new properties
