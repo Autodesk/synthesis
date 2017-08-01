@@ -166,30 +166,10 @@ public class MainState : SimState
         {
             if (dynamicCameraObject.activeSelf && DynamicCamera.MovingEnabled)
             {
-                //Switch to robot camera after overview (make sure robot camera exists first)
-                if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState))
-                    && robotCameraObject.GetComponent<RobotCamera>().CurrentCamera != null && GameObject.Find("RobotCameraPanel") == null)
-                {
-                    ToRobotCamera();
-                }
 
                 //Toggle afterwards and will not activate dynamic camera
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
-            }
-            else if (robotCameraObject.activeSelf)
-            {
-                //Switch to dynamic camera after the last camera
-                if (robotCamera.IsLastCamera())
-                {
-                    //Need to toggle before switching to dynamic because toggling will activate current camera
-                    robotCamera.ToggleCamera();
-                    ToDynamicCamera();
-                }
-                else
-                {
-                    robotCamera.ToggleCamera();
-                }
             }
         }
 
@@ -198,7 +178,7 @@ public class MainState : SimState
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
 
-        if (!IsResetting && Input.GetKey(KeyCode.Space))
+        if (!IsResetting && Input.GetKeyDown(KeyCode.Tab))
         {
             contactPoints.Add(null);
             StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
