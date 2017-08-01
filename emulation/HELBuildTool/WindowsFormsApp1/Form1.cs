@@ -28,7 +28,6 @@ namespace WindowsFormsApp1
             String path = txtBrowse.Text;
 
             this.Close();
-
         }
 
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
@@ -46,4 +45,3 @@ namespace WindowsFormsApp1
     }
 }
 
-       
