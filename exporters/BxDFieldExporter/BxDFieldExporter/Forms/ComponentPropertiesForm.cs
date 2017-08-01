@@ -106,7 +106,6 @@ namespace BxDFieldExporter {
                 massNumericUpDown.Value = (decimal)field.Mass;
             }
             catch (Exception e) {
-                MessageBox.Show(e.ToString());
             }
         }
 
