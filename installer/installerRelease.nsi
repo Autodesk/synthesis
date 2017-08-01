@@ -142,12 +142,24 @@ Section "Robot Exporter (optional)"
 
 SectionEnd
 
-Section "Field Exporter (optional)"
+Section "Legacy Field Exporter (optional)"
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\FieldExporter
 
-  File /r "FieldExporter\*"
+  File /r "FieldExporter\SimulatorAPI.dll"
+  File /r "FieldExporter\FieldExporter.exe"
+  File /r "FieldExporter\ConvexLibraryWrapper.dll"
+	
+SectionEnd
+
+Section "Field Exporter Plugin (optional)"
+	
+  ; Set output path to plugin directory
+  SetOutPath %ProgramData%\Autodesk\Application Plugins\BxDFieldExporter
+  
+  File /r "FieldExporter\BxDFieldExporter.dll"
+  File /r "FieldExporter\Autodesk.BxdFieldExporter.Inventor.addin"
 
 SectionEnd
 
@@ -174,6 +186,7 @@ Section "Uninstall"
   Delete $INSTDIR\uninstall.exe
   Delete $INSTDIR\*
   Delete $APPDATA\Autodesk\ApplicationPlugins\*
+  Delete %ProgramData%\Autodesk\ApplicationPlugins\BxDFieldExporter
 
   ; Remove shortcuts, if any
   Delete "$SMPROGRAMS\Synthesis.lnk"
