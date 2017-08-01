@@ -1116,17 +1116,16 @@ public class SimUI : MonoBehaviour
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 
-
     public void ShowControlPanel(bool show)
     {
         if (show)
         {
             EndOtherProcesses();
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(true);
+            AuxFunctions.FindObject(canvas, "InputCanvas").SetActive(true);
         }
         else
         {
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
+            AuxFunctions.FindObject(canvas, "InputCanvas").SetActive(false);
         }
     }
 
