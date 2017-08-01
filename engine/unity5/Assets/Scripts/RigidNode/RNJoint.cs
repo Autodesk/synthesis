@@ -18,40 +18,6 @@ public partial class RigidNode : RigidNode_Base
         Y
     }
 
-    public void CreateManipulatorJoint()
-    {
-        foreach (BRigidBody rb in GameObject.Find("Robot").GetComponentsInChildren<BRigidBody>())
-        {
-            MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
-        }
-
-
-        //Sets the position of Node 0 to the robot's node 0 position
-        MainObject.GetComponent<BRigidBody>().SetPosition(GameObject.Find("Robot").GetComponentInChildren<BRigidBody>().GetCollisionObject().WorldTransform.Origin.ToUnity());
-
-        //hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;  
-        if (joint != null || GetSkeletalJoint() == null)
-        {
-            RotationalJoint_Base rNode = new RotationalJoint_Base();
-            B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
-
-            hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
-
-            hc.otherRigidBody = GameObject.Find("Robot").GetComponentInChildren<BRigidBody>();
-
-            hc.localConstraintPoint = ComOffset;//new Vector3(-0.5f, 10f, 0f);
-
-
-            //put this after everything else
-            hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
-            //new B6DOFConstraint();
-            //hc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f), AxisType.X));
-            // B6DOFConstraint hc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
-        }
-
-
-    }
-
     public void CreateJoint()
     {
         if (joint != null || GetSkeletalJoint() == null)
@@ -135,6 +101,32 @@ public partial class RigidNode : RigidNode_Base
                 }
 
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Creates node_0 of a manipulator for QuickSwap mode. Node_0 is used to attach the manipulator to the robot.
+    /// </summary>
+    public void CreateManipulatorJoint()
+    {
+        //Ignore physics/collisions between the manipulator and the robot. Currently not working. 
+        foreach (BRigidBody rb in GameObject.Find("Robot").GetComponentsInChildren<BRigidBody>())
+        {
+            MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+        }
+
+        if (joint != null || GetSkeletalJoint() == null)
+        {
+            RotationalJoint_Base rNode = new RotationalJoint_Base();
+            B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
+
+            hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
+            hc.otherRigidBody = GameObject.Find("Robot").GetComponentInChildren<BRigidBody>();
+
+            hc.localConstraintPoint = ComOffset;
+
+            //Put this after everything else
+            hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
         }
     }
 
