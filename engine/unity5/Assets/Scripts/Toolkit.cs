@@ -105,6 +105,11 @@ public class Toolkit : MonoBehaviour
         }
     }
 
+    public void ToggleToolkitWindow()
+    {
+        ToggleToolkitWindow(!toolkitWindow.activeSelf);
+    }
+
 
 
     #region Ruler Functions
