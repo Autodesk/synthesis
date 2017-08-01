@@ -1121,11 +1121,11 @@ public class SimUI : MonoBehaviour
         if (show)
         {
             EndOtherProcesses();
-            AuxFunctions.FindObject(canvas, "InputCanvas").SetActive(true);
+            AuxFunctions.FindObject(canvas, "InputManager").SetActive(true);
         }
         else
         {
-            AuxFunctions.FindObject(canvas, "InputCanvas").SetActive(false);
+            AuxFunctions.FindObject(canvas, "InputManager").SetActive(false);
         }
     }
 
