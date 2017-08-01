@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.FEA
@@ -85,6 +86,8 @@ namespace Assets.Scripts.FEA
 
         private BRigidBody _selectedBody;
 
+        private float tStart;
+
         /// <summary>
         /// The body being currently highlighted.
         /// </summary>
@@ -147,6 +150,8 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public ReplayState(FixedQueue<List<ContactDescriptor>> contactPoints, List<Tracker> trackers)
         {
+            tStart = Time.time;
+
             this.contactPoints = contactPoints.ToList();
             this.trackers = trackers;
 
@@ -514,6 +519,11 @@ namespace Assets.Scripts.FEA
         public override void End()
         {
             SelectedBody = null;
+
+            Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>
+                    {
+                        { "time", Time.time - tStart },
+                    });
 
             foreach (Tracker t in trackers)
             {
