@@ -52,12 +52,12 @@ IfFileExists "$INSTDIR" +1 +28
         DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis"
 
         Goto next
-        
+
       false:
         Quit
 
       next:
-      
+
 
 
 
@@ -67,10 +67,10 @@ SectionEnd
 Section "Synthesis (required)"
 
   SectionIn RO
-  
+
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\Synthesis
-  
+
   ; Put file there
   ;File "installer.nsi"
   File /r "Synthesis\*"
@@ -78,19 +78,19 @@ Section "Synthesis (required)"
 CreateShortCut "$DESKTOP\Synthesis.lnk" "$INSTDIR\SynthesisLauncher.exe" ""
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "DisplayName" "Autodesk Synthesis" 
+                "DisplayName" "Autodesk Synthesis"
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "DisplayIcon" "plantlogo(NoBack).ico"
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "Publisher" "Autodesk" 
+                "Publisher" "Autodesk"
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                 "Readme" "C:\Users\t_hics\Downloads\3.0.1.0\3.0.1.0\README.rtf"
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
-                "URLInfoAbout" "BXD.Autodesk.com/tutorials" 
+                "URLInfoAbout" "BXD.Autodesk.com/tutorials"
 
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Autodesk Synthesis" \
                  "DisplayVersion" "3.0.1.0"
@@ -103,7 +103,23 @@ createShortCut "$SMPROGRAMS\Synthesis.lnk" "$INSTDIR\SynthesisLauncher.exe"
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoModify" 1
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Synthesis" "NoRepair" 1
 WriteUninstaller "uninstall.exe"
-  
+
+SectionEnd
+
+Section "Robot Files"
+
+SetOutPath $DOCUMENTS\Synthesis\Robots
+
+File /r "Robots\*"
+
+SectionEnd
+
+Section "Field Files"
+
+SetOutPath $DOCUMENTS\Synthesis\Fields
+
+File /r "Fields\*"
+
 SectionEnd
 
 Section
@@ -136,18 +152,18 @@ Section "Field Exporter (optional)"
 SectionEnd
 
 Section "Code Emulator (optional)"
-  
+
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\SynthesisDrive
-  
+
   ; Put file there
   ;File "example2.nsi"
   File /r "SynthesisDrive\*"
-  
-SectionEnd 
+
+SectionEnd
 
 Section "Uninstall"
-  
+
   ; Remove registry keys
   DeleteRegKey HKLM SOFTWARE\Synthesis
 
