@@ -46,7 +46,9 @@ public class MainState : SimState
     private UnityFieldDefinition fieldDefinition;
 
     private GameObject robotObject;
+    private GameObject manipulatorObject;
     private RigidNode_Base rootNode;
+    private RigidNode_Base manipulatorNode;
 
     private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private Vector3 nodeToRobotOffset;
@@ -295,6 +297,22 @@ public class MainState : SimState
 
         Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
         Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+        if (QuickSwapMode.hasManipulator)
+        {
+            Debug.Log(loadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
+            RotationalJoint_Base rNode = new RotationalJoint_Base();
+            B6DOFConstraint hc = GameObject.Find("Manipulator").transform.GetChild(0).gameObject.AddComponent<B6DOFConstraint>();
+
+            hc.thisRigidBody = GameObject.Find("Manipulator").GetComponentInChildren<BRigidBody>();
+
+            hc.otherRigidBody = GameObject.Find("Robot").GetComponentInChildren<BRigidBody>();
+
+            hc.localConstraintPoint = GameObject.Find("Robot").transform.position - GameObject.Find("Manipulator").transform.GetChild(0).transform.position; // ComOffset;//new Vector3(-0.5f, 10f, 0f);
+
+
+            //put this after everything else
+            hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
+        }
 
         dynamicCameraObject = GameObject.Find("Main Camera");
         dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
@@ -374,6 +392,7 @@ public class MainState : SimState
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
 
             DriveJoints.UpdateAllMotors(rootNode, packet.dio, QuickSwapMode.getMecanum());
+            DriveJoints.UpdateAllMotors(manipulatorNode, packet.dio, QuickSwapMode.getMecanum());
         }
 
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
@@ -490,6 +509,89 @@ public class MainState : SimState
 
         robotCameraObject.SetActive(false);
 
+
+        RotateRobot(robotStartOrientation);
+
+        return true;
+    }
+
+    bool loadManipulator(string directory)
+    {
+        manipulatorObject = new GameObject("Manipulator");
+        manipulatorObject.transform.position = /*GameObject.Find("Robot").transform.position + */GameObject.Find("Robot").transform.GetChild(0).transform.position; // ComOffset;//new Vector3(-0.5f, 10f, 0f);
+        //manipulatorObject.transform.position = robotStartPosition;
+        //manipulatorObject.transform.position = GameObject.Find("Robot").GetComponentInChildren<BRigidBody>().GetCollisionObject().WorldTransform.Origin.ToUnity(); 
+
+        RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
+        {
+            return new RigidNode(guid);
+        };
+
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        //Read .robot instead. Maybe need a RobotSkeleton class
+        manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
+        manipulatorNode.ListAllNodes(nodes);
+
+        //Load node for attaching manipulator to robot
+        RigidNode node = (RigidNode)nodes[0];
+        node.CreateTransform(manipulatorObject.transform);
+
+        if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+        {
+            Debug.Log("Robot not loaded!");
+            UnityEngine.Object.Destroy(manipulatorObject);
+            return false;
+        }
+        
+        node.CreateJoint();
+
+        node.MainObject.AddComponent<Tracker>().Trace = true;
+
+        Tracker t = node.MainObject.GetComponent<Tracker>();
+        Debug.Log(t);
+        
+
+        //Load other node
+        RigidNode otherNode = (RigidNode)nodes[1];
+        otherNode.CreateTransform(manipulatorObject.transform);
+
+        if (!otherNode.CreateMesh(directory + "\\" + otherNode.ModelFileName))
+        {
+            Debug.Log("Robot not loaded!");
+            UnityEngine.Object.Destroy(manipulatorObject);
+            return false;
+        }
+
+       
+        otherNode.CreateJoint();
+        //otherNode.CreateManipulatorJoint();
+        otherNode.MainObject.AddComponent<Tracker>().Trace = true;
+
+        t = otherNode.MainObject.GetComponent<Tracker>();
+        Debug.Log(t);
+
+        //manipulatorObject.transform.position =manipulatorObject.GetComponentInChildren<BRigidBody>().GetCollisionObject().WorldTransform.Origin.ToUnity();
+        //foreach (RigidNode_Base n in nodes)
+        //{
+        //    RigidNode node = (RigidNode)n;
+        //    node.CreateTransform(manipulatorObject.transform);
+
+        //    if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+        //    {
+        //        Debug.Log("Robot not loaded!");
+        //        UnityEngine.Object.Destroy(manipulatorObject);
+        //        return false;
+        //    }
+
+        //    node.CreateJoint();
+
+        //    node.MainObject.AddComponent<Tracker>().Trace = true;
+
+        //    Tracker t = node.MainObject.GetComponent<Tracker>();
+        //    Debug.Log(t);
+        //}
+
+        //nodeToRobotOffset = manipulatorObject.transform.GetChild(0).transform.position - manipulatorObject.transform.position;
 
         RotateRobot(robotStartOrientation);
 
