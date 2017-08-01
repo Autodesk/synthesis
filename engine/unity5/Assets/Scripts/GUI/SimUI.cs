@@ -246,15 +246,15 @@ public class SimUI : MonoBehaviour
 
             if (configuringIndex == 0)
             {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupPrimary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleasePrimary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnPrimary].ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupPrimary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releasePrimary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnPrimary).ToString();
             }
             else
             {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupSecondary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleaseSecondary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnSecondary].ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupSecondary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releaseSecondary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnSecondary).ToString();
             }
         }
     }
@@ -428,7 +428,7 @@ public class SimUI : MonoBehaviour
             EndOtherProcesses();
             changeFieldPanel.SetActive(true);
         }
-        
+
     }
 
     public void ChooseResetMode(int i)
@@ -550,7 +550,7 @@ public class SimUI : MonoBehaviour
         if (dpmWindowOn)
         {
             dpmWindowOn = false;
-            
+
         }
         else
         {
@@ -826,30 +826,62 @@ public class SimUI : MonoBehaviour
             settingControl = 0;
             return;
         }
-        foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+
+        KeyMapping[] keys = GetComponentsInChildren<KeyMapping>();
+
+        foreach (KeyMapping key in keys)
         {
-            if (Input.GetKeyDown(vKey))
+            if (InputControl.GetButtonDown(key))
             {
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
                     {
-                        Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+                        InputControl.GetButton(Controls.buttons.pickupPrimary);
                     }
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.pickupPrimary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
                 else
                 {
-                    if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnSecondary, vKey);
+                    if (settingControl == 1) InputControl.GetButton(Controls.buttons.pickupSecondary);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.releaseSecondary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
-                Controls.SaveControls();
+                Controls.Save();
                 settingControl = 0;
             }
         }
     }
+
+
+        //OLD; remove once the new one is tested 7/27/2017
+        //foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+        //{
+        //    if (Input.GetKeyDown(vKey))
+        //    {
+        //        if (configuringIndex == 0)
+        //        {
+        //            if (settingControl == 1)
+        //            {
+        //                //Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+        //                InputControl.GetButton(Controls.buttons.pickupPrimary);
+        //                Controls.Load();
+        //            }
+        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
+        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+        //        }
+        //        else
+        //        {
+        //            if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
+        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
+        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+        //        }
+        //        Controls.SaveControls();
+        //        settingControl = 0;
+        //    }
+        //}
+ 
     #endregion
     #region robot camera functions
     /// <summary>
@@ -1107,4 +1139,3 @@ public class SimUI : MonoBehaviour
 
     }
 }
-

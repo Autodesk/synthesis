@@ -456,7 +456,7 @@ namespace Assets.Scripts.FEA
                 camera = dynamicCamera.GetComponent<Camera>();
             }
 
-            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+            if (InputControl.GetButtonDown(Controls.buttons.cameraToggle))
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             if (firstFrame)
