@@ -85,17 +85,64 @@ public class DriveJoints : MonoBehaviour
         float[] pwm = dioModules[0].pwmValues;
         float[] can = dioModules[0].canValues;
 
-        pwm[0] +=
-            (InputControl.GetButton(Controls.buttons.forward) ? SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.backward) ? -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
+        //if (joystickControl)
+        //{
+        //    pwm[0] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
+        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
 
-        pwm[1] +=
-            (InputControl.GetButton(Controls.buttons.forward) ? -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.backward) ? SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
+        //    pwm[1] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
+        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
+        //}
+
+        //pwm[0] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.tankForward) * -SPEED_ARROW_PWM) +
+        //    (InputControl.GetAxisRaw(Controls.axes.tankBackward) * SPEED_ARROW_PWM) +
+        //    (InputControl.GetAxisRaw(Controls.axes.tankLeft) * SPEED_ARROW_PWM) +
+        //    (InputControl.GetAxisRaw(Controls.axes.tankRight) * SPEED_ARROW_PWM);
+
+        //pwm[1] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.tankForward) * -SPEED_ARROW_PWM) +
+        //    (InputControl.GetAxisRaw(Controls.axes.tankBackward) * SPEED_ARROW_PWM) +
+        //    (InputControl.GetAxisRaw(Controls.axes.tankLeft) * SPEED_ARROW_PWM) +
+        //    (InputControl.GetAxisRaw(Controls.axes.tankRight) * SPEED_ARROW_PWM);
+
+        //INVERTED DRIVING ERRORS
+        //Left motor
+        // pwm[0] +=
+        //     (InputControl.GetButton(Controls.buttons.tankForward) ? SPEED_ARROW_PWM : 0.0f) +
+
+        //(InputControl.GetButton(Controls.buttons.tankBackward) ? -SPEED_ARROW_PWM : 0.0f) +
+
+        //(InputControl.GetButton(Controls.buttons.tankLeft) ? -SPEED_ARROW_PWM : 0.0f) +
+
+        //(InputControl.GetButton(Controls.buttons.tankRight) ? SPEED_ARROW_PWM : 0.0f);
+
+
+        // // //Right motor
+        // pwm[1] +=
+
+        //(InputControl.GetButton(Controls.buttons.tankLeft) ? -SPEED_ARROW_PWM : 0.0f) +
+
+        //(InputControl.GetButton(Controls.buttons.tankRight) ? SPEED_ARROW_PWM : 0.0f) +
+
+        //(InputControl.GetButton(Controls.buttons.tankRight) ? -SPEED_ARROW_PWM : 0.0f) +
+
+        //(InputControl.GetButton(Controls.buttons.tankLeft) ? SPEED_ARROW_PWM : 0.0f);
+
+        //SUCCESSFUL DRIVING
+        //pwm[0] +=
+        //    (InputControl.GetButton(Controls.buttons.forward) ? SPEED_ARROW_PWM : 0.0f) +
+        //    (InputControl.GetButton(Controls.buttons.backward) ? -SPEED_ARROW_PWM : 0.0f) +
+        //    (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
+        //    (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
+
+        //pwm[1] +=
+        //    (InputControl.GetButton(Controls.buttons.forward) ? -SPEED_ARROW_PWM : 0.0f) +
+        //    (InputControl.GetButton(Controls.buttons.backward) ? SPEED_ARROW_PWM : 0.0f) +
+        //    (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
+        //(InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
 
         pwm[2] +=
             (InputControl.GetButton(Controls.buttons.pwm2Plus)) ? SPEED_ARROW_PWM :
