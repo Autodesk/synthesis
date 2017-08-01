@@ -28,6 +28,7 @@ public class QuickSwapMode : MonoBehaviour
     private GameObject syntheClaw;
     List<GameObject> manipulators;
     int selectedManipulator;
+    public static bool hasManipulator = true;
 
     // Use this for initialization
     void Start()
@@ -136,14 +137,15 @@ public class QuickSwapMode : MonoBehaviour
     {
         Color purple = new Color(0.757f, 0.200f, 0.757f);
 
-        //unselects all wheels
+        //unselects all manipulators
         for (int k = 0; k < manipulators.Count; k++)
         {
             SetColor(manipulators[k], Color.white);
         }
 
-        //selects the wheel that is clicked
+        //selects the manipulator that is clicked
         SetColor(manipulators[manipulator], purple);
+        hasManipulator = (manipulator == 0) ? false : true;
         selectedManipulator = manipulator;
     }
 
@@ -156,12 +158,12 @@ public class QuickSwapMode : MonoBehaviour
         switch (baseID)
         {
             case 0: //Default Drive Base
-                return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\DriveBases\\DriveBase2557";
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\DriveBase2557");
             case 1: //Mech Drive Base
-                return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\DriveBases\\MechDrive";
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\MechDrive");
         }
 
-        return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\DriveBases\\DriveBase2557";
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\DriveBase2557");
     }
 
     /// <summary>
@@ -171,10 +173,14 @@ public class QuickSwapMode : MonoBehaviour
     {
         switch (manipulatorID)
         {
+            case 0:
+                hasManipulator = false;
+                break;
             case 1: //SyntheClaw
-                return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\Manipulators\\Claw\\SyntheClaw";
+                hasManipulator = true;
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
         }
-        return "C:\\Users\\t_chenjas\\Documents\\MixAndMatch\\Manipulators\\Claw\\SyntheClaw";
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
     }
     public void StartSwapSim()
     {
@@ -182,6 +188,7 @@ public class QuickSwapMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedFieldName", "2014 Aerial Assist");
         PlayerPrefs.SetString("simSelectedRobot", getDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
+        PlayerPrefs.SetString("simSelectedManipulator", getManipulator(selectedManipulator));
         PlayerPrefs.Save();
         SceneManager.LoadScene("QuickSwap");
     }
