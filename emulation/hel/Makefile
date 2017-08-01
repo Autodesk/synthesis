@@ -10,7 +10,7 @@ endif
 JAVAC := $(JAVA_HOME)/bin/javac.exe
 JAR := $(JAVA_HOME)/bin/jar.exe
 
-CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Ini-libraries/include -Iwpiutil/include -std=c++14	
+CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Ini-libraries/include -Iwpiutil/src/main/native/include -std=c++14
 ifeq ($(TARGET), debug)
 	CCFLAGS += -O0 -g
 endif
@@ -24,7 +24,7 @@ CCFLAGS_NTCORE := -Intcore/include $(CCFLAGS)
 CCFLAGS_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/java/header -Intcore/include -fpermissive $(CCFLAGS)
 CCFLAGS_NTCORE_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/ntcore/java/header -Intcore/include $(CCFLAGS)
 
-SRC_FILES_HAL := $(shell find ./lib ./wpiutil -name "*.cpp" -not -name "*priority_mutex.cpp" -not -wholename "*ctre/*" -not -name "*NiFpgaState.cpp")
+SRC_FILES_HAL := $(shell find ./lib ./wpiutil/src/main/native -name "*.cpp" -not -name "*priority_mutex.cpp" -not -wholename "*ctre/*" -not -name "*NiFpgaState.cpp")
 
 SRC_FILES_NTCORE := $(shell find ./ntcore/src -name "*.cpp")
 SRC_FILES_NTCORE_JAVA := ntcore/java/lib/NetworkTablesJNI.cpp
