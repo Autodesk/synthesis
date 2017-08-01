@@ -495,8 +495,12 @@ namespace BulletUnity
         {
             settingSpawn = 0;
             if (spawnIndicator != null) Destroy(spawnIndicator);
-            DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
-            dynamicCamera.SwitchCameraState(lastCameraState);
+            if (lastCameraState != null)
+            {
+                DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                dynamicCamera.SwitchCameraState(lastCameraState);
+                lastCameraState = null;
+            }
             MainState.ControlsDisabled = false;
         }
 
