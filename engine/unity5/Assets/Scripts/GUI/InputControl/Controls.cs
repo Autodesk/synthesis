@@ -34,6 +34,11 @@ public class Controls
         public KeyMapping left;
         public KeyMapping right;
 
+        public KeyMapping tankFrontLeft;
+        public KeyMapping tankBackLeft;
+        public KeyMapping tankFrontRight;
+        public KeyMapping tankBackRight;
+
         //Remaining PWM Controls
         public KeyMapping pwm2Plus;
         public KeyMapping pwm2Neg;
@@ -65,7 +70,10 @@ public class Controls
         public Axis vertical;
         public Axis horizontal;
 
-        public Axis tankVertical;
+        public Axis tankForward;
+        public Axis tankBackward;
+        public Axis tankLeft;
+        public Axis tankRight;
     }
 
     /// <summary>
@@ -88,6 +96,11 @@ public class Controls
         buttons.backward = InputControl.setKey("Backward", KeyCode.DownArrow, new JoystickInput(JoystickAxis.Axis2Positive));
         buttons.left = InputControl.setKey("Left", KeyCode.LeftArrow, new JoystickInput(JoystickAxis.Axis4Negative));
         buttons.right = InputControl.setKey("Right", KeyCode.RightArrow, new JoystickInput(JoystickAxis.Axis4Positive));
+
+        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
+        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
+        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
+        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
 
         //Remaining PWM controls
         buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, new JoystickInput(JoystickAxis.Axis3Positive));
@@ -114,6 +127,11 @@ public class Controls
         //Set axes
         axes.horizontal = InputControl.setAxis("Horizontal", buttons.left, buttons.right);
         axes.vertical = InputControl.setAxis("Vertical", buttons.backward, buttons.forward);
+
+        axes.tankForward = InputControl.setAxis("Tank Forward", buttons.tankFrontLeft, buttons.tankFrontRight);
+        axes.tankBackward = InputControl.setAxis("Tank Backward", buttons.tankBackLeft, buttons.tankBackRight);
+        axes.tankLeft = InputControl.setAxis("Tank Left", buttons.tankBackLeft, buttons.tankFrontRight);
+        axes.tankRight = InputControl.setAxis("Tank Right", buttons.tankFrontLeft, buttons.tankBackRight);
 
         Load();
     }
