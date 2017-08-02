@@ -125,7 +125,7 @@
     <value>0, 0</value>
   </data>
   <data name="menuStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>386, 28</value>
+    <value>469, 28</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="menuStrip1.TabIndex" type="System.Int32, mscorlib">
@@ -144,7 +144,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>9</value>
   </data>
   <data name="fileToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>44, 24</value>
@@ -198,11 +198,14 @@
   <data name="synthesisButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
+  <data name="synthesisButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="synthesisButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>89, 66</value>
+    <value>65, 123</value>
   </data>
   <data name="synthesisButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>209, 76</value>
+    <value>328, 78</value>
   </data>
   <data name="synthesisButton.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -220,16 +223,16 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;synthesisButton.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>8</value>
   </data>
   <data name="fExporterButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
   <data name="fExporterButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 276</value>
+    <value>65, 368</value>
   </data>
   <data name="fExporterButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 76</value>
+    <value>328, 76</value>
   </data>
   <data name="fExporterButton.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -247,7 +250,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;fExporterButton.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>7</value>
   </data>
   <data name="rExporterButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -256,10 +259,10 @@
     <value>NoControl</value>
   </data>
   <data name="rExporterButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>197, 276</value>
+    <value>65, 275</value>
   </data>
   <data name="rExporterButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 76</value>
+    <value>328, 76</value>
   </data>
   <data name="rExporterButton.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
@@ -277,7 +280,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;rExporterButton.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>6</value>
   </data>
   <data name="codeViewerButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -286,10 +289,10 @@
     <value>NoControl</value>
   </data>
   <data name="codeViewerButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>101, 408</value>
+    <value>65, 512</value>
   </data>
   <data name="codeViewerButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>177, 76</value>
+    <value>328, 76</value>
   </data>
   <data name="codeViewerButton.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
@@ -307,13 +310,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;codeViewerButton.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>5</value>
   </data>
   <data name="liveUpdater.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="liveUpdater.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 496</value>
+    <value>62, 616</value>
   </data>
   <data name="liveUpdater.MaximumSize" type="System.Drawing.Size, System.Drawing">
     <value>500, 300</value>
@@ -337,7 +340,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;liveUpdater.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>4</value>
   </data>
   <data name="label3.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -346,7 +349,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label3.Location" type="System.Drawing.Point, System.Drawing">
-    <value>142, 38</value>
+    <value>63, 80</value>
   </data>
   <data name="label3.Size" type="System.Drawing.Size, System.Drawing">
     <value>109, 25</value>
@@ -367,7 +370,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label3.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>3</value>
   </data>
   <data name="label4.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -376,7 +379,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label4.Location" type="System.Drawing.Point, System.Drawing">
-    <value>142, 248</value>
+    <value>63, 234</value>
   </data>
   <data name="label4.Size" type="System.Drawing.Size, System.Drawing">
     <value>100, 25</value>
@@ -397,7 +400,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label4.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>2</value>
   </data>
   <data name="label5.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -406,7 +409,7 @@
     <value>Microsoft Sans Serif, 12pt</value>
   </data>
   <data name="label5.Location" type="System.Drawing.Point, System.Drawing">
-    <value>155, 380</value>
+    <value>60, 472</value>
   </data>
   <data name="label5.Size" type="System.Drawing.Size, System.Drawing">
     <value>66, 25</value>
@@ -427,13 +430,13 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;label5.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="buildLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="buildLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>335, 584</value>
+    <value>354, 721</value>
   </data>
   <data name="buildLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>39, 17</value>
@@ -454,46 +457,19 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;buildLabel.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="synthesisBulletButton.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
-    <value>Flat</value>
-  </data>
-  <data name="synthesisBulletButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="synthesisBulletButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>89, 148</value>
-  </data>
-  <data name="synthesisBulletButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>209, 76</value>
-  </data>
-  <data name="synthesisBulletButton.TabIndex" type="System.Int32, mscorlib">
-    <value>14</value>
-  </data>
-  <data name="synthesisBulletButton.Text" xml:space="preserve">
-    <value>Synthesis (Bullet Physics)</value>
-  </data>
-  <data name="&gt;&gt;synthesisBulletButton.Name" xml:space="preserve">
-    <value>synthesisBulletButton</value>
-  </data>
-  <data name="&gt;&gt;synthesisBulletButton.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;synthesisBulletButton.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;synthesisBulletButton.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>25</value>
+  </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>8, 16</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>386, 610</value>
+    <value>469, 747</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
