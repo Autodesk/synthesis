@@ -34,7 +34,6 @@ public class Controls
         public KeyMapping left;
         public KeyMapping right;
 
-
         //Tank drive controls
         public KeyMapping tankFrontLeft;
         public KeyMapping tankBackLeft;
@@ -94,12 +93,6 @@ public class Controls
         buttons.left = InputControl.setKey("Left", KeyCode.LeftArrow, new JoystickInput(JoystickAxis.Axis4Negative));
         buttons.right = InputControl.setKey("Right", KeyCode.RightArrow, new JoystickInput(JoystickAxis.Axis4Positive));
 
-        //Tank drive controls
-        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
-        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
-        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
-        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
-
         //Remaining PWM controls
         buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, new JoystickInput(JoystickAxis.Axis3Positive));
         buttons.pwm2Neg = InputControl.setKey("PWM 2 Negative", KeyCode.Alpha2, new JoystickInput(JoystickAxis.Axis3Negative));
@@ -125,6 +118,42 @@ public class Controls
         //Set axes
         axes.horizontal = InputControl.setAxis("Horizontal", buttons.left, buttons.right);
         axes.vertical = InputControl.setAxis("Vertical", buttons.backward, buttons.forward);
+
+        Load();
+    }
+
+    //Try this 8/3/17
+    //public void DPMToggle()
+    //{
+    //    if (!dpm.modeEnabled)
+    //    {
+    //        dpm.modeEnabled = true;
+    //        enableDPMText.text = "Disable Driver Practice Mode";
+    //        lockPanel.SetActive(false);
+
+    //    }
+    //    else
+    //    {
+    //        if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
+    //        else
+    //        {
+    //            enableDPMText.text = "Enable Driver Practice Mode";
+    //            dpm.displayTrajectories[0] = false;
+    //            dpm.displayTrajectories[1] = false;
+    //            dpm.modeEnabled = false;
+    //            lockPanel.SetActive(true);
+    //        }
+
+    //    }
+    //}
+
+    public static void TankDrive()
+    {
+        //Tank Drive
+        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
+        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
+        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
+        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
 
         Load();
     }
@@ -178,12 +207,6 @@ public class Controls
                 key.secondaryInput = customInputFromString(inputStr);
             }
         }
-    }
-
-    public static void TankDrive()
-    {
-        //set all controls to TankDrive
-        //disable all arcade controls
     }
 
     /// <summary>
