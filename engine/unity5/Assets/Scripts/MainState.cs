@@ -42,11 +42,6 @@ public class MainState : SimState
     private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
     //Testing camera location, can be deleted later
 
-    //=================================IN PROGRESS=============================
-    //private UltraSensor ultraSensor;
-    //private GameObject ultraSensorObject;
-    //=========================================================================
-
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
 

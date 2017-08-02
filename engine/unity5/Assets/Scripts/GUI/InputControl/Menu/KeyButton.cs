@@ -5,7 +5,7 @@ public class KeyButton : MonoBehaviour
 {
     public static KeyButton selectedButton = null;
     public static bool ignoreMouseMovement = true;
-    public static bool useKeyModifiers = false;
+    public static bool useKeyModifiers = true;
     public static bool tankDrive = false;
 
     public KeyMapping keyMapping;
@@ -22,7 +22,7 @@ public class KeyButton : MonoBehaviour
     // Update is called once per frame
     void OnGUI()
     {
-        //Implement assets (most assets are configured in Unity: OptionsTab > Canvas > SettingsMode
+        //Implement assets; (most assets are configured in Unity: OptionsTab > Canvas > SettingsMode
         mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
         mKeyText.color = Color.white;
 

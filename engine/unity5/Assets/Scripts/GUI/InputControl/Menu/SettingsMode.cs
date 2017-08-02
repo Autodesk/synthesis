@@ -22,7 +22,7 @@ public class SettingsMode : MonoBehaviour
 
     public void OnTankDrive(bool on)
     {
-        KeyButton.tankDrive = on;
+
     }
 
     public void OnSaveClick()
