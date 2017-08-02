@@ -1,6 +1,5 @@
-﻿using Assets.Scripts.FEA;
-using Assets.Scripts.FSM;
-using System;
+
+﻿using Assets.Scripts.FSM;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +13,15 @@ public class SimulatorUI : MonoBehaviour
     private int x = 0;
     public GameObject stateMachine;
     public MainState mainState;
+
     private Color hoverColor;
     private Vector3 toolTransform;
 
     private GameObject canvas;
+    private GameObject cameraToolTip;
+    private GameObject orientWindow;
+    private bool isOrienting;
+    private GameObject resetDropdown;
 
     private Image imgTemp;
 
@@ -32,7 +36,6 @@ public class SimulatorUI : MonoBehaviour
         imgTemp = AuxFunctions.FindObject("Toolbar").GetComponent<Image>();
         tTransform = AuxFunctions.FindObject("Toolbar").GetComponent<Transform>();
         toolTransform = tTransform.position;
-
     }
 
     // Update is called once per frame
@@ -43,17 +46,11 @@ public class SimulatorUI : MonoBehaviour
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
 
+
         if (mainState == null)
         {
-            mainState = stateMachine.GetComponent<StateMachine>().MainState;
+            mainState = stateMachine.GetComponent<StateMachine>().CurrentState as MainState;
         }
-        //dynamicCamera.cameraState
-        //if (Input.GetKey(Controls.ControlKey[Controls.Control.CameraToggle])) {
-        //  if (dynamicCamera.cameraState ) { 
-
-
-
-        //  }
     }
 
     public void showControlPanel(bool show)
@@ -67,7 +64,6 @@ public class SimulatorUI : MonoBehaviour
             AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
         }
     }
-
     /*
     public void hoverOpacityEnter()
     {
@@ -97,7 +93,6 @@ public class SimulatorUI : MonoBehaviour
                     });
 
     }
-
     //In game UI loads field using UI icons
     public void fieldClick()
     {
@@ -105,10 +100,9 @@ public class SimulatorUI : MonoBehaviour
     }
 
     //In game UI resets robot using UI icons
-    public void resetRobotClick()
+    public void ResetRobotClick()
     {
-        mainState = stateMachine.GetComponent<StateMachine>().MainState;
-        mainState.BeginReset(true);
+        mainState.BeginReset();
         mainState.EndReset();
     }
 
@@ -135,8 +129,6 @@ public class SimulatorUI : MonoBehaviour
 
     public void StartReplay()
     {
-        
-
         mainState.StartReplay();
     }
 
@@ -169,5 +161,77 @@ public class SimulatorUI : MonoBehaviour
     {
     
     }
+
+    public void CameraToolTips()
+    {
+        if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            cameraToolTip.GetComponent<Text>().text = "Driver Station";
+        else if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            cameraToolTip.GetComponent<Text>().text = "Freeroam";
+        else if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
+            cameraToolTip.GetComponent<Text>().text = "Orbit Robot";
+        else if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            cameraToolTip.GetComponent<Text>().text = "Overview";
+    }
+
+    public void ChooseResetMode(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                mainState.BeginReset();
+                mainState.EndReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 2:
+                mainState.IsResetting = true;
+                mainState.BeginReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+        }
+    }
+
+    public void ToggleOrientWindow()
+    {
+        isOrienting = !isOrienting;
+        orientWindow.SetActive(isOrienting);
+        if (isOrienting) mainState.BeginReset();
+        else mainState.EndReset();
+    }
+
+    public void OrientLeft()
+    {
+        mainState.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientRight()
+    {
+        mainState.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientForward()
+    {
+        mainState.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+    }
+    public void OrientBackward()
+    {
+        mainState.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
+    }
+
+    public void DefaultOrientation()
+    {
+        mainState.ResetRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
+
+    public void SaveOrientation()
+    {
+        mainState.SaveRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
+
+    public void CloseOrientWindow()
+    {
+        isOrienting = false;
+        orientWindow.SetActive(isOrienting);
+        mainState.EndReset();
+    }
 }
-   
