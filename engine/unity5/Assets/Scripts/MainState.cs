@@ -681,13 +681,4 @@ public class MainState : SimState
     {
         return rootNode;
     }
-
-    public void StartReplay()
-    {
-        if (!IsResetting)
-        {
-            contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
-        }
-    }
 }
