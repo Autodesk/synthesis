@@ -7,8 +7,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace Assets.Scripts.GUI
-{
     class QuickSwapScroll : MonoBehaviour
     {
         GameObject GObject;
@@ -29,4 +27,4 @@ namespace Assets.Scripts.GUI
         }
 
     }
-}
+
