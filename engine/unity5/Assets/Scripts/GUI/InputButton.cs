@@ -44,30 +44,48 @@ public class InputButton : MonoBehaviour
         buttonStyle.active.background = buttonSelected;
 
         tick = !tick;
-        buttonContent = Controls.ControlKey[controlKey].ToString();
+        //buttonContent = Controls.ControlKey[controlKey].ToString();
 
-        Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
-        Rect rect = GetComponent<RectTransform>().rect;
-        if (GUI.Button(new Rect(p.x - rect.width / 2 - 0.5f, Screen.height - p.y - rect.height / 2 - 0.5f, rect.width - 0.5f, rect.height - 0.5f), buttonContent, buttonStyle) && (!isEditing))
-        {
-            isEditing = true;
-            active = true;
-        }
+        //Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
+        //Rect rect = GetComponent<RectTransform>().rect;
+        //if (GUI.Button(new Rect(p.x - rect.width / 2 - 0.5f, Screen.height - p.y - rect.height / 2 - 0.5f, rect.width - 0.5f, rect.height - 0.5f), buttonContent, buttonStyle) && (!isEditing))
+        //{
+        //    isEditing = true;
+        //    active = true;
+        //}
 
         if (active)
         {
-            foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+            KeyMapping[] keys = GetComponentsInChildren<KeyMapping>();
+
+            foreach (KeyMapping key in keys)
             {
-                if (Input.GetKeyDown(vKey) && tick)
+
+                if (InputControl.GetButtonDown(key) && tick)
                 {
-                    Controls.SetControl(controlKey, vKey);
+                    Controls.Load();
                     active = false;
                     isEditing = false;
-                    Controls.SaveControls();
+                    Controls.Save();
 
-                    if (Controls.CheckConflict()) MainMenu.inputConflict.SetActive(true);
-                    else MainMenu.inputConflict.SetActive(false);
+                    //if (Controls.CheckConflict()) MainMenu.inputConflict.SetActive(true);
+                    //else MainMenu.inputConflict.SetActive(false);
                 }
+
+                //OLD/BackUp DO NOT REMOVE until testing is completed. 7/27/2017
+                //foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+                //{
+                //    if (Input.GetKeyDown(vKey) && tick)
+                //    {
+                //        Controls.SetControl(controlKey, vKey);
+                //        active = false;
+                //        isEditing = false;
+                //        Controls.SaveControls();
+
+                //        if (Controls.CheckConflict()) MainMenu.inputConflict.SetActive(true);
+                //        else MainMenu.inputConflict.SetActive(false);
+                //    }
+                //}
             }
         }
     }
