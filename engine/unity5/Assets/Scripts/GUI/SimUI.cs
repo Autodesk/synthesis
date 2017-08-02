@@ -57,6 +57,8 @@ public class SimUI : MonoBehaviour
 
     GameObject driverStationPanel;
 
+    GameObject inputManagerPanel;
+
     GameObject exitPanel;
 
     GameObject orientWindow;
@@ -220,6 +222,7 @@ public class SimUI : MonoBehaviour
         configureCameraPanel = AuxFunctions.FindObject(canvas, "CameraConfigurationPanel");
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
 
+        inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
@@ -1121,12 +1124,17 @@ public class SimUI : MonoBehaviour
         if (show)
         {
             EndOtherProcesses();
-            AuxFunctions.FindObject(canvas, "InputManager").SetActive(true);
+            inputManagerPanel.SetActive(true);
         }
         else
         {
-            AuxFunctions.FindObject(canvas, "InputManager").SetActive(false);
+            inputManagerPanel.SetActive(false);
         }
+    }
+
+    public void ShowControlPanel()
+    {
+        ShowControlPanel(!inputManagerPanel.activeSelf);
     }
 
     public void MainMenuExit(string option)
