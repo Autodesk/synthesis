@@ -71,6 +71,9 @@ namespace Assets.Scripts.FEA
 
         private EditMode editMode;
 
+        private string fieldPath;
+        private string robotPath;
+
         private float rewindTime;
         private float playbackSpeed;
         private float sliderPos;
@@ -159,8 +162,10 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Creates a new ReplayState instance.
         /// </summary>
-        public ReplayState(FixedQueue<List<ContactDescriptor>> contactPoints, List<Tracker> trackers)
+        public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints, List<Tracker> trackers)
         {
+            this.fieldPath = fieldPath;
+            this.robotPath = robotPath;
             this.contactPoints = contactPoints.ToList();
             this.trackers = trackers;
 
@@ -434,7 +439,7 @@ namespace Assets.Scripts.FEA
             Rect saveRect = new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight);
 
             if (GUI.Button(saveRect, string.Empty, saveStyle))
-                StateMachine.Instance.PushState(new SaveReplayState(trackers, contactPoints));
+                StateMachine.Instance.PushState(new SaveReplayState(fieldPath, robotPath, trackers, contactPoints));
 
             if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))
                 StateMachine.Instance.PopState();
@@ -451,7 +456,7 @@ namespace Assets.Scripts.FEA
                 camera = dynamicCamera.GetComponent<Camera>();
             }
 
-            if (Input.GetKeyDown(Controls.ControlKey[(int)Controls.Control.CameraToggle]))
+            if (InputControl.GetButtonDown(Controls.buttons.cameraToggle))
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             if (firstFrame)
@@ -538,7 +543,7 @@ namespace Assets.Scripts.FEA
                 r.WorldTransform = worldTransform;
             }
 
-            if (Input.GetKey(KeyCode.Return))
+            if (Input.GetKeyDown(KeyCode.Tab))
                 StateMachine.Instance.PopState();
         }
 

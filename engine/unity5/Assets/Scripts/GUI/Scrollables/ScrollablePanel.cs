@@ -15,6 +15,8 @@ public class ScrollablePanel : MonoBehaviour {
     protected GUIStyle listStyle;
     protected GUIStyle highlightStyle;
 
+    protected bool toScale = true;
+
     protected List<string> items;
     protected string errorMessage;
 
@@ -49,8 +51,11 @@ public class ScrollablePanel : MonoBehaviour {
         Rect rect = GetComponent<RectTransform>().rect;
         Rect area = new Rect(position.x, Screen.height - position.y, rect.width * scale, rect.height * scale);
 
-        listStyle.fontSize = Mathf.RoundToInt(16 * scale);
-        highlightStyle.fontSize = Mathf.RoundToInt(20 * scale);
+        if (toScale)
+        {
+            listStyle.fontSize = Mathf.RoundToInt(16 * scale);
+            highlightStyle.fontSize = Mathf.RoundToInt(20 * scale);
+        }
 
         //Sets up the new rectangle area for drawing UI components
         GUILayout.BeginArea(new Rect(area.x, area.y * 1.01f, area.width, rect.height * scale * .95f));
@@ -89,7 +94,6 @@ public class ScrollablePanel : MonoBehaviour {
             string entry = o.ToString();
             if (highlight != null && highlight.Equals(entry))
             {
-                Debug.Log(entry);
                 if (GUILayout.Button(entry, highlightStyle))
                 {
                     selected = o;
