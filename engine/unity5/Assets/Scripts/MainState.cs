@@ -297,7 +297,7 @@ public class MainState : SimState
 
         Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
         Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
-        if (QuickSwapMode.hasManipulator)
+        if (MixAndMatchMode.hasManipulator)
         {
             Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
         }
@@ -378,8 +378,8 @@ public class MainState : SimState
         if (rootNode != null)
         {
             UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
-            DriveJoints.UpdateAllMotors(rootNode, packet.dio, QuickSwapMode.GetMecanum());
-            if(QuickSwapMode.hasManipulator) DriveJoints.UpdateAllMotors(manipulatorNode, packet.dio, QuickSwapMode.GetMecanum());
+            DriveJoints.UpdateAllMotors(rootNode, packet.dio, MixAndMatchMode.GetMecanum());
+            if(MixAndMatchMode.hasManipulator) DriveJoints.UpdateAllMotors(manipulatorNode, packet.dio, MixAndMatchMode.GetMecanum());
         }
 
         if (Input.GetKey(Controls.ControlKey[(int)Controls.Control.ResetRobot]) && !isResetting)
