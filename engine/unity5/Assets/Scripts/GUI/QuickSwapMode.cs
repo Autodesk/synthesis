@@ -9,10 +9,10 @@ using UnityEngine.UI;
 
 public class QuickSwapMode : MonoBehaviour
 {
-
     private GameObject quickSwapMode;
     public static bool isQuickSwapMode = false;
     private GameObject infoText;
+    private GameObject presets;
 
     //Wheel options
     private GameObject tractionWheel;
@@ -42,6 +42,7 @@ public class QuickSwapMode : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Debug.Log("Start is called");
         FindAllGameObjects();
         StartQuickSwap();
     }
@@ -57,12 +58,13 @@ public class QuickSwapMode : MonoBehaviour
         quickSwapMode = GameObject.Find("QuickSwapMode");
         infoText = GameObject.Find("PartDescription");
         Text txt = infoText.GetComponent<Text>();
+        presets = GameObject.Find("PresetPanel");
 
         //Find wheel objects
         tractionWheel = GameObject.Find("TractionWheel");
         colsonWheel = GameObject.Find("ColsonWheel");
         omniWheel = GameObject.Find("OmniWheel");
-        pnuematicWheel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PneumaticWheel")).First();//GameObject.Find("PneumaticWheel");
+        pnuematicWheel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PneumaticWheel")).First();
         wheelRightScroll = GameObject.Find("WheelRightScroll");
         wheelLeftScroll = GameObject.Find("WheelLeftScroll");
         wheelLeftScroll.SetActive(false);
@@ -89,18 +91,27 @@ public class QuickSwapMode : MonoBehaviour
     /// </summary>
     public void StartQuickSwap()
     {
-        //Selects the traction wheel (default)  
-        SelectWheel(0);
+        SelectWheel(PlayerPrefs.GetInt("Wheel", 0));
 
-        //Selects the default base
-        SelectDriveBase(0);
+        SelectDriveBase(PlayerPrefs.GetInt("DriveBase", 0));
 
-        //Selects the default manipulator
-        SelectManipulator(0);
+        SelectManipulator(PlayerPrefs.GetInt("Manipulator", 0));
+
+        //LoadPresets();
 
         //Sets info panel to blank
         Text txt = infoText.GetComponent<Text>();
         txt.text = "";
+    }
+
+   // public Transform prefab;
+    //public GameObject parent;
+    public void LoadPresets()
+    {
+        //GameObject obj = new GameObject("Text");
+        //obj.AddComponent<Text>().text = "HI!";
+        //Instantiate(prefab).transform.parent = parent.transform;
+        
     }
 
     /// <summary>
@@ -266,7 +277,7 @@ public class QuickSwapMode : MonoBehaviour
             case 0: //Default Drive Base
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\DriveBase2557");
             case 1: //Mech Drive Base
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\MechDrive");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheMac");
             case 2: //Swerve Drive
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheSwerve");
         }
@@ -338,21 +349,21 @@ public class QuickSwapMode : MonoBehaviour
         if (right && firstWheel + 3 < wheels.Count)
         {
             wheels[firstWheel].SetActive(false);
-            wheels[firstWheel + 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(-165f, 7.5f);
-            wheels[firstWheel + 2].GetComponent<RectTransform>().anchoredPosition = new Vector2(96f, 7.5f);
-            wheels[firstWheel + 3].GetComponent<RectTransform>().anchoredPosition = new Vector2(363f, 7.5f);
+            wheels[firstWheel + 1].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
+            wheels[firstWheel + 2].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
+            wheels[firstWheel + 3].GetComponent<RectTransform>().anchoredPosition = new Vector2(624f, 7.5f);
             wheels[firstWheel + 3].SetActive(true);
-            firstWheel++;
-            //MonoBehaviour quickSwapScroll = new QuickSwapScroll(wheels[firstWheel + 1], new Vector2(-165f, 7.5f));
-
+            wheels[firstWheel + 3].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(363f, 7.5f));
+            firstWheel++; 
         }
 
         if (!right && firstWheel - 1 >= 0)
         {
+            wheels[firstWheel - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(-426f, 7.5f);
             wheels[firstWheel - 1].SetActive(true);
-            wheels[firstWheel - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(-165f, 7.5f);
-            wheels[firstWheel].GetComponent<RectTransform>().anchoredPosition = new Vector2(96f, 7.5f);
-            wheels[firstWheel + 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(363f, 7.5f);
+            wheels[firstWheel - 1].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
+            wheels[firstWheel].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
+            wheels[firstWheel + 1].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(353f, 7.5f));
             wheels[firstWheel + 2].SetActive(false);
             firstWheel--;
         }
