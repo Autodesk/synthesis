@@ -7,9 +7,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class QuickSwapMode : MonoBehaviour
+public class MixAndMatchMode : MonoBehaviour
 {
-    private GameObject quickSwapMode;
+    private GameObject mixAndMatchMode;
     public static bool isQuickSwapMode = false;
     private GameObject infoText;
     private GameObject presets;
@@ -55,7 +55,7 @@ public class QuickSwapMode : MonoBehaviour
 
     void FindAllGameObjects()
     {
-        quickSwapMode = GameObject.Find("QuickSwapMode");
+        mixAndMatchMode = GameObject.Find("MixAndMatchMode");
         infoText = GameObject.Find("PartDescription");
         Text txt = infoText.GetComponent<Text>();
         presets = GameObject.Find("PresetPanel");
@@ -349,11 +349,11 @@ public class QuickSwapMode : MonoBehaviour
         if (right && firstWheel + 3 < wheels.Count)
         {
             wheels[firstWheel].SetActive(false);
-            wheels[firstWheel + 1].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
-            wheels[firstWheel + 2].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
+            wheels[firstWheel + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
+            wheels[firstWheel + 2].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
             wheels[firstWheel + 3].GetComponent<RectTransform>().anchoredPosition = new Vector2(624f, 7.5f);
             wheels[firstWheel + 3].SetActive(true);
-            wheels[firstWheel + 3].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(363f, 7.5f));
+            wheels[firstWheel + 3].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(363f, 7.5f));
             firstWheel++; 
         }
 
@@ -361,9 +361,9 @@ public class QuickSwapMode : MonoBehaviour
         {
             wheels[firstWheel - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(-426f, 7.5f);
             wheels[firstWheel - 1].SetActive(true);
-            wheels[firstWheel - 1].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
-            wheels[firstWheel].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
-            wheels[firstWheel + 1].AddComponent<QuickSwapScroll>().SetTargetPostion(new Vector2(353f, 7.5f));
+            wheels[firstWheel - 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
+            wheels[firstWheel].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
+            wheels[firstWheel + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(353f, 7.5f));
             wheels[firstWheel + 2].SetActive(false);
             firstWheel--;
         }

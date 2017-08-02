@@ -233,8 +233,6 @@
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\QuickSwapMode.cs" />
-    <Compile Include="Assets\Scripts\GUI\QuickSwapScroll.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
@@ -243,6 +241,8 @@
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
     <Compile Include="Assets\Scripts\MouseListener.cs" />
     <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNCommon.cs" />

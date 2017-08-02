@@ -7,14 +7,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-    class QuickSwapScroll : MonoBehaviour
+    class MixAndMatchScroll : MonoBehaviour
     {
         Vector2 TargetPosition;
 
-        public QuickSwapScroll()
-        {
-           
-        }
     private void Start()
     {
         Debug.Log("scroll start");

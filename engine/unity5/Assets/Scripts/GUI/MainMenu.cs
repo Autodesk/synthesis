@@ -20,7 +20,7 @@ public class MainMenu : MonoBehaviour
     public GameObject optionsTab;
 
     //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
-    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, QuickSwapMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration }
+    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, MixAndMatchMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration }
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -29,7 +29,7 @@ public class MainMenu : MonoBehaviour
     private GameObject selectionPanel;
     private GameObject defaultSimulator;
     private GameObject driverPracticeMode;
-    private GameObject quickSwapMode;
+    private GameObject mixAndMatchMode;
     private GameObject dpmConfiguration;
     private GameObject localMultiplayer;
     private GameObject simLoadField;
@@ -194,7 +194,7 @@ public class MainMenu : MonoBehaviour
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
         dpmConfiguration.SetActive(false);
-        quickSwapMode.SetActive(false);
+        mixAndMatchMode.SetActive(false);
 
         selectionPanel.SetActive(true);
 
@@ -234,14 +234,14 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Switches to the quick swap menu within the simulation tab and activates its respective UI elements.
+    /// Switches to the Mix and Match menu within the simulation tab and activates its respective UI elements.
     /// </summary>
-    public void SwitchQuickSwap()
+    public void SwitchMixAndMatch()
     {
-        currentSim = Sim.QuickSwapMode;
+        currentSim = Sim.MixAndMatchMode;
 
         selectionPanel.SetActive(false);
-        quickSwapMode.SetActive(true);
+        mixAndMatchMode.SetActive(true);
     }
 
     /// <summary>
@@ -746,7 +746,7 @@ public class MainMenu : MonoBehaviour
         selectionPanel = AuxFunctions.FindObject(gameObject, "SelectionPanel"); //The Mode Selection Tab GUI Objects
         defaultSimulator = AuxFunctions.FindObject(gameObject, "DefaultSimulator");
         driverPracticeMode = AuxFunctions.FindObject(gameObject, "DriverPracticeMode");
-        quickSwapMode = AuxFunctions.FindObject(gameObject, "QuickSwapMode");
+        mixAndMatchMode = AuxFunctions.FindObject(gameObject, "MixAndMatchMode");
         dpmConfiguration = AuxFunctions.FindObject(gameObject, "DPMConfiguration");
         localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
