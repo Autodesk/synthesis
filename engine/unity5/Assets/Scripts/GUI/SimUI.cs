@@ -256,15 +256,15 @@ public class SimUI : MonoBehaviour
 
             if (configuringIndex == 0)
             {
-                intakeControlText.text = Controls.buttons.pickupPrimary.primaryInput.ToString();
-                releaseControlText.text = Controls.buttons.releasePrimary.primaryInput.ToString();
-                spawnControlText.text = Controls.buttons.spawnPrimary.primaryInput.ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupPrimary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releasePrimary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnPrimary).ToString();
             }
             else
             {
-                intakeControlText.text = Controls.buttons.pickupSecondary.primaryInput.ToString();
-                releaseControlText.text = Controls.buttons.releaseSecondary.primaryInput.ToString();
-                spawnControlText.text = Controls.buttons.spawnSecondary.primaryInput.ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupSecondary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releaseSecondary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnSecondary).ToString();
             }
         }
     }
@@ -831,33 +831,32 @@ public class SimUI : MonoBehaviour
 
     private void ListenControl()
     {
-        Debug.Log("OK");
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             settingControl = 0;
             return;
         }
 
+        KeyMapping[] keys = GetComponentsInChildren<KeyMapping>();
 
-        foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
+        foreach (KeyMapping key in keys)
         {
-            if (Input.GetKeyDown(key))
+            if (InputControl.GetButtonDown(key))
             {
-                Debug.Log("WTF");
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
                     {
-                        Controls.buttons.pickupPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                        InputControl.GetButton(Controls.buttons.pickupPrimary);
                     }
-                    else if (settingControl == 2) Controls.buttons.releasePrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
-                    else Controls.buttons.spawnPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.pickupPrimary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
                 else
                 {
-                    if (settingControl == 1) Controls.buttons.pickupSecondary.primaryInput = Controls.CustomInputFromString(key.ToString());
-                    else if (settingControl == 2) Controls.buttons.releaseSecondary.primaryInput = Controls.CustomInputFromString(key.ToString());
-                    else Controls.buttons.spawnPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                    if (settingControl == 1) InputControl.GetButton(Controls.buttons.pickupSecondary);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.releaseSecondary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
                 Controls.Save();
                 settingControl = 0;

@@ -157,14 +157,14 @@ public class Controls
 
             if (inputStr != "")
             {
-                key.primaryInput = CustomInputFromString(inputStr);
+                key.primaryInput = customInputFromString(inputStr);
             }
 
             inputStr = PlayerPrefs.GetString("Controls." + key.name + ".secondary");
 
             if (inputStr != "")
             {
-                key.secondaryInput = CustomInputFromString(inputStr);
+                key.secondaryInput = customInputFromString(inputStr);
             }
         }
     }
@@ -214,9 +214,8 @@ public class Controls
     /// </summary>
     /// <returns>CustomInput from string.</returns>
     /// <param name="value">String representation of CustomInput.</param>
-    public static CustomInput CustomInputFromString(string value)
+    private static CustomInput customInputFromString(string value)
     {
-        Debug.Log("Key" + value);
         CustomInput res;
 
         res = JoystickInput.FromString(value);
