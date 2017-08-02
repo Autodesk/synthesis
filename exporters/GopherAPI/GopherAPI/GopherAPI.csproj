@@ -82,23 +82,14 @@
     <Compile Include="Reader\GopherReader_Base.cs" />
     <Compile Include="Reader\RobotReader.cs" />
     <Compile Include="Reader\Section.cs" />
-<<<<<<< HEAD:exporters/robot_importer/GopherAPI/GopherAPI/GopherAPI.csproj
-    <Compile Include="Reader\STLReader.cs" />
-    <Compile Include="Robot.cs" />
-=======
     <Compile Include="RobotNodeGenerator.cs" />
->>>>>>> master:exporters/GopherAPI/GopherAPI/GopherAPI.csproj
     <Compile Include="STL\Facet.cs" />
     <Compile Include="STL\STLMesh.cs" />
     <Compile Include="Other\TransformationMatrix.cs" />
     <Compile Include="STL\STLFile.cs" />
-<<<<<<< HEAD:exporters/robot_importer/GopherAPI/GopherAPI/GopherAPI.csproj
-    <Compile Include="Writer\GopherScribe.cs" />
-=======
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Writer\" />
->>>>>>> master:exporters/GopherAPI/GopherAPI/GopherAPI.csproj
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
