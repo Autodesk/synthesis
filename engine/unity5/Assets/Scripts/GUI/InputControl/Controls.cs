@@ -187,6 +187,9 @@ public class Controls
         }
     }
 
+    //Pseudocode for tank drive toggle
+    //if tank drive on
+
     /// <summary>
     /// Resets to default controls.
     /// </summary>

@@ -20,6 +20,11 @@ public class SettingsMode : MonoBehaviour
         KeyButton.useKeyModifiers = on;
     }
 
+    public void OnTankDrive(bool on)
+    {
+        KeyButton.tankDrive = on;
+    }
+
     public void OnSaveClick()
     {
         Controls.Save();
