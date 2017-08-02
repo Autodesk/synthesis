@@ -37,6 +37,12 @@ public class SettingsMode : MonoBehaviour
         UpdateAllText();
     }
 
+    public void OnReset()
+    {
+        Controls.Reset();
+        Controls.Save();
+    }
+
     public void UpdateAllText()
     {
         KeyButton[] keyButtons = GetComponentsInChildren<KeyButton>();

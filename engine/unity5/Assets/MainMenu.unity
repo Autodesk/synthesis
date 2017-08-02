@@ -11007,7 +11007,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1921058178}
   m_Layer: 0
-  m_Name: OptionsTab-D
+  m_Name: OptionsTab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
