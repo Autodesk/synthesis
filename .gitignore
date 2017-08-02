@@ -6,7 +6,6 @@ engine/unity5/Build_Data
 *.vxcproj.user
 tags
 *.exe
-*.dll
 *.userprefs
 build/*
 *.sdf

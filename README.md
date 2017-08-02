@@ -1,8 +1,4 @@
 # Autodesk BXD Synthesis
-
-We're doing a code sprint competition right now! Click [HERE](http://bxd.autodesk.com/codesprint.html) to learn more about it!
-- [Official Competition Document](http://bxd.autodesk.com/codesprint/synthesis_codesprint.pdf)
-
 ## Overview
 Synthesis is a simulation engine allowing FIRST Robotics teams to test robot designs and software prior to completion of robot construction.
 
