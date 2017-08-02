@@ -10,7 +10,7 @@ endif
 JAVAC := $(JAVA_HOME)/bin/javac.exe
 JAR := $(JAVA_HOME)/bin/jar.exe
 
-CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Ini-libraries/include -Iwpiutil/src/main/native/include -std=c++14
+CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Iallwpilib/ni-libraries/include -Iwpiutil/src/main/native/include -std=c++14
 ifeq ($(TARGET), debug)
 	CCFLAGS += -O0 -g
 endif
@@ -18,8 +18,8 @@ ifeq ($(TARGET), release)
 	CCflags += -O2
 endif
 
-CCFLAGS_CPP := -Iwpilibc/shared/include -Iwpilibc/athena/include -Intcore/include $(CCFLAGS)
-CCFLAGS_HAL := -Ilib -Ilib/athena -Intcore/include $(CCFLAGS) -Iwpilibc/shared/include -Iwpilibc/athena/include
+CCFLAGS_CPP := -Iallwpilib/wpilibc/shared/include -Iallwpilib/wpilibc/athena/include -Intcore/include $(CCFLAGS)
+CCFLAGS_HAL := -Ilib -Ilib/athena -Intcore/include $(CCFLAGS) -Iallwpilib/wpilibc/shared/include -Iallwpilib/wpilibc/athena/include
 CCFLAGS_NTCORE := -Intcore/include $(CCFLAGS)
 CCFLAGS_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/java/header -Intcore/include -fpermissive $(CCFLAGS)
 CCFLAGS_NTCORE_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/ntcore/java/header -Intcore/include $(CCFLAGS)
@@ -30,11 +30,11 @@ SRC_FILES_NTCORE := $(shell find ./ntcore/src -name "*.cpp")
 SRC_FILES_NTCORE_JAVA := ntcore/java/lib/NetworkTablesJNI.cpp
 JAVA_FILES_NTCORE_JAVA := $(shell find ./ntcore/java -name "*.java")
 
-SRC_FILES_CPP := $(shell find ./wpilibc -name "*.cpp" -not -name "VisionRunner.cpp")
+SRC_FILES_CPP := $(shell find ./allwpilib/wpilibc -name "*.cpp" -not -name "VisionRunner.cpp" -not -name "CameraServer.cpp" -not -wholename "*sim/*")
 
-SRC_FILES_JAVA := $(shell find ./wpilibj -name "*.cpp" -not -name "CANJNI.cpp")
+SRC_FILES_JAVA := $(shell find ./allwpilib/wpilibj -name "*.cpp" -not -name "CANJNI.cpp")
 
-JAVA_FILES_JAVA := $(shell find ./wpilibj -name "*.java" -not -wholename "*sim/*" -not -wholename "*test/*" -not -name "CameraServer.java" -not -name "Vision*.java")
+JAVA_FILES_JAVA := $(shell find ./allwpilib/wpilibj -name "*.java" -not -wholename "*sim/*" -not -wholename "*test/*" -not -name "CameraServer.java" -not -name "Vision*.java")
 
 OBJ_FILES_CPP := $(addprefix build/cpp/,$(patsubst %.cpp,%.o,$(SRC_FILES_CPP)))
 OBJ_FILES_JAVA := $(addprefix build/java/,$(patsubst %.cpp,%.o,$(SRC_FILES_JAVA)))
