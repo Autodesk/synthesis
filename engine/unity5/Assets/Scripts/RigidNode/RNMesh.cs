@@ -36,7 +36,6 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.rotation = root.rotation;
 
             ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
-
         });
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
