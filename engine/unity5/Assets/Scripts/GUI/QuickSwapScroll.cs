@@ -9,21 +9,33 @@ using UnityEngine.UI;
 
     class QuickSwapScroll : MonoBehaviour
     {
-        GameObject GObject;
         Vector2 TargetPosition;
 
-        public QuickSwapScroll(GameObject gObject, Vector2 targetPosition)
+        public QuickSwapScroll()
         {
-            GObject = gObject;
-            TargetPosition = targetPosition;
+           
         }
+    private void Start()
+    {
+        Debug.Log("scroll start");
+    }
 
-        void Update()
+
+    public void SetTargetPostion(Vector2 targetPosition)
+    {
+        TargetPosition = targetPosition;
+
+    }
+    void Update()
         {
-            if (GObject.activeSelf == true && Math.Abs(GObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x) > 3)
+        Debug.Log("scroll");
+            if (gameObject.activeSelf == true && Math.Abs(gameObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x) > 3)
             {
-                GObject.GetComponent<RectTransform>().anchoredPosition = (GObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x > 0) ? (Vector3)GObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(-3f, 0f, 0f) : (Vector3)GObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(3f, 0f, 0f);
-            }
+                gameObject.GetComponent<RectTransform>().anchoredPosition = (gameObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x > 0) ? (Vector3)gameObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(-3f, 0f, 0f) : (Vector3)gameObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(3f, 0f, 0f);
+            } else
+        {
+            Destroy(this);
+        }
         }
 
     }
