@@ -96,40 +96,16 @@ public class DriveJoints : MonoBehaviour
         //    (InputControl.GetAxisRaw(Controls.axes.vertical));
         //}
 
-        //pwm[0] +=
-        //    (InputControl.GetAxisRaw(Controls.axes.tankForward) * -SPEED_ARROW_PWM) +
-        //    (InputControl.GetAxisRaw(Controls.axes.tankBackward) * SPEED_ARROW_PWM) +
-        //    (InputControl.GetAxisRaw(Controls.axes.tankLeft) * SPEED_ARROW_PWM) +
-        //    (InputControl.GetAxisRaw(Controls.axes.tankRight) * SPEED_ARROW_PWM);
-
-        //pwm[1] +=
-        //    (InputControl.GetAxisRaw(Controls.axes.tankForward) * -SPEED_ARROW_PWM) +
-        //    (InputControl.GetAxisRaw(Controls.axes.tankBackward) * SPEED_ARROW_PWM) +
-        //    (InputControl.GetAxisRaw(Controls.axes.tankLeft) * SPEED_ARROW_PWM) +
-        //    (InputControl.GetAxisRaw(Controls.axes.tankRight) * SPEED_ARROW_PWM);
-
-        //INVERTED DRIVING ERRORS
+        //Tank Drive
         //Left motor
-         pwm[0] +=
-             (InputControl.GetButton(Controls.buttons.tankFrontLeft) ? -SPEED_ARROW_PWM : 0.0f) +
+        pwm[0] +=
+            (InputControl.GetButton(Controls.buttons.tankFrontLeft) ? SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.tankBackLeft) ? -SPEED_ARROW_PWM : 0.0f);
 
-        (InputControl.GetButton(Controls.buttons.tankBackLeft) ? SPEED_ARROW_PWM : 0.0f) +
-
-        (InputControl.GetButton(Controls.buttons.tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
-
-        (InputControl.GetButton(Controls.buttons.tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
-
-
-        // //Right motor
-        pwm[1] +=
-
-       (InputControl.GetButton(Controls.buttons.tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
-
-       (InputControl.GetButton(Controls.buttons.tankBackRight) ? SPEED_ARROW_PWM : 0.0f) +
-
-       (InputControl.GetButton(Controls.buttons.tankFrontLeft) ? SPEED_ARROW_PWM : 0.0f) +
-
-       (InputControl.GetButton(Controls.buttons.tankBackLeft) ? -SPEED_ARROW_PWM : 0.0f);
+        //Right motor
+         pwm[1] +=
+            (InputControl.GetButton(Controls.buttons.tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons.tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
 
         //SUCCESSFUL DRIVING
         //pwm[0] +=
