@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using BulletSharp;
 using BulletSharp.Math;
-using System.Collections;
 using BulletUnity.Debugging;
 
 namespace BulletUnity
@@ -39,7 +38,7 @@ namespace BulletUnity
                     {
                         bool skip = false;
                         //Debug.Log(other.UserObject.ToString());
-                        GameObject tempGamepiece = GameObject.Find(other.UserObject.ToString().Replace(" (BulletUnity.BRigidBody)", ""));
+                        GameObject tempGamepiece = ((BRigidBody)other.UserObject).gameObject;
                         foreach (GameObject gp in heldGamepieces)
                         {
                             if (gp == tempGamepiece) skip = true;
