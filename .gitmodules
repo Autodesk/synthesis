@@ -4,3 +4,6 @@
 [submodule "emulation/hel/wpiutil"]
 	path = emulation/hel/wpiutil
 	url = https://github.com/wpilibsuite/wpiutil
+[submodule "emulation/hel/allwpilib"]
+	path = emulation/hel/allwpilib
+	url = https://github.com/wpilibsuite/allwpilib
