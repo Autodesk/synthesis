@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 
 namespace Assets.Scripts.FEA
 {
@@ -103,8 +102,6 @@ namespace Assets.Scripts.FEA
 
         private BRigidBody _selectedBody;
 
-        private float tStart; //for analytics--tracking when user starts replay mode
-
         /// <summary>
         /// The body being currently highlighted.
         /// </summary>
@@ -167,8 +164,6 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints, List<Tracker> trackers)
         {
-            tStart = Time.time;
-
             this.fieldPath = fieldPath;
             this.robotPath = robotPath;
             this.contactPoints = contactPoints.ToList();
@@ -558,12 +553,6 @@ namespace Assets.Scripts.FEA
         public override void End()
         {
             SelectedBody = null;
-
-            Analytics.CustomEvent("Replay Mode", new Dictionary<string, object>
-                {
-                    { "time", Time.time - tStart},
-                });
-
 
             foreach (Tracker t in trackers)
             {
