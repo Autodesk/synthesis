@@ -15,6 +15,7 @@ public class SimUI : MonoBehaviour
     MainState main;
     DynamicCamera camera;
     DriverPractice dpm;
+    Toolkit toolkit;
 
     GameObject canvas;
 
@@ -55,6 +56,12 @@ public class SimUI : MonoBehaviour
     GameObject changeFieldPanel;
 
     GameObject driverStationPanel;
+
+    GameObject exitPanel;
+
+    GameObject orientWindow;
+    bool isOrienting = false;
+    GameObject resetDropdown;
 
     Text enableDPMText;
 
@@ -120,9 +127,11 @@ public class SimUI : MonoBehaviour
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             //Get the render texture from Resources/Images
             robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
+            toolkit = GetComponent<Toolkit>();
         }
         else if (dpm == null)
         {
+            camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             dpm = main.GetDriverPractice();
             FindElements();
         }
@@ -132,6 +141,16 @@ public class SimUI : MonoBehaviour
             UpdateVectorConfiguration();
             UpdateWindows();
             if (settingControl != 0) ListenControl();
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
+                {
+                    if (!exitPanel.activeSelf) MainMenuExit("open");
+                    else MainMenuExit("cancel");
+                }
+            }
+
         }
 
     }
@@ -201,9 +220,16 @@ public class SimUI : MonoBehaviour
         configureCameraPanel = AuxFunctions.FindObject(canvas, "CameraConfigurationPanel");
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
 
+
+        orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
+        resetDropdown = GameObject.Find("Reset Robot Dropdown");
+
         cameraConfigurationModeButton = AuxFunctions.FindObject(canvas, "ConfigurationMode");
         cameraNodeText = AuxFunctions.FindObject(canvas, "NodeText").GetComponent<Text>();
         cancelNodeSelectionButton = AuxFunctions.FindObject(canvas, "CancelNodeSelectionButton");
+
+        exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
+
     }
 
     /// <summary>
@@ -230,15 +256,15 @@ public class SimUI : MonoBehaviour
 
             if (configuringIndex == 0)
             {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupPrimary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleasePrimary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnPrimary].ToString();
+                intakeControlText.text = Controls.buttons.pickupPrimary.primaryInput.ToString();
+                releaseControlText.text = Controls.buttons.releasePrimary.primaryInput.ToString();
+                spawnControlText.text = Controls.buttons.spawnPrimary.primaryInput.ToString();
             }
             else
             {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupSecondary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleaseSecondary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnSecondary].ToString();
+                intakeControlText.text = Controls.buttons.pickupSecondary.primaryInput.ToString();
+                releaseControlText.text = Controls.buttons.releaseSecondary.primaryInput.ToString();
+                spawnControlText.text = Controls.buttons.spawnSecondary.primaryInput.ToString();
             }
         }
     }
@@ -358,8 +384,9 @@ public class SimUI : MonoBehaviour
         string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))
         {
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
-            PlayerPrefs.SetString("simSelectedRObotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
             main.ChangeRobot(directory);
             ToggleChangeRobotPanel();
         }
@@ -371,8 +398,15 @@ public class SimUI : MonoBehaviour
 
     public void ToggleChangeRobotPanel()
     {
-        changeFieldPanel.SetActive(false);
-        changeRobotPanel.SetActive(!changeRobotPanel.activeSelf);
+        if (changeRobotPanel.activeSelf)
+        {
+            changeRobotPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            changeRobotPanel.SetActive(true);
+        }
     }
 
     public void ChangeField()
@@ -381,6 +415,7 @@ public class SimUI : MonoBehaviour
         string directory = PlayerPrefs.GetString("FieldDirectory") + "\\" + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
         if (Directory.Exists(directory))
         {
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedField", directory);
             PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
             PlayerPrefs.Save();
@@ -394,8 +429,54 @@ public class SimUI : MonoBehaviour
 
     public void ToggleChangeFieldPanel()
     {
+        if (changeFieldPanel.activeSelf)
+        {
+            changeFieldPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            changeFieldPanel.SetActive(true);
+        }
+
+    }
+
+    public void ChooseResetMode(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                main.BeginReset();
+                main.EndReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 2:
+                EndOtherProcesses();
+                main.IsResetting = true;
+                main.BeginReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
+    /// </summary>
+    public void EndOtherProcesses()
+    {
+        changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
-        changeFieldPanel.SetActive(!changeFieldPanel.activeSelf);
+        exitPanel.SetActive(false);
+        CloseOrientWindow();
+        main.IsResetting = false;
+        toolkit.ToggleRulerWindow(false);
+        if (configuring)
+        {
+            CancelDefineGamepiece();
+            CancelDefineIntake();
+            CancelDefineRelease();
+            CancelGamepieceSpawn();
+        }
     }
     #endregion
     #region camera button functions
@@ -417,46 +498,57 @@ public class SimUI : MonoBehaviour
     #endregion
     #region orient button functions
 
-    ////Orient Robot Functions
-    //public void OrientStart()
-    //{
-    //    main.StartOrient();
-    //}
+    public void ToggleOrientWindow()
+    {
+        if (isOrienting)
+        {
+            isOrienting = false;
+            main.EndReset();
+        }
+        else
+        {
+            EndOtherProcesses();
+            isOrienting = true;
+            main.BeginReset();
+        }
+        orientWindow.SetActive(isOrienting);
+    }
 
-    //public void OrientLeft()
-    //{
-    //    main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-    //}
+    public void OrientLeft()
+    {
+        main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientRight()
+    {
+        main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientForward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+    }
+    public void OrientBackward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
+    }
 
-    //public void OrientRight()
-    //{
-    //    main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-    //}
+    public void DefaultOrientation()
+    {
+        main.ResetRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
 
-    //public void OrientForward()
-    //{
-    //    main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-    //}
+    public void SaveOrientation()
+    {
+        main.SaveRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
+    }
 
-    //public void OrientBackward()
-    //{
-    //    main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-    //}
-
-    //public void OrientSave()
-    //{
-    //    main.SaveOrientation();
-    //}
-
-    //public void OrientEnd()
-    //{
-    //    //To be filled in later when UI work has been done
-    //}
-
-    //public void OrientDefault()
-    //{
-    //    main.ResetOrientation();
-    //}
+    public void CloseOrientWindow()
+    {
+        isOrienting = false;
+        orientWindow.SetActive(isOrienting);
+        main.EndReset();
+    }
 
     #endregion
     #region driver practice mode button functions
@@ -465,7 +557,16 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void DPMToggleWindow()
     {
-        dpmWindowOn = !dpmWindowOn;
+        if (dpmWindowOn)
+        {
+            dpmWindowOn = false;
+
+        }
+        else
+        {
+            EndOtherProcesses();
+            dpmWindowOn = true;
+        }
         dpmWindow.SetActive(dpmWindowOn);
     }
 
@@ -527,6 +628,7 @@ public class SimUI : MonoBehaviour
     {
         if (dpm.modeEnabled)
         {
+            EndOtherProcesses();
             configuring = true;
             configuringIndex = 0;
             configHeaderText.text = "Configuration Menu - Primary Gamepiece";
@@ -544,6 +646,7 @@ public class SimUI : MonoBehaviour
     {
         if (dpm.modeEnabled)
         {
+            EndOtherProcesses();
             configuring = true;
             configuringIndex = 1;
             configHeaderText.text = "Configuration Menu - Secondary Gamepiece";
@@ -582,6 +685,7 @@ public class SimUI : MonoBehaviour
 
     public void DefineGamepiece()
     {
+        EndOtherProcesses();
         dpm.DefineGamepiece(configuringIndex);
     }
 
@@ -592,6 +696,7 @@ public class SimUI : MonoBehaviour
 
     public void DefineIntake()
     {
+        EndOtherProcesses();
         dpm.DefineIntake(configuringIndex);
     }
 
@@ -607,6 +712,7 @@ public class SimUI : MonoBehaviour
 
     public void DefineRelease()
     {
+        EndOtherProcesses();
         dpm.DefineRelease(configuringIndex);
     }
 
@@ -622,6 +728,7 @@ public class SimUI : MonoBehaviour
 
     public void SetGamepieceSpawn()
     {
+        EndOtherProcesses();
         dpm.StartGamepieceSpawn(configuringIndex);
     }
 
@@ -724,35 +831,68 @@ public class SimUI : MonoBehaviour
 
     private void ListenControl()
     {
+        Debug.Log("OK");
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             settingControl = 0;
             return;
         }
-        foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+
+
+        foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
         {
-            if (Input.GetKeyDown(vKey))
+            if (Input.GetKeyDown(key))
             {
+                Debug.Log("WTF");
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
                     {
-                        Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+                        Controls.buttons.pickupPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
                     }
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+                    else if (settingControl == 2) Controls.buttons.releasePrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                    else Controls.buttons.spawnPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
                 }
                 else
                 {
-                    if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnSecondary, vKey);
+                    if (settingControl == 1) Controls.buttons.pickupSecondary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                    else if (settingControl == 2) Controls.buttons.releaseSecondary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                    else Controls.buttons.spawnPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
                 }
-                Controls.SaveControls();
+                Controls.Save();
                 settingControl = 0;
             }
         }
     }
+
+
+        //OLD; remove once the new one is tested 7/27/2017
+        //foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+        //{
+        //    if (Input.GetKeyDown(vKey))
+        //    {
+        //        if (configuringIndex == 0)
+        //        {
+        //            if (settingControl == 1)
+        //            {
+        //                //Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+        //                InputControl.GetButton(Controls.buttons.pickupPrimary);
+        //                Controls.Load();
+        //            }
+        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
+        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+        //        }
+        //        else
+        //        {
+        //            if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
+        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
+        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+        //        }
+        //        Controls.SaveControls();
+        //        settingControl = 0;
+        //    }
+        //}
+ 
     #endregion
     #region robot camera functions
     /// <summary>
@@ -978,5 +1118,35 @@ public class SimUI : MonoBehaviour
     }
 
 
-}
+    public void ShowControlPanel(bool show)
+    {
+        if (show)
+        {
+            EndOtherProcesses();
+            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(true);
+        }
+        else
+        {
+            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
+        }
+    }
 
+    public void MainMenuExit(string option)
+    {
+        EndOtherProcesses();
+        switch (option)
+        {
+            case "open":
+                exitPanel.SetActive(true);
+                break;
+            case "exit":
+                Application.LoadLevel("MainMenu");
+                break;
+
+            case "cancel":
+                exitPanel.SetActive(false);
+                break;
+        }
+
+    }
+}

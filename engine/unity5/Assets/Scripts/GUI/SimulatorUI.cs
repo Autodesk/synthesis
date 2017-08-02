@@ -35,7 +35,7 @@ public class SimulatorUI : MonoBehaviour
         {
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
-        if(mainState == null)
+        if (mainState == null)
         {
             mainState = stateMachine.GetComponent<StateMachine>().CurrentState as MainState;
         }
@@ -99,7 +99,7 @@ public class SimulatorUI : MonoBehaviour
     }
 
     //In game UI button opens tutorial link in browser
-   
+
     public void toLink()
     {
         Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
@@ -130,7 +130,7 @@ public class SimulatorUI : MonoBehaviour
                 mainState.IsResetting = true;
                 mainState.BeginReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;
-                break; 
+                break;
         }
     }
 
@@ -178,4 +178,3 @@ public class SimulatorUI : MonoBehaviour
         mainState.EndReset();
     }
 }
-   
