@@ -31,6 +31,7 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public abstract class CameraState
     {
+        public GameObject robot;
         protected MonoBehaviour mono;
 
         /// <summary>
@@ -54,7 +55,6 @@ public class DynamicCamera : MonoBehaviour
     /// </summary>
     public class DriverStationState : CameraState
     {
-        GameObject robot;
         Quaternion startRotation;
         Quaternion lookingRotation;
         Quaternion currentRotation;
@@ -73,7 +73,6 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            robot = GameObject.Find("Robot");
             if (opposite) currentPosition = position2Vector;
             else currentPosition = position1Vector;
             mono.transform.position = currentPosition;
@@ -120,7 +119,6 @@ public class DynamicCamera : MonoBehaviour
         float magnification = 5.0f;
         float cameraAngle = 45f;
         float panValue = 0f;
-        GameObject robot;
 
         public OrbitState(MonoBehaviour mono)
         {
@@ -129,7 +127,6 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            robot = GameObject.Find("Robot");
             rotateVector = new Vector3(0f, 1f, 0f);
             lagVector = rotateVector;
         }
