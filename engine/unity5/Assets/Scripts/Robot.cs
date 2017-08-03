@@ -3,6 +3,7 @@ using System.Collections;
 using BulletUnity;
 using BulletSharp;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using Assets.Scripts.FEA;
 
@@ -41,21 +42,48 @@ public class Robot : MonoBehaviour {
 
     public int controlIndex = 0;
 
+    private const float HOLD_TIME = 0.8f;
+    private float keyDownTime = 0f;
+
+    public string RobotName;
+
 
 
     // Use this for initialization
     void Start () {
 	}
-	
+
     /// <summary>
     /// Called once per frame to ensure all rigid bodie components are activated
     /// </summary>
-	void Update () {
+    void Update() {
 
         BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
+        if (!IsResetting)
+        {
+            if (InputControl.GetButtonDown(Controls.buttons[controlIndex].resetRobot))
+            {
+                keyDownTime = Time.time;
+            }
+
+            else if (InputControl.GetButton(Controls.buttons[controlIndex].resetRobot))
+            {
+                if (Time.time - keyDownTime > HOLD_TIME)
+                {
+                    IsResetting = true;
+                    BeginReset();
+                }
+            }
+
+            else if (InputControl.GetButtonUp(Controls.buttons[controlIndex].resetRobot))
+            {
+                BeginReset();
+                EndReset();
+            }
+        }
     }
     /// <summary>
     /// Called once every physics step (framerate independent) to drive motor joints as well as handle the resetting of the robot
@@ -116,6 +144,8 @@ public class Robot : MonoBehaviour {
         }
 
         RotateRobot(robotStartOrientation);
+
+        RobotName = new DirectoryInfo(directory).Name;
 
         isInitialized = true;
         return true;

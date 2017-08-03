@@ -26,7 +26,7 @@ public class MainState : SimState
     private UnityPacket unityPacket;
 
     private List<Robot> robots;
-    private Robot activeRobot;
+    public Robot activeRobot { get; private set; }
 
     private DynamicCamera dynamicCamera;
     public GameObject dynamicCameraObject;
@@ -65,6 +65,7 @@ public class MainState : SimState
     private string robotPath;
 
     public List<Robot> SpawnedRobots { get; private set; }
+    private const int MAX_ROBOTS = 4;
 
 
     /// <summary>
@@ -134,27 +135,7 @@ public class MainState : SimState
         //Otherwise, reset the robot normally (quick reset feature)
         if (!activeRobot.IsResetting)
         {
-            if (InputControl.GetButtonDown(Controls.buttons[0].resetRobot))
-            {
-                keyDownTime = Time.time;
-            }
-
-            else if (InputControl.GetButton(Controls.buttons[0].resetRobot))
-            {
-                if (Time.time - keyDownTime > HOLD_TIME)
-                {
-                    IsResetting = true;
-                    activeRobot.BeginReset();
-                }
-            }
-
-            else if (InputControl.GetButtonUp(Controls.buttons[0].resetRobot))
-            {
-                activeRobot.BeginReset();
-                activeRobot.EndReset();
-            }
-
-            if (Input.GetKeyDown(KeyCode.U) && SpawnedRobots.Count < 4) LoadRobot(robotPath);
+            if (Input.GetKeyDown(KeyCode.U)) LoadRobot(robotPath);
             if (Input.GetKeyDown(KeyCode.Y)) SwitchActiveRobot();
         }
 
@@ -227,44 +208,49 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
-    bool LoadRobot(string directory)
+    public bool LoadRobot(string directory)
     {
-        robotPath = directory;
-
-        GameObject robotObject = new GameObject("Robot");
-        Robot robot = robotObject.AddComponent<Robot>();
-
-        //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
-        if (!robot.InitializeRobot(directory, this)) return false;
-
-        //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
-        if (activeRobot == null)
+        if (SpawnedRobots.Count < MAX_ROBOTS)
         {
-            activeRobot = robot;
+            robotPath = directory;
 
-            //Robot camera feature
-            if (robotCamera == null)
+            GameObject robotObject = new GameObject("Robot");
+            Robot robot = robotObject.AddComponent<Robot>();
+
+            //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
+            if (!robot.InitializeRobot(directory, this)) return false;
+
+            //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
+            if (activeRobot == null)
             {
-                robotCameraObject = GameObject.Find("RobotCameraList");
-                robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+                activeRobot = robot;
+
+                //Robot camera feature
+                if (robotCamera == null)
+                {
+                    robotCameraObject = GameObject.Find("RobotCameraList");
+                    robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+                }
+
+                robotCamera.RemoveCameras();
+                //The camera data should be read here as a foreach loop and included in robot file
+                //Attached to main frame and face the front
+                robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
+                //Attached to the first node and face the front
+                robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
+                //Attached to main frame and face the back
+                robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
+
+                robotCameraObject.SetActive(true);
             }
 
-            robotCamera.RemoveCameras();
-            //The camera data should be read here as a foreach loop and included in robot file
-            //Attached to main frame and face the front
-            robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
-            //Attached to the first node and face the front
-            robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
-            //Attached to main frame and face the back
-            robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
+            robot.controlIndex = SpawnedRobots.Count;
+            SpawnedRobots.Add(robot);
 
-            robotCameraObject.SetActive(true);
+            return true;
         }
-
-        robot.controlIndex = SpawnedRobots.Count;
-        SpawnedRobots.Add(robot);
-
-        return true;
+        else return false;
+        
     }
 
     /// <summary>
@@ -277,20 +263,58 @@ public class MainState : SimState
         return activeRobot.InitializeRobot(directory, this);
     }
 
+    /// <summary>
+    /// Changes the active robot from the current one to the next one in the list
+    /// </summary>
     private void SwitchActiveRobot()
     {
-        if (SpawnedRobots.Count > 1)
+        if (SpawnedRobots.Count >= 1)
         {
-            int index = SpawnedRobots.IndexOf(activeRobot);
-            if (index < SpawnedRobots.Count - 1)
+            if (activeRobot != null)
             {
-                activeRobot = SpawnedRobots[index + 1];
+                int index = SpawnedRobots.IndexOf(activeRobot);
+                if (index < SpawnedRobots.Count - 1)
+                {
+                    activeRobot = SpawnedRobots[index + 1];
+                }
+                else
+                {
+                    activeRobot = SpawnedRobots[0];
+                }
             }
-            else
-            {
-                activeRobot = SpawnedRobots[0];
-            }
+            else activeRobot = SpawnedRobots[0];
             dynamicCamera.cameraState.robot = activeRobot.gameObject;
+
+        }
+    }
+
+    /// <summary>
+    /// Changes the active robot to a different robot based on a given index
+    /// </summary>
+    public void SwitchActiveRobot(int index)
+    {
+        if (index < SpawnedRobots.Count)
+        {
+            activeRobot = SpawnedRobots[index];
+            dynamicCamera.cameraState.robot = activeRobot.gameObject;
+        }
+    }
+
+    public void RemoveRobot(int index)
+    {
+        if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
+        {
+            GameObject.Destroy(SpawnedRobots[index].gameObject);
+            SpawnedRobots.RemoveAt(index);
+            activeRobot = null;
+            SwitchActiveRobot();
+
+            int i = 0;
+            foreach (Robot robot in SpawnedRobots)
+            {
+                robot.controlIndex = i;
+                i++;
+            }
         }
     }
 

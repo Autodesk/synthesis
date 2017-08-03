@@ -54,6 +54,7 @@ public class SimUI : MonoBehaviour
 
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
+    GameObject addRobotPanel;
 
     GameObject driverStationPanel;
 
@@ -229,6 +230,8 @@ public class SimUI : MonoBehaviour
         cancelNodeSelectionButton = AuxFunctions.FindObject(canvas, "CancelNodeSelectionButton");
 
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
+
+        addRobotPanel = AuxFunctions.FindObject(canvas, "AddRobotPanel");
 
     }
 
@@ -466,6 +469,7 @@ public class SimUI : MonoBehaviour
     {
         changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
+        addRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         CloseOrientWindow();
         main.IsResetting = false;
