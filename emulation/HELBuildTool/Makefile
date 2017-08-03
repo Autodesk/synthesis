@@ -7,14 +7,14 @@ ifndef SYNTHESIS_LIBS
 ifeq ($(TARGET), dev)
 	SYNTHESIS_LIBS := /home/t_leeb/synthesis/emulation/hel/build/
 else
-	SYNTHESIS_LIBS := /cygdrive/c/Program\ Files\ (x86)/Autodesk/Synthesis/RobotDrive/lib
+	SYNTHESIS_LIBS := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/lib
 endif
 endif
 ifndef SYNTHESIS_INCLUDES
 ifeq ($(TARGET), dev)
 	SYNTHESIS_INCLUDES := /home/t_leeb/synthesis/emulation/hel
 else
-	SYNTHESIS_INCLUDES := /cygdrive/c/Program\ Files\ (x86)/Autodesk/Synthesis/RobotDrive/include
+	SYNTHESIS_INCLUDES := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/include
 endif
 endif
 
