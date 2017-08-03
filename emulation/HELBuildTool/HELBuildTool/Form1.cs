@@ -40,7 +40,7 @@ namespace WindowsFormsApp1
                 "/cygdrive/c/cygwin64/home/t_leeb/synthesis/emulation/HELBuildTool/Makefile " +
                 "&& echo 'Starting robot code' && ./build/FRC_UserProgram " +
                 "|| read -p 'Press enter to continue'\"");
-            startInfo.EnvironmentVariables["PATH"] = "C:\\cygwin64\\bin";
+            startInfo.EnvironmentVariables["PATH"] = "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64\\bin";
             startInfo.UseShellExecute = false;
 
             System.Diagnostics.Process.Start(startInfo);
