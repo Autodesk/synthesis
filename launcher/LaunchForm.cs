@@ -116,7 +116,7 @@ namespace SynthesisLauncher
         {
             try
             {
-                Process.Start(exePath + "\\SynthesisDrive\\SynthesisDriver.exe");
+                Process.Start(exePath + "\\SynthesisDrive\\HELBuildTool\\HELBuildTool.exe");
             }
             catch
             {

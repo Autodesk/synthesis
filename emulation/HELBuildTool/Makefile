@@ -3,8 +3,21 @@ ifndef TARGET
 	TARGET := debug
 endif
 
-SYNTHESIS_LIBS = /home/t_leeb/synthesis/emulation/hel/build/
-SYNTHESIS_INCLUDES = /home/t_leeb/synthesis/emulation/hel
+ifndef SYNTHESIS_LIBS
+ifeq ($(TARGET), dev)
+	SYNTHESIS_LIBS := /home/t_leeb/synthesis/emulation/hel/build/
+else
+	SYNTHESIS_LIBS := /cygdrive/c/Program\ Files\ (x86)/Autodesk/Synthesis/RobotDrive/lib
+endif
+endif
+ifndef SYNTHESIS_INCLUDES
+ifeq ($(TARGET), dev)
+	SYNTHESIS_INCLUDES := /home/t_leeb/synthesis/emulation/hel
+else
+	SYNTHESIS_INCLUDES := /cygdrive/c/Program\ Files\ (x86)/Autodesk/Synthesis/RobotDrive/include
+endif
+endif
+
 CCFLAGS := -L$(SYNTHESIS_LIBS)/ntcore -L$(SYNTHESIS_LIBS)/cpp -L$(SYNTHESIS_LIBS)/hal -lwpilib -lntcore-static -lHAL -lWs2_32 -I$(SYNTHESIS_INCLUDES)/include -I$(SYNTHESIS_INCLUDES)/ni-libraries/include -I$(SYNTHESIS_INCLUDES)/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/wpilibc/shared/include -I$(SYNTHESIS_INCLUDES)/wpiutil/src/main/native/include/ -I$(SYNTHESIS_INCLUDES)/ntcore/include -std=c++11
 ifeq ($(TARGET), debug)
 	CCFLAGS :=	$(CCFLAGS) -O0 -g

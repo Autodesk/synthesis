@@ -128,5 +128,34 @@ java: $(OUT_JAVA)
 
 hal: $(OUT_HAL)
 
+install: $(OUT_CPP)
+	@echo -e "\e[1m\e[32mINSTALL\e[39m include\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/include
+	@cp -rf include ../../installer/SynthesisDrive/include/include
+	@echo -e "\e[1m\e[32mINSTALL\e[39m include/ni-libraries\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/include/ni-libraries
+	@cp -rf allwpilib/ni-libraries/include ../../installer/SynthesisDrive/include/ni-libraries/include
+	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpilibc/athena\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/athena
+	@cp -rf allwpilib/wpilibc/athena/include ../../installer/SynthesisDrive/include/wpilibc/athena/include
+	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpilibc/shared\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/shared
+	@cp -rf allwpilib/wpilibc/shared/include ../../installer/SynthesisDrive/include/wpilibc/shared/include
+	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpiutil\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/include/wpiutil/src/main/native
+	@cp -rf wpiutil/src/main/native/include ../../installer/SynthesisDrive/include/wpiutil/src/main/native/include
+	@echo -e "\e[1m\e[32mINSTALL\e[39m include/ntcore\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/include/ntcore
+	@cp -rf ntcore/include ../../installer/SynthesisDrive/include/ntcore/include
+	@echo -e "\e[1m\e[32mINSTALL\e[39m lib/hal\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/lib/hal
+	@cp -rf build/hal/libHAL.a ../../installer/SynthesisDrive/lib/hal/libHAL.a
+	@echo -e "\e[1m\e[32mINSTALL\e[39m lib/ntcore\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/lib/ntcore
+	@cp -rf build/ntcore/libntcore-static.a ../../installer/SynthesisDrive/lib/ntcore/libntcore-static.a
+	@echo -e "\e[1m\e[32mINSTALL\e[39m lib/cpp\e[0m"
+	@mkdir -p ../../installer/SynthesisDrive/lib/cpp
+	@cp -rf build/cpp/libwpilib.a ../../installer/SynthesisDrive/lib/cpp/libwpilib.a
+
 clean:
 	rm -r build
