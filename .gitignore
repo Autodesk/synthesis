@@ -7,4 +7,15 @@ engine/unity5/Build_Data
 tags
 *.exe
 *.userprefs
+docs/
 build/
+installer/FieldExporter
+installer/Fields
+installer/RobotExporter
+installer/Robots
+installer/Synthesis
+installer/SynthesisDrive
+installer/SynthesisLauncher.exe
+installer/Apache2.rtf
+installer/Synthesis Installer.exe
+installer/README.pdf
