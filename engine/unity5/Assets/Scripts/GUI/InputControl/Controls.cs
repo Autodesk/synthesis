@@ -165,8 +165,8 @@ public class Controls
         buttons[0].pwm6Neg = InputControl.setKey("PWM 6 Negative", KeyCode.Alpha0, new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick1));
 
         //Other Controls
-        buttons[0].resetRobot = InputControl.setKey("Reset Robot", KeyCode.R, new JoystickInput(JoystickButton.Button1, Joystick.Joystick1));
-        buttons[0].cameraToggle = InputControl.setKey("Camera Toggle", KeyCode.C, new JoystickInput(JoystickButton.Button2, Joystick.Joystick1));
+        buttons[0].resetRobot = InputControl.setKey("Reset Robot", KeyCode.R, new JoystickInput(JoystickButton.Button8, Joystick.Joystick1));
+        buttons[0].cameraToggle = InputControl.setKey("Camera Toggle", KeyCode.C, new JoystickInput(JoystickButton.Button7, Joystick.Joystick1));
         buttons[0].pickupPrimary = InputControl.setKey("Pick Up Primary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1));
         buttons[0].releasePrimary = InputControl.setKey("Release Primary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1));
         buttons[0].spawnPrimary = InputControl.setKey("Spawn Primary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
@@ -198,8 +198,8 @@ public class Controls
         buttons[1].pwm6Neg = InputControl.setKey("2: PWM 6 Negative", new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick2));
 
         //Other Controls
-        buttons[1].resetRobot = InputControl.setKey("2: Reset Robot", new JoystickInput(JoystickButton.Button1, Joystick.Joystick2));
-        buttons[1].cameraToggle = InputControl.setKey("2: Camera Toggle", new JoystickInput(JoystickButton.Button2, Joystick.Joystick2));
+        buttons[1].resetRobot = InputControl.setKey("2: Reset Robot", new JoystickInput(JoystickButton.Button8, Joystick.Joystick2));
+        buttons[1].cameraToggle = InputControl.setKey("2: Camera Toggle", new JoystickInput(JoystickButton.Button7, Joystick.Joystick2));
         buttons[1].pickupPrimary = InputControl.setKey("2: Pick Up Primary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick2));
         buttons[1].releasePrimary = InputControl.setKey("2: Release Primary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick2));
         buttons[1].spawnPrimary = InputControl.setKey("2: Spawn Primary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick2));
@@ -227,8 +227,8 @@ public class Controls
         buttons[2].pwm6Neg = InputControl.setKey("3: PWM 6 Negative", new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick3));
 
         //Other Controls
-        buttons[2].resetRobot = InputControl.setKey("3: Reset Robot", new JoystickInput(JoystickButton.Button1, Joystick.Joystick3));
-        buttons[2].cameraToggle = InputControl.setKey("3: Camera Toggle", new JoystickInput(JoystickButton.Button2, Joystick.Joystick3));
+        buttons[2].resetRobot = InputControl.setKey("3: Reset Robot", new JoystickInput(JoystickButton.Button8, Joystick.Joystick3));
+        buttons[2].cameraToggle = InputControl.setKey("3: Camera Toggle", new JoystickInput(JoystickButton.Button7, Joystick.Joystick3));
         buttons[2].pickupPrimary = InputControl.setKey("3: Pick Up Primary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick3));
         buttons[2].releasePrimary = InputControl.setKey("3: Release Primary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick3));
         buttons[2].spawnPrimary = InputControl.setKey("3: Spawn Primary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick3));
@@ -257,8 +257,8 @@ public class Controls
         buttons[3].pwm6Neg = InputControl.setKey("4: PWM 6 Negative", new JoystickInput(JoystickAxis.Axis8Negative, Joystick.Joystick4));
 
         //Other Controls
-        buttons[3].resetRobot = InputControl.setKey("4: Reset Robot", new JoystickInput(JoystickButton.Button1, Joystick.Joystick4));
-        buttons[3].cameraToggle = InputControl.setKey("4: Camera Toggle", new JoystickInput(JoystickButton.Button2, Joystick.Joystick4));
+        buttons[3].resetRobot = InputControl.setKey("4: Reset Robot", new JoystickInput(JoystickButton.Button8, Joystick.Joystick4));
+        buttons[3].cameraToggle = InputControl.setKey("4: Camera Toggle", new JoystickInput(JoystickButton.Button7, Joystick.Joystick4));
         buttons[3].pickupPrimary = InputControl.setKey("4: Pick Up Primary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick4));
         buttons[3].releasePrimary = InputControl.setKey("4: Release Primary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick4));
         buttons[3].spawnPrimary = InputControl.setKey("4: Spawn Primary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick4));
