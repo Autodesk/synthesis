@@ -54,7 +54,9 @@ public class MainMenu : MonoBehaviour
 
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
+
     private GameObject settingsMode; //The InputManager Objects
+    private GameObject tankMode;     //Tank Mode InputManager
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
@@ -179,6 +181,7 @@ public class MainMenu : MonoBehaviour
             simTab.SetActive(false);
             optionsTab.SetActive(true);
             settingsMode.SetActive(true);
+            tankMode.SetActive(false);
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -382,6 +385,23 @@ public class MainMenu : MonoBehaviour
         graphics.SetActive(false);
         input.SetActive(true);
         settingsMode.SetActive(true);
+        tankMode.SetActive(false);
+    }
+
+    public void SwitchTankOn()
+    {
+        graphics.SetActive(false);
+        input.SetActive(true);
+        settingsMode.SetActive(false);
+        tankMode.SetActive(true);
+    }
+
+    public void SwitchTankOff()
+    {
+        graphics.SetActive(false);
+        input.SetActive(true);
+        settingsMode.SetActive(true);
+        tankMode.SetActive(false);
     }
 
     public void StartDefaultSim()
@@ -805,7 +825,9 @@ public class MainMenu : MonoBehaviour
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
         input = AuxFunctions.FindObject(gameObject, "Input");
+
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
+        tankMode = AuxFunctions.FindObject(gameObject, "TankMode");
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");

@@ -2,13 +2,22 @@
 
 public class SettingsMode : MonoBehaviour
 {
-    public GameObject settingsMode;
+    //public GameObject tankMode;
 
     // Update is called once per frame
     void Update()
     {
-
+        //if (KeyButton.selectedButton == null && InputControl.GetKeyDown(KeyCode.Escape))
+        //{
+        //    tankMode.SetActive(true);
+        //    //gameObject.SetActive(false);
+        //}
     }
+
+    //public void Test()
+    //{
+    //    tankMode.SetActive(true);
+    //}
 
     public void OnIgnoreMouseMovementChanged(bool on)
     {
@@ -18,11 +27,6 @@ public class SettingsMode : MonoBehaviour
     public void OnUseKeyModifiersChanged(bool on)
     {
         KeyButton.useKeyModifiers = on;
-    }
-
-    public void OnTankDrive(bool on)
-    {
-
     }
 
     public void OnSaveClick()
