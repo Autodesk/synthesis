@@ -88,7 +88,7 @@ public class Toolkit : MonoBehaviour
 
         UpdateStopwatch();
 
-        UpdateControlIndicator();
+        //UpdateControlIndicator();
 
     }
 
@@ -262,6 +262,7 @@ public class Toolkit : MonoBehaviour
 
 
     #endregion
+    /*
     #region Dummy Robot
 
     public void SpawnDummyRobot()
@@ -296,5 +297,5 @@ public class Toolkit : MonoBehaviour
         }
     }
 
-    #endregion
+    #endregion*/
 }

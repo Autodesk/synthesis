@@ -465,7 +465,7 @@ namespace BulletUnity
                     lastCameraState = dynamicCamera.cameraState;
                     dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
 
-                    MainState.ControlsDisabled = true;
+                    //MainState.ControlsDisabled = true;
                 }
                 else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
             }
@@ -497,7 +497,7 @@ namespace BulletUnity
             if (spawnIndicator != null) Destroy(spawnIndicator);
             DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
             dynamicCamera.SwitchCameraState(lastCameraState);
-            MainState.ControlsDisabled = false;
+            //MainState.ControlsDisabled = false;
         }
 
         #endregion
@@ -856,16 +856,16 @@ namespace BulletUnity
         {
             if (processingIndex == 0)
             {
-                if ((InputControl.GetButton(Controls.buttons.pickupPrimary)))
+                if ((InputControl.GetButton(Controls.buttons[0].pickupPrimary)))
                 {
 
                     Intake(0);
                 }
-                if ((InputControl.GetButton(Controls.buttons.pickupSecondary)))
+                if ((InputControl.GetButton(Controls.buttons[0].pickupSecondary)))
                 {
                     Intake(1);
                 }
-                if ((InputControl.GetButtonDown(Controls.buttons.releasePrimary)))
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releasePrimary)))
                 {
                     ReleaseGamepiece(0);
                 }
@@ -873,7 +873,7 @@ namespace BulletUnity
                 {
                     HoldGamepiece(0);
                 }
-                if ((InputControl.GetButtonDown(Controls.buttons.releaseSecondary)))
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releaseSecondary)))
                 {
                     ReleaseGamepiece(1);
                 }
@@ -885,16 +885,16 @@ namespace BulletUnity
             }
             else
             {
-                if ((InputControl.GetButton(Controls.buttons.pickupSecondary)))
+                if ((InputControl.GetButton(Controls.buttons[0].pickupSecondary)))
                 {
 
                     Intake(1);
                 }
-                if ((InputControl.GetButton(Controls.buttons.pickupPrimary)))
+                if ((InputControl.GetButton(Controls.buttons[0].pickupPrimary)))
                 {
                     Intake(0);
                 }
-                if ((InputControl.GetButtonDown(Controls.buttons.releaseSecondary)))
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releaseSecondary)))
                 {
                     ReleaseGamepiece(1);
                 }
@@ -902,7 +902,7 @@ namespace BulletUnity
                 {
                     HoldGamepiece(1);
                 }
-                if ((InputControl.GetButtonDown(Controls.buttons.releasePrimary)))
+                if ((InputControl.GetButtonDown(Controls.buttons[0].releasePrimary)))
                 {
                     ReleaseGamepiece(0);
                 }
@@ -913,8 +913,8 @@ namespace BulletUnity
                 processingIndex = 0;
             }
 
-            if ((InputControl.GetButtonDown(Controls.buttons.spawnPrimary))) SpawnGamepiece(0);
-            if ((InputControl.GetButtonDown(Controls.buttons.spawnPrimary))) SpawnGamepiece(1);
+            if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(0);
+            if ((InputControl.GetButtonDown(Controls.buttons[0].spawnPrimary))) SpawnGamepiece(1);
         }
     }
 

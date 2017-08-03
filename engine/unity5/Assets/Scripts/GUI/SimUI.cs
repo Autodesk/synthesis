@@ -132,7 +132,7 @@ public class SimUI : MonoBehaviour
         else if (dpm == null)
         {
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
-            dpm = main.GetDriverPractice();
+            //dpm = main.GetDriverPractice();
             FindElements();
         }
         else
@@ -256,15 +256,15 @@ public class SimUI : MonoBehaviour
 
             if (configuringIndex == 0)
             {
-                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupPrimary).ToString();
-                releaseControlText.text = InputControl.GetButton(Controls.buttons.releasePrimary).ToString();
-                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnPrimary).ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons[0].pickupPrimary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons[0].releasePrimary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons[0].spawnPrimary).ToString();
             }
             else
             {
-                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupSecondary).ToString();
-                releaseControlText.text = InputControl.GetButton(Controls.buttons.releaseSecondary).ToString();
-                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnSecondary).ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons[0].pickupSecondary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons[0].releaseSecondary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons[0].spawnSecondary).ToString();
             }
         }
     }
@@ -446,14 +446,14 @@ public class SimUI : MonoBehaviour
         switch (i)
         {
             case 1:
-                main.BeginReset();
-                main.EndReset();
+                main.BeginRobotReset();
+                main.EndRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
             case 2:
                 EndOtherProcesses();
                 main.IsResetting = true;
-                main.BeginReset();
+                main.BeginRobotReset();
                 resetDropdown.GetComponent<Dropdown>().value = 0;
                 break;
         }
@@ -503,13 +503,13 @@ public class SimUI : MonoBehaviour
         if (isOrienting)
         {
             isOrienting = false;
-            main.EndReset();
+            main.EndRobotReset();
         }
         else
         {
             EndOtherProcesses();
             isOrienting = true;
-            main.BeginReset();
+            main.BeginRobotReset();
         }
         orientWindow.SetActive(isOrienting);
     }
@@ -547,7 +547,7 @@ public class SimUI : MonoBehaviour
     {
         isOrienting = false;
         orientWindow.SetActive(isOrienting);
-        main.EndReset();
+        main.EndRobotReset();
     }
 
     #endregion
@@ -847,16 +847,16 @@ public class SimUI : MonoBehaviour
                 {
                     if (settingControl == 1)
                     {
-                        InputControl.GetButton(Controls.buttons.pickupPrimary);
+                        InputControl.GetButton(Controls.buttons[0].pickupPrimary);
                     }
-                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.pickupPrimary);
-                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons[0].pickupPrimary);
+                    else InputControl.GetButton(Controls.buttons[0].spawnPrimary);
                 }
                 else
                 {
-                    if (settingControl == 1) InputControl.GetButton(Controls.buttons.pickupSecondary);
-                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.releaseSecondary);
-                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
+                    if (settingControl == 1) InputControl.GetButton(Controls.buttons[0].pickupSecondary);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons[0].releaseSecondary);
+                    else InputControl.GetButton(Controls.buttons[0].spawnPrimary);
                 }
                 Controls.Save();
                 settingControl = 0;
@@ -875,7 +875,7 @@ public class SimUI : MonoBehaviour
         //            if (settingControl == 1)
         //            {
         //                //Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
-        //                InputControl.GetButton(Controls.buttons.pickupPrimary);
+        //                InputControl.GetButton(Controls.buttons[0].pickupPrimary);
         //                Controls.Load();
         //            }
         //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);

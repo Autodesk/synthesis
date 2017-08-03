@@ -768,7 +768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.216, y: 0.3972125}
   m_AnchorMax: {x: 0.77466667, y: 0.72800004}
-  m_AnchoredPosition: {x: 14.800781, y: -7.75}
+  m_AnchoredPosition: {x: 14.796875, y: -7.75}
   m_SizeDelta: {x: 631.1488, y: -91.59103}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &143995659
@@ -1421,7 +1421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a7935f29428d14ab40056caa715af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  listType: Replays
+  listType: 
 --- !u!114 &224614001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1581,7 +1581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7f6358fcc04324986d53762c001210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingsMode: {fileID: 350618140}
+  settingsMode: {fileID: 0}
 --- !u!1 &271483337
 GameObject:
   m_ObjectHideFlags: 0
@@ -1683,7 +1683,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7f6358fcc04324986d53762c001210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingsMode: {fileID: 350618140}
+  settingsMode: {fileID: 0}
 --- !u!224 &350618142
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2205,7 +2205,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.19242716, y: 0.62357366}
   m_AnchorMax: {x: 0.8026823, y: 0.7808241}
-  m_AnchoredPosition: {x: 4.248047, y: -6.5}
+  m_AnchoredPosition: {x: 4.25, y: -6.5}
   m_SizeDelta: {x: -20, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &445894610
@@ -2370,14 +2370,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 515c633c2b5c2944ea02dcd9def2a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  list:
-  - m_Text: Windowed
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: Fullscreen
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  setting: Screen Mode
+  list: []
+  setting: 
 --- !u!114 &458303893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8768,38 +8762,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 515c633c2b5c2944ea02dcd9def2a6b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  list:
-  - m_Text: 640x480
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 800x600
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1024x768
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1280x720
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1280x768
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1280x1024
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1400x900
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1600x900
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1680x1050
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  - m_Text: 1920x1080
-    m_Image: {fileID: 0}
-    m_Tooltip: 
-  setting: Resolution
+  list: []
+  setting: 
 --- !u!114 &1432465059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10460,7 +10424,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.216, y: 0.24683623}
   m_AnchorMax: {x: 0.7527619, y: 0.3972125}
-  m_AnchoredPosition: {x: 26.296875, y: 7.1875}
+  m_AnchoredPosition: {x: 26.3125, y: 7.25}
   m_SizeDelta: {x: 654.1422, y: 12.45121}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1865866543
