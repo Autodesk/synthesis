@@ -85,6 +85,20 @@ public class DriveJoints : MonoBehaviour
         float[] pwm = dioModules[0].pwmValues;
         float[] can = dioModules[0].canValues;
 
+        bool joystickControl = true;
+
+        //if (joystickControl)
+        //{
+        //    pwm[0] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
+        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
+
+        //    pwm[1] +=
+        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
+        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
+        //}
+
+
         //if (tankDrive)
         //{
         //    Controls.TankDrive();
