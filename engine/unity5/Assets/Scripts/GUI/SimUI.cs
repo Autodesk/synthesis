@@ -29,7 +29,7 @@ public class SimUI : MonoBehaviour
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
 
-    
+
 
     GameObject releaseVelocityPanel;
 
@@ -41,11 +41,13 @@ public class SimUI : MonoBehaviour
     GameObject releaseHorizontalEntry;
 
     GameObject lockPanel;
-    
+
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
 
     GameObject driverStationPanel;
+
+    GameObject inputManagerPanel;
 
     GameObject exitPanel;
 
@@ -119,7 +121,8 @@ public class SimUI : MonoBehaviour
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
             dpm = main.GetDriverPractice();
             FindElements();
-        }else if(camera == null)
+        }
+        else if (camera == null)
         {
             camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
@@ -190,19 +193,23 @@ public class SimUI : MonoBehaviour
 
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
-        
+
         primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
         secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
 
-        
+
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
+        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
+
+        inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
-        
+
 
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
 
@@ -232,15 +239,15 @@ public class SimUI : MonoBehaviour
 
             if (configuringIndex == 0)
             {
-                intakeControlText.text = Controls.buttons.pickupPrimary.primaryInput.ToString();
-                releaseControlText.text = Controls.buttons.releasePrimary.primaryInput.ToString();
-                spawnControlText.text = Controls.buttons.spawnPrimary.primaryInput.ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupPrimary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releasePrimary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnPrimary).ToString();
             }
             else
             {
-                intakeControlText.text = Controls.buttons.pickupSecondary.primaryInput.ToString();
-                releaseControlText.text = Controls.buttons.releaseSecondary.primaryInput.ToString();
-                spawnControlText.text = Controls.buttons.spawnSecondary.primaryInput.ToString();
+                intakeControlText.text = InputControl.GetButton(Controls.buttons.pickupSecondary).ToString();
+                releaseControlText.text = InputControl.GetButton(Controls.buttons.releaseSecondary).ToString();
+                spawnControlText.text = InputControl.GetButton(Controls.buttons.spawnSecondary).ToString();
             }
         }
     }
@@ -339,8 +346,8 @@ public class SimUI : MonoBehaviour
             }
         }
 
-        if(main != null)
-        UpdateFreeroamWindow();
+        if (main != null)
+            UpdateFreeroamWindow();
         UpdateSpawnpointWindow();
         UpdateDriverStationPanel();
     }
@@ -807,33 +814,32 @@ public class SimUI : MonoBehaviour
 
     private void ListenControl()
     {
-        Debug.Log("OK");
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             settingControl = 0;
             return;
         }
 
+        KeyMapping[] keys = GetComponentsInChildren<KeyMapping>();
 
-        foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
+        foreach (KeyMapping key in keys)
         {
-            if (Input.GetKeyDown(key))
+            if (InputControl.GetButtonDown(key))
             {
-                Debug.Log("WTF");
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
                     {
-                        Controls.buttons.pickupPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                        InputControl.GetButton(Controls.buttons.pickupPrimary);
                     }
-                    else if (settingControl == 2) Controls.buttons.releasePrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
-                    else Controls.buttons.spawnPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.pickupPrimary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
                 else
                 {
-                    if (settingControl == 1) Controls.buttons.pickupSecondary.primaryInput = Controls.CustomInputFromString(key.ToString());
-                    else if (settingControl == 2) Controls.buttons.releaseSecondary.primaryInput = Controls.CustomInputFromString(key.ToString());
-                    else Controls.buttons.spawnPrimary.primaryInput = Controls.CustomInputFromString(key.ToString());
+                    if (settingControl == 1) InputControl.GetButton(Controls.buttons.pickupSecondary);
+                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons.releaseSecondary);
+                    else InputControl.GetButton(Controls.buttons.spawnPrimary);
                 }
                 Controls.Save();
                 settingControl = 0;
@@ -842,33 +848,33 @@ public class SimUI : MonoBehaviour
     }
 
 
-        //OLD; remove once the new one is tested 7/27/2017
-        //foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
-        //{
-        //    if (Input.GetKeyDown(vKey))
-        //    {
-        //        if (configuringIndex == 0)
-        //        {
-        //            if (settingControl == 1)
-        //            {
-        //                //Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
-        //                InputControl.GetButton(Controls.buttons.pickupPrimary);
-        //                Controls.Load();
-        //            }
-        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
-        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
-        //        }
-        //        else
-        //        {
-        //            if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
-        //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
-        //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
-        //        }
-        //        Controls.SaveControls();
-        //        settingControl = 0;
-        //    }
-        //}
- 
+    //OLD; remove once the new one is tested 7/27/2017
+    //foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
+    //{
+    //    if (Input.GetKeyDown(vKey))
+    //    {
+    //        if (configuringIndex == 0)
+    //        {
+    //            if (settingControl == 1)
+    //            {
+    //                //Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
+    //                InputControl.GetButton(Controls.buttons.pickupPrimary);
+    //                Controls.Load();
+    //            }
+    //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
+    //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+    //        }
+    //        else
+    //        {
+    //            if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
+    //            else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
+    //            else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
+    //        }
+    //        Controls.SaveControls();
+    //        settingControl = 0;
+    //    }
+    //}
+
     #endregion
 
     /// <summary>
@@ -929,18 +935,22 @@ public class SimUI : MonoBehaviour
         camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
 
-
     public void ShowControlPanel(bool show)
     {
         if (show)
         {
             EndOtherProcesses();
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(true);
+            inputManagerPanel.SetActive(true);
         }
         else
         {
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
+            inputManagerPanel.SetActive(false);
         }
+    }
+
+    public void ShowControlPanel()
+    {
+        ShowControlPanel(!inputManagerPanel.activeSelf);
     }
 
     public void MainMenuExit(string option)
