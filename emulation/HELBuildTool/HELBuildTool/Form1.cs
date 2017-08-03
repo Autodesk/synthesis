@@ -34,8 +34,9 @@ namespace WindowsFormsApp1
             System.IO.Directory.SetCurrentDirectory(path);
 
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo(
-                "C:\\cygwin64\\bin\\mintty.exe",
-                "C:\\cygwin64\\bin\\bash.exe -c \"mount -c /cygdrive && make -f " +
+                "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64\\bin\\mintty.exe",
+                "'C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64\\bin\\bash.exe' " +
+                "-c \"mount -c /cygdrive && make -f " +
                 "/cygdrive/c/cygwin64/home/t_leeb/synthesis/emulation/HELBuildTool/Makefile " +
                 "&& echo 'Starting robot code' && ./build/FRC_UserProgram " +
                 "|| read -p 'Press enter to continue'\"");
