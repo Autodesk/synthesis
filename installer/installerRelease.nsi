@@ -156,7 +156,7 @@ SectionEnd
 Section "Field Exporter Plugin (optional)"
 	
   ; Set output path to plugin directory
-  SetOutPath %ProgramData%\Autodesk\Application Plugins\BxDFieldExporter
+  SetOutPath $APPDATA\Autodesk\Application Plugins\BxDFieldExporter
   
   File /r "FieldExporter\BxDFieldExporter.dll"
   File /r "FieldExporter\Autodesk.BxdFieldExporter.Inventor.addin"

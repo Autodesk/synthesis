@@ -41,15 +41,15 @@ public class SimulatorUI : MonoBehaviour
         }
     }
 
-    public void showControlPanel(bool show)
+    public void ShowControlPanel(bool show)
     {
         if (show)
         {
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(true);
+            AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(true);
         }
         else
         {
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
+            AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(false);
         }
     }
 
