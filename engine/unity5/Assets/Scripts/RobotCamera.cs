@@ -11,7 +11,6 @@ public class RobotCamera : MonoBehaviour
     public List<GameObject> robotCameraList = new List<GameObject>();
     public GameObject CurrentCamera { get; set; }
     public GameObject CameraIndicator;
-    public float FOV;
 
     private GameObject robotCameraListObject;
     public GameObject SelectedNode;
@@ -24,6 +23,8 @@ public class RobotCamera : MonoBehaviour
     //GUI stuff
     MainState main;
     GameObject canvas;
+    DynamicCamera dynamicCamera;
+    DynamicCamera.CameraState preConfigCamState;
 
     GameObject cameraAnglePanel;
     GameObject xAngleEntry;
@@ -162,6 +163,8 @@ public class RobotCamera : MonoBehaviour
         if (main == null)
         {
             main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+        }else if(dynamicCamera == null){
+            dynamicCamera = main.dynamicCameraObject.GetComponent<DynamicCamera>();
         }
         else
         {
@@ -186,9 +189,10 @@ public class RobotCamera : MonoBehaviour
             }
         }
 
-        ConfigurateCameraPosition();
+        UpdateCameraPosition();
         UpdateCameraAnglePanel();
         UpdateCameraFOVPanel();
+        UpdateNodeAttachment();
     }
 
 
@@ -252,7 +256,7 @@ public class RobotCamera : MonoBehaviour
     /// <summary>
     /// Use WASD change the position, rotation of camera
     /// </summary>
-    private void ConfigurateCameraPosition()
+    private void UpdateCameraPosition()
     {
         if (changingCameraPosition)
         {
@@ -403,6 +407,7 @@ public class RobotCamera : MonoBehaviour
             configureRobotCameraButton.SetActive(false);
             //Close the panel when indicator is not active and stop all configuration
             configureCameraPanel.SetActive(false);
+            if(changingCameraPosition) dynamicCamera.SwitchToState(preConfigCamState);
             isChangingHeight = SelectingNode = changingCameraPosition = false;
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
             SelectingNode = false;
@@ -420,6 +425,8 @@ public class RobotCamera : MonoBehaviour
         configureCameraPanel.SetActive(changingCameraPosition);
         if (changingCameraPosition)
         {
+            preConfigCamState = dynamicCamera.cameraState;
+            dynamicCamera.SwitchCameraState(new DynamicCamera.CameraConfigurationState(dynamicCamera));
             //Update the node where current camera is attached to
             cameraNodeText.text = "Current Node: " + CurrentCamera.transform.parent.gameObject.name;
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "End Configuration";
@@ -427,6 +434,7 @@ public class RobotCamera : MonoBehaviour
         else
         {
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+            dynamicCamera.SwitchToState(preConfigCamState);
         }
     }
 
@@ -444,7 +452,6 @@ public class RobotCamera : MonoBehaviour
         {
             cameraConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
         }
-        CurrentCamera.GetComponent<Camera>().fieldOfView = FOV;
     }
 
     /// <summary>
@@ -490,7 +497,7 @@ public class RobotCamera : MonoBehaviour
         {
             xAngleEntry.GetComponent<InputField>().text = CurrentCamera.transform.localEulerAngles.x.ToString();
             yAngleEntry.GetComponent<InputField>().text = CurrentCamera.transform.localEulerAngles.y.ToString();
-            zAngleEntry.GetComponentInChildren<Text>().text = CurrentCamera.transform.localEulerAngles.z.ToString();
+            zAngleEntry.GetComponent<InputField>().text = CurrentCamera.transform.localEulerAngles.z.ToString();
         }
     }
 
@@ -616,6 +623,11 @@ public class RobotCamera : MonoBehaviour
             SyncCameraFOV();
             isEditingFOV = false;
         }
+    }
+
+    public void UpdateNodeAttachment()
+    {
+        cameraNodeText.text = "Current Node: " + CurrentCamera.transform.parent.gameObject.name;
     }
     #endregion
 
