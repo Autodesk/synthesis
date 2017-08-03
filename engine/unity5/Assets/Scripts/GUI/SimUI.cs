@@ -55,6 +55,8 @@ public class SimUI : MonoBehaviour
     bool isOrienting = false;
     GameObject resetDropdown;
 
+    GameObject loadingPanel;
+
     Text enableDPMText;
 
     Text primaryGamepieceText;
@@ -212,7 +214,7 @@ public class SimUI : MonoBehaviour
 
 
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
-
+        loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
     }
 
     /// <summary>
@@ -367,11 +369,12 @@ public class SimUI : MonoBehaviour
         string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
         if (Directory.Exists(directory))
         {
+            panel.SetActive(false);
+            changeRobotPanel.SetActive(false);
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
             main.ChangeRobot(directory);
-            ToggleChangeRobotPanel();
         }
         else
         {
@@ -398,6 +401,9 @@ public class SimUI : MonoBehaviour
         string directory = PlayerPrefs.GetString("FieldDirectory") + "\\" + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
         if (Directory.Exists(directory))
         {
+            panel.SetActive(false);
+            changeFieldPanel.SetActive(false);
+            loadingPanel.SetActive(true);
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedField", directory);
             PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
