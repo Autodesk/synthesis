@@ -1,23 +1,49 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using System.Collections.ObjectModel;
 
-
-
-/// <summary>
-/// <see cref="Controls"/> is a set of user defined buttons and axes. It is better to store this file somewhere in your project.
-/// </summary>
-public static class DemoControls
+public class TankDrive
 {
+    bool tankdrive = true;
     /// <summary>
     /// <see cref="Buttons"/> is a set of user defined buttons.
     /// </summary>
     public struct Buttons
     {
-        public KeyMapping up;
-        public KeyMapping down;
+        //Basic robot controls
+        public KeyMapping forward;
+        public KeyMapping backward;
         public KeyMapping left;
         public KeyMapping right;
-        public KeyMapping jump;
+
+        //Tank drive controls
+        public KeyMapping tankFrontLeft;
+        public KeyMapping tankBackLeft;
+        public KeyMapping tankFrontRight;
+        public KeyMapping tankBackRight;
+
+        //Remaining PWM Controls
+        public KeyMapping pwm2Plus;
+        public KeyMapping pwm2Neg;
+        public KeyMapping pwm3Plus;
+        public KeyMapping pwm3Neg;
+        public KeyMapping pwm4Plus;
+        public KeyMapping pwm4Neg;
+        public KeyMapping pwm5Plus;
+        public KeyMapping pwm5Neg;
+        public KeyMapping pwm6Plus;
+        public KeyMapping pwm6Neg;
+
+        //Other controls
+        public KeyMapping resetRobot;
+        public KeyMapping cameraToggle;
+        public KeyMapping pickupPrimary;
+        public KeyMapping releasePrimary;
+        public KeyMapping spawnPrimary;
+        public KeyMapping pickupSecondary;
+        public KeyMapping releaseSecondary;
+        public KeyMapping spawnSecondary;
     }
 
     /// <summary>
@@ -29,8 +55,6 @@ public static class DemoControls
         public Axis horizontal;
     }
 
-
-
     /// <summary>
     /// Set of buttons.
     /// </summary>
@@ -41,21 +65,17 @@ public static class DemoControls
     /// </summary>
     public static Axes axes;
 
-
-
-    /// <summary>
-    /// Initializes the <see cref="Controls"/> class.
-    /// </summary>
-    static DemoControls()
+    static TankDrive()
     {
-        buttons.up = InputControl.setKey("Up", KeyCode.W, KeyCode.UpArrow, new JoystickInput(JoystickAxis.Axis2Negative));
-        buttons.down = InputControl.setKey("Down", KeyCode.S, KeyCode.DownArrow, new JoystickInput(JoystickAxis.Axis2Positive));
-        buttons.left = InputControl.setKey("Left", KeyCode.A, KeyCode.LeftArrow, new JoystickInput(JoystickAxis.Axis1Negative));
-        buttons.right = InputControl.setKey("Right", KeyCode.D, KeyCode.RightArrow, new JoystickInput(JoystickAxis.Axis1Positive));
-        buttons.jump = InputControl.setKey("Jump", KeyCode.Space, KeyCode.None, new JoystickInput(JoystickButton.Button1));
+    
 
-        axes.vertical = InputControl.setAxis("Vertical", buttons.down, buttons.up);
-        axes.horizontal = InputControl.setAxis("Horizontal", buttons.left, buttons.right);
+        //Tank Drive
+        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
+        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
+        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
+        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
+
+ 
 
         Load();
     }
@@ -73,14 +93,12 @@ public static class DemoControls
     /// </summary>
     public static void Save()
     {
-        // It is just an example. You may remove it or modify it if you want
         ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
 
         foreach (KeyMapping key in keys)
         {
             PlayerPrefs.SetString("Controls." + key.name + ".primary", key.primaryInput.ToString());
             PlayerPrefs.SetString("Controls." + key.name + ".secondary", key.secondaryInput.ToString());
-            PlayerPrefs.SetString("Controls." + key.name + ".third", key.thirdInput.ToString());
         }
 
         PlayerPrefs.Save();
@@ -91,7 +109,6 @@ public static class DemoControls
     /// </summary>
     public static void Load()
     {
-        // It is just an example. You may remove it or modify it if you want
         ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
 
         foreach (KeyMapping key in keys)
@@ -111,14 +128,20 @@ public static class DemoControls
             {
                 key.secondaryInput = customInputFromString(inputStr);
             }
-
-            inputStr = PlayerPrefs.GetString("Controls." + key.name + ".third");
-
-            if (inputStr != "")
-            {
-                key.thirdInput = customInputFromString(inputStr);
-            }
         }
+    }
+
+    public static void StartTankDrive()
+    {
+        //Tank Drive
+        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", KeyCode.None, new JoystickInput(JoystickAxis.Axis9Negative));
+        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", KeyCode.None, new JoystickInput(JoystickAxis.Axis9Positive));
+        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", KeyCode.None, new JoystickInput(JoystickAxis.Axis10Negative));
+        buttons.tankBackRight = InputControl.setKey("Tank Back Right", KeyCode.None, new JoystickInput(JoystickAxis.Axis10Positive));
+
+  
+
+        GameObject.Find("TankMode").GetComponent<TankMode>().UpdateAllText();
     }
 
     /// <summary>

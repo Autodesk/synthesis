@@ -20,6 +20,8 @@ public class DriveJoints : MonoBehaviour
     private const float MAX_SLIDER_FORCE = 1000f;
     private const float MAX_SLIDER_SPEED = 2f;
 
+    public static bool tankDriveOn = false;
+
     public static void SetSolenoid(RigidNode node, bool forward)
     {
         float acceleration = 0;
@@ -85,17 +87,17 @@ public class DriveJoints : MonoBehaviour
         float[] pwm = dioModules[0].pwmValues;
         float[] can = dioModules[0].canValues;
 
-        bool joystickControl = true;
+        //bool joystickControl = true;
 
         //if (joystickControl)
         //{
-        //    pwm[0] +=
-        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
-        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
+        //pwm[0] +=
+        //(InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
+        //(InputControl.GetAxisRaw(Controls.axes.vertical)) * .5f;
 
-        //    pwm[1] +=
-        //    (InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
-        //    (InputControl.GetAxisRaw(Controls.axes.vertical));
+        //pwm[1] +=
+        //(InputControl.GetAxisRaw(Controls.axes.vertical)) * .5f +
+        //(InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f;
         //}
 
 
@@ -123,7 +125,7 @@ public class DriveJoints : MonoBehaviour
             (InputControl.GetButton(Controls.buttons.forward) ? -SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons.backward) ? SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons.left) ? -SPEED_ARROW_PWM : 0.0f) +
-        (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
+            (InputControl.GetButton(Controls.buttons.right) ? SPEED_ARROW_PWM : 0.0f);
 
         pwm[2] +=
             (InputControl.GetButton(Controls.buttons.pwm2Plus)) ? SPEED_ARROW_PWM :

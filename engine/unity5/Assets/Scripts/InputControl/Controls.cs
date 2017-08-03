@@ -147,16 +147,6 @@ public class Controls
     //    }
     //}
 
-    public static void TankDrive()
-    {
-        //Tank Drive
-        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
-        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
-        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
-        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
-
-        Load();
-    }
 
     /// <summary>
     /// Nothing. It just call static constructor if needed.
@@ -220,12 +210,6 @@ public class Controls
         buttons.left = InputControl.setKey("Left", KeyCode.LeftArrow, new JoystickInput(JoystickAxis.Axis4Negative));
         buttons.right = InputControl.setKey("Right", KeyCode.RightArrow, new JoystickInput(JoystickAxis.Axis4Positive));
 
-        //Tank drive controls
-        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
-        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
-        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
-        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
-
         //Remaining PWM controls
         buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, new JoystickInput(JoystickAxis.Axis3Positive));
         buttons.pwm2Neg = InputControl.setKey("PWM 2 Negative", KeyCode.Alpha2, new JoystickInput(JoystickAxis.Axis3Negative));
@@ -252,6 +236,11 @@ public class Controls
         axes.horizontal = InputControl.setAxis("Joystick Horizontal", buttons.left, buttons.right);
         axes.vertical = InputControl.setAxis("Joystick Vertical", buttons.backward, buttons.forward);
 
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+    }
+
+    public static void HardReset()
+    {
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
     }
 
