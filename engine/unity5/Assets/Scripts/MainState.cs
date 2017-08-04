@@ -65,7 +65,7 @@ public class MainState : SimState
     private string robotPath;
 
     public List<Robot> SpawnedRobots { get; private set; }
-    private const int MAX_ROBOTS = 4;
+    private const int MAX_ROBOTS = 6;
 
 
     /// <summary>
