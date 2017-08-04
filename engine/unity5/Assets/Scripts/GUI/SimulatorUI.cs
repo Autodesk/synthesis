@@ -1,10 +1,8 @@
-
 ﻿using Assets.Scripts.FSM;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Analytics;
 
 public class SimulatorUI : MonoBehaviour
 {
@@ -14,28 +12,20 @@ public class SimulatorUI : MonoBehaviour
     public GameObject stateMachine;
     public MainState mainState;
 
-    private Color hoverColor;
-    private Vector3 toolTransform;
-
     private GameObject canvas;
     private GameObject cameraToolTip;
     private GameObject orientWindow;
     private bool isOrienting;
     private GameObject resetDropdown;
-
-    private Image imgTemp;
-
-    private Transform tTransform;
-
     // Use this for initialization
     void Start()
     {
-
-        canvas = GameObject.Find("Canvas");
         stateMachine = GameObject.Find("StateMachine");
-        imgTemp = AuxFunctions.FindObject("Toolbar").GetComponent<Image>();
-        tTransform = AuxFunctions.FindObject("Toolbar").GetComponent<Transform>();
-        toolTransform = tTransform.position;
+        canvas = GameObject.Find("Canvas");
+        cameraToolTip = GameObject.Find("TooltipText (9)");
+        orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
+        resetDropdown = GameObject.Find("Reset Robot Dropdown");
+        isOrienting = false;
     }
 
     // Update is called once per frame
@@ -45,38 +35,24 @@ public class SimulatorUI : MonoBehaviour
         {
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
-
-
         if (mainState == null)
         {
             mainState = stateMachine.GetComponent<StateMachine>().CurrentState as MainState;
         }
     }
 
-    public void showControlPanel(bool show)
+    public void ShowControlPanel(bool show)
     {
         if (show)
         {
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(true);
+            AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(true);
         }
         else
         {
-            AuxFunctions.FindObject(canvas, "FullscreenPanel").SetActive(false);
+            AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(false);
         }
     }
-    /*
-    public void hoverOpacityEnter()
-    {
-        hoverColor = imgTemp.color;
-        //AuxFunctions.FindObject("Toolbar").GetComponent<Image>().color = new Color();
-       imgTemp.color = new Color(0, 0, 0, 255);
-    }
 
-    public void hoverOpacityExit()
-    {
-        imgTemp.color = hoverColor;
-    }
-    */
 
     //In game UI loads robot using UI icons
     public void robotClick()
@@ -84,15 +60,6 @@ public class SimulatorUI : MonoBehaviour
 
     }
 
-    //In game UI button activates driver practice mode
-    public void driverPracticeClick()
-    {
-        Analytics.CustomEvent("Driver Practice Mode", new Dictionary<string, object>
-                    {
-                        { "mode", true },
-                    });
-
-    }
     //In game UI loads field using UI icons
     public void fieldClick()
     {
@@ -101,12 +68,14 @@ public class SimulatorUI : MonoBehaviour
 
 
     //In game UI switches view using UI icons
-    public void SwitchViewClick(int cam)
+    public void SwitchViewClickMoreBetterer(int joe)
     {
-        switch (cam)
+        Debug.Log(joe);
+        switch (joe)
         {
             case 1:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.DriverStationState(dynamicCamera));
+                DynamicCamera.MovingEnabled = true;
                 break;
             case 2:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.OrbitState(dynamicCamera));
@@ -114,46 +83,20 @@ public class SimulatorUI : MonoBehaviour
                 break;
             case 3:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.FreeroamState(dynamicCamera));
+                DynamicCamera.MovingEnabled = true;
                 break;
             case 4:
                 dynamicCamera.SwitchCameraState(new DynamicCamera.OverviewState(dynamicCamera));
-                break; 
+                DynamicCamera.MovingEnabled = true;
+                break;
         }
     }
-
-    public void StartReplay()
-    {
-        mainState.StartReplay();
-    }
-
-    //toolbar animation 
-
-    public void hoverToolOff()
-    {
-        //tempPos.y = tempVal + amplitude * Mathf.Sin(speed * Time.time);
-        //transform.position = tempPos;
-       
-        tTransform.position = new Vector3(toolTransform.x, toolTransform.y + 60, toolTransform.z);
-    }
-
-    public void hoverToolOn()
-    {
-        //tempPos.y = tempVal + amplitude * Mathf.Sin(speed * Time.time);
-        //transform.position = tempPos;
-        tTransform.position = toolTransform;
-    }
-
 
     //In game UI button opens tutorial link in browser
 
     public void toLink()
     {
         Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
-    }
-
-    public void ReplayModeActivated()
-    {
-    
     }
 
     public void CameraToolTips()

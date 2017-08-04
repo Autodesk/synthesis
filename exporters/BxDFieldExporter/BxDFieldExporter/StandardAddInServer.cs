@@ -101,6 +101,7 @@ namespace BxDFieldExporter
                 click_OnSelectEventDelegate = new UserInputEventsSink_OnSelectEventHandler(UIEvents_OnSelect);// make a new ui event reactor
                 UIEvent.OnSelect += click_OnSelectEventDelegate;// add the event reactor to the onselect
                 UIEvent.OnContextMenu += UIEvent_OnContextMenu;
+				InventorApplication.ApplicationEvents.OnActivateDocument += ApplicationEvents_OnActivateDocument;
             }
             catch (Exception e)
             {
@@ -183,6 +184,23 @@ namespace BxDFieldExporter
 
         #endregion
 
+		
+        private void ApplicationEvents_OnActivateDocument(_Document DocumentObject, EventTimingEnum BeforeOrAfter, NameValueMap Context, out HandlingCodeEnum HandlingCode)
+        {
+            if(DocumentObject is PartDocument doc)
+            {
+                doc.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            }
+            else if (DocumentObject is PresentationDocument doc1)
+            {
+                doc1.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            }
+            else if (DocumentObject is DrawingDocument doc2)
+            {
+                doc2.DisabledCommandList.Add(MainApplication.CommandManager.ControlDefinitions["BxD:RobotExporter:Environment"]);
+            }
+            HandlingCode = HandlingCodeEnum.kEventNotHandled;
+        }
         // called when the exporter starts
         public void startExport_OnExecute(Inventor.NameValueMap Context)
         {
