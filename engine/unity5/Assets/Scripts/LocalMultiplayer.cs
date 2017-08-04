@@ -65,13 +65,13 @@ public class LocalMultiplayer : MonoBehaviour {
     /// </summary>
     public void ToggleMultiplayerWindow()
     {
-        if (addRobotWindow.activeSelf)
+        if (multiplayerWindow.activeSelf)
         {
-            addRobotWindow.SetActive(false);
+            multiplayerWindow.SetActive(false);
         }
         else
         {
-            addRobotWindow.SetActive(true);
+            multiplayerWindow.SetActive(true);
         }
     }
 

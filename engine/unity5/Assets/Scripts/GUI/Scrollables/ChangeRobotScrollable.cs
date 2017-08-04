@@ -17,6 +17,9 @@ public class ChangeRobotScrollable : ScrollablePanel
     {
 
         base.Start();
+        listStyle.fontSize = 14;
+        highlightStyle.fontSize = 14;
+        toScale = false;
         errorMessage = "No robots found in directory!";
     }
 
