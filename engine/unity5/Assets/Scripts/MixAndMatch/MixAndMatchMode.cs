@@ -12,7 +12,15 @@ public class MixAndMatchMode : MonoBehaviour
     private GameObject mixAndMatchMode;
     public static bool isQuickSwapMode = false;
     private GameObject infoText;
-    private GameObject presets;
+
+    //Presets
+    private GameObject presetsPanel;
+    List<GameObject> presetClones = new List<GameObject>();
+    public List<MaMPreset> presetsList = new List<MaMPreset>();
+    private GameObject setPresetPanel;
+    private GameObject inputField;
+    private GameObject presetRightScroll;
+    private GameObject presetLeftScroll;
 
     //Wheel options
     private GameObject tractionWheel;
@@ -58,7 +66,11 @@ public class MixAndMatchMode : MonoBehaviour
         mixAndMatchMode = GameObject.Find("MixAndMatchMode");
         infoText = GameObject.Find("PartDescription");
         Text txt = infoText.GetComponent<Text>();
-        presets = GameObject.Find("PresetPanel");
+        presetsPanel = GameObject.Find("PresetPanel");
+        setPresetPanel = GameObject.Find("SetPresetPanel");
+        inputField = GameObject.Find("InputField");
+        presetRightScroll = GameObject.Find("PresetRightScroll");
+        presetLeftScroll = GameObject.Find("PresetLeftScroll");
 
         //Find wheel objects
         tractionWheel = GameObject.Find("TractionWheel");
@@ -67,7 +79,7 @@ public class MixAndMatchMode : MonoBehaviour
         pnuematicWheel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PneumaticWheel")).First();
         wheelRightScroll = GameObject.Find("WheelRightScroll");
         wheelLeftScroll = GameObject.Find("WheelLeftScroll");
-        wheelLeftScroll.SetActive(false);
+       
         //Put all the wheels in the wheels list
         wheels = new List<GameObject> { tractionWheel, colsonWheel, omniWheel, pnuematicWheel };
 
@@ -97,21 +109,21 @@ public class MixAndMatchMode : MonoBehaviour
 
         SelectManipulator(PlayerPrefs.GetInt("Manipulator", 0));
 
-        //LoadPresets();
+        if(this.gameObject.name == "MixAndMatchModeScript")
+        {
+            //CreatePreset();
+            
+            wheelLeftScroll.SetActive(false);
+            setPresetPanel.SetActive(false);
+            XMLManager.ins.LoadItems();
+            LoadPresets();
+        }
 
         //Sets info panel to blank
         Text txt = infoText.GetComponent<Text>();
         txt.text = "";
-    }
 
-   // public Transform prefab;
-    //public GameObject parent;
-    public void LoadPresets()
-    {
-        //GameObject obj = new GameObject("Text");
-        //obj.AddComponent<Text>().text = "HI!";
-        //Instantiate(prefab).transform.parent = parent.transform;
-        
+       
     }
 
     /// <summary>
@@ -129,6 +141,110 @@ public class MixAndMatchMode : MonoBehaviour
         SceneManager.LoadScene("QuickSwap");
     }
 
+    #region Presets
+    public void SetPresetName()
+    {
+        String name = "";
+        if (inputField.GetComponent<InputField>().text.Length > 0) name = inputField.GetComponent<InputField>().text;
+        Debug.Log(name);
+        presetsList.Add(new MaMPreset(selectedWheel, selectedDriveBase, selectedManipulator, name));
+        XMLManager.ins.itemDB.xmlList.Add(new MaMPreset(selectedWheel, selectedDriveBase, selectedManipulator, name));
+
+        GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[presetClones.Count], 0);
+        clone.GetComponent<Text>().text = XMLManager.ins.itemDB.xmlList[presetClones.Count].GetName();
+        presetClones.Add(clone);
+        clone.SetActive(false);
+
+        //Creates a listner for OnClick
+        int value = presetClones.Count;
+        Button buttonCtrl = clone.GetComponent<Button>();
+        buttonCtrl.onClick.AddListener(() => SelectPresets(value));
+
+        Text txt = infoText.GetComponent<Text>();
+        txt.text = "";
+
+    }
+   
+    /// <summary>
+    /// Called when a preset option is clicked. Selects the preset's wheel, drive base and manipulator.
+    /// </summary>
+    /// <param name="value"></param>
+    public void SelectPresets(int value)
+    {
+        Debug.Log(value);
+        SelectWheel(XMLManager.ins.itemDB.xmlList[value].GetWheel());
+        SelectDriveBase(XMLManager.ins.itemDB.xmlList[value].GetDriveBase());
+        SelectManipulator(XMLManager.ins.itemDB.xmlList[value].GetManipulator(), "preset");
+    }
+
+    /// <summary>
+    /// Creates the GameObjects that are clones of the PresetPrefab and addes them to the presetClones list.
+    /// Sets the text to the name of the corresponding MaMPreset Object.
+    /// Shows the first 3 in the preset panel. 
+    /// </summary>
+    public void LoadPresets()
+    {
+        //Loads the first three presets
+        for (int i = 0; i < 3 && i < XMLManager.ins.itemDB.xmlList.Count; i++)
+        {
+            Debug.Log("LoadPreset" + i);
+            GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[i], i);
+            clone.GetComponent<Text>().text = XMLManager.ins.itemDB.xmlList[i].GetName();
+            presetClones.Add(clone);
+
+            //Creates a listner for OnClick
+            int value = i;
+            Button buttonCtrl = clone.GetComponent<Button>();
+            buttonCtrl.onClick.AddListener(() => SelectPresets(value));
+        }
+
+        //Loads the rest of the presets and inactivates them
+        for (int i = 3; i < XMLManager.ins.itemDB.xmlList.Count; i++)
+        {
+            GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[i], 0);
+            clone.GetComponent<Text>().text = XMLManager.ins.itemDB.xmlList[i].GetName();
+            presetClones.Add(clone);
+            clone.SetActive(false);
+
+            //Creates a listner for OnClick
+            int value = i;
+            Button buttonCtrl = clone.GetComponent<Button>();
+            buttonCtrl.onClick.AddListener(() => SelectPresets(value));
+        }
+        
+    }
+
+    /// <summary>
+    /// Creates a MaMPreset object and adds it to the XMLList. The MaMPreset object contains values associated with the preset, such as the wheel.
+    /// </summary>
+    public void CreatePreset()
+    {
+        MaMPreset preset = new MaMPreset(0, 0, 0, "Default");
+        presetsList.Add(preset);
+        XMLManager.ins.itemDB.xmlList.Add(preset);
+        XMLManager.ins.SaveItems();
+    }
+
+    /// <summary>
+    /// Creates a MaMPreset object and adds it to the presetsList. The MaMPreset object contains values associated with the preset, such as the wheel.
+    /// </summary>
+    public void CreatePreset(int wheel, int driveBase, int manipulator, String name)
+    {
+        MaMPreset preset = new MaMPreset(wheel, driveBase, manipulator, name);
+        presetsList.Add(preset);
+        XMLManager.ins.itemDB.xmlList.Add(preset);
+        XMLManager.ins.SaveItems();
+        XMLManager.ins.LoadItems();
+
+       
+    }
+
+    public void ToggleSetPresetPanel()
+    {
+        setPresetPanel.SetActive(!setPresetPanel.activeSelf);
+    }
+
+#endregion
     #region InfoText
     public void SetWheelInfoText(int wheel)
     {
@@ -255,6 +371,24 @@ public class MixAndMatchMode : MonoBehaviour
         selectedManipulator = manipulator;
     }
 
+    public void SelectManipulator(int manipulator, string presetName)
+    {
+        Color purple = new Color(0.757f, 0.200f, 0.757f);
+
+        //unselects all manipulators
+        for (int k = 0; k < manipulators.Count; k++)
+        {
+            SetColor(manipulators[k], Color.white);
+        }
+
+        //selects the manipulator that is clicked
+        SetColor(manipulators[manipulator], purple);
+        hasManipulator = (manipulator == 0) ? false : true;
+        selectedManipulator = manipulator;
+        Text txt = infoText.GetComponent<Text>();
+        txt.text = "";
+    }
+
     /// <summary>
     /// Sets the color for selecting/unselecting parts.
     /// </summary>
@@ -343,6 +477,7 @@ public class MixAndMatchMode : MonoBehaviour
     }
     #endregion
 
+    #region Scrollers
     int firstWheel = 0;
     public void ScrollWheels(bool right)
     {
@@ -382,5 +517,44 @@ public class MixAndMatchMode : MonoBehaviour
         }
     }
 
+    int firstPreset = 0;
+    public void ScrollPreset(bool right)
+    {
+        if (right && firstPreset + 3 < presetClones.Count)
+        {
+            presetClones[firstPreset].SetActive(false);
+            presetClones[firstPreset + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(450, -40));
+            presetClones[firstPreset + 2].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(700, -40));
+            presetClones[firstPreset + 3].GetComponent<RectTransform>().anchoredPosition = new Vector2(1200, -40);
+            presetClones[firstPreset + 3].SetActive(true);
+            presetClones[firstPreset + 3].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(950, -40));
+            firstPreset++;
+        }
 
+        if (!right && firstPreset - 1 >= 0)
+        {
+            presetClones[firstPreset - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(200, -40);
+            presetClones[firstPreset - 1].SetActive(true);
+            presetClones[firstPreset - 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(450, -40));
+            presetClones[firstPreset].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(700, -40));
+            presetClones[firstPreset + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(950, -40));
+            presetClones[firstPreset + 2].SetActive(false);
+            firstPreset--;
+        }
+
+        presetRightScroll.SetActive(true);
+        presetLeftScroll.SetActive(true);
+
+        if (firstPreset + 3 == presetClones.Count)
+        {
+            presetRightScroll.SetActive(false);
+        }
+
+        if (firstPreset == 0)
+        {
+            presetLeftScroll.SetActive(false);
+        }
+    }
+
+    #endregion
 }
