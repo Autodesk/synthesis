@@ -19,3 +19,5 @@ installer/SynthesisLauncher.exe
 installer/Apache2.rtf
 installer/Synthesis Installer.exe
 installer/README.pdf
+*.sdf
+*.VC.db

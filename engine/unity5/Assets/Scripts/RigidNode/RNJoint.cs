@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
+using Assets.Scripts.BUExtensions;
 
 public partial class RigidNode : RigidNode_Base
 {
@@ -16,7 +17,7 @@ public partial class RigidNode : RigidNode_Base
         X,
         Y
     }
-    
+
     public void CreateJoint()
     {
         if (joint != null || GetSkeletalJoint() == null)
@@ -26,21 +27,22 @@ public partial class RigidNode : RigidNode_Base
         {
             case SkeletalJointType.ROTATIONAL:
 
+                WheelType wheelType = WheelType.NOT_A_WHEEL;
+
                 if (this.HasDriverMeta<WheelDriverMeta>())
+                {
                     OrientWheelNormals();
+                    wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
+                }
 
                 RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
 
-                BHingedConstraint hc = (BHingedConstraint)(joint = ConfigJoint<BHingedConstraint>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
+                BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
                 Vector3 rAxis = rNode.axis.AsV3().normalized;
 
-                //if (rAxis.x < 0) rAxis.x *= -1f;
-                //if (rAxis.y < 0) rAxis.y *= -1f;
-                //if (rAxis.z < 0) rAxis.z *= -1f;
+                hc.axisInA = rAxis;
+                hc.axisInB = rAxis;
 
-                hc.localConstraintAxisX = rAxis;
-                hc.localConstraintAxisY = new Vector3(rAxis.y, rAxis.z, rAxis.x); // This is the closeset thing to working, so keep it until better solution found.
-                //hc.localConstraintAxisY = new Vector3(Math.Abs(rAxis.y), rAxis.x, rAxis.z); // So very close...
                 if (hc.setLimit = rNode.hasAngularLimit)
                 {
                     hc.lowLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitHigh;
@@ -48,10 +50,10 @@ public partial class RigidNode : RigidNode_Base
                 }
 
                 hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
-                
+
                 break;
             case SkeletalJointType.CYLINDRICAL:
-                
+
                 CylindricalJoint_Base cNode = (CylindricalJoint_Base)GetSkeletalJoint();
 
                 B6DOFConstraint bc = (B6DOFConstraint)(joint = ConfigJoint<B6DOFConstraint>(cNode.basePoint.AsV3() - ComOffset, cNode.axis.AsV3(), AxisType.X));
@@ -63,7 +65,7 @@ public partial class RigidNode : RigidNode_Base
 
                 break;
             case SkeletalJointType.LINEAR:
-                
+
                 LinearJoint_Base lNode = (LinearJoint_Base)GetSkeletalJoint();
 
                 Vector3 lAxis = lNode.axis.AsV3().normalized;
@@ -94,7 +96,7 @@ public partial class RigidNode : RigidNode_Base
                         MainObject.GetComponent<BRigidBody>().mass *= 2f;
                     }
                 }
-                
+
                 break;
         }
     }
