@@ -18,4 +18,6 @@ public abstract class SensorBase : MonoBehaviour {
 	}
 
     public abstract float ReturnOutput();
+
+
 }
