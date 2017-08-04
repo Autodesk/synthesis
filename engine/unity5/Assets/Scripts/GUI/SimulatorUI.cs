@@ -66,12 +66,6 @@ public class SimulatorUI : MonoBehaviour
 
     }
 
-    //In game UI resets robot using UI icons
-    public void ResetRobotClick()
-    {
-        mainState.BeginReset();
-        mainState.EndReset();
-    }
 
     //In game UI switches view using UI icons
     public void SwitchViewClickMoreBetterer(int joe)
@@ -115,66 +109,5 @@ public class SimulatorUI : MonoBehaviour
             cameraToolTip.GetComponent<Text>().text = "Orbit Robot";
         else if (dynamicCamera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
             cameraToolTip.GetComponent<Text>().text = "Overview";
-    }
-
-    public void ChooseResetMode(int i)
-    {
-        switch (i)
-        {
-            case 1:
-                mainState.BeginReset();
-                mainState.EndReset();
-                resetDropdown.GetComponent<Dropdown>().value = 0;
-                break;
-            case 2:
-                mainState.IsResetting = true;
-                mainState.BeginReset();
-                resetDropdown.GetComponent<Dropdown>().value = 0;
-                break;
-        }
-    }
-
-    public void ToggleOrientWindow()
-    {
-        isOrienting = !isOrienting;
-        orientWindow.SetActive(isOrienting);
-        if (isOrienting) mainState.BeginReset();
-        else mainState.EndReset();
-    }
-
-    public void OrientLeft()
-    {
-        mainState.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-    }
-    public void OrientRight()
-    {
-        mainState.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-    }
-    public void OrientForward()
-    {
-        mainState.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-    }
-    public void OrientBackward()
-    {
-        mainState.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-    }
-
-    public void DefaultOrientation()
-    {
-        mainState.ResetRobotOrientation();
-        orientWindow.SetActive(isOrienting = false);
-    }
-
-    public void SaveOrientation()
-    {
-        mainState.SaveRobotOrientation();
-        orientWindow.SetActive(isOrienting = false);
-    }
-
-    public void CloseOrientWindow()
-    {
-        isOrienting = false;
-        orientWindow.SetActive(isOrienting);
-        mainState.EndReset();
     }
 }
