@@ -220,6 +220,8 @@ public class MainState : SimState
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(directory, this)) return false;
 
+            robotObject.AddComponent<DriverPracticeRobot>().Initialize(directory);
+
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (activeRobot == null)
             {

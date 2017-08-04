@@ -45,7 +45,6 @@ public class LocalMultiplayer : MonoBehaviour {
         if (mainState == null)
         {
             mainState = ((MainState)StateMachine.Instance.CurrentState);
-            if (mainState != null) UpdateUI();
         }
     }
     
@@ -71,6 +70,7 @@ public class LocalMultiplayer : MonoBehaviour {
         }
         else
         {
+            simUI.EndOtherProcesses();
             multiplayerWindow.SetActive(true);
         }
     }
@@ -86,6 +86,8 @@ public class LocalMultiplayer : MonoBehaviour {
             mainState.SwitchActiveRobot(index);
             activeIndex = index;
             UpdateUI();
+
+            GetComponent<DriverPracticeMode>().ChangeActiveRobot(index);
         }
 
 
@@ -118,6 +120,7 @@ public class LocalMultiplayer : MonoBehaviour {
     {
         mainState.RemoveRobot(activeIndex);
         activeIndex = mainState.SpawnedRobots.IndexOf(mainState.activeRobot);
+        GetComponent<DriverPracticeMode>().ChangeActiveRobot(activeIndex);
         UpdateUI();
     }
 

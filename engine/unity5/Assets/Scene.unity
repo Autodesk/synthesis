@@ -491,7 +491,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 349.99997, y: 0}
+  m_AnchoredPosition: {x: 350, y: 0}
   m_SizeDelta: {x: 61, y: 36}
   m_Pivot: {x: 0.35666856, y: 0.5}
 --- !u!114 &28575581
@@ -1617,7 +1617,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 93044909}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 1392445389, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
@@ -1650,7 +1650,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DPMToggleWindow
         m_Mode: 1
         m_Arguments:
@@ -1802,7 +1802,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 33.3, y: -7.5}
+  m_AnchoredPosition: {x: 33.300003, y: -7.5}
   m_SizeDelta: {x: -5.4, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &101443187
@@ -2572,7 +2572,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeOffsetX
           m_Mode: 3
           m_Arguments:
@@ -2589,7 +2589,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -2606,7 +2606,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -3302,7 +3302,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: EndEdit
         m_Mode: 1
         m_Arguments:
@@ -3318,7 +3318,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SyncInputFieldEntry
         m_Mode: 1
         m_Arguments:
@@ -3354,7 +3354,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: StartEdit
           m_Mode: 1
           m_Arguments:
@@ -6083,7 +6083,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeHorizontalAngle
           m_Mode: 3
           m_Arguments:
@@ -6100,7 +6100,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -6117,7 +6117,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -7447,7 +7447,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeHorizontalAngle
           m_Mode: 3
           m_Arguments:
@@ -7464,7 +7464,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -7481,7 +7481,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -7885,7 +7885,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: EndEdit
         m_Mode: 1
         m_Arguments:
@@ -7901,7 +7901,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SyncInputFieldEntry
         m_Mode: 1
         m_Arguments:
@@ -7937,7 +7937,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: StartEdit
           m_Mode: 1
           m_Arguments:
@@ -8813,7 +8813,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: HighlightRelease
         m_Mode: 1
         m_Arguments:
@@ -9231,7 +9231,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeOffsetY
           m_Mode: 3
           m_Arguments:
@@ -9248,7 +9248,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -9265,7 +9265,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -10967,7 +10967,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SetNewControl
         m_Mode: 3
         m_Arguments:
@@ -11238,7 +11238,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DisplayTrajectorySecondary
         m_Mode: 1
         m_Arguments:
@@ -11702,7 +11702,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: CancelDefineRelease
         m_Mode: 1
         m_Arguments:
@@ -12177,7 +12177,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SpawnGamepieceSecondary
         m_Mode: 1
         m_Arguments:
@@ -13627,7 +13627,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeReleaseSpeed
           m_Mode: 3
           m_Arguments:
@@ -13644,7 +13644,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -13877,7 +13877,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeVerticalAngle
           m_Mode: 3
           m_Arguments:
@@ -13894,7 +13894,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -13911,7 +13911,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -15545,7 +15545,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: CancelDefineIntake
         m_Mode: 1
         m_Arguments:
@@ -16252,7 +16252,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: EndEdit
         m_Mode: 1
         m_Arguments:
@@ -16268,7 +16268,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SyncInputFieldEntry
         m_Mode: 1
         m_Arguments:
@@ -16304,7 +16304,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: StartEdit
           m_Mode: 1
           m_Arguments:
@@ -18666,7 +18666,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 44.5, y: 0}
+  m_AnchoredPosition: {x: 44.500004, y: 0}
   m_SizeDelta: {x: 68.9, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &936351509
@@ -19457,7 +19457,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 449.99997, y: -50.00003}
+  m_AnchoredPosition: {x: 450, y: -50.00003}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &964698482
@@ -20835,7 +20835,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: CancelDefineGamepiece
         m_Mode: 1
         m_Arguments:
@@ -21465,7 +21465,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: ClearGamepieces
         m_Mode: 1
         m_Arguments:
@@ -23232,7 +23232,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeOffsetX
           m_Mode: 3
           m_Arguments:
@@ -23249,7 +23249,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -23266,7 +23266,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -26375,7 +26375,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: EndEdit
         m_Mode: 1
         m_Arguments:
@@ -26391,7 +26391,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SyncInputFieldEntry
         m_Mode: 1
         m_Arguments:
@@ -26427,7 +26427,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: StartEdit
           m_Mode: 1
           m_Arguments:
@@ -26935,7 +26935,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SetGamepieceSpawn
         m_Mode: 1
         m_Arguments:
@@ -27825,7 +27825,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: EndEdit
         m_Mode: 1
         m_Arguments:
@@ -27841,7 +27841,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SyncInputFieldEntry
         m_Mode: 1
         m_Arguments:
@@ -27877,7 +27877,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: StartEdit
           m_Mode: 1
           m_Arguments:
@@ -28220,7 +28220,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 449.99997, y: 0.000076293945}
+  m_AnchoredPosition: {x: 450, y: 0.000076293945}
   m_SizeDelta: {x: 80, y: -84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1528165347
@@ -29099,7 +29099,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: CloseConfigurationWindow
         m_Mode: 1
         m_Arguments:
@@ -29831,7 +29831,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: EndEdit
         m_Mode: 1
         m_Arguments:
@@ -29847,7 +29847,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SyncInputFieldEntry
         m_Mode: 1
         m_Arguments:
@@ -29883,7 +29883,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: StartEdit
           m_Mode: 1
           m_Arguments:
@@ -30847,7 +30847,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1659065343
 RectTransform:
   m_ObjectHideFlags: 0
@@ -31185,7 +31185,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeOffsetZ
           m_Mode: 3
           m_Arguments:
@@ -31202,7 +31202,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -31383,7 +31383,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DPMToggleWindow
         m_Mode: 1
         m_Arguments:
@@ -31574,7 +31574,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SpawnGamepiecePrimary
         m_Mode: 1
         m_Arguments:
@@ -31674,7 +31674,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeVerticalAngle
           m_Mode: 3
           m_Arguments:
@@ -31691,7 +31691,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -31708,7 +31708,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -32526,7 +32526,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeOffsetY
           m_Mode: 3
           m_Arguments:
@@ -32543,7 +32543,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -32560,7 +32560,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -32724,7 +32724,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DefineGamepiece
         m_Mode: 1
         m_Arguments:
@@ -33246,7 +33246,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: HighlightIntake
         m_Mode: 1
         m_Arguments:
@@ -33726,6 +33726,7 @@ GameObject:
   - component: {fileID: 1741231145}
   - component: {fileID: 1741231146}
   - component: {fileID: 1741231147}
+  - component: {fileID: 1741231148}
   m_Layer: 0
   m_Name: StateMachine
   m_TagString: Untagged
@@ -33768,9 +33769,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4350195affeb7684985229f088d2fe39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dpmWindowOn: 0
-  configuring: 0
-  configuringIndex: 0
 --- !u!114 &1741231146
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33793,6 +33791,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b87c4742e1a24f049a773c2eb9266dc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1741231148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1741231142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89003b5628d03314aaa13d2f1d642080, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dpmWindowOn: 0
+  configuring: 0
+  configuringIndex: 0
 --- !u!1 &1744877097
 GameObject:
   m_ObjectHideFlags: 0
@@ -34637,7 +34649,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SetNewControl
         m_Mode: 3
         m_Arguments:
@@ -34833,7 +34845,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DefineRelease
         m_Mode: 1
         m_Arguments:
@@ -35463,7 +35475,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DefineIntake
         m_Mode: 1
         m_Arguments:
@@ -36053,7 +36065,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ChangeReleaseSpeed
           m_Mode: 3
           m_Arguments:
@@ -36070,7 +36082,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -36087,7 +36099,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -36969,7 +36981,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DPMToggle
         m_Mode: 1
         m_Arguments:
@@ -37092,7 +37104,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DPMConfigureSecondary
         m_Mode: 1
         m_Arguments:
@@ -37577,7 +37589,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 349.99997, y: -43.333084}
+  m_AnchoredPosition: {x: 350, y: -43.333084}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2002520314
@@ -37827,7 +37839,7 @@ GameObject:
   - component: {fileID: 2016364931}
   - component: {fileID: 2016364930}
   m_Layer: 5
-  m_Name: SpawnPrimaryButton (1)
+  m_Name: DisplayTrajectoryButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37891,7 +37903,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DisplayTrajectoryPrimary
         m_Mode: 1
         m_Arguments:
@@ -39410,7 +39422,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: SetNewControl
         m_Mode: 3
         m_Arguments:
@@ -39618,7 +39630,7 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1741231145}
+        - m_Target: {fileID: 1741231148}
           m_MethodName: ReleaseConfigurationButton
           m_Mode: 1
           m_Arguments:
@@ -39783,7 +39795,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: DPMConfigurePrimary
         m_Mode: 1
         m_Arguments:
@@ -40223,7 +40235,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231145}
+      - m_Target: {fileID: 1741231148}
         m_MethodName: CancelGamepieceSpawn
         m_Mode: 1
         m_Arguments:
