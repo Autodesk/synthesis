@@ -396,7 +396,7 @@ public class MainMenu : MonoBehaviour
         input.SetActive(true);
         settingsMode.SetActive(false);
         tankMode.SetActive(true);
-        GameObject.Find("TankMode").GetComponent<TankMode>().OnTankDrive();
+        //GameObject.Find("TankMode").GetComponent<TankMode>().OnTankDrive();
     }
 
     public void SwitchTankOff()
