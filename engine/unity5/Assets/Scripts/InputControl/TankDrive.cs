@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 public class TankDrive
 {
-    bool tankdrive = true;
+    private static bool tankDrive = true;
     /// <summary>
     /// <see cref="Buttons"/> is a set of user defined buttons.
     /// </summary>
@@ -67,13 +67,11 @@ public class TankDrive
 
     static TankDrive()
     {
-    
-
         //Tank Drive
-        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
-        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
-        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
-        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
+        //buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
+        //buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
+        //buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
+        //buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
 
  
 
@@ -138,8 +136,6 @@ public class TankDrive
         buttons.tankBackLeft = InputControl.setKey("Tank Back Left", KeyCode.None, new JoystickInput(JoystickAxis.Axis9Positive));
         buttons.tankFrontRight = InputControl.setKey("Tank Front Right", KeyCode.None, new JoystickInput(JoystickAxis.Axis10Negative));
         buttons.tankBackRight = InputControl.setKey("Tank Back Right", KeyCode.None, new JoystickInput(JoystickAxis.Axis10Positive));
-
-  
 
         GameObject.Find("TankMode").GetComponent<TankMode>().UpdateAllText();
     }

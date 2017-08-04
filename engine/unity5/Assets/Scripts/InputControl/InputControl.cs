@@ -19,6 +19,9 @@ public static class InputControl
     private static List<KeyMapping>               mKeysList          = new List<KeyMapping>();
     private static Dictionary<string, KeyMapping> mKeysMap           = new Dictionary<string, KeyMapping>();
 
+    private static List<KeyMapping> mKeysList2 = new List<KeyMapping>();
+    private static bool tankDrive = false;
+
     // Set of axes
     private static List<Axis>                     mAxesList          = new List<Axis>();
     private static Dictionary<string, Axis>       mAxesMap           = new Dictionary<string, Axis>();
