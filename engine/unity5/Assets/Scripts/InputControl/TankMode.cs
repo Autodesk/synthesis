@@ -17,11 +17,11 @@ public class TankMode : MonoBehaviour
         UpdateAllText();
     }
 
-    public void OnTankDrive()
-    {
-        Controls.StartTankDrive();
-        Controls.Save();
-    }
+    //public void OnTankDrive()
+    //{
+    //    Controls.StartTankDrive();
+    //    Controls.Save();
+    //}
 
     public void UpdateAllText()
     {

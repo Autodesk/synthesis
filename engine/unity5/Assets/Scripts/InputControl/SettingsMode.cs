@@ -41,11 +41,11 @@ public class SettingsMode : MonoBehaviour
         UpdateAllText();
     }
 
-    public void OnArcadeDrive()
-    {
-        Controls.StartArcadeDrive();
-        Controls.Save();
-    }
+    //public void OnArcadeDrive()
+    //{
+    //    Controls.StartArcadeDrive();
+    //    Controls.Save();
+    //}
 
     public void OnReset()
     {
