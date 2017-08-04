@@ -3963,7 +3963,7 @@ RectTransform:
   - {fileID: 299910931}
   - {fileID: 1258167107}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 24
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
@@ -6306,16 +6306,16 @@ RectTransform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 260594384}
   m_LocalRotation: {x: -0.000000014901161, y: -0, z: 0.000000007450581, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.00030517578}
+  m_LocalPosition: {x: 0, y: 0, z: 0.0003047}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1820251056}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 26
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -100.49988, y: 29.700043}
+  m_AnchoredPosition: {x: -102, y: 138}
   m_SizeDelta: {x: 177.8, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &260594386
@@ -6357,7 +6357,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ConfigureCameraPosition
         m_Mode: 1
         m_Arguments:
@@ -8532,7 +8532,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ToggleEditAngle
         m_Mode: 1
         m_Arguments:
@@ -8654,7 +8654,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ToggleEditFOV
         m_Mode: 1
         m_Arguments:
@@ -10262,7 +10262,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ToggleCameraIndicator
         m_Mode: 1
         m_Arguments:
@@ -10668,7 +10668,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   robotCameraList: []
-  CameraIndicator: {fileID: 1036741683}
   SelectedNode: {fileID: 0}
 --- !u!1 &470925453
 GameObject:
@@ -10925,7 +10924,7 @@ RectTransform:
   - {fileID: 132884431}
   - {fileID: 1793333219}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 25
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -12117,7 +12116,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: CancelNodeSelection
         m_Mode: 1
         m_Arguments:
@@ -14003,7 +14002,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ToggleChangeNode
         m_Mode: 1
         m_Arguments:
@@ -23606,7 +23605,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1100986219
 RectTransform:
   m_ObjectHideFlags: 0
@@ -23665,8 +23664,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 469202155}
-        m_MethodName: 
+      - m_Target: {fileID: 1741231149}
+        m_MethodName: ToggleCameraWindow
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -25727,10 +25726,10 @@ RectTransform:
   - {fileID: 1659065343}
   - {fileID: 1295867237}
   - {fileID: 1100986219}
+  - {fileID: 260594385}
   - {fileID: 1526485025}
   - {fileID: 169396283}
   - {fileID: 487780152}
-  - {fileID: 260594385}
   m_Father: {fileID: 1039971749}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -29818,7 +29817,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ToggleCameraAnglePanel
         m_Mode: 1
         m_Arguments:
@@ -31224,11 +31223,11 @@ RectTransform:
   - {fileID: 1443327441}
   - {fileID: 156840287}
   m_Father: {fileID: 1234831590}
-  m_RootOrder: 23
+  m_RootOrder: 24
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 245.30032, y: 101.500114}
+  m_AnchoredPosition: {x: 245.30032, y: 101.50012}
   m_SizeDelta: {x: 489.5, y: 202.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1526485026
@@ -33517,7 +33516,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ToggleConfigurationMode
         m_Mode: 1
         m_Arguments:
@@ -37260,6 +37259,7 @@ GameObject:
   - component: {fileID: 1741231146}
   - component: {fileID: 1741231147}
   - component: {fileID: 1741231148}
+  - component: {fileID: 1741231149}
   m_Layer: 0
   m_Name: StateMachine
   m_TagString: Untagged
@@ -37338,6 +37338,18 @@ MonoBehaviour:
   dpmWindowOn: 0
   configuring: 0
   configuringIndex: 0
+--- !u!114 &1741231149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1741231142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc0b482aa6e0c3d4c894683f566c8638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CameraIndicator: {fileID: 1036741683}
 --- !u!1 &1744877097
 GameObject:
   m_ObjectHideFlags: 0
@@ -37986,7 +37998,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1741231149}
         m_MethodName: ToggleCameraFOVPanel
         m_Mode: 1
         m_Arguments:
