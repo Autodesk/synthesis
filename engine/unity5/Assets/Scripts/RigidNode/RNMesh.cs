@@ -81,7 +81,7 @@ public partial class RigidNode : RigidNode_Base
         {
             rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
         }
-        
+
         if (this.HasDriverMeta<WheelDriverMeta>())
             UpdateWheelMass(); // 'tis a wheel, so needs more mass for joints to work correctly.
 

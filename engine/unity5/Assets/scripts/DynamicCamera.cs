@@ -58,18 +58,29 @@ public class DynamicCamera : MonoBehaviour
         Quaternion startRotation;
         Quaternion lookingRotation;
         Quaternion currentRotation;
+        static Vector3 position1Vector = new Vector3(0f, 1.5f, -9.5f);
+        static Vector3 position2Vector = new Vector3(0f, 1.5f, 9.5f);
+        Vector3 currentPosition;
 
-        public DriverStationState(MonoBehaviour mono)
+        float transformSpeed;
+        bool opposite;
+
+        public DriverStationState(MonoBehaviour mono, bool oppositeSide = false)
         {
             this.mono = mono;
+            this.opposite = oppositeSide;
         }
 
         public override void Init()
         {
             robot = GameObject.Find("Robot");
-            mono.transform.position = new Vector3(0f, 1.5f, -9f);
+            if (opposite) currentPosition = position2Vector;
+            else currentPosition = position1Vector;
+            mono.transform.position = currentPosition;
+
             startRotation = Quaternion.LookRotation(Vector3.zero - mono.transform.position);
             currentRotation = startRotation;
+            transformSpeed = 2.5f;
         }
 
         public override void Update()
@@ -83,9 +94,14 @@ public class DynamicCamera : MonoBehaviour
             {
                 robot = GameObject.Find("Robot");
             }
-
+            if (MovingEnabled)
+            {
+                currentPosition += Input.GetAxis("CameraHorizontal") * new Vector3(1, 0, 0) * transformSpeed * Time.deltaTime;
+            }
             mono.transform.rotation = currentRotation;
+            mono.transform.position = currentPosition;
         }
+
 
         public override void End()
         {
@@ -134,14 +150,18 @@ public class DynamicCamera : MonoBehaviour
                     else
                     {
                         panValue = 0f;
-                        
+
                         if (Input.GetMouseButton(1))
                         {
                             magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 1.5f);
-                            
+
                         }
 
                     }
+                }
+                else
+                {
+                    panValue = 0f;
                 }
 
                 rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
@@ -212,16 +232,16 @@ public class DynamicCamera : MonoBehaviour
         {
             if (MovingEnabled)
             {
-                if (Input.GetMouseButton(1))
+                if (InputControl.GetMouseButton(1))
                 {
-                    rotationVector.x -= Input.GetAxis("Mouse Y") * rotationSpeed;
+                    rotationVector.x -= InputControl.GetAxis("Mouse Y") * rotationSpeed;
                     rotationVector.y += Input.GetAxis("Mouse X") * rotationSpeed;
                 }
 
                 positionVector += Input.GetAxis("CameraHorizontal") * mono.transform.right * transformSpeed * Time.deltaTime;
                 positionVector += Input.GetAxis("CameraVertical") * mono.transform.forward * transformSpeed * Time.deltaTime;
 
-                zoomValue = Mathf.Max(Mathf.Min(zoomValue - Input.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
+                zoomValue = Mathf.Max(Mathf.Min(zoomValue - InputControl.GetAxis("Mouse ScrollWheel") * scrollWheelSensitivity, 60.0f), 10.0f);
 
                 //lagPosVector = CalculateLagVector(lagPosVector, positionVector, lagResponsiveness);
                 lagRotVector = CalculateLagVector(lagRotVector, rotationVector, lagResponsiveness);
@@ -310,6 +330,85 @@ public class DynamicCamera : MonoBehaviour
 
         }
     }
+
+    public class CameraConfigurationState : CameraState
+    {
+        Vector3 targetVector;
+        Vector3 rotateVector;
+        Vector3 lagVector;
+        const float lagResponsiveness = 10f;
+        float magnification = 2.0f;
+        float cameraAngle = 45f;
+        float panValue = 0f;
+        GameObject currentCamera;
+
+        public CameraConfigurationState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+        }
+        public override void Init()
+        {
+            currentCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
+        }
+
+        public override void Update()
+        {
+            currentCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
+            if (currentCamera != null)
+            {
+                targetVector = currentCamera.transform.position;
+                if (MovingEnabled)
+                {
+                    if (Input.GetMouseButton(0))
+                    {
+                        cameraAngle = Mathf.Max(Mathf.Min(cameraAngle - Input.GetAxis("Mouse Y") * 5f, 90f), 0f);
+                        panValue = -Input.GetAxis("Mouse X") / 5f;
+                    }
+                    else
+                    {
+                        panValue = 0f;
+
+                        if (Input.GetMouseButton(1))
+                        {
+                            magnification = Mathf.Max(Mathf.Min(magnification - ((Input.GetAxis("Mouse Y") / 5f) * magnification), 12f), 0.5f);
+                        }
+
+                    }
+                }
+                else
+                {
+                    panValue = 0f;
+                }
+
+                rotateVector = rotateXZ(rotateVector, targetVector, panValue, magnification);
+                rotateVector.y = targetVector.y + magnification * Mathf.Sin(cameraAngle * Mathf.Deg2Rad);
+
+                lagVector = CalculateLagVector(lagVector, rotateVector, lagResponsiveness);
+
+                mono.transform.position = lagVector;
+                mono.transform.LookAt(targetVector);
+            }
+            else
+            {
+                currentCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
+            }
+        
+        }
+
+        public override void End()
+        {
+        }
+
+        Vector3 rotateXZ(Vector3 vector, Vector3 origin, float theta, float mag)
+        {
+            vector -= origin;
+            Vector3 output = vector;
+            output.x = Mathf.Cos(theta) * (vector.x) - Mathf.Sin(theta) * (vector.z);
+            output.z = Mathf.Sin(theta) * (vector.x) + Mathf.Cos(theta) * (vector.z);
+
+            return output.normalized * mag + origin;
+        }
+    }
     void Start()
     {
         SwitchCameraState(new OrbitState(this));
@@ -326,10 +425,13 @@ public class DynamicCamera : MonoBehaviour
     /// <param name="currentCameraState"></param>
     public void ToggleCameraState(CameraState currentCameraState)
     {
-        if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
-        else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
-        else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
-        else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this));
+        if (MovingEnabled)
+        {
+            if (currentCameraState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new OrbitState(this));
+            else if (currentCameraState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new FreeroamState(this));
+            else if (currentCameraState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new OverviewState(this));
+            else if (currentCameraState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new DriverStationState(this, false));
+        }
         if (_cameraState != null) _cameraState.Update();
     }
 
@@ -384,6 +486,14 @@ public class DynamicCamera : MonoBehaviour
     {
         if (type == 0) SwitchCameraState(new FreeroamState(this));
         else if (type == 1) SwitchCameraState(new OrbitState(this));
-        else SwitchCameraState(new DriverStationState(this));
+        else SwitchCameraState(new DriverStationState(this, false));
+    }
+
+    public void SwitchToState(CameraState targetState)
+    {
+        if (targetState.GetType().Equals(typeof(DriverStationState))) SwitchCameraState(new DriverStationState(this));
+        else if (targetState.GetType().Equals(typeof(OrbitState))) SwitchCameraState(new OrbitState(this));
+        else if (targetState.GetType().Equals(typeof(FreeroamState))) SwitchCameraState(new FreeroamState(this));
+        else if (targetState.GetType().Equals(typeof(OverviewState))) SwitchCameraState(new OverviewState(this));
     }
 }
