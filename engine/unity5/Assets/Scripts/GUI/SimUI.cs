@@ -243,7 +243,6 @@ public class SimUI : MonoBehaviour
     {
         changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
-        addRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         CloseOrientWindow();
         main.IsResetting = false;   
