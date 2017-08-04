@@ -231,7 +231,7 @@ public class MainState : SimState
                 if (robotCamera == null)
                 {
                     robotCameraObject = GameObject.Find("RobotCameraList");
-                    robotCamera = robotCameraObject.AddComponent<RobotCamera>();
+                    robotCamera = robotCameraObject.GetComponent<RobotCamera>();
                 }
 
                 robotCamera.RemoveCameras();
@@ -248,11 +248,9 @@ public class MainState : SimState
 
             robot.controlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
-
             return true;
         }
-        else return false;
-        
+        return false;
     }
 
     /// <summary>
