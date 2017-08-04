@@ -72,18 +72,20 @@ public class RobotCamera : MonoBehaviour
     /// Add a new camera to the robot using the default position and rotation
     /// </summary>
     /// <returns></returns>
-    public GameObject AddCamera()
+    public GameObject AddCamera(Transform anchor)
     {
         GameObject newCamera = new GameObject("RobotCamera_" + robotCameraList.Count);
         newCamera.AddComponent<Camera>();
-        newCamera.transform.localPosition = new Vector3(0f, 0f, 0f);
+        newCamera.transform.parent = anchor;
+        newCamera.transform.localPosition = new Vector3(0f, 0.5f, 0f);
         newCamera.transform.localRotation = Quaternion.identity;
         newCamera.SetActive(false);
         if (robotCameraList.Count == 0)
             CurrentCamera = newCamera;
 
         robotCameraList.Add(newCamera);
-        CurrentCamera = newCamera;
+        if (robotCameraList.Count == 0)
+            CurrentCamera = newCamera;
         return newCamera;
     }
 

@@ -47,17 +47,17 @@ public class Robot : MonoBehaviour {
 
     public string RobotName;
 
-
+    private RobotCamera robotCamera;
 
     // Use this for initialization
     void Start () {
-	}
+    }
 
     /// <summary>
     /// Called once per frame to ensure all rigid bodie components are activated
     /// </summary>
     void Update() {
-
+        
         BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
 
         if (!rigidBody.GetCollisionObject().IsActive)
@@ -148,6 +148,14 @@ public class Robot : MonoBehaviour {
         RobotName = new DirectoryInfo(directory).Name;
 
         isInitialized = true;
+
+        robotCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>();
+        //Attached to the main frame and face the front
+        robotCamera.AddCamera(transform.GetChild(0).transform);
+        //Attached to the first node and face the front
+        robotCamera.AddCamera(transform.GetChild(1).transform);
+        ////Attached to main frame and face the back
+        robotCamera.AddCamera(transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
         return true;
     }
 
