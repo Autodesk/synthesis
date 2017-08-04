@@ -140,6 +140,12 @@ public class Controls
         }
     }
 
+    public static void TankDrive()
+    {
+        //set all controls to TankDrive
+        //disable all arcade controls
+    }
+
     /// <summary>
     /// Resets to default controls.
     /// </summary>
