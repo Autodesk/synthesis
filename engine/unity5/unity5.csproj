@@ -207,8 +207,9 @@
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
+    <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
+    <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
-    <Compile Include="Assets\Scripts\DriverPractice.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />

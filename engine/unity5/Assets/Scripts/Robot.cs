@@ -30,7 +30,7 @@ public class Robot : MonoBehaviour {
     private bool isResettingOrientation;
     public bool IsResetting = false;
 
-    private DriverPractice driverPractice;
+    private DriverPracticeRobot dpmRobot;
 
     public bool ControlsEnabled = true;
 
@@ -303,5 +303,10 @@ public class Robot : MonoBehaviour {
         robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
         robotStartOrientation.ToUnity();
         EndReset();
+    }
+
+    public DriverPracticeRobot GetDriverPractice()
+    {
+        return GetComponent<DriverPracticeRobot>();
     }
 }

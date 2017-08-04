@@ -82,7 +82,6 @@ public class DriveJoints : MonoBehaviour
 
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex)
     {
-        Debug.Log(controlIndex);
         float[] pwm = new float[10];
         float[] can = new float[10];
 

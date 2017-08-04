@@ -262,6 +262,11 @@ public class Toolkit : MonoBehaviour
 
 
     #endregion
+
+    public void EndProcesses()
+    {
+        ToggleRulerWindow(false);
+    }
     /*
     #region Dummy Robot
 
