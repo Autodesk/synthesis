@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.FSM
@@ -88,23 +87,7 @@ namespace Assets.Scripts.FSM
             if (CurrentState != null)
                 return;
 
-            string defaultStateName = EditorPrefs.GetString(StateMachineEditor.DefaultStateNameKey);
-            Type defaultStateType = Type.GetType(defaultStateName);
-
-            if (defaultStateType == null)
-            {
-                Debug.LogError("\"" + defaultStateName + "\" is not a valid type!");
-                return;
-            }
-
-            SimState defaultState = Activator.CreateInstance(defaultStateType) as SimState;
-            MainState = (MainState)defaultState;
-
-            if (defaultState == null)
-                Debug.LogError("\"" + defaultStateName + "\" does not extend SimState!");
-            else
-                PushState(defaultState);
-
+            PushState(new MainState());
         }
 
         /// <summary>
