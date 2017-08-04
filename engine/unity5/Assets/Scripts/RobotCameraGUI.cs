@@ -189,6 +189,13 @@ class RobotCameraGUI : MonoBehaviour
             //Free the target texture and disable the camera since robot camera has more depth than main camera
             robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
             robotCamera.CurrentCamera.SetActive(false);
+            //Close the panel when indicator is not active and stop all configuration
+            configureCameraPanel.SetActive(false);
+            if (robotCamera.ChangingCameraPosition) dynamicCamera.SwitchToState(preConfigCamState);
+            robotCamera.IsChangingHeight = robotCamera.SelectingNode = robotCamera.ChangingCameraPosition = false;
+            configureRobotCameraButton.GetComponentInChildren<Text>().text = "Configure Robot Camera";
+            robotCamera.SelectingNode = false;
+            robotCamera.SelectedNode = null;
         }
     }
 
