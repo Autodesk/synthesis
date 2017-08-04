@@ -4,27 +4,23 @@ using UnityEngine;
 
 public class TankMode : MonoBehaviour
 {
-    //public GameObject settingsMode;
+    public GameObject tankMode;
 
     private void Update()
     {
-        //if (InputControl.GetKeyDown(KeyCode.Escape))
-        //{
-        //    //settingsMode.SetActive(true);
-        //    //gameObject.SetActive(false);
-        //}
+
     }
 
     public void OnLoadClick()
     {
-        TankDrive.Load();
+        Controls.Load();
         UpdateAllText();
     }
 
     public void OnTankDrive()
     {
-        TankDrive.StartTankDrive();
-        TankDrive.Save();
+        Controls.StartTankDrive();
+        Controls.Save();
     }
 
     public void UpdateAllText()

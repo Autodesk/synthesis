@@ -2,7 +2,7 @@
 
 public class SettingsMode : MonoBehaviour
 {
-    //public GameObject tankMode;
+    public GameObject settingsMode;
 
     // Update is called once per frame
     void Update()
@@ -39,6 +39,12 @@ public class SettingsMode : MonoBehaviour
     {
         Controls.Load();
         UpdateAllText();
+    }
+
+    public void OnArcadeDrive()
+    {
+        Controls.StartArcadeDrive();
+        Controls.Save();
     }
 
     public void OnReset()

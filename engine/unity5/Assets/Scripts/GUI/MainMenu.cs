@@ -57,6 +57,7 @@ public class MainMenu : MonoBehaviour
 
     private GameObject settingsMode; //The InputManager Objects
     private GameObject tankMode;     //Tank Mode InputManager
+    private GameObject resetTank;
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
@@ -386,6 +387,7 @@ public class MainMenu : MonoBehaviour
         input.SetActive(true);
         settingsMode.SetActive(true);
         tankMode.SetActive(false);
+        //GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnArcadeDrive();
     }
 
     public void SwitchTankOn()
@@ -394,6 +396,7 @@ public class MainMenu : MonoBehaviour
         input.SetActive(true);
         settingsMode.SetActive(false);
         tankMode.SetActive(true);
+        GameObject.Find("TankMode").GetComponent<TankMode>().OnTankDrive();
     }
 
     public void SwitchTankOff()
@@ -402,6 +405,8 @@ public class MainMenu : MonoBehaviour
         input.SetActive(true);
         settingsMode.SetActive(true);
         tankMode.SetActive(false);
+
+        //GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnArcadeDrive();
     }
 
     public void StartDefaultSim()

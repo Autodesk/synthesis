@@ -23,6 +23,8 @@ public class Controls
     //};
     #endregion
 
+    public static bool tankDrive = true;
+
     /// <summary>
     /// <see cref="Buttons"/> is a set of user defined buttons.
     /// </summary>
@@ -92,6 +94,12 @@ public class Controls
         buttons.backward = InputControl.setKey("Backward", KeyCode.DownArrow, new JoystickInput(JoystickAxis.Axis2Positive));
         buttons.left = InputControl.setKey("Left", KeyCode.LeftArrow, new JoystickInput(JoystickAxis.Axis4Negative));
         buttons.right = InputControl.setKey("Right", KeyCode.RightArrow, new JoystickInput(JoystickAxis.Axis4Positive));
+
+        //Tank Drive
+        buttons.tankFrontLeft = InputControl.setKey("Tank Front Left", new JoystickInput(JoystickAxis.Axis9Negative));
+        buttons.tankBackLeft = InputControl.setKey("Tank Back Left", new JoystickInput(JoystickAxis.Axis9Positive));
+        buttons.tankFrontRight = InputControl.setKey("Tank Front Right", new JoystickInput(JoystickAxis.Axis10Negative));
+        buttons.tankBackRight = InputControl.setKey("Tank Back Right", new JoystickInput(JoystickAxis.Axis10Positive));
 
         //Remaining PWM controls
         buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, new JoystickInput(JoystickAxis.Axis3Positive));
@@ -199,6 +207,82 @@ public class Controls
         }
     }
 
+    //the exact flow should be: removeAllKey -> set the keys -> load
+
+    public static void StartArcadeDrive()
+    {
+        InputControl.removeKey(buttons.tankFrontLeft);
+        InputControl.removeKey(buttons.tankBackLeft);
+        InputControl.removeKey(buttons.tankFrontRight);
+        InputControl.removeKey(buttons.tankBackRight);
+
+        //Remaining PWM controls
+        buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, new JoystickInput(JoystickAxis.Axis3Positive));
+        buttons.pwm2Neg = InputControl.setKey("PWM 2 Negative", KeyCode.Alpha2, new JoystickInput(JoystickAxis.Axis3Negative));
+        buttons.pwm3Plus = InputControl.setKey("PWM 3 Positive", KeyCode.Alpha3, new JoystickInput(JoystickAxis.Axis5Positive));
+        buttons.pwm3Neg = InputControl.setKey("PWM 3 Negative", KeyCode.Alpha4, new JoystickInput(JoystickAxis.Axis5Negative));
+        buttons.pwm4Plus = InputControl.setKey("PWM 4 Positive", KeyCode.Alpha5, new JoystickInput(JoystickAxis.Axis6Positive));
+        buttons.pwm4Neg = InputControl.setKey("PWM 4 Negative", KeyCode.Alpha6, new JoystickInput(JoystickAxis.Axis6Negative));
+        buttons.pwm5Plus = InputControl.setKey("PWM 5 Positive", KeyCode.Alpha7, new JoystickInput(JoystickAxis.Axis7Positive));
+        buttons.pwm5Neg = InputControl.setKey("PWM 5 Negative", KeyCode.Alpha8, new JoystickInput(JoystickAxis.Axis7Negative));
+        buttons.pwm6Plus = InputControl.setKey("PWM 6 Positive", KeyCode.Alpha9, new JoystickInput(JoystickAxis.Axis8Positive));
+        buttons.pwm6Neg = InputControl.setKey("PWM 6 Negative", KeyCode.Alpha0, new JoystickInput(JoystickAxis.Axis8Negative));
+
+        //Other Controls
+        buttons.resetRobot = InputControl.setKey("Reset Robot", KeyCode.R, new JoystickInput(JoystickButton.Button1));
+        buttons.cameraToggle = InputControl.setKey("Camera Toggle", KeyCode.C, new JoystickInput(JoystickButton.Button2));
+        buttons.pickupPrimary = InputControl.setKey("Pick Up Primary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3));
+        buttons.releasePrimary = InputControl.setKey("Release Primary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4));
+        buttons.spawnPrimary = InputControl.setKey("Spawn Primary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5));
+        buttons.pickupSecondary = InputControl.setKey("Pick Up Secondary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3));
+        buttons.releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4));
+        buttons.spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5));
+
+        //Set axes
+        axes.horizontal = InputControl.setAxis("Joystick Horizontal", buttons.left, buttons.right);
+        axes.vertical = InputControl.setAxis("Joystick Vertical", buttons.backward, buttons.forward);
+
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+    }
+
+    public static void StartTankDrive()
+    {
+        InputControl.removeKey(buttons.forward);
+        InputControl.removeKey(buttons.backward);
+        InputControl.removeKey(buttons.left);
+        InputControl.removeKey(buttons.right);
+
+        //Remaining PWM controls
+        buttons.pwm2Plus = InputControl.setKey("PWM 2 Positive", KeyCode.Alpha1, new JoystickInput(JoystickAxis.Axis3Positive));
+        buttons.pwm2Neg = InputControl.setKey("PWM 2 Negative", KeyCode.Alpha2, new JoystickInput(JoystickAxis.Axis3Negative));
+        buttons.pwm3Plus = InputControl.setKey("PWM 3 Positive", KeyCode.Alpha3, new JoystickInput(JoystickAxis.Axis5Positive));
+        buttons.pwm3Neg = InputControl.setKey("PWM 3 Negative", KeyCode.Alpha4, new JoystickInput(JoystickAxis.Axis5Negative));
+        buttons.pwm4Plus = InputControl.setKey("PWM 4 Positive", KeyCode.Alpha5, new JoystickInput(JoystickAxis.Axis6Positive));
+        buttons.pwm4Neg = InputControl.setKey("PWM 4 Negative", KeyCode.Alpha6, new JoystickInput(JoystickAxis.Axis6Negative));
+        buttons.pwm5Plus = InputControl.setKey("PWM 5 Positive", KeyCode.Alpha7, new JoystickInput(JoystickAxis.Axis7Positive));
+        buttons.pwm5Neg = InputControl.setKey("PWM 5 Negative", KeyCode.Alpha8, new JoystickInput(JoystickAxis.Axis7Negative));
+        buttons.pwm6Plus = InputControl.setKey("PWM 6 Positive", KeyCode.Alpha9, new JoystickInput(JoystickAxis.Axis8Positive));
+        buttons.pwm6Neg = InputControl.setKey("PWM 6 Negative", KeyCode.Alpha0, new JoystickInput(JoystickAxis.Axis8Negative));
+
+        //Other Controls
+        buttons.resetRobot = InputControl.setKey("Reset Robot", KeyCode.R, new JoystickInput(JoystickButton.Button1));
+        buttons.cameraToggle = InputControl.setKey("Camera Toggle", KeyCode.C, new JoystickInput(JoystickButton.Button2));
+        buttons.pickupPrimary = InputControl.setKey("Pick Up Primary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3));
+        buttons.releasePrimary = InputControl.setKey("Release Primary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4));
+        buttons.spawnPrimary = InputControl.setKey("Spawn Primary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5));
+        buttons.pickupSecondary = InputControl.setKey("Pick Up Secondary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3));
+        buttons.releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4));
+        buttons.spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5));
+
+        //Set axes
+        axes.horizontal = InputControl.setAxis("Joystick Horizontal", buttons.left, buttons.right);
+        axes.vertical = InputControl.setAxis("Joystick Vertical", buttons.backward, buttons.forward);
+
+        GameObject.Find("TankMode").GetComponent<TankMode>().UpdateAllText();
+    }
+
+    
+
     /// <summary>
     /// Resets to default controls.
     /// </summary>
@@ -236,11 +320,6 @@ public class Controls
         axes.horizontal = InputControl.setAxis("Joystick Horizontal", buttons.left, buttons.right);
         axes.vertical = InputControl.setAxis("Joystick Vertical", buttons.backward, buttons.forward);
 
-        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-    }
-
-    public static void HardReset()
-    {
         GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
     }
 
