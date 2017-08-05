@@ -156,6 +156,10 @@ public class Robot : MonoBehaviour {
         robotCamera.AddCamera(transform.GetChild(1).transform);
         ////Attached to main frame and face the back
         robotCamera.AddCamera(transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
+
+        SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
+        //sensorManager.AddBeamBreaker(transform.GetChild(0).gameObject, new Vector3(0, 0, 1), new Vector3(0, 90, 0), 1);
+        //sensorManager.AddUltrasonicSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
         return true;
     }
 
