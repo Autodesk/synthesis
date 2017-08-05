@@ -5,13 +5,16 @@ using UnityEngine;
 class SensorManager : MonoBehaviour
 {
     public GameObject Ultrasonic;
+    public GameObject BeamBreaker;
 
     //Lists of sensors
-    private List<GameObject> sensorList = new List<GameObject>();
+    private List<GameObject> ultrasonicList = new List<GameObject>();
+    private List<GameObject> beamBreakerList = new List<GameObject>();
     void Start()
     {
         //Hold a list of prefabs for instantiate later in the game
         Ultrasonic = Resources.Load("Prefabs/UltrasonicSensor") as GameObject;
+        BeamBreaker = Resources.Load("Prefabs/BeamBreaker") as GameObject;
     }
 
     /// <summary>
@@ -25,7 +28,19 @@ class SensorManager : MonoBehaviour
         GameObject ultrasonic = GameObject.Instantiate(Ultrasonic, parent.transform);
         ultrasonic.transform.localPosition = position;
         ultrasonic.transform.localRotation = Quaternion.Euler(rotation);
-        ultrasonic.name = "Ultrasonic_" + sensorList.Count;
-        sensorList.Add(ultrasonic);
+        ultrasonic.name = "Ultrasonic_" + ultrasonicList.Count;
+        ultrasonicList.Add(ultrasonic);
+    }
+
+    public void AddBeamBreaker(GameObject parent, Vector3 position, Vector3 rotation, float distance)
+    {
+        GameObject beamBreaker = GameObject.Instantiate(BeamBreaker, parent.transform);
+        beamBreaker.transform.localPosition = position;
+        beamBreaker.transform.localRotation = Quaternion.Euler(rotation);
+        beamBreaker.name = "BeamBreaker_" + beamBreakerList.Count;
+        beamBreakerList.Add(beamBreaker);
+
+        BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
+        sensor.SetSensorOffset(distance);
     }
 }
