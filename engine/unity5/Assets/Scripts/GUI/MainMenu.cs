@@ -387,16 +387,31 @@ public class MainMenu : MonoBehaviour
         input.SetActive(true);
         settingsMode.SetActive(true);
         tankMode.SetActive(false);
-        //GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnArcadeDrive();
     }
+
+    TankMode theTankMode;
+    Text enableTankDriveText;
 
     public void SwitchTankOn()
     {
+        //if (!theTankMode.enabled)
+        //{
+        //    theTankMode.enabled = true;
+        //    enableTankDriveText.text = "Disable Tank Drive";
+        //}
+        //else
+        //{
+        //    theTankMode.enabled = false;
+        //    enableTankDriveText.text = "Enable Tank Drive";
+        //}
+
         graphics.SetActive(false);
         input.SetActive(true);
         settingsMode.SetActive(false);
         tankMode.SetActive(true);
-        //GameObject.Find("TankMode").GetComponent<TankMode>().OnTankDrive();
+
+        Controls.TankDrive();
+        Controls.Save();
     }
 
     public void SwitchTankOff()
@@ -405,8 +420,6 @@ public class MainMenu : MonoBehaviour
         input.SetActive(true);
         settingsMode.SetActive(true);
         tankMode.SetActive(false);
-
-        //GameObject.Find("SettingsMode").GetComponent<SettingsMode>().OnArcadeDrive();
     }
 
     public void StartDefaultSim()
@@ -614,7 +627,7 @@ public class MainMenu : MonoBehaviour
     #region Other Methods
     public void InputDefaultPressed()
     {
-        Controls.Reset();
+        Controls.ArcadeDrive();
     }
 
     public void ApplyGraphics()
@@ -651,15 +664,12 @@ public class MainMenu : MonoBehaviour
     {
         Application.OpenURL("http://bxd.autodesk.com/?page=tutorialFieldExporter");
     }
+
     public void OpenRobotConfigurationTutorial()
     {
         Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
     }
-    public void ResetControls()
-    {
-        Controls.Reset();
-        Controls.Save();
-    }
+
     public void SelectSimField()
     {
         GameObject fieldList = GameObject.Find("SimLoadFieldList");
