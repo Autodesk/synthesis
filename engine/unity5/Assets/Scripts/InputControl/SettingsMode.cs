@@ -7,17 +7,8 @@ public class SettingsMode : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (KeyButton.selectedButton == null && InputControl.GetKeyDown(KeyCode.Escape))
-        //{
-        //    tankMode.SetActive(true);
-        //    //gameObject.SetActive(false);
-        //}
-    }
 
-    //public void Test()
-    //{
-    //    tankMode.SetActive(true);
-    //}
+    }
 
     public void OnIgnoreMouseMovementChanged(bool on)
     {
@@ -41,15 +32,9 @@ public class SettingsMode : MonoBehaviour
         UpdateAllText();
     }
 
-    //public void OnArcadeDrive()
-    //{
-    //    Controls.StartArcadeDrive();
-    //    Controls.Save();
-    //}
-
     public void OnReset()
     {
-        Controls.Reset();
+        Controls.ArcadeDrive();
         Controls.Save();
     }
 
