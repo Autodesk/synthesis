@@ -2,7 +2,11 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.IO;
+<<<<<<< HEAD
 using System;
+=======
+using UnityEngine.SceneManagement;
+>>>>>>> MixAndMatch
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
@@ -20,11 +24,15 @@ public class MainMenu : MonoBehaviour
     public GameObject optionsTab;
 
     //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
+<<<<<<< HEAD
     public enum Sim
     {
         Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot,
         SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration, SimLoadReplay
     }
+=======
+    public enum Sim { Selection, DefaultSimulator, DriverPracticeMode, MixAndMatchMode, Multiplayer, SimLoadRobot, SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration }
+>>>>>>> MixAndMatch
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -33,6 +41,7 @@ public class MainMenu : MonoBehaviour
     private GameObject selectionPanel;
     private GameObject defaultSimulator;
     private GameObject driverPracticeMode;
+    private GameObject mixAndMatchMode;
     private GameObject dpmConfiguration;
     private GameObject localMultiplayer;
     private GameObject simLoadField;
@@ -124,11 +133,19 @@ public class MainMenu : MonoBehaviour
                 }
                 break;
         }
+<<<<<<< HEAD
 
         //Initializes and renders the Field Browser
         if (fieldDirectory != null) InitFieldBrowser();
         if (robotDirectory != null) InitRobotBrowser();
 
+=======
+
+        //Initializes and renders the Field Browser
+        if (fieldDirectory != null) InitFieldBrowser();
+        if (robotDirectory != null) InitRobotBrowser();
+
+>>>>>>> MixAndMatch
         //Renders the message manager which displays error messages
         UserMessageManager.Render();
         UserMessageManager.scale = canvas.scaleFactor;
@@ -201,6 +218,7 @@ public class MainMenu : MonoBehaviour
         simLoadRobot.SetActive(false);
         simLoadReplay.SetActive(false);
         dpmConfiguration.SetActive(false);
+        mixAndMatchMode.SetActive(false);
 
         selectionPanel.SetActive(true);
 
@@ -242,6 +260,17 @@ public class MainMenu : MonoBehaviour
 
         dpmRobotSelectText.GetComponent<Text>().text = dpmSelectedRobotName;
         dpmFieldSelectText.GetComponent<Text>().text = dpmSelectedFieldName;
+    }
+
+    /// <summary>
+    /// Switches to the Mix and Match menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
+    public void SwitchMixAndMatch()
+    {
+        currentSim = Sim.MixAndMatchMode;
+
+        selectionPanel.SetActive(false);
+        mixAndMatchMode.SetActive(true);
     }
 
     /// <summary>
@@ -792,6 +821,7 @@ public class MainMenu : MonoBehaviour
         selectionPanel = AuxFunctions.FindObject(gameObject, "SelectionPanel"); //The Mode Selection Tab GUI Objects
         defaultSimulator = AuxFunctions.FindObject(gameObject, "DefaultSimulator");
         driverPracticeMode = AuxFunctions.FindObject(gameObject, "DriverPracticeMode");
+        mixAndMatchMode = AuxFunctions.FindObject(gameObject, "MixAndMatchMode");
         dpmConfiguration = AuxFunctions.FindObject(gameObject, "DPMConfiguration");
         localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
