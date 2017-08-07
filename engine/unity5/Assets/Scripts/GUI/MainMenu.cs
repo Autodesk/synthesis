@@ -88,8 +88,8 @@ public class MainMenu : MonoBehaviour
 
     public static bool fullscreen; //true if application is in fullscreen
     public static int resolutionsetting; //resolution setting index
-    private int[] xresolution = new int[10]; //arrays of resolution widths corresponding to index
-    private int[] yresolution = new int[10]; //arrays of resolution heights corresponding to index
+    private int[] xresolution = new int[8]; //arrays of resolution widths corresponding to index
+    private int[] yresolution = new int[8]; //arrays of resolution heights corresponding to index
 
     private Canvas canvas; //canvas component of this object--used for scaling user message manager to size
 
@@ -888,27 +888,23 @@ public class MainMenu : MonoBehaviour
 
     void InitGraphicsSettings()
     {
-        xresolution[0] = 640;
-        xresolution[1] = 800;
-        xresolution[2] = 1024;
+        xresolution[0] = 1024;
+        xresolution[1] = 1280;
+        xresolution[2] = 1280;
         xresolution[3] = 1280;
-        xresolution[4] = 1280;
-        xresolution[5] = 1280;
-        xresolution[6] = 1400;
-        xresolution[7] = 1600;
-        xresolution[8] = 1680;
-        xresolution[9] = 1920;
+        xresolution[4] = 1400;
+        xresolution[5] = 1600;
+        xresolution[6] = 1680;
+        xresolution[7] = 1920;
 
-        yresolution[0] = 480;
-        yresolution[1] = 600;
+        yresolution[0] = 768;
+        yresolution[1] = 720;
         yresolution[2] = 768;
-        yresolution[3] = 720;
-        yresolution[4] = 768;
-        yresolution[5] = 1024;
-        yresolution[6] = 900;
-        yresolution[7] = 900;
-        yresolution[8] = 1050;
-        yresolution[9] = 1080;
+        yresolution[3] = 1024;
+        yresolution[4] = 900;
+        yresolution[5] = 900;
+        yresolution[6] = 1050;
+        yresolution[7] = 1080;
 
         fullscreen = Screen.fullScreen;
         int width = Screen.currentResolution.width;
@@ -921,8 +917,6 @@ public class MainMenu : MonoBehaviour
         else if (width == xresolution[5] && height == yresolution[5]) resolutionsetting = 5;
         else if (width == xresolution[6] && height == yresolution[6]) resolutionsetting = 6;
         else if (width == xresolution[7] && height == yresolution[7]) resolutionsetting = 7;
-        else if (width == xresolution[8] && height == yresolution[8]) resolutionsetting = 8;
-        else if (width == xresolution[9] && height == yresolution[9]) resolutionsetting = 9;
         else resolutionsetting = 2;
     }
 
