@@ -546,7 +546,7 @@ public class Controls
         #endregion
 
         TankModeEnabled = true;
-        //if (GameObject.Find("TankMode") != null) GameObject.Find("TankMode").GetComponent<TankMode>().UpdateAllText();
+        if (GameObject.Find("TankMode") != null) GameObject.Find("TankMode").GetComponent<TankMode>().UpdateAllText();
     }
 
     public static void RemoveArcadeKeys()
