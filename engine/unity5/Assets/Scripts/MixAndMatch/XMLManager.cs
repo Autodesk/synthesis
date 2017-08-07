@@ -17,7 +17,12 @@ public class XMLManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        ins.itemDB.xmlList.Clear();
+        foreach (MaMPreset var in itemDB.xmlList)
+        {
+            Debug.Log("presets list" + var.GetName());
+        }
+            
     }
 
     // Update is called once per frame
@@ -57,6 +62,5 @@ public class XMLManager : MonoBehaviour
 [System.Serializable]
 public class ItemDatabase
 {
-    
     public List<MaMPreset> xmlList = new List<MaMPreset>();
 }
