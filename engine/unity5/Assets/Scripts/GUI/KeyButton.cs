@@ -6,7 +6,6 @@ public class KeyButton : MonoBehaviour
     public static KeyButton selectedButton = null;
     public static bool ignoreMouseMovement = true;
     public static bool useKeyModifiers = true;
-    public static bool tankDrive = false;
 
     public KeyMapping keyMapping;
     public int keyIndex;

@@ -38,6 +38,14 @@ public class SettingsMode : MonoBehaviour
         Controls.Save();
     }
 
+    //public void OnTankDrive()
+    //{
+    //    Controls.IsTankDrive = true;
+    //    Controls.TankDrive();
+    //    Controls.Save();
+    //}
+
+
     public void UpdateAllText()
     {
         KeyButton[] keyButtons = GetComponentsInChildren<KeyButton>();
