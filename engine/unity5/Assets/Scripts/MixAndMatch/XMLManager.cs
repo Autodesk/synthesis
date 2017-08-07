@@ -16,12 +16,7 @@ public class XMLManager : MonoBehaviour
     }
     // Use this for initialization
     void Start()
-    {
-        ins.itemDB.xmlList.Clear();
-        foreach (MaMPreset var in itemDB.xmlList)
-        {
-            Debug.Log("presets list" + var.GetName());
-        }
+    {      
             
     }
 
@@ -34,27 +29,26 @@ public class XMLManager : MonoBehaviour
     //list of items
     public ItemDatabase itemDB;
 
-    //save function
+    //Save Items in the List to an XML file
     public void SaveItems()
     {
         //open a new xml file
         XmlSerializer serializer = new XmlSerializer(typeof(ItemDatabase));
         FileStream stream = new FileStream(Application.persistentDataPath + "/item_data.xml", FileMode.Create);
 
-       // XmlTextWriter writer = new XmlTextWriter(Application.persistentDataPath + "/item_data.xml", new XmlWriterSettings { Encoding = Encoding.Unicode, OmitXmlDeclaration = true, ConformanceLevel = ConformanceLevel.Fragment, Indent = true, NewLineOnAttributes = false });
         //Taking info from unity class and putting it into XML file
         serializer.Serialize(stream, itemDB);
         stream.Close();
     }
 
-    //load function
+    //Loads items from an XML file to the list
     public void LoadItems()
     {
         XmlSerializer serializer = new XmlSerializer(typeof(ItemDatabase));
         FileStream stream2 = new FileStream(Application.persistentDataPath + "/item_data.xml", FileMode.Open);
       
         //TO DO Check for file
-        itemDB = (ItemDatabase)serializer.Deserialize(stream2);
+        ins.itemDB = (ItemDatabase)serializer.Deserialize(stream2);
         stream2.Close();
     }
 }
