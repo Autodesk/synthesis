@@ -51,7 +51,6 @@ public class MixAndMatchMode : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Debug.Log("Start is called");
         FindAllGameObjects();
         StartMixAndMatch();
     }
@@ -104,30 +103,26 @@ public class MixAndMatchMode : MonoBehaviour
     /// </summary>
     public void StartMixAndMatch()
     {
-       // FindAllGameObjects();
-        Debug.Log("StartMixAndMatch is called");
-        SelectWheel(PlayerPrefs.GetInt("Wheel", 0));
-
-        SelectDriveBase(PlayerPrefs.GetInt("DriveBase", 0));
-
-        SelectManipulator(PlayerPrefs.GetInt("Manipulator", 0));
-
         if(this.gameObject.name == "MixAndMatchModeScript")
-        {
-            //CreatePreset(0, 0, 0, "Default");
-            
+        {   
             wheelLeftScroll.SetActive(false);
+            presetLeftScroll.SetActive(false);
+            presetRightScroll.SetActive(false);
+            if (XMLManager.ins.itemDB.xmlList.Count() > 3) presetRightScroll.SetActive(true);
             setPresetPanel.SetActive(false);
-            XMLManager.ins.LoadItems();
+            //XMLManager.ins.itemDB.xmlList.Clear();
+           
             String presetFile = Application.persistentDataPath + "/item_data.xml";
-            if(File.Exists(presetFile)) LoadPresets();
+            if (File.Exists(presetFile))
+            {
+                XMLManager.ins.LoadItems();
+                LoadPresets();
+            }
         }
 
         //Sets info panel to blank
         Text txt = infoText.GetComponent<Text>();
-        txt.text = "";
-
-       
+        txt.text = "";    
     }
 
     /// <summary>
@@ -146,12 +141,19 @@ public class MixAndMatchMode : MonoBehaviour
     }
 
     #region Presets
+    
+    /// <summary>
+    /// When the user enters the name for a preset, creates a MaMPreset object with the name and selected parts and adds it to the list.
+    /// Also creates a GameObject clone of the preset prefab and adds it to the presetClones list.
+    /// </summary>
     public void SetPresetName()
     {
         String name = "";
         if (inputField.GetComponent<InputField>().text.Length > 0) name = inputField.GetComponent<InputField>().text;
         Debug.Log("SetPresetName to " + name);
         XMLManager.ins.itemDB.xmlList.Add(new MaMPreset(selectedWheel, selectedDriveBase, selectedManipulator, name));
+
+        XMLManager.ins.SaveItems();
 
         int clonePosition = (presetClones.Count < 3) ? presetClones.Count : 0;
         GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[presetClones.Count], clonePosition);
@@ -170,10 +172,11 @@ public class MixAndMatchMode : MonoBehaviour
         Debug.Log("Set Preset name value: " + value);
 
         Text txt = infoText.GetComponent<Text>();
-        txt.text = "";
+        txt.text = XMLManager.ins.itemDB.xmlList[presetClones.Count].GetName();
 
     }
-   
+
+    int lastSelectedPreset;
     /// <summary>
     /// Called when a preset option is clicked. Selects the preset's wheel, drive base and manipulator.
     /// </summary>
@@ -181,9 +184,23 @@ public class MixAndMatchMode : MonoBehaviour
     public void SelectPresets(int value)
     {
         Debug.Log("Select presets: " + value);
+        Debug.Log("List size: " + XMLManager.ins.itemDB.xmlList.Count);
         SelectWheel(XMLManager.ins.itemDB.xmlList[value].GetWheel());
         SelectDriveBase(XMLManager.ins.itemDB.xmlList[value].GetDriveBase());
         SelectManipulator(XMLManager.ins.itemDB.xmlList[value].GetManipulator(), "preset");
+
+        Text txt = infoText.GetComponent<Text>();
+        txt.text = XMLManager.ins.itemDB.xmlList[value].GetName();
+
+        lastSelectedPreset = value;
+    }
+
+    public void DeletePreset()
+    {
+        XMLManager.ins.itemDB.xmlList.RemoveAt(lastSelectedPreset);
+        Destroy(presetClones[lastSelectedPreset]);
+        presetClones.RemoveAt(lastSelectedPreset);
+        
     }
 
     /// <summary>
@@ -196,7 +213,6 @@ public class MixAndMatchMode : MonoBehaviour
         //Loads the first three presets
         for (int i = 0; i < 3 && i < XMLManager.ins.itemDB.xmlList.Count; i++)
         {
-            Debug.Log("LoadPreset" + i);
             GameObject clone = presetsPanel.GetComponent<MaMPresetMono>().CreateClone(XMLManager.ins.itemDB.xmlList[i], i);
             clone.GetComponent<Text>().text = XMLManager.ins.itemDB.xmlList[i].GetName();
             presetClones.Add(clone);
