@@ -10,43 +10,48 @@ using UnityEngine.UI;
 
 public class MixAndMatchMode : MonoBehaviour
 {
+    
     private GameObject mixAndMatchMode;
     public static bool isQuickSwapMode = false;
     private GameObject infoText;
 
     //Presets
     private GameObject presetsPanel;
-    List<GameObject> presetClones = new List<GameObject>();
-    public List<MaMPreset> presetsList = new List<MaMPreset>();
+    [HideInInspector] public List<GameObject> presetClones = new List<GameObject>();
+    [HideInInspector] public List<MaMPreset> presetsList = new List<MaMPreset>();
     private GameObject setPresetPanel;
     private GameObject inputField;
-    private GameObject presetRightScroll;
-    private GameObject presetLeftScroll;
+   
 
     //Wheel options
     private GameObject tractionWheel;
     private GameObject colsonWheel;
     private GameObject omniWheel;
     private GameObject pneumaticWheel;
-    List<GameObject> wheels;
+    [HideInInspector] public List<GameObject> wheels;
     public static int selectedWheel; //This is public static so that it can be accessed by RNMesh
-    private GameObject wheelRightScroll;
-    private GameObject wheelLeftScroll;
+  
 
     //Drive Base options
     private GameObject defaultDrive;
     private GameObject mecanumDrive;
     private GameObject swerveDrive;
-    List<GameObject> bases;
+    [HideInInspector] public List<GameObject> bases;
     int selectedDriveBase;
     public static bool isMecanum = false;
 
     //Manipulator Options
     private GameObject noManipulator;
     private GameObject syntheClaw;
-    List<GameObject> manipulators;
+    [HideInInspector] public List<GameObject> manipulators;
     int selectedManipulator;
     public static bool hasManipulator = true;
+
+    //Scroll buttons
+    private GameObject wheelRightScroll;
+    private GameObject wheelLeftScroll;
+    private GameObject presetRightScroll;
+    private GameObject presetLeftScroll;
 
     // Use this for initialization
     void Start()
@@ -69,16 +74,14 @@ public class MixAndMatchMode : MonoBehaviour
         presetsPanel = GameObject.Find("PresetPanel");
         setPresetPanel = GameObject.Find("SetPresetPanel");
         inputField = GameObject.Find("InputField");
-        presetRightScroll = GameObject.Find("PresetRightScroll");
-        presetLeftScroll = GameObject.Find("PresetLeftScroll");
+        
 
         //Find wheel objects
         tractionWheel = GameObject.Find("TractionWheel");
         colsonWheel = GameObject.Find("ColsonWheel");
         omniWheel = GameObject.Find("OmniWheel");
         pneumaticWheel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PneumaticWheel")).First();
-        wheelRightScroll = GameObject.Find("WheelRightScroll");
-        wheelLeftScroll = GameObject.Find("WheelLeftScroll");
+       
        
         //Put all the wheels in the wheels list
         wheels = new List<GameObject> { tractionWheel, colsonWheel, omniWheel, pneumaticWheel };
@@ -96,6 +99,17 @@ public class MixAndMatchMode : MonoBehaviour
         syntheClaw = GameObject.Find("SyntheClaw");
         //Put all the manipulators in the manipulators list
         manipulators = new List<GameObject> { noManipulator, syntheClaw };
+
+        //Find all the scroll buttons
+        wheelRightScroll = GameObject.Find("WheelRightScroll");
+        wheelLeftScroll = GameObject.Find("WheelLeftScroll");
+        presetRightScroll = GameObject.Find("PresetRightScroll");
+        presetLeftScroll = GameObject.Find("PresetLeftScroll");
+
+        if(this.gameObject.name == "MixAndMatchModeScript")
+        {
+            this.gameObject.GetComponent<MaMScroller>().FindAllGameObjects();
+        }
     }
 
     /// <summary>
@@ -108,7 +122,7 @@ public class MixAndMatchMode : MonoBehaviour
             wheelLeftScroll.SetActive(false);
             presetLeftScroll.SetActive(false);
             presetRightScroll.SetActive(false);
-            if (XMLManager.ins.itemDB.xmlList.Count() > 3) presetRightScroll.SetActive(true);
+
             setPresetPanel.SetActive(false);
             //XMLManager.ins.itemDB.xmlList.Clear();
            
@@ -118,15 +132,17 @@ public class MixAndMatchMode : MonoBehaviour
                 XMLManager.ins.LoadItems();
                 LoadPresets();
             }
+
+            if (XMLManager.ins.itemDB.xmlList.Count() > 3) presetRightScroll.SetActive(true);
+
+            SelectWheel(0);
+            SelectDriveBase(0);
+            SelectManipulator(0);
+
+            // Sets info panel to blank
+            Text txt = infoText.GetComponent<Text>();
+            txt.text = "";
         }
-
-        SelectWheel(0);
-        SelectDriveBase(0);
-        SelectManipulator(0);
-
-        //Sets info panel to blank
-        Text txt = infoText.GetComponent<Text>();
-        txt.text = "";    
     }
 
     /// <summary>
@@ -508,86 +524,5 @@ public class MixAndMatchMode : MonoBehaviour
         }
         return 1.0f;
     }
-    #endregion
-    #region Scrollers
-    int firstWheel = 0;
-    public void ScrollWheels(bool right)
-    {
-        if (right && firstWheel + 3 < wheels.Count)
-        {
-            wheels[firstWheel].SetActive(false);
-            wheels[firstWheel + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
-            wheels[firstWheel + 2].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
-            wheels[firstWheel + 3].GetComponent<RectTransform>().anchoredPosition = new Vector2(624f, 7.5f);
-            wheels[firstWheel + 3].SetActive(true);
-            Debug.Log(wheels[firstWheel + 3].ToString() + "Set active");
-            wheels[firstWheel + 3].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(363f, 7.5f));
-            firstWheel++; 
-        }
-
-        if (!right && firstWheel - 1 >= 0)
-        {
-            wheels[firstWheel - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(-426f, 7.5f);
-            wheels[firstWheel - 1].SetActive(true);
-            wheels[firstWheel - 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(-165f, 7.5f));
-            wheels[firstWheel].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
-            wheels[firstWheel + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(353f, 7.5f));
-            wheels[firstWheel + 2].SetActive(false);
-            firstWheel--;
-        }
-
-        wheelRightScroll.SetActive(true);
-        wheelLeftScroll.SetActive(true);
-
-        if (firstWheel + 3 == wheels.Count)
-        {
-            wheelRightScroll.SetActive(false);
-        }
-
-        if (firstWheel == 0)
-        {
-            wheelLeftScroll.SetActive(false);
-        }
-    }
-
-    int firstPreset = 0;
-    public void ScrollPreset(bool right)
-    {
-        if (right && firstPreset + 3 < presetClones.Count)
-        {
-            presetClones[firstPreset].SetActive(false);
-            presetClones[firstPreset + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(450, -40));
-            presetClones[firstPreset + 2].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(700, -40));
-            presetClones[firstPreset + 3].GetComponent<RectTransform>().anchoredPosition = new Vector2(1200, -40);
-            presetClones[firstPreset + 3].SetActive(true);
-            presetClones[firstPreset + 3].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(950, -40));
-            firstPreset++;
-        }
-
-        if (!right && firstPreset - 1 >= 0)
-        {
-            presetClones[firstPreset - 1].GetComponent<RectTransform>().anchoredPosition = new Vector2(200, -40);
-            presetClones[firstPreset - 1].SetActive(true);
-            presetClones[firstPreset - 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(450, -40));
-            presetClones[firstPreset].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(700, -40));
-            presetClones[firstPreset + 1].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(950, -40));
-            presetClones[firstPreset + 2].SetActive(false);
-            firstPreset--;
-        }
-
-        presetRightScroll.SetActive(true);
-        presetLeftScroll.SetActive(true);
-
-        if (firstPreset + 3 == presetClones.Count)
-        {
-            presetRightScroll.SetActive(false);
-        }
-
-        if (firstPreset == 0)
-        {
-            presetLeftScroll.SetActive(false);
-        }
-    }
-
     #endregion
 }

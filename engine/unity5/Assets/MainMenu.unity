@@ -1876,6 +1876,7 @@ GameObject:
   m_Component:
   - component: {fileID: 264252735}
   - component: {fileID: 264252734}
+  - component: {fileID: 264252736}
   m_Layer: 0
   m_Name: MixAndMatchModeScript
   m_TagString: Untagged
@@ -1895,7 +1896,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339903f995aa7847a21d9da41006612, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  presetClones: []
   presetsList: []
+  wheels: []
+  bases: []
+  manipulators: []
 --- !u!224 &264252735
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1915,6 +1920,17 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &264252736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 264252733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91bb23b429a52994c8d2bc912e097ae2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &269615967
 GameObject:
   m_ObjectHideFlags: 0
@@ -2262,7 +2278,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 264252734}
+      - m_Target: {fileID: 264252736}
         m_MethodName: ScrollWheels
         m_Mode: 6
         m_Arguments:
@@ -8712,7 +8728,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 264252734}
+      - m_Target: {fileID: 264252736}
         m_MethodName: ScrollPreset
         m_Mode: 6
         m_Arguments:
@@ -17210,7 +17226,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 264252734}
+      - m_Target: {fileID: 264252736}
         m_MethodName: ScrollPreset
         m_Mode: 6
         m_Arguments:
@@ -18192,7 +18208,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 264252734}
+      - m_Target: {fileID: 264252736}
         m_MethodName: ScrollWheels
         m_Mode: 6
         m_Arguments:
