@@ -766,7 +766,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 860403445}
         m_MethodName: SwitchSimDefault
         m_Mode: 1
         m_Arguments:
@@ -1947,7 +1947,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &269615968
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8315,7 +8315,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 50, y: 0}
+  m_AnchoredPosition: {x: 49.99997, y: 0}
   m_SizeDelta: {x: -100, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &941821009
@@ -14666,7 +14666,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 860403445}
         m_MethodName: SwitchSimSelection
         m_Mode: 1
         m_Arguments:
@@ -14858,7 +14858,7 @@ RectTransform:
   m_Children:
   - {fileID: 1272083411}
   - {fileID: 680739008}
-  - {fileID: 2014997159}
+  - {fileID: 1972851967}
   m_Father: {fileID: 2111465051}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -16578,7 +16578,7 @@ GameObject:
   - component: {fileID: 1972851969}
   - component: {fileID: 1972851968}
   m_Layer: 0
-  m_Name: NextButton
+  m_Name: DeleteButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16591,17 +16591,17 @@ RectTransform:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1972851966}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.000057, y: 1.000057, z: 1.000057}
   m_Children:
   - {fileID: 1981839060}
-  m_Father: {fileID: 2111465051}
-  m_RootOrder: 8
+  m_Father: {fileID: 1792833902}
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 282, y: 58}
+  m_AnchoredPosition: {x: -229.50006, y: 58.00482}
   m_SizeDelta: {x: 265.6, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1972851968
@@ -16783,7 +16783,7 @@ GameObject:
   - component: {fileID: 2014997161}
   - component: {fileID: 2014997160}
   m_Layer: 0
-  m_Name: NextButton (1)
+  m_Name: NextButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16798,15 +16798,15 @@ RectTransform:
   m_GameObject: {fileID: 2014997158}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.0000601, y: 1.0000601, z: 1.0000601}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1183638634}
-  m_Father: {fileID: 1792833902}
-  m_RootOrder: 2
+  m_Father: {fileID: 2111465051}
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -695.32635, y: 46.004242}
+  m_AnchoredPosition: {x: -183.79996, y: 46.00006}
   m_SizeDelta: {x: 265.6, y: 49}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2014997160
@@ -16849,8 +16849,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 264252734}
-        m_MethodName: StartSwapSim
+      - m_Target: {fileID: 860403445}
+        m_MethodName: SwitchSimLoadField
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -17827,7 +17827,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2111465051
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17847,7 +17847,7 @@ RectTransform:
   - {fileID: 1792833902}
   - {fileID: 1765887084}
   - {fileID: 1407041185}
-  - {fileID: 1972851967}
+  - {fileID: 2014997159}
   - {fileID: 264252735}
   - {fileID: 773322951}
   m_Father: {fileID: 733606799}

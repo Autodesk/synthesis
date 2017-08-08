@@ -299,6 +299,17 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
+    /// Switches to the load field menu for the default simulator and activates its respective UI elements.
+    /// </summary>
+    public void SwitchSimLoadField(bool isMaM)
+    {
+        currentSim = Sim.SimLoadField;
+
+        defaultSimulator.SetActive(false);
+        simLoadField.SetActive(true);
+    }
+
+    /// <summary>
     /// Switches to the load replay menu for the default simulator and activates its respective UI elements.
     /// </summary>
     public void SwitchSimLoadReplay()
@@ -415,6 +426,7 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
             Application.LoadLevel("Scene");
+            PlayerPrefs.SetInt("MixAndMatch", 1); //0 means true, 1 means false
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
