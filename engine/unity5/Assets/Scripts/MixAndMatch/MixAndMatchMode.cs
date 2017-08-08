@@ -58,6 +58,7 @@ public class MixAndMatchMode : MonoBehaviour
     {
         FindAllGameObjects();
         StartMixAndMatch();
+        PlayerPrefs.SetInt("MixAndMatch", 0); //0 is true, 1 is false
     }
 
     // Update is called once per frame
