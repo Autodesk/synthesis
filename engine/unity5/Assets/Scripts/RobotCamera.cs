@@ -2,22 +2,27 @@
 using System.Collections.Generic;
 using BulletUnity;
 using BulletSharp;
+using UnityEngine.UI;
+using Assets.Scripts.FSM;
+
 
 public class RobotCamera : MonoBehaviour
 {
     public List<GameObject> robotCameraList = new List<GameObject>();
     public GameObject CurrentCamera { get; set; }
-    public GameObject CameraIndicator;
+
     private GameObject robotCameraListObject;
     public GameObject SelectedNode;
+    public bool SelectingNode { get; set; }
 
-    public bool SelectingNode {get; set;}
-
-    public bool ChangingCameraPosition { get; set; }
-    public bool IsChangingHeight { get; set; }
 
     private static float positionSpeed = 0.5f;
     private static float rotationSpeed = 25;
+    
+    public bool ChangingCameraPosition { get; set; }
+    public bool IsChangingHeight { get; set; }
+    public bool IsShowingAngle { get; set; }
+    public bool IsChangingFOV { get; set; }
 
     /// <summary>
     /// Switching between different cameras on robot given the specific camera
@@ -37,7 +42,6 @@ public class RobotCamera : MonoBehaviour
     public void ToggleCamera()
     {
         SwitchCamera(robotCameraList[(robotCameraList.IndexOf(CurrentCamera) + 1) % robotCameraList.Count]);
-        //CameraIndicator.SetActive(CurrentCamera.activeSelf);
     }
 
     /// <summary>
@@ -68,18 +72,20 @@ public class RobotCamera : MonoBehaviour
     /// Add a new camera to the robot using the default position and rotation
     /// </summary>
     /// <returns></returns>
-    public GameObject AddCamera()
+    public GameObject AddCamera(Transform anchor)
     {
         GameObject newCamera = new GameObject("RobotCamera_" + robotCameraList.Count);
         newCamera.AddComponent<Camera>();
-        newCamera.transform.localPosition = new Vector3(0f, 0f, 0f);
+        newCamera.transform.parent = anchor;
+        newCamera.transform.localPosition = new Vector3(0f, 0.5f, 0f);
         newCamera.transform.localRotation = Quaternion.identity;
         newCamera.SetActive(false);
         if (robotCameraList.Count == 0)
             CurrentCamera = newCamera;
 
         robotCameraList.Add(newCamera);
-        CurrentCamera = newCamera;
+        if (robotCameraList.Count == 0)
+            CurrentCamera = newCamera;
         return newCamera;
     }
 
@@ -107,24 +113,8 @@ public class RobotCamera : MonoBehaviour
         return robotCameraList;
     }
 
-    public void Start()
+    private void Update()
     {
-        robotCameraListObject = GameObject.Find("RobotCameraList");
-        if (CameraIndicator == null)
-        {
-            CameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
-        }
-    }
-    public void Update()
-    {
-        if (CameraIndicator.activeSelf)
-        {
-            CameraIndicator.transform.position = CurrentCamera.transform.position;
-            CameraIndicator.transform.rotation = CurrentCamera.transform.rotation;
-
-            CameraIndicator.transform.parent = CurrentCamera.transform;
-        }
-
         //Enable selecting node state, and users can left click on a node to choose it
         if (SelectingNode)
         {
@@ -135,11 +125,10 @@ public class RobotCamera : MonoBehaviour
 
             }
         }
-
-        ConfigurateCameraPosition();
-        
+        UpdateCameraPosition();
     }
-    
+
+
     /// <summary>
     /// Initialize robot node selection
     /// </summary>
@@ -198,13 +187,17 @@ public class RobotCamera : MonoBehaviour
     }
 
     /// <summary>
-    /// Use WASD and right mouse to change the position, rotation of camera
+    /// Use WASD change the position, rotation of camera
     /// </summary>
-    private void ConfigurateCameraPosition()
+    private void UpdateCameraPosition()
     {
         if (ChangingCameraPosition)
         {
-            if (Input.GetMouseButton(1)) //Control rotation
+            if (IsChangingFOV)
+            {
+                CurrentCamera.GetComponent<Camera>().fieldOfView += Input.GetAxis("CameraVertical");
+            }
+            else if (IsShowingAngle) //Control rotation (only when the angle panel is active)
             {
                 CurrentCamera.transform.Rotate(new Vector3(-Input.GetAxis("CameraVertical") * rotationSpeed, Input.GetAxis("CameraHorizontal") * rotationSpeed, 0) * Time.deltaTime);
             }
