@@ -49,6 +49,9 @@ public class Robot : MonoBehaviour {
 
     private RobotCamera robotCamera;
 
+    private GameObject manipulatorObject;
+    private RigidNode_Base manipulatorNode;
+
     // Use this for initialization
     void Start () {
     }
@@ -92,8 +95,9 @@ public class Robot : MonoBehaviour {
     {
         if (rootNode != null && ControlsEnabled)
         {
-            if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex);
-            else DriveJoints.UpdateAllMotors(rootNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex);
+            if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
+            else DriveJoints.UpdateAllMotors(rootNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
+            if (MixAndMatchMode.hasManipulator) DriveJoints.UpdateAllMotors(manipulatorNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
         }
 
         if (IsResetting)
@@ -316,5 +320,58 @@ public class Robot : MonoBehaviour {
     public DriverPracticeRobot GetDriverPractice()
     {
         return GetComponent<DriverPracticeRobot>();
+    }
+
+    public bool LoadManipulator(string directory)
+    {
+        manipulatorObject = new GameObject("Manipulator");
+
+        //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
+        manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
+        //manipulatorObject.transform.position = robotStartPosition;
+
+        RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
+        {
+            return new RigidNode(guid);
+        };
+
+        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
+        //TO-DO: Read .robot instead (from the new exporters if they are implemented). Maybe need a RobotSkeleton class
+        manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
+        manipulatorNode.ListAllNodes(nodes);
+
+        //Load node_0 for attaching manipulator to robot
+        RigidNode node = (RigidNode)nodes[0];
+        node.CreateTransform(manipulatorObject.transform);
+        if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
+        {
+            Debug.Log("Robot not loaded!");
+            UnityEngine.Object.Destroy(manipulatorObject);
+            return false;
+        }
+        node.CreateManipulatorJoint();
+        node.MainObject.AddComponent<Tracker>().Trace = true;
+        Tracker t = node.MainObject.GetComponent<Tracker>();
+        Debug.Log(t);
+
+        //Load other nodes associated with the manipulator
+        for (int i = 1; i < nodes.Count; i++)
+        {
+            RigidNode otherNode = (RigidNode)nodes[i];
+            otherNode.CreateTransform(manipulatorObject.transform);
+            if (!otherNode.CreateMesh(directory + "\\" + otherNode.ModelFileName))
+            {
+                Debug.Log("Robot not loaded!");
+                UnityEngine.Object.Destroy(manipulatorObject);
+                return false;
+            }
+            otherNode.CreateJoint();
+            otherNode.MainObject.AddComponent<Tracker>().Trace = true;
+            t = otherNode.MainObject.GetComponent<Tracker>();
+            Debug.Log(t);
+        }
+
+        RotateRobot(robotStartOrientation);
+        return true;
     }
 }

@@ -27,7 +27,7 @@ public class MixAndMatchMode : MonoBehaviour
     private GameObject tractionWheel;
     private GameObject colsonWheel;
     private GameObject omniWheel;
-    private GameObject pnuematicWheel;
+    private GameObject pneumaticWheel;
     List<GameObject> wheels;
     public static int selectedWheel; //This is public static so that it can be accessed by RNMesh
     private GameObject wheelRightScroll;
@@ -76,12 +76,12 @@ public class MixAndMatchMode : MonoBehaviour
         tractionWheel = GameObject.Find("TractionWheel");
         colsonWheel = GameObject.Find("ColsonWheel");
         omniWheel = GameObject.Find("OmniWheel");
-        pnuematicWheel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PneumaticWheel")).First();
+        pneumaticWheel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PneumaticWheel")).First();
         wheelRightScroll = GameObject.Find("WheelRightScroll");
         wheelLeftScroll = GameObject.Find("WheelLeftScroll");
        
         //Put all the wheels in the wheels list
-        wheels = new List<GameObject> { tractionWheel, colsonWheel, omniWheel, pnuematicWheel };
+        wheels = new List<GameObject> { tractionWheel, colsonWheel, omniWheel, pneumaticWheel };
 
 
         //Find drive base objects
@@ -119,6 +119,10 @@ public class MixAndMatchMode : MonoBehaviour
                 LoadPresets();
             }
         }
+
+        SelectWheel(0);
+        SelectDriveBase(0);
+        SelectManipulator(0);
 
         //Sets info panel to blank
         Text txt = infoText.GetComponent<Text>();
@@ -516,6 +520,7 @@ public class MixAndMatchMode : MonoBehaviour
             wheels[firstWheel + 2].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(96f, 7.5f));
             wheels[firstWheel + 3].GetComponent<RectTransform>().anchoredPosition = new Vector2(624f, 7.5f);
             wheels[firstWheel + 3].SetActive(true);
+            Debug.Log(wheels[firstWheel + 3].ToString() + "Set active");
             wheels[firstWheel + 3].AddComponent<MixAndMatchScroll>().SetTargetPostion(new Vector2(363f, 7.5f));
             firstWheel++; 
         }

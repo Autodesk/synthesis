@@ -19,38 +19,15 @@ public class SimUI : MonoBehaviour
 
     GameObject canvas;
 
-<<<<<<< HEAD
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
-=======
-    GameObject dpmWindow;
-    GameObject configWindow;
+
     GameObject swapWindow;
 
     GameObject wheelPanel;
     GameObject driveBasePanel;
     GameObject manipulatorPanel;
 
-    GameObject releaseVelocityPanel;
-
-    GameObject xOffsetEntry;
-    GameObject yOffsetEntry;
-    GameObject zOffsetEntry;
-    GameObject releaseSpeedEntry;
-    GameObject releaseVerticalEntry;
-    GameObject releaseHorizontalEntry;
-
-    Text enableDPMText;
->>>>>>> MixAndMatch
-
-    GameObject robotCameraList;
-    GameObject robotCameraIndicator;
-    GameObject showCameraButton;
-    GameObject configureRobotCameraButton;
-    GameObject cameraConfigurationModeButton;
-    GameObject changeCameraNodeButton;
-    GameObject configureCameraPanel;
-    GameObject cancelNodeSelectionButton;
 
     GameObject changeRobotPanel;
     GameObject changeFieldPanel;
@@ -58,16 +35,12 @@ public class SimUI : MonoBehaviour
 
     GameObject driverStationPanel;
 
-<<<<<<< HEAD
     GameObject inputManagerPanel;
-=======
 
-    public bool dpmWindowOn = false; //if the driver practice mode window is active
     public bool swapWindowOn = false; //if the swap window is active
     public bool wheelPanelOn = false; //if the wheel panel is active
     public bool driveBasePanelOn = false; //if the drive base panel is active
     public bool manipulatorPanelOn = false; //if the manipulator panel is active
->>>>>>> MixAndMatch
 
     GameObject exitPanel;
 
@@ -95,8 +68,6 @@ public class SimUI : MonoBehaviour
         if (main == null)
         {
             main = transform.GetComponent<StateMachine>().CurrentState as MainState;
-            //Get the render texture from Resources/Images
-            toolkit = GetComponent<Toolkit>();
         }
         else if (dpm == null)
         {
@@ -139,19 +110,13 @@ public class SimUI : MonoBehaviour
     {
         canvas = GameObject.Find("Canvas");
 
-<<<<<<< HEAD
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
-=======
-        dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
-        configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
+
         swapWindow = AuxFunctions.FindObject(canvas, "SwapPanel");
         wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
         driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
         manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
-
-        enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
->>>>>>> MixAndMatch
 
         addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
 
@@ -457,12 +422,7 @@ public class SimUI : MonoBehaviour
                 exitPanel.SetActive(false);
                 break;
         }
-<<<<<<< HEAD
-
     }
-=======
-    }
-    #endregion
 
     #region swap part
     /// <summary>
@@ -513,5 +473,4 @@ public class SimUI : MonoBehaviour
         }
     }
     #endregion
->>>>>>> MixAndMatch
 }
