@@ -51,37 +51,10 @@ public class MainState : SimState
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
 
-<<<<<<< HEAD
+
     public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
-=======
-    private GameObject robotObject;
-    private GameObject manipulatorObject;
-    private RigidNode_Base rootNode;
-    private RigidNode_Base manipulatorNode;
-
-    private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
-    private Vector3 nodeToRobotOffset;
-    private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
-
-    private List<GameObject> extraElements;
-
-    private Texture2D buttonTexture;
-    private Texture2D buttonSelected;
-    private Texture2D greyWindowTexture;
-    private Texture2D darkGreyWindowTexture;
-    private Texture2D lightGreyWindowTexture;
-    private Texture2D transparentWindowTexture;
-
-    private Font gravityRegular;
-    private Font russoOne;
-
-    private GUIController gui;
-
-    private GUIStyle menuWindow;
-    private GUIStyle menuButton;
->>>>>>> MixAndMatch
 
     private OverlayWindow oWindow;
 
@@ -140,6 +113,11 @@ public class MainState : SimState
             tracking = true;
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+
+            if (MixAndMatchMode.hasManipulator)
+            {
+                Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
+            }
         }
         else
         {
@@ -220,19 +198,11 @@ public class MainState : SimState
 
         fieldObject = new GameObject("Field");
 
-<<<<<<< HEAD
         FieldDefinition.Factory = delegate (Guid guid, string name)
         {
             return new UnityFieldDefinition(guid, name);
         };
-=======
-        Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
-        Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
-        if (MixAndMatchMode.hasManipulator)
-        {
-            Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
-        }
->>>>>>> MixAndMatch
+
 
         string loadResult;
         fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
@@ -323,48 +293,8 @@ public class MainState : SimState
             }
             else activeRobot = SpawnedRobots[0];
             dynamicCamera.cameraState.robot = activeRobot.gameObject;
-
-<<<<<<< HEAD
-=======
-        UpdateTrackers();
-    }
-
-    public override void FixedUpdate()
-    {
-
-        if (Input.GetKey(KeyCode.M))
-            SceneManager.LoadScene("MainMenu");
-
-        if (rootNode != null)
-        {
-            UnityPacket.OutputStatePacket packet = unityPacket.GetLastPacket();
-            DriveJoints.UpdateAllMotors(rootNode, packet.dio, MixAndMatchMode.GetMecanum());
-            if(MixAndMatchMode.hasManipulator) DriveJoints.UpdateAllMotors(manipulatorNode, packet.dio, MixAndMatchMode.GetMecanum());
->>>>>>> MixAndMatch
         }
-
-        robotCameraObject = GameObject.Find("RobotCameraList");
-        robotCamera = robotCameraObject.GetComponent<RobotCamera>();
-
-
-        //GameObject sensorManager = GameObject.Find("RobotSensorManager");
-        //sensorManager.GetComponent<SensorManager>().AddUltrasonicSensor(robotObject.transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-
-        //robotCamera.RemoveCameras();
-        ////The camera data should be read here as a foreach loop and included in robot file
-        ////Attached to main frame and face the front
-        //robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
-        ////Attached to the first node and face the front
-        //robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
-        ////Attached to main frame and face the back
-        //robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
-
-
-        //robotCameraObject.SetActive(true);
     }
-
-            
-
 
     /// <summary>
     /// Changes the active robot to a different robot based on a given index
@@ -476,56 +406,10 @@ public class MainState : SimState
     /// <returns></returns>
     bool LoadManipulator(string directory)
     {
-        manipulatorObject = new GameObject("Manipulator");
-
-        //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
-        manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position; 
-        //manipulatorObject.transform.position = robotStartPosition;
-
-        RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
-        {
-            return new RigidNode(guid);
-        };
-
-        List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        //TO-DO: Read .robot instead (from the new exporters if they are implemented). Maybe need a RobotSkeleton class
-        manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
-        manipulatorNode.ListAllNodes(nodes);
-
-        //Load node_0 for attaching manipulator to robot
-        RigidNode node = (RigidNode)nodes[0];
-        node.CreateTransform(manipulatorObject.transform);
-        if (!node.CreateMesh(directory + "\\" + node.ModelFileName))
-        {
-            Debug.Log("Robot not loaded!");
-            UnityEngine.Object.Destroy(manipulatorObject);
-            return false;
-        }       
-        node.CreateManipulatorJoint();
-        node.MainObject.AddComponent<Tracker>().Trace = true;
-        Tracker t = node.MainObject.GetComponent<Tracker>();
-        Debug.Log(t);       
-
-        //Load other nodes associated with the manipulator
-        for (int i = 1; i < nodes.Count; i++)
-        {
-            RigidNode otherNode = (RigidNode)nodes[i];
-            otherNode.CreateTransform(manipulatorObject.transform);
-            if (!otherNode.CreateMesh(directory + "\\" + otherNode.ModelFileName))
-            {
-                Debug.Log("Robot not loaded!");
-                UnityEngine.Object.Destroy(manipulatorObject);
-                return false;
-            }
-            otherNode.CreateJoint();
-            otherNode.MainObject.AddComponent<Tracker>().Trace = true;
-            t = otherNode.MainObject.GetComponent<Tracker>();
-            Debug.Log(t);
-        }
-
-        RotateRobot(robotStartOrientation);
-        return true;
+        return activeRobot.LoadManipulator(directory);
     }
+        
+    
 
     private void UpdateTrackers()
     {
