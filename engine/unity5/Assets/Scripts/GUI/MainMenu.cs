@@ -57,7 +57,7 @@ public class MainMenu : MonoBehaviour
 
     private GameObject settingsMode; //The InputManager Objects
     //private GameObject tankMode;     //Tank Mode InputManager
-    //private Text enableTankDriveText; //Enable + Disable tank drive text
+    private Text enableTankDriveText; //Enable + Disable tank drive text
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
@@ -182,25 +182,6 @@ public class MainMenu : MonoBehaviour
             simTab.SetActive(false);
             optionsTab.SetActive(true);
             settingsMode.SetActive(true);
-
-            //if (Controls.IsTankDrive == true)
-            //{
-                //Controls.SwitchControls();
-                //Controls.Save();
-            //}
-
-            //if (Controls.IsTankDrive == true)
-            //{
-            //    //tankMode.SetActive(true);
-            //    //settingsMode.SetActive(false);
-            //}
-            //else
-            //{
-            //    //tankMode.SetActive(false);
-            //    //settingsMode.SetActive(true);
-            //}
-            //settingsMode.SetActive(true);
-            //tankMode.SetActive(false);
         }
         else UserMessageManager.Dispatch("You must select a directory or exit first!", 3);
     }
@@ -397,72 +378,42 @@ public class MainMenu : MonoBehaviour
     {
         graphics.SetActive(true);
         input.SetActive(false);
+        settingsMode.SetActive(true);
     }
 
     public void SwitchInput()
     {
         graphics.SetActive(false);
         input.SetActive(true);
-        //if (Controls.IsTankDrive == true)
-        //{
-        //    tankMode.SetActive(true);
-        //    settingsMode.SetActive(false);
-        //}
-        //else
-        //{
-        //    tankMode.SetActive(false);
-        //    settingsMode.SetActive(true);
-        //}
         settingsMode.SetActive(true);
-        //tankMode.SetActive(false);
-
-        if (Controls.IsTankDrive == true)
-        {
-            Controls.SwitchControls();
-            Controls.Save();
-        }
     }
 
     public void SwitchTankOn()
     {
-        //if (Controls.TankModeEnabled)
-        //{
-        //    Controls.IsTankDrive = true;
-        //    Controls.SwitchControls();
-        //    enableTankDriveText.text = "Enable Tank Drive";
-        //}
-        //else
-        //{
-        //    Controls.IsTankDrive = false;
-        //    Controls.SwitchControls();
-        //    enableTankDriveText.text = "Disable Tank Drive";
-        //}
-
         graphics.SetActive(false);
         input.SetActive(true);
         settingsMode.SetActive(true);
-        //tankMode.SetActive(true);
 
-        Controls.IsTankDrive = true;
-        Controls.TankDrive();
-        //Controls.Save();
+        if (!Controls.TankDriveEnabled)
+        {
+            Controls.TankDriveEnabled = true;
+            Controls.IsTankDrive = true;
+            Controls.check = false;
+            Controls.SwitchControls();
+            Controls.Save();
+            enableTankDriveText.text = "Disable Tank Drive";
+        }
+        else
+        {
+            Controls.TankDriveEnabled = false;
+            Controls.IsTankDrive = false;
+            Controls.check = true;
+            Controls.SwitchControls();
+            Controls.Save();
+            enableTankDriveText.text = "Enable Tank Drive";
+        }
 
         Debug.Log("On");
-    }
-
-    public void SwitchTankOff()
-    {
-        graphics.SetActive(false);
-        input.SetActive(true);
-        settingsMode.SetActive(true);
-        //tankMode.SetActive(false);
-
-        Controls.IsTankDrive = false;
-        //Controls.RemoveTankKeys();
-        Controls.SwitchControls();
-        //Controls.Save();
-
-        Debug.Log("Off");
     }
 
     public void StartDefaultSim()
@@ -886,7 +837,7 @@ public class MainMenu : MonoBehaviour
 
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
         //tankMode = AuxFunctions.FindObject(gameObject, "TankMode");
-        //enableTankDriveText = AuxFunctions.FindObject(gameObject, "Tank").GetComponent<Text>();
+        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");
