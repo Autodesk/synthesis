@@ -19,16 +19,13 @@ public static class InputControl
     private static List<KeyMapping>               mKeysList          = new List<KeyMapping>();
     private static Dictionary<string, KeyMapping> mKeysMap           = new Dictionary<string, KeyMapping>();
 
-    private static List<KeyMapping> mKeysList2 = new List<KeyMapping>();
-    private static bool tankDrive = false;
-
     // Set of axes
     private static List<Axis>                     mAxesList          = new List<Axis>();
     private static Dictionary<string, Axis>       mAxesMap           = new Dictionary<string, Axis>();
 
     // Smooth for GetAxis
     private static Dictionary<string, float>      mSmoothAxesValues  = new Dictionary<string, float>();
-    private static float                          mSmoothCoefficient = 5f; // Smooth looks the same as in Input.GetAxis() with this value
+    private static float                          mSmoothCoefficient = NO_SMOOTH; // Smooth looks the same as in Input.GetAxis() with this value
 
     // Joystick options
     private static float                          mJoystickThreshold = 0.2f;

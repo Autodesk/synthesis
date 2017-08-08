@@ -26,6 +26,7 @@ public class Controls
     public static bool IsTankDrive;
     public static bool check;
     public static bool TankDriveEnabled = false;
+    public static bool clicked;
 
     /// <summary>
     /// <see cref="Buttons"/> is a set of user defined buttons.
@@ -72,8 +73,15 @@ public class Controls
     /// </summary>
     public struct Axes
     {
+        //Arcade Axes
         public Axis vertical;
         public Axis horizontal;
+
+        //Tank Axes
+        public Axis tankForward;
+        public Axis tankBackward;
+        public Axis tankLeft;
+        public Axis tankRight;
     }
 
     /// <summary>
@@ -788,9 +796,9 @@ public class Controls
         buttons[0].releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1));
         buttons[0].spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
 
-        //Set axes
-        //axes[0].horizontal = InputControl.setAxis("Joystick 1 Axis 2", buttons[0].left, buttons[0].right);
-        //axes[0].vertical = InputControl.setAxis("Joystick 1 Axis 4", buttons[0].backward, buttons[0].forward);
+        //Set Tank Drive Axes
+        axes[0].tankForward = InputControl.setAxis("Joystick 1 Axis 9", buttons[0].tankBackLeft, buttons[0].tankFrontLeft);
+        axes[0].tankLeft = InputControl.setAxis("Joystick 1 Axis 10", buttons[0].tankFrontRight, buttons[0].tankBackRight);
         #endregion
 
         #region Player 2 Controls
@@ -821,6 +829,10 @@ public class Controls
         buttons[1].pickupSecondary = InputControl.setKey("2: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick2));
         buttons[1].releaseSecondary = InputControl.setKey("2: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick2));
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick2));
+
+        //Set Tank Drive Axes
+        axes[1].tankForward = InputControl.setAxis("Joystick 2 Axis 9", buttons[1].tankBackLeft, buttons[1].tankFrontLeft);
+        axes[1].tankLeft = InputControl.setAxis("Joystick 2 Axis 10", buttons[1].tankFrontRight, buttons[1].tankBackRight);
         #endregion
 
         #region Player 3 Controls
@@ -851,6 +863,10 @@ public class Controls
         buttons[2].pickupSecondary = InputControl.setKey("3: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick3));
         buttons[2].releaseSecondary = InputControl.setKey("3: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick3));
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick3));
+
+        //Set Tank Drive Axes
+        axes[2].tankForward = InputControl.setAxis("Joystick 3 Axis 9", buttons[2].tankBackLeft, buttons[2].tankFrontLeft);
+        axes[2].tankLeft = InputControl.setAxis("Joystick 3 Axis 10", buttons[2].tankFrontRight, buttons[2].tankBackRight);
         #endregion
 
         #region Player 4 Controls
@@ -881,6 +897,10 @@ public class Controls
         buttons[3].pickupSecondary = InputControl.setKey("4: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick4));
         buttons[3].releaseSecondary = InputControl.setKey("4: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick4));
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick4));
+
+        //Set Tank Drive Axes
+        axes[3].tankForward = InputControl.setAxis("Joystick 4 Axis 9", buttons[3].tankBackLeft, buttons[3].tankFrontLeft);
+        axes[3].tankLeft = InputControl.setAxis("Joystick 4 Axis 10", buttons[3].tankFrontRight, buttons[3].tankBackRight);
         #endregion
 
         #region Player 5 Controls
@@ -911,6 +931,10 @@ public class Controls
         buttons[4].pickupSecondary = InputControl.setKey("5: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick5));
         buttons[4].releaseSecondary = InputControl.setKey("5: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick5));
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick5));
+
+        //Set Tank Drive Axes
+        axes[4].tankForward = InputControl.setAxis("Joystick 5 Axis 9", buttons[4].tankBackLeft, buttons[4].tankFrontLeft);
+        axes[4].tankLeft = InputControl.setAxis("Joystick 5 Axis 10", buttons[4].tankFrontRight, buttons[4].tankBackRight);
         #endregion
 
         #region Player 6 Controls
@@ -941,6 +965,10 @@ public class Controls
         buttons[5].pickupSecondary = InputControl.setKey("6: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick6));
         buttons[5].releaseSecondary = InputControl.setKey("6: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick6));
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick6));
+
+        //Set Tank Drive Axes
+        axes[5].tankForward = InputControl.setAxis("Joystick 6 Axis 9", buttons[5].tankBackLeft, buttons[5].tankFrontLeft);
+        axes[5].tankLeft = InputControl.setAxis("Joystick 6 Axis 10", buttons[5].tankFrontRight, buttons[5].tankBackRight);
         #endregion
 
         IsTankDrive = true;
@@ -983,9 +1011,9 @@ public class Controls
         buttons[0].releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1));
         buttons[0].spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
 
-        //Set axes
-        //axes[0].horizontal = InputControl.setAxis("Joystick 1 Axis 2", buttons[0].left, buttons[0].right);
-        //axes[0].vertical = InputControl.setAxis("Joystick 1 Axis 4", buttons[0].backward, buttons[0].forward);
+        //Set Tank Drive Axes
+        axes[0].tankForward = InputControl.setAxis("Joystick 1 Axis 9", buttons[0].tankBackLeft, buttons[0].tankFrontLeft);
+        axes[0].tankLeft = InputControl.setAxis("Joystick 1 Axis 10", buttons[0].tankFrontRight, buttons[0].tankBackRight);
         #endregion
 
         #region Player 2 Controls
@@ -1016,6 +1044,10 @@ public class Controls
         buttons[1].pickupSecondary = InputControl.setKey("2: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick2));
         buttons[1].releaseSecondary = InputControl.setKey("2: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick2));
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick2));
+
+        //Set Tank Drive Axes
+        axes[1].tankForward = InputControl.setAxis("Joystick 2 Axis 9", buttons[1].tankBackLeft, buttons[1].tankFrontLeft);
+        axes[1].tankLeft = InputControl.setAxis("Joystick 2 Axis 10", buttons[1].tankFrontRight, buttons[1].tankBackRight);
         #endregion
 
         #region Player 3 Controls
@@ -1046,6 +1078,10 @@ public class Controls
         buttons[2].pickupSecondary = InputControl.setKey("3: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick3));
         buttons[2].releaseSecondary = InputControl.setKey("3: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick3));
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick3));
+
+        //Set Tank Drive Axes
+        axes[2].tankForward = InputControl.setAxis("Joystick 3 Axis 9", buttons[2].tankBackLeft, buttons[2].tankFrontLeft);
+        axes[2].tankLeft = InputControl.setAxis("Joystick 3 Axis 10", buttons[2].tankFrontRight, buttons[2].tankBackRight);
         #endregion
 
         #region Player 4 Controls
@@ -1076,6 +1112,10 @@ public class Controls
         buttons[3].pickupSecondary = InputControl.setKey("4: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick4));
         buttons[3].releaseSecondary = InputControl.setKey("4: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick4));
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick4));
+
+        //Set Tank Drive Axes
+        axes[3].tankForward = InputControl.setAxis("Joystick 4 Axis 9", buttons[3].tankBackLeft, buttons[3].tankFrontLeft);
+        axes[3].tankLeft = InputControl.setAxis("Joystick 4 Axis 10", buttons[3].tankFrontRight, buttons[3].tankBackRight);
         #endregion
 
         #region Player 5 Controls
@@ -1106,6 +1146,10 @@ public class Controls
         buttons[4].pickupSecondary = InputControl.setKey("5: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick5));
         buttons[4].releaseSecondary = InputControl.setKey("5: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick5));
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick5));
+
+        //Set Tank Drive Axes
+        axes[4].tankForward = InputControl.setAxis("Joystick 5 Axis 9", buttons[4].tankBackLeft, buttons[4].tankFrontLeft);
+        axes[4].tankLeft = InputControl.setAxis("Joystick 5 Axis 10", buttons[4].tankFrontRight, buttons[4].tankBackRight);
         #endregion
 
         #region Player 6 Controls
@@ -1136,6 +1180,10 @@ public class Controls
         buttons[5].pickupSecondary = InputControl.setKey("6: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick6));
         buttons[5].releaseSecondary = InputControl.setKey("6: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick6));
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick6));
+
+        //Set Tank Drive Axes
+        axes[5].tankForward = InputControl.setAxis("Joystick 6 Axis 9", buttons[5].tankBackLeft, buttons[5].tankFrontLeft);
+        axes[5].tankLeft = InputControl.setAxis("Joystick 6 Axis 10", buttons[5].tankFrontRight, buttons[5].tankBackRight);
         #endregion
 
         IsTankDrive = true;
