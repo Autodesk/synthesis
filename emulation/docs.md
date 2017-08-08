@@ -27,11 +27,7 @@ The build system for the HEL uses GNU Make on Cygwin. Because of this, there are
 
 ### Installing Cygwin
 
-<<<<<<< HEAD
 Cygwin is a Linux layer for Windows. A lot of the original HAL code was written for the RoboRIO, which is a Linux system, meaning that it is easier to compile it for a more similar platform than for a non-Unix based OS like Windows. In addition, Cygwin gives use the ability to use GCC, which is the only supported compiler in Eclipse. If we want to implement an Eclipse plugin, we will have to use Cygwin at some point.
-=======
-Cygwin is a Linux emulation layer for Windows. A lot of the original HAL code was written for the RoboRIO, which is a Linux system, meaning that it is easier to compile it for a more similar platform than for a non-Unix based OS like Windows. In addition, Cygwin gives use the ability to use GCC, which is the only supported compiler in Eclipse. If we want to implement an Eclipse plugin, we will have to use Cygwin at some point.
->>>>>>> emu-hal
 
 To install Cygwin, use the setup executable from [here](https://cygwin.com/setup-x86_64.exe) and run it. Select "Install from internet", followed by "All users" and `C:\cygwin64` as the root directory. *Do not* install to `C:\Program Files` or bad things will happen (Cygwin is supposed to be placed in it's own directory, and if it gets put in Program Files, it will end up putting a bunch of random Linux stuff directly in Program Files). You can leave the local package directory at whatever it defaults to. Also leave "Direct connection" on.
 

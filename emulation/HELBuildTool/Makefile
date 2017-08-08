@@ -4,18 +4,10 @@ ifndef TARGET
 endif
 
 ifndef SYNTHESIS_LIBS
-ifeq ($(TARGET), dev)
-	SYNTHESIS_LIBS := /home/t_leeb/synthesis/emulation/hel/build/
-else
 	SYNTHESIS_LIBS := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/lib
 endif
-endif
 ifndef SYNTHESIS_INCLUDES
-ifeq ($(TARGET), dev)
-	SYNTHESIS_INCLUDES := /home/t_leeb/synthesis/emulation/hel
-else
 	SYNTHESIS_INCLUDES := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/include
-endif
 endif
 
 CCFLAGS := -m64 -L$(SYNTHESIS_LIBS)/ntcore -L$(SYNTHESIS_LIBS)/cpp -L$(SYNTHESIS_LIBS)/hal -lwpilib -lntcore-static -lHAL -lWs2_32 -I$(SYNTHESIS_INCLUDES)/wpilibc/athena/include -I$(SYNTHESIS_INCLUDES)/wpilibc/shared/include -I$(SYNTHESIS_INCLUDES)/include -I$(SYNTHESIS_INCLUDES)/ni-libraries/include -I$(SYNTHESIS_INCLUDES)/wpiutil/src/main/native/include/ -I$(SYNTHESIS_INCLUDES)/ntcore/include -std=c++11
@@ -28,7 +20,9 @@ endif
 SRC_FILES = $(shell find ./ -name "*.cpp")
 HEADER_FILES = $(shell find ./ -name "*.h")
 OBJ_FILES =	$(addprefix build/,$(patsubst %.cpp,%.o,$(SRC_FILES)))
-TEAM_ID_FILE := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool/teamID.cpp
+ifndef TEAM_ID_FILE
+	TEAM_ID_FILE := /cygdrive/c/Program\ Files\ \(x86\)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool/teamID.cpp
+endif
 
 .PHONY: build/FRC_UserProgram
 
