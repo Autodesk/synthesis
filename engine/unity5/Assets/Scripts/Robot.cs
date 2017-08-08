@@ -160,7 +160,7 @@ public class Robot : MonoBehaviour {
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         //sensorManager.AddBeamBreaker(transform.GetChild(0).gameObject, new Vector3(0, 0, 1), new Vector3(0, 90, 0), 1);
         //sensorManager.AddUltrasonicSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        sensorManager.AddGyroSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        //sensorManager.AddGyroSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
         return true;
     }
 
