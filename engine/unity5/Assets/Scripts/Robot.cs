@@ -97,7 +97,8 @@ public class Robot : MonoBehaviour {
         {
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
             else DriveJoints.UpdateAllMotors(rootNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
-            if (MixAndMatchMode.hasManipulator) DriveJoints.UpdateAllMotors(manipulatorNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
+            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 1);
+            if (MixAndMatchMode.hasManipulator && isMixAndMatch == 0) DriveJoints.UpdateAllMotors(manipulatorNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
         }
 
         if (IsResetting)

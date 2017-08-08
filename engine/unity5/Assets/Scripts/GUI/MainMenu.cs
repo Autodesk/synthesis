@@ -16,6 +16,9 @@ public class MainMenu : MonoBehaviour
     public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
+    public static bool isMixAndMatch = false;
+    public GameObject mixAndMatchModeScript;
+
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
     //We store these because it allows us to easily find and access specific UI objects.
     public GameObject homeTab;
@@ -212,6 +215,8 @@ public class MainMenu : MonoBehaviour
 
         selectionPanel.SetActive(true);
 
+        isMixAndMatch = false;
+
     }
 
     /// <summary>
@@ -219,20 +224,27 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchSimDefault()
     {
-        currentSim = Sim.DefaultSimulator;
+        if (!isMixAndMatch)
+        {
+            currentSim = Sim.DefaultSimulator;
 
-        selectionPanel.SetActive(false);
-        simLoadField.SetActive(false);
-        simLoadRobot.SetActive(false);
-        simLoadReplay.SetActive(false);
-        defaultSimulator.SetActive(true);
+            selectionPanel.SetActive(false);
+            simLoadField.SetActive(false);
+            simLoadRobot.SetActive(false);
+            simLoadReplay.SetActive(false);
+            defaultSimulator.SetActive(true);
 
-        PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
-        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+            PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+            PlayerPrefs.SetString("simSelectedField", simSelectedField);
 
 
-        simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
-        simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+            simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
+            simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+        } else
+        {
+            SwitchMixAndMatch();
+        }
+
     }
 
     /// <summary>
@@ -258,9 +270,17 @@ public class MainMenu : MonoBehaviour
     public void SwitchMixAndMatch()
     {
         currentSim = Sim.MixAndMatchMode;
-
+        
         selectionPanel.SetActive(false);
+        simLoadField.SetActive(false);
+        simLoadRobot.SetActive(false);
+        simLoadReplay.SetActive(false);
         mixAndMatchMode.SetActive(true);
+
+        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+
+        isMixAndMatch = true;
+
     }
 
     /// <summary>
@@ -307,6 +327,9 @@ public class MainMenu : MonoBehaviour
 
         defaultSimulator.SetActive(false);
         simLoadField.SetActive(true);
+        mixAndMatchMode.SetActive(false);
+
+        isMixAndMatch = true;
     }
 
     /// <summary>
@@ -674,12 +697,20 @@ public class MainMenu : MonoBehaviour
         {
             simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
-            SwitchSimDefault();
+            if (isMixAndMatch)
+            {
+                PlayerPrefs.SetString("simSelectedField", simSelectedField);
+                mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartSwapSim();
+            } else
+            {
+                SwitchSimDefault();
+            }            
         }
         else
         {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
+        
     }
 
     public void SelectSimRobot()
@@ -785,6 +816,8 @@ public class MainMenu : MonoBehaviour
         dpmSelectedRobot = PlayerPrefs.GetString("dpmSelectedRobot");
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
+
+
         canvas = GetComponent<Canvas>();
 
 
@@ -849,6 +882,9 @@ public class MainMenu : MonoBehaviour
         inputConflict = AuxFunctions.FindObject(gameObject, "InputConflict");
 
         AuxFunctions.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+
+        mixAndMatchModeScript = AuxFunctions.FindObject(gameObject, "MixAndMatchModeScript");
+        Debug.Log(mixAndMatchModeScript.ToString());
     }
 
     void InitGraphicsSettings()
