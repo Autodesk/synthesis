@@ -153,12 +153,14 @@ public class MixAndMatchMode : MonoBehaviour
     {
         //PlayerPrefs.SetString("simSelectedField", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\Fields\\2014 Aerial Assist");
         //PlayerPrefs.SetString("simSelectedFieldName", "2014 Aerial Assist");
+
+
         PlayerPrefs.SetString("simSelectedRobot", GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
         PlayerPrefs.SetString("simSelectedManipulator", GetManipulator(selectedManipulator));
         PlayerPrefs.Save();
         isQuickSwapMode = true;
-        SceneManager.LoadScene("QuickSwap");
+        SceneManager.LoadScene("MixAndMatch");
     }
 
     #region Presets

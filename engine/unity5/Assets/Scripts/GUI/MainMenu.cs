@@ -689,6 +689,10 @@ public class MainMenu : MonoBehaviour
         Controls.Reset();
         Controls.Save();
     }
+
+    /// <summary>
+    /// Called when the "Select Field" button is clicked within the set field panel
+    /// </summary>
     public void SelectSimField()
     {
         GameObject fieldList = GameObject.Find("SimLoadFieldList");
@@ -700,6 +704,8 @@ public class MainMenu : MonoBehaviour
             if (isMixAndMatch)
             {
                 PlayerPrefs.SetString("simSelectedField", simSelectedField);
+                fieldList.SetActive(false);
+                splashScreen.SetActive(true);
                 mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartSwapSim();
             } else
             {

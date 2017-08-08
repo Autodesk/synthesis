@@ -7304,6 +7304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0c4953847945db49995aedafcbde146, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mixAndMatchModeScript: {fileID: 0}
   homeTab: {fileID: 1769824028}
   simTab: {fileID: 733606798}
   optionsTab: {fileID: 1921058177}
@@ -8315,7 +8316,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 49.99997, y: 0}
+  m_AnchoredPosition: {x: 50, y: 0}
   m_SizeDelta: {x: -100, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &941821009
@@ -16851,14 +16852,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 860403445}
         m_MethodName: SwitchSimLoadField
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
