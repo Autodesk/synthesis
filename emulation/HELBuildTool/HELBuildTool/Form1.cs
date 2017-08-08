@@ -32,13 +32,18 @@ namespace WindowsFormsApp1
 
             Console.WriteLine(path);
             String currentDir = System.IO.Directory.GetCurrentDirectory();
+            String windowsCurrentDir = currentDir;
+            //convert currentDir to a cygwin path
+            currentDir = currentDir.Replace("C:\\", "/cygdrive/c/").Replace("\\", "/");
             System.IO.Directory.SetCurrentDirectory(path);
             Console.WriteLine(currentDir);
 
 #if DEBUG
             String cygwinPath = "C:\\cygwin64";
-            String buildTool = currentDir + "../";
-            String makeArgs = "SYNTHESIS_LIBS=" + currentDir + "/../../emulation/hel/build SYNTHESIS_INCLUDES=" + currentDir + "../../emulation/hel/";
+            String buildTool = currentDir + "/../../..";
+            String makeArgs = "SYNTHESIS_LIBS=" + currentDir + "/../../../../../emulation/hel/build " +
+              "SYNTHESIS_INCLUDES=" + currentDir + "/../../../../../emulation/hel/ " +
+              "TEAM_ID_FILE=" + currentDir + "/../../../teamID.cpp";
 #else
             String cygwinPath = "C:\\Program Files (x86)\\Autodesk\\Synthesis\\cygwin64";
             String buildTool = "/cygdrive/c/Program Files (x86)/Autodesk/Synthesis/SynthesisDrive/HELBuildTool";
@@ -57,6 +62,7 @@ namespace WindowsFormsApp1
             startInfo.UseShellExecute = false;
 
             System.Diagnostics.Process.Start(startInfo);
+            System.IO.Directory.SetCurrentDirectory(windowsCurrentDir);
         }
 
         private void folderBrowserDialog1_HelpRequest(object sender, EventArgs e)
