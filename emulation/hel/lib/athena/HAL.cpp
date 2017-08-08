@@ -320,7 +320,7 @@ void HAL_BaseInitialize(int32_t* status) {
 /**
  * Call this to start up HAL. This is required for robot programs.
  */
-int32_t HAL_Initialize(int32_t mode) {
+int32_t HAL_Initialize(int32_t timeout, int32_t mode) {
   WSADATA wsaData;
   int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
   if (iResult != 0) {
