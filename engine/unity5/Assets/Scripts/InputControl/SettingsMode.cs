@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
+    private Text enableTankDriveText;
 
     // Update is called once per frame
     void Update()
@@ -43,6 +45,30 @@ public class SettingsMode : MonoBehaviour
         {
             Controls.ResetArcadeDrive();
             Controls.Save();
+        }
+    }
+
+    public void OnEnableTankDrive()
+    {
+        if (!Controls.TankDriveEnabled)
+        {
+            Controls.TankDriveEnabled = true;
+            Controls.IsTankDrive = true;
+            Controls.check = false;
+            Controls.SwitchControls();
+            Controls.Save();
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Disable Tank Drive";
+        }
+        else
+        {
+            Controls.TankDriveEnabled = false;
+            Controls.IsTankDrive = false;
+            Controls.check = true;
+            Controls.SwitchControls();
+            Controls.Save();
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Enable Tank Drive";
         }
     }
 
