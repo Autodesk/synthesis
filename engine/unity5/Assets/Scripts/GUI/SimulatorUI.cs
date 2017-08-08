@@ -41,17 +41,17 @@ public class SimulatorUI : MonoBehaviour
         }
     }
 
-    public void ShowControlPanel(bool show)
-    {
-        if (show)
-        {
-            AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(true);
-        }
-        else
-        {
-            AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(false);
-        }
-    }
+    //public void ShowControlPanel(bool show)
+    //{
+    //    if (show)
+    //    {
+    //        AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(true);
+    //    }
+    //    else
+    //    {
+    //        AuxFunctions.FindObject(canvas, "InputManagerPanel").SetActive(false);
+    //    }
+    //}
 
 
     //In game UI loads robot using UI icons
