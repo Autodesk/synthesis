@@ -7,6 +7,7 @@ using UnityEngine;
 using BulletUnity;
 using BulletSharp;
 using Assets.Scripts.FSM;
+using UnityEngine.UI;
 
 /// <summary>
 /// Ultrasonic sensor class, must be attached to a node gameobject
@@ -14,10 +15,10 @@ using Assets.Scripts.FSM;
 public class UltraSensor : SensorBase
 {
 
-    private float ultraAngle; //angle in degrees of the sensor's range
-    public float maxRange; //maximmum range of the sensor
+    public float MaxRange; //maximmum range of the sensor
     private UnityEngine.Vector3 offset = Vector3.zero; //offset from node in world coordinates
     private UnityEngine.Vector3 rotation = Vector3.forward; //rotation difference from the node rotation
+    private bool isChangingRange;
 
     //Initialization
     void Start()
@@ -41,6 +42,7 @@ public class UltraSensor : SensorBase
 
         //var as the type (lambda function)
         //these variables can only live INSIDE a function. 
+        UpdateOutputDisplay();
         Debug.Log(ReturnOutput());
     }
 
@@ -49,12 +51,12 @@ public class UltraSensor : SensorBase
     {
         //setting shortest distance of a collider to the maxRange, then if any colliders are closer to the sensor, 
         //their distanceToCollider value becomes the new shortest distance
-        float shortestDistance = maxRange;
+        float shortestDistance = MaxRange;
 
         //Raycasting begins
         Ray ray = new Ray(gameObject.transform.position, transform.forward);
         BulletSharp.Math.Vector3 fromUltra = ray.origin.ToBullet();
-        BulletSharp.Math.Vector3 toCollider = ray.GetPoint(maxRange).ToBullet();
+        BulletSharp.Math.Vector3 toCollider = ray.GetPoint(MaxRange).ToBullet();
         
         Vector3 toColliderUnity = toCollider.ToUnity();
 
@@ -69,37 +71,56 @@ public class UltraSensor : SensorBase
         List<BulletSharp.Math.Vector3> colliderPositions = raysCallback.HitPointWorld;
         BulletSharp.Math.Vector3 colliderPosition = BulletSharp.Math.Vector3.Zero;
 
-        float distanceToCollider = maxRange;
+        float distanceToCollider = MaxRange;
         //Loop through all hit points and get the shortest distance, exclude the origin since it is also counted as a hit point
         foreach (BulletSharp.Math.Vector3 pos in colliderPositions)
         {
-            if ((pos - fromUltra).Length < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
+            if ((pos - fromUltra).Length <= MaxRange && (pos - fromUltra).Length < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
             {
                 distanceToCollider = (pos - fromUltra).Length;
                 colliderPosition = pos;
             }
         }
 
+        //Draw a line to view the ray action
+        //When the ray links to the middle of the field, it means the sensor is out of range
         Debug.DrawLine(fromUltra.ToUnity(), colliderPosition.ToUnity(), Color.green, 5f);
 
+        //A check that might be useful in the future if use a bundle of rays instead of a single ray
         if (distanceToCollider < shortestDistance)
         {
             shortestDistance = distanceToCollider;
         }
 
-        //Will need when data sent to emulator
-        //if (shortestDistance == maxRange)
-        //{
-        //    //read out to user that nothing within range was detected by ultrasonic sensor;
-        //    Debug.Log("False");
-        //}
-        //else
-        //{
-        //    //read out to user that first object detected was 'shortestDistance' away;
-        //    Debug.Log("True");
-        //}
-
         return shortestDistance;
     }
 
+    public override void SetSensorRange(float range)
+    {
+        MaxRange = range;
+    }
+
+    public override float GetSensorRange()
+    {
+        return MaxRange;
+    }
+
+    /// <summary>
+    /// Update the maxRange of ultrasonic sensor
+    /// </summary>
+    public override void UpdateRangeTransform()
+    {
+        MaxRange += Input.GetAxis("CameraVertical");
+    }
+
+    public override void UpdateOutputDisplay()
+    {
+        base.UpdateOutputDisplay();
+        GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
+        if (outputPanel != null)
+        {
+            GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
+            outputText.GetComponent<Text>().text = gameObject.name + " Output (meters)";
+        }
+    }
 }

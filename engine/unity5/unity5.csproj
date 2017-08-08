@@ -288,6 +288,8 @@
     <Compile Include="Assets\Scripts\Robot.cs" />
     <Compile Include="Assets\Scripts\RobotCamera.cs" />
     <Compile Include="Assets\Scripts\RobotCameraGUI.cs" />
+    <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
+    <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
