@@ -1,4 +1,4 @@
-# Autodesk Synthesis
+# <img src="http://bxd.autodesk.com/synthesis/images/synthesislogo.png" alt="logo" width="50" height ="50"/>Autodesk Synthesis
 
 Synthesis is a robotics simulator designed to help FIRST Robotics teams design, strategize, test, and practice. Teams can import their own robot and field designs or use preexisting ones into the simulator for a variety of uses, including:
 * Testing robot designs
