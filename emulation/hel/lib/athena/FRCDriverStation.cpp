@@ -47,6 +47,8 @@ static hal::priority_condition_variable newDSDataAvailableCond;
 static hal::priority_mutex newDSDataAvailableMutex;
 static int newDSDataAvailableCounter{0};
 
+extern int teamID;
+
 FRCCommonControlData lastDataPacket;
 DynamicControlData lastDynamicControlPacket [32];
 /*WaitSemaphore newDataSemInternal;
@@ -67,7 +69,6 @@ void DriverStationThread() {
 	int robotSocket;
 	int dsSocket;
   
-  int teamID = 3636;
 	uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
 	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
   //10.0.2.5

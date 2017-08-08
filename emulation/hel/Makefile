@@ -18,7 +18,7 @@ ifeq ($(TARGET), release)
 	CCflags += -O2
 endif
 
-CCFLAGS_CPP := -Iallwpilib/wpilibc/shared/include -Iallwpilib/wpilibc/athena/include -Intcore/include $(CCFLAGS)
+CCFLAGS_CPP := -Iallwpilib/wpilibc/athena/include -Iallwpilib/wpilibc/shared/include -Iinclude -Intcore/include $(CCFLAGS)
 CCFLAGS_HAL := -Ilib -Ilib/athena -Intcore/include $(CCFLAGS) -Iallwpilib/wpilibc/shared/include -Iallwpilib/wpilibc/athena/include
 CCFLAGS_NTCORE := -Intcore/include $(CCFLAGS)
 CCFLAGS_JAVA := -I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/win32 -Ibuild/java/header -Intcore/include -fpermissive $(CCFLAGS)
@@ -30,7 +30,7 @@ SRC_FILES_NTCORE := $(shell find ./ntcore/src -name "*.cpp")
 SRC_FILES_NTCORE_JAVA := ntcore/java/lib/NetworkTablesJNI.cpp
 JAVA_FILES_NTCORE_JAVA := $(shell find ./ntcore/java -name "*.java")
 
-SRC_FILES_CPP := $(shell find ./allwpilib/wpilibc -name "*.cpp" -not -name "VisionRunner.cpp" -not -name "CameraServer.cpp" -not -wholename "*sim/*")
+SRC_FILES_CPP := $(shell find ./allwpilib/wpilibc/ -name "*.cpp" -not -name "VisionRunner.cpp" -not -name "CameraServer.cpp" -not -wholename "*sim/*")
 
 SRC_FILES_JAVA := $(shell find ./allwpilib/wpilibj -name "*.cpp" -not -name "CANJNI.cpp")
 
@@ -131,13 +131,16 @@ hal: $(OUT_HAL)
 install: $(OUT_CPP)
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include
-	@cp -rf include ../../installer/SynthesisDrive/include/include
+	@cp -rf include ../../installer/SynthesisDrive/include
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/ni-libraries\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/ni-libraries
 	@cp -rf allwpilib/ni-libraries/include ../../installer/SynthesisDrive/include/ni-libraries/include
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpilibc/athena\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/athena
+	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/athena/vision
 	@cp -rf allwpilib/wpilibc/athena/include ../../installer/SynthesisDrive/include/wpilibc/athena/include
+	@cp -rf CameraServer.h ../../installer/SynthesisDrive/include/wpilibc/athena/include
+	@cp -rf VisionRunner.h ../../installer/SynthesisDrive/include/wpilibc/athena/include/vision
 	@echo -e "\e[1m\e[32mINSTALL\e[39m include/wpilibc/shared\e[0m"
 	@mkdir -p ../../installer/SynthesisDrive/include/wpilibc/shared
 	@cp -rf allwpilib/wpilibc/shared/include ../../installer/SynthesisDrive/include/wpilibc/shared/include
