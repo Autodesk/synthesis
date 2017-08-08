@@ -48,6 +48,20 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
+    //public void UpdateTankToggle()
+    //{
+    //    if (Controls.clicked)
+    //    {
+    //        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+    //        enableTankDriveText.text = "Disable Tank Drive";
+    //    }
+    //    else
+    //    {
+    //        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+    //        enableTankDriveText.text = "Enable Tank Drive";
+    //    }
+    //}
+
     public void OnEnableTankDrive()
     {
         if (!Controls.TankDriveEnabled)
@@ -55,6 +69,7 @@ public class SettingsMode : MonoBehaviour
             Controls.TankDriveEnabled = true;
             Controls.IsTankDrive = true;
             Controls.check = false;
+            //Controls.clicked = true;
             Controls.SwitchControls();
             Controls.Save();
             enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();

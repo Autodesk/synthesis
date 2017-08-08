@@ -93,30 +93,24 @@ public class DriveJoints : MonoBehaviour
             can = dioModules[0].canValues;
         }
 
-        //bool joystickControl = true;
-
-        //if (joystickControl)
-        //{
-        //pwm[0] +=
-        //(InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f +
-        //(InputControl.GetAxisRaw(Controls.axes.vertical)) * .5f;
-
-        //pwm[1] +=
-        //(InputControl.GetAxisRaw(Controls.axes.vertical)) * .5f +
-        //(InputControl.GetAxisRaw(Controls.axes.horizontal)) * .5f;
-        //}
-
         if (Controls.IsTankDrive)
         {
-            //Left motor
-            pwm[0] +=
-               (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontLeft) ? SPEED_ARROW_PWM : 0.0f) +
-               (InputControl.GetButton(Controls.buttons[controlIndex].tankBackLeft) ? -SPEED_ARROW_PWM : 0.0f);
+            #region Tank Drive
+            ////Left motor
+            //pwm[0] +=
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontLeft) ? SPEED_ARROW_PWM : 0.0f) +
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackLeft) ? -SPEED_ARROW_PWM : 0.0f);
 
-            //Right motor
+            ////Right motor
+            //pwm[1] +=
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
+
+            pwm[0] +=
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankForward) * SPEED_ARROW_PWM);
+
             pwm[1] +=
-               (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
-               (InputControl.GetButton(Controls.buttons[controlIndex].tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeft) * SPEED_ARROW_PWM);
 
             pwm[2] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
@@ -137,37 +131,30 @@ public class DriveJoints : MonoBehaviour
             pwm[6] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
-
-            //GameObject.Find("TankMode").GetComponent<TankMode>();
+            #endregion
         }
-
-        //if (tankDrive)
-        //{
-        //    Controls.TankDrive();
-        //    //Left motor
-        //    pwm[0] +=
-        //        (InputControl.GetButton(Controls.buttons.tankFrontLeft) ? SPEED_ARROW_PWM : 0.0f) +
-        //        (InputControl.GetButton(Controls.buttons.tankBackLeft) ? -SPEED_ARROW_PWM : 0.0f);
-
-        //    //Right motor
-        //    pwm[1] +=
-        //       (InputControl.GetButton(Controls.buttons.tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
-        //       (InputControl.GetButton(Controls.buttons.tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
-        //}
-
         else
         {
+            #region Arcade Drive
+            //pwm[0] +=
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+
+            //pwm[1] +=
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+
             pwm[0] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
 
             pwm[1] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
 
             pwm[2] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
@@ -188,6 +175,7 @@ public class DriveJoints : MonoBehaviour
             pwm[6] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
+            #endregion
         }
 
         #region Old Controls: 2017 and Older
