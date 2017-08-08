@@ -34,17 +34,17 @@ public class SettingsMode : MonoBehaviour
 
     public void OnReset()
     {
-        Controls.ArcadeDrive();
-        Controls.Save();
+        if (Controls.IsTankDrive)
+        {
+            Controls.ResetTankDrive();
+            Controls.Save();
+        }
+        else
+        {
+            Controls.ResetArcadeDrive();
+            Controls.Save();
+        }
     }
-
-    //public void OnTankDrive()
-    //{
-    //    Controls.IsTankDrive = true;
-    //    Controls.TankDrive();
-    //    Controls.Save();
-    //}
-
 
     public void UpdateAllText()
     {
