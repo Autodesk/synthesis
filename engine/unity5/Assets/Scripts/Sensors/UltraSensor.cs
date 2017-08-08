@@ -14,10 +14,10 @@ using Assets.Scripts.FSM;
 public class UltraSensor : SensorBase
 {
 
-    private float ultraAngle; //angle in degrees of the sensor's range
-    public float maxRange; //maximmum range of the sensor
+    public float MaxRange; //maximmum range of the sensor
     private UnityEngine.Vector3 offset = Vector3.zero; //offset from node in world coordinates
     private UnityEngine.Vector3 rotation = Vector3.forward; //rotation difference from the node rotation
+    private bool isChangingRange;
 
     //Initialization
     void Start()
@@ -49,12 +49,12 @@ public class UltraSensor : SensorBase
     {
         //setting shortest distance of a collider to the maxRange, then if any colliders are closer to the sensor, 
         //their distanceToCollider value becomes the new shortest distance
-        float shortestDistance = maxRange;
+        float shortestDistance = MaxRange;
 
         //Raycasting begins
         Ray ray = new Ray(gameObject.transform.position, transform.forward);
         BulletSharp.Math.Vector3 fromUltra = ray.origin.ToBullet();
-        BulletSharp.Math.Vector3 toCollider = ray.GetPoint(maxRange).ToBullet();
+        BulletSharp.Math.Vector3 toCollider = ray.GetPoint(MaxRange).ToBullet();
         
         Vector3 toColliderUnity = toCollider.ToUnity();
 
@@ -69,11 +69,11 @@ public class UltraSensor : SensorBase
         List<BulletSharp.Math.Vector3> colliderPositions = raysCallback.HitPointWorld;
         BulletSharp.Math.Vector3 colliderPosition = BulletSharp.Math.Vector3.Zero;
 
-        float distanceToCollider = maxRange;
+        float distanceToCollider = MaxRange;
         //Loop through all hit points and get the shortest distance, exclude the origin since it is also counted as a hit point
         foreach (BulletSharp.Math.Vector3 pos in colliderPositions)
         {
-            if ((pos - fromUltra).Length < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
+            if ((pos - fromUltra).Length <= MaxRange && (pos - fromUltra).Length < distanceToCollider && !pos.Equals(BulletSharp.Math.Vector3.Zero))
             {
                 distanceToCollider = (pos - fromUltra).Length;
                 colliderPosition = pos;
@@ -87,19 +87,28 @@ public class UltraSensor : SensorBase
             shortestDistance = distanceToCollider;
         }
 
-        //Will need when data sent to emulator
-        //if (shortestDistance == maxRange)
-        //{
-        //    //read out to user that nothing within range was detected by ultrasonic sensor;
-        //    Debug.Log("False");
-        //}
-        //else
-        //{
-        //    //read out to user that first object detected was 'shortestDistance' away;
-        //    Debug.Log("True");
-        //}
-
         return shortestDistance;
     }
 
+    public override void SetSensorRange(float range)
+    {
+        MaxRange = range;
+    }
+
+    public override void UpdateTransform()
+    {
+        if (IsChangingPosition)
+        {
+            if (isChangingRange)
+            {
+                MaxRange += Input.GetAxis("CameraVertical");
+            }
+        }
+        base.UpdateTransform();
+    }
+
+    public override float GetSensorRange()
+    {
+        return MaxRange;
+    }
 }

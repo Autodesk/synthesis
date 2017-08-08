@@ -11,12 +11,8 @@ public class BeamBreaker : SensorBase
     public bool IsEmitter;
     public GameObject Emitter;
     public GameObject Receiver;
-    private bool setPosition;
-    private Vector3 receivePosition;
     private float sensorOffset;
-    private void Start()
-    {
-    }
+    private bool isChangingOffset;
 
     private void Update()
     {
@@ -63,7 +59,30 @@ public class BeamBreaker : SensorBase
         }
     }
 
-    public void SetSensorOffset(float distance)
+    public override void UpdateTransform()
+    {
+        if (IsChangingPosition)
+        {
+            if (isChangingOffset)
+            {
+                sensorOffset += Input.GetAxis("CameraVertical");
+                SetSensorRange(sensorOffset);
+            }
+        }
+        base.UpdateTransform();
+    }
+
+    public void SetChangingOffset(bool isChanging)
+    {
+        isChangingOffset = isChanging;
+    }
+
+    public override float GetSensorRange()
+    {
+        return sensorOffset;
+    }
+
+    public override void SetSensorRange(float distance)
     {
         Emitter.transform.localPosition = new Vector3(0, 0, -distance / 2);
         Receiver.transform.localPosition = new Vector3(0, 0, distance / 2);
