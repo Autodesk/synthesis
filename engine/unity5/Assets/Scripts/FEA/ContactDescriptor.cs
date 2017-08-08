@@ -22,10 +22,5 @@ namespace Assets.Scripts.FEA
         /// The BRigidBody associated with the robot.
         /// </summary>
         public BRigidBody RobotBody { get; set; }
-
-        /// <summary>
-        /// The BRigidBody associated with the body of the environment.
-        /// </summary>
-        public BRigidBody OtherBody { get; set; }
     }
 }
