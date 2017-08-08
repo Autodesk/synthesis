@@ -1,31 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using BulletUnity;
-using BulletSharp;
 
 class SensorManagerGUI : MonoBehaviour
 {
-    private SimUI simUI;
-    private GameObject canvas;
-    private SensorBase currentSensor;
-    private SensorManager sensorManager;
+    SimUI simUI;
+    GameObject canvas;
+    SensorBase currentSensor;
+    SensorManager sensorManager;
+    DynamicCamera.CameraState preConfigState;
+    DynamicCamera dynamicCamera;
 
-    private GameObject configureSensorButton;
-    private GameObject sensorOptionPanel;
-    private GameObject sensorTypePanel;
-    private GameObject cancelOptionButton;
-    private GameObject addSensorButton;
-    private GameObject selectExistingButton;
+    GameObject configureSensorButton;
+    GameObject sensorOptionPanel;
+    GameObject sensorTypePanel;
+    GameObject cancelOptionButton;
+    GameObject addSensorButton;
+    GameObject selectExistingButton;
 
-    private GameObject addUltrasonicButton;
-    private GameObject addBeamBreakerButton;
-    private GameObject cancelTypeButton;
+    GameObject addUltrasonicButton;
+    GameObject addBeamBreakerButton;
+    GameObject addGyroButton;
+    GameObject cancelTypeButton;
 
-    private GameObject selectedNode;
+    GameObject selectedNode;
 
     GameObject sensorAnglePanel;
     GameObject xAngleEntry;
@@ -44,6 +42,7 @@ class SensorManagerGUI : MonoBehaviour
     GameObject changeSensorNodeButton;
     GameObject configureSensorPanel;
     GameObject cancelNodeSelectionButton;
+    GameObject deleteSensorButton;
 
     GameObject lockPositionButton;
     GameObject lockAngleButton;
@@ -52,14 +51,20 @@ class SensorManagerGUI : MonoBehaviour
     Text sensorNodeText;
 
     private bool isChoosingOption;
+
     private bool isAddingSensor;
     private bool isAddingUltrasonic;
     private bool isAddingBeamBreaker;
+    private bool isAddingGyro;
+
     private bool isSelectingSensor;
     private bool isEditingAngle;
     private bool isEditingRange;
     private bool nodeConfirmed;
     private bool sensorConfirmed;
+
+    //A list of all output panels instantiated
+    private List<GameObject> sensorOutputPanels = new List<GameObject>();
 
     private void Start()
     {
@@ -67,19 +72,26 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     private void Update()
-    { 
+    {
+        //When the current sensor is ready to be configured, call its UpdateTransformFunction
         if (currentSensor != null && currentSensor.IsChangingPosition)
         {
             currentSensor.UpdateTransform();
             sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
+            UpdateSensorAnglePanel();
+            UpdateSensorRangePanel();
         }
     }
 
+    /// <summary>
+    /// Find ALL the GUI stuff needed for the sensor GUI to work
+    /// </summary>
     private void FindElements()
     {
         canvas = GameObject.Find("Canvas");
         simUI = gameObject.GetComponent<SimUI>();
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
+        dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
 
         sensorOptionPanel = AuxFunctions.FindObject(canvas, "SensorOptionPanel");
         sensorTypePanel = AuxFunctions.FindObject(canvas, "SensorTypePanel");
@@ -93,6 +105,7 @@ class SensorManagerGUI : MonoBehaviour
         //For choosing sensor type
         addUltrasonicButton = AuxFunctions.FindObject(sensorTypePanel, "AddUltrasonic");
         addBeamBreakerButton = AuxFunctions.FindObject(sensorTypePanel, "AddBeamBreaker");
+        addGyroButton = AuxFunctions.FindObject(sensorTypePanel, "AddGyro");
         cancelTypeButton = AuxFunctions.FindObject(sensorTypePanel, "CancelButton");
 
         //For Sensor position and attachment configuration
@@ -101,6 +114,7 @@ class SensorManagerGUI : MonoBehaviour
         sensorConfigurationModeButton = AuxFunctions.FindObject(configureSensorPanel, "ConfigurationMode");
         sensorNodeText = AuxFunctions.FindObject(configureSensorPanel, "NodeText").GetComponent<Text>();
         cancelNodeSelectionButton = AuxFunctions.FindObject(configureSensorPanel, "CancelNodeSelectionButton");
+        deleteSensorButton = AuxFunctions.FindObject(configureSensorPanel, "DeleteSensorButton");
 
         //For Sensor angle configuration
         sensorAnglePanel = AuxFunctions.FindObject(canvas, "SensorAnglePanel");
@@ -123,13 +137,17 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     #region Sensor Option Panel
-
+    /// <summary>
+    /// Method for "Add/Configure Sensor" button. End configuration ends all window related to sensor addition/configuration
+    /// </summary>
     public void ToggleSensorOption()
     {
         isChoosingOption = !isChoosingOption;
         sensorOptionPanel.SetActive(isChoosingOption);
         if (isChoosingOption)
         {
+            preConfigState = dynamicCamera.cameraState;
+            dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
             configureSensorButton.GetComponentInChildren<Text>().text = "End Configuration";
         }
         else
@@ -139,6 +157,9 @@ class SensorManagerGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Activate the state of choosing anchor node for new sensors to attach
+    /// </summary>
     public void ToggleAddSensor()
     {
         isAddingSensor = !isAddingSensor;
@@ -153,14 +174,21 @@ class SensorManagerGUI : MonoBehaviour
         {
             addSensorButton.GetComponentInChildren<Text>().text = "Add New Sensor";
             selectExistingButton.SetActive(true);
+            //Turn off selectingNode state
             sensorManager.SelectingNode = false;
+            //Update the node selected to selectedNode
             SyncNodeSelection();
-            Debug.Log(selectedNode.name);
+
+            cancelOptionButton.SetActive(false);
+
+            //Activate sensor type panel if a valid node is selected
             if (selectedNode != null)
             {
                 sensorTypePanel.SetActive(true);
                 sensorOptionPanel.SetActive(false);
+                CancelOptionSelection();
             }
+            //Stay at sensor option panel
             else
             {
                 UserMessageManager.Dispatch("No node selected!", 3f);
@@ -168,6 +196,9 @@ class SensorManagerGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Activate the state of selecting existing sensors on the robot
+    /// </summary>
     public void ToggleSelectExisting()
     {
         isSelectingSensor = !isSelectingSensor;
@@ -181,15 +212,22 @@ class SensorManagerGUI : MonoBehaviour
         }
         else
         {
+            cancelOptionButton.SetActive(false);
+
             selectExistingButton.GetComponentInChildren<Text>().text = "Select Existing Sensor";
             addSensorButton.SetActive(true);
+            //Turn off selecting sensor state
             sensorManager.SelectingSensor = false;
+            //Update selectedSensor
             SyncSensorSelection();
-            if(currentSensor != null)
+            //If a valid sensor is selected, start configuring it
+            if (currentSensor != null)
             {
                 sensorOptionPanel.SetActive(false);
                 StartConfiguration();
+                CancelOptionSelection();
             }
+            //Stay at sensorOptionPanel
             else
             {
                 UserMessageManager.Dispatch("No sensor selected!", 3f);
@@ -197,12 +235,18 @@ class SensorManagerGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set the GUI selectedNode to the sensorManager's selectedNode and then set the sensorManager's selectedNode to null
+    /// </summary>
     public void SyncNodeSelection()
     {
         selectedNode = sensorManager.SelectedNode;
         sensorManager.ClearSelectedNode();
     }
 
+    /// <summary>
+    /// Similar function as the SyncNodeFunction
+    /// </summary>
     public void SyncSensorSelection()
     {
         if (sensorManager.SelectedSensor == null)
@@ -217,7 +261,7 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Exit the state of selecting node attachment
+    /// Exit the state of selecting node attachment and go back to sensorOptionPanel
     /// </summary>
     public void CancelOptionSelection()
     {
@@ -225,50 +269,62 @@ class SensorManagerGUI : MonoBehaviour
         {
             isAddingSensor = false;
             sensorManager.ClearSelectedNode();
-            addSensorButton.GetComponentInChildren<Text>().text = "Add New Sensor";
-            selectExistingButton.SetActive(true);
-        }else if (isSelectingSensor)
+
+        }
+        else if (isSelectingSensor)
         {
             isSelectingSensor = false;
             sensorManager.ClearSelectedSensor();
-            selectExistingButton.GetComponentInChildren<Text>().text = "Select Existing Sensor";
-            addSensorButton.SetActive(true);
+
         }
+        selectExistingButton.GetComponentInChildren<Text>().text = "Select Existing Sensor";
+        addSensorButton.SetActive(true);
+        addSensorButton.GetComponentInChildren<Text>().text = "Add New Sensor";
+        selectExistingButton.SetActive(true);
         cancelOptionButton.SetActive(false);
     }
 
     #endregion
 
     #region Choose Sensor Type Panel
+    /// <summary>
+    /// Add a new ultrasonic sensor on the selectedNode and then start configuring it
+    /// </summary>
     public void ToggleAddUltrasonic()
     {
         isAddingUltrasonic = !isAddingUltrasonic;
-
+        addBeamBreakerButton.SetActive(!isAddingUltrasonic);
+        addGyroButton.SetActive(!isAddingUltrasonic);
+        cancelTypeButton.SetActive(isAddingUltrasonic);
         if (isAddingUltrasonic)
         {
             addUltrasonicButton.GetComponentInChildren<Text>().text = "Confirm";
-            addBeamBreakerButton.SetActive(false);
-            cancelTypeButton.SetActive(true);
+
+            //Add a sensor
             AddUltrasonic();
-            Debug.Log(currentSensor.name);
         }
         else
         {
             addUltrasonicButton.GetComponentInChildren<Text>().text = "Add Ultrasonic";
-            Debug.Log(currentSensor.name);
+
             StartConfiguration();
             sensorTypePanel.SetActive(false);
         }
     }
 
+    /// <summary>
+    /// Adds a new beam breaker sensor on the selectedNode and then start configuring it
+    /// </summary>
     public void ToggleAddBeamBreaker()
     {
         isAddingBeamBreaker = !isAddingBeamBreaker;
+        addUltrasonicButton.SetActive(!isAddingBeamBreaker);
+        addGyroButton.SetActive(!isAddingBeamBreaker);
+        cancelTypeButton.SetActive(isAddingBeamBreaker);
         if (isAddingBeamBreaker)
         {
             addBeamBreakerButton.GetComponentInChildren<Text>().text = "Confirm";
-            addUltrasonicButton.SetActive(false);
-            cancelTypeButton.SetActive(true);
+
             AddBeamBreaker();
         }
         else
@@ -279,28 +335,65 @@ class SensorManagerGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Adds a new gyro sensor on the selectedNode and then start configuring it
+    /// </summary>
+    public void ToggleAddGyro()
+    {
+        isAddingGyro = !isAddingGyro;
+        addUltrasonicButton.SetActive(!isAddingGyro);
+        addBeamBreakerButton.SetActive(!isAddingGyro);
+        cancelTypeButton.SetActive(isAddingGyro);
+        if (isAddingGyro)
+        {
+            addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
+
+            AddGyro();
+        }
+        else
+        {
+            addGyroButton.GetComponentInChildren<Text>().text = "Add Gyro";
+            StartConfiguration();
+            sensorTypePanel.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Cancel the current sensor type selection and destroy the sensor game object
+    /// </summary>
     public void CancelSensorTypeSelection()
     {
         if (isAddingBeamBreaker)
         {
             isAddingBeamBreaker = false;
             addBeamBreakerButton.GetComponentInChildren<Text>().text = "Add Beam Breaker";
-            addUltrasonicButton.SetActive(true);
-        }else if (isAddingUltrasonic)
+        }
+        else if (isAddingUltrasonic)
         {
             isAddingUltrasonic = false;
             addUltrasonicButton.GetComponentInChildren<Text>().text = "Add Ultrasonic";
-            addBeamBreakerButton.SetActive(true);
         }
+        else if (isAddingGyro)
+        {
+            isAddingGyro = false;
+            addGyroButton.GetComponentInChildren<Text>().text = "Add Gyro";
+        }
+        addUltrasonicButton.SetActive(true);
+        addBeamBreakerButton.SetActive(true);
+        addGyroButton.SetActive(true);
         Destroy(currentSensor.gameObject);
+        sensorManager.RemoveSensor(currentSensor.gameObject);
         cancelTypeButton.SetActive(false);
     }
 
+    /// <summary>
+    /// Methods that call corresponding add sensor functions in sensorManager, attach a new sensor on selectedNode
+    /// </summary>
     public void AddUltrasonic()
     {
         if (selectedNode != null)
         {
-            currentSensor = sensorManager.AddUltrasonicSensor(selectedNode, new Vector3(0, 0.2f, 0), Vector3.zero);
+            currentSensor = sensorManager.AddUltrasonic(selectedNode, new Vector3(0, 0.2f, 0), Vector3.zero);
         }
     }
     public void AddBeamBreaker()
@@ -310,10 +403,29 @@ class SensorManagerGUI : MonoBehaviour
             currentSensor = sensorManager.AddBeamBreaker(selectedNode, Vector3.zero, Vector3.zero);
         }
     }
+    public void AddGyro()
+    {
+        if (selectedNode != null)
+        {
+            currentSensor = sensorManager.AddGyro(selectedNode, Vector3.zero, Vector3.zero);
+        }
+    }
 
     #endregion
 
     #region Configuration GUI
+
+    /// <summary>
+    /// Start the sensor configuration
+    /// </summary>
+    public void StartConfiguration()
+    {
+        currentSensor.IsChangingPosition = true;
+        configureSensorPanel.SetActive(true);
+        dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
+        DisplayOutput();
+    }
+
     /// <summary>
     /// Toggle between changing position along horizontal plane or changing height
     /// </summary>
@@ -340,23 +452,26 @@ class SensorManagerGUI : MonoBehaviour
             sensorManager.DefineNode(); //Start selecting a new node
             changeSensorNodeButton.GetComponentInChildren<Text>().text = "Confirm";
             cancelNodeSelectionButton.SetActive(true);
+            deleteSensorButton.SetActive(false);
         }
         else if (sensorManager.SelectingNode && sensorManager.SelectedNode != null)
         {
             //Change the node where Sensor is attached to, clear selected node, and update name of current node
             currentSensor.gameObject.transform.parent = sensorManager.SelectedNode.transform;
             sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
-            changeSensorNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
-            cancelNodeSelectionButton.SetActive(false);
-            sensorManager.ClearSelectedNode();
-            sensorManager.SelectingNode = false;
+            CancelNodeSelection();
+            deleteSensorButton.SetActive(true);
         }
     }
 
+    /// <summary>
+    /// Cancel node selection button method
+    /// </summary>
     public void CancelNodeSelection()
     {
         changeSensorNodeButton.GetComponentInChildren<Text>().text = "Change Attachment Node";
         cancelNodeSelectionButton.SetActive(false);
+        deleteSensorButton.SetActive(true);
         sensorManager.ClearSelectedNode();
         sensorManager.SelectingNode = false;
     }
@@ -431,7 +546,7 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Update the local FOV of the current Sensor to the Sensor angle panel
+    /// Update the local range of the current Sensor to the Sensor range panel
     /// </summary>
     public void UpdateSensorRangePanel()
     {
@@ -442,7 +557,7 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Take the FOV input and set the rotation of the current Sensor
+    /// Take the range input and set the range of the current Sensor
     /// </summary>
     public void SyncSensorRange()
     {
@@ -454,7 +569,7 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Control the button that toggles Sensor FOV panel
+    /// Control the button that toggles Sensor range panel
     /// </summary>
     public void ToggleSensorRangePanel()
     {
@@ -475,7 +590,7 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Toggle FOV edit mode and update FOV from the input
+    /// Toggle range edit mode and update range from the input
     /// </summary>
     public void ToggleEditRange()
     {
@@ -492,34 +607,81 @@ class SensorManagerGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Update the text for current node
+    /// </summary>
     public void UpdateNodeAttachment()
     {
         sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
     }
 
+    /// <summary>
+    /// Delete the current sensor from the robot
+    /// </summary>
+    public void DeleteSensor()
+    {
+        Destroy(currentSensor.gameObject);
+        sensorManager.RemoveSensor(currentSensor.gameObject);
+        ShiftOutputPanels();
+        currentSensor = null;
+        configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
+        EndProcesses();
+    }
+
+    /// <summary>
+    /// Create an output panel for the current sensor if there is not one for it. Output update is handled by each sensor (in SensorBase/other sensor scripts)
+    /// </summary>
+    public void DisplayOutput()
+    {
+        if (GameObject.Find(currentSensor.name + "_Panel") == null)
+        {
+            int index = sensorManager.GetSensorIndex(currentSensor.gameObject);
+            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1150, 680 - index * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
+            panel.transform.parent = canvas.transform;
+            panel.name = currentSensor.name + "_Panel";
+            sensorOutputPanels.Add(panel);
+        }
+    }
+
+    /// <summary>
+    /// Shift the position of the output panel according to the sensor index in the active sensor list
+    /// </summary>
+    public void ShiftOutputPanels()
+    {
+        //Find the deleted sensor's corresponding panel and destroy it
+        GameObject uselessPanel = GameObject.Find(currentSensor.name + "_Panel");
+        sensorOutputPanels.Remove(uselessPanel);
+        Destroy(uselessPanel);
+
+        //Shift position of remaining panels
+        foreach (GameObject panel in sensorOutputPanels)
+        {
+            string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
+            GameObject sensor = GameObject.Find(sensorName);
+            panel.transform.position = new Vector3(1150, 680 - sensorManager.GetSensorIndex(sensor) * 60, 0);
+        }
+    }
     #endregion
 
-
+    /// <summary>
+    /// Close all window related to adding/configuring sensor
+    /// </summary>
     public void EndProcesses()
     {
-        isChoosingOption = isSelectingSensor = isAddingBeamBreaker = isAddingUltrasonic = nodeConfirmed = false;
+        isChoosingOption = isSelectingSensor = isAddingSensor = isAddingBeamBreaker = isAddingUltrasonic = nodeConfirmed = false;
         sensorOptionPanel.SetActive(false);
         configureSensorPanel.SetActive(false);
         sensorTypePanel.SetActive(false);
+        selectedNode = null;
+        CancelNodeSelection();
+        CancelOptionSelection();
         if (currentSensor != null)
         {
-            Destroy(currentSensor.gameObject);
-            sensorManager.SelectingNode = false;
             currentSensor.IsChangingPosition = false;
-            currentSensor = null;
         }
-        selectedNode = null;
+        dynamicCamera.SwitchToState(preConfigState);
     }
 
-    public void StartConfiguration()
-    {
-        currentSensor.IsChangingPosition = true;
-        configureSensorPanel.SetActive(true);
-    }
+
 }
 

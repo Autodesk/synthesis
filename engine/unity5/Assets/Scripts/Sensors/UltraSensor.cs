@@ -7,6 +7,7 @@ using UnityEngine;
 using BulletUnity;
 using BulletSharp;
 using Assets.Scripts.FSM;
+using UnityEngine.UI;
 
 /// <summary>
 /// Ultrasonic sensor class, must be attached to a node gameobject
@@ -41,6 +42,7 @@ public class UltraSensor : SensorBase
 
         //var as the type (lambda function)
         //these variables can only live INSIDE a function. 
+        UpdateOutputDisplay();
         Debug.Log(ReturnOutput());
     }
 
@@ -80,8 +82,11 @@ public class UltraSensor : SensorBase
             }
         }
 
+        //Draw a line to view the ray action
+        //When the ray links to the middle of the field, it means the sensor is out of range
         Debug.DrawLine(fromUltra.ToUnity(), colliderPosition.ToUnity(), Color.green, 5f);
 
+        //A check that might be useful in the future if use a bundle of rays instead of a single ray
         if (distanceToCollider < shortestDistance)
         {
             shortestDistance = distanceToCollider;
@@ -95,20 +100,27 @@ public class UltraSensor : SensorBase
         MaxRange = range;
     }
 
-    public override void UpdateTransform()
-    {
-        if (IsChangingPosition)
-        {
-            if (isChangingRange)
-            {
-                MaxRange += Input.GetAxis("CameraVertical");
-            }
-        }
-        base.UpdateTransform();
-    }
-
     public override float GetSensorRange()
     {
         return MaxRange;
+    }
+
+    /// <summary>
+    /// Update the maxRange of ultrasonic sensor
+    /// </summary>
+    public override void UpdateRangeTransform()
+    {
+        MaxRange += Input.GetAxis("CameraVertical");
+    }
+
+    public override void UpdateOutputDisplay()
+    {
+        base.UpdateOutputDisplay();
+        GameObject outputPanel = GameObject.Find(gameObject.name + "_Panel");
+        if (outputPanel != null)
+        {
+            GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
+            outputText.GetComponent<Text>().text = gameObject.name + " Output (meters)";
+        }
     }
 }

@@ -9,11 +9,11 @@ class SensorManager : MonoBehaviour
     public GameObject Ultrasonic;
     public GameObject BeamBreaker;
     public GameObject Gyro;
+    public GameObject OutputPanel;
 
     //Lists of sensors
-    private List<GameObject> ultrasonicList = new List<GameObject>();
-    private List<GameObject> beamBreakerList = new List<GameObject>();
-    private List<GameObject> gyroList = new List<GameObject>();
+    private List<GameObject> activeSensorList = new List<GameObject>();
+    private List<GameObject> sensorList = new List<GameObject>();
 
     public bool SelectingNode { get; set; }
     public GameObject SelectedNode { get; private set; }
@@ -25,10 +25,12 @@ class SensorManager : MonoBehaviour
         Ultrasonic = Resources.Load("Prefabs/UltrasonicSensor") as GameObject;
         BeamBreaker = Resources.Load("Prefabs/BeamBreaker") as GameObject;
         Gyro = Resources.Load("Prefabs/Gyro") as GameObject;
+        OutputPanel = Resources.Load("Prefabs/SensorOutput") as GameObject;
     }
 
     private void Update()
     {
+        //Handle the state where the user is selecting a node for attachment or selecting a sensor to configure
         if (SelectingNode)
         {
             SetNode();
@@ -40,48 +42,76 @@ class SensorManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Instantiate an ultrasonic sensor (a distance sensor actually) and set its name, local position, local rotation, and add it to the list
+    /// Instantiate an ultrasonic sensor (a distance sensor actually) and set its name, local position, local rotation, and add it to 
+    /// both sensor list and active sensor list
     /// </summary>
     /// <param name="parent"></param> the parent node to which the sensor is attached
     /// <param name="position"></param> local position of the sensor
     /// <param name="rotation"></param> local rotation of the sensor
-    public SensorBase AddUltrasonicSensor(GameObject parent, Vector3 position, Vector3 rotation)
+    public SensorBase AddUltrasonic(GameObject parent, Vector3 position, Vector3 rotation)
     {
         GameObject ultrasonic = GameObject.Instantiate(Ultrasonic, parent.transform);
         ultrasonic.transform.localPosition = position;
         ultrasonic.transform.localRotation = Quaternion.Euler(rotation);
-        ultrasonic.name = "Ultrasonic_" + ultrasonicList.Count;
-        ultrasonicList.Add(ultrasonic);
+        ultrasonic.name = "Ultrasonic_" + sensorList.Count;
+        sensorList.Add(ultrasonic);
+        activeSensorList.Add(ultrasonic);
         return ultrasonic.GetComponent<UltraSensor>();
     }
 
+    /// <summary>
+    /// Instantiate an beam breaker sensor and set its name, local position, local rotation, and add it to 
+    /// both sensor list and active sensor list
+    /// </summary>
+    /// <param name="parent"></param> the parent node to which the sensor is attached
+    /// <param name="position"></param> local position of the sensor
+    /// <param name="rotation"></param> local rotation of the sensor
+    /// <param name="distance"></param> the distance offset between the emitter and receiver
     public SensorBase AddBeamBreaker(GameObject parent, Vector3 position, Vector3 rotation, float distance = 0)
     {
         GameObject beamBreaker = GameObject.Instantiate(BeamBreaker, parent.transform);
         beamBreaker.transform.localPosition = position;
         beamBreaker.transform.localRotation = Quaternion.Euler(rotation);
-        beamBreaker.name = "BeamBreaker_" + beamBreakerList.Count;
-        beamBreakerList.Add(beamBreaker);
-
+        beamBreaker.name = "BeamBreaker_" + sensorList.Count;
+        sensorList.Add(beamBreaker);
+        activeSensorList.Add(beamBreaker);
         BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
         sensor.SetSensorRange(distance);
-        return beamBreaker.GetComponent<BeamBreaker>();
+        return sensor;
     }
 
-    public void AddGyroSensor(GameObject parent, Vector3 position, Vector3 rotation)
+    /// <summary>
+    /// Instantiate an gyro sensor (measure angular rotation rate) and set its name, local position, local rotation, and add it to 
+    /// both sensor list and active sensor list
+    /// </summary>
+    /// <param name="parent"></param> the parent node to which the sensor is attached
+    /// <param name="position"></param> local position of the sensor
+    /// <param name="rotation"></param> local rotation of the sensor
+    public SensorBase AddGyro(GameObject parent, Vector3 position, Vector3 rotation)
     {
         GameObject gyro = GameObject.Instantiate(Gyro, parent.transform);
         gyro.transform.localPosition = position;
         gyro.transform.localRotation = Quaternion.Euler(rotation);
-        gyro.name = "Gyro_" + gyroList.Count;
-        ultrasonicList.Add(gyro);
-    }
+        gyro.name = "Gyro_" + sensorList.Count;
 
+        sensorList.Add(gyro);
+        activeSensorList.Add(gyro);
+
+        Gyro sensor = gyro.GetComponent<Gyro>();
+        return sensor;
+    }
+    
+    /// <summary>
+    /// Start the state of selecting node for attachment
+    /// </summary>
     public void DefineNode()
     {
         SelectingNode = true;
     }
 
+    /// <summary>
+    /// When user click left mouse, use raycast to select a node for attachment
+    /// </summary>
     public void SetNode()
     {
         if (Input.GetMouseButtonDown(0))
@@ -119,6 +149,9 @@ class SensorManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// When user click left mouse, use raycast to select a sensor for configuration
+    /// </summary>
     public void SetSensor()
     {
         if (Input.GetMouseButtonDown(0))
@@ -139,13 +172,38 @@ class SensorManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set SelectedNode to null
+    /// </summary>
     public void ClearSelectedNode()
     {
         SelectedNode = null;
     }
 
+    /// <summary>
+    /// Set SelectedSensor to null
+    /// </summary>
     public void ClearSelectedSensor()
     {
         SelectedSensor = null;
+    }
+
+    /// <summary>
+    /// Get the sensor index of the given sensor from active sensor list (excluding those that got deleted)
+    /// </summary>
+    /// <param name="sensor"></param> the sensor that you need to look up index for
+    /// <returns></returns> the index of given sensor
+    public int GetSensorIndex(GameObject sensor)
+    {
+        return activeSensorList.IndexOf(sensor);
+    }
+
+    /// <summary>
+    /// Remove the given sensor from the active sensor list
+    /// </summary>
+    /// <param name="sensor"></param> the sensor that you want to remove from the active sensor list
+    public void RemoveSensor(GameObject sensor)
+    {
+        activeSensorList.Remove(sensor);
     }
 }
