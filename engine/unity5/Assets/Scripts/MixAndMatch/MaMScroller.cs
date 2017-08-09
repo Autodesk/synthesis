@@ -32,6 +32,8 @@ public class MaMScroller : MonoBehaviour {
     public bool Scroll(bool right, List<GameObject> objectList, int firstObject, Vector2[] positions, GameObject rightScroll, GameObject leftScroll)
     {
         int _firstObject = firstObject;
+
+
         //Makes sure that the list is not already scrolling
         if (objectList[_firstObject].GetComponent<MixAndMatchScroll>() != null) return false;
         if (objectList[_firstObject + 1].GetComponent<MixAndMatchScroll>() != null) return false;
@@ -88,9 +90,11 @@ public class MaMScroller : MonoBehaviour {
         if (Scroll(right, wheels, firstWheel, positions, wheelRightScroll, wheelLeftScroll)) firstWheel = (right) ? firstWheel + 1 : firstWheel - 1;
     }
 
-    int firstPreset = 0;
+    public static int firstPreset = 0;
     public void ScrollPreset(bool right)
     {
+        presetClones = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().presetClones;
+        Debug.Log(presetClones.Count);
         Vector2[] positions = { new Vector2(200, -40), new Vector2(450, -40), new Vector2(700, -40), new Vector2(950, -40), new Vector2(1200, -40), };
         if (Scroll(right, presetClones, firstPreset, positions, presetRightScroll, presetLeftScroll)) firstPreset = (right) ? firstPreset + 1 : firstPreset - 1;
     }

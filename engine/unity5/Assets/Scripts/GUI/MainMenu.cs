@@ -691,7 +691,7 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Called when the "Select Field" button is clicked within the set field panel
+    /// Called when the "Select Field" button is clicked within the field  selection panel
     /// </summary>
     public void SelectSimField()
     {
@@ -701,7 +701,8 @@ public class MainMenu : MonoBehaviour
         {
             simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
-            if (isMixAndMatch)
+
+            if (isMixAndMatch) //Starts the MixAndMatch scene
             {
                 PlayerPrefs.SetString("simSelectedField", simSelectedField);
                 fieldList.SetActive(false);
