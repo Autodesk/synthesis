@@ -25,7 +25,7 @@ public static class InputControl
 
     // Smooth for GetAxis
     private static Dictionary<string, float>      mSmoothAxesValues  = new Dictionary<string, float>();
-    private static float                          mSmoothCoefficient = 5f; // Smooth looks the same as in Input.GetAxis() with this value
+    private static float                          mSmoothCoefficient = NO_SMOOTH; // Smooth looks the same as in Input.GetAxis() with this value
 
     // Joystick options
     private static float                          mJoystickThreshold = 0.2f;
@@ -1396,6 +1396,7 @@ public static class InputControl
     {
         mKeysList.Remove(key);
         mKeysMap.Remove (key.name);
+        
     }
 
     /// <summary>
