@@ -48,42 +48,41 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
-    //public void UpdateTankToggle()
-    //{
-    //    if (Controls.clicked)
-    //    {
-    //        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-    //        enableTankDriveText.text = "Disable Tank Drive";
-    //    }
-    //    else
-    //    {
-    //        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-    //        enableTankDriveText.text = "Enable Tank Drive";
-    //    }
-    //}
-
     public void OnEnableTankDrive()
     {
         if (!Controls.TankDriveEnabled)
         {
             Controls.TankDriveEnabled = true;
             Controls.IsTankDrive = true;
-            Controls.check = false;
-            //Controls.clicked = true;
+            Controls.CheckForKeyRemoval = false;
             Controls.SwitchControls();
             Controls.Save();
             enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Disable Tank Drive";
+            enableTankDriveText.text = "Switch Arcade Drive"; 
         }
         else
         {
             Controls.TankDriveEnabled = false;
             Controls.IsTankDrive = false;
-            Controls.check = true;
+            Controls.CheckForKeyRemoval = true;
             Controls.SwitchControls();
             Controls.Save();
             enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Enable Tank Drive";
+            enableTankDriveText.text = "Switch Tank Drive";
+        }
+    }
+
+    public void UpdateTankText()
+    {
+        if (Controls.IsTankDrive)
+        {
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Switch Arcade Drive";
+        }
+        else
+        {
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Switch Tank Drive";
         }
     }
 
