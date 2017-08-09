@@ -39,12 +39,11 @@ namespace BxDFieldExporter
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager
-        {
-            get
-            {
+        internal static global::System.Resources.ResourceManager ResourceManager {
+            get {
                 if (object.ReferenceEquals(resourceMan, null))
                 {
+
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("InvAddIn.Resource", typeof(Resource).Assembly);
                     resourceMan = temp;
                 }
@@ -57,14 +56,11 @@ namespace BxDFieldExporter
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture
-        {
-            get
-            {
+        internal static global::System.Globalization.CultureInfo Culture {
+            get {
                 return resourceCulture;
             }
-            set
-            {
+            set {
                 resourceCulture = value;
             }
         }
@@ -72,10 +68,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddAssembly16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddAssembly16 {
+            get {
                 object obj = ResourceManager.GetObject("AddAssembly16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -84,10 +78,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddAssembly32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddAssembly32 {
+            get {
                 object obj = ResourceManager.GetObject("AddAssembly32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -96,10 +88,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddNewPart16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddNewPart16 {
+            get {
                 object obj = ResourceManager.GetObject("AddNewPart16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -108,10 +98,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddNewPart32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddNewPart32 {
+            get {
                 object obj = ResourceManager.GetObject("AddNewPart32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -120,10 +108,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddNewType16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddNewType16 {
+            get {
                 object obj = ResourceManager.GetObject("AddNewType16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -132,10 +118,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddNewType32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddNewType32 {
+            get {
                 object obj = ResourceManager.GetObject("AddNewType32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -144,10 +128,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddSpawnLocation16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddSpawnLocation16 {
+            get {
                 object obj = ResourceManager.GetObject("AddSpawnLocation16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -156,10 +138,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AddSpawnLocation32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap AddSpawnLocation32 {
+            get {
                 object obj = ResourceManager.GetObject("AddSpawnLocation32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -168,10 +148,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ChangeSpawnLocation16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap ChangeSpawnLocation16 {
+            get {
                 object obj = ResourceManager.GetObject("ChangeSpawnLocation16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -180,10 +158,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ChangeSpawnLocation32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap ChangeSpawnLocation32 {
+            get {
                 object obj = ResourceManager.GetObject("ChangeSpawnLocation32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -192,10 +168,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap EditType16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap EditType16 {
+            get {
                 object obj = ResourceManager.GetObject("EditType16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -204,10 +178,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap EditType32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap EditType32 {
+            get {
                 object obj = ResourceManager.GetObject("EditType32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -216,10 +188,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ExportField16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap ExportField16 {
+            get {
                 object obj = ResourceManager.GetObject("ExportField16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -228,10 +198,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ExportField32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap ExportField32 {
+            get {
                 object obj = ResourceManager.GetObject("ExportField32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -240,10 +208,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveAssembly16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveAssembly16 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveAssembly16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -252,10 +218,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveAssembly32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveAssembly32 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveAssembly32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -264,10 +228,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveSpawnLocation16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveSpawnLocation16 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveSpawnLocation16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -276,10 +238,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveSpawnLocation32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveSpawnLocation32 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveSpawnLocation32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -288,10 +248,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveSubAssembly16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveSubAssembly16 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveSubAssembly16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -300,10 +258,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveSubAssembly32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveSubAssembly32 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveSubAssembly32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -312,10 +268,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveType16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveType16 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveType16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -324,10 +278,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveType32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap RemoveType32 {
+            get {
                 object obj = ResourceManager.GetObject("RemoveType32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -336,10 +288,8 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap StartExporter16
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap StartExporter16 {
+            get {
                 object obj = ResourceManager.GetObject("StartExporter16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
@@ -348,110 +298,104 @@ namespace BxDFieldExporter
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap StartExporter32
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap StartExporter32 {
+            get {
                 object obj = ResourceManager.GetObject("StartExporter32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTAddNewComponent
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTAddNewComponent {
+            get {
                 object obj = ResourceManager.GetObject("TTAddNewComponent", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTAddAssembly
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTAddAssembly {
+            get {
                 object obj = ResourceManager.GetObject("TTAddAssembly", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTAddPart
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTAddPart {
+            get {
                 object obj = ResourceManager.GetObject("TTAddPart", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTAddSpawnLocation
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTAddSpawnLocation {
+            get {
                 object obj = ResourceManager.GetObject("TTAddSpawnLocation", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTComponentProperties
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTComponentProperties {
+            get {
                 object obj = ResourceManager.GetObject("TTComponentProperties", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTEditSpawnLocation
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTEditSpawnLocation {
+            get {
                 object obj = ResourceManager.GetObject("TTEditSpawnLocation", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTExportField
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTExportField {
+            get {
                 object obj = ResourceManager.GetObject("TTExportField", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTRemovePart
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTRemovePart {
+            get {
                 object obj = ResourceManager.GetObject("TTRemovePart", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTRemoveComponent
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTRemoveComponent {
+            get {
                 object obj = ResourceManager.GetObject("TTRemoveComponent", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTRemoveAssembly
-        {
-            get
-            {
+        internal static System.Drawing.Bitmap TTRemoveAssembly {
+            get {
                 object obj = ResourceManager.GetObject("TTRemoveAssembly", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
 
-        internal static System.Drawing.Bitmap TTRemoveSpawnPoint
+        internal static System.Drawing.Bitmap TTRemoveSpawnPoint {
+            get {
+                object obj = ResourceManager.GetObject("TTRemoveSpawnPoint", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ComponentBrowserNode16
         {
             get
             {
-                object obj = ResourceManager.GetObject("TTRemoveSpawnPoint", resourceCulture);
+                object obj = ResourceManager.GetObject("ComponentBrowserNode16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+
+        internal static System.Drawing.Bitmap FieldIcon16
+        {
+            get
+            {
+                object obj = ResourceManager.GetObject("FieldIcon16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

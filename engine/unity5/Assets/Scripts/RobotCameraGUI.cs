@@ -236,7 +236,7 @@ class RobotCameraGUI : MonoBehaviour
         if (robotCamera.ChangingCameraPosition)
         {
             preConfigCamState = dynamicCamera.cameraState;
-            dynamicCamera.SwitchCameraState(new DynamicCamera.CameraConfigurationState(dynamicCamera));
+            dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, robotCamera.CurrentCamera));
             //Update the node where current camera is attached to
             cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
             configureRobotCameraButton.GetComponentInChildren<Text>().text = "End Configuration";
@@ -369,7 +369,7 @@ class RobotCameraGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Update the local FOV of the current camera to the camera angle panel
+    /// Update the local FOV of the current camera to the camera FOV panel
     /// </summary>
     public void UpdateCameraFOVPanel()
     {
@@ -380,7 +380,7 @@ class RobotCameraGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Take the FOV input and set the rotation of the current camera
+    /// Take the FOV input and set the FOV of the current camera
     /// </summary>
     public void SyncCameraFOV()
     {
