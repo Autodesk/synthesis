@@ -51,6 +51,7 @@ public class MainState : SimState
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
 
+
     public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
@@ -112,6 +113,12 @@ public class MainState : SimState
             tracking = true;
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+
+            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 1); //0 is true, 1 is false
+            if (isMixAndMatch == 0 && MixAndMatchMode.hasManipulator)
+            {
+                Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
+            }
         }
         else
         {
@@ -196,6 +203,7 @@ public class MainState : SimState
         {
             return new UnityFieldDefinition(guid, name);
         };
+
 
         string loadResult;
         fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
@@ -286,31 +294,8 @@ public class MainState : SimState
             }
             else activeRobot = SpawnedRobots[0];
             dynamicCamera.cameraState.robot = activeRobot.gameObject;
-
         }
-
-        robotCameraObject = GameObject.Find("RobotCameraList");
-        robotCamera = robotCameraObject.GetComponent<RobotCamera>();
-
-
-        //GameObject sensorManager = GameObject.Find("RobotSensorManager");
-        //sensorManager.GetComponent<SensorManager>().AddUltrasonicSensor(robotObject.transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-
-        //robotCamera.RemoveCameras();
-        ////The camera data should be read here as a foreach loop and included in robot file
-        ////Attached to main frame and face the front
-        //robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
-        ////Attached to the first node and face the front
-        //robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
-        ////Attached to main frame and face the back
-        //robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
-
-
-        //robotCameraObject.SetActive(true);
     }
-
-            
-
 
     /// <summary>
     /// Changes the active robot to a different robot based on a given index
@@ -414,6 +399,18 @@ public class MainState : SimState
             }
         }
     }
+
+    /// <summary>
+    /// Loads a manipulator for Quick Swap Mode and maps it to the robot. 
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <returns></returns>
+    bool LoadManipulator(string directory)
+    {
+        return activeRobot.LoadManipulator(directory);
+    }
+        
+    
 
     private void UpdateTrackers()
     {
