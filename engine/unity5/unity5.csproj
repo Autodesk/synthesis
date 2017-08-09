@@ -17,7 +17,12 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
+<<<<<<< HEAD
     <RootNamespace></RootNamespace>
+=======
+    <RootNamespace>
+    </RootNamespace>
+>>>>>>> master
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -75,6 +80,9 @@
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
@@ -253,6 +261,7 @@
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
     <Compile Include="Assets\Scripts\ICollisionCallback.cs" />
+<<<<<<< HEAD
     <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
     <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
     <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
@@ -271,6 +280,8 @@
     <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
     <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\InputControl\TankMode.cs" />
+=======
+>>>>>>> master
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\LocalizationHelperr.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
@@ -312,7 +323,11 @@
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
+<<<<<<< HEAD
     <None Include="Assets\Scripts\InputControl\Documentation\Readme.txt" />
+=======
+    <None Include="Assets\Scripts\GUI\InputControl\Readme.txt" />
+>>>>>>> master
     <None Include="Assets\item_data.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

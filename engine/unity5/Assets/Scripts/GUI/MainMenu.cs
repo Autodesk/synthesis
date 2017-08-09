@@ -236,11 +236,25 @@ public class MainMenu : MonoBehaviour
             simLoadRobot.SetActive(false);
             simLoadReplay.SetActive(false);
             defaultSimulator.SetActive(true);
+<<<<<<< HEAD
+
+            PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+            PlayerPrefs.SetString("simSelectedField", simSelectedField);
+=======
 
             PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
             PlayerPrefs.SetString("simSelectedField", simSelectedField);
 
+>>>>>>> master
 
+            simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
+            simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+        } else
+        {
+            SwitchMixAndMatch();
+        }
+
+<<<<<<< HEAD
             simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
             simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
         }
@@ -248,6 +262,8 @@ public class MainMenu : MonoBehaviour
         {
             SwitchMixAndMatch();
         }
+=======
+>>>>>>> master
     }
 
 
@@ -690,6 +706,14 @@ public class MainMenu : MonoBehaviour
     {
         Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
     }
+<<<<<<< HEAD
+=======
+    public void ResetControls()
+    {
+        Controls.Reset();
+        Controls.Save();
+    }
+>>>>>>> master
 
     /// <summary>
     /// Called when the "Select Field" button is clicked within the field  selection panel
@@ -825,6 +849,12 @@ public class MainMenu : MonoBehaviour
         dpmSelectedRobot = PlayerPrefs.GetString("dpmSelectedRobot");
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
+<<<<<<< HEAD
+=======
+
+
+        canvas = GetComponent<Canvas>();
+>>>>>>> master
 
 
         canvas = GetComponent<Canvas>();

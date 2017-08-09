@@ -76,6 +76,9 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
+    </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
     </Reference>
@@ -277,7 +280,11 @@
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
+<<<<<<< HEAD
     <None Include="Assets\Scripts\InputControl\Documentation\Readme.txt" />
+=======
+    <None Include="Assets\Scripts\GUI\InputControl\Readme.txt" />
+>>>>>>> master
     <None Include="Assets\item_data.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
