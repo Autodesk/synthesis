@@ -680,6 +680,9 @@ class SensorManagerGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Toggle between showing sensor output and hiding them
+    /// </summary>
     public void ToggleSensorOutput()
     {
         isHidingOutput = !isHidingOutput;
@@ -699,6 +702,9 @@ class SensorManagerGUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Display all sensor output and set the toggle button text to "Hide Sensor Output"
+    /// </summary>
     public void DisplayAllOutput()
     {
         isHidingOutput = false;
@@ -710,6 +716,7 @@ class SensorManagerGUI : MonoBehaviour
         hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Hide Sensor Output";
     }
     #endregion
+
     /// <summary>
     /// Close all window related to adding/configuring sensor
     /// </summary>
@@ -722,6 +729,7 @@ class SensorManagerGUI : MonoBehaviour
         selectedNode = null;
         CancelNodeSelection();
         CancelOptionSelection();
+        configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         if (currentSensor != null)
         {
             currentSensor.IsChangingPosition = false;
