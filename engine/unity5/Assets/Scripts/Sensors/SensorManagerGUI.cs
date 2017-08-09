@@ -17,6 +17,7 @@ class SensorManagerGUI : MonoBehaviour
     GameObject cancelOptionButton;
     GameObject addSensorButton;
     GameObject selectExistingButton;
+    GameObject sensorOptionToolTip;
 
     GameObject addUltrasonicButton;
     GameObject addBeamBreakerButton;
@@ -108,6 +109,7 @@ class SensorManagerGUI : MonoBehaviour
         addSensorButton = AuxFunctions.FindObject(sensorOptionPanel, "AddNewSensor");
         selectExistingButton = AuxFunctions.FindObject(sensorOptionPanel, "ConfigureExistingSensor");
         cancelOptionButton = AuxFunctions.FindObject(sensorOptionPanel, "CancelButton");
+        sensorOptionToolTip = AuxFunctions.FindObject(sensorOptionPanel, "ToolTipPanel");
 
         //For choosing sensor type
         addUltrasonicButton = AuxFunctions.FindObject(sensorTypePanel, "AddUltrasonic");
@@ -175,6 +177,8 @@ class SensorManagerGUI : MonoBehaviour
         {
             addSensorButton.GetComponentInChildren<Text>().text = "Confirm";
             selectExistingButton.SetActive(false);
+            sensorOptionToolTip.SetActive(true);
+            sensorOptionToolTip.GetComponentInChildren<Text>().text = "Select the robot node to which the new sensor will attach and Confirm";
             cancelOptionButton.SetActive(sensorManager.SelectingNode = true);
             UserMessageManager.Dispatch("Please select a robot node for sensor attachment", 3);
         }
@@ -188,7 +192,7 @@ class SensorManagerGUI : MonoBehaviour
             SyncNodeSelection();
 
             cancelOptionButton.SetActive(false);
-
+            sensorOptionToolTip.SetActive(false);
             //Activate sensor type panel if a valid node is selected
             if (selectedNode != null)
             {
@@ -214,6 +218,8 @@ class SensorManagerGUI : MonoBehaviour
         {
             selectExistingButton.GetComponentInChildren<Text>().text = "Confirm";
             addSensorButton.SetActive(false);
+            sensorOptionToolTip.SetActive(true);
+            sensorOptionToolTip.GetComponentInChildren<Text>().text = "Select an existing sensor for configuration and Confirm";
             cancelOptionButton.SetActive(sensorManager.SelectingSensor = true);
             UserMessageManager.Dispatch("Please select a sensor for configuration", 3f);
 
@@ -221,6 +227,7 @@ class SensorManagerGUI : MonoBehaviour
         else
         {
             cancelOptionButton.SetActive(false);
+            sensorOptionToolTip.SetActive(false);
 
             selectExistingButton.GetComponentInChildren<Text>().text = "Select Existing Sensor";
             addSensorButton.SetActive(true);
