@@ -243,12 +243,13 @@ public class MainMenu : MonoBehaviour
 
             simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
             simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
-        } else
+        }
+        else
         {
             SwitchMixAndMatch();
         }
-
     }
+
 
     /// <summary>
     /// Switches to the driver practice menu within the simulation tab and activates its respective UI elements.
@@ -823,6 +824,8 @@ public class MainMenu : MonoBehaviour
         dpmSelectedFieldName = (Directory.Exists(dpmSelectedField)) ? PlayerPrefs.GetString("dpmSelectedFieldName", "No Field Selected!") : "No Field Selected!";
         dpmSelectedRobot = PlayerPrefs.GetString("dpmSelectedRobot");
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
+
+
 
         canvas = GetComponent<Canvas>();
 
