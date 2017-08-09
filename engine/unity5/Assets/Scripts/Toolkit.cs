@@ -275,6 +275,7 @@ public class Toolkit : MonoBehaviour
     public void EndProcesses()
     {
         ToggleRulerWindow(false);
+        toolkitWindow.SetActive(false);
     }
     /*
     #region Dummy Robot
