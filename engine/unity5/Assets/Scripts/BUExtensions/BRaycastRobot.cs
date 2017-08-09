@@ -23,6 +23,21 @@ namespace Assets.Scripts.BUExtensions
         public RaycastRobot RaycastRobot { get; private set; }
 
         /// <summary>
+        /// Adjusts the friction value of the robot's wheels.
+        /// </summary>
+        public float Friction
+        {
+            set
+            {
+                vehicleTuning.FrictionSlip = value;
+            }
+            get
+            {
+                return vehicleTuning.FrictionSlip;
+            }
+        }
+
+        /// <summary>
         /// Adds a wheel to the BRaycastVehicle from the given information.
         /// </summary>
         /// <param name="connectionPoint"></param>
