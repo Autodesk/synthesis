@@ -52702,8 +52702,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2138357099}
-<<<<<<< HEAD
-=======
 --- !u!1 &2147308433
 GameObject:
   m_ObjectHideFlags: 0
@@ -52778,4 +52776,3 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2147308433}
->>>>>>> 6a2f4d1171e2d95cbdf33658c31de479eb73e501
