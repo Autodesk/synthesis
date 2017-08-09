@@ -20,23 +20,20 @@ public partial class RigidNode : RigidNode_Base
 
     public void CreateJoint()
     {
+        if (GetParent() == null)
+        {
+            MainObject.AddComponent<BRaycastRobot>();
+            return;
+        }
+
         if (joint != null || GetSkeletalJoint() == null)
         {
             return;
         }
 
-
         switch (GetSkeletalJoint().GetJointType())
         {
             case SkeletalJointType.ROTATIONAL:
-
-                WheelType wheelType = WheelType.NOT_A_WHEEL;
-
-                if (this.HasDriverMeta<WheelDriverMeta>())
-                {
-                    OrientWheelNormals();
-                    wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
-                }
 
                 RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
 

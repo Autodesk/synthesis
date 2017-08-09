@@ -5,8 +5,9 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
+using Assets.Scripts.BUExtensions;
 
-public class DriveJoints : MonoBehaviour
+public class DriveJoints
 {
     private const float SPEED_ARROW_PWM = 0.5f;
     private const float WHEEL_MAX_SPEED = 300f;
@@ -20,6 +21,7 @@ public class DriveJoints : MonoBehaviour
     private const float MAX_SLIDER_FORCE = 1000f;
     private const float MAX_SLIDER_SPEED = 2f;
 
+    private static List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 
     enum MecanumPorts { FRONT_RIGHT, FRONT_LEFT, BACK_RIGHT, BACK_LEFT };
 
@@ -86,16 +88,14 @@ public class DriveJoints : MonoBehaviour
 
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
+        if (dioModules[0] == null)
+            return;
+
         bool IsMecanum = mecanum;
         int reverse = -1;
-        float[] pwm = new float[10];
-        float[] can = new float[10];
 
-        if (dioModules[0] != null)
-        {
-            pwm = dioModules[0].pwmValues;
-            can = dioModules[0].canValues;
-        }
+        float[] pwm = dioModules[0].pwmValues;
+        float[] can = dioModules[0].canValues;
 
         if (IsMecanum)
         {
@@ -168,8 +168,7 @@ public class DriveJoints : MonoBehaviour
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
         }
 
-
-        List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
+        listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
         for (int i = 0; i < pwm.Length; i++)
@@ -178,9 +177,19 @@ public class DriveJoints : MonoBehaviour
             {
                 RigidNode rigidNode = (RigidNode)node;
 
+                BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+
+                if (raycastWheel != null)
+                {
+                    if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                    {
+                        raycastWheel.ApplyForce(pwm[i]);
+                    }
+                }
+
                 if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
                 {
-                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
+                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                     {
                         if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
                         {

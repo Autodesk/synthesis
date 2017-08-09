@@ -11,7 +11,7 @@ public partial class RigidNode : RigidNode_Base
     float WHEEL_MASS_SCALE = 15f;
     float WHEEL_FRICTION = 1f;
 
-    private void OrientWheelNormals()
+    public void OrientWheelNormals()
     {
         if (GetSkeletalJoint() is RotationalJoint_Base)
         {
