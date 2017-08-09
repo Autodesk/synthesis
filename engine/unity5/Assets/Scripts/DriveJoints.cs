@@ -90,7 +90,6 @@ public class DriveJoints
     {
         if (dioModules[0] == null)
             return;
-<<<<<<< HEAD
 
         bool IsMecanum = mecanum;
         int reverse = -1;
@@ -102,21 +101,6 @@ public class DriveJoints
         {
             #region Mecanum Drive
             pwm[(int)MecanumPorts.FRONT_RIGHT] +=
-
-=======
-
-        bool IsMecanum = mecanum;
-        int reverse = -1;
-
-        float[] pwm = dioModules[0].pwmValues;
-        float[] can = dioModules[0].canValues;
-
-        if (IsMecanum)
-        {
-
-            pwm[(int)MecanumPorts.FRONT_RIGHT] +=
-
->>>>>>> master
             (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? reverse * SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
@@ -147,7 +131,6 @@ public class DriveJoints
             (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
             (Input.GetKey(KeyCode.O) ? reverse * SPEED_ARROW_PWM : 0.0f) + //Left Rotate
             (Input.GetKey(KeyCode.P) ? reverse * -SPEED_ARROW_PWM : 0.0f); //Right Rotate
-<<<<<<< HEAD
             #endregion
         }
 
@@ -217,26 +200,6 @@ public class DriveJoints
             pwm[2] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Neg)) ? -SPEED_ARROW_PWM : 0f;
-=======
-
-        }
-        else
-        {
-            pwm[0] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
-            pwm[1] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
-
-            pwm[2] +=
-             (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
-             (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Neg)) ? -SPEED_ARROW_PWM : 0f;
->>>>>>> master
 
             pwm[3] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Plus)) ? SPEED_ARROW_PWM :
@@ -253,10 +216,7 @@ public class DriveJoints
             pwm[6] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
-<<<<<<< HEAD
             #endregion
-=======
->>>>>>> master
         }
 
         listOfSubNodes.Clear();
