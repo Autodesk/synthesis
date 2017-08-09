@@ -223,6 +223,7 @@ public class DynamicCamera : MonoBehaviour
             rotationSpeed = 3f;
             transformSpeed = 2.5f;
             scrollWheelSensitivity = 40f;
+            if (robot == null) robot = GameObject.Find("robot");
         }
 
         public override void Update()
@@ -280,10 +281,10 @@ public class DynamicCamera : MonoBehaviour
             mono.transform.position = positionVector;
             rotationVector = new Vector3(90f, 90f, 0f);
             mono.transform.rotation = Quaternion.Euler(rotationVector);
+            if (robot == null) robot = GameObject.Find("robot");
         }
         public override void Update()
         {
-
         }
 
         public override void End()
@@ -328,7 +329,7 @@ public class DynamicCamera : MonoBehaviour
         }
     }
 
-    public class CameraConfigurationState : CameraState
+    public class ConfigurationState : CameraState
     {
         Vector3 targetVector;
         Vector3 rotateVector;
@@ -337,23 +338,26 @@ public class DynamicCamera : MonoBehaviour
         float magnification = 2.0f;
         float cameraAngle = 45f;
         float panValue = 0f;
-        GameObject currentCamera;
+        bool isRobotCamera;
+        GameObject target;
 
-        public CameraConfigurationState(MonoBehaviour mono)
+        public ConfigurationState(MonoBehaviour mono, GameObject targetObject = null)
         {
             this.mono = mono;
+            if (robot == null) robot = GameObject.Find("Robot");
+            this.target = targetObject;
+            if (target == null) target = robot.transform.GetChild(0).gameObject;
         }
         public override void Init()
         {
-            currentCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
         }
 
         public override void Update()
         {
-            currentCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
-            if (currentCamera != null)
+            target = robot.transform.GetChild(0).gameObject;
+            if (target != null)
             {
-                targetVector = currentCamera.transform.position;
+                targetVector = target.transform.position;
                 if (MovingEnabled)
                 {
                     if (Input.GetMouseButton(0))
@@ -387,7 +391,7 @@ public class DynamicCamera : MonoBehaviour
             }
             else
             {
-                currentCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
+                target = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
             }
         
         }

@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
+using Assets.Scripts.FSM;
+using Assets.Scripts.BUExtensions;
 
 public partial class RigidNode : RigidNode_Base
 {
@@ -52,11 +54,7 @@ public partial class RigidNode : RigidNode_Base
         foreach (GameObject meshObject in meshObjects)
             meshObject.transform.parent = MainObject.transform;
 
-        if (this.HasDriverMeta<WheelDriverMeta>())
-        {
-            CreateWheel();
-        }
-        else
+        if (!this.HasDriverMeta<WheelDriverMeta>() || this.GetDriverMeta<WheelDriverMeta>().type == WheelType.NOT_A_WHEEL)
         {
             BMultiHullShape hullShape = MainObject.AddComponent<BMultiHullShape>();
 
@@ -66,24 +64,20 @@ public partial class RigidNode : RigidNode_Base
                 hull.Margin = 0f;
                 hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
             }
+
+            physicalProperties = mesh.physics;
+
+            BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
+            rigidBody.mass = mesh.physics.mass;
+            rigidBody.friction = 0.25f;
+            rigidBody.RemoveOnCollisionCallbackEventHandler();
+            ((RigidBody)rigidBody.GetCollisionObject()).ActivationState = ActivationState.DisableDeactivation;
+
+            foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
+                rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
+
+            MainObject.AddComponent<BMultiCallbacks>().AddCallback((StateMachine.Instance.CurrentState as MainState).CollisionTracker);
         }
-
-        physicalProperties = mesh.physics;
-
-        BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
-        rigidBody.mass = mesh.physics.mass;
-        rigidBody.friction = 1f;
-
-        if (this.HasDriverMeta<WheelDriverMeta>())
-            UpdateWheelRigidBody();
-
-        foreach (BRigidBody rb in MainObject.transform.parent.GetComponentsInChildren<BRigidBody>())
-        {
-            rigidBody.GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
-        }
-
-        if (this.HasDriverMeta<WheelDriverMeta>())
-            UpdateWheelMass(); // 'tis a wheel, so needs more mass for joints to work correctly.
 
         #region Free mesh
         foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
