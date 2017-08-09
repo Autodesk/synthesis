@@ -734,7 +734,11 @@ class SensorManagerGUI : MonoBehaviour
         {
             currentSensor.IsChangingPosition = false;
         }
-        dynamicCamera.SwitchToState(preConfigState);
+        if (preConfigState != null)
+        {
+            dynamicCamera.SwitchToState(preConfigState);
+            preConfigState = null;
+        }
     }
 }
 
