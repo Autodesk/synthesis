@@ -79,6 +79,17 @@ public partial class RigidNode : RigidNode_Base
             MainObject.AddComponent<BMultiCallbacks>().AddCallback((StateMachine.Instance.CurrentState as MainState).CollisionTracker);
         }
 
+        if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)
+        {
+
+
+            BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
+            if (MixAndMatchMode.isMixAndMatchMode)
+            {
+                rigidBody.mass += PlayerPrefs.GetFloat("wheelMass", 1f);
+            }
+            rigidBody.GetCollisionObject().CollisionShape.CalculateLocalInertia(rigidBody.mass);
+        }
         #region Free mesh
         foreach (var list in new List<BXDAMesh.BXDASubMesh>[] { mesh.meshes, mesh.colliders })
         {
