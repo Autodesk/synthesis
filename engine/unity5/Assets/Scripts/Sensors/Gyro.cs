@@ -18,18 +18,24 @@ public class Gyro : SensorBase
     private float currentAngle;
     private float currentTime;
     private float lastTime;
+    private static float timeGap = 0.02f;
+    private float sumAngle;
+    private float sample;
+    private float angleOffset;
 
-    private void Update()
+    private void FixedUpdate()
     {
         //Update current time and angle
         currentTime = Time.timeSinceLevelLoad;
-        currentAngle = gameObject.transform.parent.transform.localEulerAngles.y;
+        currentAngle = gameObject.transform.parent.transform.localEulerAngles.y + angleOffset;
         //Update the output panel
         UpdateOutputDisplay();
         Debug.Log(ReturnOutput());
+        Debug.Log("Current angle is " + GetAngle());
         //Set last time to current time
         lastTime = currentTime;
     }
+
     /// <summary>
     /// Return the angle rotated on Y axis
     /// </summary>
@@ -57,20 +63,38 @@ public class Gyro : SensorBase
             current = currentAngle;
             last = lastAngle;
         }
-        //Debug.Log("lastAngle is " + lastAngle + " last is " + last);
-        //Debug.Log("currentAngle is " + currentAngle + " current is " + current);
+
         //Set last angle to current angle
         lastAngle = currentAngle;
+
+        //Add angle to the sum
+        float angleOffset = (current - last);
+        sumAngle += angleOffset;
+
         //Calculate angular rotation rate in degrees/second
         return (current - last) / (currentTime - lastTime);
     }
 
+    public override void UpdateAngleTransform()
+    {
+        base.UpdateAngleTransform();
+        ResetSensorReading();
+    }
     /// <summary>
     /// Do nothing because currently gyro does not have a range specification. Could be sensitivity in the future though
     /// </summary>
     public override void UpdateRangeTransform()
     {
         
+    }
+
+    /// <summary>
+    /// Return the current angle of the robot
+    /// </summary>
+    /// <returns></returns>
+    public float GetAngle()
+    {
+        return sumAngle;
     }
 
     public override void UpdateOutputDisplay()
@@ -82,5 +106,16 @@ public class Gyro : SensorBase
             GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
             outputText.GetComponent<Text>().text = gameObject.name + " Output (degrees/s)";
         }
+    }
+
+    public void ResetAngle()
+    {
+        sumAngle = 0;
+    }
+
+    public override void ResetSensorReading()
+    {
+        angleOffset = gameObject.transform.localEulerAngles.y;
+        ResetAngle();
     }
 }

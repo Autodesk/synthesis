@@ -171,12 +171,21 @@ public class Toolkit : MonoBehaviour
             {
                 rulerStartPoint.transform.position = rayResult.HitPointWorld.ToUnity();
             }
-            else
+            else if(!mainState.IsMetric)
             {
                 rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 328.084f)/100 + "ft";
                 rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 328.084f)/100  + "ft";
                 rulerYText.text = Mathf.Round(Mathf.Abs(firstPoint.Y - rayResult.HitPointWorld.Y) * 328.084f)/100 + "ft";
                 rulerZText.text = Mathf.Round(Mathf.Abs(firstPoint.Z - rayResult.HitPointWorld.Z) * 328.084f)/100 + "ft";
+                rulerEndPoint.transform.position = rayResult.HitPointWorld.ToUnity();
+                rulerStartPoint.GetComponent<LineRenderer>().SetPosition(1, rulerEndPoint.transform.position);
+            }
+            else
+            {
+                rulerText.text = Mathf.Round(BulletSharp.Math.Vector3.Distance(firstPoint, rayResult.HitPointWorld) * 100f) / 100 + "m";
+                rulerXText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 1000f) / 1000 + "m";
+                rulerYText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 1000f) / 1000 + "m";
+                rulerZText.text = Mathf.Round(Mathf.Abs(firstPoint.X - rayResult.HitPointWorld.X) * 1000f) / 1000 + "m";
                 rulerEndPoint.transform.position = rayResult.HitPointWorld.ToUnity();
                 rulerStartPoint.GetComponent<LineRenderer>().SetPosition(1, rulerEndPoint.transform.position);
             }
