@@ -16,6 +16,7 @@ public class SimUI : MonoBehaviour
     DynamicCamera camera;
     Toolkit toolkit;
     DriverPracticeMode dpm;
+    SensorManagerGUI sensorManagerGUI;
 
     GameObject canvas;
 
@@ -76,6 +77,8 @@ public class SimUI : MonoBehaviour
 
             toolkit = GetComponent<Toolkit>();
             dpm = GetComponent<DriverPracticeMode>();
+            sensorManagerGUI = GetComponent<SensorManagerGUI>();
+
             FindElements();
         }
         else if (camera == null)
@@ -257,6 +260,7 @@ public class SimUI : MonoBehaviour
 
         dpm.EndProcesses();
         toolkit.EndProcesses();
+        sensorManagerGUI.EndProcesses();
     }
     #endregion
     #region camera button functions
