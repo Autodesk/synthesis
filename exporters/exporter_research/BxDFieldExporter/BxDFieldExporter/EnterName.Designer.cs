@@ -42,14 +42,14 @@
             this.nameTextBox.Name = "nameTextBox";
             this.nameTextBox.Size = new System.Drawing.Size(249, 22);
             this.nameTextBox.TabIndex = 0;
-            this.nameTextBox.TextChanged += new System.EventHandler(this.nameTextBox_TextChanged);
+            this.nameTextBox.TextChanged += new System.EventHandler(this.NameTextBox_TextChanged);
             // 
             // enterNameLabel
             // 
             this.enterNameLabel.AutoSize = true;
             this.enterNameLabel.Location = new System.Drawing.Point(12, 15);
             this.enterNameLabel.Name = "enterNameLabel";
-            this.enterNameLabel.Size = new System.Drawing.Size(87, 17);
+            this.enterNameLabel.Size = new System.Drawing.Size(82, 16);
             this.enterNameLabel.TabIndex = 1;
             this.enterNameLabel.Text = "Enter Name:";
             // 
@@ -62,7 +62,7 @@
             this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
-            this.cancelButton.MouseClick += new System.Windows.Forms.MouseEventHandler(CancleButton_OnClick);
+            this.cancelButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.CancleButton_OnClick);
             // 
             // okButton
             // 
@@ -74,8 +74,7 @@
             this.okButton.TabIndex = 3;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
-
-            this.okButton.MouseClick += new System.Windows.Forms.MouseEventHandler(OKButton_OnClick);
+            this.okButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OKButton_OnClick);
             // 
             // reservedLabel
             // 
@@ -83,12 +82,12 @@
             this.reservedLabel.ForeColor = System.Drawing.Color.Red;
             this.reservedLabel.Location = new System.Drawing.Point(12, 48);
             this.reservedLabel.Name = "reservedLabel";
-            this.reservedLabel.Size = new System.Drawing.Size(123, 17);
+            this.reservedLabel.Size = new System.Drawing.Size(118, 16);
             this.reservedLabel.TabIndex = 4;
             this.reservedLabel.Text = "Name is reserved.";
             this.reservedLabel.Visible = false;
             // 
-            // EnterNameDialog
+            // EnterName
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -102,9 +101,9 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "EnterNameDialog";
+            this.Name = "EnterName";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Enter Property Set Name";
+            this.Text = "Enter Property Set Name";          
             this.ResumeLayout(false);
             this.PerformLayout();
 
