@@ -121,6 +121,12 @@ public class SimUI : MonoBehaviour
         wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
         driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
         manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
+<<<<<<< HEAD
+=======
+
+        addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
+
+>>>>>>> master
 
         addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
 
@@ -441,6 +447,7 @@ public class SimUI : MonoBehaviour
         swapWindowOn = !swapWindowOn;
         swapWindow.SetActive(swapWindowOn);
     }
+<<<<<<< HEAD
 
     public void TogglePanel(GameObject panel)
     {
@@ -453,6 +460,20 @@ public class SimUI : MonoBehaviour
         } 
     }
 
+=======
+
+    public void TogglePanel(GameObject panel)
+    {
+        if (panel.activeSelf == true)
+        {
+            panel.SetActive(false);
+        } else
+        {
+            panel.SetActive(true);
+        } 
+    }
+
+>>>>>>> master
     public void PartToggleWindow(string Window)
     {
         List<GameObject> swapPanels = new List<GameObject> { wheelPanel, driveBasePanel, manipulatorPanel };

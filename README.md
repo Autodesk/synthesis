@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ﻿# <img src="http://bxd.autodesk.com/synthesis/images/synthesislogo.png" alt="logo" width="50" height ="50"/>Autodesk Synthesis
+=======
+# <img src="http://bxd.autodesk.com/synthesis/images/synthesislogo.png" alt="logo" width="50" height ="50"/>Autodesk Synthesis
+>>>>>>> master
 =======
 # <img src="http://bxd.autodesk.com/synthesis/images/synthesislogo.png" alt="logo" width="50" height ="50"/>Autodesk Synthesis
 >>>>>>> master
@@ -30,7 +34,11 @@ Synthesis is comprised of 4 separate components that are mostly developed indepe
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change. This  way, we can ensure that there is no overlap between contributions and internal development work. You may contact us at frc@autodesk.com.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 When ready to contribute, just submit a pull request and be sure to include a clear and detailed descriptions of the changes you've made so that we can verify them and eventually merge.
+=======
+When ready to contribute, just submit a pull request and be sure to include a clear and detailed descriptions of the changes you've made so that we can verify them and eventually merge.
+>>>>>>> master
 =======
 When ready to contribute, just submit a pull request and be sure to include a clear and detailed descriptions of the changes you've made so that we can verify them and eventually merge.
 >>>>>>> master
