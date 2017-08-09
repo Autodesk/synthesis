@@ -63,7 +63,10 @@ public class MainMenu : MonoBehaviour
 
     private GameObject graphics; //The Graphics GUI Objects
     private GameObject input; //The Input GUI Objects
+
     private GameObject settingsMode; //The InputManager Objects
+    //private GameObject tankMode;     //Tank Mode InputManager
+    private Text enableTankDriveText; //Enable + Disable tank drive text
 
     private GameObject splashScreen; //A panel that shows up at the start to cover the screen while initializing everything.
 
@@ -240,11 +243,11 @@ public class MainMenu : MonoBehaviour
 
             simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
             simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
-        } else
+        }
+        else
         {
             SwitchMixAndMatch();
         }
-
     }
 
     /// <summary>
@@ -428,6 +431,7 @@ public class MainMenu : MonoBehaviour
     {
         graphics.SetActive(true);
         input.SetActive(false);
+        settingsMode.SetActive(true);
     }
 
     public void SwitchInput()
@@ -643,7 +647,7 @@ public class MainMenu : MonoBehaviour
     #region Other Methods
     public void InputDefaultPressed()
     {
-        Controls.Reset();
+        Controls.ArcadeDrive();
     }
 
     public void ApplyGraphics()
@@ -680,14 +684,10 @@ public class MainMenu : MonoBehaviour
     {
         Application.OpenURL("http://bxd.autodesk.com/?page=tutorialFieldExporter");
     }
+
     public void OpenRobotConfigurationTutorial()
     {
         Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
-    }
-    public void ResetControls()
-    {
-        Controls.Reset();
-        Controls.Save();
     }
 
     /// <summary>
@@ -797,6 +797,7 @@ public class MainMenu : MonoBehaviour
         }
     }
     #endregion
+
     void Start()
     {
 
@@ -823,11 +824,7 @@ public class MainMenu : MonoBehaviour
         dpmSelectedRobot = PlayerPrefs.GetString("dpmSelectedRobot");
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
-
-
         canvas = GetComponent<Canvas>();
-
-
 
         customfieldon = false;
         customroboton = false;
@@ -877,7 +874,9 @@ public class MainMenu : MonoBehaviour
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
         input = AuxFunctions.FindObject(gameObject, "Input");
+
         settingsMode = AuxFunctions.FindObject(gameObject, "SettingsMode");
+        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");

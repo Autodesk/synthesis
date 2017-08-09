@@ -124,13 +124,9 @@ public class SimUI : MonoBehaviour
 
         addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
 
-
-
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
-
-        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
 

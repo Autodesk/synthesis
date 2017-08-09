@@ -1,23 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class SettingsMode : MonoBehaviour
+public class TankMode : MonoBehaviour
 {
-    public GameObject settingsMode;
+    public GameObject tankMode;
+    public bool enabled = false;
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
 
-    }
-
-    public void OnIgnoreMouseMovementChanged(bool on)
-    {
-        KeyButton.ignoreMouseMovement = on;
-    }
-
-    public void OnUseKeyModifiersChanged(bool on)
-    {
-        KeyButton.useKeyModifiers = on;
     }
 
     public void OnSaveClick()
@@ -34,7 +26,7 @@ public class SettingsMode : MonoBehaviour
 
     public void OnReset()
     {
-        Controls.Reset();
+        Controls.TankDrive();
         Controls.Save();
     }
 
