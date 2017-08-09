@@ -68,6 +68,7 @@ public class MainState : SimState
     public List<Robot> SpawnedRobots { get; private set; }
     private const int MAX_ROBOTS = 6;
 
+    public bool IsMetric;
 
     /// <summary>
     /// Called when the script instance is being initialized.

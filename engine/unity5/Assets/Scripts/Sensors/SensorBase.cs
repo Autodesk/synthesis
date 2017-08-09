@@ -103,4 +103,12 @@ public abstract class SensorBase : MonoBehaviour
             inputField.GetComponent<InputField>().text = ReturnOutput().ToString();
         }
     }
+
+    /// <summary>
+    /// Only used for gyro right now
+    /// </summary>
+    public virtual void ResetSensorReading()
+    {
+
+    }
 }

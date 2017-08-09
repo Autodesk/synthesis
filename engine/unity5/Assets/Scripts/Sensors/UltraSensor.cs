@@ -19,7 +19,8 @@ public class UltraSensor : SensorBase
     private UnityEngine.Vector3 offset = Vector3.zero; //offset from node in world coordinates
     private UnityEngine.Vector3 rotation = Vector3.forward; //rotation difference from the node rotation
     private bool isChangingRange;
-
+    private MainState main;
+    private bool isMetric;
     //Initialization
     void Start()
     {
@@ -42,6 +43,14 @@ public class UltraSensor : SensorBase
 
         //var as the type (lambda function)
         //these variables can only live INSIDE a function. 
+        if (main == null)
+        {
+            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+        }
+        else
+        {
+            isMetric = main.IsMetric;
+        }
         UpdateOutputDisplay();
         Debug.Log(ReturnOutput());
     }
@@ -49,10 +58,6 @@ public class UltraSensor : SensorBase
     //Step #2
     public override float ReturnOutput()
     {
-        //setting shortest distance of a collider to the maxRange, then if any colliders are closer to the sensor, 
-        //their distanceToCollider value becomes the new shortest distance
-        float shortestDistance = MaxRange;
-
         //Raycasting begins
         Ray ray = new Ray(gameObject.transform.position, transform.forward);
         BulletSharp.Math.Vector3 fromUltra = ray.origin.ToBullet();
@@ -86,12 +91,17 @@ public class UltraSensor : SensorBase
         //When the ray links to the middle of the field, it means the sensor is out of range
         Debug.DrawLine(fromUltra.ToUnity(), colliderPosition.ToUnity(), Color.green, 5f);
 
+        
+        //setting shortest distance of a collider to the maxRange, then if any colliders are closer to the sensor, 
+        //their distanceToCollider value becomes the new shortest distance
+        float shortestDistance = MaxRange;
+        if (!isMetric) distanceToCollider = AuxFunctions.ToFeet(distanceToCollider);
         //A check that might be useful in the future if use a bundle of rays instead of a single ray
         if (distanceToCollider < shortestDistance)
         {
             shortestDistance = distanceToCollider;
         }
-
+        
         return shortestDistance;
     }
 
@@ -120,7 +130,14 @@ public class UltraSensor : SensorBase
         if (outputPanel != null)
         {
             GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
-            outputText.GetComponent<Text>().text = gameObject.name + " Output (meters)";
+            if (isMetric)
+            {
+                outputText.GetComponent<Text>().text = gameObject.name + " Output (meters)";
+            }
+            else
+            {
+                outputText.GetComponent<Text>().text = gameObject.name + " Output (feet)";
+            }
         }
     }
 }

@@ -14,10 +14,12 @@ public class BeamBreaker : SensorBase
     public GameObject Receiver;
     private float sensorOffset;
     private bool isChangingOffset;
-
-    private void Update()
+    
+    private void FixedUpdate()
     {
         UpdateOutputDisplay();
+        float output = ReturnOutput();
+
         Debug.Log(ReturnOutput());
     }
 
@@ -65,7 +67,7 @@ public class BeamBreaker : SensorBase
             return 0;
         }
     }
-    
+
     public override float GetSensorRange()
     {
         return sensorOffset;
