@@ -13,7 +13,6 @@ using UnityEngine.UI;
 
     private void Start()
     {
-        Debug.Log("scroll start");
     }
 
 
@@ -24,7 +23,7 @@ using UnityEngine.UI;
     }
     void Update()
         {
-        Debug.Log("scroll");
+
             if (gameObject.activeSelf == true && Math.Abs(gameObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x) > 3)
             {
                 gameObject.GetComponent<RectTransform>().anchoredPosition = (gameObject.GetComponent<RectTransform>().anchoredPosition.x - TargetPosition.x > 0) ? (Vector3)gameObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(-3f, 0f, 0f) : (Vector3)gameObject.GetComponent<RectTransform>().anchoredPosition + new Vector3(3f, 0f, 0f);
