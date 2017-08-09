@@ -239,4 +239,14 @@ public class AuxFunctions
         }
         return new GameObject("COULDNOTFIND" + name);
     }
+
+    public static float ToFeet(float meter)
+    {
+        return meter * (328.084f) / 100;
+    }
+
+    public static float ToMeter(float feet)
+    {
+        return feet * 30.48f / 100;
+    }
 }

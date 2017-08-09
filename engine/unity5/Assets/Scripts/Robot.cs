@@ -87,6 +87,7 @@ public class Robot : MonoBehaviour {
                 EndReset();
             }
         }
+        
     }
     /// <summary>
     /// Called once every physics step (framerate independent) to drive motor joints as well as handle the resetting of the robot
@@ -165,7 +166,7 @@ public class Robot : MonoBehaviour {
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         //sensorManager.AddBeamBreaker(transform.GetChild(0).gameObject, new Vector3(0, 0, 1), new Vector3(0, 90, 0), 1);
         //sensorManager.AddUltrasonicSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        //sensorManager.AddGyroSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        //sensorManager.AddGyro(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
         return true;
     }
 
@@ -250,6 +251,8 @@ public class Robot : MonoBehaviour {
             RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
+        
+
     }
 
     /// <summary>
