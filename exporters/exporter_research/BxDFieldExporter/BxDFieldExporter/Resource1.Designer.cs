@@ -163,6 +163,16 @@ namespace InvAddIn {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ComponentBrowserNode16 {
+            get {
+                object obj = ResourceManager.GetObject("ComponentBrowserNode16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap EditType16 {
             get {
                 object obj = ResourceManager.GetObject("EditType16", resourceCulture);
@@ -203,9 +213,9 @@ namespace InvAddIn {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Pointer {
+        internal static System.Drawing.Bitmap FieldIcon16 {
             get {
-                object obj = ResourceManager.GetObject("Pointer", resourceCulture);
+                object obj = ResourceManager.GetObject("FieldIcon16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

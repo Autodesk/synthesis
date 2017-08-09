@@ -30,7 +30,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -45,14 +45,14 @@
     <NoWarn>
     </NoWarn>
     <Optimize>false</Optimize>
-    <RegisterForComInterop>true</RegisterForComInterop>
+    <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -99,18 +99,6 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddAssembly.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AddAssembly.Designer.cs">
-      <DependentUpon>AddAssembly.cs</DependentUpon>
-    </Compile>
-    <Compile Include="AddPart.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AddPart.Designer.cs">
-      <DependentUpon>AddPart.cs</DependentUpon>
-    </Compile>
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -147,6 +135,12 @@
     <Compile Include="FieldDataType.cs" />
     <Compile Include="FieldSaver.cs" />
     <Compile Include="JointResolver.cs" />
+    <Compile Include="LoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoadingForm.Designer.cs">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MeshColliderPropertiesForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -174,9 +168,7 @@
     <Compile Include="TempWriter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BxDFieldExporter.X.manifest">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="BxDFieldExporter.X.manifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Autodesk.BxDFieldExporter.Inventor.addin">
@@ -187,23 +179,30 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AddAssembly.resx">
-      <DependentUpon>AddAssembly.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="AddPart.resx">
-      <DependentUpon>AddPart.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="EditCoordinate.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>EditCoordinate1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EnterName.resx">
+      <DependentUpon>EnterName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LoadingForm.resx">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\load.gif" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\TTAddNewComponent.png" />
@@ -239,16 +238,39 @@
     <None Include="Resources\TTRemoveSpawnPoint.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Pointer.png" />
+    <COMReference Include="stdole1">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AssemblyBrowserNode16.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon2 %28002%29.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon1 %28002%29.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ComponentBrowserNode16.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FieldIcon16.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>call "%25VS141COMNTOOLS%25vsvars32"
+    <PostBuildEvent>call "%25VS140COMNTOOLS%25vsvars32"
 			mt.exe -manifest "$(ProjectDir)BxDFieldExporter.X.manifest" -outputresource:"$(TargetPath)";#2
-			XCopy "$(TargetPath)" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
-		    XCopy "$(ProjectDir)Autodesk.BxDFieldExporter.Inventor.addin" "%25AppData%25\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
+			XCopy "$(TargetPath)" "%AppData%\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R
+		    XCopy "$(ProjectDir)Autodesk.BxDFieldExporter.Inventor.addin" "%AppData%\Autodesk\ApplicationPlugins\$(TargetName)\" /Y /R   
 	</PostBuildEvent>
   </PropertyGroup>
 </Project>
