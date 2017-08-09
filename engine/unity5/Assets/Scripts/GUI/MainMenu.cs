@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 using System;
+using UnityEngine.SceneManagement;
+
+
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
@@ -13,6 +16,9 @@ public class MainMenu : MonoBehaviour
     public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
+    public static bool isMixAndMatch = false;
+    public GameObject mixAndMatchModeScript;
+
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
     //We store these because it allows us to easily find and access specific UI objects.
     public GameObject homeTab;
@@ -20,11 +26,13 @@ public class MainMenu : MonoBehaviour
     public GameObject optionsTab;
 
     //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
+
     public enum Sim
     {
-        Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot,
+        Selection, DefaultSimulator, DriverPracticeMode, MixAndMatchMode, Multiplayer, SimLoadRobot,
         SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration, SimLoadReplay
     }
+   
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -33,6 +41,7 @@ public class MainMenu : MonoBehaviour
     private GameObject selectionPanel;
     private GameObject defaultSimulator;
     private GameObject driverPracticeMode;
+    private GameObject mixAndMatchMode;
     private GameObject dpmConfiguration;
     private GameObject localMultiplayer;
     private GameObject simLoadField;
@@ -132,6 +141,7 @@ public class MainMenu : MonoBehaviour
         if (fieldDirectory != null) InitFieldBrowser();
         if (robotDirectory != null) InitRobotBrowser();
 
+
         //Renders the message manager which displays error messages
         UserMessageManager.Render();
         UserMessageManager.scale = canvas.scaleFactor;
@@ -204,8 +214,11 @@ public class MainMenu : MonoBehaviour
         simLoadRobot.SetActive(false);
         simLoadReplay.SetActive(false);
         dpmConfiguration.SetActive(false);
+        mixAndMatchMode.SetActive(false);
 
         selectionPanel.SetActive(true);
+
+        isMixAndMatch = false;
 
     }
 
@@ -214,21 +227,45 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchSimDefault()
     {
-        currentSim = Sim.DefaultSimulator;
+        if (!isMixAndMatch)
+        {
+            currentSim = Sim.DefaultSimulator;
 
-        selectionPanel.SetActive(false);
-        simLoadField.SetActive(false);
-        simLoadRobot.SetActive(false);
-        simLoadReplay.SetActive(false);
-        defaultSimulator.SetActive(true);
+            selectionPanel.SetActive(false);
+            simLoadField.SetActive(false);
+            simLoadRobot.SetActive(false);
+            simLoadReplay.SetActive(false);
+            defaultSimulator.SetActive(true);
+<<<<<<< HEAD
 
-        PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
-        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+            PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+            PlayerPrefs.SetString("simSelectedField", simSelectedField);
+=======
 
+            PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+            PlayerPrefs.SetString("simSelectedField", simSelectedField);
 
-        simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
-        simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+>>>>>>> master
+
+            simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
+            simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+        } else
+        {
+            SwitchMixAndMatch();
+        }
+
+<<<<<<< HEAD
+            simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
+            simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+        }
+        else
+        {
+            SwitchMixAndMatch();
+        }
+=======
+>>>>>>> master
     }
+
 
     /// <summary>
     /// Switches to the driver practice menu within the simulation tab and activates its respective UI elements.
@@ -245,6 +282,25 @@ public class MainMenu : MonoBehaviour
 
         dpmRobotSelectText.GetComponent<Text>().text = dpmSelectedRobotName;
         dpmFieldSelectText.GetComponent<Text>().text = dpmSelectedFieldName;
+    }
+
+    /// <summary>
+    /// Switches to the Mix and Match menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
+    public void SwitchMixAndMatch()
+    {
+        currentSim = Sim.MixAndMatchMode;
+        
+        selectionPanel.SetActive(false);
+        simLoadField.SetActive(false);
+        simLoadRobot.SetActive(false);
+        simLoadReplay.SetActive(false);
+        mixAndMatchMode.SetActive(true);
+
+        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+
+        isMixAndMatch = true;
+
     }
 
     /// <summary>
@@ -280,6 +336,20 @@ public class MainMenu : MonoBehaviour
 
         defaultSimulator.SetActive(false);
         simLoadField.SetActive(true);
+    }
+
+    /// <summary>
+    /// Switches to the load field menu for the default simulator and activates its respective UI elements.
+    /// </summary>
+    public void SwitchSimLoadField(bool isMaM)
+    {
+        currentSim = Sim.SimLoadField;
+
+        defaultSimulator.SetActive(false);
+        simLoadField.SetActive(true);
+        mixAndMatchMode.SetActive(false);
+
+        isMixAndMatch = true;
     }
 
     /// <summary>
@@ -388,34 +458,6 @@ public class MainMenu : MonoBehaviour
         settingsMode.SetActive(true);
     }
 
-    //public void SwitchTankOn()
-    //{
-    //    graphics.SetActive(false);
-    //    input.SetActive(true);
-    //    settingsMode.SetActive(true);
-
-    //    if (!Controls.TankDriveEnabled)
-    //    {
-    //        Controls.TankDriveEnabled = true;
-    //        Controls.IsTankDrive = true;
-    //        Controls.check = false;
-    //        Controls.SwitchControls();
-    //        Controls.Save();
-    //        enableTankDriveText.text = "Disable Tank Drive";
-    //    }
-    //    else
-    //    {
-    //        Controls.TankDriveEnabled = false;
-    //        Controls.IsTankDrive = false;
-    //        Controls.check = true;
-    //        Controls.SwitchControls();
-    //        Controls.Save();
-    //        enableTankDriveText.text = "Enable Tank Drive";
-    //    }
-
-    //    Debug.Log("On");
-    //}
-
     public void StartDefaultSim()
     {
         if (Directory.Exists(simSelectedField) && Directory.Exists(simSelectedRobot))
@@ -428,6 +470,7 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
             Application.LoadLevel("Scene");
+            PlayerPrefs.SetInt("MixAndMatch", 1); //0 means true, 1 means false
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
@@ -663,7 +706,18 @@ public class MainMenu : MonoBehaviour
     {
         Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
     }
+<<<<<<< HEAD
+=======
+    public void ResetControls()
+    {
+        Controls.Reset();
+        Controls.Save();
+    }
+>>>>>>> master
 
+    /// <summary>
+    /// Called when the "Select Field" button is clicked within the field  selection panel
+    /// </summary>
     public void SelectSimField()
     {
         GameObject fieldList = GameObject.Find("SimLoadFieldList");
@@ -672,12 +726,23 @@ public class MainMenu : MonoBehaviour
         {
             simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
-            SwitchSimDefault();
+
+            if (isMixAndMatch) //Starts the MixAndMatch scene
+            {
+                PlayerPrefs.SetString("simSelectedField", simSelectedField);
+                fieldList.SetActive(false);
+                splashScreen.SetActive(true);
+                mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartSwapSim();
+            } else
+            {
+                SwitchSimDefault();
+            }            
         }
         else
         {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
+        
     }
 
     public void SelectSimRobot()
@@ -757,6 +822,7 @@ public class MainMenu : MonoBehaviour
         }
     }
     #endregion
+
     void Start()
     {
 
@@ -783,9 +849,15 @@ public class MainMenu : MonoBehaviour
         dpmSelectedRobot = PlayerPrefs.GetString("dpmSelectedRobot");
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
+<<<<<<< HEAD
+=======
+
+
         canvas = GetComponent<Canvas>();
+>>>>>>> master
 
 
+        canvas = GetComponent<Canvas>();
 
         customfieldon = false;
         customroboton = false;
@@ -821,6 +893,7 @@ public class MainMenu : MonoBehaviour
         selectionPanel = AuxFunctions.FindObject(gameObject, "SelectionPanel"); //The Mode Selection Tab GUI Objects
         defaultSimulator = AuxFunctions.FindObject(gameObject, "DefaultSimulator");
         driverPracticeMode = AuxFunctions.FindObject(gameObject, "DriverPracticeMode");
+        mixAndMatchMode = AuxFunctions.FindObject(gameObject, "MixAndMatchMode");
         dpmConfiguration = AuxFunctions.FindObject(gameObject, "DPMConfiguration");
         localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
@@ -848,6 +921,9 @@ public class MainMenu : MonoBehaviour
         inputConflict = AuxFunctions.FindObject(gameObject, "InputConflict");
 
         AuxFunctions.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+
+        mixAndMatchModeScript = AuxFunctions.FindObject(gameObject, "MixAndMatchModeScript");
+        Debug.Log(mixAndMatchModeScript.ToString());
     }
 
     void InitGraphicsSettings()

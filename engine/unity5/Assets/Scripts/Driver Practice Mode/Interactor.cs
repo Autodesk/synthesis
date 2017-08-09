@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using BulletSharp;
 using BulletSharp.Math;
 using BulletUnity.Debugging;
+using Assets.Scripts;
+using System;
+using Assets.Scripts.BUExtensions;
 
 namespace BulletUnity
 {
@@ -12,13 +15,18 @@ namespace BulletUnity
     /// 
     /// Implements BCollisionCallbacksDefault because it has a callback method that triggers whenever this object collides with any other object.
     /// </summary>
-    public class Interactor : BCollisionCallbacksDefault
+    public class Interactor : MonoBehaviour, ICollisionCallback
     {
         private GameObject[] collisionObject = new GameObject[2];
         private bool[] collisionDetected = new bool[2];
         public string[] collisionKeyword = new string[2];
-        
+
         public List<GameObject> heldGamepieces = new List<GameObject>();
+
+        private void Awake()
+        {
+            GetComponent<BMultiCallbacks>().AddCallback(this);
+        }
 
         /// <summary>
         /// Method is called whenever interactor collides with another object.
@@ -26,13 +34,13 @@ namespace BulletUnity
         /// </summary>
         /// <param name="other">The object the interactor collided with</param>
         /// <param name="manifoldList">List of collision manifolds--this isn't used</param>
-        public override void BOnCollisionEnter(CollisionObject other, PersistentManifoldList manifoldList)
+        public void BOnCollisionEnter(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
         {
             string gamepiece;
             for (int i = 0; i < collisionKeyword.Length; i++)
             {
                 if (collisionKeyword[i] != null)
-                { 
+                {
                     gamepiece = collisionKeyword[i];
                     if (other.UserObject.ToString().Contains(gamepiece))
                     {
@@ -55,12 +63,16 @@ namespace BulletUnity
             }
         }
 
+        public void BOnCollisionStay(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
+        {
+        }
+
         /// <summary>
         /// Method is called whenever interactor stops colliding with another object.
         /// Checks if the name of the other object contains the keyword of the gamepiece we are looking for and acts if so.
         /// </summary>
         /// <param name="other">The object the interactor stopped colliding with</param>
-        public override void BOnCollisionExit(CollisionObject other)
+        public void BOnCollisionExit(CollisionObject other)
         {
             string gamepiece;
             for (int i = 0; i < collisionKeyword.Length; i++)
@@ -78,7 +90,7 @@ namespace BulletUnity
 
         public GameObject GetObject(int index)
         {
-            collisionDetected[index] = false;       
+            collisionDetected[index] = false;
             return collisionObject[index];
         }
 
@@ -90,6 +102,16 @@ namespace BulletUnity
         public void SetKeyword(string keyword, int index)
         {
             collisionKeyword[index] = keyword;
+        }
+
+        public void OnVisitPersistentManifold(PersistentManifold pm)
+        {
+            // Not implemented
+        }
+
+        public void OnFinishedVisitingManifolds()
+        {
+            // Not implemented
         }
     }
 }
