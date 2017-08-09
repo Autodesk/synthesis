@@ -20,7 +20,7 @@ public class MainState : SimState
     private BPhysicsWorld physicsWorld;
     private int lastFrameCount;
 
-    private bool tracking;
+    public bool Tracking { get; private set; }
     private bool awaitingReplay;
 
     private UnityPacket unityPacket;
@@ -51,16 +51,14 @@ public class MainState : SimState
     private GameObject fieldObject;
     private UnityFieldDefinition fieldDefinition;
 
-
     public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
 
     private OverlayWindow oWindow;
 
-    private FixedQueue<List<ContactDescriptor>> contactPoints;
-
     public List<Tracker> Trackers { get; private set; }
+    public CollisionTracker CollisionTracker { get; private set; }
 
     private string fieldPath;
     private string robotPath;
@@ -95,7 +93,7 @@ public class MainState : SimState
 
         //setting up replay
         Trackers = new List<Tracker>();
-        contactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
+        CollisionTracker = new CollisionTracker(this);
 
         //starts a new instance of unity packet which receives packets from the driver station
         unityPacket = new UnityPacket();
@@ -111,7 +109,7 @@ public class MainState : SimState
 
         if (string.IsNullOrEmpty(selectedReplay))
         {
-            tracking = true;
+            Tracking = true;
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
@@ -160,8 +158,8 @@ public class MainState : SimState
         // Switches to replay mode
         if (!activeRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
         {
-            contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+            CollisionTracker.Synchronize(lastFrameCount);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
         }
 
         UpdateTrackers();
@@ -185,7 +183,7 @@ public class MainState : SimState
         if (awaitingReplay)
         {
             awaitingReplay = false;
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
         }
     }
 
@@ -392,11 +390,11 @@ public class MainState : SimState
                     currentContacts.Add(currentContact);
                 }
 
-                contactPoints.Add(currentContacts);
+                CollisionTracker.ContactPoints.Add(currentContacts);
             }
             else
             {
-                contactPoints.Add(null);
+                CollisionTracker.ContactPoints.Add(null);
             }
         }
     }
@@ -417,55 +415,9 @@ public class MainState : SimState
     {
         int numSteps = physicsWorld.frameCount - lastFrameCount;
 
-        if (tracking && numSteps > 0)
-        {
+        if (Tracking && numSteps > 0)
             foreach (Tracker t in Trackers)
                 t.AddState(numSteps);
-
-            for (int i = numSteps; i > 0; i--)
-            {
-                List<ContactDescriptor> frameContacts = null;
-
-                int numManifolds = physicsWorld.world.Dispatcher.NumManifolds;
-
-                for (int j = 0; j < numManifolds; j++)
-                {
-                    PersistentManifold contactManifold = physicsWorld.world.Dispatcher.GetManifoldByIndexInternal(j);
-                    BRigidBody obA = (BRigidBody)contactManifold.Body0.UserObject;
-                    BRigidBody obB = (BRigidBody)contactManifold.Body1.UserObject;
-
-                    if (!obA.gameObject.name.StartsWith("node") && !obB.gameObject.name.StartsWith("node"))
-                        continue;
-
-                    ManifoldPoint mp = null;
-
-                    int numContacts = contactManifold.NumContacts;
-
-                    for (int k = 0; k < numContacts; k++)
-                    {
-                        mp = contactManifold.GetContactPoint(k);
-
-                        if (mp.LifeTime == i)
-                            break;
-                    }
-
-                    if (mp == null)
-                        continue;
-
-                    if (frameContacts == null)
-                        frameContacts = new List<ContactDescriptor>();
-
-                    frameContacts.Add(new ContactDescriptor
-                    {
-                        AppliedImpulse = mp.AppliedImpulse,
-                        Position = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f,
-                        RobotBody = obA.name.StartsWith("node") ? obA : obB
-                    });
-                }
-
-                contactPoints.Add(frameContacts);
-            }
-        }
 
         lastFrameCount += numSteps;
     }
@@ -474,8 +426,8 @@ public class MainState : SimState
     {
         if (!activeRobot.IsResetting)
         {
-            contactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, contactPoints, Trackers));
+            CollisionTracker.Synchronize(lastFrameCount);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
         }
     }
 
@@ -485,11 +437,11 @@ public class MainState : SimState
     public override void Resume()
     {
         lastFrameCount = physicsWorld.frameCount;
-        tracking = true;
+        Tracking = true;
 
         Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = true;
 
-        contactPoints.Clear(null);
+        CollisionTracker.Reset();
     }
 
     /// <summary>
@@ -497,7 +449,7 @@ public class MainState : SimState
     /// </summary>
     public override void Pause()
     {
-        tracking = false;
+        Tracking = false;
         Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = false;
     }
     #endregion
@@ -523,7 +475,7 @@ public class MainState : SimState
         {
             t.Clear();
 
-            contactPoints.Clear(null);
+            CollisionTracker.Reset();
         }
     }
 

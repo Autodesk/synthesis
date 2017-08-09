@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Assets.Scripts.FEA;
+using Assets.Scripts.BUExtensions;
 
 /// <summary>
 /// To be attached to all robot parent objects.
@@ -144,6 +145,14 @@ public class Robot : MonoBehaviour {
                 return false;
             }
 
+            if (n.HasDriverMeta<WheelDriverMeta>() && n.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
+            {
+                WheelType wheelType = n.GetDriverMeta<WheelDriverMeta>().type;
+                node.MainObject.AddComponent<BRaycastWheel>().CreateWheel(node);
+                node.MainObject.transform.parent = ((RigidNode)node.GetParent()).MainObject.transform;
+                continue;
+            }
+
             node.CreateJoint();
 
             node.MainObject.AddComponent<Tracker>().Trace = true;
@@ -182,7 +191,13 @@ public class Robot : MonoBehaviour {
 
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+            if (br == null)
+                continue;
+
+            RigidBody r = (RigidBody)br.GetCollisionObject();
+
             r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
 
@@ -248,7 +263,13 @@ public class Robot : MonoBehaviour {
 
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+            if (br == null)
+                continue;
+
+            RigidBody r = (RigidBody)br.GetCollisionObject();
+
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
         
@@ -262,7 +283,12 @@ public class Robot : MonoBehaviour {
     {
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+            if (br == null)
+                continue;
+
+            RigidBody r = (RigidBody)br.GetCollisionObject();
 
             BulletSharp.Math.Matrix newTransform = r.WorldTransform;
             newTransform.Origin += transposition.ToBullet();
@@ -279,7 +305,12 @@ public class Robot : MonoBehaviour {
 
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
-            RigidBody r = (RigidBody)n.MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+            BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+            if (br == null)
+                continue;
+
+            RigidBody r = (RigidBody)br.GetCollisionObject();
 
             if (origin == null)
                 origin = r.CenterOfMassPosition;
