@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ExportProcess {
@@ -26,8 +27,19 @@ namespace ExportProcess {
             }
         }
         public byte[] getData() {
-            try {
-                return data;
+            try
+            {
+                List<byte> fullSTLData = new List<byte>();
+                fullSTLData.AddRange(BitConverter.GetBytes(ID));
+                for (int x = 0; x != 4; x++)
+                {
+                    for(int y = 0; y != 4; y++)
+                    {
+                        fullSTLData.AddRange(BitConverter.GetBytes(translationData[x, y]));
+                    }
+                }
+                fullSTLData.AddRange(data);
+                return fullSTLData.ToArray();
             }
             catch (Exception e) {
                 MessageBox.Show(e.Message);

@@ -36,6 +36,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
+    GameObject unitConversionButton;
 
     public bool swapWindowOn = false; //if the swap window is active
     public bool wheelPanelOn = false; //if the wheel panel is active
@@ -136,6 +137,7 @@ public class SimUI : MonoBehaviour
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
 
+        unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
     }
 
 
@@ -394,10 +396,12 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             inputManagerPanel.SetActive(true);
+            unitConversionButton.SetActive(true);
         }
         else
         {
             inputManagerPanel.SetActive(false);
+            unitConversionButton.SetActive(false);
         }
     }
 
@@ -424,6 +428,10 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    public void ToggleUnitConversion()
+    {
+        main.IsMetric = !main.IsMetric;
+    }
     #region swap part
     /// <summary>
     /// Toggles the Driver Practice Mode window
