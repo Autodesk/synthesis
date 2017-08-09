@@ -432,9 +432,20 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Toggles between meter and feet measurements
+    /// </summary>
     public void ToggleUnitConversion()
     {
         main.IsMetric = !main.IsMetric;
+        if (main.IsMetric)
+        {
+            unitConversionButton.GetComponentInChildren<Text>().text = "To Feet";
+        }
+        else
+        {
+            unitConversionButton.GetComponentInChildren<Text>().text = "To Meter";
+        }
     }
     #region swap part
     /// <summary>
