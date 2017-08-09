@@ -168,7 +168,8 @@ public class Robot : MonoBehaviour {
         //Attached to the main frame and face the front
         robotCamera.AddCamera(transform.GetChild(0).transform);
         //Attached to the first node and face the front
-        robotCamera.AddCamera(transform.GetChild(1).transform);
+        if (transform.childCount > 1)
+            robotCamera.AddCamera(transform.GetChild(1).transform);
         ////Attached to main frame and face the back
         robotCamera.AddCamera(transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
 

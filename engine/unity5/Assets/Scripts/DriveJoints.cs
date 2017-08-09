@@ -91,7 +91,7 @@ public class DriveJoints
         if (dioModules[0] == null)
             return;
 
-        bool IsMecanum = false;
+        bool IsMecanum = mecanum;
         int reverse = -1;
 
         float[] pwm = dioModules[0].pwmValues;
@@ -134,8 +134,8 @@ public class DriveJoints
             (Input.GetKey(KeyCode.P) ? reverse * -SPEED_ARROW_PWM : 0.0f); //Right Rotate
             #endregion
         }
-        
-if (Controls.IsTankDrive)
+
+        if (Controls.IsTankDrive)
         {
             #region Tank Drive
             ////Left motor
