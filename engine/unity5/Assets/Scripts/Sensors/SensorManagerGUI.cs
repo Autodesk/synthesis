@@ -73,6 +73,10 @@ class SensorManagerGUI : MonoBehaviour
 
     private void Update()
     {
+        if(dynamicCamera == null)
+        {
+            dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+        }
         //When the current sensor is ready to be configured, call its UpdateTransformFunction
         if (currentSensor != null && currentSensor.IsChangingPosition)
         {
@@ -681,7 +685,5 @@ class SensorManagerGUI : MonoBehaviour
         }
         dynamicCamera.SwitchToState(preConfigState);
     }
-
-
 }
 

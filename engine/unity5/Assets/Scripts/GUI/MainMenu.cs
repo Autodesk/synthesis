@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.IO;
 using System;
+using UnityEngine.SceneManagement;
+
+
 /// <summary>
 /// This is the class that handles nearly everything within the main menu scene such as ui objects, transitions, and loading fields/robots.
 /// </summary>
@@ -13,6 +16,9 @@ public class MainMenu : MonoBehaviour
     public enum Tab { Main, Sim, Options, FieldDir, RobotDir };
     public static Tab currentTab = Tab.Main;
 
+    public static bool isMixAndMatch = false;
+    public GameObject mixAndMatchModeScript;
+
     //These refer to the parent gameobjects; each of them contain all the UI objects of the main menu state they are representing.
     //We store these because it allows us to easily find and access specific UI objects.
     public GameObject homeTab;
@@ -20,11 +26,13 @@ public class MainMenu : MonoBehaviour
     public GameObject optionsTab;
 
     //This refers to what 'state' or 'page' the main menu is in while it is in the 'Sim' tab.
+
     public enum Sim
     {
-        Selection, DefaultSimulator, DriverPracticeMode, Multiplayer, SimLoadRobot,
+        Selection, DefaultSimulator, DriverPracticeMode, MixAndMatchMode, Multiplayer, SimLoadRobot,
         SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration, SimLoadReplay
     }
+   
     public static Sim currentSim = Sim.DefaultSimulator;
     Sim lastSim;
 
@@ -33,6 +41,7 @@ public class MainMenu : MonoBehaviour
     private GameObject selectionPanel;
     private GameObject defaultSimulator;
     private GameObject driverPracticeMode;
+    private GameObject mixAndMatchMode;
     private GameObject dpmConfiguration;
     private GameObject localMultiplayer;
     private GameObject simLoadField;
@@ -85,8 +94,8 @@ public class MainMenu : MonoBehaviour
 
     public static bool fullscreen; //true if application is in fullscreen
     public static int resolutionsetting; //resolution setting index
-    private int[] xresolution = new int[10]; //arrays of resolution widths corresponding to index
-    private int[] yresolution = new int[10]; //arrays of resolution heights corresponding to index
+    private int[] xresolution = new int[8]; //arrays of resolution widths corresponding to index
+    private int[] yresolution = new int[8]; //arrays of resolution heights corresponding to index
 
     private Canvas canvas; //canvas component of this object--used for scaling user message manager to size
 
@@ -128,6 +137,7 @@ public class MainMenu : MonoBehaviour
         //Initializes and renders the Field Browser
         if (fieldDirectory != null) InitFieldBrowser();
         if (robotDirectory != null) InitRobotBrowser();
+
 
         //Renders the message manager which displays error messages
         UserMessageManager.Render();
@@ -201,8 +211,11 @@ public class MainMenu : MonoBehaviour
         simLoadRobot.SetActive(false);
         simLoadReplay.SetActive(false);
         dpmConfiguration.SetActive(false);
+        mixAndMatchMode.SetActive(false);
 
         selectionPanel.SetActive(true);
+
+        isMixAndMatch = false;
 
     }
 
@@ -211,20 +224,27 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     public void SwitchSimDefault()
     {
-        currentSim = Sim.DefaultSimulator;
+        if (!isMixAndMatch)
+        {
+            currentSim = Sim.DefaultSimulator;
 
-        selectionPanel.SetActive(false);
-        simLoadField.SetActive(false);
-        simLoadRobot.SetActive(false);
-        simLoadReplay.SetActive(false);
-        defaultSimulator.SetActive(true);
+            selectionPanel.SetActive(false);
+            simLoadField.SetActive(false);
+            simLoadRobot.SetActive(false);
+            simLoadReplay.SetActive(false);
+            defaultSimulator.SetActive(true);
 
-        PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
-        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+            PlayerPrefs.SetString("simSelectedRobot", simSelectedRobot);
+            PlayerPrefs.SetString("simSelectedField", simSelectedField);
 
 
-        simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
-        simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+            simRobotSelectText.GetComponent<Text>().text = simSelectedRobotName;
+            simFieldSelectText.GetComponent<Text>().text = simSelectedFieldName;
+        } else
+        {
+            SwitchMixAndMatch();
+        }
+
     }
 
     /// <summary>
@@ -242,6 +262,25 @@ public class MainMenu : MonoBehaviour
 
         dpmRobotSelectText.GetComponent<Text>().text = dpmSelectedRobotName;
         dpmFieldSelectText.GetComponent<Text>().text = dpmSelectedFieldName;
+    }
+
+    /// <summary>
+    /// Switches to the Mix and Match menu within the simulation tab and activates its respective UI elements.
+    /// </summary>
+    public void SwitchMixAndMatch()
+    {
+        currentSim = Sim.MixAndMatchMode;
+        
+        selectionPanel.SetActive(false);
+        simLoadField.SetActive(false);
+        simLoadRobot.SetActive(false);
+        simLoadReplay.SetActive(false);
+        mixAndMatchMode.SetActive(true);
+
+        PlayerPrefs.SetString("simSelectedField", simSelectedField);
+
+        isMixAndMatch = true;
+
     }
 
     /// <summary>
@@ -277,6 +316,20 @@ public class MainMenu : MonoBehaviour
 
         defaultSimulator.SetActive(false);
         simLoadField.SetActive(true);
+    }
+
+    /// <summary>
+    /// Switches to the load field menu for the default simulator and activates its respective UI elements.
+    /// </summary>
+    public void SwitchSimLoadField(bool isMaM)
+    {
+        currentSim = Sim.SimLoadField;
+
+        defaultSimulator.SetActive(false);
+        simLoadField.SetActive(true);
+        mixAndMatchMode.SetActive(false);
+
+        isMixAndMatch = true;
     }
 
     /// <summary>
@@ -396,6 +449,7 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
             Application.LoadLevel("Scene");
+            PlayerPrefs.SetInt("MixAndMatch", 1); //0 means true, 1 means false
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
@@ -643,12 +697,20 @@ public class MainMenu : MonoBehaviour
         {
             simSelectedFieldName = fieldList.GetComponent<SelectFieldScrollable>().selectedEntry;
             simSelectedField = fieldDirectory + "\\" + simSelectedFieldName + "\\";
-            SwitchSimDefault();
+            if (isMixAndMatch)
+            {
+                PlayerPrefs.SetString("simSelectedField", simSelectedField);
+                mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartSwapSim();
+            } else
+            {
+                SwitchSimDefault();
+            }            
         }
         else
         {
             UserMessageManager.Dispatch("No Field Selected!", 2);
         }
+        
     }
 
     public void SelectSimRobot()
@@ -754,6 +816,8 @@ public class MainMenu : MonoBehaviour
         dpmSelectedRobot = PlayerPrefs.GetString("dpmSelectedRobot");
         dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
+
+
         canvas = GetComponent<Canvas>();
 
 
@@ -792,6 +856,7 @@ public class MainMenu : MonoBehaviour
         selectionPanel = AuxFunctions.FindObject(gameObject, "SelectionPanel"); //The Mode Selection Tab GUI Objects
         defaultSimulator = AuxFunctions.FindObject(gameObject, "DefaultSimulator");
         driverPracticeMode = AuxFunctions.FindObject(gameObject, "DriverPracticeMode");
+        mixAndMatchMode = AuxFunctions.FindObject(gameObject, "MixAndMatchMode");
         dpmConfiguration = AuxFunctions.FindObject(gameObject, "DPMConfiguration");
         localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
@@ -817,31 +882,30 @@ public class MainMenu : MonoBehaviour
         inputConflict = AuxFunctions.FindObject(gameObject, "InputConflict");
 
         AuxFunctions.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
+
+        mixAndMatchModeScript = AuxFunctions.FindObject(gameObject, "MixAndMatchModeScript");
+        Debug.Log(mixAndMatchModeScript.ToString());
     }
 
     void InitGraphicsSettings()
     {
-        xresolution[0] = 640;
-        xresolution[1] = 800;
-        xresolution[2] = 1024;
+        xresolution[0] = 1024;
+        xresolution[1] = 1280;
+        xresolution[2] = 1280;
         xresolution[3] = 1280;
-        xresolution[4] = 1280;
-        xresolution[5] = 1280;
-        xresolution[6] = 1400;
-        xresolution[7] = 1600;
-        xresolution[8] = 1680;
-        xresolution[9] = 1920;
+        xresolution[4] = 1400;
+        xresolution[5] = 1600;
+        xresolution[6] = 1680;
+        xresolution[7] = 1920;
 
-        yresolution[0] = 480;
-        yresolution[1] = 600;
+        yresolution[0] = 768;
+        yresolution[1] = 720;
         yresolution[2] = 768;
-        yresolution[3] = 720;
-        yresolution[4] = 768;
-        yresolution[5] = 1024;
-        yresolution[6] = 900;
-        yresolution[7] = 900;
-        yresolution[8] = 1050;
-        yresolution[9] = 1080;
+        yresolution[3] = 1024;
+        yresolution[4] = 900;
+        yresolution[5] = 900;
+        yresolution[6] = 1050;
+        yresolution[7] = 1080;
 
         fullscreen = Screen.fullScreen;
         int width = Screen.currentResolution.width;
@@ -854,8 +918,6 @@ public class MainMenu : MonoBehaviour
         else if (width == xresolution[5] && height == yresolution[5]) resolutionsetting = 5;
         else if (width == xresolution[6] && height == yresolution[6]) resolutionsetting = 6;
         else if (width == xresolution[7] && height == yresolution[7]) resolutionsetting = 7;
-        else if (width == xresolution[8] && height == yresolution[8]) resolutionsetting = 8;
-        else if (width == xresolution[9] && height == yresolution[9]) resolutionsetting = 9;
         else resolutionsetting = 2;
     }
 

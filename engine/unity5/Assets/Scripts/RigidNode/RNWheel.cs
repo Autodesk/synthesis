@@ -42,6 +42,15 @@ public partial class RigidNode : RigidNode_Base
         rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
     }
 
+    private void UpdateWheelRigidBody(float friction)
+    {
+        BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
+        rigidBody.friction = friction;
+
+        rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
+        rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
+    }
+
     private void UpdateWheelMass()
     {
         BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
