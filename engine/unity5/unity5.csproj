@@ -17,12 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
-<<<<<<< HEAD
-    <RootNamespace></RootNamespace>
-=======
     <RootNamespace>
     </RootNamespace>
->>>>>>> master
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -241,8 +237,31 @@
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
     <Compile Include="Assets\Scripts\GUI\InputButton.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Axis.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Controls.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\DemoControls.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_CreateButtonScript.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_GameModeScript.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_KeyButtonScript.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_PlayerScript.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_SettingsModeScript.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\InputDevice.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\Joystick.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\JoystickAxis.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\JoystickButton.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\KeyModifier.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\MouseAxis.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\MouseButton.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\InputControl.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\CustomInput.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\JoystickInput.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\KeyboardInput.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\MouseInput.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\KeyMapping.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\CreateButton.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\KeyButton.cs" />
+    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\GUI\InputScrollable.cs" />
-    <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
@@ -261,27 +280,6 @@
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
     <Compile Include="Assets\Scripts\ICollisionCallback.cs" />
-<<<<<<< HEAD
-    <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
-    <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\InputDevice.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\Joystick.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickAxis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\KeyModifier.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\MouseAxis.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Enums\MouseButton.cs" />
-    <Compile Include="Assets\Scripts\InputControl\InputControl.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\CustomInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\JoystickInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\KeyboardInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
-    <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
-    <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
-    <Compile Include="Assets\Scripts\InputControl\TankMode.cs" />
-=======
->>>>>>> master
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\LocalizationHelperr.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
@@ -323,11 +321,7 @@
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
-<<<<<<< HEAD
-    <None Include="Assets\Scripts\InputControl\Documentation\Readme.txt" />
-=======
     <None Include="Assets\Scripts\GUI\InputControl\Readme.txt" />
->>>>>>> master
     <None Include="Assets\item_data.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
