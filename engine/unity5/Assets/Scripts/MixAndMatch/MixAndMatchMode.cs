@@ -12,7 +12,7 @@ public class MixAndMatchMode : MonoBehaviour
 
     private GameObject mixAndMatchMode;
     private GameObject mixAndMatchModeScript;
-    public static bool isQuickSwapMode = false;
+    public static bool isMixAndMatchMode = false;
     private GameObject infoText;
 
     //Presets
@@ -161,8 +161,10 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
         PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
+        PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
+        PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
         PlayerPrefs.Save();
-        isQuickSwapMode = true;
+        isMixAndMatchMode = true;
         SceneManager.LoadScene("Scene");
     }
 

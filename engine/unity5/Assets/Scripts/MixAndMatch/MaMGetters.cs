@@ -45,7 +45,7 @@ public class MaMGetters : MonoBehaviour {
     /// Returns the coefficient of friction value associated with a wheel. The coeffecient of friction is taken from VexPro's website. 
     /// These may need to be adjusted.
     /// </summary>
-    public static float GetWheelFriction(int wheelID)
+    public float GetWheelFriction(int wheelID)
     {
         switch (wheelID)
         {
@@ -64,7 +64,7 @@ public class MaMGetters : MonoBehaviour {
     ///<summary>
     ///Returns the wheel mass associated with a wheel. Masses are taken off Vex's website and converted to kilograms.
     /// </summary>
-    public static float GetWheelMass(int wheelID)
+    public float GetWheelMass(int wheelID)
     {
         switch (wheelID)
         {

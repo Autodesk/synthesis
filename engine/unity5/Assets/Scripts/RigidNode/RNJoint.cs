@@ -22,7 +22,16 @@ public partial class RigidNode : RigidNode_Base
     {
         if (GetParent() == null)
         {
-            MainObject.AddComponent<BRaycastRobot>();
+            if (MixAndMatchMode.isMixAndMatchMode)
+            {
+                MainObject.AddComponent<BRaycastRobot>().Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
+               
+            } else
+            {
+                MainObject.AddComponent<BRaycastRobot>();
+            }
+
+
             return;
         }
 
