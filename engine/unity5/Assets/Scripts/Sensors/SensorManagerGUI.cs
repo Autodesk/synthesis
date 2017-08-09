@@ -48,6 +48,8 @@ class SensorManagerGUI : MonoBehaviour
     GameObject lockAngleButton;
     GameObject lockRangeButton;
 
+    GameObject hideOutputPanelsButton;
+
     Text sensorNodeText;
 
     private bool isChoosingOption;
@@ -62,6 +64,7 @@ class SensorManagerGUI : MonoBehaviour
     private bool isEditingRange;
     private bool nodeConfirmed;
     private bool sensorConfirmed;
+    private bool isHidingOutput;
 
     //A list of all output panels instantiated
     private List<GameObject> sensorOutputPanels = new List<GameObject>();
@@ -73,7 +76,7 @@ class SensorManagerGUI : MonoBehaviour
 
     private void Update()
     {
-        if(dynamicCamera == null)
+        if (dynamicCamera == null)
         {
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
@@ -138,6 +141,7 @@ class SensorManagerGUI : MonoBehaviour
         lockAngleButton = AuxFunctions.FindObject(configureSensorPanel, "LockAngleButton");
         lockRangeButton = AuxFunctions.FindObject(configureSensorPanel, "LockRangeButton");
 
+        hideOutputPanelsButton = AuxFunctions.FindObject(canvas, "HideOutputButton");
     }
 
     #region Sensor Option Panel
@@ -507,7 +511,6 @@ class SensorManagerGUI : MonoBehaviour
             //Debug.Log("Sync angle!");
             currentSensor.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
-
     }
 
     /// <summary>
@@ -632,6 +635,9 @@ class SensorManagerGUI : MonoBehaviour
         EndProcesses();
     }
 
+    #endregion
+
+    #region Sensor Output
     /// <summary>
     /// Create an output panel for the current sensor if there is not one for it. Output update is handled by each sensor (in SensorBase/other sensor scripts)
     /// </summary>
@@ -640,10 +646,11 @@ class SensorManagerGUI : MonoBehaviour
         if (GameObject.Find(currentSensor.name + "_Panel") == null)
         {
             int index = sensorManager.GetSensorIndex(currentSensor.gameObject);
-            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1150, 680 - index * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
+            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1185, 700 - (index+1) * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
             panel.transform.parent = canvas.transform;
             panel.name = currentSensor.name + "_Panel";
             sensorOutputPanels.Add(panel);
+            DisplayAllOutput();
         }
     }
 
@@ -662,11 +669,40 @@ class SensorManagerGUI : MonoBehaviour
         {
             string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
             GameObject sensor = GameObject.Find(sensorName);
-            panel.transform.position = new Vector3(1150, 680 - sensorManager.GetSensorIndex(sensor) * 60, 0);
+            panel.transform.position = new Vector3(1185, 700 - (sensorManager.GetSensorIndex(sensor)+1) * 60, 0);
         }
     }
-    #endregion
 
+    public void ToggleSensorOutput()
+    {
+        isHidingOutput = !isHidingOutput;
+
+        foreach (GameObject panel in sensorOutputPanels)
+        {
+            panel.SetActive(!isHidingOutput);
+        }
+
+        if (isHidingOutput)
+        {
+            hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Show Sensor Output";
+        }
+        else
+        {
+            hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Hide Sensor Output";
+        }
+    }
+
+    public void DisplayAllOutput()
+    {
+        isHidingOutput = false;
+        foreach (GameObject panel in sensorOutputPanels)
+        {
+            panel.SetActive(true);
+        }
+        hideOutputPanelsButton.SetActive(true);
+        hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Hide Sensor Output";
+    }
+    #endregion
     /// <summary>
     /// Close all window related to adding/configuring sensor
     /// </summary>
