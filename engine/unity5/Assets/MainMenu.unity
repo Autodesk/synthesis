@@ -9934,7 +9934,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enable Tank Drive
+  m_Text: Switch Tank Drive
 --- !u!222 &1706014942
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -12330,7 +12330,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -175, y: 220.6}
+  m_AnchoredPosition: {x: -175, y: 220.60002}
   m_SizeDelta: {x: 310, y: 52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2143817429

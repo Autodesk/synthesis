@@ -24,7 +24,7 @@ public class Controls
     #endregion
 
     public static bool IsTankDrive;
-    public static bool check;
+    public static bool CheckForKeyRemoval;
     public static bool TankDriveEnabled = false;
     public static bool clicked;
 
@@ -113,7 +113,7 @@ public class Controls
         }
         else
         {
-            if (check)
+            if (CheckForKeyRemoval)
             {
                 ArcadeDrive();
                 Load();
@@ -184,7 +184,7 @@ public class Controls
     /// </summary>
     public static void ArcadeDrive()
     {
-        if (check)
+        if (CheckForKeyRemoval)
         {
             RemoveTankKeys();
         }
