@@ -22,15 +22,11 @@ public partial class RigidNode : RigidNode_Base
     {
         if (GetParent() == null)
         {
-            if (MixAndMatchMode.isMixAndMatchMode)
-            {
-                MainObject.AddComponent<BRaycastRobot>().Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
-               
-            } else
-            {
-                MainObject.AddComponent<BRaycastRobot>();
-            }
+            BRaycastRobot robot = MainObject.AddComponent<BRaycastRobot>();
+            robot.NumWheels = Children.Count(x => x.Value.HasDriverMeta<WheelDriverMeta>() && x.Value.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
 
+            if (MixAndMatchMode.isMixAndMatchMode)
+                robot.Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
 
             return;
         }
