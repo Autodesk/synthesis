@@ -44,7 +44,7 @@ The next step is selecting which packages to install. Cygwin has support for aut
 
 - `make`
 - `patch`
-- `mingw64-x86_64-gcc-g++`
+- `mingw64-i686-gcc-g++`
 
 Once all of these packages have been selected, you can click next until the progress bars appear, at which point Cygwin will install these packages to the root (`C:\cygwin64`).
 

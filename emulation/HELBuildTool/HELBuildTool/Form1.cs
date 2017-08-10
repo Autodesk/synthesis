@@ -20,12 +20,44 @@ namespace WindowsFormsApp1
             InitializeComponent();
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private void btnSetup_Click(object sender, EventArgs e)
         {
+          String number = txtNumber.Text;
+          String firstDigits = number.Substring(0, number.Length - 2);
+          String secondDigits = number.Substring(number.Length - 2, 2);
 
+          String deviceName;
+
+          //get all loopback adapters to see if one already exists
+          System.Management.ManagementObjectCollection results = (new System.Management.ManagementObjectSearcher(
+              "SELECT Name, NetConnectionID, PNPDeviceID, ConfigManagerErrorCode, NetConnectionStatus " +
+              "FROM Win32_NetworkAdapter " +
+              "WHERE ServiceName='msloop'")).Get();
+
+         if(results.Count > 0) {
+            deviceName = results.GetEnumerator().Current.Properties.Cast<System.Management.PropertyData>()
+              .Single(p => p.Name == "Name").Value.ToString();
+          }
+          else {
+
+            //enable a loopback adapter
+            System.Diagnostics.Process.Start("cmd", "/C devcon install %WINDIR%\\Inf\\NetLoop.inf *MSLOOP")
+              .WaitForExit(0);
+
+            results = (new System.Management.ManagementObjectSearcher(
+                "SELECT Name, NetConnectionID, PNPDeviceID, ConfigManagerErrorCode, NetConnectionStatus " +
+                "FROM Win32_NetworkAdapter " +
+                "WHERE ServiceName='msloop'")).Get();
+            deviceName = results.GetEnumerator().Current.Properties.Cast<System.Management.PropertyData>()
+              .Single(p => p.Name == "Name").Value.ToString();
+          }
+
+          //set the IP address of the loopback adapter
+          System.Diagnostics.Process.Start("netsh", "int ip set address name=\"" + deviceName +
+              "\" static 10." + firstDigits + "." + secondDigits + ".2 255.255.255.0");
         }
 
-        private void btnContinue_Click(object sender, EventArgs e)
+        private void btnRunCode_Click(object sender, EventArgs e)
         {
             String number = txtNumber.Text;
             String path = txtBrowse.Text;

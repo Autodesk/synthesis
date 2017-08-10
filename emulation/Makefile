@@ -1,7 +1,7 @@
 .PHONY: install installHELBuildTool installSetupLoopbackAdapter
 
 install: installHELBuildTool installSetupLoopbackAdapter
-	@$(MAKE) -C hel install
+	@$(MAKE) -C hel install TARGET=release
 
 installHELBuildTool:
 	@mkdir -p ../installer/SynthesisDrive/HELBuildTool
