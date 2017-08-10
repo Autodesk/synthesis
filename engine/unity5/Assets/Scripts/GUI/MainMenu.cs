@@ -453,7 +453,8 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
             Application.LoadLevel("Scene");
-            PlayerPrefs.SetInt("MixAndMatch", 1); //0 means true, 1 means false
+            PlayerPrefs.SetInt("MixAndMatch", 0); //0 means false, 1 means true
+
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }

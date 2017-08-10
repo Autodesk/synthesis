@@ -276,6 +276,7 @@
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
