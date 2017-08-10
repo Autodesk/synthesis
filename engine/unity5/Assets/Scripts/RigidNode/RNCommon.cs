@@ -8,7 +8,7 @@ using BulletUnity;
 public partial class RigidNode : RigidNode_Base
 {
     public GameObject MainObject { get; private set; }
-    public Vector3 ComOffset { get; private set; }
+    public Vector3 ComOffset { get; set; }
 
     private Transform root;
     private Component joint;
