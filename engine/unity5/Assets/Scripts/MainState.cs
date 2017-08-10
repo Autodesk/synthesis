@@ -132,7 +132,7 @@ public class MainState : SimState
     /// </summary>
     public override void Update()
     {
-     
+
         //If the reset button is held down after a certain amount of time, then go into change spawnpoint mode (reset spawnpoint feature)
         //Otherwise, reset the robot normally (quick reset feature)
         if (!activeRobot.IsResetting)
@@ -450,7 +450,7 @@ public class MainState : SimState
     }
     #endregion
 
-   
+
     #region Robot Interaction Functions
 
     /// <summary>
