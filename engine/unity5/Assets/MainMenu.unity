@@ -7076,6 +7076,11 @@ Prefab:
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
       value: Pneumatic Wheel
       objectReference: {fileID: 0}
+    - target: {fileID: 224566567971736862, guid: 2e1458182e7af5a459513738338549fc,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 363
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2e1458182e7af5a459513738338549fc, type: 2}
   m_IsPrefabParent: 0
@@ -7464,7 +7469,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -175, y: 220.60002}
+  m_AnchoredPosition: {x: -175, y: 220.6}
   m_SizeDelta: {x: 310, y: 52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1154537509
