@@ -31,6 +31,7 @@ public class SimUI : MonoBehaviour
 
 
     GameObject changeRobotPanel;
+    GameObject robotListPanel;
     GameObject changeFieldPanel;
     GameObject addRobotPanel;
 
@@ -128,6 +129,8 @@ public class SimUI : MonoBehaviour
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
+        robotListPanel = AuxFunctions.FindObject(changeRobotPanel, "RobotListPanel");
+
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
@@ -173,6 +176,9 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            PlayerPrefs.Save();
+            RobotCamera rc = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>();
+            rc.RemoveCameras();
             main.ChangeRobot(directory);
         }
         else
@@ -191,6 +197,7 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             changeRobotPanel.SetActive(true);
+            robotListPanel.SetActive(true);
         }
     }
 

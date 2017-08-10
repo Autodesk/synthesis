@@ -91,10 +91,6 @@ public class RobotCamera : MonoBehaviour
 
     public void RemoveCameras()
     {
-        foreach (GameObject robotCamera in robotCameraList)
-        {
-            Destroy(robotCamera);
-        }
         CurrentCamera = null;
         robotCameraList.Clear();
     }

@@ -117,9 +117,12 @@ public class Robot : MonoBehaviour {
     {
         //Deletes all nodes if any exist
         int childCount = transform.childCount;
-        for (int i = 0; i < childCount; ++i)
-            Destroy(transform.GetChild(i).gameObject);
-
+        for (int i = childCount - 1; i >= 0; i--)
+        {
+            Transform child = transform.GetChild(i);
+            child.parent = null;
+            Destroy(child.gameObject);
+        }
         mainState = source;
         transform.position = robotStartPosition;
 
