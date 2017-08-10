@@ -14,40 +14,58 @@ namespace Assets.Scripts.FEA
         private BPhysicsWorld physicsWorld;
         private List<ContactDescriptor>[] passedContacts;
         private int framesPassed;
+        private int lastFrameCount;
 
+        /// <summary>
+        /// The list of contact points tracked by the CollisionTracker.
+        /// </summary>
         public FixedQueue<List<ContactDescriptor>> ContactPoints { get; private set; }
-        public int LastFrameCount { get; private set; }
 
+        /// <summary>
+        /// Creates a new CollisionTracker instance.
+        /// </summary>
+        /// <param name="mainState"></param>
         public CollisionTracker(MainState mainState)
         {
             this.mainState = mainState;
             physicsWorld = BPhysicsWorld.Get();
             framesPassed = -1;
+            lastFrameCount = physicsWorld.frameCount;
 
             ContactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
-            LastFrameCount = physicsWorld.frameCount;
         }
 
+        /// <summary>
+        /// Resets the CollisionTracker and clears all stored contact information.
+        /// </summary>
         public void Reset()
         {
             ContactPoints.Clear(null);
-            LastFrameCount = physicsWorld.frameCount;
+            lastFrameCount = physicsWorld.frameCount;
             framesPassed = -1;
         }
 
+        /// <summary>
+        /// Synchronizes the CollisionTracker's frame count with the given frame count.
+        /// </summary>
+        /// <param name="updatedFrameCount"></param>
         public void Synchronize(int updatedFrameCount)
         {
-            for (int i = 0; i <= updatedFrameCount - LastFrameCount; i++)
+            for (int i = 0; i <= updatedFrameCount - lastFrameCount; i++)
                 ContactPoints.Add(null);
         }
 
+        /// <summary>
+        /// Finds any robot collisions and adds them to the list of collisions for the current frame.
+        /// </summary>
+        /// <param name="pm"></param>
         public void OnVisitPersistentManifold(PersistentManifold pm)
         {
             if (!mainState.Tracking)
                 return;
 
             if (framesPassed == -1) // This is the first manifold visited of the frame
-                framesPassed = physicsWorld.frameCount - LastFrameCount;
+                framesPassed = physicsWorld.frameCount - lastFrameCount;
 
             if (passedContacts == null)
                 passedContacts = new List<ContactDescriptor>[framesPassed];
@@ -60,45 +78,47 @@ namespace Assets.Scripts.FEA
 
             int numContacts = pm.NumContacts;
 
-            for (int i = framesPassed; i > 0; i--)
+            for (int i = 0; i < framesPassed; i++)
             {
-                ManifoldPoint mp = null;
+                if (numContacts - 1 - i < 0)
+                    break;
 
-                for (int j = 0; j < numContacts; j++)
-                {
-                    mp = pm.GetContactPoint(j);
+                ManifoldPoint mp = pm.GetContactPoint(numContacts - 1 - i);
 
-                    if (mp.LifeTime == i * 2 - 1) // fsr the lifetime starts at 1 and increases by 2 every frame
-                        break;
-                }
-
-                if (mp == null)
-                    return;
-
-                if (passedContacts[i - 1] == null)
-                    passedContacts[i - 1] = new List<ContactDescriptor>();
-
-                passedContacts[i - 1].Add(new ContactDescriptor
+                ContactDescriptor cd = new ContactDescriptor
                 {
                     AppliedImpulse = mp.AppliedImpulse,
                     Position = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f,
                     RobotBody = obA.name.StartsWith("node") ? obA : obB
-                });
+                };
+
+                if (passedContacts[framesPassed - 1 - i] == null)
+                    passedContacts[framesPassed - 1 - i] = new List<ContactDescriptor>();
+
+                passedContacts[framesPassed - 1 - i].Add(cd);
             }
         }
 
+        /// <summary>
+        /// Adds all frame collisions to the queue of total collisions.
+        /// </summary>
         public void OnFinishedVisitingManifolds()
         {
             if (!mainState.Tracking)
                 return;
 
-            if (framesPassed > 0)
-                for (int i = passedContacts.Length - 1; i >= 0; i--)
+            framesPassed = physicsWorld.frameCount - lastFrameCount;
+            lastFrameCount = physicsWorld.frameCount;
+
+            for (int i = 0; i < framesPassed; i++)
+            {
+                if (passedContacts != null && passedContacts.Length > i)
                     ContactPoints.Add(passedContacts[i]);
+                else
+                    ContactPoints.Add(null);
+            }
 
             passedContacts = null;
-
-            LastFrameCount = physicsWorld.frameCount;
             framesPassed = -1;
         }
 

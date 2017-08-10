@@ -143,6 +143,16 @@ namespace BxDFieldExporter {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AssemblyIcon16 {
+            get {
+                object obj = ResourceManager.GetObject("AssemblyIcon16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ChangeSpawnLocation16 {
             get {
                 object obj = ResourceManager.GetObject("ChangeSpawnLocation16", resourceCulture);
@@ -156,6 +166,16 @@ namespace BxDFieldExporter {
         internal static System.Drawing.Bitmap ChangeSpawnLocation32 {
             get {
                 object obj = ResourceManager.GetObject("ChangeSpawnLocation32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ComponentBrowserNode16 {
+            get {
+                object obj = ResourceManager.GetObject("ComponentBrowserNode16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -196,6 +216,26 @@ namespace BxDFieldExporter {
         internal static System.Drawing.Bitmap ExportField32 {
             get {
                 object obj = ResourceManager.GetObject("ExportField32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FieldIcon16 {
+            get {
+                object obj = ResourceManager.GetObject("FieldIcon16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PartIcon16 {
+            get {
+                object obj = ResourceManager.GetObject("PartIcon16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

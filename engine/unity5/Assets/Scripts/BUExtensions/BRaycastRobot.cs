@@ -11,16 +11,29 @@ namespace Assets.Scripts.BUExtensions
     public class BRaycastRobot : MonoBehaviour
     {
         private const float SuspensionToleranceCm = 5f;
-        private const float SuspensionCompressionRatio = 0.5f;
-        private const float SuspensionStiffnessRatio = 30f;
+        private const float SuspensionCompressionRatio = 10f;
+        private const float SuspensionStiffnessRatio = 2000f;
         private const float RollingFriction = 0.0025f;
+        private const int DefaultNumWheels = 4;
 
         private VehicleTuning vehicleTuning;
+        private BRigidBody rigidBody;
 
         /// <summary>
         /// The Bullet Physics RaycastVehicle associated with the BRaycastVehicle.
         /// </summary>
         public RaycastRobot RaycastRobot { get; private set; }
+
+        /// <summary>
+        /// Used as a multiplier to calculate the stiffness values for each wheel.
+        /// </summary>
+        public int NumWheels
+        {
+            set
+            {
+                vehicleTuning.SuspensionStiffness = CalculateStiffness(value);
+            }
+        }
 
         /// <summary>
         /// Adjusts the friction value of the robot's wheels.
@@ -76,7 +89,7 @@ namespace Assets.Scripts.BUExtensions
         {
             ((DynamicsWorld)BPhysicsWorld.Get().world).SetInternalTickCallback(UpdateVehicle);
 
-            BRigidBody rigidBody = GetComponent<BRigidBody>();
+            rigidBody = GetComponent<BRigidBody>();
 
             if (rigidBody == null)
             {
@@ -89,8 +102,8 @@ namespace Assets.Scripts.BUExtensions
                 MaxSuspensionForce = 1000f,
                 MaxSuspensionTravelCm = SuspensionToleranceCm,
                 SuspensionDamping = 10f,
-                SuspensionCompression = rigidBody.mass * SuspensionCompressionRatio,
-                SuspensionStiffness = rigidBody.mass * SuspensionStiffnessRatio,
+                SuspensionCompression = SuspensionCompressionRatio,
+                SuspensionStiffness = CalculateStiffness(DefaultNumWheels),
                 FrictionSlip = 2f
             },
             (RigidBody)rigidBody.GetCollisionObject(),
@@ -116,6 +129,16 @@ namespace Assets.Scripts.BUExtensions
         private void UpdateVehicle(DynamicsWorld world, float timeStep)
         {
             RaycastRobot.UpdateVehicle(timeStep);
+        }
+
+        /// <summary>
+        /// Calculates the suspension stiffness with the given number of wheels.
+        /// </summary>
+        /// <param name="numWheels"></param>
+        /// <returns></returns>
+        private float CalculateStiffness(int numWheels)
+        {
+            return SuspensionStiffnessRatio / numWheels;
         }
     }
 }

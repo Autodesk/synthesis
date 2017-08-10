@@ -183,6 +183,17 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Used for Mix and Match
+    /// </summary>
+    public void MaMChangeRobot(string directory)
+    {
+        RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+        rc.DetachCameras(main.activeRobot);
+       // string directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\";
+        main.ChangeRobot(directory);
+    }
+
     public void ToggleChangeRobotPanel()
     {
         if (changeRobotPanel.activeSelf)
