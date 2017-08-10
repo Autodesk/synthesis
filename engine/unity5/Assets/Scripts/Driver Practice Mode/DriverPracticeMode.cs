@@ -237,7 +237,7 @@ public class DriverPracticeMode : MonoBehaviour {
                 dpmWindow.SetActive(false);
                 defineGamepieceWindow.SetActive(true);
             }
-            else if (dpmRobot.settingSpawn != 0)
+            else if (dpmRobot.settingSpawn != 0 || dpmRobot.settingGoal != 0)
             {
                 configWindow.SetActive(false);
                 dpmWindow.SetActive(false);
@@ -444,6 +444,12 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         simUI.EndOtherProcesses();
         dpmRobot.StartGamepieceSpawn(configuringIndex);
+    }
+
+    public void SetGamepieceGoal()
+    {
+        simUI.EndOtherProcesses();
+        dpmRobot.StartGamepieceGoal(configuringIndex);
     }
 
     public void CancelGamepieceSpawn()
