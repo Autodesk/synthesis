@@ -31,7 +31,7 @@ public class MainState : SimState
     private DynamicCamera dynamicCamera;
     public GameObject dynamicCameraObject;
 
-    private RobotCamera robotCamera;
+    private RobotCameraManager robotCamera;
     public GameObject robotCameraObject;
 
     //Testing camera location, can be deleted later
@@ -132,7 +132,7 @@ public class MainState : SimState
     /// </summary>
     public override void Update()
     {
-     
+
         //If the reset button is held down after a certain amount of time, then go into change spawnpoint mode (reset spawnpoint feature)
         //Otherwise, reset the robot normally (quick reset feature)
         if (!activeRobot.IsResetting)
@@ -403,8 +403,6 @@ public class MainState : SimState
     {
         return activeRobot.LoadManipulator(directory);
     }
-        
-    
 
     private void UpdateTrackers()
     {
@@ -434,7 +432,8 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
         Tracking = true;
 
-        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = true;
+        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
+            c.enabled = true;
 
         CollisionTracker.Reset();
     }
@@ -445,11 +444,13 @@ public class MainState : SimState
     public override void Pause()
     {
         Tracking = false;
-        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = false;
+
+        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
+            c.enabled = false;
     }
     #endregion
 
-   
+
     #region Robot Interaction Functions
 
     /// <summary>

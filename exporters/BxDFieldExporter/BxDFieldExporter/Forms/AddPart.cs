@@ -82,5 +82,20 @@ namespace BxDFieldExporter
             mAddInInterface.SetCancel(true);
             mAddInInterface.SetRunOnce(false);
         }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                this.Close();
+
+            }
+            else if (keyData == Keys.Enter)
+            {
+                this.Close();
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
     }
 }

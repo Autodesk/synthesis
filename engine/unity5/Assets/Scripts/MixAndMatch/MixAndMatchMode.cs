@@ -37,6 +37,7 @@ public class MixAndMatchMode : MonoBehaviour
     private GameObject defaultDrive;
     private GameObject mecanumDrive;
     private GameObject swerveDrive;
+    private GameObject narrowDrive;
     [HideInInspector] public List<GameObject> bases;
     int selectedDriveBase;
     public static bool isMecanum = false;
@@ -51,6 +52,8 @@ public class MixAndMatchMode : MonoBehaviour
     //Scroll buttons
     private GameObject wheelRightScroll;
     private GameObject wheelLeftScroll;
+    private GameObject driveBaseRightScroll;
+    private GameObject driveBaseLeftScroll;
     private GameObject presetRightScroll;
     private GameObject presetLeftScroll;
 
@@ -94,8 +97,9 @@ public class MixAndMatchMode : MonoBehaviour
         defaultDrive = GameObject.Find("DefaultBase");
         mecanumDrive = GameObject.Find("MecanumBase");
         swerveDrive = GameObject.Find("SwerveBase");
+        narrowDrive = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("NarrowBase")).First();
         //Put all the drive bases in the bases list
-        bases = new List<GameObject> { defaultDrive, mecanumDrive, swerveDrive };
+        bases = new List<GameObject> { defaultDrive, mecanumDrive, swerveDrive, narrowDrive };
 
         //Find manipulator objects
         noManipulator = GameObject.Find("NoManipulator");
@@ -106,6 +110,8 @@ public class MixAndMatchMode : MonoBehaviour
         //Find all the scroll buttons
         wheelRightScroll = GameObject.Find("WheelRightScroll");
         wheelLeftScroll = GameObject.Find("WheelLeftScroll");
+        driveBaseRightScroll = GameObject.Find("BaseRightScroll");
+        driveBaseLeftScroll = GameObject.Find("BaseLeftScroll");
         presetRightScroll = GameObject.Find("PresetRightScroll");
         presetLeftScroll = GameObject.Find("PresetLeftScroll");
 
@@ -123,6 +129,7 @@ public class MixAndMatchMode : MonoBehaviour
         if (this.gameObject.name == "MixAndMatchModeScript")
         {
             wheelLeftScroll.SetActive(false);
+            driveBaseLeftScroll.SetActive(false);
             presetLeftScroll.SetActive(false);
             presetRightScroll.SetActive(false);
 
@@ -165,7 +172,16 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
         PlayerPrefs.Save();
         isMixAndMatchMode = true;
-        SceneManager.LoadScene("Scene");
+        SceneManager.LoadScene("MixAndMatch");
+    }
+
+    public void ChangeMaMRobot()
+    {
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+            PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
+            PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
+        GameObject stateMachine = GameObject.Find("StateMachine");
+        stateMachine.GetComponent<SimUI>().MaMChangeRobot(mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
     }
 
     #region Presets
@@ -330,6 +346,9 @@ public class MixAndMatchMode : MonoBehaviour
             case 2: //Swerve Drive           
                 txt.text = "Swerve Drive \n\nAllows wheels to swivel. \nUse controls for PWM port 2 to swivel wheels"; //Check if it is PWM port 2
                 break;
+            case 3: //Narrow Drive
+                txt.text = "Narrow Drive \n\n";
+                 break;
         }
 
     }

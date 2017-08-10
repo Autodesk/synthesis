@@ -623,7 +623,6 @@ public class Controls
         if (GameObject.Find("SettingsMode") != null)
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
         }
     }
 

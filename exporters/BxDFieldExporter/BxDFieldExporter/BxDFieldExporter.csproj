@@ -33,7 +33,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2018\Bin\BxDFieldExporter\</OutputPath>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
@@ -264,7 +264,18 @@
       <Name>FieldExporter</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\ComponentBrowserNode16.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon1 %28002%29.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon2 %28002%29.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FieldIcon16.bmp" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
