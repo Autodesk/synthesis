@@ -103,8 +103,21 @@ public class Robot : MonoBehaviour
         {
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
             else DriveJoints.UpdateAllMotors(rootNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 1);
-            if (MixAndMatchMode.hasManipulator && isMixAndMatch == 0) DriveJoints.UpdateAllMotors(manipulatorNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
+            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0);
+           
+            int isManipulator = PlayerPrefs.GetInt("HasManipulator", 0); //0 is false, 1 is true
+            Debug.Log("Has Manipulator: " + isManipulator);
+            if (isManipulator == 1 && isMixAndMatch == 1)
+            {
+                Debug.Log("should be moving manipulator!");
+
+                UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
+                emptyDIO[0] = new UnityPacket.OutputStatePacket.DIOModule();
+                emptyDIO[1] = new UnityPacket.OutputStatePacket.DIOModule();
+
+                DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
+
+            }
         }
 
         if (IsResetting)
@@ -235,9 +248,8 @@ public class Robot : MonoBehaviour
             r.WorldTransform = newTransform;
         }
 
-        RotateRobot(robotStartOrientation);
-
-
+        GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5) ;
+        { }
         if (IsResetting)
         {
             Debug.Log("is resetting!");
@@ -301,7 +313,7 @@ public class Robot : MonoBehaviour
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
 
-
+       
     }
 
     /// <summary>

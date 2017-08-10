@@ -110,8 +110,8 @@ public class MainState : SimState
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 1); //0 is true, 1 is false
-            if (isMixAndMatch == 0 && MixAndMatchMode.hasManipulator)
+            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
+            if (isMixAndMatch == 1 && MixAndMatchMode.hasManipulator)
             {
                 Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
             }
