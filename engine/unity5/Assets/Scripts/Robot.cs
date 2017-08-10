@@ -57,6 +57,7 @@ public class Robot : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+
     }
 
     /// <summary>
@@ -119,6 +120,7 @@ public class Robot : MonoBehaviour
     /// <returns></returns>
     public bool InitializeRobot(string directory, MainState source)
     {
+        
         //Deletes all nodes if any exist, take the old node transforms out from the robot object
         int childCount = transform.childCount;
         for (int i = childCount - 1; i >= 0; i--)
@@ -129,6 +131,9 @@ public class Robot : MonoBehaviour
             child.parent = null;
             Destroy(child.gameObject);
         }
+        SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
+        sensorManager.ResetSensorLists();
+
         mainState = source;
         transform.position = robotStartPosition;
 
@@ -196,7 +201,6 @@ public class Robot : MonoBehaviour
             robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
         }
 
-        SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         //sensorManager.AddBeamBreaker(transform.GetChild(0).gameObject, new Vector3(0, 0, 1), new Vector3(0, 90, 0), 1);
         //sensorManager.AddUltrasonicSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
         //sensorManager.AddGyro(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));

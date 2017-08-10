@@ -11,6 +11,7 @@ public class RobotCameraManager : MonoBehaviour
     public List<GameObject> robotCameraList = new List<GameObject>();
     public List<GameObject> tempCameraList = new List<GameObject>();
 
+    private GameObject cameraIndicator;
     public GameObject CurrentCamera { get; set; }
     
     private GameObject robotCameraListObject;
@@ -25,6 +26,27 @@ public class RobotCameraManager : MonoBehaviour
     public bool IsChangingHeight { get; set; }
     public bool IsShowingAngle { get; set; }
     public bool IsChangingFOV { get; set; }
+
+    private void Start()
+    {
+        robotCameraListObject = GameObject.Find("RobotCameraList");
+        cameraIndicator = AuxFunctions.FindObject(robotCameraListObject, "CameraIndicator");
+    }
+
+    private void Update()
+    {
+        //Enable selecting node state, and users can left click on a node to choose it
+        if (SelectingNode)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                SetNode();
+                Debug.Log("Selecting node");
+
+            }
+        }
+        UpdateCameraPosition();
+    }
 
     /// <summary>
     /// Switching between different cameras on robot given the specific camera
@@ -109,6 +131,7 @@ public class RobotCameraManager : MonoBehaviour
     public void RemoveAllCameras()
     {
         CurrentCamera = null;
+        cameraIndicator.transform.parent = robotCameraListObject.transform;
         foreach(GameObject robotCamera in robotCameraList)
         {
             robotCamera.transform.parent = null;
@@ -117,14 +140,22 @@ public class RobotCameraManager : MonoBehaviour
         robotCameraList.Clear();
     }
 
-    public void RemoveCameraFromRobot(Robot parent)
+    /// <summary>
+    /// Remove all cameras from a given robot, used when a robot is removed. Use DetachCamerasFromRobot when changing a robot!
+    /// </summary>
+    /// <param name="parent"></param> The robot whose cameras you want to remove
+    public void RemoveCamerasFromRobot(Robot parent)
     {
-        List<GameObject> removingCamera = GetRobotCamerasFromRobot(parent);
-        foreach(GameObject camera in removingCamera)
+        List<GameObject> removingCameras = GetRobotCamerasFromRobot(parent);
+        //Take out the camera indicator in case it gets destroyed with one of the robots
+        cameraIndicator.transform.parent = robotCameraListObject.transform;
+        foreach (GameObject camera in removingCameras)
         {
+            //Remove those useless cameras from the list and destroy them
             if (robotCameraList.Contains(camera))
             {
                 robotCameraList.Remove(camera);
+                
                 Destroy(camera);
             }
         }
@@ -134,11 +165,11 @@ public class RobotCameraManager : MonoBehaviour
     /// Detach the robot camera from a given robot in preparation for changing robot or other operation that needs to take out a specific group of robot camera
     /// </summary>
     /// <param name="parent"></param> A robot where cameras are going to be detached from
-    public void DetachCameras(Robot parent)
+    public void DetachCamerasFromRobot(Robot parent)
     {
-        List<GameObject> detachingCamera = GetRobotCamerasFromRobot(parent);
+        List<GameObject> detachingCameras = GetRobotCamerasFromRobot(parent);
 
-        foreach(GameObject camera in detachingCamera)
+        foreach(GameObject camera in detachingCameras)
         {
             camera.GetComponent<RobotCamera>().DetachCamera();
         }
@@ -176,23 +207,7 @@ public class RobotCameraManager : MonoBehaviour
     {
         return robotCameraList;
     }
-
-    private void Update()
-    {
-        //Enable selecting node state, and users can left click on a node to choose it
-        if (SelectingNode)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                SetNode();
-                Debug.Log("Selecting node");
-
-            }
-        }
-        UpdateCameraPosition();
-    }
-
-
+    
     /// <summary>
     /// Initialize robot node selection
     /// </summary>
@@ -200,7 +215,6 @@ public class RobotCameraManager : MonoBehaviour
     {
         UserMessageManager.Dispatch("Click on a robot node to set it as the attachment node", 5);
         SelectingNode = true;
-        //SelectedNode = null;
     }
 
     /// <summary>
@@ -251,13 +265,13 @@ public class RobotCameraManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Use WASD change the position, rotation of camera
+    /// Use WASD change the position, rotation, fov of camera
     /// </summary>
     private void UpdateCameraPosition()
     {
         if (ChangingCameraPosition)
         {
-            if (IsChangingFOV)
+            if (IsChangingFOV) //Control fov
             {
                 CurrentCamera.GetComponent<Camera>().fieldOfView += Input.GetAxis("CameraVertical");
             }
@@ -273,6 +287,7 @@ public class RobotCameraManager : MonoBehaviour
             {
                 CurrentCamera.transform.Translate(new Vector3(0, Input.GetAxis("CameraVertical") * positionSpeed, 0) * Time.deltaTime);
             }
+            //Update configuration info of the current camera
             CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();
         }
     }

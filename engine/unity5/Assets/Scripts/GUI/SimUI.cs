@@ -175,7 +175,7 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.Save();
 
             RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
-            rc.DetachCameras(main.activeRobot);
+            rc.DetachCamerasFromRobot(main.activeRobot);
             SensorManager sm = GameObject.Find("SensorManager").GetComponent<SensorManager>();
             sm.RemoveSensorsFromRobot(main.activeRobot);
 
@@ -193,7 +193,7 @@ public class SimUI : MonoBehaviour
     public void MaMChangeRobot(string directory)
     {
         RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
-        rc.DetachCameras(main.activeRobot);
+        rc.DetachCamerasFromRobot(main.activeRobot);
         SensorManager sm = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sm.RemoveSensorsFromRobot(main.activeRobot);
         // string directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\";

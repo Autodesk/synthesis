@@ -77,11 +77,12 @@ class SensorManagerGUI : MonoBehaviour
 
     private void Update()
     {
+        //Find the dynamic camera
         if (dynamicCamera == null)
         {
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
-        //When the current sensor is ready to be configured, call its UpdateTransformFunction
+        //When the current sensor is ready to be configured, call its UpdateTransformFunction and update its angle, range & node text in the corresponding panels
         if (currentSensor != null && currentSensor.IsChangingPosition)
         {
             currentSensor.UpdateTransform();
@@ -653,7 +654,7 @@ class SensorManagerGUI : MonoBehaviour
         if (GameObject.Find(currentSensor.name + "_Panel") == null)
         {
             int index = sensorManager.GetSensorIndex(currentSensor.gameObject);
-            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1185, 650 - (index+1) * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
+            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1190, 690 - (index+1) * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
             panel.transform.parent = canvas.transform;
             panel.name = currentSensor.name + "_Panel";
             sensorOutputPanels.Add(panel);
@@ -681,11 +682,19 @@ class SensorManagerGUI : MonoBehaviour
             }
         }
         //Shift position of remaining panels
-        foreach (GameObject panel in sensorOutputPanels)
+        if (sensorOutputPanels.Count > 0)
         {
-            string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
-            GameObject sensor = GameObject.Find(sensorName);
-            panel.transform.position = new Vector3(1185, 650 - (sensorManager.GetSensorIndex(sensor)+1) * 60, 0);
+            foreach (GameObject panel in sensorOutputPanels)
+            {
+                string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
+                GameObject sensor = GameObject.Find(sensorName);
+                panel.transform.position = new Vector3(1190, 690 - (sensorManager.GetSensorIndex(sensor) + 1) * 60, 0);
+            }
+        }
+        else
+        {
+            hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Show Sensor Output";
+            hideOutputPanelsButton.SetActive(false);
         }
     }
     
