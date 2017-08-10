@@ -11,6 +11,10 @@ public class MaMScroller : MonoBehaviour {
     private GameObject wheelLeftScroll;
     private List<GameObject> wheels;
 
+    private GameObject driveBaseRightScroll;
+    private GameObject driveBaseLeftScroll;
+    private List<GameObject> driveBases;
+
     private GameObject presetRightScroll;
     private GameObject presetLeftScroll;
     private List<GameObject> presetClones;
@@ -22,7 +26,10 @@ public class MaMScroller : MonoBehaviour {
         wheelRightScroll = GameObject.Find("WheelRightScroll");
         wheelLeftScroll = GameObject.Find("WheelLeftScroll");
         wheels = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().wheels;
-        Debug.Log(wheels.Count);
+
+        driveBaseRightScroll = GameObject.Find("BaseRightScroll");
+        driveBaseLeftScroll = GameObject.Find("BaseLeftScroll");
+        driveBases = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().bases;
 
         presetRightScroll = GameObject.Find("PresetRightScroll");
         presetLeftScroll = GameObject.Find("PresetLeftScroll");
@@ -32,7 +39,6 @@ public class MaMScroller : MonoBehaviour {
     public bool Scroll(bool right, List<GameObject> objectList, int firstObject, Vector2[] positions, GameObject rightScroll, GameObject leftScroll)
     {
         int _firstObject = firstObject;
-
 
         //Makes sure that the list is not already scrolling
         if (objectList[_firstObject].GetComponent<MixAndMatchScroll>() != null) return false;
@@ -90,6 +96,14 @@ public class MaMScroller : MonoBehaviour {
         if (Scroll(right, wheels, firstWheel, positions, wheelRightScroll, wheelLeftScroll)) firstWheel = (right) ? firstWheel + 1 : firstWheel - 1;
     }
 
+    int firstDriveBase = 0;
+    public void ScrollDriveBase(bool right)
+    {
+
+        Vector2[] positions = { new Vector2(-426f, 8f), new Vector2(-165f, 8f), new Vector2(96f, 8f), new Vector2(363f, 8f), new Vector2(624f, 8f), };
+        if (Scroll(right, driveBases, firstDriveBase, positions, driveBaseRightScroll, driveBaseLeftScroll)) firstDriveBase = (right) ? firstDriveBase + 1 : firstDriveBase - 1;
+    }
+
     public static int firstPreset = 0;
     public void ScrollPreset(bool right)
     {
@@ -98,5 +112,7 @@ public class MaMScroller : MonoBehaviour {
         Vector2[] positions = { new Vector2(200, -40), new Vector2(450, -40), new Vector2(700, -40), new Vector2(950, -40), new Vector2(1200, -40), };
         if (Scroll(right, presetClones, firstPreset, positions, presetRightScroll, presetLeftScroll)) firstPreset = (right) ? firstPreset + 1 : firstPreset - 1;
     }
+
+
 
 }
