@@ -476,6 +476,38 @@ public class DriverPracticeRobot : MonoBehaviour
         else FinishGamepieceSpawn(); //if already setting spawn, end editing process
     }
 
+    private void UpdateGamepieceSpawn()
+    {
+        int index = settingSpawn - 1;
+        if (spawnIndicator != null)
+        {
+            ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
+            if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
+            if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
+            if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
+            if (Input.GetKey(KeyCode.DownArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
+                gamepieceSpawn[index] = spawnIndicator.transform.position;
+                FinishGamepieceSpawn();
+            }
+        }
+    }
+
+    public void FinishGamepieceSpawn()
+    {
+        settingSpawn = 0;
+        if (spawnIndicator != null) Destroy(spawnIndicator);
+        if (lastCameraState != null)
+        {
+            DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+            dynamicCamera.SwitchCameraState(lastCameraState);
+            lastCameraState = null;
+        }
+        //MainState.ControlsDisabled = false;
+    }
+
     public void StartGamepieceGoal(int index)
     {
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
@@ -486,10 +518,8 @@ public class DriverPracticeRobot : MonoBehaviour
                 if (goalIndicator != null) Destroy(goalIndicator);
                 if (goalIndicator == null)
                 {
-                    goalIndicator = Instantiate(AuxFunctions.FindObject(gamepieceNames[index]).GetComponentInParent<BRigidBody>().gameObject, new UnityEngine.Vector3(0, 3, 0), UnityEngine.Quaternion.identity);
+                    goalIndicator = GameObject.CreatePrimitive(PrimitiveType.Cube); // Create cube to show goal region
                     goalIndicator.name = "GoalIndicator";
-                    Destroy(goalIndicator.GetComponent<BRigidBody>());
-                    if (goalIndicator.transform.GetChild(0) != null) goalIndicator.transform.GetChild(0).name = "GoalIndicatorMesh";
                     Renderer render = goalIndicator.GetComponentInChildren<Renderer>();
                     render.material.shader = Shader.Find("Transparent/Diffuse");
                     Color newColor = render.material.color;
@@ -510,25 +540,6 @@ public class DriverPracticeRobot : MonoBehaviour
         else FinishGamepieceGoal(); //if already setting spawn, end editing process
     }
 
-    private void UpdateGamepieceSpawn()
-    {
-        int index = settingSpawn - 1;
-        if (spawnIndicator != null)
-        {
-            ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
-            if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-            if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-            if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-            if (Input.GetKey(KeyCode.DownArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
-                gamepieceSpawn[index] = spawnIndicator.transform.position;
-                FinishGamepieceSpawn();
-            }
-        }
-    }
-
     private void UpdateGamepieceGoal()
     {
         int index = settingGoal - 1;
@@ -542,23 +553,10 @@ public class DriverPracticeRobot : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
-                gamepieceGoal[index] = spawnIndicator.transform.position;
+                gamepieceGoal[index] = goalIndicator.transform.position;
                 FinishGamepieceGoal();
             }
         }
-    }
-
-    public void FinishGamepieceSpawn()
-    {
-        settingSpawn = 0;
-        if (spawnIndicator != null) Destroy(spawnIndicator);
-        if (lastCameraState != null)
-        {
-            DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
-            dynamicCamera.SwitchCameraState(lastCameraState);
-            lastCameraState = null;
-        }
-        //MainState.ControlsDisabled = false;
     }
 
     public void FinishGamepieceGoal()

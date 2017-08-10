@@ -317,8 +317,12 @@ public class DynamicCamera : MonoBehaviour
             if (target != null && target.transform.childCount > 0)
             {
                 targetPosition = target.transform.GetChild(0).transform.position;
-
             }
+            else if (target != null)
+            {
+                targetPosition = target.transform.position;
+            }
+
             mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
         }
 
