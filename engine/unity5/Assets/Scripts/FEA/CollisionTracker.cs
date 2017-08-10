@@ -80,6 +80,9 @@ namespace Assets.Scripts.FEA
 
             for (int i = 0; i < framesPassed; i++)
             {
+                if (numContacts - 1 - i < 0)
+                    break;
+
                 ManifoldPoint mp = pm.GetContactPoint(numContacts - 1 - i);
 
                 ContactDescriptor cd = new ContactDescriptor
