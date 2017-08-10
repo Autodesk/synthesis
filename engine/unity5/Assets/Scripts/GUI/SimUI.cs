@@ -173,14 +173,25 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
             PlayerPrefs.Save();
-            RobotCamera rc = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>();
-            rc.RemoveCameras();
+            RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+            rc.DetachCameras(main.activeRobot);
             main.ChangeRobot(directory);
         }
         else
         {
             UserMessageManager.Dispatch("Robot directory not found!", 5);
         }
+    }
+
+    /// <summary>
+    /// Used for Mix and Match
+    /// </summary>
+    public void MaMChangeRobot(string directory)
+    {
+        RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+        rc.DetachCameras(main.activeRobot);
+       // string directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\";
+        main.ChangeRobot(directory);
     }
 
     public void ToggleChangeRobotPanel()
