@@ -40,7 +40,7 @@ public class PopupButton : MonoBehaviour {
         boxStyle = new GUIStyle("box");
         boxStyle.normal.background = buttonBackground;
 
-        canvas = GameObject.Find("MainMenuCanvas").GetComponent<Canvas>();
+        canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
     }
 
 	void OnGUI () {

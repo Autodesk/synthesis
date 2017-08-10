@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using BulletUnity;
 using Assets.Scripts.FSM;
+using System.IO;
 
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
@@ -11,84 +12,49 @@ using Assets.Scripts.FSM;
 /// </summary>
 public class SimUI : MonoBehaviour
 {
-
     MainState main;
     DynamicCamera camera;
-    DriverPractice dpm;
+    Toolkit toolkit;
+    DriverPracticeMode dpm;
 
     GameObject canvas;
 
-    GameObject dpmWindow;
-    GameObject configWindow;
-    GameObject defineIntakeWindow;
-    GameObject defineReleaseWindow;
-    GameObject setSpawnWindow;
-    GameObject defineGamepieceWindow;
-
     GameObject freeroamCameraWindow;
     GameObject spawnpointWindow;
-    GameObject robotCameraViewWindow;
-    RenderTexture robotCameraView;
-    RobotCamera robotCamera;
 
-    GameObject releaseVelocityPanel;
+    GameObject swapWindow;
 
-    GameObject xOffsetEntry;
-    GameObject yOffsetEntry;
-    GameObject zOffsetEntry;
-    GameObject releaseSpeedEntry;
-    GameObject releaseVerticalEntry;
-    GameObject releaseHorizontalEntry;
-
-    GameObject lockPanel;
-
-    GameObject robotCameraList;
+    GameObject wheelPanel;
+    GameObject driveBasePanel;
+    GameObject manipulatorPanel;
 
 
+    GameObject changeRobotPanel;
+    GameObject changeFieldPanel;
+    GameObject addRobotPanel;
 
-    Text enableDPMText;
+    GameObject driverStationPanel;
 
-    Text primaryGamepieceText;
-    Text secondaryGamepieceText;
+    GameObject inputManagerPanel;
 
-    Text intakeControlText;
-    Text releaseControlText;
-    Text spawnControlText;
+    public bool swapWindowOn = false; //if the swap window is active
+    public bool wheelPanelOn = false; //if the wheel panel is active
+    public bool driveBasePanelOn = false; //if the drive base panel is active
+    public bool manipulatorPanelOn = false; //if the manipulator panel is active
 
-    Text configHeaderText;
-    Text configuringText;
+    GameObject exitPanel;
 
-    Text intakeMechanismText;
-    Text releaseMechanismText;
+    GameObject orientWindow;
+    bool isOrienting = false;
+    GameObject resetDropdown;
 
-    Text primaryCountText;
-    Text secondaryCountText;
+    Text cameraNodeText;
 
-    public bool dpmWindowOn = false; //if the driver practice mode window is active
-
-    public bool configuring = false; //if the configuration window is active
-    public int configuringIndex = 0; //0 if user is configuring primary, 1 if user is configuring secondary
-
-    private int holdCount = 0; //counts how long a button has been pressed (for add/subtract buttons to increase increment)
-    const int holdThreshold = 150;
-    const float offsetIncrement = 0.01f;
-    const float speedIncrement = 0.1f;
-    const float angleIncrement = 1f;
-
-    private float deltaOffsetX;
-    private float deltaOffsetY;
-    private float deltaOffsetZ;
-
-    private float deltaReleaseSpeed;
-    private float deltaReleaseHorizontal;
-    private float deltaReleaseVertical;
-
-    private int settingControl = 0; //0 if false, 1 if intake, 2 if release, 3 if spawn
-
-    bool isEditing = false;
+    GameObject loadingPanel;
 
     private bool freeroamWindowClosed = false;
-    private bool usingRobotView = false;
+
+    private bool oppositeSide = false;
 
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
@@ -101,24 +67,32 @@ public class SimUI : MonoBehaviour
     {
         if (main == null)
         {
-            main = transform.GetComponent<StateMachine>().MainState;
-            camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
-            //Get the render texture from Resources/Images
-            robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
+            main = transform.GetComponent<StateMachine>().CurrentState as MainState;
         }
         else if (dpm == null)
         {
-            dpm = main.GetDriverPractice();
+            camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
+
+            toolkit = GetComponent<Toolkit>();
+            dpm = GetComponent<DriverPracticeMode>();
             FindElements();
-
-
+        }
+        else if (camera == null)
+        {
+            camera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
         else
         {
-            UpdateDPMValues();
-            UpdateVectorConfiguration();
             UpdateWindows();
-            if (settingControl != 0) ListenControl();
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (StateMachine.Instance.CurrentState.GetType().Equals(typeof(MainState)))
+                {
+                    if (!exitPanel.activeSelf) MainMenuExit("open");
+                    else MainMenuExit("cancel");
+                }
+            }
 
         }
 
@@ -126,6 +100,7 @@ public class SimUI : MonoBehaviour
 
     private void OnGUI()
     {
+        UserMessageManager.Render();
     }
 
     /// <summary>
@@ -135,191 +110,45 @@ public class SimUI : MonoBehaviour
     {
         canvas = GameObject.Find("Canvas");
 
-        dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
-        configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
-
-        enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
-
-        primaryGamepieceText = AuxFunctions.FindObject(canvas, "PrimaryGamepieceText").GetComponent<Text>();
-        secondaryGamepieceText = AuxFunctions.FindObject(canvas, "SecondaryGamepieceText").GetComponent<Text>();
-
-        configuringText = AuxFunctions.FindObject(canvas, "ConfiguringText").GetComponent<Text>();
-        configHeaderText = AuxFunctions.FindObject(canvas, "ConfigHeaderText").GetComponent<Text>();
-
-        releaseVelocityPanel = AuxFunctions.FindObject(canvas, "ReleaseVelocityPanel");
-
-        xOffsetEntry = AuxFunctions.FindObject(canvas, "XOffsetEntry");
-        yOffsetEntry = AuxFunctions.FindObject(canvas, "YOffsetEntry");
-        zOffsetEntry = AuxFunctions.FindObject(canvas, "ZOffsetEntry");
-        releaseSpeedEntry = AuxFunctions.FindObject(canvas, "ReleaseSpeedEntry");
-        releaseVerticalEntry = AuxFunctions.FindObject(canvas, "ReleaseVerticalEntry");
-        releaseHorizontalEntry = AuxFunctions.FindObject(canvas, "ReleaseHorizontalEntry");
-
-        releaseMechanismText = AuxFunctions.FindObject(canvas, "ReleaseMechanismText").GetComponent<Text>();
-        intakeMechanismText = AuxFunctions.FindObject(canvas, "IntakeMechanismText").GetComponent<Text>();
-
-        defineIntakeWindow = AuxFunctions.FindObject(canvas, "DefineIntakePanel");
-        defineReleaseWindow = AuxFunctions.FindObject(canvas, "DefineReleasePanel");
-        defineGamepieceWindow = AuxFunctions.FindObject(canvas, "DefineGamepiecePanel");
-        setSpawnWindow = AuxFunctions.FindObject(canvas, "SetGamepieceSpawnPanel");
-
-        intakeControlText = AuxFunctions.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
-        releaseControlText = AuxFunctions.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
-        spawnControlText = AuxFunctions.FindObject(canvas, "SpawnInputButton").GetComponentInChildren<Text>();
-
-        lockPanel = AuxFunctions.FindObject(canvas, "DPMLockPanel");
-
         freeroamCameraWindow = AuxFunctions.FindObject(canvas, "FreeroamPanel");
         spawnpointWindow = AuxFunctions.FindObject(canvas, "SpawnpointPanel");
 
-        robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
+        swapWindow = AuxFunctions.FindObject(canvas, "SwapPanel");
+        wheelPanel = AuxFunctions.FindObject(canvas, "WheelPanel");
+        driveBasePanel = AuxFunctions.FindObject(canvas, "DriveBasePanel");
+        manipulatorPanel = AuxFunctions.FindObject(canvas, "ManipulatorPanel");
 
-        primaryCountText = AuxFunctions.FindObject(canvas, "PrimaryCountText").GetComponent<Text>();
-        secondaryCountText = AuxFunctions.FindObject(canvas, "SecondaryCountText").GetComponent<Text>();
+        addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
 
-        robotCameraList = AuxFunctions.FindObject(canvas, "RobotCameraList");
-        robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanelBorder");
+
+
+        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
+        changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
+        changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
+
+        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
+
+        inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+
+        orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
+        resetDropdown = GameObject.Find("Reset Robot Dropdown");
+
+        exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
+        loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
+
     }
 
-    /// <summary>
-    /// Updates the UI elements in the driver practice mode toolbars to reflect changes in configurable values
-    /// </summary>
-    private void UpdateDPMValues()
-    {
-        if (dpm.gamepieceNames[0] == null) primaryGamepieceText.text = "Primary Gamepiece:  NOT CONFIGURED";
-        else primaryGamepieceText.text = "Primary Gamepiece:  " + dpm.gamepieceNames[0];
 
-        if (dpm.gamepieceNames[1] == null) secondaryGamepieceText.text = "Secondary Gamepiece:  NOT CONFIGURED";
-        else secondaryGamepieceText.text = "Secondary Gamepiece:  " + dpm.gamepieceNames[1];
-
-        primaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[0].Count + "\nHeld: " + dpm.objectsHeld[0].Count;
-        secondaryCountText.text = "Spawned: " + dpm.spawnedGamepieces[1].Count + "\nHeld: " + dpm.objectsHeld[1].Count;
-
-        if (configuring)
-        {
-            if (dpm.gamepieceNames[configuringIndex] == null) configuringText.text = "Gamepiece not defined yet!";
-            else configuringText.text = "Configuring:  " + dpm.gamepieceNames[configuringIndex];
-
-            releaseMechanismText.text = "Current Part:  " + dpm.releaseNode[configuringIndex].name;
-            intakeMechanismText.text = "Current Part:  " + dpm.intakeNode[configuringIndex].name;
-
-            if (configuringIndex == 0)
-            {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupPrimary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleasePrimary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnPrimary].ToString();
-            }
-            else
-            {
-                intakeControlText.text = Controls.ControlKey[(int)Controls.Control.PickupSecondary].ToString();
-                releaseControlText.text = Controls.ControlKey[(int)Controls.Control.ReleaseSecondary].ToString();
-                spawnControlText.text = Controls.ControlKey[(int)Controls.Control.SpawnSecondary].ToString();
-            }
-        }
-    }
-
-    /// <summary>
-    /// Updates DPM values regarding release position vector and release velocity values
-    /// </summary>
-    private void UpdateVectorConfiguration()
-    {
-        if (holdCount > 0 && !isEditing) //This indicates that any of the configuration increment buttons are being pressed
-        {
-            if (deltaOffsetX != 0)
-            {
-                if (holdCount < holdThreshold) dpm.ChangeOffsetX(deltaOffsetX, configuringIndex);
-                else dpm.ChangeOffsetX(deltaOffsetX * 5, configuringIndex);
-            }
-            else if (deltaOffsetY != 0)
-            {
-                if (holdCount < holdThreshold) dpm.ChangeOffsetY(deltaOffsetY, configuringIndex);
-                else dpm.ChangeOffsetY(deltaOffsetY * 5, configuringIndex);
-            }
-            else if (deltaOffsetZ != 0)
-            {
-                if (holdCount < holdThreshold) dpm.ChangeOffsetZ(deltaOffsetZ, configuringIndex);
-                else dpm.ChangeOffsetZ(deltaOffsetZ * 5, configuringIndex);
-            }
-            else if (deltaReleaseSpeed != 0)
-            {
-                if (holdCount < holdThreshold) dpm.ChangeReleaseSpeed(deltaReleaseSpeed, configuringIndex);
-                else dpm.ChangeReleaseSpeed(deltaReleaseSpeed * 5, configuringIndex);
-            }
-            else if (deltaReleaseHorizontal != 0)
-            {
-                if (holdCount < holdThreshold) dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal, configuringIndex);
-                else dpm.ChangeReleaseHorizontalAngle(deltaReleaseHorizontal * 5, configuringIndex);
-            }
-            else if (deltaReleaseVertical != 0)
-            {
-                if (holdCount < holdThreshold) dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical, configuringIndex);
-                else dpm.ChangeReleaseVerticalAngle(deltaReleaseVertical * 5, configuringIndex);
-            }
-            holdCount++;
-        }
-
-        if (!isEditing)
-        {
-
-            xOffsetEntry.GetComponent<InputField>().text = dpm.positionOffset[configuringIndex][0].ToString();
-            yOffsetEntry.GetComponent<InputField>().text = dpm.positionOffset[configuringIndex][1].ToString();
-            zOffsetEntry.GetComponent<InputField>().text = dpm.positionOffset[configuringIndex][2].ToString();
-
-            releaseSpeedEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][0].ToString();
-            releaseHorizontalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][1].ToString();
-            releaseVerticalEntry.GetComponent<InputField>().text = dpm.releaseVelocity[configuringIndex][2].ToString();
-        }
-    }
 
     private void UpdateWindows()
     {
-        if (configuring)
-        {
-            if (dpm.addingGamepiece)
-            {
-                configWindow.SetActive(false);
-                dpmWindow.SetActive(false);
-                defineGamepieceWindow.SetActive(true);
-            }
-            else if (dpm.settingSpawn != 0)
-            {
-                configWindow.SetActive(false);
-                dpmWindow.SetActive(false);
-                setSpawnWindow.SetActive(true);
-            }
-            else if (dpm.definingIntake)
-            {
-                configWindow.SetActive(false);
-                dpmWindow.SetActive(false);
-                defineIntakeWindow.SetActive(true);
-            }
-            else if (dpm.definingRelease)
-            {
-                configWindow.SetActive(false);
-                dpmWindow.SetActive(false);
-                defineReleaseWindow.SetActive(true);
-            }
-            else
-            {
-                defineGamepieceWindow.SetActive(false);
-                setSpawnWindow.SetActive(false);
-                defineIntakeWindow.SetActive(false);
-                defineReleaseWindow.SetActive(false);
-                dpmWindow.SetActive(true);
-                configWindow.SetActive(true);
-            }
-        }
-
-        UpdateFreeroamWindow();
+        if (main != null)
+            UpdateFreeroamWindow();
         UpdateSpawnpointWindow();
-        UpdateCameraWindow();
-
+        UpdateDriverStationPanel();
     }
 
-    private void UpdateCameraView()
-    {
 
-    }
     #region main button functions
     /// <summary>
     /// Resets the robot
@@ -328,6 +157,105 @@ public class SimUI : MonoBehaviour
     //{
     //    main.ResetRobot();
     //}
+    public void ChangeRobot()
+    {
+        GameObject panel = GameObject.Find("RobotListPanel");
+        string directory = PlayerPrefs.GetString("RobotDirectory") + "\\" + panel.GetComponent<ChangeRobotScrollable>().selectedEntry;
+        if (Directory.Exists(directory))
+        {
+            panel.SetActive(false);
+            changeRobotPanel.SetActive(false);
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+            PlayerPrefs.SetString("simSelectedRobot", directory);
+            PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            main.ChangeRobot(directory);
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Robot directory not found!", 5);
+        }
+    }
+
+    public void ToggleChangeRobotPanel()
+    {
+        if (changeRobotPanel.activeSelf)
+        {
+            changeRobotPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            changeRobotPanel.SetActive(true);
+        }
+    }
+
+    public void ChangeField()
+    {
+        GameObject panel = GameObject.Find("FieldListPanel");
+        string directory = PlayerPrefs.GetString("FieldDirectory") + "\\" + panel.GetComponent<ChangeFieldScrollable>().selectedEntry;
+        if (Directory.Exists(directory))
+        {
+            panel.SetActive(false);
+            changeFieldPanel.SetActive(false);
+            loadingPanel.SetActive(true);
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+            PlayerPrefs.SetString("simSelectedField", directory);
+            PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
+            PlayerPrefs.Save();
+            Application.LoadLevel("Scene");
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Field directory not found!", 5);
+        }
+    }
+
+    public void ToggleChangeFieldPanel()
+    {
+        if (changeFieldPanel.activeSelf)
+        {
+            changeFieldPanel.SetActive(false);
+        }
+        else
+        {
+            EndOtherProcesses();
+            changeFieldPanel.SetActive(true);
+        }
+
+    }
+
+    public void ChooseResetMode(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                main.BeginRobotReset();
+                main.EndRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 2:
+                EndOtherProcesses();
+                main.IsResetting = true;
+                main.BeginRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
+    /// </summary>
+    public void EndOtherProcesses()
+    {
+        changeFieldPanel.SetActive(false);
+        changeRobotPanel.SetActive(false);
+        exitPanel.SetActive(false);
+        CloseOrientWindow();
+        main.IsResetting = false;   
+
+        dpm.EndProcesses();
+        toolkit.EndProcesses();
+    }
     #endregion
     #region camera button functions
     //Camera Functions
@@ -348,455 +276,59 @@ public class SimUI : MonoBehaviour
     #endregion
     #region orient button functions
 
-    ////Orient Robot Functions
-    //public void OrientStart()
-    //{
-    //    main.StartOrient();
-    //}
-
-    //public void OrientLeft()
-    //{
-    //    main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
-    //}
-
-    //public void OrientRight()
-    //{
-    //    main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
-    //}
-
-    //public void OrientForward()
-    //{
-    //    main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
-    //}
-
-    //public void OrientBackward()
-    //{
-    //    main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
-    //}
-
-    //public void OrientSave()
-    //{
-    //    main.SaveOrientation();
-    //}
-
-    //public void OrientEnd()
-    //{
-    //    //To be filled in later when UI work has been done
-    //}
-
-    //public void OrientDefault()
-    //{
-    //    main.ResetOrientation();
-    //}
-
-    #endregion
-    #region driver practice mode button functions
-    /// <summary>
-    /// Toggles the Driver Practice Mode window
-    /// </summary>
-    public void DPMToggleWindow()
+    public void ToggleOrientWindow()
     {
-        dpmWindowOn = !dpmWindowOn;
-        dpmWindow.SetActive(dpmWindowOn);
-    }
-
-    /// <summary>
-    /// Sets the driver practice mode to either be enabled or disabled, depending on what state it was at before.
-    /// </summary>
-    public void DPMToggle()
-    {
-        if (!dpm.modeEnabled)
+        if (isOrienting)
         {
-            dpm.modeEnabled = true;
-            enableDPMText.text = "Disable Driver Practice Mode";
-            lockPanel.SetActive(false);
-            
+            isOrienting = false;
+            main.EndRobotReset();
         }
         else
         {
-            if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
-            else
-            {
-                enableDPMText.text = "Enable Driver Practice Mode";
-                dpm.displayTrajectories[0] = false;
-                dpm.displayTrajectories[1] = false;
-                dpm.modeEnabled = false;
-                lockPanel.SetActive(true);
-            }
-
+            EndOtherProcesses();
+            isOrienting = true;
+            main.BeginRobotReset();
         }
+        orientWindow.SetActive(isOrienting);
     }
 
-    /// <summary>
-    /// Clears all the gamepieces sharing the same name as the ones that have been configured from the field.
-    /// </summary>
-    public void ClearGamepieces()
+    public void OrientLeft()
     {
-        dpm.ClearGamepieces();
+        main.RotateRobot(new Vector3(Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientRight()
+    {
+        main.RotateRobot(new Vector3(-Mathf.PI * 0.25f, 0f, 0f));
+    }
+    public void OrientForward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, Mathf.PI * 0.25f));
+    }
+    public void OrientBackward()
+    {
+        main.RotateRobot(new Vector3(0f, 0f, -Mathf.PI * 0.25f));
     }
 
-    /// <summary>
-    /// Toggles the display of primary gamepiece release trajectory.
-    /// </summary>
-    public void DisplayTrajectoryPrimary()
+    public void DefaultOrientation()
     {
-        dpm.displayTrajectories[0] = !dpm.displayTrajectories[0];
+        main.ResetRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
     }
 
-    /// <summary>
-    /// Toggles the display of primary gamepiece release trajectory.
-    /// </summary>
-    public void DisplayTrajectorySecondary()        
+    public void SaveOrientation()
     {
-        dpm.displayTrajectories[1] = !dpm.displayTrajectories[1];
+        main.SaveRobotOrientation();
+        orientWindow.SetActive(isOrienting = false);
     }
 
-    /// <summary>
-    /// Opens the configuration window and sets it up for the primary gamepiece
-    /// </summary>
-    public void DPMConfigurePrimary()
+    public void CloseOrientWindow()
     {
-        if (dpm.modeEnabled)
-        {
-            configuring = true;
-            configuringIndex = 0;
-            configHeaderText.text = "Configuration Menu - Primary Gamepiece";
-            configWindow.SetActive(true);
-            dpm.displayTrajectories[0] = true;
-            dpm.displayTrajectories[1] = false;
-        }
-        else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
-    }
-
-    /// <summary>
-    /// Opens the configuration window and sets it up for the secondary gamepiece
-    /// </summary>
-    public void DPMConfigureSecondary()
-    {
-        if (dpm.modeEnabled)
-        {
-            configuring = true;
-            configuringIndex = 1;
-            configHeaderText.text = "Configuration Menu - Secondary Gamepiece";
-            configWindow.SetActive(true);
-            dpm.displayTrajectories[0] = false;
-            dpm.displayTrajectories[1] = true;
-        }
-        else UserMessageManager.Dispatch("You must enable Driver Practice Mode first!", 5);
-    }
-
-    /// <summary>
-    /// Spawns the primary gamepiece at its defined spawn location, or at the field's origin if one hasn't been defined
-    /// </summary>
-    public void SpawnGamepiecePrimary()
-    {
-        dpm.SpawnGamepiece(0);
-    }
-
-    /// <summary>
-    /// Spawns the secondary gamepiece at its defined spawn location, or at the field's origon if one hasn't been defined.
-    /// </summary>
-    public void SpawnGamepieceSecondary()
-    {
-        dpm.SpawnGamepiece(1);
+        isOrienting = false;
+        orientWindow.SetActive(isOrienting);
+        main.EndRobotReset();
     }
 
     #endregion
-    #region dpm configuration button functions
-    public void CloseConfigurationWindow()
-    {
-        configWindow.SetActive(false);
-        configuring = false;
-        dpm.displayTrajectories[configuringIndex] = false;
-        dpm.Save();
-    }
-
-    public void DefineGamepiece()
-    {
-        dpm.DefineGamepiece(configuringIndex);
-    }
-
-    public void CancelDefineGamepiece()
-    {
-        dpm.addingGamepiece = false;
-    }
-
-    public void DefineIntake()
-    {
-        dpm.DefineIntake(configuringIndex);
-    }
-
-    public void CancelDefineIntake()
-    {
-        dpm.definingIntake = false;
-    }
-
-    public void CloseFreeroamWindow()
-    {
-        freeroamCameraWindow.SetActive(false);
-        freeroamWindowClosed = true;
-    }
-
-    public void HighlightIntake()
-    {
-        dpm.HighlightNode(dpm.intakeNode[configuringIndex].name);
-    }
-
-    public void DefineRelease()
-    {
-        dpm.DefineRelease(configuringIndex);
-    }
-
-    public void CancelDefineRelease()
-    {
-        dpm.definingRelease = false;
-    }
-
-    public void HighlightRelease()
-    {
-        dpm.HighlightNode(dpm.releaseNode[configuringIndex].name);
-    }
-
-    public void SetGamepieceSpawn()
-    {
-        dpm.StartGamepieceSpawn(configuringIndex);
-    }
-
-    public void CancelGamepieceSpawn()
-    {
-        dpm.FinishGamepieceSpawn();
-    }
-
-
-
-
-    public void AddOffsetX()
-    {
-        deltaOffsetX = offsetIncrement;
-        holdCount++;
-    }
-    public void SubstractOffsetX()
-    {
-        deltaOffsetX = -offsetIncrement;
-        holdCount++;
-    }
-    public void AddOffsetY()
-    {
-        deltaOffsetY = offsetIncrement;
-        holdCount++;
-    }
-    public void SubstractOffsetY()
-    {
-        deltaOffsetY = -offsetIncrement;
-        holdCount++;
-    }
-    public void AddOffsetZ()
-    {
-        deltaOffsetZ = offsetIncrement;
-        holdCount++;
-    }
-    public void SubtractOffsetZ()
-    {
-        deltaOffsetZ = -offsetIncrement;
-        holdCount++;
-    }
-
-    public void AddReleaseSpeed()
-    {
-        deltaReleaseSpeed = speedIncrement;
-        holdCount++;
-    }
-    public void SubtractReleaseSpeed()
-    {
-        deltaReleaseSpeed = -speedIncrement;
-        holdCount++;
-    }
-    public void AddReleaseHorizontalAngle()
-    {
-        deltaReleaseHorizontal = angleIncrement;
-        holdCount++;
-    }
-    public void SubtractReleaseHorizontalAngle()
-    {
-        deltaReleaseHorizontal = -angleIncrement;
-        holdCount++;
-    }
-    public void AddReleaseVerticalAngle()
-    {
-        deltaReleaseVertical = angleIncrement;
-        holdCount++;
-    }
-    public void SubtractReleaseVerticalAngle()
-    {
-        deltaReleaseVertical = -angleIncrement;
-        holdCount++;
-    }
-    public void ReleaseConfigurationButton()
-    {
-        deltaOffsetX = 0;
-        deltaOffsetY = 0;
-        deltaOffsetZ = 0;
-
-        deltaReleaseSpeed = 0;
-        deltaReleaseHorizontal = 0;
-        deltaReleaseVertical = 0;
-        holdCount = 0;
-    }
-
-    public void StartEdit()
-    {
-        isEditing = true;
-    }
-
-    public void EndEdit()
-    {
-        isEditing = false;
-    }
-
-    public void SyncInputFieldEntry()
-    {
-        if (isEditing)
-        {
-            float temp = 0;
-            if (float.TryParse(xOffsetEntry.GetComponent<InputField>().text, out temp))
-                dpm.positionOffset[configuringIndex][0] = temp;
-            temp = 0;
-            if (float.TryParse(yOffsetEntry.GetComponent<InputField>().text, out temp))
-                dpm.positionOffset[configuringIndex][1] = temp;
-            temp = 0;
-            if (float.TryParse(zOffsetEntry.GetComponent<InputField>().text, out temp))
-                dpm.positionOffset[configuringIndex][2] = temp;
-            temp = 0;
-            if (float.TryParse(releaseSpeedEntry.GetComponent<InputField>().text, out temp))
-                dpm.releaseVelocity[configuringIndex][0] = temp;
-            temp = 0;
-            if (float.TryParse(releaseHorizontalEntry.GetComponent<InputField>().text, out temp))
-                dpm.releaseVelocity[configuringIndex][1] = temp;
-            temp = 0;
-            if (float.TryParse(releaseVerticalEntry.GetComponent<InputField>().text, out temp))
-                dpm.releaseVelocity[configuringIndex][2] = temp;
-        }
-    }
-    #endregion
-    #region control customization functions
-
-    public void ChangeIntakeControl()
-    {
-        settingControl = 1;
-    }
-
-    public void ChangeReleaseControl()
-    {
-        settingControl = 2;
-    }
-
-    public void ChangeSpawnControl()
-    {
-        settingControl = 3;
-    }
-
-    private void ListenControl()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            settingControl = 0;
-            return;
-        }
-        foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
-        {
-            if (Input.GetKeyDown(vKey))
-            {
-                if (configuringIndex == 0)
-                {
-                    if (settingControl == 1)
-                    {
-                        Controls.SetControl((int)Controls.Control.PickupPrimary, vKey);
-                    }
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleasePrimary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnPrimary, vKey);
-                }
-                else
-                {
-                    if (settingControl == 1) Controls.SetControl((int)Controls.Control.PickupSecondary, vKey);
-                    else if (settingControl == 2) Controls.SetControl((int)Controls.Control.ReleaseSecondary, vKey);
-                    else Controls.SetControl((int)Controls.Control.SpawnSecondary, vKey);
-                }
-                Controls.SaveControls();
-                settingControl = 0;
-            }
-        }
-    }
-    #endregion
-
-    /// <summary>
-    /// Updates the robot camera view window
-    /// </summary>
-    private void UpdateCameraWindow()
-    {
-        //Make sure robot camera exists first
-        if(robotCamera == null && robotCameraList.GetComponent<RobotCamera>() != null)
-        {
-            robotCamera = robotCameraList.GetComponent<RobotCamera>();
-        }
-
-        if (robotCamera != null)
-        {
-            //Can use robot view when dynamicCamera is active
-            if (usingRobotView && main.dynamicCameraObject.activeSelf)
-            {
-                robotCamera = robotCameraList.GetComponent<RobotCamera>();
-                Debug.Log(robotCamera.CurrentCamera);
-
-                //Make sure there is camera on robot
-                if (robotCamera.CurrentCamera != null)
-                {
-                    robotCamera.CurrentCamera.SetActive(true);
-                    robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
-                    //Toggle the robot camera using Q (should be changed later)
-                    if (Input.GetKeyDown(KeyCode.Q))
-                    {
-                        robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
-                        robotCamera.ToggleCamera();
-                        robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
-
-                    }
-                    //Debug.Log("Robot camera view is " + robotCameraView.name);
-                    //Debug.Log(robotCamera.CurrentCamera);
-                }
-            }
-            //Don't allow using robot view window when users are currently using one of the robot view
-            else if (usingRobotView && !main.dynamicCameraObject.activeSelf)
-            {
-                UserMessageManager.Dispatch("You can only use robot view window when you are not in robot view mode!", 2f);
-                usingRobotView = false;
-                robotCameraViewWindow.SetActive(false);
-            }
-            //Free the target texture of the current camera when the window is closed (for normal toggle camera function)
-            else
-            {
-                robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Toggles the state of usingRobotView when the button "Toggle Robot Camera" is clicked
-    /// </summary>
-    public void ToggleCameraWindow()
-    {
-        usingRobotView = !usingRobotView;
-        robotCameraViewWindow.SetActive(usingRobotView);
-        if (usingRobotView)
-        {
-            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = robotCameraView;
-        }
-        else
-        {
-            //Free the target texture and disable the camera since robot camera has more depth than main camera
-            robotCamera.CurrentCamera.GetComponent<Camera>().targetTexture = null;
-            robotCamera.CurrentCamera.SetActive(false);
-        }
-    }
 
     /// <summary>
     /// Pop reset instructions when main is in reset spawnpoint mode
@@ -831,5 +363,114 @@ public class SimUI : MonoBehaviour
             freeroamCameraWindow.SetActive(false);
         }
     }
-}
 
+
+    public void CloseFreeroamWindow()
+    {
+        freeroamCameraWindow.SetActive(false);
+        freeroamWindowClosed = true;
+    }
+
+    /// <summary>
+    /// Activate driver station panel if the main camera is in driver station state
+    /// </summary>
+    private void UpdateDriverStationPanel()
+    {
+        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+    }
+
+    /// <summary>
+    /// Change to driver station view to the opposite side
+    /// </summary>
+    public void ToggleDriverStation()
+    {
+        oppositeSide = !oppositeSide;
+        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
+    }
+
+    public void ShowControlPanel(bool show)
+    {
+        if (show)
+        {
+            EndOtherProcesses();
+            inputManagerPanel.SetActive(true);
+        }
+        else
+        {
+            inputManagerPanel.SetActive(false);
+        }
+    }
+
+    public void ShowControlPanel()
+    {
+        ShowControlPanel(!inputManagerPanel.activeSelf);
+    }
+
+    public void MainMenuExit(string option)
+    {
+        EndOtherProcesses();
+        switch (option)
+        {
+            case "open":
+                exitPanel.SetActive(true);
+                break;
+            case "exit":
+                Application.LoadLevel("MainMenu");
+                break;
+
+            case "cancel":
+                exitPanel.SetActive(false);
+                break;
+        }
+    }
+
+    #region swap part
+    /// <summary>
+    /// Toggles the Driver Practice Mode window
+    /// </summary>
+    public void SwapToggleWindow()
+    {
+        swapWindowOn = !swapWindowOn;
+        swapWindow.SetActive(swapWindowOn);
+    }
+
+    public void TogglePanel(GameObject panel)
+    {
+        if (panel.activeSelf == true)
+        {
+            panel.SetActive(false);
+        } else
+        {
+            panel.SetActive(true);
+        } 
+    }
+
+    public void PartToggleWindow(string Window)
+    {
+        List<GameObject> swapPanels = new List<GameObject> { wheelPanel, driveBasePanel, manipulatorPanel };
+        switch (Window)
+        {
+            case "wheel":
+                TogglePanel(wheelPanel);
+                driveBasePanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+            case "driveBase":
+                TogglePanel(driveBasePanel);
+                wheelPanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+            case "manipulator":
+                TogglePanel(manipulatorPanel);
+                driveBasePanel.SetActive(false);
+                wheelPanel.SetActive(false);
+                break;
+            default:
+                wheelPanel.SetActive(false);
+                driveBasePanel.SetActive(false);
+                manipulatorPanel.SetActive(false);
+                break;
+        }
+    }
+    #endregion
+}
