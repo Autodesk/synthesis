@@ -66,6 +66,7 @@
             // 
             // CancelButton
             // 
+            this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.CancelButton.Location = new System.Drawing.Point(110, 70);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(75, 23);
@@ -76,13 +77,16 @@
             // 
             // AddAssembly
             // 
+            this.AcceptButton = this.okButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.CancelButton;
             this.ClientSize = new System.Drawing.Size(204, 111);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.pictureBox1);
+            this.KeyPreview = true;
             this.Name = "AddAssembly";
             this.Text = "Add Assembly";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CancelButton_onClick);
