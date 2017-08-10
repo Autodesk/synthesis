@@ -13,32 +13,35 @@ public static class InputControl
 {
     public const float NO_SMOOTH = 1000f;
 
-
-
     // Set of keys
-    private static List<KeyMapping>               mKeysList          = new List<KeyMapping>();
-    private static Dictionary<string, KeyMapping> mKeysMap           = new Dictionary<string, KeyMapping>();
+    private static List<KeyMapping> mKeysList = new List<KeyMapping>();
+    private static Dictionary<string, KeyMapping> mKeysMap = new Dictionary<string, KeyMapping>();
 
-    private static List<KeyMapping> mKeysList2 = new List<KeyMapping>();
-    private static bool tankDrive = false;
+    // Set of player keys
+    private static List<KeyMapping> mKeysListPlayer1 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListPlayer2 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListPlayer3 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListPlayer4 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListPlayer5 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListPlayer6 = new List<KeyMapping>();
 
     // Set of axes
-    private static List<Axis>                     mAxesList          = new List<Axis>();
-    private static Dictionary<string, Axis>       mAxesMap           = new Dictionary<string, Axis>();
+    private static List<Axis> mAxesList = new List<Axis>();
+    private static Dictionary<string, Axis> mAxesMap = new Dictionary<string, Axis>();
 
     // Smooth for GetAxis
-    private static Dictionary<string, float>      mSmoothAxesValues  = new Dictionary<string, float>();
-    private static float                          mSmoothCoefficient = 5f; // Smooth looks the same as in Input.GetAxis() with this value
+    private static Dictionary<string, float> mSmoothAxesValues = new Dictionary<string, float>();
+    private static float mSmoothCoefficient = NO_SMOOTH; // Smooth looks the same as in Input.GetAxis() with this value
 
     // Joystick options
-    private static float                          mJoystickThreshold = 0.2f;
+    private static float mJoystickThreshold = 0.2f;
 
     // Mouse options
-    private static float                          mMouseSensitivity  = 1f;
-    private static bool                           mInvertMouseY      = false;
+    private static float mMouseSensitivity = 1f;
+    private static bool mInvertMouseY = false;
 
     // Common options
-    private static InputDevice                    mInputDevice       = InputDevice.Any;
+    private static InputDevice mInputDevice = InputDevice.Any;
 
 
 
@@ -120,7 +123,7 @@ public static class InputControl
 
         set
         {
-            if (value<0f)
+            if (value < 0f)
             {
                 mMouseSensitivity = 0f;
             }
@@ -1356,22 +1359,54 @@ public static class InputControl
     /// <param name="primary">Primary input.</param>
     /// <param name="secondary">Secondary input.</param>
     /// <param name="third">Third input.</param>
-    public static KeyMapping setKey(string name, CustomInput primary=null, CustomInput secondary=null, CustomInput third=null)
+    public static KeyMapping setKey(string name, CustomInput primary = null, CustomInput secondary = null, CustomInput third = null)
     {
         KeyMapping outKey = null;
 
         if (mKeysMap.TryGetValue(name, out outKey))
         {
-            outKey.primaryInput   = primary;
+            outKey.primaryInput = primary;
             outKey.secondaryInput = secondary;
-            outKey.thirdInput     = third;
+            outKey.thirdInput = third;
         }
         else
         {
             outKey = new KeyMapping(name, primary, secondary, third);
 
             mKeysList.Add(outKey);
-            mKeysMap.Add (name, outKey);
+            mKeysMap.Add(name, outKey);
+        }
+
+        return outKey;
+    }
+
+    public static KeyMapping setKey(string name, int controlIndex = 0, CustomInput primary = null, CustomInput secondary = null, CustomInput third = null)
+    {
+        KeyMapping outKey = null;
+
+        if (mKeysMap.TryGetValue(name, out outKey))
+        {
+            outKey.primaryInput = primary;
+            outKey.secondaryInput = secondary;
+            outKey.thirdInput = third;
+        }
+        else
+        {
+            outKey = new KeyMapping(name, primary, secondary, third);
+
+            //switch (controlIndex)
+            //{
+            //    case 0:
+            //        mKeysList.Add(outKey);
+            //        break;
+            //    case 1:
+            //        mKeysListPlayer1.Add(outKey);
+            //        break;
+
+            //}
+
+            mKeysList.Add(outKey);
+            mKeysMap.Add(name, outKey);
         }
 
         return outKey;
@@ -1398,8 +1433,8 @@ public static class InputControl
     public static void removeKey(KeyMapping key)
     {
         mKeysList.Remove(key);
-        mKeysMap.Remove (key.name);
-        
+        mKeysMap.Remove(key.name);
+
     }
 
     /// <summary>
@@ -1436,6 +1471,11 @@ public static class InputControl
     {
         return mKeysList.AsReadOnly();
     }
+
+    //public static ReadOnlyCollection<KeyMapping> getPlayer1Keys()
+    //{
+    //    return mKeysListPlayer1.AsReadOnly();
+    //}
     #endregion
 
     #region Setup axes
@@ -1488,7 +1528,7 @@ public static class InputControl
             outAxis = new Axis(name, negative, positive);
 
             mAxesList.Add(outAxis);
-            mAxesMap.Add (name, outAxis);
+            mAxesMap.Add(name, outAxis);
         }
 
         return outAxis;
@@ -1500,7 +1540,7 @@ public static class InputControl
     /// <param name="name">Axis name.</param>
     public static void removeAxis(string name)
     {
-        Axis outAxis=null;
+        Axis outAxis = null;
 
         if (mAxesMap.TryGetValue(name, out outAxis))
         {
@@ -1515,7 +1555,7 @@ public static class InputControl
     public static void removeAxis(Axis axis)
     {
         mAxesList.Remove(axis);
-        mAxesMap.Remove (axis.name);
+        mAxesMap.Remove(axis.name);
     }
 
     /// <summary>
@@ -1524,7 +1564,7 @@ public static class InputControl
     /// <param name="name">Axis name.</param>
     public static Axis axis(string name)
     {
-        Axis outAxis=null;
+        Axis outAxis = null;
 
         if (mAxesMap.TryGetValue(name, out outAxis))
         {
@@ -1670,7 +1710,7 @@ public static class InputControl
     /// <returns>Currently active input.</returns>
     /// <param name="ignoreMouseMovement">If set to <c>true</c> ignore mouse movement.</param>
     /// <param name="useModifiers">If set to <c>true</c> handle key modifiers.</param>
-    public static CustomInput currentInput(bool ignoreMouseMovement=true, bool useModifiers = false)
+    public static CustomInput currentInput(bool ignoreMouseMovement = true, bool useModifiers = false)
     {
         KeyModifier modifiers = KeyModifier.NoModifier;
 
@@ -1709,7 +1749,7 @@ public static class InputControl
 
                 if (joyAxis > mJoystickThreshold)
                 {
-                    return new JoystickInput((JoystickAxis)((j - 1) * 2),     (Joystick)i, modifiers);
+                    return new JoystickInput((JoystickAxis)((j - 1) * 2), (Joystick)i, modifiers);
                 }
             }
             #endregion
@@ -1870,7 +1910,7 @@ public static class InputControl
         }
 
         float newValue = GetAxisRaw(axisName, exactKeyModifiers);
-        float res      = previousValue + (newValue - previousValue) * totalCoefficient;
+        float res = previousValue + (newValue - previousValue) * totalCoefficient;
 
         mSmoothAxesValues[axisName] = res;
 
@@ -1900,7 +1940,7 @@ public static class InputControl
         }
 
         float newValue = GetAxisRaw(axis, exactKeyModifiers);
-        float res      = previousValue + (newValue - previousValue) * totalCoefficient;
+        float res = previousValue + (newValue - previousValue) * totalCoefficient;
 
         mSmoothAxesValues[axis.name] = res;
 
@@ -2282,7 +2322,7 @@ public static class InputControl
 
         set
         {
-            Input.imeCompositionMode=value;
+            Input.imeCompositionMode = value;
         }
     }
 

@@ -11,7 +11,7 @@ public partial class RigidNode : RigidNode_Base
     float WHEEL_MASS_SCALE = 15f;
     float WHEEL_FRICTION = 1f;
 
-    private void OrientWheelNormals()
+    public void OrientWheelNormals()
     {
         if (GetSkeletalJoint() is RotationalJoint_Base)
         {
@@ -37,6 +37,15 @@ public partial class RigidNode : RigidNode_Base
     {
         BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
         rigidBody.friction = WHEEL_FRICTION;
+
+        rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
+        rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
+    }
+
+    private void UpdateWheelRigidBody(float friction)
+    {
+        BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
+        rigidBody.friction = friction;
 
         rigidBody.GetCollisionObject().CcdMotionThreshold = CCD_MOTION_THRESHOLD;
         rigidBody.GetCollisionObject().CcdSweptSphereRadius = CCD_SWEPT_SPHERE_RADIUS;
