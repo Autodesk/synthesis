@@ -279,6 +279,7 @@
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
