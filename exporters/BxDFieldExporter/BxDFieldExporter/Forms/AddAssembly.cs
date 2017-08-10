@@ -74,5 +74,28 @@ namespace BxDFieldExporter
             mAddInInterface.SetCancel(true);
             mAddInInterface.SetRunOnce(false);
         }
+
+        ///// <summary>
+        ///// Override ProcessCmdKey in order to collect escape and enter key input
+        ///// </summary>
+        ///// <param name="msg"></param>
+        ///// <param name="keyData"></param>
+        ///// <returns></returns>
+        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        //{
+        //    if (keyData == Keys.Escape)
+        //    {
+        //        this.Close();
+
+        //    }
+        //    else if (keyData == Keys.Enter)
+        //    {
+        //        this.Close();
+        //    }
+
+        //    return base.ProcessCmdKey(ref msg, keyData);
+        //}
+
+
     }
 }

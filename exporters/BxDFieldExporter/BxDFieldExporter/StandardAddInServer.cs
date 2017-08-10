@@ -294,6 +294,10 @@ namespace BxDFieldExporter
                 //cancelExporter_OnExecute(null);
             }
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
+            if (environment.InternalName.Equals("BxD:FieldExporter:Environment"))
+            {
+                BrowserNodeIcons(); //sets topnode icon if environment is changed to field exporter
+            }
         }
         /// <summary>
         /// Prepares the exportation environment, generates Icons, descriptions, and tooltips for each button
@@ -578,7 +582,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
 
         // starts a timer to react to events in the browser/ graphics interface
         static bool RightDoc;
-        /*private void TimerWatch()
+        private void TimerWatch()
         {
             try
             {
@@ -659,7 +663,7 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 }
 
             }
-        }*/
+        }
         // adds a new fieldDataComponent to the array and to the browser pane
         public static BrowserNodeDefinition AddComponent(string name)
         {
@@ -683,7 +687,9 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                     oNodeRescs = oPanes.ClientNodeResources;// set the ClientNodeResources the the active document's ClientNodeResources
                     try
                     {
-                        oRes = oNodeRescs.Add("MYID", 1, null);// create a new ClientNodeResource to be used when you add the browser node
+                        stdole.IPictureDisp componentIcon =
+                            PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.ComponentBrowserNode16));
+                        oRes = oNodeRescs.Add("MYID", 1, componentIcon);// create a new ClientNodeResource to be used when you add the browser node
                     }
                     catch (Exception)
                     {// if the method fails then assume that there is already a ClientNodeResource
@@ -818,10 +824,12 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                         t.CompOccs.Add(selectedAssembly);// add the assembly occurence to the arraylist
                                         partSet.AddItem(selectedAssembly); //add the assembly occurence to a set that is highlighted in purple
                                         ClientNodeResources nodeRescs = oPanes.ClientNodeResources;
-                                        ClientNodeResource nodeRes = null;
+                                        ClientNodeResource nodeRes = null;                                        
                                         try
                                         {
-                                            nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, null);
+                                            stdole.IPictureDisp assemblyIcon =
+                                                PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AssemblyIcon16));
+                                          nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, assemblyIcon);                                           
                                         }
                                         catch
                                         {
@@ -1243,7 +1251,6 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             return false;
         }
 
-
         public bool AreNodesSelected()
         {
             foreach(BrowserNode node in oPane.TopNode.BrowserNodes)
@@ -1259,6 +1266,22 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 }
             }
             return false;
+        }
+        public static void BrowserNodeIcons()
+        {
+            Document activeDoc = InventorApplication.ActiveDocument;
+            BrowserPane activePane = activeDoc.BrowserPanes.ActivePane;
+            BrowserNode topNode = activePane.TopNode;
+
+            ClientBrowserNodeDefinition topNodeDef = (ClientBrowserNodeDefinition)topNode.BrowserNodeDefinition;
+
+            stdole.IPictureDisp fieldIcon =
+                PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.FieldIcon16));
+
+            ClientNodeResource fieldResource;
+            fieldResource = activeDoc.BrowserPanes.ClientNodeResources.Add("FieldIcon16", 2, fieldIcon);
+
+            topNodeDef.Icon = fieldResource;
         }
     }
 
