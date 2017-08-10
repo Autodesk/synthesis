@@ -403,12 +403,10 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             inputManagerPanel.SetActive(true);
-            unitConversionButton.SetActive(true);
         }
         else
         {
             inputManagerPanel.SetActive(false);
-            unitConversionButton.SetActive(false);
         }
     }
 
