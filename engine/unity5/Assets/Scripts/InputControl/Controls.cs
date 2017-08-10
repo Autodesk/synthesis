@@ -28,6 +28,8 @@ public class Controls
     public static bool TankDriveEnabled = false;
     public static bool Clicked;
 
+    public static int playerIndex = 0;
+
     /// <summary>
     /// <see cref="Buttons"/> is a set of user defined buttons.
     /// </summary>
@@ -78,10 +80,8 @@ public class Controls
         public Axis horizontal;
 
         //Tank Axes
-        public Axis tankForward;
-        public Axis tankBackward;
-        public Axis tankLeft;
-        public Axis tankRight;
+        public Axis tankLeftAxis;
+        public Axis tankRightAxis;
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public class Controls
             TankDrive();
             Load();
 
-            Debug.Log("tankDrive true");
+            Debug.Log("tankDrive true/TankMode");
         }
         else
         {
@@ -120,11 +120,13 @@ public class Controls
             {
                 ArcadeDrive();
                 Load();
+                Debug.Log("ArcadeMode");
             }
             else
             {
                 ResetArcadeDrive();
                 Load();
+                Debug.Log("ResetArcadeMode");
             }
 
             Debug.Log("tankDrive false");
@@ -224,7 +226,7 @@ public class Controls
         buttons[0].releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1));
         buttons[0].spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
 
-        //Set axes
+        //Set Arcade Drive Axes
         axes[0].horizontal = InputControl.setAxis("Joystick 1 Axis 2", buttons[0].left, buttons[0].right);
         axes[0].vertical = InputControl.setAxis("Joystick 1 Axis 4", buttons[0].backward, buttons[0].forward);
         #endregion
@@ -257,6 +259,10 @@ public class Controls
         buttons[1].pickupSecondary = InputControl.setKey("2: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick2));
         buttons[1].releaseSecondary = InputControl.setKey("2: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick2));
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick2));
+
+        //Set Arcade Drive Axes
+        axes[1].horizontal = InputControl.setAxis("Joystick 2 Axis 2", buttons[1].left, buttons[1].right);
+        axes[1].vertical = InputControl.setAxis("Joystick 2 Axis 4", buttons[1].backward, buttons[1].forward);
         #endregion
 
         #region Player 3 Controls
@@ -287,6 +293,10 @@ public class Controls
         buttons[2].pickupSecondary = InputControl.setKey("3: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick3));
         buttons[2].releaseSecondary = InputControl.setKey("3: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick3));
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick3));
+
+        //Set Arcade Drive Axes
+        axes[2].horizontal = InputControl.setAxis("Joystick 3 Axis 2", buttons[2].left, buttons[2].right);
+        axes[2].vertical = InputControl.setAxis("Joystick 3 Axis 4", buttons[2].backward, buttons[2].forward);
         #endregion
 
         #region Player 4 Controls
@@ -317,6 +327,10 @@ public class Controls
         buttons[3].pickupSecondary = InputControl.setKey("4: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick4));
         buttons[3].releaseSecondary = InputControl.setKey("4: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick4));
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick4));
+
+        //Set Arcade Drive Axes
+        axes[3].horizontal = InputControl.setAxis("Joystick 4 Axis 2", buttons[3].left, buttons[3].right);
+        axes[3].vertical = InputControl.setAxis("Joystick 4 Axis 4", buttons[3].backward, buttons[3].forward);
         #endregion
 
         #region Player 5 Controls
@@ -347,6 +361,10 @@ public class Controls
         buttons[4].pickupSecondary = InputControl.setKey("5: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick5));
         buttons[4].releaseSecondary = InputControl.setKey("5: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick5));
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick5));
+
+        //Set Arcade Drive Axes
+        axes[4].horizontal = InputControl.setAxis("Joystick 5 Axis 2", buttons[4].left, buttons[4].right);
+        axes[4].vertical = InputControl.setAxis("Joystick 5 Axis 4", buttons[4].backward, buttons[4].forward);
         #endregion
 
         #region Player 6 Controls
@@ -377,6 +395,10 @@ public class Controls
         buttons[5].pickupSecondary = InputControl.setKey("6: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick6));
         buttons[5].releaseSecondary = InputControl.setKey("6: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick6));
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick6));
+
+        //Set Arcade Drive Axes
+        axes[5].horizontal = InputControl.setAxis("Joystick 6 Axis 2", buttons[5].left, buttons[5].right);
+        axes[5].vertical = InputControl.setAxis("Joystick 6 Axis 4", buttons[5].backward, buttons[5].forward);
         #endregion
 
         IsTankDrive = false;
@@ -394,7 +416,7 @@ public class Controls
     public static void ResetArcadeDrive()
     {
         #region Primary Controls
-        //Basic robot controls
+        //Basic Controls
         buttons[0].forward = InputControl.setKey("Forward", KeyCode.UpArrow, new JoystickInput(JoystickAxis.Axis2Negative, Joystick.Joystick1));
         buttons[0].backward = InputControl.setKey("Backward", KeyCode.DownArrow, new JoystickInput(JoystickAxis.Axis2Positive, Joystick.Joystick1));
         buttons[0].left = InputControl.setKey("Left", KeyCode.LeftArrow, new JoystickInput(JoystickAxis.Axis4Negative, Joystick.Joystick1));
@@ -422,7 +444,7 @@ public class Controls
         buttons[0].releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1));
         buttons[0].spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
 
-        //Set axes
+        //Set Arcade Drive Axes
         axes[0].horizontal = InputControl.setAxis("Joystick 1 Axis 2", buttons[0].left, buttons[0].right);
         axes[0].vertical = InputControl.setAxis("Joystick 1 Axis 4", buttons[0].backward, buttons[0].forward);
         #endregion
@@ -455,6 +477,10 @@ public class Controls
         buttons[1].pickupSecondary = InputControl.setKey("2: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick2));
         buttons[1].releaseSecondary = InputControl.setKey("2: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick2));
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick2));
+
+        //Set Arcade Drive Axes
+        axes[1].horizontal = InputControl.setAxis("Joystick 2 Axis 2", buttons[1].left, buttons[1].right);
+        axes[1].vertical = InputControl.setAxis("Joystick 2 Axis 4", buttons[1].backward, buttons[1].forward);
         #endregion
 
         #region Player 3 Controls
@@ -485,6 +511,10 @@ public class Controls
         buttons[2].pickupSecondary = InputControl.setKey("3: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick3));
         buttons[2].releaseSecondary = InputControl.setKey("3: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick3));
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick3));
+
+        //Set Arcade Drive Axes
+        axes[2].horizontal = InputControl.setAxis("Joystick 3 Axis 2", buttons[2].left, buttons[2].right);
+        axes[2].vertical = InputControl.setAxis("Joystick 3 Axis 4", buttons[2].backward, buttons[2].forward);
         #endregion
 
         #region Player 4 Controls
@@ -515,6 +545,10 @@ public class Controls
         buttons[3].pickupSecondary = InputControl.setKey("4: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick4));
         buttons[3].releaseSecondary = InputControl.setKey("4: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick4));
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick4));
+
+        //Set Arcade Drive Axes
+        axes[3].horizontal = InputControl.setAxis("Joystick 4 Axis 2", buttons[3].left, buttons[3].right);
+        axes[3].vertical = InputControl.setAxis("Joystick 4 Axis 4", buttons[3].backward, buttons[3].forward);
         #endregion
 
         #region Player 5 Controls
@@ -545,6 +579,10 @@ public class Controls
         buttons[4].pickupSecondary = InputControl.setKey("5: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick5));
         buttons[4].releaseSecondary = InputControl.setKey("5: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick5));
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick5));
+
+        //Set Arcade Drive Axes
+        axes[4].horizontal = InputControl.setAxis("Joystick 5 Axis 2", buttons[4].left, buttons[4].right);
+        axes[4].vertical = InputControl.setAxis("Joystick 5 Axis 4", buttons[4].backward, buttons[4].forward);
         #endregion
 
         #region Player 6 Controls
@@ -575,12 +613,17 @@ public class Controls
         buttons[5].pickupSecondary = InputControl.setKey("6: Pick Up Secondary Gamepiece", new JoystickInput(JoystickButton.Button3, Joystick.Joystick6));
         buttons[5].releaseSecondary = InputControl.setKey("6: Release Secondary Gamepiece", new JoystickInput(JoystickButton.Button4, Joystick.Joystick6));
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick6));
+
+        //Set Arcade Drive Axes
+        axes[5].horizontal = InputControl.setAxis("Joystick 6 Axis 2", buttons[5].left, buttons[5].right);
+        axes[5].vertical = InputControl.setAxis("Joystick 6 Axis 4", buttons[5].backward, buttons[5].forward);
         #endregion
 
         IsTankDrive = false;
         if (GameObject.Find("SettingsMode") != null)
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
         }
     }
 
@@ -621,8 +664,8 @@ public class Controls
         buttons[0].spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
 
         //Set Tank Drive Axes
-        axes[0].tankForward = InputControl.setAxis("Joystick 1 Axis 9", buttons[0].tankBackLeft, buttons[0].tankFrontLeft);
-        axes[0].tankLeft = InputControl.setAxis("Joystick 1 Axis 10", buttons[0].tankFrontRight, buttons[0].tankBackRight);
+        axes[0].tankLeftAxis = InputControl.setAxis("Joystick 1 Axis 9", buttons[0].tankBackLeft, buttons[0].tankFrontLeft);
+        axes[0].tankRightAxis = InputControl.setAxis("Joystick 1 Axis 10", buttons[0].tankFrontRight, buttons[0].tankBackRight);
         #endregion
 
         #region Player 2 Controls
@@ -655,8 +698,8 @@ public class Controls
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick2));
 
         //Set Tank Drive Axes
-        axes[1].tankForward = InputControl.setAxis("Joystick 2 Axis 9", buttons[1].tankBackLeft, buttons[1].tankFrontLeft);
-        axes[1].tankLeft = InputControl.setAxis("Joystick 2 Axis 10", buttons[1].tankFrontRight, buttons[1].tankBackRight);
+        axes[1].tankLeftAxis = InputControl.setAxis("Joystick 2 Axis 9", buttons[1].tankBackLeft, buttons[1].tankFrontLeft);
+        axes[1].tankRightAxis = InputControl.setAxis("Joystick 2 Axis 10", buttons[1].tankFrontRight, buttons[1].tankBackRight);
         #endregion
 
         #region Player 3 Controls
@@ -689,8 +732,8 @@ public class Controls
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick3));
 
         //Set Tank Drive Axes
-        axes[2].tankForward = InputControl.setAxis("Joystick 3 Axis 9", buttons[2].tankBackLeft, buttons[2].tankFrontLeft);
-        axes[2].tankLeft = InputControl.setAxis("Joystick 3 Axis 10", buttons[2].tankFrontRight, buttons[2].tankBackRight);
+        axes[2].tankLeftAxis = InputControl.setAxis("Joystick 3 Axis 9", buttons[2].tankBackLeft, buttons[2].tankFrontLeft);
+        axes[2].tankRightAxis = InputControl.setAxis("Joystick 3 Axis 10", buttons[2].tankFrontRight, buttons[2].tankBackRight);
         #endregion
 
         #region Player 4 Controls
@@ -723,8 +766,8 @@ public class Controls
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick4));
 
         //Set Tank Drive Axes
-        axes[3].tankForward = InputControl.setAxis("Joystick 4 Axis 9", buttons[3].tankBackLeft, buttons[3].tankFrontLeft);
-        axes[3].tankLeft = InputControl.setAxis("Joystick 4 Axis 10", buttons[3].tankFrontRight, buttons[3].tankBackRight);
+        axes[3].tankLeftAxis = InputControl.setAxis("Joystick 4 Axis 9", buttons[3].tankBackLeft, buttons[3].tankFrontLeft);
+        axes[3].tankRightAxis = InputControl.setAxis("Joystick 4 Axis 10", buttons[3].tankFrontRight, buttons[3].tankBackRight);
         #endregion
 
         #region Player 5 Controls
@@ -757,8 +800,8 @@ public class Controls
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick5));
 
         //Set Tank Drive Axes
-        axes[4].tankForward = InputControl.setAxis("Joystick 5 Axis 9", buttons[4].tankBackLeft, buttons[4].tankFrontLeft);
-        axes[4].tankLeft = InputControl.setAxis("Joystick 5 Axis 10", buttons[4].tankFrontRight, buttons[4].tankBackRight);
+        axes[4].tankLeftAxis = InputControl.setAxis("Joystick 5 Axis 9", buttons[4].tankBackLeft, buttons[4].tankFrontLeft);
+        axes[4].tankRightAxis = InputControl.setAxis("Joystick 5 Axis 10", buttons[4].tankFrontRight, buttons[4].tankBackRight);
         #endregion
 
         #region Player 6 Controls
@@ -791,8 +834,8 @@ public class Controls
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick6));
 
         //Set Tank Drive Axes
-        axes[5].tankForward = InputControl.setAxis("Joystick 6 Axis 9", buttons[5].tankBackLeft, buttons[5].tankFrontLeft);
-        axes[5].tankLeft = InputControl.setAxis("Joystick 6 Axis 10", buttons[5].tankFrontRight, buttons[5].tankBackRight);
+        axes[5].tankLeftAxis = InputControl.setAxis("Joystick 6 Axis 9", buttons[5].tankBackLeft, buttons[5].tankFrontLeft);
+        axes[5].tankRightAxis = InputControl.setAxis("Joystick 6 Axis 10", buttons[5].tankFrontRight, buttons[5].tankBackRight);
         #endregion
 
         IsTankDrive = true;
@@ -839,8 +882,8 @@ public class Controls
         buttons[0].spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
 
         //Set Tank Drive Axes
-        axes[0].tankForward = InputControl.setAxis("Joystick 1 Axis 9", buttons[0].tankBackLeft, buttons[0].tankFrontLeft);
-        axes[0].tankLeft = InputControl.setAxis("Joystick 1 Axis 10", buttons[0].tankFrontRight, buttons[0].tankBackRight);
+        axes[0].tankLeftAxis = InputControl.setAxis("Joystick 1 Axis 9", buttons[0].tankBackLeft, buttons[0].tankFrontLeft);
+        axes[0].tankRightAxis = InputControl.setAxis("Joystick 1 Axis 10", buttons[0].tankFrontRight, buttons[0].tankBackRight);
         #endregion
 
         #region Player 2 Controls
@@ -873,8 +916,8 @@ public class Controls
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick2));
 
         //Set Tank Drive Axes
-        axes[1].tankForward = InputControl.setAxis("Joystick 2 Axis 9", buttons[1].tankBackLeft, buttons[1].tankFrontLeft);
-        axes[1].tankLeft = InputControl.setAxis("Joystick 2 Axis 10", buttons[1].tankFrontRight, buttons[1].tankBackRight);
+        axes[1].tankLeftAxis = InputControl.setAxis("Joystick 2 Axis 9", buttons[1].tankBackLeft, buttons[1].tankFrontLeft);
+        axes[1].tankRightAxis = InputControl.setAxis("Joystick 2 Axis 10", buttons[1].tankFrontRight, buttons[1].tankBackRight);
         #endregion
 
         #region Player 3 Controls
@@ -907,8 +950,8 @@ public class Controls
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick3));
 
         //Set Tank Drive Axes
-        axes[2].tankForward = InputControl.setAxis("Joystick 3 Axis 9", buttons[2].tankBackLeft, buttons[2].tankFrontLeft);
-        axes[2].tankLeft = InputControl.setAxis("Joystick 3 Axis 10", buttons[2].tankFrontRight, buttons[2].tankBackRight);
+        axes[2].tankLeftAxis = InputControl.setAxis("Joystick 3 Axis 9", buttons[2].tankBackLeft, buttons[2].tankFrontLeft);
+        axes[2].tankRightAxis = InputControl.setAxis("Joystick 3 Axis 10", buttons[2].tankFrontRight, buttons[2].tankBackRight);
         #endregion
 
         #region Player 4 Controls
@@ -941,8 +984,8 @@ public class Controls
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick4));
 
         //Set Tank Drive Axes
-        axes[3].tankForward = InputControl.setAxis("Joystick 4 Axis 9", buttons[3].tankBackLeft, buttons[3].tankFrontLeft);
-        axes[3].tankLeft = InputControl.setAxis("Joystick 4 Axis 10", buttons[3].tankFrontRight, buttons[3].tankBackRight);
+        axes[3].tankLeftAxis = InputControl.setAxis("Joystick 4 Axis 9", buttons[3].tankBackLeft, buttons[3].tankFrontLeft);
+        axes[3].tankRightAxis = InputControl.setAxis("Joystick 4 Axis 10", buttons[3].tankFrontRight, buttons[3].tankBackRight);
         #endregion
 
         #region Player 5 Controls
@@ -975,8 +1018,8 @@ public class Controls
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick5));
 
         //Set Tank Drive Axes
-        axes[4].tankForward = InputControl.setAxis("Joystick 5 Axis 9", buttons[4].tankBackLeft, buttons[4].tankFrontLeft);
-        axes[4].tankLeft = InputControl.setAxis("Joystick 5 Axis 10", buttons[4].tankFrontRight, buttons[4].tankBackRight);
+        axes[4].tankLeftAxis = InputControl.setAxis("Joystick 5 Axis 9", buttons[4].tankBackLeft, buttons[4].tankFrontLeft);
+        axes[4].tankRightAxis = InputControl.setAxis("Joystick 5 Axis 10", buttons[4].tankFrontRight, buttons[4].tankBackRight);
         #endregion
 
         #region Player 6 Controls
@@ -1009,8 +1052,8 @@ public class Controls
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", new JoystickInput(JoystickButton.Button5, Joystick.Joystick6));
 
         //Set Tank Drive Axes
-        axes[5].tankForward = InputControl.setAxis("Joystick 6 Axis 9", buttons[5].tankBackLeft, buttons[5].tankFrontLeft);
-        axes[5].tankLeft = InputControl.setAxis("Joystick 6 Axis 10", buttons[5].tankFrontRight, buttons[5].tankBackRight);
+        axes[5].tankLeftAxis = InputControl.setAxis("Joystick 6 Axis 9", buttons[5].tankBackLeft, buttons[5].tankFrontLeft);
+        axes[5].tankRightAxis = InputControl.setAxis("Joystick 6 Axis 10", buttons[5].tankFrontRight, buttons[5].tankBackRight);
         #endregion
 
         IsTankDrive = true;
@@ -1027,13 +1070,13 @@ public class Controls
     {
 
         #region Remove Primary Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[0].forward);
         InputControl.removeKey(buttons[0].backward);
         InputControl.removeKey(buttons[0].left);
         InputControl.removeKey(buttons[0].right);
 
-        //Remaining PWM controls
+        //Remove remaining PWM controls
         InputControl.removeKey(buttons[0].pwm2Plus);
         InputControl.removeKey(buttons[0].pwm2Neg);
         InputControl.removeKey(buttons[0].pwm3Plus);
@@ -1045,7 +1088,7 @@ public class Controls
         InputControl.removeKey(buttons[0].pwm6Plus);
         InputControl.removeKey(buttons[0].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[0].resetRobot);
         InputControl.removeKey(buttons[0].cameraToggle);
         InputControl.removeKey(buttons[0].pickupPrimary);
@@ -1055,19 +1098,19 @@ public class Controls
         InputControl.removeKey(buttons[0].releaseSecondary);
         InputControl.removeKey(buttons[0].spawnSecondary);
 
-        //Set axes
+        //Remove axes
         InputControl.removeAxis(axes[0].horizontal);
         InputControl.removeAxis(axes[0].vertical);
         #endregion
 
         #region Player 2 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[1].forward);
         InputControl.removeKey(buttons[1].backward);
         InputControl.removeKey(buttons[1].left);
         InputControl.removeKey(buttons[1].right);
 
-        //Remaining PWM controls
+        //Remove remaining PWM controls
         InputControl.removeKey(buttons[1].pwm2Plus);
         InputControl.removeKey(buttons[1].pwm2Neg);
         InputControl.removeKey(buttons[1].pwm3Plus);
@@ -1079,7 +1122,7 @@ public class Controls
         InputControl.removeKey(buttons[1].pwm6Plus);
         InputControl.removeKey(buttons[1].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[1].resetRobot);
         InputControl.removeKey(buttons[1].cameraToggle);
         InputControl.removeKey(buttons[1].pickupPrimary);
@@ -1088,16 +1131,20 @@ public class Controls
         InputControl.removeKey(buttons[1].pickupSecondary);
         InputControl.removeKey(buttons[1].releaseSecondary);
         InputControl.removeKey(buttons[1].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[1].horizontal);
+        InputControl.removeAxis(axes[1].vertical);
         #endregion
 
         #region Player 3 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[2].forward);
         InputControl.removeKey(buttons[2].backward);
         InputControl.removeKey(buttons[2].left);
         InputControl.removeKey(buttons[2].right);
 
-        //Remaining PWM controls
+        //Rmove remaining PWM controls
         InputControl.removeKey(buttons[2].pwm2Plus);
         InputControl.removeKey(buttons[2].pwm2Neg);
         InputControl.removeKey(buttons[2].pwm3Plus);
@@ -1109,7 +1156,7 @@ public class Controls
         InputControl.removeKey(buttons[2].pwm6Plus);
         InputControl.removeKey(buttons[2].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[2].resetRobot);
         InputControl.removeKey(buttons[2].cameraToggle);
         InputControl.removeKey(buttons[2].pickupPrimary);
@@ -1118,16 +1165,20 @@ public class Controls
         InputControl.removeKey(buttons[2].pickupSecondary);
         InputControl.removeKey(buttons[2].releaseSecondary);
         InputControl.removeKey(buttons[2].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[2].horizontal);
+        InputControl.removeAxis(axes[2].vertical);
         #endregion
 
         #region Player4 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[3].forward);
         InputControl.removeKey(buttons[3].backward);
         InputControl.removeKey(buttons[3].left);
         InputControl.removeKey(buttons[3].right);
 
-        //Remaining PWM controls
+        //Rmove remaining PWM controls
         InputControl.removeKey(buttons[3].pwm2Plus);
         InputControl.removeKey(buttons[3].pwm2Neg);
         InputControl.removeKey(buttons[3].pwm3Plus);
@@ -1139,7 +1190,7 @@ public class Controls
         InputControl.removeKey(buttons[3].pwm6Plus);
         InputControl.removeKey(buttons[3].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[3].resetRobot);
         InputControl.removeKey(buttons[3].cameraToggle);
         InputControl.removeKey(buttons[3].pickupPrimary);
@@ -1148,16 +1199,20 @@ public class Controls
         InputControl.removeKey(buttons[3].pickupSecondary);
         InputControl.removeKey(buttons[3].releaseSecondary);
         InputControl.removeKey(buttons[3].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[3].horizontal);
+        InputControl.removeAxis(axes[3].vertical);
         #endregion
 
         #region Player 5 Controls
-        //Basic robot controls
+        //Remove bBasic robot controls
         InputControl.removeKey(buttons[4].forward);
         InputControl.removeKey(buttons[4].backward);
         InputControl.removeKey(buttons[4].left);
         InputControl.removeKey(buttons[4].right);
 
-        //Remaining PWM controls
+        //Rmove remaining PWM controls
         InputControl.removeKey(buttons[4].pwm2Plus);
         InputControl.removeKey(buttons[4].pwm2Neg);
         InputControl.removeKey(buttons[4].pwm3Plus);
@@ -1169,7 +1224,7 @@ public class Controls
         InputControl.removeKey(buttons[4].pwm6Plus);
         InputControl.removeKey(buttons[4].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[4].resetRobot);
         InputControl.removeKey(buttons[4].cameraToggle);
         InputControl.removeKey(buttons[4].pickupPrimary);
@@ -1178,16 +1233,20 @@ public class Controls
         InputControl.removeKey(buttons[4].pickupSecondary);
         InputControl.removeKey(buttons[4].releaseSecondary);
         InputControl.removeKey(buttons[4].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[4].horizontal);
+        InputControl.removeAxis(axes[4].vertical);
         #endregion
 
         #region Player 6 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[5].forward);
         InputControl.removeKey(buttons[5].backward);
         InputControl.removeKey(buttons[5].left);
         InputControl.removeKey(buttons[5].right);
 
-        //Remaining PWM controls
+        //Rmove remaining PWM controls
         InputControl.removeKey(buttons[5].pwm2Plus);
         InputControl.removeKey(buttons[5].pwm2Neg);
         InputControl.removeKey(buttons[5].pwm3Plus);
@@ -1199,7 +1258,7 @@ public class Controls
         InputControl.removeKey(buttons[5].pwm6Plus);
         InputControl.removeKey(buttons[5].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[5].resetRobot);
         InputControl.removeKey(buttons[5].cameraToggle);
         InputControl.removeKey(buttons[5].pickupPrimary);
@@ -1208,6 +1267,10 @@ public class Controls
         InputControl.removeKey(buttons[5].pickupSecondary);
         InputControl.removeKey(buttons[5].releaseSecondary);
         InputControl.removeKey(buttons[5].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[5].horizontal);
+        InputControl.removeAxis(axes[5].vertical);
         #endregion
     }
 
@@ -1217,13 +1280,13 @@ public class Controls
     public static void RemoveTankKeys()
     {
         #region Remove Primary Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[0].tankFrontLeft);
         InputControl.removeKey(buttons[0].tankFrontRight);
         InputControl.removeKey(buttons[0].tankBackLeft);
         InputControl.removeKey(buttons[0].tankBackRight);
 
-        //Remaining PWM controls
+        //Remove remaining PWM controls
         InputControl.removeKey(buttons[0].pwm2Plus);
         InputControl.removeKey(buttons[0].pwm2Neg);
         InputControl.removeKey(buttons[0].pwm3Plus);
@@ -1235,7 +1298,7 @@ public class Controls
         InputControl.removeKey(buttons[0].pwm6Plus);
         InputControl.removeKey(buttons[0].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[0].resetRobot);
         InputControl.removeKey(buttons[0].cameraToggle);
         InputControl.removeKey(buttons[0].pickupPrimary);
@@ -1245,16 +1308,19 @@ public class Controls
         InputControl.removeKey(buttons[0].releaseSecondary);
         InputControl.removeKey(buttons[0].spawnSecondary);
 
+        //Remove axes
+        InputControl.removeAxis(axes[0].tankLeftAxis);
+        InputControl.removeAxis(axes[0].tankRightAxis);
         #endregion
 
         #region Player 2 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[1].tankFrontLeft);
         InputControl.removeKey(buttons[1].tankFrontRight);
         InputControl.removeKey(buttons[1].tankBackLeft);
         InputControl.removeKey(buttons[1].tankBackRight);
 
-        //Remaining PWM controls
+        //Remove remaining PWM controls
         InputControl.removeKey(buttons[1].pwm2Plus);
         InputControl.removeKey(buttons[1].pwm2Neg);
         InputControl.removeKey(buttons[1].pwm3Plus);
@@ -1266,7 +1332,7 @@ public class Controls
         InputControl.removeKey(buttons[1].pwm6Plus);
         InputControl.removeKey(buttons[1].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[1].resetRobot);
         InputControl.removeKey(buttons[1].cameraToggle);
         InputControl.removeKey(buttons[1].pickupPrimary);
@@ -1275,16 +1341,20 @@ public class Controls
         InputControl.removeKey(buttons[1].pickupSecondary);
         InputControl.removeKey(buttons[1].releaseSecondary);
         InputControl.removeKey(buttons[1].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[1].tankLeftAxis);
+        InputControl.removeAxis(axes[1].tankRightAxis);
         #endregion
 
         #region Player 3 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[2].tankFrontLeft);
         InputControl.removeKey(buttons[2].tankFrontRight);
         InputControl.removeKey(buttons[2].tankBackLeft);
         InputControl.removeKey(buttons[2].tankBackRight);
 
-        //Remaining PWM controls
+        //Rmove remaining PWM controls
         InputControl.removeKey(buttons[2].pwm2Plus);
         InputControl.removeKey(buttons[2].pwm2Neg);
         InputControl.removeKey(buttons[2].pwm3Plus);
@@ -1296,7 +1366,7 @@ public class Controls
         InputControl.removeKey(buttons[2].pwm6Plus);
         InputControl.removeKey(buttons[2].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[2].resetRobot);
         InputControl.removeKey(buttons[2].cameraToggle);
         InputControl.removeKey(buttons[2].pickupPrimary);
@@ -1305,16 +1375,20 @@ public class Controls
         InputControl.removeKey(buttons[2].pickupSecondary);
         InputControl.removeKey(buttons[2].releaseSecondary);
         InputControl.removeKey(buttons[2].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[2].tankLeftAxis);
+        InputControl.removeAxis(axes[2].tankRightAxis);
         #endregion
 
         #region Player4 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[3].tankFrontLeft);
         InputControl.removeKey(buttons[3].tankFrontRight);
         InputControl.removeKey(buttons[3].tankBackLeft);
         InputControl.removeKey(buttons[3].tankBackRight);
 
-        //Remaining PWM controls
+        //Rmove remaining PWM controls
         InputControl.removeKey(buttons[3].pwm2Plus);
         InputControl.removeKey(buttons[3].pwm2Neg);
         InputControl.removeKey(buttons[3].pwm3Plus);
@@ -1326,7 +1400,7 @@ public class Controls
         InputControl.removeKey(buttons[3].pwm6Plus);
         InputControl.removeKey(buttons[3].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[3].resetRobot);
         InputControl.removeKey(buttons[3].cameraToggle);
         InputControl.removeKey(buttons[3].pickupPrimary);
@@ -1335,16 +1409,20 @@ public class Controls
         InputControl.removeKey(buttons[3].pickupSecondary);
         InputControl.removeKey(buttons[3].releaseSecondary);
         InputControl.removeKey(buttons[3].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[3].tankLeftAxis);
+        InputControl.removeAxis(axes[3].tankRightAxis);
         #endregion
 
         #region Player 5 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[4].tankFrontLeft);
         InputControl.removeKey(buttons[4].tankFrontRight);
         InputControl.removeKey(buttons[4].tankBackLeft);
         InputControl.removeKey(buttons[4].tankBackRight);
 
-        //Remaining PWM controls
+        //Remove remaining PWM controls
         InputControl.removeKey(buttons[4].pwm2Plus);
         InputControl.removeKey(buttons[4].pwm2Neg);
         InputControl.removeKey(buttons[4].pwm3Plus);
@@ -1356,7 +1434,7 @@ public class Controls
         InputControl.removeKey(buttons[4].pwm6Plus);
         InputControl.removeKey(buttons[4].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[4].resetRobot);
         InputControl.removeKey(buttons[4].cameraToggle);
         InputControl.removeKey(buttons[4].pickupPrimary);
@@ -1365,16 +1443,20 @@ public class Controls
         InputControl.removeKey(buttons[4].pickupSecondary);
         InputControl.removeKey(buttons[4].releaseSecondary);
         InputControl.removeKey(buttons[4].spawnSecondary);
+
+        //Remove axes
+        InputControl.removeAxis(axes[4].tankLeftAxis);
+        InputControl.removeAxis(axes[4].tankRightAxis);
         #endregion
 
         #region Player 6 Controls
-        //Basic robot controls
+        //Remove basic robot controls
         InputControl.removeKey(buttons[5].tankFrontLeft);
         InputControl.removeKey(buttons[5].tankFrontRight);
         InputControl.removeKey(buttons[5].tankBackLeft);
         InputControl.removeKey(buttons[5].tankBackRight);
 
-        //Remaining PWM controls
+        //Remove remaining PWM controls
         InputControl.removeKey(buttons[5].pwm2Plus);
         InputControl.removeKey(buttons[5].pwm2Neg);
         InputControl.removeKey(buttons[5].pwm3Plus);
@@ -1386,7 +1468,7 @@ public class Controls
         InputControl.removeKey(buttons[5].pwm6Plus);
         InputControl.removeKey(buttons[5].pwm6Neg);
 
-        //Other controls
+        //Remove other controls
         InputControl.removeKey(buttons[5].resetRobot);
         InputControl.removeKey(buttons[5].cameraToggle);
         InputControl.removeKey(buttons[5].pickupPrimary);
@@ -1395,8 +1477,11 @@ public class Controls
         InputControl.removeKey(buttons[5].pickupSecondary);
         InputControl.removeKey(buttons[5].releaseSecondary);
         InputControl.removeKey(buttons[5].spawnSecondary);
-        #endregion
 
+        //Remove axes
+        InputControl.removeAxis(axes[5].tankLeftAxis);
+        InputControl.removeAxis(axes[5].tankRightAxis);
+        #endregion
     }
 
     /// <summary>
@@ -1433,7 +1518,6 @@ public class Controls
     }
 }
 #region Old Controls: 2016 and Older
-
 //public static void ResetDefaults()
 //{
 //    ControlKey[(int)Control.Forward] = KeyCode.UpArrow;

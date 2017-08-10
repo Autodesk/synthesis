@@ -36,7 +36,7 @@ public class TankMode : MonoBehaviour
 
         foreach (KeyButton keyButton in keyButtons)
         {
-            keyButton.updateText();
+            keyButton.UpdateText();
         }
     }
 }
