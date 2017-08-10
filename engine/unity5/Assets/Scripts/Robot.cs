@@ -116,11 +116,15 @@ public class Robot : MonoBehaviour {
     /// <returns></returns>
     public bool InitializeRobot(string directory, MainState source)
     {
-        //Deletes all nodes if any exist
+        //Deletes all nodes if any exist, take the old node transforms out from the robot object
         int childCount = transform.childCount;
-        for (int i = 0; i < childCount; ++i)
-            Destroy(transform.GetChild(i).gameObject);
-
+        for (int i = childCount - 1; i >= 0; i--)
+        {
+            Transform child = transform.GetChild(i);
+            //If not do this the game object is destroyed but the parent-child transform relationship remains!
+            child.parent = null;
+            Destroy(child.gameObject);
+        }
         mainState = source;
         transform.position = robotStartPosition;
 
