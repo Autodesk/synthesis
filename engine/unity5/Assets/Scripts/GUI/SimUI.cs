@@ -190,7 +190,7 @@ public class SimUI : MonoBehaviour
     {
         RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
         rc.DetachCameras(main.activeRobot);
-       // string directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\";
+        // string directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\";
         main.ChangeRobot(directory);
     }
 
@@ -270,7 +270,7 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         CloseOrientWindow();
-        main.IsResetting = false;   
+        main.IsResetting = false;
 
         dpm.EndProcesses();
         toolkit.EndProcesses();
@@ -474,10 +474,11 @@ public class SimUI : MonoBehaviour
         if (panel.activeSelf == true)
         {
             panel.SetActive(false);
-        } else
+        }
+        else
         {
             panel.SetActive(true);
-        } 
+        }
     }
 
     public void PartToggleWindow(string Window)
