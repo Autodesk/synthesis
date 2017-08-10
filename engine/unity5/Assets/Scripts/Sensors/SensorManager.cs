@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using BulletSharp;
 using BulletUnity;
+using Assets.Scripts.FSM;
 
 class SensorManager : MonoBehaviour
 {
@@ -10,9 +11,11 @@ class SensorManager : MonoBehaviour
     public GameObject BeamBreaker;
     public GameObject Gyro;
     public GameObject OutputPanel;
+    public MainState main;
 
     //Lists of sensors
     private List<GameObject> activeSensorList = new List<GameObject>();
+    private List<GameObject> inactiveSensorList = new List<GameObject>();
     private List<GameObject> sensorList = new List<GameObject>();
 
     public bool SelectingNode { get; set; }
@@ -30,6 +33,10 @@ class SensorManager : MonoBehaviour
 
     private void Update()
     {
+        if(main == null)
+        {
+            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+        }
         //Handle the state where the user is selecting a node for attachment or selecting a sensor to configure
         if (SelectingNode)
         {
@@ -54,6 +61,7 @@ class SensorManager : MonoBehaviour
         ultrasonic.transform.localPosition = position;
         ultrasonic.transform.localRotation = Quaternion.Euler(rotation);
         ultrasonic.name = "Ultrasonic_" + sensorList.Count;
+        ultrasonic.GetComponent<SensorBase>().Robot = main.activeRobot;
         sensorList.Add(ultrasonic);
         activeSensorList.Add(ultrasonic);
         return ultrasonic.GetComponent<UltraSensor>();
@@ -73,6 +81,7 @@ class SensorManager : MonoBehaviour
         beamBreaker.transform.localPosition = position;
         beamBreaker.transform.localRotation = Quaternion.Euler(rotation);
         beamBreaker.name = "BeamBreaker_" + sensorList.Count;
+        beamBreaker.GetComponent<SensorBase>().Robot = main.activeRobot;
         sensorList.Add(beamBreaker);
         activeSensorList.Add(beamBreaker);
         BeamBreaker sensor = beamBreaker.GetComponent<BeamBreaker>();
@@ -93,7 +102,7 @@ class SensorManager : MonoBehaviour
         gyro.transform.localPosition = position;
         gyro.transform.localRotation = Quaternion.Euler(rotation);
         gyro.name = "Gyro_" + sensorList.Count;
-
+        gyro.GetComponent<SensorBase>().Robot = main.activeRobot;
         sensorList.Add(gyro);
         activeSensorList.Add(gyro);
 
@@ -205,5 +214,64 @@ class SensorManager : MonoBehaviour
     public void RemoveSensor(GameObject sensor)
     {
         activeSensorList.Remove(sensor);
+        inactiveSensorList.Add(sensor);
+    }
+
+    /// <summary>
+    /// Get a list of sensors attached to the given robot
+    /// </summary>
+    /// <param name="robot"></param> The robot where sensors are attached to
+    /// <returns></returns> A list of sensors attached to the robot
+    public List<GameObject> GetSensorsFromRobot(Robot robot)
+    {
+        List<GameObject> sensorsOnRobot = new List<GameObject>();
+        foreach(GameObject sensor in activeSensorList)
+        {
+            if (sensor.GetComponent<SensorBase>().Robot.Equals(robot))
+            {
+                sensorsOnRobot.Add(sensor);
+            }
+        }
+        return sensorsOnRobot;
+    }
+
+
+    /// <summary>
+    /// Remove all sensors attached to the given robot and destroy them, reset all lists
+    /// </summary>
+    /// <param name="robot"></param> The robot where sensors are attached to
+    public void RemoveSensorsFromRobot(Robot robot)
+    {
+        List<GameObject> sensorsOnRobot = GetSensorsFromRobot(robot);
+        foreach(GameObject removingSensors in sensorsOnRobot)
+        {
+            if (activeSensorList.Contains(removingSensors))
+            {
+                activeSensorList.Remove(removingSensors);
+                removingSensors.transform.parent = null;
+                Destroy(removingSensors.gameObject);
+                inactiveSensorList.Add(removingSensors);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Clear all sensor lists (sensor, active, inactive). Used when a robot is initialized. Hopefully no one use this in multiplayer :)
+    /// </summary>
+    public void ResetSensorLists()
+    {
+        activeSensorList.Clear();
+        sensorList.Clear();
+        inactiveSensorList.Clear();
+    }
+
+    public List<GameObject> GetActiveSensors()
+    {
+        return activeSensorList;
+    }
+
+    public List<GameObject> GetInactiveSensors()
+    {
+        return inactiveSensorList;
     }
 }
