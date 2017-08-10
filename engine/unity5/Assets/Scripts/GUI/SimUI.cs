@@ -173,8 +173,8 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
             PlayerPrefs.Save();
-            RobotCamera rc = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>();
-            rc.RemoveCameras();
+            RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+            rc.DetachCameras(main.activeRobot);
             main.ChangeRobot(directory);
         }
         else
