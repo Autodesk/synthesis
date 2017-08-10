@@ -60,9 +60,14 @@ public class SettingsMode : MonoBehaviour
         }
         else
         {
-            Controls.ResetArcadeDrive();
+            //Controls.ResetArcadeDrive();
             Controls.Save();
         }
+    }
+
+    public void OnPlayerOne()
+    {
+        
     }
 
     /// <summary>
@@ -115,7 +120,7 @@ public class SettingsMode : MonoBehaviour
 
         foreach (KeyButton keyButton in keyButtons)
         {
-            keyButton.updateText();
+            keyButton.UpdateText();
         }
     }
 }

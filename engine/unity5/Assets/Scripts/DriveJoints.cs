@@ -148,10 +148,10 @@ public class DriveJoints
             //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
 
             pwm[0] +=
-               (InputControl.GetAxis(Controls.axes[controlIndex].tankForward) * SPEED_ARROW_PWM);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxis) * SPEED_ARROW_PWM);
 
             pwm[1] +=
-               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeft) * SPEED_ARROW_PWM);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxis) * SPEED_ARROW_PWM);
 
             pwm[2] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :

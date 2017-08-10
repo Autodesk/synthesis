@@ -259,6 +259,12 @@ public static class InputControl
         return setKey(name, argToInput(primary), argToInput(secondary));
     }
 
+    //==============================================================================
+    public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary)
+    {
+        return setKey(name, controlIndex, argToInput(primary), argToInput(secondary));
+    }
+
     /// <summary>
     /// Create new <see cref="KeyMapping"/> with specified name and inputs.
     /// </summary>
@@ -1380,7 +1386,8 @@ public static class InputControl
         return outKey;
     }
 
-    public static KeyMapping setKey(string name, int controlIndex = 0, CustomInput primary = null, CustomInput secondary = null, CustomInput third = null)
+    //=======================================================================================================
+    public static KeyMapping setKey(string name, int controlIndex, CustomInput primary = null, CustomInput secondary = null, CustomInput third = null)
     {
         KeyMapping outKey = null;
 
@@ -1394,16 +1401,12 @@ public static class InputControl
         {
             outKey = new KeyMapping(name, primary, secondary, third);
 
-            //switch (controlIndex)
-            //{
-            //    case 0:
-            //        mKeysList.Add(outKey);
-            //        break;
-            //    case 1:
-            //        mKeysListPlayer1.Add(outKey);
-            //        break;
-
-            //}
+            switch (controlIndex)
+            {
+                case 0:
+                    mKeysListPlayer1.Add(outKey);
+                    break;
+            }
 
             mKeysList.Add(outKey);
             mKeysMap.Add(name, outKey);
@@ -1472,10 +1475,10 @@ public static class InputControl
         return mKeysList.AsReadOnly();
     }
 
-    //public static ReadOnlyCollection<KeyMapping> getPlayer1Keys()
-    //{
-    //    return mKeysListPlayer1.AsReadOnly();
-    //}
+    public static ReadOnlyCollection<KeyMapping> getPlayerOneKeys()
+    {
+        return mKeysListPlayer1.AsReadOnly();
+    }
     #endregion
 
     #region Setup axes

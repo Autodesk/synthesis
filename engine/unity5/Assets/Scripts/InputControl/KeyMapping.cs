@@ -4,6 +4,7 @@
 public class KeyMapping
 {
     private string      mName;
+    private int         mControlIndex;
     private CustomInput mPrimaryInput;
     private CustomInput mSecondaryInput;
     private CustomInput mThirdInput;

@@ -5,7 +5,7 @@ public class KeyButton : MonoBehaviour
 {
     public static KeyButton selectedButton = null;
     public static bool ignoreMouseMovement = true;
-    public static bool useKeyModifiers = true;
+    public static bool useKeyModifiers = false;
 
     public KeyMapping keyMapping;
     public int keyIndex;
@@ -39,17 +39,17 @@ public class KeyButton : MonoBehaviour
                     ((KeyboardInput)currentInput).key == KeyCode.Escape
                    )
                 {
-                    setInput(new KeyboardInput());
+                    SetInput(new KeyboardInput());
                 }
                 else
                 {
-                    setInput(currentInput);
+                    SetInput(currentInput);
                 }
             }
         }
     }
 
-    public void updateText()
+    public void UpdateText()
     {
         if (mKeyText == null)
         {
@@ -72,7 +72,7 @@ public class KeyButton : MonoBehaviour
     {
         if (selectedButton != null)
         {
-            selectedButton.updateText();
+            selectedButton.UpdateText();
         }
 
         selectedButton = this;
@@ -85,7 +85,7 @@ public class KeyButton : MonoBehaviour
         mKeyText.text = "...";
     }
 
-    private void setInput(CustomInput input)
+    private void SetInput(CustomInput input)
     {
         switch (keyIndex)
         {
@@ -97,7 +97,7 @@ public class KeyButton : MonoBehaviour
                 break;
         }
 
-        updateText();
+        UpdateText();
 
         selectedButton = null;
     }

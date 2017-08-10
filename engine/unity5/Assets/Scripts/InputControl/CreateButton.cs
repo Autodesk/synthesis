@@ -65,7 +65,7 @@ public class CreateButton : MonoBehaviour
                 buttonScript.keyMapping = key;
                 buttonScript.keyIndex = i;
 
-                buttonScript.updateText();
+                buttonScript.UpdateText();
             }
             #endregion
 
@@ -142,9 +142,11 @@ public class CreateButton : MonoBehaviour
                 buttonScript.keyMapping = key;
                 buttonScript.keyIndex = i;
 
-                buttonScript.updateText();
+                buttonScript.UpdateText();
             }
             #endregion
+
+            Controls.Save();
 
             contentHeight += 28;
         }
@@ -158,27 +160,19 @@ public class CreateButton : MonoBehaviour
         rectTransform.offsetMin = new Vector2(0, -contentHeight);
     }
 
-    //public void Player1()
+    //public void PlayerOne()
     //{
     //    namesTransform = transform.Find("Names");
     //    keysTransform = transform.Find("Keys");
-    //    foreach (Transform child in namesTransform)
-    //    {
-    //        Destroy(child.gameObject);
-    //    }
-    //    foreach (Transform child in keysTransform)
-    //    {
-    //        Destroy(child.gameObject);
-    //    }
 
     //    float maxNameWidth = 0;
     //    float contentHeight = 4;
 
-    //    ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayer1Keys();
+    //    ReadOnlyCollection<KeyMapping> playerOneKeys = InputControl.getPlayerOneKeys();
 
-    //    foreach (KeyMapping key in keys)
+    //    foreach (KeyMapping key in playerOneKeys)
     //    {
-    //        //Key Text vs Key Buttons
+    //        //******************************Key Text vs Key Buttons***********************************
     //        //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
     //        //Key Buttons: The buttons in the second and third column of the Input Manager menu
     //        #region Key text
@@ -219,9 +213,11 @@ public class CreateButton : MonoBehaviour
     //            buttonScript.keyMapping = key;
     //            buttonScript.keyIndex = i;
 
-    //            buttonScript.updateText();
+    //            buttonScript.UpdateText();
     //        }
     //        #endregion
+
+    //        Controls.Save();
 
     //        contentHeight += 28;
     //    }
