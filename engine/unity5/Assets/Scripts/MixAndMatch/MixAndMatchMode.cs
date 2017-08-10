@@ -165,7 +165,16 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
         PlayerPrefs.Save();
         isMixAndMatchMode = true;
-        SceneManager.LoadScene("Scene");
+        SceneManager.LoadScene("MixAndMatch");
+    }
+
+    public void ChangeMaMRobot()
+    {
+            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+            PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
+            PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
+        GameObject stateMachine = GameObject.Find("StateMachine");
+        stateMachine.GetComponent<SimUI>().MaMChangeRobot(mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
     }
 
     #region Presets
