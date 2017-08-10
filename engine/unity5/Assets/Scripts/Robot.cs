@@ -12,7 +12,8 @@ using Assets.Scripts.BUExtensions;
 /// To be attached to all robot parent objects.
 /// Handles all robot-specific interaction such as driving joints, resetting, and orienting robot.
 /// </summary>
-public class Robot : MonoBehaviour {
+public class Robot : MonoBehaviour
+{
 
     private bool isInitialized;
 
@@ -48,20 +49,22 @@ public class Robot : MonoBehaviour {
 
     public string RobotName;
 
-    private RobotCamera robotCamera;
+    private RobotCameraManager robotCameraManager;
 
     private GameObject manipulatorObject;
     private RigidNode_Base manipulatorNode;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
     }
 
     /// <summary>
     /// Called once per frame to ensure all rigid bodie components are activated
     /// </summary>
-    void Update() {
-        
+    void Update()
+    {
+
         BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
 
         if (!rigidBody.GetCollisionObject().IsActive)
@@ -88,7 +91,7 @@ public class Robot : MonoBehaviour {
                 EndReset();
             }
         }
-        
+
     }
     /// <summary>
     /// Called once every physics step (framerate independent) to drive motor joints as well as handle the resetting of the robot
@@ -121,6 +124,7 @@ public class Robot : MonoBehaviour {
         for (int i = childCount - 1; i >= 0; i--)
         {
             Transform child = transform.GetChild(i);
+
             //If not do this the game object is destroyed but the parent-child transform relationship remains!
             child.parent = null;
             Destroy(child.gameObject);
@@ -168,14 +172,28 @@ public class Robot : MonoBehaviour {
 
         isInitialized = true;
 
-        robotCamera = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>();
-        //Attached to the main frame and face the front
-        robotCamera.AddCamera(transform.GetChild(0).transform);
-        //Attached to the first node and face the front
-        if (transform.childCount > 1)
-            robotCamera.AddCamera(transform.GetChild(1).transform);
-        ////Attached to main frame and face the back
-        robotCamera.AddCamera(transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
+        bool hasRobotCamera = false;
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+
+        foreach (GameObject robotCamera in robotCameraManager.GetRobotCameraList())
+        {
+            if (robotCamera.GetComponent<RobotCamera>().robot.Equals(this))
+            {
+                robotCamera.GetComponent<RobotCamera>().RecoverConfiguration();
+                hasRobotCamera = true;
+                Debug.Log(hasRobotCamera);
+            }
+        }
+        if (!hasRobotCamera)
+        {
+            //Attached to the main frame and face the front
+            robotCameraManager.AddCamera(this, transform.GetChild(0).transform);
+            //Attached to the first node and face the front
+            if (transform.childCount > 1)
+                robotCameraManager.AddCamera(this, transform.GetChild(1).transform);
+            ////Attached to main frame and face the back
+            robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
+        }
 
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         //sensorManager.AddBeamBreaker(transform.GetChild(0).gameObject, new Vector3(0, 0, 1), new Vector3(0, 90, 0), 1);
@@ -277,7 +295,7 @@ public class Robot : MonoBehaviour {
 
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
-        
+
 
     }
 
