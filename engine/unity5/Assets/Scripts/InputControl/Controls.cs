@@ -26,7 +26,7 @@ public class Controls
     public static bool IsTankDrive;
     public static bool CheckForKeyRemoval;
     public static bool TankDriveEnabled = false;
-    public static bool clicked;
+    public static bool Clicked;
 
     /// <summary>
     /// <see cref="Buttons"/> is a set of user defined buttons.
@@ -102,6 +102,9 @@ public class Controls
         SwitchControls();
     }
 
+    /// <summary>
+    /// Allows for initialization for tank drive or arcade drive.
+    /// </summary>
     public static void SwitchControls()
     {
         if (IsTankDrive)
@@ -180,10 +183,13 @@ public class Controls
     }
 
     /// <summary>
-    /// Resets to default controls.
+    /// Sets controls to Arcade Drive.
     /// </summary>
     public static void ArcadeDrive()
     {
+        //If there are tank drive keys that need to be removed
+        //Recall at initialization, tank drive has not been turned 
+        //so there are no keys that need to be removed.
         if (CheckForKeyRemoval)
         {
             RemoveTankKeys();
@@ -225,7 +231,7 @@ public class Controls
 
         #region Player 2 Controls
         //Basic robot controls
-        buttons[1].forward = InputControl.setKey("2: Forward", new JoystickInput(JoystickAxis.Axis2Negative,Joystick.Joystick2));
+        buttons[1].forward = InputControl.setKey("2: Forward", new JoystickInput(JoystickAxis.Axis2Negative, Joystick.Joystick2));
         buttons[1].backward = InputControl.setKey("2: Backward", new JoystickInput(JoystickAxis.Axis2Positive, Joystick.Joystick2));
         buttons[1].left = InputControl.setKey("2: Left", new JoystickInput(JoystickAxis.Axis4Negative, Joystick.Joystick2));
         buttons[1].right = InputControl.setKey("2: Right", new JoystickInput(JoystickAxis.Axis4Positive, Joystick.Joystick2));
@@ -374,6 +380,7 @@ public class Controls
         #endregion
 
         IsTankDrive = false;
+
         if (GameObject.Find("SettingsMode") != null)
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
@@ -381,6 +388,9 @@ public class Controls
         }
     }
 
+    /// <summary>
+    /// Reset to default Arcade Drive.
+    /// </summary>
     public static void ResetArcadeDrive()
     {
         #region Primary Controls
@@ -571,198 +581,12 @@ public class Controls
         if (GameObject.Find("SettingsMode") != null)
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
-            //GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
         }
     }
 
-    public static void RemoveArcadeKeys()
-    {
-
-        #region Remove Primary Controls
-        //Basic robot controls
-        InputControl.removeKey(buttons[0].forward);
-        InputControl.removeKey(buttons[0].backward);
-        InputControl.removeKey(buttons[0].left);
-        InputControl.removeKey(buttons[0].right);
-
-        //Remaining PWM controls
-        InputControl.removeKey(buttons[0].pwm2Plus);
-        InputControl.removeKey(buttons[0].pwm2Neg);
-        InputControl.removeKey(buttons[0].pwm3Plus);
-        InputControl.removeKey(buttons[0].pwm3Neg);
-        InputControl.removeKey(buttons[0].pwm4Plus);
-        InputControl.removeKey(buttons[0].pwm4Neg);
-        InputControl.removeKey(buttons[0].pwm5Plus);
-        InputControl.removeKey(buttons[0].pwm5Neg);
-        InputControl.removeKey(buttons[0].pwm6Plus);
-        InputControl.removeKey(buttons[0].pwm6Neg);
-
-        //Other controls
-        InputControl.removeKey(buttons[0].resetRobot);
-        InputControl.removeKey(buttons[0].cameraToggle);
-        InputControl.removeKey(buttons[0].pickupPrimary);
-        InputControl.removeKey(buttons[0].releasePrimary);
-        InputControl.removeKey(buttons[0].spawnPrimary);
-        InputControl.removeKey(buttons[0].pickupSecondary);
-        InputControl.removeKey(buttons[0].releaseSecondary);
-        InputControl.removeKey(buttons[0].spawnSecondary);
-
-        //Set axes
-        InputControl.removeAxis(axes[0].horizontal);
-        InputControl.removeAxis(axes[0].vertical);
-        #endregion
-
-        #region Player 2 Controls
-        //Basic robot controls
-        InputControl.removeKey(buttons[1].forward);
-        InputControl.removeKey(buttons[1].backward);
-        InputControl.removeKey(buttons[1].left);
-        InputControl.removeKey(buttons[1].right);
-
-        //Remaining PWM controls
-        InputControl.removeKey(buttons[1].pwm2Plus);
-        InputControl.removeKey(buttons[1].pwm2Neg);
-        InputControl.removeKey(buttons[1].pwm3Plus);
-        InputControl.removeKey(buttons[1].pwm3Neg);
-        InputControl.removeKey(buttons[1].pwm4Plus);
-        InputControl.removeKey(buttons[1].pwm4Neg);
-        InputControl.removeKey(buttons[1].pwm5Plus);
-        InputControl.removeKey(buttons[1].pwm5Neg);
-        InputControl.removeKey(buttons[1].pwm6Plus);
-        InputControl.removeKey(buttons[1].pwm6Neg);
-
-        //Other controls
-        InputControl.removeKey(buttons[1].resetRobot);
-        InputControl.removeKey(buttons[1].cameraToggle);
-        InputControl.removeKey(buttons[1].pickupPrimary);
-        InputControl.removeKey(buttons[1].releasePrimary);
-        InputControl.removeKey(buttons[1].spawnPrimary);
-        InputControl.removeKey(buttons[1].pickupSecondary);
-        InputControl.removeKey(buttons[1].releaseSecondary);
-        InputControl.removeKey(buttons[1].spawnSecondary);
-        #endregion
-
-        #region Player 3 Controls
-        //Basic robot controls
-        InputControl.removeKey(buttons[2].forward);
-        InputControl.removeKey(buttons[2].backward);
-        InputControl.removeKey(buttons[2].left);
-        InputControl.removeKey(buttons[2].right);
-
-        //Remaining PWM controls
-        InputControl.removeKey(buttons[2].pwm2Plus);
-        InputControl.removeKey(buttons[2].pwm2Neg);
-        InputControl.removeKey(buttons[2].pwm3Plus);
-        InputControl.removeKey(buttons[2].pwm3Neg);
-        InputControl.removeKey(buttons[2].pwm4Plus);
-        InputControl.removeKey(buttons[2].pwm4Neg);
-        InputControl.removeKey(buttons[2].pwm5Plus);
-        InputControl.removeKey(buttons[2].pwm5Neg);
-        InputControl.removeKey(buttons[2].pwm6Plus);
-        InputControl.removeKey(buttons[2].pwm6Neg);
-
-        //Other controls
-        InputControl.removeKey(buttons[2].resetRobot);
-        InputControl.removeKey(buttons[2].cameraToggle);
-        InputControl.removeKey(buttons[2].pickupPrimary);
-        InputControl.removeKey(buttons[2].releasePrimary);
-        InputControl.removeKey(buttons[2].spawnPrimary);
-        InputControl.removeKey(buttons[2].pickupSecondary);
-        InputControl.removeKey(buttons[2].releaseSecondary);
-        InputControl.removeKey(buttons[2].spawnSecondary);
-        #endregion
-
-        #region Player4 Controls
-        //Basic robot controls
-        InputControl.removeKey(buttons[3].forward);
-        InputControl.removeKey(buttons[3].backward);
-        InputControl.removeKey(buttons[3].left);
-        InputControl.removeKey(buttons[3].right);
-
-        //Remaining PWM controls
-        InputControl.removeKey(buttons[3].pwm2Plus);
-        InputControl.removeKey(buttons[3].pwm2Neg);
-        InputControl.removeKey(buttons[3].pwm3Plus);
-        InputControl.removeKey(buttons[3].pwm3Neg);
-        InputControl.removeKey(buttons[3].pwm4Plus);
-        InputControl.removeKey(buttons[3].pwm4Neg);
-        InputControl.removeKey(buttons[3].pwm5Plus);
-        InputControl.removeKey(buttons[3].pwm5Neg);
-        InputControl.removeKey(buttons[3].pwm6Plus);
-        InputControl.removeKey(buttons[3].pwm6Neg);
-
-        //Other controls
-        InputControl.removeKey(buttons[3].resetRobot);
-        InputControl.removeKey(buttons[3].cameraToggle);
-        InputControl.removeKey(buttons[3].pickupPrimary);
-        InputControl.removeKey(buttons[3].releasePrimary);
-        InputControl.removeKey(buttons[3].spawnPrimary);
-        InputControl.removeKey(buttons[3].pickupSecondary);
-        InputControl.removeKey(buttons[3].releaseSecondary);
-        InputControl.removeKey(buttons[3].spawnSecondary);
-        #endregion
-
-        #region Player 5 Controls
-        //Basic robot controls
-        InputControl.removeKey(buttons[4].forward);
-        InputControl.removeKey(buttons[4].backward);
-        InputControl.removeKey(buttons[4].left);
-        InputControl.removeKey(buttons[4].right);
-
-        //Remaining PWM controls
-        InputControl.removeKey(buttons[4].pwm2Plus);
-        InputControl.removeKey(buttons[4].pwm2Neg);
-        InputControl.removeKey(buttons[4].pwm3Plus);
-        InputControl.removeKey(buttons[4].pwm3Neg);
-        InputControl.removeKey(buttons[4].pwm4Plus);
-        InputControl.removeKey(buttons[4].pwm4Neg);
-        InputControl.removeKey(buttons[4].pwm5Plus);
-        InputControl.removeKey(buttons[4].pwm5Neg);
-        InputControl.removeKey(buttons[4].pwm6Plus);
-        InputControl.removeKey(buttons[4].pwm6Neg);
-
-        //Other controls
-        InputControl.removeKey(buttons[4].resetRobot);
-        InputControl.removeKey(buttons[4].cameraToggle);
-        InputControl.removeKey(buttons[4].pickupPrimary);
-        InputControl.removeKey(buttons[4].releasePrimary);
-        InputControl.removeKey(buttons[4].spawnPrimary);
-        InputControl.removeKey(buttons[4].pickupSecondary);
-        InputControl.removeKey(buttons[4].releaseSecondary);
-        InputControl.removeKey(buttons[4].spawnSecondary);
-        #endregion
-
-        #region Player 6 Controls
-        //Basic robot controls
-        InputControl.removeKey(buttons[5].forward);
-        InputControl.removeKey(buttons[5].backward);
-        InputControl.removeKey(buttons[5].left);
-        InputControl.removeKey(buttons[5].right);
-
-        //Remaining PWM controls
-        InputControl.removeKey(buttons[5].pwm2Plus);
-        InputControl.removeKey(buttons[5].pwm2Neg);
-        InputControl.removeKey(buttons[5].pwm3Plus);
-        InputControl.removeKey(buttons[5].pwm3Neg);
-        InputControl.removeKey(buttons[5].pwm4Plus);
-        InputControl.removeKey(buttons[5].pwm4Neg);
-        InputControl.removeKey(buttons[5].pwm5Plus);
-        InputControl.removeKey(buttons[5].pwm5Neg);
-        InputControl.removeKey(buttons[5].pwm6Plus);
-        InputControl.removeKey(buttons[5].pwm6Neg);
-
-        //Other controls
-        InputControl.removeKey(buttons[5].resetRobot);
-        InputControl.removeKey(buttons[5].cameraToggle);
-        InputControl.removeKey(buttons[5].pickupPrimary);
-        InputControl.removeKey(buttons[5].releasePrimary);
-        InputControl.removeKey(buttons[5].spawnPrimary);
-        InputControl.removeKey(buttons[5].pickupSecondary);
-        InputControl.removeKey(buttons[5].releaseSecondary);
-        InputControl.removeKey(buttons[5].spawnSecondary);
-        #endregion
-    }
-
+    /// <summary>
+    /// Sets controls to Tank Drive.
+    /// </summary>
     public static void TankDrive()
     {
         RemoveArcadeKeys();
@@ -979,6 +803,9 @@ public class Controls
         }
     }
 
+    /// <summary>
+    /// Reset to default Tank Drive.
+    /// </summary>
     public static void ResetTankDrive()
     {
 
@@ -1193,8 +1020,200 @@ public class Controls
         }
     }
 
+    /// <summary>
+    /// Removes arcade drive keys for tank drive.
+    /// </summary>
+    public static void RemoveArcadeKeys()
+    {
 
+        #region Remove Primary Controls
+        //Basic robot controls
+        InputControl.removeKey(buttons[0].forward);
+        InputControl.removeKey(buttons[0].backward);
+        InputControl.removeKey(buttons[0].left);
+        InputControl.removeKey(buttons[0].right);
 
+        //Remaining PWM controls
+        InputControl.removeKey(buttons[0].pwm2Plus);
+        InputControl.removeKey(buttons[0].pwm2Neg);
+        InputControl.removeKey(buttons[0].pwm3Plus);
+        InputControl.removeKey(buttons[0].pwm3Neg);
+        InputControl.removeKey(buttons[0].pwm4Plus);
+        InputControl.removeKey(buttons[0].pwm4Neg);
+        InputControl.removeKey(buttons[0].pwm5Plus);
+        InputControl.removeKey(buttons[0].pwm5Neg);
+        InputControl.removeKey(buttons[0].pwm6Plus);
+        InputControl.removeKey(buttons[0].pwm6Neg);
+
+        //Other controls
+        InputControl.removeKey(buttons[0].resetRobot);
+        InputControl.removeKey(buttons[0].cameraToggle);
+        InputControl.removeKey(buttons[0].pickupPrimary);
+        InputControl.removeKey(buttons[0].releasePrimary);
+        InputControl.removeKey(buttons[0].spawnPrimary);
+        InputControl.removeKey(buttons[0].pickupSecondary);
+        InputControl.removeKey(buttons[0].releaseSecondary);
+        InputControl.removeKey(buttons[0].spawnSecondary);
+
+        //Set axes
+        InputControl.removeAxis(axes[0].horizontal);
+        InputControl.removeAxis(axes[0].vertical);
+        #endregion
+
+        #region Player 2 Controls
+        //Basic robot controls
+        InputControl.removeKey(buttons[1].forward);
+        InputControl.removeKey(buttons[1].backward);
+        InputControl.removeKey(buttons[1].left);
+        InputControl.removeKey(buttons[1].right);
+
+        //Remaining PWM controls
+        InputControl.removeKey(buttons[1].pwm2Plus);
+        InputControl.removeKey(buttons[1].pwm2Neg);
+        InputControl.removeKey(buttons[1].pwm3Plus);
+        InputControl.removeKey(buttons[1].pwm3Neg);
+        InputControl.removeKey(buttons[1].pwm4Plus);
+        InputControl.removeKey(buttons[1].pwm4Neg);
+        InputControl.removeKey(buttons[1].pwm5Plus);
+        InputControl.removeKey(buttons[1].pwm5Neg);
+        InputControl.removeKey(buttons[1].pwm6Plus);
+        InputControl.removeKey(buttons[1].pwm6Neg);
+
+        //Other controls
+        InputControl.removeKey(buttons[1].resetRobot);
+        InputControl.removeKey(buttons[1].cameraToggle);
+        InputControl.removeKey(buttons[1].pickupPrimary);
+        InputControl.removeKey(buttons[1].releasePrimary);
+        InputControl.removeKey(buttons[1].spawnPrimary);
+        InputControl.removeKey(buttons[1].pickupSecondary);
+        InputControl.removeKey(buttons[1].releaseSecondary);
+        InputControl.removeKey(buttons[1].spawnSecondary);
+        #endregion
+
+        #region Player 3 Controls
+        //Basic robot controls
+        InputControl.removeKey(buttons[2].forward);
+        InputControl.removeKey(buttons[2].backward);
+        InputControl.removeKey(buttons[2].left);
+        InputControl.removeKey(buttons[2].right);
+
+        //Remaining PWM controls
+        InputControl.removeKey(buttons[2].pwm2Plus);
+        InputControl.removeKey(buttons[2].pwm2Neg);
+        InputControl.removeKey(buttons[2].pwm3Plus);
+        InputControl.removeKey(buttons[2].pwm3Neg);
+        InputControl.removeKey(buttons[2].pwm4Plus);
+        InputControl.removeKey(buttons[2].pwm4Neg);
+        InputControl.removeKey(buttons[2].pwm5Plus);
+        InputControl.removeKey(buttons[2].pwm5Neg);
+        InputControl.removeKey(buttons[2].pwm6Plus);
+        InputControl.removeKey(buttons[2].pwm6Neg);
+
+        //Other controls
+        InputControl.removeKey(buttons[2].resetRobot);
+        InputControl.removeKey(buttons[2].cameraToggle);
+        InputControl.removeKey(buttons[2].pickupPrimary);
+        InputControl.removeKey(buttons[2].releasePrimary);
+        InputControl.removeKey(buttons[2].spawnPrimary);
+        InputControl.removeKey(buttons[2].pickupSecondary);
+        InputControl.removeKey(buttons[2].releaseSecondary);
+        InputControl.removeKey(buttons[2].spawnSecondary);
+        #endregion
+
+        #region Player4 Controls
+        //Basic robot controls
+        InputControl.removeKey(buttons[3].forward);
+        InputControl.removeKey(buttons[3].backward);
+        InputControl.removeKey(buttons[3].left);
+        InputControl.removeKey(buttons[3].right);
+
+        //Remaining PWM controls
+        InputControl.removeKey(buttons[3].pwm2Plus);
+        InputControl.removeKey(buttons[3].pwm2Neg);
+        InputControl.removeKey(buttons[3].pwm3Plus);
+        InputControl.removeKey(buttons[3].pwm3Neg);
+        InputControl.removeKey(buttons[3].pwm4Plus);
+        InputControl.removeKey(buttons[3].pwm4Neg);
+        InputControl.removeKey(buttons[3].pwm5Plus);
+        InputControl.removeKey(buttons[3].pwm5Neg);
+        InputControl.removeKey(buttons[3].pwm6Plus);
+        InputControl.removeKey(buttons[3].pwm6Neg);
+
+        //Other controls
+        InputControl.removeKey(buttons[3].resetRobot);
+        InputControl.removeKey(buttons[3].cameraToggle);
+        InputControl.removeKey(buttons[3].pickupPrimary);
+        InputControl.removeKey(buttons[3].releasePrimary);
+        InputControl.removeKey(buttons[3].spawnPrimary);
+        InputControl.removeKey(buttons[3].pickupSecondary);
+        InputControl.removeKey(buttons[3].releaseSecondary);
+        InputControl.removeKey(buttons[3].spawnSecondary);
+        #endregion
+
+        #region Player 5 Controls
+        //Basic robot controls
+        InputControl.removeKey(buttons[4].forward);
+        InputControl.removeKey(buttons[4].backward);
+        InputControl.removeKey(buttons[4].left);
+        InputControl.removeKey(buttons[4].right);
+
+        //Remaining PWM controls
+        InputControl.removeKey(buttons[4].pwm2Plus);
+        InputControl.removeKey(buttons[4].pwm2Neg);
+        InputControl.removeKey(buttons[4].pwm3Plus);
+        InputControl.removeKey(buttons[4].pwm3Neg);
+        InputControl.removeKey(buttons[4].pwm4Plus);
+        InputControl.removeKey(buttons[4].pwm4Neg);
+        InputControl.removeKey(buttons[4].pwm5Plus);
+        InputControl.removeKey(buttons[4].pwm5Neg);
+        InputControl.removeKey(buttons[4].pwm6Plus);
+        InputControl.removeKey(buttons[4].pwm6Neg);
+
+        //Other controls
+        InputControl.removeKey(buttons[4].resetRobot);
+        InputControl.removeKey(buttons[4].cameraToggle);
+        InputControl.removeKey(buttons[4].pickupPrimary);
+        InputControl.removeKey(buttons[4].releasePrimary);
+        InputControl.removeKey(buttons[4].spawnPrimary);
+        InputControl.removeKey(buttons[4].pickupSecondary);
+        InputControl.removeKey(buttons[4].releaseSecondary);
+        InputControl.removeKey(buttons[4].spawnSecondary);
+        #endregion
+
+        #region Player 6 Controls
+        //Basic robot controls
+        InputControl.removeKey(buttons[5].forward);
+        InputControl.removeKey(buttons[5].backward);
+        InputControl.removeKey(buttons[5].left);
+        InputControl.removeKey(buttons[5].right);
+
+        //Remaining PWM controls
+        InputControl.removeKey(buttons[5].pwm2Plus);
+        InputControl.removeKey(buttons[5].pwm2Neg);
+        InputControl.removeKey(buttons[5].pwm3Plus);
+        InputControl.removeKey(buttons[5].pwm3Neg);
+        InputControl.removeKey(buttons[5].pwm4Plus);
+        InputControl.removeKey(buttons[5].pwm4Neg);
+        InputControl.removeKey(buttons[5].pwm5Plus);
+        InputControl.removeKey(buttons[5].pwm5Neg);
+        InputControl.removeKey(buttons[5].pwm6Plus);
+        InputControl.removeKey(buttons[5].pwm6Neg);
+
+        //Other controls
+        InputControl.removeKey(buttons[5].resetRobot);
+        InputControl.removeKey(buttons[5].cameraToggle);
+        InputControl.removeKey(buttons[5].pickupPrimary);
+        InputControl.removeKey(buttons[5].releasePrimary);
+        InputControl.removeKey(buttons[5].spawnPrimary);
+        InputControl.removeKey(buttons[5].pickupSecondary);
+        InputControl.removeKey(buttons[5].releaseSecondary);
+        InputControl.removeKey(buttons[5].spawnSecondary);
+        #endregion
+    }
+
+    /// <summary>
+    /// Removes tank drive keys for arcade drive.
+    /// </summary>
     public static void RemoveTankKeys()
     {
         #region Remove Primary Controls
@@ -1378,7 +1397,6 @@ public class Controls
         InputControl.removeKey(buttons[5].spawnSecondary);
         #endregion
 
-        //GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
     }
 
     /// <summary>
