@@ -295,6 +295,7 @@
     <Compile Include="Assets\Scripts\Robot.cs" />
     <Compile Include="Assets\Scripts\RobotCamera.cs" />
     <Compile Include="Assets\Scripts\RobotCameraGUI.cs" />
+    <Compile Include="Assets\Scripts\RobotCameraManager.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />

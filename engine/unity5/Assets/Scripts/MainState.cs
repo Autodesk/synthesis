@@ -31,7 +31,7 @@ public class MainState : SimState
     private DynamicCamera dynamicCamera;
     public GameObject dynamicCameraObject;
 
-    private RobotCamera robotCamera;
+    private RobotCameraManager robotCamera;
     public GameObject robotCameraObject;
 
     //Testing camera location, can be deleted later
