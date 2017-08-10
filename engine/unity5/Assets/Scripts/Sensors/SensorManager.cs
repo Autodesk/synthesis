@@ -253,15 +253,16 @@ class SensorManager : MonoBehaviour
                 inactiveSensorList.Add(removingSensors);
             }
         }
+    }
+
+    /// <summary>
+    /// Clear all sensor lists (sensor, active, inactive). Used when a robot is initialized. Hopefully no one use this in multiplayer :)
+    /// </summary>
+    public void ResetSensorLists()
+    {
         activeSensorList.Clear();
         sensorList.Clear();
         inactiveSensorList.Clear();
-    }
-
-
-    private void SetSensorRobot(GameObject sensor, Robot robot)
-    {
-        sensor.GetComponent<SensorBase>().Robot = robot;
     }
 
     public List<GameObject> GetActiveSensors()

@@ -296,7 +296,7 @@ public class MainState : SimState
 
     public void RemoveRobot(int index)
     {
-        robotCameraManager.RemoveCameraFromRobot(SpawnedRobots[index]);
+        robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
         sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
         if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
         {
