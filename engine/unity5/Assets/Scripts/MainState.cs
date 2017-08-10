@@ -403,8 +403,6 @@ public class MainState : SimState
     {
         return activeRobot.LoadManipulator(directory);
     }
-        
-    
 
     private void UpdateTrackers()
     {
@@ -434,7 +432,8 @@ public class MainState : SimState
         lastFrameCount = physicsWorld.frameCount;
         Tracking = true;
 
-        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = true;
+        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
+            c.enabled = true;
 
         CollisionTracker.Reset();
     }
@@ -445,7 +444,9 @@ public class MainState : SimState
     public override void Pause()
     {
         Tracking = false;
-        Resources.FindObjectsOfTypeAll<Canvas>()[0].enabled = false;
+
+        foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
+            c.enabled = false;
     }
     #endregion
 
