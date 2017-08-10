@@ -2,7 +2,8 @@
 using System.Windows.Forms;
 using Inventor;
 
-namespace BxDFieldExporter {
+namespace BxDFieldExporter
+{
     public partial class EditCoordinate : Form
     {
         UserCoordinateSystem UCS;
@@ -17,7 +18,7 @@ namespace BxDFieldExporter {
             oMatrix = oTG.CreateMatrix();
         }
 
-        private void textBoxX_TextChanged(object sender, EventArgs e)
+        private void TextBoxX_TextChanged(object sender, EventArgs e)
         {
             double XTranform = 0;
             try
@@ -26,7 +27,7 @@ namespace BxDFieldExporter {
             }
             catch (Exception)
             {
-                if (textBoxX.Text.Length > 0 && ! textBoxX.Text.Equals("-"))
+                if (textBoxX.Text.Length > 0 && !textBoxX.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }
@@ -35,7 +36,7 @@ namespace BxDFieldExporter {
             UCS.Definition.Transformation = oTranslationMatrix;
         }
 
-        private void textBoxY_TextChanged(object sender, EventArgs e)
+        private void TextBoxY_TextChanged(object sender, EventArgs e)
         {
             double YTranform = 0;
             try
@@ -44,7 +45,7 @@ namespace BxDFieldExporter {
             }
             catch (Exception)
             {
-                if (textBoxY.Text.Length > 0 && ! textBoxY.Text.Equals("-"))
+                if (textBoxY.Text.Length > 0 && !textBoxY.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }
@@ -53,7 +54,7 @@ namespace BxDFieldExporter {
             UCS.Definition.Transformation = oTranslationMatrix;
         }
 
-        private void textBoxZ_TextChanged(object sender, EventArgs e)
+        private void TextBoxZ_TextChanged(object sender, EventArgs e)
         {
             double ZTranform = 0;
             try
@@ -62,7 +63,7 @@ namespace BxDFieldExporter {
             }
             catch (Exception)
             {
-                if (textBoxZ.Text.Length > 0 && ! textBoxZ.Text.Equals("-"))
+                if (textBoxZ.Text.Length > 0 && !textBoxZ.Text.Equals("-"))
                 {
                     MessageBox.Show("warning, incorrect input");
                 }
@@ -70,7 +71,7 @@ namespace BxDFieldExporter {
             oTranslationMatrix.SetTranslation(oTG.CreateVector(UCS.Transformation.Translation.X, UCS.Transformation.Translation.Y, ZTranform));
             UCS.Definition.Transformation = oTranslationMatrix;
         }
-        public void readData(UserCoordinateSystem ucs)
+        public void ReadData(UserCoordinateSystem ucs)
         {
             UCS = ucs;
             textBoxX.Text = UCS.Transformation.Translation.X.ToString();

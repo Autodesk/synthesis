@@ -1,7 +1,13 @@
 fileFormatVersion: 2
-guid: d109c579d53afec46b0f86c681e61f94
+<<<<<<< HEAD:engine/unity5/Assets/Standard Assets.meta
+guid: 5ac42816e389fb4409ecb1e4927b1a46
 folderAsset: yes
-timeCreated: 1501796320
+timeCreated: 1501606330
+=======
+guid: f1183cb6a81f98440865a34f26df8441
+folderAsset: yes
+timeCreated: 1501704811
+>>>>>>> MixAndMatch:engine/unity5/Assets/Resources/Prefabs.meta
 licenseType: Free
 DefaultImporter:
   userData: 
