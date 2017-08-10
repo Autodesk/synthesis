@@ -117,6 +117,19 @@ public class RobotCameraManager : MonoBehaviour
         robotCameraList.Clear();
     }
 
+    public void RemoveCameraFromRobot(Robot parent)
+    {
+        List<GameObject> removingCamera = GetRobotCamerasFromRobot(parent);
+        foreach(GameObject camera in removingCamera)
+        {
+            if (robotCameraList.Contains(camera))
+            {
+                robotCameraList.Remove(camera);
+                Destroy(camera);
+            }
+        }
+        CurrentCamera = robotCameraList[0];
+    }
     /// <summary>
     /// Detach the robot camera from a given robot in preparation for changing robot or other operation that needs to take out a specific group of robot camera
     /// </summary>

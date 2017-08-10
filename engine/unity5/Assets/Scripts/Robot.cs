@@ -183,6 +183,7 @@ public class Robot : MonoBehaviour
                 hasRobotCamera = true;
                 Debug.Log(hasRobotCamera);
             }
+
         }
         if (!hasRobotCamera)
         {
