@@ -27,4 +27,7 @@ public:
     
 };
 
+extern float pwmValues[10];
+extern void StartUnityThread();
+
 #endif

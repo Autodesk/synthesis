@@ -51,7 +51,6 @@ void HAL_SetPWMPeriodScale(HAL_DigitalHandle pwmPortHandle, int32_t squelchMask,
                            int32_t* status);
 int32_t HAL_GetLoopTiming(int32_t* status);
 
-extern void HAL_StartUnityThread();
 #ifdef __cplusplus
 }
 #endif

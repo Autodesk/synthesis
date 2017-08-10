@@ -1,5 +1,5 @@
-CC = x86_64-w64-mingw32-g++
-AR = x86_64-w64-mingw32-ar
+CC = i686-w64-mingw32-g++
+AR = i686-w64-mingw32-ar
 TARGET = debug
 
 ifndef JAVA_HOME
@@ -10,7 +10,7 @@ endif
 JAVAC := $(JAVA_HOME)/bin/javac.exe
 JAR := $(JAVA_HOME)/bin/jar.exe
 
-CCFLAGS := -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Iallwpilib/ni-libraries/include -Iwpiutil/src/main/native/include -std=c++14
+CCFLAGS := -m32 -D_WIN32 -D_WIN32_WINNT=0x0602 -Iinclude -Iallwpilib/ni-libraries/include -Iwpiutil/src/main/native/include -std=c++14
 ifeq ($(TARGET), debug)
 	CCFLAGS += -O0 -g
 endif

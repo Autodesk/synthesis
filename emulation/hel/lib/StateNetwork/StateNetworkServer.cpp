@@ -1,6 +1,9 @@
 #include "StateNetworkServer.h"
 #include "OSAL/OSAL.h"
 #include <stdio.h>
+#include <thread>
+#include <chrono>
+#include <cmath>
 #if USE_WINAPI
 #include <Windows.h>
 #elif USE_POSIX
@@ -89,4 +92,28 @@ StateNetworkServer* StateNetworkServer::HAL_GetStateNetworkServerInstance() {
 	static StateNetworkServer* SNSInstance = new StateNetworkServer();
 	return SNSInstance;
 
+}
+
+float pwmValues[10];
+
+void StateNetworkThread() {
+  StateNetworkServer stateNetwork;
+  stateNetwork.Open();
+
+  OutputStatePacket packet;
+  while (true) {
+    //printf("%f %f %f %f\n", pwmValues[0], pwmValues[1], pwmValues[2], pwmValues[3]);
+    std::copy(pwmValues, pwmValues + 10, packet.dio[0].pwmValues);
+    stateNetwork.SendStatePacket(packet);
+    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+  }
+}
+
+bool threadStarted = false;
+void StartUnityThread() {
+  if (threadStarted == true) {
+    return;
+  }
+  std::thread(StateNetworkThread).detach();
+  threadStarted = true;
 }
