@@ -79,16 +79,14 @@ namespace Assets.Scripts.BUExtensions
             w.RollInfluence = 0.25f;
             w.Brake = RollingFriction / radius;
 
-            return RaycastRobot.NumWheels - 1;     
+            return RaycastRobot.NumWheels - 1;
         }
 
         /// <summary>
         /// Initializes the BRaycastVehicle.
         /// </summary>
-        void Awake()
+        private void Awake()
         {
-            ((DynamicsWorld)BPhysicsWorld.Get().world).SetInternalTickCallback(UpdateVehicle);
-
             rigidBody = GetComponent<BRigidBody>();
 
             if (rigidBody == null)
@@ -96,7 +94,7 @@ namespace Assets.Scripts.BUExtensions
                 Destroy(this);
                 return;
             }
-            
+
             RaycastRobot = new RaycastRobot(vehicleTuning = new VehicleTuning
             {
                 MaxSuspensionForce = 1000f,
@@ -108,27 +106,24 @@ namespace Assets.Scripts.BUExtensions
             },
             (RigidBody)rigidBody.GetCollisionObject(),
             new BRobotRaycaster((DynamicsWorld)BPhysicsWorld.Get().world));
-            
+
             RaycastRobot.SetCoordinateSystem(0, 1, 2);
+
+            BRobotManager.Instance.RegisterRaycastRobot(RaycastRobot);
         }
-        
+
         /// <summary>
         /// Updates each wheel's position for proper interpolation.
         /// </summary>
-        void Update()
+        private void Update()
         {
             for (int i = 0; i < RaycastRobot.NumWheels; i++)
                 RaycastRobot.UpdateWheelTransform(i, true);
         }
 
-        /// <summary>
-        /// Updates the vehicle (synced with the internal physics tick).
-        /// </summary>
-        /// <param name="world"></param>
-        /// <param name="timeStep"></param>
-        private void UpdateVehicle(DynamicsWorld world, float timeStep)
+        private void OnDestroy()
         {
-            RaycastRobot.UpdateVehicle(timeStep);
+            BRobotManager.Instance.DeregisterRaycastRobot(RaycastRobot);
         }
 
         /// <summary>

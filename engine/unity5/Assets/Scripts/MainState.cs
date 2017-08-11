@@ -10,6 +10,7 @@ using System.IO;
 using Assets.Scripts.FEA;
 using Assets.Scripts.FSM;
 using System.Linq;
+using Assets.Scripts.BUExtensions;
 
 public class MainState : SimState
 {
@@ -86,6 +87,7 @@ public class MainState : SimState
     {
         //getting bullet physics information
         physicsWorld = BPhysicsWorld.Get();
+        ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BRobotManager.Instance.UpdateRaycastRobots);
         lastFrameCount = physicsWorld.frameCount;
 
         //setting up replay
