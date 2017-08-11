@@ -37,6 +37,8 @@ class FileBrowser : OverlayWindow
 
     public event Action<object> OnComplete;
 
+    private List<string> targetFolderList = new List<string>();
+
     /// <summary>
     /// If this file browser is currently visible.
     /// </summary>
@@ -192,14 +194,14 @@ class FileBrowser : OverlayWindow
     /// <param name="stringify">Optional function to convert object to string</param>
     /// <param name="highlight">Optional currently-selected item's string representation</param>
     /// <returns>The selected object</returns>
-    private object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify, string highlight)
+    private object SelectList<T>(IEnumerable<T> items, System.Func<T, string> stringify, string highlight, List<string> targetName)
     {
         object selected = null;
         foreach (T o in items)
         {
             string entry = stringify != null ? stringify(o) : o.ToString(); ;
 
-            if (tempSelection != null && entry.Equals(tempSelection.Name))
+            if (tempSelection != null && entry.Equals(tempSelection.Name) || targetName.Contains(entry))
             {
                 if (GUILayout.Button(entry, highlightStyle))
                 {
@@ -263,11 +265,28 @@ class FileBrowser : OverlayWindow
                 " " + "NOT the field/robot itself!", descriptionStyle);
 
         directoryScroll = GUILayout.BeginScrollView(directoryScroll);
+
+        //This part will make the main menu highlight 3 levels up to the correct file, more level will cause slow performance
+        foreach (DirectoryInfo info in directoryInfo.GetDirectories())
+        {
+            if (info.GetFiles("*.bxdf").Length > 0 || info.GetFiles("*.bxda").Length > 0 || info.GetFiles(".bxdj").Length > 0)
+            {
+                targetFolderList.Add(info.Name);
+            }
+            foreach (DirectoryInfo infoChild in info.GetDirectories())
+            {
+                if (infoChild.GetFiles("*.bxdf").Length > 0 || infoChild.GetFiles("*.bxda").Length > 0 || infoChild.GetFiles(".bxdj").Length > 0)
+                {
+                    targetFolderList.Add(info.Name);
+                }
+            }
+        }
+
         directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
         {
             return o.Name;
-        }, new DirectoryInfo(directoryLocation).Name) as DirectoryInfo;
-
+        }, new DirectoryInfo(directoryLocation).Name, targetFolderList) as DirectoryInfo;
+        targetFolderList.Clear();
         GUILayout.EndScrollView();
         GUILayout.EndArea();
 
@@ -371,4 +390,22 @@ class FileBrowser : OverlayWindow
     {
         return windowRect;
     }
+
+    ////A recursive attempt that does not actually work...
+    //public void UpdateTargetFolderList(DirectoryInfo topDirectory, int searchLevel)
+    //{
+    //    DirectoryInfo dir = topDirectory;
+    //    if (dir.GetFiles("*.bxdf").Length > 0 || dir.GetFiles("*.bxda").Length > 0 || dir.GetFiles(".bxdj").Length > 0)
+    //    {
+    //        targetFolderList.Add(dir.Name);
+    //        Debug.Log(dir.Name + searchLevel);
+    //    }
+    //    if (searchLevel > 0)
+    //    {
+    //        foreach (DirectoryInfo dirChild in dir.GetDirectories())
+    //        {
+    //            UpdateTargetFolderList(dirChild, searchLevel - 1);
+    //        }
+    //    }
+    //}
 }
