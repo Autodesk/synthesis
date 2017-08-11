@@ -112,5 +112,9 @@ public abstract class SensorBase : MonoBehaviour
 
     }
 
+    public void ResetConfigurationState()
+    {
+        IsChangingPosition = IsChangingAngle = IsChangingHeight = IsChangingRange = false;
+    }
     
 }
