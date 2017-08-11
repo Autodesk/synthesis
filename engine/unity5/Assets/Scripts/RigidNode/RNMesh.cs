@@ -65,7 +65,7 @@ public partial class RigidNode : RigidNode_Base
                 hullShape.AddHullShape(hull, BulletSharp.Math.Matrix.Translation(-ComOffset.ToBullet()));
             }
 
-            physicalProperties = mesh.physics;
+            PhysicalProperties = mesh.physics;
 
             BRigidBody rigidBody = MainObject.AddComponent<BRigidBody>();
             rigidBody.mass = mesh.physics.mass;

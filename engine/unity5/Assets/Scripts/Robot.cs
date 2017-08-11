@@ -5,6 +5,7 @@ using BulletSharp;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.FEA;
 using Assets.Scripts.BUExtensions;
 
@@ -158,6 +159,9 @@ public class Robot : MonoBehaviour
         rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
         rootNode.ListAllNodes(nodes);
 
+        int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
+        float collectiveMass = 0f;
+
         foreach (RigidNode_Base n in nodes)
         {
             RigidNode node = (RigidNode)n;
@@ -169,18 +173,17 @@ public class Robot : MonoBehaviour
                 return false;
             }
 
-            if (n.HasDriverMeta<WheelDriverMeta>() && n.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
-            {
-                WheelType wheelType = n.GetDriverMeta<WheelDriverMeta>().type;
-                node.MainObject.AddComponent<BRaycastWheel>().CreateWheel(node);
-                node.MainObject.transform.parent = ((RigidNode)node.GetParent()).MainObject.transform;
-                continue;
-            }
+            node.CreateJoint(numWheels);
 
-            node.CreateJoint();
+            if (node.PhysicalProperties != null)
+                collectiveMass += node.PhysicalProperties.mass;
 
-            node.MainObject.AddComponent<Tracker>().Trace = true;
+            if (node.MainObject.GetComponent<BRigidBody>() != null)
+                node.MainObject.AddComponent<Tracker>().Trace = true;
         }
+
+        foreach (BRaycastRobot r in FindObjectsOfType<BRaycastRobot>())
+            r.RaycastRobot.EffectiveMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
 
@@ -435,6 +438,9 @@ public class Robot : MonoBehaviour
         manipulatorNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
         manipulatorNode.ListAllNodes(nodes);
 
+        int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
+        float collectiveMass = 0f;
+
         //Load node_0 for attaching manipulator to robot
         RigidNode node = (RigidNode)nodes[0];
         node.CreateTransform(manipulatorObject.transform);
@@ -460,11 +466,14 @@ public class Robot : MonoBehaviour
                 UnityEngine.Object.Destroy(manipulatorObject);
                 return false;
             }
-            otherNode.CreateJoint();
+            otherNode.CreateJoint(numWheels);
             otherNode.MainObject.AddComponent<Tracker>().Trace = true;
             t = otherNode.MainObject.GetComponent<Tracker>();
             Debug.Log(t);
         }
+
+        foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
+            r.RaycastRobot.EffectiveMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;

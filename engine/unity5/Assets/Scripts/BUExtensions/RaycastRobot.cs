@@ -70,6 +70,8 @@ namespace Assets.Scripts.BUExtensions
             get { return chassisBody; }
         }
 
+        public float EffectiveMass { get; set; }
+
         IVehicleRaycaster vehicleRaycaster;
 
         static RigidBody fixedBody;
@@ -121,6 +123,7 @@ namespace Assets.Scripts.BUExtensions
             vehicleRaycaster = raycaster;
 
             SlidingFriction = 1.0f;
+            EffectiveMass = 1.0f / chassis.InvMass;
         }
 
         public WheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS, float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
@@ -351,13 +354,16 @@ namespace Assets.Scripts.BUExtensions
             float rel_vel;
             Vector3.Dot(ref normal, ref vel, out rel_vel);
 
-#if ONLY_USE_LINEAR_MASS
-	        float massTerm = 1.0f / (body1.InvMass + body2.InvMass);
-	        impulse = - contactDamping * rel_vel * massTerm;
-#else
-            float velocityImpulse = -contactDamping * rel_vel * jacDiagABInv;
-            impulse = velocityImpulse;
-#endif
+            if (NumWheels == 1)
+            {
+                float massTerm = 1.0f / (body1.InvMass + body2.InvMass);
+                impulse = -contactDamping * rel_vel * massTerm;
+            }
+            else
+            {
+                float velocityImpulse = -contactDamping * rel_vel * jacDiagABInv;
+                impulse = velocityImpulse;
+            }
         }
 
         public void UpdateAction(CollisionWorld collisionWorld, float deltaTimeStep)
@@ -457,7 +463,6 @@ namespace Assets.Scripts.BUExtensions
 
                     float maximpSquared = maximp * maximpSide;
 
-
                     forwardImpulse[i] = rollingFriction;//wheel.EngineForce* timeStep;
 
                     float x = forwardImpulse[i] * fwdFactor;
@@ -535,7 +540,7 @@ namespace Assets.Scripts.BUExtensions
 
         public void UpdateSuspension(float step)
         {
-            float chassisMass = 1.0f / chassisBody.InvMass;
+            //float chassisMass = 1.0f / chassisBody.InvMass;
 
             for (int w_it = 0; w_it < NumWheels; w_it++)
             {
@@ -573,7 +578,7 @@ namespace Assets.Scripts.BUExtensions
                     }
 
                     // RESULT
-                    wheel_info.WheelsSuspensionForce = force * chassisMass;
+                    wheel_info.WheelsSuspensionForce = force * EffectiveMass;
                     if (wheel_info.WheelsSuspensionForce < 0)
                     {
                         wheel_info.WheelsSuspensionForce = 0;
