@@ -191,14 +191,29 @@ public class SimUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Used for Mix and Match
+    /// Changes the drive base, destroys old manipulator and creates new manipulator, sets wheels
     /// </summary>
-    public void MaMChangeRobot(string directory)
+    public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory, int robotHasManipulator)
     {
         robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
         sensorManager.RemoveSensorsFromRobot(main.activeRobot);
-        // string directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\";
-        main.ChangeRobot(directory);
+
+        //Change the drive base 
+        main.ChangeRobot(robotDirectory);
+
+        //If the current robot has a manipulator, destroy the manipulator
+        if (robotHasManipulator == 1) //0 is false, 1 is true
+        {
+            main.DeleteManipulatorNodes();
+            
+        }
+
+        //If the new robot has a manipulator, load the manipulator
+        int newRobotHasManipulator = PlayerPrefs.GetInt("hasManipulator");
+        if (newRobotHasManipulator == 1) //0 is false, 1 is true
+        {
+            main.LoadManipulator(manipulatorDirectory);
+        }
     }
 
     public void ToggleChangeRobotPanel()

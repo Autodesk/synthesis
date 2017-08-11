@@ -251,10 +251,17 @@ public class MainState : SimState
     /// <returns>whether the process was successful</returns>
     public bool ChangeRobot(string directory)
     {
-        
         sensorManager.RemoveSensorsFromRobot(activeRobot);
         sensorManagerGUI.ShiftOutputPanels();
         return activeRobot.InitializeRobot(directory, this);
+    }
+
+    /// <summary>
+    /// Used to delete manipulator nodes in MaM mode
+    /// </summary>
+    public void DeleteManipulatorNodes()
+    {
+        activeRobot.DeleteNodes();
     }
 
     /// <summary>
@@ -393,7 +400,7 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory"></param>
     /// <returns></returns>
-    bool LoadManipulator(string directory)
+    public bool LoadManipulator(string directory)
     {
         return activeRobot.LoadManipulator(directory);
     }
