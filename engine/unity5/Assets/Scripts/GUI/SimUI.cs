@@ -42,6 +42,8 @@ public class SimUI : MonoBehaviour
     GameObject inputManagerPanel;
     GameObject unitConversionButton;
 
+    GameObject mixAndMatchPanel;
+
     public bool swapWindowOn = false; //if the swap window is active
     public bool wheelPanelOn = false; //if the wheel panel is active
     public bool driveBasePanelOn = false; //if the drive base panel is active
@@ -145,6 +147,8 @@ public class SimUI : MonoBehaviour
 
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+
+        mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
     }
 
 
@@ -291,6 +295,8 @@ public class SimUI : MonoBehaviour
         changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
+        mixAndMatchPanel.SetActive(false);
+        
         CloseOrientWindow();
         main.IsResetting = false;
 

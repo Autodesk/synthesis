@@ -113,7 +113,8 @@ public class MainState : SimState
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
-            if (isMixAndMatch == 1 && MixAndMatchMode.hasManipulator)
+            int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
+            if (isMixAndMatch == 1 && hasManipulator == 1)
             {
                 Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
             }
@@ -405,6 +406,40 @@ public class MainState : SimState
     public bool LoadManipulator(string directory)
     {
         return activeRobot.LoadManipulator(directory);
+    }
+
+    /// <summary>
+    /// Loads a new robot and manipulator from given directorys
+    /// </summary>
+    /// <param name="directory">robot directory</param>
+    /// <returns>whether the process was successful</returns>
+    public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
+    {
+        if (SpawnedRobots.Count < MAX_ROBOTS)
+        {
+            robotPath = baseDirectory;
+
+            GameObject robotObject = new GameObject("Robot");
+            Robot robot = robotObject.AddComponent<Robot>();
+
+            //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
+            if (!robot.InitializeRobot(baseDirectory, this)) return false;
+
+            robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
+
+            //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
+            if (activeRobot == null)
+            {
+                activeRobot = robot;
+            }
+
+            robot.controlIndex = SpawnedRobots.Count;
+            SpawnedRobots.Add(robot);
+
+            robot.LoadManipulator(manipulatorDirectory);
+            return true;
+        }
+        return false;
     }
 
     private void UpdateTrackers()

@@ -266,8 +266,32 @@ public class Robot : MonoBehaviour
             r.WorldTransform = newTransform;
         }
 
+        int hasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
+        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
+        if (hasManipulator == 1 && isMixAndMatch == 1)
+        {
+            foreach (RigidNode n in manipulatorNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+
+                BulletSharp.Math.Matrix newTransform = r.WorldTransform;
+                newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
+                newTransform.Basis = BulletSharp.Math.Matrix.Identity;
+                r.WorldTransform = newTransform;
+            }
+
+        }
+
+
         GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5) ;
-        { }
         if (IsResetting)
         {
             Debug.Log("is resetting!");
@@ -331,7 +355,23 @@ public class Robot : MonoBehaviour
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
 
-       
+        int hasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
+        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
+        if (hasManipulator == 1 && isMixAndMatch == 1)
+        {
+            foreach (RigidNode n in manipulatorNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
+        }
+
     }
 
     /// <summary>
@@ -425,7 +465,9 @@ public class Robot : MonoBehaviour
         manipulatorObject = new GameObject("Manipulator");
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
-        manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
+        //manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
+
+        manipulatorObject.transform.position = gameObject.transform.GetChild(0).transform.position;
         //manipulatorObject.transform.position = robotStartPosition;
 
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
@@ -472,7 +514,7 @@ public class Robot : MonoBehaviour
             Debug.Log(t);
         }
 
-        foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
+        foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
             r.RaycastRobot.EffectiveMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
