@@ -60,14 +60,15 @@ public class SettingsMode : MonoBehaviour
         }
         else
         {
-            //Controls.ResetArcadeDrive();
+            Controls.ResetArcadeDrive();
             Controls.Save();
         }
     }
 
     public void OnPlayerOne()
     {
-        
+        GameObject.Find("Content").GetComponent<CreateButton>().DestroyList();
+        GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
     }
 
     /// <summary>
@@ -83,7 +84,7 @@ public class SettingsMode : MonoBehaviour
             Controls.SwitchControls();
             Controls.Save();
             enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Arcade Drive"; 
+            enableTankDriveText.text = "Switch Arcade Drive";
         }
         else
         {
