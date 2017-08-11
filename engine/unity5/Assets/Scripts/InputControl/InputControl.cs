@@ -279,7 +279,6 @@ public static class InputControl
     /// <param name="secondary">Secondary input.</param>
     public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary)
     {
-        Debug.Log("setKey");
         return setKey(name, controlIndex, argToInput(primary), argToInput(secondary));
     }
 
@@ -1431,15 +1430,12 @@ public static class InputControl
             {
                 case 0:
                     mKeysListPlayer1.Add(outKey);
-                    Debug.Log("Button P1: " + mKeysListPlayer1.Count);
                     break;
                 case 1:
                     mKeysListPlayer2.Add(outKey);
-                    Debug.Log("Button P2: " + mKeysListPlayer2.Count);
                     break;
                 case 2:
                     mKeysListPlayer3.Add(outKey);
-                    Debug.Log("Button P3: " + mKeysListPlayer3.Count);
                     break;
                 case 3:
                     mKeysListPlayer4.Add(outKey);
@@ -1631,15 +1627,12 @@ public static class InputControl
             {
                 case 0:
                     mAxesListPlayer1.Add(outAxis);
-                    Debug.Log("Axis P1: " + mAxesListPlayer1.Count);
                     break;
                 case 1:
                     mAxesListPlayer2.Add(outAxis);
-                    Debug.Log("Axis P2: " + mAxesListPlayer2.Count);
                     break;
                 case 3:
                     mAxesListPlayer2.Add(outAxis);
-                    Debug.Log("Axis P3: " + mAxesListPlayer3.Count);
                     break;
                 case 4:
                     mAxesListPlayer3.Add(outAxis);

@@ -232,10 +232,14 @@ public class Controls
     /// </summary>
     public static void TankDrive()
     {
-        RemoveArcadeKeys();
-        TankControls();
+        if (GameObject.Find("Content").GetComponent<CreateButton>() != null)
+        {
+            RemoveArcadeKeys();
+        }
 
+        TankControls();
         IsTankDrive = true;
+
         if (GameObject.Find("SettingsMode") != null)
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();

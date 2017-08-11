@@ -35,7 +35,6 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnSaveClick()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
         Controls.Save();
         UserMessageManager.Dispatch("Player preferances saved.", 5);
     }
