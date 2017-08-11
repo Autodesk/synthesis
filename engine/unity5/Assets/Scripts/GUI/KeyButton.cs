@@ -61,6 +61,8 @@ public class KeyButton : MonoBehaviour
 
             case 0:
                 mKeyText.text = keyMapping.primaryInput.ToString();
+                Debug.Log("PlayerOne " + InputControl.getPlayerOneKeys()[0].ToString());
+                Debug.Log("Main " + InputControl.getKeysList()[0].ToString());
                 break;
             case 1:
                 mKeyText.text = keyMapping.secondaryInput.ToString();

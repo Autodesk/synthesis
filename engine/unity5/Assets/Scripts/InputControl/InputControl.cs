@@ -1397,7 +1397,6 @@ public static class InputControl
             outKey.primaryInput = primary;
             outKey.secondaryInput = secondary;
             outKey.thirdInput = third;
-            Debug.Log("TryGetValue");
         }
         else
         {
@@ -1415,7 +1414,6 @@ public static class InputControl
                     break;
             }
 
-            Debug.Log("outside switch");
             mKeysList.Add(outKey);
             mKeysMap.Add(name, outKey);
         }
