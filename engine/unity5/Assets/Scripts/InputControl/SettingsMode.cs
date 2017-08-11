@@ -66,12 +66,6 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
-    public void OnPlayerOne()
-    {
-        GameObject.Find("Content").GetComponent<CreateButton>().DestroyList();
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
-    }
-
     /// <summary>
     /// Enables tank drive.
     /// </summary>
@@ -99,19 +93,37 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
-    public void UpdateTankText()
+    #region Player Buttons
+    public void OnPlayerOne()
     {
-        if (Controls.IsTankDrive)
-        {
-            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Arcade Drive";
-        }
-        else
-        {
-            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Tank Drive";
-        }
+        GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
     }
+
+    public void OnPlayerTwo()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().PlayerTwo();
+    }
+
+    public void OnPlayerThree()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().PlayerThree();
+    }
+
+    public void OnPlayerFour()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().PlayerFour();
+    }
+
+    public void OnPlayerFive()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().PlayerFive();
+    }
+
+    public void OnPlayerSix()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().PlayerSix();
+    }
+    #endregion
 
     /// <summary>
     /// Updates all the key buttons.
