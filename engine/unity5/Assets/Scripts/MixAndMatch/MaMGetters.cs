@@ -18,6 +18,8 @@ public class MaMGetters : MonoBehaviour {
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheMac");
             case 2: //Swerve Drive
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheSwerve");
+            case 3: //Narrow Drive
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Non");
         }
 
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\DriveBase2557");
@@ -33,9 +35,11 @@ public class MaMGetters : MonoBehaviour {
         {
             case 0: //No manipulator
                 MixAndMatchMode.hasManipulator = false;
+                PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
                 break;
             case 1: //SyntheClaw
                 MixAndMatchMode.hasManipulator = true;
+                PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
         }
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
@@ -45,7 +49,7 @@ public class MaMGetters : MonoBehaviour {
     /// Returns the coefficient of friction value associated with a wheel. The coeffecient of friction is taken from VexPro's website. 
     /// These may need to be adjusted.
     /// </summary>
-    public static float GetWheelFriction(int wheelID)
+    public float GetWheelFriction(int wheelID)
     {
         switch (wheelID)
         {
@@ -64,7 +68,7 @@ public class MaMGetters : MonoBehaviour {
     ///<summary>
     ///Returns the wheel mass associated with a wheel. Masses are taken off Vex's website and converted to kilograms.
     /// </summary>
-    public static float GetWheelMass(int wheelID)
+    public float GetWheelMass(int wheelID)
     {
         switch (wheelID)
         {

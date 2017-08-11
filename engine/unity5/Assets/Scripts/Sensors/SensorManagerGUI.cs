@@ -77,11 +77,12 @@ class SensorManagerGUI : MonoBehaviour
 
     private void Update()
     {
+        //Find the dynamic camera
         if (dynamicCamera == null)
         {
             dynamicCamera = GameObject.Find("Main Camera").GetComponent<DynamicCamera>();
         }
-        //When the current sensor is ready to be configured, call its UpdateTransformFunction
+        //When the current sensor is ready to be configured, call its UpdateTransformFunction and update its angle, range & node text in the corresponding panels
         if (currentSensor != null && currentSensor.IsChangingPosition)
         {
             currentSensor.UpdateTransform();
@@ -653,7 +654,7 @@ class SensorManagerGUI : MonoBehaviour
         if (GameObject.Find(currentSensor.name + "_Panel") == null)
         {
             int index = sensorManager.GetSensorIndex(currentSensor.gameObject);
-            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1185, 700 - (index+1) * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
+            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1190, 690 - (index+1) * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
             panel.transform.parent = canvas.transform;
             panel.name = currentSensor.name + "_Panel";
             sensorOutputPanels.Add(panel);
@@ -666,20 +667,37 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void ShiftOutputPanels()
     {
-        //Find the deleted sensor's corresponding panel and destroy it
-        GameObject uselessPanel = GameObject.Find(currentSensor.name + "_Panel");
-        sensorOutputPanels.Remove(uselessPanel);
-        Destroy(uselessPanel);
-
-        //Shift position of remaining panels
-        foreach (GameObject panel in sensorOutputPanels)
+        DisplayAllOutput();
+        currentSensor = null;
+        if (sensorManager.GetInactiveSensors().Count != 0)
         {
-            string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
-            GameObject sensor = GameObject.Find(sensorName);
-            panel.transform.position = new Vector3(1185, 700 - (sensorManager.GetSensorIndex(sensor)+1) * 60, 0);
+            foreach (GameObject sensor in sensorManager.GetInactiveSensors())
+            {
+                GameObject uselessPanel = GameObject.Find(sensor.name + "_Panel");
+                if (sensorOutputPanels.Contains(uselessPanel))
+                {
+                    sensorOutputPanels.Remove(uselessPanel);
+                    Destroy(uselessPanel);
+                }
+            }
+        }
+        //Shift position of remaining panels
+        if (sensorOutputPanels.Count > 0)
+        {
+            foreach (GameObject panel in sensorOutputPanels)
+            {
+                string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
+                GameObject sensor = GameObject.Find(sensorName);
+                panel.transform.position = new Vector3(1190, 690 - (sensorManager.GetSensorIndex(sensor) + 1) * 60, 0);
+            }
+        }
+        else
+        {
+            hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Show Sensor Output";
+            hideOutputPanelsButton.SetActive(false);
         }
     }
-
+    
     /// <summary>
     /// Toggle between showing sensor output and hiding them
     /// </summary>
@@ -734,7 +752,12 @@ class SensorManagerGUI : MonoBehaviour
         {
             currentSensor.IsChangingPosition = false;
         }
-        dynamicCamera.SwitchToState(preConfigState);
+
+        if (preConfigState != null)
+        {
+            dynamicCamera.SwitchToState(preConfigState);
+            preConfigState = null;
+        }
     }
 }
 

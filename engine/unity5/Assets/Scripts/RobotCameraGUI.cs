@@ -26,7 +26,7 @@ class RobotCameraGUI : MonoBehaviour
 
     GameObject robotCameraViewWindow;
     RenderTexture robotCameraView;
-    RobotCamera robotCamera;
+    RobotCameraManager robotCamera;
 
     GameObject robotCameraIndicator;
     GameObject showCameraButton;
@@ -71,13 +71,12 @@ class RobotCameraGUI : MonoBehaviour
             UpdateNodeAttachment();
         }
 
-        if (CameraIndicator.activeSelf)
-        {
+        
             CameraIndicator.transform.position = robotCamera.CurrentCamera.transform.position;
             CameraIndicator.transform.rotation = robotCamera.CurrentCamera.transform.rotation;
 
             CameraIndicator.transform.parent = robotCamera.CurrentCamera.transform;
-        }
+        
     }
 
     #region robot camera GUI functions
@@ -96,7 +95,7 @@ class RobotCameraGUI : MonoBehaviour
 
         //For camera indicator
         robotCameraListObject = GameObject.Find("RobotCameraList");
-        robotCamera = robotCameraListObject.GetComponent<RobotCamera>();
+        robotCamera = robotCameraListObject.GetComponent<RobotCameraManager>();
 
         if (CameraIndicator == null)
         {
@@ -303,7 +302,7 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void UpdateCameraAnglePanel()
     {
-        if (!isEditingAngle)
+        if (!isEditingAngle && robotCamera.CurrentCamera != null)
         {
             xAngleEntry.GetComponent<InputField>().text = robotCamera.CurrentCamera.transform.localEulerAngles.x.ToString();
             yAngleEntry.GetComponent<InputField>().text = robotCamera.CurrentCamera.transform.localEulerAngles.y.ToString();
@@ -373,7 +372,7 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void UpdateCameraFOVPanel()
     {
-        if (!isEditingFOV)
+        if (!isEditingFOV && robotCamera.CurrentCamera != null)
         {
             FOVEntry.GetComponent<InputField>().text = robotCamera.CurrentCamera.GetComponent<Camera>().fieldOfView.ToString();
         }
@@ -437,6 +436,7 @@ class RobotCameraGUI : MonoBehaviour
 
     public void UpdateNodeAttachment()
     {
+        if(robotCamera.CurrentCamera != null)
         cameraNodeText.text = "Current Node: " + robotCamera.CurrentCamera.transform.parent.gameObject.name;
     }
 

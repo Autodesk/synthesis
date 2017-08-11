@@ -17,7 +17,7 @@ namespace BxDFieldExporter
     {
         //Used to access StandardAddInServer's exposed API
         private Inventor.Application mApplication;
-        private AutomationInterface mAddInInterface;
+        private IAutomationInterface mAddInInterface;
 
         public AddPart()
         {
@@ -46,21 +46,22 @@ namespace BxDFieldExporter
                 {
                     
                     //Calls Automation property    
-                    mAddInInterface = (AutomationInterface)oAddIn.Automation;
+                    mAddInInterface = (IAutomationInterface)oAddIn.Automation;
                 }
             }
         }
 
         private void OKButton_OnClick(object sender, EventArgs e)
         {
-            mAddInInterface.setRunOnce(false);
+            mAddInInterface.SetRunOnce(false);
+            mAddInInterface.SetDone(true);
             this.Close();
         }
 
         private void CancelButton_onClick(object sender, EventArgs e)
         {
-            mAddInInterface.setCancel(true);
-            mAddInInterface.setRunOnce(false);
+            mAddInInterface.SetCancel(true);
+            mAddInInterface.SetRunOnce(false);
             this.Close();
         }
 
@@ -71,15 +72,30 @@ namespace BxDFieldExporter
 
         private void CancelButton_onClick(object sender, MouseEventArgs e)
         {
-            mAddInInterface.setCancel(true);
-            mAddInInterface.setRunOnce(false);
+            mAddInInterface.SetCancel(true);
+            mAddInInterface.SetRunOnce(false);
             this.Close();
         }
 
         private void CancelButton_onClick(object sender, FormClosedEventArgs e)
         {
-            mAddInInterface.setCancel(true);
-            mAddInInterface.setRunOnce(false);
+            mAddInInterface.SetCancel(true);
+            mAddInInterface.SetRunOnce(false);
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                this.Close();
+
+            }
+            else if (keyData == Keys.Enter)
+            {
+                this.Close();
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

@@ -17,8 +17,8 @@ public abstract class SensorBase : MonoBehaviour
     public bool IsChangingRange { get; set; }
     private static float positionSpeed = 0.5f;
     private static float rotationSpeed = 25;
+    public Robot Robot { get; set; }
 
-    
     // Use this for initialization
     void Start()
     {
@@ -111,4 +111,6 @@ public abstract class SensorBase : MonoBehaviour
     {
 
     }
+
+    
 }

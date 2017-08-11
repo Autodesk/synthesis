@@ -11,11 +11,11 @@ public partial class RigidNode : RigidNode_Base
     float WHEEL_MASS_SCALE = 15f;
     float WHEEL_FRICTION = 1f;
 
-    private void OrientWheelNormals()
+    public void OrientWheelNormals()
     {
         if (GetSkeletalJoint() is RotationalJoint_Base)
         {
-            Vector3 com = ((RigidNode)GetParent()).physicalProperties.centerOfMass.AsV3();
+            Vector3 com = ((RigidNode)GetParent()).PhysicalProperties.centerOfMass.AsV3();
             RotationalJoint_Base rJoint = (RotationalJoint_Base)GetSkeletalJoint();
             Vector3 diff = rJoint.basePoint.AsV3() - com;
 

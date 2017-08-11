@@ -14,7 +14,7 @@ namespace BxDFieldExporter {
         /// 
         public EnterName() {
             InitializeComponent();
-
+            nameTextBox.KeyDown += new KeyEventHandler(EnterName_KeyDown);
         }
 
         /// <summary>
@@ -38,6 +38,29 @@ namespace BxDFieldExporter {
         }
         private void CancleButton_OnClick(object sender, EventArgs e) {
             this.Dispose(true);
+        }
+
+        private void EnterName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                name = nameTextBox.Text;
+                StandardAddInServer.AddComponent(name);
+                this.Close();
+                this.Dispose(true);
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape && nameTextBox.Focused)
+            {
+                this.Close();
+                this.Dispose(true);
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

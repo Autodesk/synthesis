@@ -391,7 +391,7 @@ public class DynamicCamera : MonoBehaviour
             }
             else
             {
-                target = GameObject.Find("RobotCameraList").GetComponent<RobotCamera>().CurrentCamera;
+                target = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>().CurrentCamera;
             }
         
         }

@@ -1,11 +1,7 @@
 fileFormatVersion: 2
-guid: 9f2825cf593a1ff4283fd4fee244cdf4
+guid: 7d1e48b619c4dee459f2d1c022884011
 folderAsset: yes
-<<<<<<< HEAD:engine/unity5/Assets/Standard Assets/CrossPlatformInput.meta
-timeCreated: 1501870311
-=======
-timeCreated: 1500675561
->>>>>>> MixAndMatch:engine/unity5/Assets/Scripts/InputControl.meta
+timeCreated: 1501521544
 licenseType: Free
 DefaultImporter:
   userData: 

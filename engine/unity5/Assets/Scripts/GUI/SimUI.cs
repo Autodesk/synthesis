@@ -17,6 +17,8 @@ public class SimUI : MonoBehaviour
     Toolkit toolkit;
     DriverPracticeMode dpm;
     SensorManagerGUI sensorManagerGUI;
+    SensorManager sensorManager;
+    RobotCameraManager robotCameraManager;
 
     GameObject canvas;
 
@@ -31,6 +33,7 @@ public class SimUI : MonoBehaviour
 
 
     GameObject changeRobotPanel;
+    GameObject robotListPanel;
     GameObject changeFieldPanel;
     GameObject addRobotPanel;
 
@@ -124,13 +127,11 @@ public class SimUI : MonoBehaviour
 
         addRobotPanel = AuxFunctions.FindObject("MultiplayerPanel");
 
-
-
         driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
         changeRobotPanel = AuxFunctions.FindObject(canvas, "ChangeRobotPanel");
-        changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
+        robotListPanel = AuxFunctions.FindObject(changeRobotPanel, "RobotListPanel");
 
-        driverStationPanel = AuxFunctions.FindObject(canvas, "DriverStationPanel");
+        changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
 
@@ -141,6 +142,9 @@ public class SimUI : MonoBehaviour
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
 
         unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
+
+        sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
     }
 
 
@@ -173,11 +177,42 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedReplay", string.Empty);
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
+            PlayerPrefs.Save();
+
+            robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
+            sensorManager.RemoveSensorsFromRobot(main.activeRobot);
+
             main.ChangeRobot(directory);
         }
         else
         {
             UserMessageManager.Dispatch("Robot directory not found!", 5);
+        }
+    }
+
+    /// <summary>
+    /// Changes the drive base, destroys old manipulator and creates new manipulator, sets wheels
+    /// </summary>
+    public void MaMChangeRobot(string robotDirectory, string manipulatorDirectory, int robotHasManipulator)
+    {
+        robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
+        sensorManager.RemoveSensorsFromRobot(main.activeRobot);
+
+        //Change the drive base 
+        main.ChangeRobot(robotDirectory);
+
+        //If the current robot has a manipulator, destroy the manipulator
+        if (robotHasManipulator == 1) //0 is false, 1 is true
+        {
+            main.DeleteManipulatorNodes();
+            
+        }
+
+        //If the new robot has a manipulator, load the manipulator
+        int newRobotHasManipulator = PlayerPrefs.GetInt("hasManipulator");
+        if (newRobotHasManipulator == 1) //0 is false, 1 is true
+        {
+            main.LoadManipulator(manipulatorDirectory);
         }
     }
 
@@ -191,6 +226,7 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             changeRobotPanel.SetActive(true);
+            robotListPanel.SetActive(true);
         }
     }
 
@@ -256,7 +292,7 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         CloseOrientWindow();
-        main.IsResetting = false;   
+        main.IsResetting = false;
 
         dpm.EndProcesses();
         toolkit.EndProcesses();
@@ -400,12 +436,10 @@ public class SimUI : MonoBehaviour
         {
             EndOtherProcesses();
             inputManagerPanel.SetActive(true);
-            unitConversionButton.SetActive(true);
         }
         else
         {
             inputManagerPanel.SetActive(false);
-            unitConversionButton.SetActive(false);
         }
     }
 
@@ -432,9 +466,20 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Toggles between meter and feet measurements
+    /// </summary>
     public void ToggleUnitConversion()
     {
         main.IsMetric = !main.IsMetric;
+        if (main.IsMetric)
+        {
+            unitConversionButton.GetComponentInChildren<Text>().text = "To Feet";
+        }
+        else
+        {
+            unitConversionButton.GetComponentInChildren<Text>().text = "To Meter";
+        }
     }
     #region swap part
     /// <summary>
@@ -451,10 +496,11 @@ public class SimUI : MonoBehaviour
         if (panel.activeSelf == true)
         {
             panel.SetActive(false);
-        } else
+        }
+        else
         {
             panel.SetActive(true);
-        } 
+        }
     }
 
     public void PartToggleWindow(string Window)
