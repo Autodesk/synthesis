@@ -10,6 +10,7 @@ using System.IO;
 using Assets.Scripts.FEA;
 using Assets.Scripts.FSM;
 using System.Linq;
+using Assets.Scripts.BUExtensions;
 
 public class MainState : SimState
 {
@@ -31,9 +32,11 @@ public class MainState : SimState
     private DynamicCamera dynamicCamera;
     public GameObject dynamicCameraObject;
 
-    private RobotCameraManager robotCamera;
+    private RobotCameraManager robotCameraManager;
     public GameObject robotCameraObject;
 
+    private SensorManager sensorManager;
+    private SensorManagerGUI sensorManagerGUI;
     //Testing camera location, can be deleted later
     private Vector3 robotCameraPosition = new Vector3(0f, 0.5f, 0f);
     private Vector3 robotCameraRotation = new Vector3(0f, 0f, 0f);
@@ -84,6 +87,7 @@ public class MainState : SimState
     {
         //getting bullet physics information
         physicsWorld = BPhysicsWorld.Get();
+        ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BRobotManager.Instance.UpdateRaycastRobots);
         lastFrameCount = physicsWorld.frameCount;
 
         //setting up replay
@@ -108,8 +112,8 @@ public class MainState : SimState
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 1); //0 is true, 1 is false
-            if (isMixAndMatch == 0 && MixAndMatchMode.hasManipulator)
+            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
+            if (isMixAndMatch == 1 && MixAndMatchMode.hasManipulator)
             {
                 Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
             }
@@ -123,8 +127,12 @@ public class MainState : SimState
         //initializes the dynamic camera
         dynamicCameraObject = GameObject.Find("Main Camera");
         dynamicCamera = dynamicCameraObject.AddComponent<DynamicCamera>();
-
         DynamicCamera.MovingEnabled = true;
+
+        sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
+        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
+
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
     }
 
     /// <summary>
@@ -229,24 +237,6 @@ public class MainState : SimState
             if (activeRobot == null)
             {
                 activeRobot = robot;
-
-                ////Robot camera feature
-                //if (robotCamera == null)
-                //{
-                //    robotCameraObject = GameObject.Find("RobotCameraList");
-                //    robotCamera = robotCameraObject.GetComponent<RobotCamera>();
-                //}
-
-                //robotCamera.RemoveCameras();
-                ////The camera data should be read here as a foreach loop and included in robot file
-                ////Attached to main frame and face the front
-                //robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition, robotCameraRotation);
-                ////Attached to the first node and face the front
-                //robotCamera.AddCamera(robotObject.transform.GetChild(1).transform, robotCameraPosition2, robotCameraRotation2);
-                ////Attached to main frame and face the back
-                //robotCamera.AddCamera(robotObject.transform.GetChild(0).transform, robotCameraPosition3, robotCameraRotation3);
-
-                //robotCameraObject.SetActive(true);
             }
 
             robot.controlIndex = SpawnedRobots.Count;
@@ -263,6 +253,9 @@ public class MainState : SimState
     /// <returns>whether the process was successful</returns>
     public bool ChangeRobot(string directory)
     {
+        
+        sensorManager.RemoveSensorsFromRobot(activeRobot);
+        sensorManagerGUI.ShiftOutputPanels();
         return activeRobot.InitializeRobot(directory, this);
     }
 
@@ -305,8 +298,11 @@ public class MainState : SimState
 
     public void RemoveRobot(int index)
     {
+        robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
+        sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
         if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
         {
+            
             GameObject.Destroy(SpawnedRobots[index].gameObject);
             SpawnedRobots.RemoveAt(index);
             activeRobot = null;

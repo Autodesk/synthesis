@@ -453,7 +453,8 @@ public class MainMenu : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobotName", simSelectedRobotName);
             PlayerPrefs.Save();
             Application.LoadLevel("Scene");
-            PlayerPrefs.SetInt("MixAndMatch", 1); //0 means true, 1 means false
+            PlayerPrefs.SetInt("MixAndMatch", 0); //0 means false, 1 means true
+
         }
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
@@ -813,7 +814,7 @@ public class MainMenu : MonoBehaviour
         robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
         robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
-        fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the field directory no longer exists, set it to the default application path.
+        fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : fieldDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the field directory no longer exists, set it to the default application path.
 
         simSelectedField = PlayerPrefs.GetString("simSelectedField");
         simSelectedFieldName = (Directory.Exists(simSelectedField)) ? PlayerPrefs.GetString("simSelectedFieldName", "No Field Selected!") : "No Field Selected!";

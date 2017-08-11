@@ -71,13 +71,12 @@ class RobotCameraGUI : MonoBehaviour
             UpdateNodeAttachment();
         }
 
-        if (CameraIndicator.activeSelf)
-        {
+        
             CameraIndicator.transform.position = robotCamera.CurrentCamera.transform.position;
             CameraIndicator.transform.rotation = robotCamera.CurrentCamera.transform.rotation;
 
             CameraIndicator.transform.parent = robotCamera.CurrentCamera.transform;
-        }
+        
     }
 
     #region robot camera GUI functions

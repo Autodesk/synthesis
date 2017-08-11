@@ -17,6 +17,8 @@ public class SimUI : MonoBehaviour
     Toolkit toolkit;
     DriverPracticeMode dpm;
     SensorManagerGUI sensorManagerGUI;
+    SensorManager sensorManager;
+    RobotCameraManager robotCameraManager;
 
     GameObject canvas;
 
@@ -140,6 +142,9 @@ public class SimUI : MonoBehaviour
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
 
         unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
+
+        sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
     }
 
 
@@ -173,8 +178,10 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedRobot", directory);
             PlayerPrefs.SetString("simSelectedRobotName", panel.GetComponent<ChangeRobotScrollable>().selectedEntry);
             PlayerPrefs.Save();
-            RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
-            rc.DetachCameras(main.activeRobot);
+
+            robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
+            sensorManager.RemoveSensorsFromRobot(main.activeRobot);
+
             main.ChangeRobot(directory);
         }
         else
@@ -188,8 +195,8 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void MaMChangeRobot(string directory)
     {
-        RobotCameraManager rc = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
-        rc.DetachCameras(main.activeRobot);
+        robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
+        sensorManager.RemoveSensorsFromRobot(main.activeRobot);
         // string directory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\";
         main.ChangeRobot(directory);
     }
