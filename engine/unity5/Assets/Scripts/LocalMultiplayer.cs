@@ -75,6 +75,7 @@ public class LocalMultiplayer : MonoBehaviour {
         {
             simUI.EndOtherProcesses();
             multiplayerWindow.SetActive(true);
+            UpdateUI();
         }
     }
 
@@ -116,6 +117,12 @@ public class LocalMultiplayer : MonoBehaviour {
         UpdateUI();
     }
 
+    public void ToggleChangeRobotPanel()
+    {
+        simUI.ToggleChangeRobotPanel();
+        multiplayerWindow.SetActive(true);
+    }
+
     /// <summary>
     /// Adds a new robot to the field based on user selection in the popup robot list window
     /// </summary>
@@ -154,7 +161,6 @@ public class LocalMultiplayer : MonoBehaviour {
         }
         else
         {
-            simUI.EndOtherProcesses();
             addRobotWindow.SetActive(true);
         }
     }
@@ -199,7 +205,7 @@ public class LocalMultiplayer : MonoBehaviour {
         highlight.transform.position = robotButtons[activeIndex].transform.position;
 
         GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
-        GameObject.Find("ControlIndexText").GetComponent<Text>().text = "Control Index: " + (mainState.SpawnedRobots[activeIndex].controlIndex + 1);
+        GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
     }
 
     /// <summary>
@@ -208,5 +214,19 @@ public class LocalMultiplayer : MonoBehaviour {
     public void HideTooltip()
     {
         GameObject.Find("MultiplayerTooltip").SetActive(false);
+    }
+    
+    /// <summary>
+    /// Changes the control index of the active robot
+    /// </summary>
+    public void ChangeControlIndex(int index)
+    {
+        mainState.ChangeControlIndex(index);
+        UpdateUI();
+    }
+
+    public void EndProcesses()
+    {
+        if (multiplayerWindow.activeSelf) ToggleMultiplayerWindow();
     }
 }

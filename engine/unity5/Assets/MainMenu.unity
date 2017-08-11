@@ -1741,7 +1741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a7935f29428d14ab40056caa715af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  listType: 
+  listType: Replays
 --- !u!114 &224614001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6025,7 +6025,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1004531418
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7055,7 +7055,7 @@ Prefab:
       objectReference: {fileID: 860403445}
     - target: {fileID: 1283820611311570, guid: 2e1458182e7af5a459513738338549fc, type: 2}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224640275956595058, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}

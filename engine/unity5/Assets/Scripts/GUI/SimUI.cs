@@ -16,6 +16,7 @@ public class SimUI : MonoBehaviour
     DynamicCamera camera;
     Toolkit toolkit;
     DriverPracticeMode dpm;
+    LocalMultiplayer multiplayer;
     SensorManagerGUI sensorManagerGUI;
     SensorManager sensorManager;
     RobotCameraManager robotCameraManager;
@@ -82,6 +83,7 @@ public class SimUI : MonoBehaviour
 
             toolkit = GetComponent<Toolkit>();
             dpm = GetComponent<DriverPracticeMode>();
+            multiplayer = GetComponent<LocalMultiplayer>();
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
             FindElements();
@@ -302,6 +304,8 @@ public class SimUI : MonoBehaviour
 
         dpm.EndProcesses();
         toolkit.EndProcesses();
+        multiplayer.EndProcesses();
+        
         sensorManagerGUI.EndProcesses();
     }
     #endregion
