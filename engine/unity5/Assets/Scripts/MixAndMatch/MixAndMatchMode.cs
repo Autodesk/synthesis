@@ -163,9 +163,6 @@ public class MixAndMatchMode : MonoBehaviour
     /// </summary>
     public void StartSwapSim()
     {
-        //PlayerPrefs.SetString("simSelectedField", "C:\\Program Files (x86)\\Autodesk\\Synthesis\\Synthesis\\Fields\\2014 Aerial Assist");
-        //PlayerPrefs.SetString("simSelectedFieldName", "2014 Aerial Assist");
-        
         PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
         PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
@@ -176,13 +173,25 @@ public class MixAndMatchMode : MonoBehaviour
         SceneManager.LoadScene("MixAndMatch");
     }
 
+    /// <summary>
+    /// When the user changes wheels/drive bases/manipulators within the simulator, changes the robot.
+    /// </summary>
     public void ChangeMaMRobot()
     {
-            PlayerPrefs.SetString("simSelectedReplay", string.Empty);
-            PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
-            PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
+        int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
+
+        string baseDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
+        string manipulatorDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator);
+
+        PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+        PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
+        PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
+        PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
+        PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+
         GameObject stateMachine = GameObject.Find("StateMachine");
-        stateMachine.GetComponent<SimUI>().MaMChangeRobot(mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
+
+        stateMachine.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory, robotHasManipulator);
     }
 
     #region Presets
@@ -309,7 +318,7 @@ public class MixAndMatchMode : MonoBehaviour
     }
 
     #endregion
-    
+
     #region Selecters
     /// <summary>
     /// Selects a wheel, as referenced by its index in the wheels list.
@@ -374,7 +383,7 @@ public class MixAndMatchMode : MonoBehaviour
         //selects the manipulator that is clicked
         SetColor(manipulators[manipulator], purple);
         this.gameObject.GetComponent<MaMInfoText>().SetManipulatorInfoText(manipulator);
-        hasManipulator = (manipulator == 0) ? false : true;
+        //hasManipulator = (manipulator == 0) ? false : true;
         selectedManipulator = manipulator;
     }
 

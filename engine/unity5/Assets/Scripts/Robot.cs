@@ -103,20 +103,18 @@ public class Robot : MonoBehaviour
         {
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
             else DriveJoints.UpdateAllMotors(rootNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0);
+            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); //0 is false, 1 is true
            
-            int isManipulator = PlayerPrefs.GetInt("HasManipulator", 0); //0 is false, 1 is true
-            Debug.Log("Has Manipulator: " + isManipulator);
+            int isManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
+            
+            //If the robot is in Mix and Match mode and has a manipulator, update the manipulator motors
             if (isManipulator == 1 && isMixAndMatch == 1)
             {
-                Debug.Log("should be moving manipulator!");
-
                 UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
                 emptyDIO[0] = new UnityPacket.OutputStatePacket.DIOModule();
                 emptyDIO[1] = new UnityPacket.OutputStatePacket.DIOModule();
 
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
-
             }
         }
 
@@ -220,6 +218,23 @@ public class Robot : MonoBehaviour
         return true;
     }
 
+    public void DeleteNodes()
+    {
+        //Deletes all nodes if any exist, take the old node transforms out from the robot object
+        int childCount = manipulatorObject.transform.childCount;
+        for (int i = childCount - 1; i >= 0; i--)
+        {
+            Transform child = manipulatorObject.transform.GetChild(i);
+
+            //If not do this the game object is destroyed but the parent-child transform relationship remains!
+            child.parent = null;
+            Destroy(child.gameObject);
+        }
+
+        Destroy(manipulatorObject);
+    }
+
+     
     /// <summary>
     /// Return the robot to robotStartPosition and destroy extra game pieces
     /// </summary>
