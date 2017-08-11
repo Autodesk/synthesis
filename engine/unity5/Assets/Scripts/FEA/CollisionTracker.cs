@@ -72,31 +72,31 @@ namespace Assets.Scripts.FEA
 
             BRigidBody obA = pm.Body0.UserObject as BRigidBody;
             BRigidBody obB = pm.Body1.UserObject as BRigidBody;
+            BRigidBody robotBody = obA != null && obA.gameObject.name.StartsWith("node") ? obA : obB != null && obB.gameObject.name.StartsWith("node") ? obB : null;
 
-            if ((obA == null || obB == null) || (!obA.gameObject.name.StartsWith("node") && !obB.gameObject.name.StartsWith("node")))
+            if (robotBody == null)
                 return;
 
             int numContacts = pm.NumContacts;
 
             for (int i = 0; i < framesPassed; i++)
             {
-                if (numContacts - 1 - i < 0)
-                    break;
-
-                ManifoldPoint mp = pm.GetContactPoint(numContacts - 1 - i);
+                ManifoldPoint mp = pm.GetContactPoint(i);
 
                 ContactDescriptor cd = new ContactDescriptor
                 {
                     AppliedImpulse = mp.AppliedImpulse,
                     Position = (mp.PositionWorldOnA + mp.PositionWorldOnB) * 0.5f,
-                    RobotBody = obA.name.StartsWith("node") ? obA : obB
+                    RobotBody = robotBody
                 };
 
-                if (passedContacts[framesPassed - 1 - i] == null)
-                    passedContacts[framesPassed - 1 - i] = new List<ContactDescriptor>();
+                if (passedContacts[i] == null)
+                    passedContacts[i] = new List<ContactDescriptor>();
 
-                passedContacts[framesPassed - 1 - i].Add(cd);
+                passedContacts[i].Add(cd);
             }
+
+            pm.ClearManifold();
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Assets.Scripts.FEA
 
             for (int i = 0; i < framesPassed; i++)
             {
-                if (passedContacts != null && passedContacts.Length > i)
+                if (passedContacts != null)
                     ContactPoints.Add(passedContacts[i]);
                 else
                     ContactPoints.Add(null);

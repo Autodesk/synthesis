@@ -451,9 +451,18 @@ namespace Assets.Scripts.FEA
         }
 
         /// <summary>
-        /// Updates the positions and rotations of each tracker's parent object according to the replay time.
+        /// Pops the replay state if the tab key is pressed.
         /// </summary>
         public override void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Tab))
+                StateMachine.Instance.PopState();
+        }
+
+        /// <summary>
+        /// Updates the positions and rotations of each tracker's parent object according to the replay time.
+        /// </summary>
+        public override void LateUpdate()
         {
             if (dynamicCamera == null)
             {
@@ -535,21 +544,10 @@ namespace Assets.Scripts.FEA
 
                 float percent = replayTime - currentIndex;
 
-                RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
-
-                if (!r.IsActive)
-                    r.Activate();
-
-                BulletSharp.Math.Matrix worldTransform = r.WorldTransform;
-
-                worldTransform.Origin = BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent);
-                worldTransform.Basis = BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent);
-
-                r.WorldTransform = worldTransform;
+                BRigidBody rb = t.GetComponent<BRigidBody>();
+                rb.SetPosition(BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent).ToUnity());
+                rb.SetRotation(BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent).GetOrientation().ToUnity());
             }
-
-            if (Input.GetKeyDown(KeyCode.Tab))
-                StateMachine.Instance.PopState();
         }
 
         /// <summary>
