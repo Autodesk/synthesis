@@ -12,7 +12,7 @@ namespace Assets.Scripts.BUExtensions
     {
         private RigidNode node;
         private Vector3 axis;
-        private BRaycastRobot vehicle;
+        private BRaycastRobot robot;
         private BulletSharp.Math.Vector3 basePoint;
         private float radius;
 
@@ -30,9 +30,9 @@ namespace Assets.Scripts.BUExtensions
             this.node = node;
 
             RigidNode parent = (RigidNode)node.GetParent();
-            vehicle = parent.MainObject.GetComponent<BRaycastRobot>();
+            robot = parent.MainObject.GetComponent<BRaycastRobot>();
 
-            if (vehicle == null)
+            if (robot == null)
             {
                 Debug.LogError("Could not add BRaycastWheel because its parent does not have a BRaycastVehicle!");
                 Destroy(this);
@@ -47,9 +47,11 @@ namespace Assets.Scripts.BUExtensions
 
             radius = driverMeta.radius * 0.01f;
 
-            basePoint = (node.MainObject.transform.localPosition - parent.ComOffset).ToBullet() + new BulletSharp.Math.Vector3(0f, VerticalOffset, 0f);
+            Vector3 localPosition = parent.MainObject.transform.InverseTransformPoint(node.MainObject.transform.position);
 
-            wheelIndex = vehicle.AddWheel(driverMeta.type, basePoint, axis.normalized.ToBullet(), VerticalOffset, radius);
+            basePoint = localPosition.ToBullet() + new BulletSharp.Math.Vector3(0f, VerticalOffset, 0f);
+
+            wheelIndex = robot.AddWheel(driverMeta.type, basePoint, axis.normalized.ToBullet(), VerticalOffset, radius);
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace Assets.Scripts.BUExtensions
         /// <param name="force"></param>
         public void ApplyForce(float force)
         {
-            vehicle.RaycastRobot.ApplyEngineForce(-force * (SimTorque / radius), wheelIndex);
+            robot.RaycastRobot.ApplyEngineForce(-force * (SimTorque / radius), wheelIndex);
         }
 
         /// <summary>
@@ -74,13 +76,13 @@ namespace Assets.Scripts.BUExtensions
         /// </summary>
         private void Update()
         {
-            if (vehicle == null)
+            if (robot == null)
                 return;
 
             Vector3 velocity = ((RigidBody)transform.parent.GetComponent<BRigidBody>().GetCollisionObject()).GetVelocityInLocalPoint(basePoint).ToUnity();
             Vector3 localVelocity = transform.parent.InverseTransformDirection(velocity);
 
-            WheelInfo wheelInfo = vehicle.RaycastRobot.GetWheelInfo(wheelIndex);
+            WheelInfo wheelInfo = robot.RaycastRobot.GetWheelInfo(wheelIndex);
             Vector3 wheelAxle = wheelInfo.WheelAxleCS.ToUnity();
 
             transform.position = wheelInfo.WorldTransform.Origin.ToUnity();
