@@ -65,10 +65,12 @@ public class DriverPracticeRobot : MonoBehaviour
     //for gamepiece spawning customizability
     private List<UnityEngine.Vector3> gamepieceSpawn;
     private List<UnityEngine.Vector3> gamepieceGoal;
+    private List<float> gamepieceGoalSize;
     private GameObject spawnIndicator;
     private GameObject goalIndicator;
     public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
     public int settingGoal = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
+    public bool settingGoalVertical = false;
     private DynamicCamera.CameraState lastCameraState;
 
 
@@ -138,7 +140,10 @@ public class DriverPracticeRobot : MonoBehaviour
         gamepieceGoal = new List<UnityEngine.Vector3>();
         gamepieceGoal.Add(new UnityEngine.Vector3(0f, 3f, 0f));
         gamepieceGoal.Add(new UnityEngine.Vector3(0f, 3f, 0f));
-
+        
+        gamepieceGoalSize = new List<float>();
+        gamepieceGoalSize.Add(1f);
+        gamepieceGoalSize.Add(1f);
 
         drawnTrajectory = new List<LineRenderer>();
         drawnTrajectory.Add(gameObject.AddComponent<LineRenderer>());
@@ -482,6 +487,7 @@ public class DriverPracticeRobot : MonoBehaviour
         if (spawnIndicator != null)
         {
             ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
+            ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
             if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
             if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
             if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
@@ -490,6 +496,10 @@ public class DriverPracticeRobot : MonoBehaviour
             {
                 UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
                 gamepieceSpawn[index] = spawnIndicator.transform.position;
+                FinishGamepieceSpawn();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
                 FinishGamepieceSpawn();
             }
         }
@@ -528,8 +538,9 @@ public class DriverPracticeRobot : MonoBehaviour
                 }
                 goalIndicator.transform.position = gamepieceGoal[index];
                 settingGoal = index + 1;
+                settingGoalVertical = false;
 
-                DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                 DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                 lastCameraState = dynamicCamera.cameraState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
 
@@ -545,16 +556,50 @@ public class DriverPracticeRobot : MonoBehaviour
         int index = settingGoal - 1;
         if (goalIndicator != null)
         {
-            ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = goalIndicator;
-            if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-            if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-            if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-            if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
-            if (Input.GetKeyDown(KeyCode.Return))
+            if (!settingGoalVertical)
             {
-                UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
-                gamepieceGoal[index] = goalIndicator.transform.position;
-                FinishGamepieceGoal();
+                DynamicCamera.SateliteState satellite = ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
+                satellite.target = goalIndicator;
+                satellite.targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
+                satellite.rotationVector = new UnityEngine.Vector3(90f, 90f, 0f);
+                if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
+                if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
+                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
+                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.1f;
+                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.1f;
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    settingGoalVertical = true;
+                }
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    FinishGamepieceGoal();
+                }
+            }
+            else
+            {
+                DynamicCamera.SateliteState satellite = ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
+                satellite.target = goalIndicator;
+                satellite.targetOffset = new UnityEngine.Vector3(-6f, 0f, 0f);
+                satellite.rotationVector = new UnityEngine.Vector3(0f, 90f, 0f);
+                if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
+                if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
+                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.up * 0.1f;
+                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.down * 0.1f;
+                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.1f;
+                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.1f;
+                if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    UserMessageManager.Dispatch("New gamepiece goal location has been set!", 3f);
+                    gamepieceGoal[index] = goalIndicator.transform.position;
+                    gamepieceGoalSize[index] = goalIndicator.transform.localScale.x;
+                    FinishGamepieceGoal();
+                }
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    FinishGamepieceGoal();
+                }
             }
         }
     }
@@ -828,6 +873,9 @@ public class DriverPracticeRobot : MonoBehaviour
                 sb = new StringBuilder();
                 writer.WriteLine(sb.Append(gamepieceGoal[i].x).Append("|").Append(gamepieceGoal[i].y).Append("|").Append(gamepieceGoal[i].z));
 
+                writer.WriteLine("#Goal Size");
+                writer.WriteLine(gamepieceGoalSize[i]);
+
                 writer.WriteLine("#Intake Node");
                 writer.WriteLine(intakeNode[i].name);
 
@@ -875,25 +923,30 @@ public class DriverPracticeRobot : MonoBehaviour
                 }
                 else if (counter == 3)
                 {
-                    if (line.Equals("#Intake Node")) counter++;
+                    if (line.Equals("#Goal Size")) counter++;
                     else gamepieceGoal[index] = DeserializeVector3Array(line);
                 }
                 else if (counter == 4)
                 {
+                    if (line.Equals("#Intake Node")) counter++;
+                    else gamepieceGoalSize[index] = float.Parse(line);
+                }
+                else if (counter == 5)
+                {
                     if (line.Equals("#Release Node")) counter++;
                     else intakeNode[index] = GameObject.Find(line);
                 }
-                else if (counter == 5)
+                else if (counter == 6)
                 {
                     if (line.Equals("#Release Position")) counter++;
                     else releaseNode[index] = GameObject.Find(line);
                 }
-                else if (counter == 6)
+                else if (counter == 7)
                 {
                     if (line.Equals("#Release Velocity")) counter++;
                     else positionOffset[index] = DeserializeVector3Array(line);
                 }
-                else if (counter == 7)
+                else if (counter == 8)
                 {
                     if (line.Contains("#Gamepiece"))
                     {

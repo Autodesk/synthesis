@@ -296,8 +296,9 @@ public class DynamicCamera : MonoBehaviour
     public class SateliteState : CameraState
     {
         Vector3 targetPosition;
-        Vector3 rotationVector;
         public GameObject target;
+        public Vector3 targetOffset;
+        public Vector3 rotationVector;
 
         public SateliteState(MonoBehaviour mono)
         {
@@ -308,6 +309,7 @@ public class DynamicCamera : MonoBehaviour
         {
             target = GameObject.Find("Robot");
             targetPosition = target.transform.position;
+            targetOffset = new Vector3(0f, 6f, 0f);
             rotationVector = new Vector3(90f, 90f, 0f);
             mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
@@ -323,7 +325,8 @@ public class DynamicCamera : MonoBehaviour
                 targetPosition = target.transform.position;
             }
 
-            mono.transform.position = targetPosition + new Vector3(0f, 6f, 0f);
+            mono.transform.position = targetPosition + targetOffset;
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
 
         public override void End()
