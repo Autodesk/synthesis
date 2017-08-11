@@ -9,10 +9,10 @@ public partial class RigidNode : RigidNode_Base
 {
     public GameObject MainObject { get; private set; }
     public Vector3 ComOffset { get; set; }
+    public PhysicalProperties PhysicalProperties { get; private set; }
 
     private Transform root;
     private Component joint;
-    private PhysicalProperties physicalProperties;
 
     public RigidNode(Guid guid)
         : base(guid)
