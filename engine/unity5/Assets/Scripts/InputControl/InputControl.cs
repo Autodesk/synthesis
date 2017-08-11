@@ -262,6 +262,7 @@ public static class InputControl
     //==============================================================================
     public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary)
     {
+        Debug.Log("setKey");
         return setKey(name, controlIndex, argToInput(primary), argToInput(secondary));
     }
 
@@ -1396,6 +1397,7 @@ public static class InputControl
             outKey.primaryInput = primary;
             outKey.secondaryInput = secondary;
             outKey.thirdInput = third;
+            Debug.Log("TryGetValue");
         }
         else
         {
@@ -1405,9 +1407,15 @@ public static class InputControl
             {
                 case 0:
                     mKeysListPlayer1.Add(outKey);
+                    Debug.Log("setKey case 0 " + mKeysListPlayer1.Count);
+                    break;
+                default:
+                    mKeysList.Add(outKey);
+                    Debug.Log("setKey default");
                     break;
             }
 
+            Debug.Log("outside switch");
             mKeysList.Add(outKey);
             mKeysMap.Add(name, outKey);
         }
