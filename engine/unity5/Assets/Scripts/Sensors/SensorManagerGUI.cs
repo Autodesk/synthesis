@@ -398,10 +398,13 @@ class SensorManagerGUI : MonoBehaviour
         addBeamBreakerButton.SetActive(true);
         addGyroButton.SetActive(true);
 
-        sensorManager.RemoveSensor(currentSensor.gameObject);
-        ShiftOutputPanels();
-        Destroy(currentSensor.gameObject);
-
+        if (currentSensor != null)
+        {
+            sensorManager.RemoveSensor(currentSensor.gameObject);
+            ShiftOutputPanels();
+            Destroy(currentSensor.gameObject);
+            currentSensor = null;
+        }
         cancelTypeButton.SetActive(false);
     }
 
