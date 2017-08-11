@@ -18,42 +18,52 @@ public partial class RigidNode : RigidNode_Base
         Y
     }
 
-    public void CreateJoint()
+    public void CreateJoint(int numWheels)
     {
         if (joint != null || GetSkeletalJoint() == null)
         {
             return;
         }
 
-
         switch (GetSkeletalJoint().GetJointType())
         {
             case SkeletalJointType.ROTATIONAL:
 
-                WheelType wheelType = WheelType.NOT_A_WHEEL;
-
-                if (this.HasDriverMeta<WheelDriverMeta>())
+                if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
                 {
-                    OrientWheelNormals();
-                    wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
+                    RigidNode parent = (RigidNode)GetParent();
+
+                    if (parent.MainObject.GetComponent<BRaycastRobot>() == null)
+                    {
+                        BRaycastRobot robot = parent.MainObject.AddComponent<BRaycastRobot>();
+                        robot.NumWheels = numWheels;
+
+                        if (MixAndMatchMode.isMixAndMatchMode)
+                            robot.Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
+                    }
+
+                    WheelType wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
+                    MainObject.AddComponent<BRaycastWheel>().CreateWheel(this);
+                    MainObject.transform.parent = parent.MainObject.transform;
                 }
-
-                RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
-
-                BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
-                Vector3 rAxis = rNode.axis.AsV3().normalized;
-
-                hc.axisInA = rAxis;
-                hc.axisInB = rAxis;
-
-                if (hc.setLimit = rNode.hasAngularLimit)
+                else
                 {
-                    hc.lowLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitHigh;
-                    hc.highLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitLow;
+                    RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
+
+                    BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
+                    Vector3 rAxis = rNode.axis.AsV3().normalized;
+
+                    hc.axisInA = rAxis;
+                    hc.axisInB = rAxis;
+
+                    if (hc.setLimit = rNode.hasAngularLimit)
+                    {
+                        hc.lowLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitHigh;
+                        hc.highLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitLow;
+                    }
+
+                    hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
                 }
-
-                hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
-
                 break;
             case SkeletalJointType.CYLINDRICAL:
 

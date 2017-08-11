@@ -5,8 +5,9 @@ using System.Text;
 using UnityEngine;
 using BulletUnity;
 using BulletSharp;
+using Assets.Scripts.BUExtensions;
 
-public class DriveJoints : MonoBehaviour
+public class DriveJoints
 {
     private const float SPEED_ARROW_PWM = 0.5f;
     private const float WHEEL_MAX_SPEED = 300f;
@@ -20,6 +21,7 @@ public class DriveJoints : MonoBehaviour
     private const float MAX_SLIDER_FORCE = 1000f;
     private const float MAX_SLIDER_SPEED = 2f;
 
+    private static List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
 
     enum MecanumPorts { FRONT_RIGHT, FRONT_LEFT, BACK_RIGHT, BACK_LEFT };
 
@@ -83,25 +85,104 @@ public class DriveJoints : MonoBehaviour
         return MathfExt.ToDegrees(Mathf.Acos(Vector3.Dot(childUp, parentUp) / (childUp.magnitude * parentUp.magnitude)));
     }
 
+    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
+    {
+        if (dioModules[0] == null)
+            return;
 
+        float[] pwm = dioModules[0].pwmValues;
+        float[] can = dioModules[0].canValues;
+
+            pwm[4] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Neg)) ? -SPEED_ARROW_PWM : 0f;
+        Debug.Log("PWM 4: " + pwm[4].ToString());
+            pwm[5] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+            pwm[6] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+        listOfSubNodes.Clear();
+        skeleton.ListAllNodes(listOfSubNodes);
+
+        for (int i = 0; i < pwm.Length; i++)
+        {
+            foreach (RigidNode_Base node in listOfSubNodes)
+            {
+                RigidNode rigidNode = (RigidNode)node;
+
+                BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+
+                if (raycastWheel != null)
+                {
+                    if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                    {
+                        raycastWheel.ApplyForce(pwm[i]);
+                    }
+                }
+
+                if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
+                {
+                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
+                    {
+                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                        {
+                            float maxSpeed = 0f;
+                            float impulse = 0f;
+                            float friction = 0f;
+
+                            if (rigidNode.HasDriverMeta<WheelDriverMeta>())
+                            {
+                                maxSpeed = WHEEL_MAX_SPEED;
+                                impulse = WHEEL_MOTOR_IMPULSE;
+                                friction = WHEEL_COAST_FRICTION;
+                            }
+                            else
+                            {
+                                maxSpeed = HINGE_MAX_SPEED;
+                                impulse = HINGE_MOTOR_IMPULSE;
+                                friction = HINGE_COAST_FRICTION;
+                            }
+
+                            BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
+                            hingedConstraint.enableMotor = true;
+                            hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? maxSpeed : pwm[i] < 0f ? -maxSpeed : 0f;
+                            hingedConstraint.maxMotorImpulse = pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
+                        }
+                    }
+                    else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
+                    {
+                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
+                        {
+                            BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
+                            SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
+                            sc.PoweredLinearMotor = true;
+                            sc.MaxLinearMotorForce = MAX_SLIDER_FORCE;
+                            sc.TargetLinearMotorVelocity = pwm[i] * MAX_SLIDER_SPEED;
+                        }
+                    }
+                }
+            }
+        }
+    }
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
+        if (dioModules[0] == null)
+            return;
+
         bool IsMecanum = mecanum;
         int reverse = -1;
-        float[] pwm = new float[10];
-        float[] can = new float[10];
 
-        if (dioModules[0] != null)
-        {
-            pwm = dioModules[0].pwmValues;
-            can = dioModules[0].canValues;
-        }
+        float[] pwm = dioModules[0].pwmValues;
+        float[] can = dioModules[0].canValues;
 
         if (IsMecanum)
         {
-
+            #region Mecanum Drive
             pwm[(int)MecanumPorts.FRONT_RIGHT] +=
-
             (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? reverse * SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
@@ -132,24 +213,31 @@ public class DriveJoints : MonoBehaviour
             (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
             (Input.GetKey(KeyCode.O) ? reverse * SPEED_ARROW_PWM : 0.0f) + //Left Rotate
             (Input.GetKey(KeyCode.P) ? reverse * -SPEED_ARROW_PWM : 0.0f); //Right Rotate
-
+            #endregion
         }
-        else
+
+        if (Controls.IsTankDrive)
         {
+            #region Tank Drive
+            ////Left motor
+            //pwm[0] +=
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontLeft) ? SPEED_ARROW_PWM : 0.0f) +
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackLeft) ? -SPEED_ARROW_PWM : 0.0f);
+
+            ////Right motor
+            //pwm[1] +=
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankFrontRight) ? -SPEED_ARROW_PWM : 0.0f) +
+            //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
+
             pwm[0] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxis) * SPEED_ARROW_PWM);
+
             pwm[1] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
-                (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxis) * SPEED_ARROW_PWM);
 
             pwm[2] +=
-             (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
-             (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Neg)) ? -SPEED_ARROW_PWM : 0f;
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Neg)) ? -SPEED_ARROW_PWM : 0f;
 
             pwm[3] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Plus)) ? SPEED_ARROW_PWM :
@@ -166,10 +254,54 @@ public class DriveJoints : MonoBehaviour
             pwm[6] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
+            #endregion
+        }
+        else
+        {
+            #region Arcade Drive
+            //pwm[0] +=
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+
+            //pwm[1] +=
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].left) ? -SPEED_ARROW_PWM : 0.0f) +
+            //    (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
+
+            pwm[0] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+
+            pwm[1] +=
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+
+            pwm[2] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm2Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+            pwm[3] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm3Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+            pwm[4] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+            pwm[5] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+            pwm[6] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
+            #endregion
         }
 
-
-        List<RigidNode_Base> listOfSubNodes = new List<RigidNode_Base>();
+        listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
 
         for (int i = 0; i < pwm.Length; i++)
@@ -178,9 +310,19 @@ public class DriveJoints : MonoBehaviour
             {
                 RigidNode rigidNode = (RigidNode)node;
 
+                BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+
+                if (raycastWheel != null)
+                {
+                    if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                    {
+                        raycastWheel.ApplyForce(pwm[i]);
+                    }
+                }
+
                 if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
                 {
-                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor())
+                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
                     {
                         if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
                         {

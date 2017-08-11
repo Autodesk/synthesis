@@ -17,7 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -27,7 +28,7 @@
     <IntermediateOutputPath>Temp\UnityVS_obj\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_2;UNITY_5_6;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_2;UNITY_5_6;UNITY_5;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -37,7 +38,7 @@
     <IntermediateOutputPath>Temp\UnityVS_obj\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DefineConstants>TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_2;UNITY_5_6;UNITY_5;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;</DefineConstants>
+    <DefineConstants>TRACE;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_5_6_2;UNITY_5_6;UNITY_5;UNITY_ANALYTICS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_DUCK_TYPING;ENABLE_GENERICS;ENABLE_PVR_GI;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_RUNTIME_NAVMESH_BUILDING;ENABLE_SPRITERENDERER_FLIPPING;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_RAKNET;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_WEBCAM;ENABLE_WWW;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_HUB;ENABLE_CLOUD_PROJECT_ID;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_METRICS;ENABLE_EDITOR_METRICS_CACHING;ENABLE_NATIVE_ARRAY;INCLUDE_DYNAMIC_GI;INCLUDE_GI;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;INCLUDE_PUBNUB;ENABLE_PLAYMODE_TESTS_RUNNER;ENABLE_SCRIPTING_NEW_CSHARP_COMPILER;ENABLE_VIDEO;UNITY_STANDALONE_WIN;UNITY_STANDALONE;ENABLE_SUBSTANCE;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_UNITYWEBREQUEST;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_EVENT_QUEUE;ENABLE_CLUSTERINPUT;ENABLE_VR;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_2_0_SUBSET;ENABLE_PROFILER;DEBUG;TRACE;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_WIN;ENABLE_NATIVE_ARRAY_CHECKS;UNITY_TEAM_LICENSE;ENABLE_VSTU;</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
@@ -75,6 +76,9 @@
     </Reference>
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>Library\UnityAssemblies\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="SimulatorAPI">
       <HintPath>Assets\Scripts\SimulatorAPI.dll</HintPath>
@@ -204,13 +208,20 @@
     <Compile Include="Assets\BulletUnity\Scripts\SoftBody\SBSettings.cs" />
     <Compile Include="Assets\LocalizationHelper.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BHingedConstraintEx.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BMultiCallbacks.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BRaycastRobot.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BRaycastWheel.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BRobotManager.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BRobotRaycaster.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
+    <Compile Include="Assets\Scripts\FEA\CollisionTracker.cs" />
     <Compile Include="Assets\Scripts\FEA\ContactDescriptor.cs" />
     <Compile Include="Assets\Scripts\FEA\FixedQueue.cs" />
     <Compile Include="Assets\Scripts\FEA\ReplayExporter.cs" />
@@ -227,31 +238,8 @@
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
     <Compile Include="Assets\Scripts\GUI\InputButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Axis.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Controls.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\DemoControls.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_CreateButtonScript.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_GameModeScript.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_KeyButtonScript.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_PlayerScript.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Demo\InputControlDemo_SettingsModeScript.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\InputDevice.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\Joystick.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\JoystickAxis.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\JoystickButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\KeyModifier.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\MouseAxis.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Enums\MouseButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\InputControl.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\CustomInput.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\JoystickInput.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\KeyboardInput.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Inputs\MouseInput.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\KeyMapping.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\CreateButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\KeyButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputControl\Menu\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\GUI\InputScrollable.cs" />
+    <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
@@ -269,14 +257,35 @@
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
+    <Compile Include="Assets\Scripts\ICollisionCallback.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
+    <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Enums\InputDevice.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Enums\Joystick.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickAxis.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Enums\JoystickButton.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Enums\KeyModifier.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Enums\MouseAxis.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Enums\MouseButton.cs" />
+    <Compile Include="Assets\Scripts\InputControl\InputControl.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Inputs\CustomInput.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Inputs\JoystickInput.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Inputs\KeyboardInput.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
+    <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
+    <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
+    <Compile Include="Assets\Scripts\InputControl\TankMode.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\LocalizationHelperr.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\MaMSimUI.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchMode.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MixAndMatchScroll.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\XMLManager.cs" />
@@ -289,6 +298,7 @@
     <Compile Include="Assets\Scripts\Robot.cs" />
     <Compile Include="Assets\Scripts\RobotCamera.cs" />
     <Compile Include="Assets\Scripts\RobotCameraGUI.cs" />
+    <Compile Include="Assets\Scripts\RobotCameraManager.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
@@ -310,7 +320,7 @@
     <None Include="Assets\BulletUnity\InternalResources\LineRenderFix.shader" />
     <None Include="Assets\BulletUnity\license.txt" />
     <None Include="Assets\Plugins\BulletUnity\Native\OSX\libbulletc.bundle\Contents\Resources\CMakeLists.txt" />
-    <None Include="Assets\Scripts\GUI\InputControl\Readme.txt" />
+    <None Include="Assets\Scripts\InputControl\Documentation\Readme.txt" />
     <None Include="Assets\item_data.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
