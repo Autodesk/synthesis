@@ -113,7 +113,8 @@ public class MainState : SimState
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
-            if (isMixAndMatch == 1 && MixAndMatchMode.hasManipulator)
+            int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
+            if (isMixAndMatch == 1 && hasManipulator == 1)
             {
                 Debug.Log(LoadManipulator(PlayerPrefs.GetString("simSelectedManipulator")) ? "Load manipulator success" : "Load manipulator failed");
             }
@@ -255,6 +256,7 @@ public class MainState : SimState
     {
         sensorManager.RemoveSensorsFromRobot(activeRobot);
         sensorManagerGUI.ShiftOutputPanels();
+        sensorManagerGUI.EndProcesses();
         return activeRobot.InitializeRobot(directory, this);
     }
 
@@ -301,6 +303,11 @@ public class MainState : SimState
             activeRobot = SpawnedRobots[index];
             dynamicCamera.cameraState.robot = activeRobot.gameObject;
         }
+    }
+
+    public void ChangeControlIndex(int index)
+    {
+        activeRobot.controlIndex = index;
     }
 
     public void RemoveRobot(int index)
@@ -407,6 +414,40 @@ public class MainState : SimState
         return activeRobot.LoadManipulator(directory);
     }
 
+    /// <summary>
+    /// Loads a new robot and manipulator from given directorys
+    /// </summary>
+    /// <param name="directory">robot directory</param>
+    /// <returns>whether the process was successful</returns>
+    public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
+    {
+        if (SpawnedRobots.Count < MAX_ROBOTS)
+        {
+            robotPath = baseDirectory;
+
+            GameObject robotObject = new GameObject("Robot");
+            Robot robot = robotObject.AddComponent<Robot>();
+
+            //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
+            if (!robot.InitializeRobot(baseDirectory, this)) return false;
+
+            robotObject.AddComponent<DriverPracticeRobot>().Initialize(baseDirectory);
+
+            //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
+            if (activeRobot == null)
+            {
+                activeRobot = robot;
+            }
+
+            robot.controlIndex = SpawnedRobots.Count;
+            SpawnedRobots.Add(robot);
+
+            robot.LoadManipulator(manipulatorDirectory);
+            return true;
+        }
+        return false;
+    }
+
     private void UpdateTrackers()
     {
         int numSteps = physicsWorld.frameCount - lastFrameCount;
@@ -450,6 +491,19 @@ public class MainState : SimState
 
         foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
             c.enabled = false;
+    }
+
+    public void EnterReplayState()
+    {
+        if (!activeRobot.IsResetting)
+        {
+            CollisionTracker.Synchronize(lastFrameCount);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Please finish resetting before entering replay mode!", 5f);
+        }
     }
     #endregion
 
@@ -526,7 +580,7 @@ public class MainState : SimState
         activeRobot.Packet = unityPacket.GetLastPacket();
         foreach (Robot robot in SpawnedRobots)
         {
-            if (robot != activeRobot) robot.Packet = new UnityPacket.OutputStatePacket();
+            if (robot != activeRobot) robot.Packet = null;
         }
     }
     #endregion

@@ -170,14 +170,24 @@ public class DriveJoints
     }
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
-        if (dioModules[0] == null)
-            return;
+        
 
         bool IsMecanum = mecanum;
         int reverse = -1;
 
-        float[] pwm = dioModules[0].pwmValues;
-        float[] can = dioModules[0].canValues;
+        float[] pwm;
+        float[] can;
+
+        if (dioModules[0] != null)
+        {
+            pwm = dioModules[0].pwmValues;
+            can = dioModules[0].canValues;
+        }
+        else
+        {
+            pwm = new float[10];
+            can = new float[10];
+        }
 
         if (IsMecanum)
         {

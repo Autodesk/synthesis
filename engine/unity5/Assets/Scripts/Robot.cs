@@ -55,10 +55,11 @@ public class Robot : MonoBehaviour
     private GameObject manipulatorObject;
     private RigidNode_Base manipulatorNode;
 
+    UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
+
     // Use this for initialization
     void Start()
     {
-
     }
 
     /// <summary>
@@ -102,8 +103,9 @@ public class Robot : MonoBehaviour
     {
         if (rootNode != null && ControlsEnabled)
         {
+
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
-            else DriveJoints.UpdateAllMotors(rootNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
+            else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); //0 is false, 1 is true
            
             int isManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
@@ -111,10 +113,6 @@ public class Robot : MonoBehaviour
             //If the robot is in Mix and Match mode and has a manipulator, update the manipulator motors
             if (isManipulator == 1 && isMixAndMatch == 1)
             {
-                UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
-                emptyDIO[0] = new UnityPacket.OutputStatePacket.DIOModule();
-                emptyDIO[1] = new UnityPacket.OutputStatePacket.DIOModule();
-
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
             }
         }
@@ -265,9 +263,35 @@ public class Robot : MonoBehaviour
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
             r.WorldTransform = newTransform;
         }
+        
+        int hasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
+        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
+        if (hasManipulator == 1 && isMixAndMatch == 1)
+        {
+            foreach (RigidNode n in manipulatorNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearVelocity = r.AngularVelocity = BulletSharp.Math.Vector3.Zero;
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.Zero;
+
+                BulletSharp.Math.Matrix newTransform = r.WorldTransform;
+                newTransform.Origin = (robotStartPosition + n.ComOffset).ToBullet();
+                newTransform.Basis = BulletSharp.Math.Matrix.Identity;
+                r.WorldTransform = newTransform;
+            }
+
+        }
+        
+        //Where "save orientation" works
+        RotateRobot(robotStartOrientation);
 
         GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5) ;
-        { }
         if (IsResetting)
         {
             Debug.Log("is resetting!");
@@ -331,7 +355,23 @@ public class Robot : MonoBehaviour
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
 
-       
+        int hasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
+        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
+        if (hasManipulator == 1 && isMixAndMatch == 1)
+        {
+            foreach (RigidNode n in manipulatorNode.ListAllNodes())
+            {
+                BRigidBody br = n.MainObject.GetComponent<BRigidBody>();
+
+                if (br == null)
+                    continue;
+
+                RigidBody r = (RigidBody)br.GetCollisionObject();
+
+                r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
+            }
+        }
+
     }
 
     /// <summary>
@@ -425,7 +465,9 @@ public class Robot : MonoBehaviour
         manipulatorObject = new GameObject("Manipulator");
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
-        manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
+        //manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
+
+        manipulatorObject.transform.position = gameObject.transform.GetChild(0).transform.position;
         //manipulatorObject.transform.position = robotStartPosition;
 
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)

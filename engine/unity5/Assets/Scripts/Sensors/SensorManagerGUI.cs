@@ -397,8 +397,14 @@ class SensorManagerGUI : MonoBehaviour
         addUltrasonicButton.SetActive(true);
         addBeamBreakerButton.SetActive(true);
         addGyroButton.SetActive(true);
-        Destroy(currentSensor.gameObject);
-        sensorManager.RemoveSensor(currentSensor.gameObject);
+
+        if (currentSensor != null)
+        {
+            sensorManager.RemoveSensor(currentSensor.gameObject);
+            ShiftOutputPanels();
+            Destroy(currentSensor.gameObject);
+            currentSensor = null;
+        }
         cancelTypeButton.SetActive(false);
     }
 
@@ -410,6 +416,7 @@ class SensorManagerGUI : MonoBehaviour
         if (selectedNode != null)
         {
             currentSensor = sensorManager.AddUltrasonic(selectedNode, new Vector3(0, 0.2f, 0), Vector3.zero);
+            DisplayOutput();
         }
     }
     public void AddBeamBreaker()
@@ -417,6 +424,7 @@ class SensorManagerGUI : MonoBehaviour
         if (selectedNode != null)
         {
             currentSensor = sensorManager.AddBeamBreaker(selectedNode, Vector3.zero, Vector3.zero);
+            DisplayOutput();
         }
     }
     public void AddGyro()
@@ -424,6 +432,7 @@ class SensorManagerGUI : MonoBehaviour
         if (selectedNode != null)
         {
             currentSensor = sensorManager.AddGyro(selectedNode, Vector3.zero, Vector3.zero);
+            DisplayOutput();
         }
     }
 
@@ -439,7 +448,6 @@ class SensorManagerGUI : MonoBehaviour
         currentSensor.IsChangingPosition = true;
         configureSensorPanel.SetActive(true);
         dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
-        DisplayOutput();
     }
 
     /// <summary>
@@ -623,6 +631,23 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Reset configuration window to its default state
+    /// </summary>
+    public void ResetConfigurationWindow()
+    {
+        lockPositionButton.SetActive(false);
+        lockAngleButton.SetActive(false);
+        lockRangeButton.SetActive(false);
+        showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
+        showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
+        sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+        sensorAnglePanel.SetActive(false);
+        sensorRangePanel.SetActive(false);
+        CancelNodeSelection();
+        configureSensorPanel.SetActive(false);
+
+    }
+    /// <summary>
     /// Update the text for current node
     /// </summary>
     public void UpdateNodeAttachment()
@@ -642,7 +667,6 @@ class SensorManagerGUI : MonoBehaviour
         configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         EndProcesses();
     }
-
     #endregion
 
     #region Sensor Output
@@ -668,16 +692,23 @@ class SensorManagerGUI : MonoBehaviour
     public void ShiftOutputPanels()
     {
         DisplayAllOutput();
-        currentSensor = null;
+        //currentSensor = null;
         if (sensorManager.GetInactiveSensors().Count != 0)
         {
             foreach (GameObject sensor in sensorManager.GetInactiveSensors())
             {
-                GameObject uselessPanel = GameObject.Find(sensor.name + "_Panel");
-                if (sensorOutputPanels.Contains(uselessPanel))
+                //Have to catch this exception because the GameObject is not destroyed immediately
+                try
                 {
-                    sensorOutputPanels.Remove(uselessPanel);
-                    Destroy(uselessPanel);
+                    GameObject uselessPanel = GameObject.Find(sensor.name + "_Panel");
+                    if (sensorOutputPanels.Contains(uselessPanel))
+                    {
+                        sensorOutputPanels.Remove(uselessPanel);
+                        Destroy(uselessPanel);
+                    }
+                }catch(MissingReferenceException e)
+                {
+                    continue;
                 }
             }
         }
@@ -742,15 +773,15 @@ class SensorManagerGUI : MonoBehaviour
     {
         isChoosingOption = isSelectingSensor = isAddingSensor = isAddingBeamBreaker = isAddingUltrasonic = nodeConfirmed = false;
         sensorOptionPanel.SetActive(false);
-        configureSensorPanel.SetActive(false);
+        ResetConfigurationWindow();
         sensorTypePanel.SetActive(false);
         selectedNode = null;
-        CancelNodeSelection();
         CancelOptionSelection();
         configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         if (currentSensor != null)
         {
-            currentSensor.IsChangingPosition = false;
+            currentSensor.ResetConfigurationState();
+            currentSensor = null;
         }
 
         if (preConfigState != null)

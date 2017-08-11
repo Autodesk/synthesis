@@ -16,6 +16,7 @@ public class SimUI : MonoBehaviour
     DynamicCamera camera;
     Toolkit toolkit;
     DriverPracticeMode dpm;
+    LocalMultiplayer multiplayer;
     SensorManagerGUI sensorManagerGUI;
     SensorManager sensorManager;
     RobotCameraManager robotCameraManager;
@@ -41,6 +42,8 @@ public class SimUI : MonoBehaviour
 
     GameObject inputManagerPanel;
     GameObject unitConversionButton;
+
+    GameObject mixAndMatchPanel;
 
     public bool swapWindowOn = false; //if the swap window is active
     public bool wheelPanelOn = false; //if the wheel panel is active
@@ -80,6 +83,7 @@ public class SimUI : MonoBehaviour
 
             toolkit = GetComponent<Toolkit>();
             dpm = GetComponent<DriverPracticeMode>();
+            multiplayer = GetComponent<LocalMultiplayer>();
             sensorManagerGUI = GetComponent<SensorManagerGUI>();
 
             FindElements();
@@ -145,6 +149,8 @@ public class SimUI : MonoBehaviour
 
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+
+        mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
     }
 
 
@@ -291,11 +297,15 @@ public class SimUI : MonoBehaviour
         changeFieldPanel.SetActive(false);
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
+        mixAndMatchPanel.SetActive(false);
+        
         CloseOrientWindow();
         main.IsResetting = false;
 
         dpm.EndProcesses();
         toolkit.EndProcesses();
+        multiplayer.EndProcesses();
+        
         sensorManagerGUI.EndProcesses();
     }
     #endregion
@@ -377,7 +387,7 @@ public class SimUI : MonoBehaviour
     /// </summary>
     private void UpdateSpawnpointWindow()
     {
-        if (main.IsResetting)
+        if (main.activeRobot.IsResetting)
         {
             spawnpointWindow.SetActive(true);
         }
@@ -480,6 +490,13 @@ public class SimUI : MonoBehaviour
         {
             unitConversionButton.GetComponentInChildren<Text>().text = "To Meter";
         }
+    }
+
+    /// <summary>
+    /// Enters replay mode
+    /// </summary>
+    public void EnterReplayMode() {
+        main.EnterReplayState();
     }
     #region swap part
     /// <summary>

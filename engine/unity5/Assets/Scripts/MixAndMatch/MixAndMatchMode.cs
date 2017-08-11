@@ -173,10 +173,37 @@ public class MixAndMatchMode : MonoBehaviour
         SceneManager.LoadScene("MixAndMatch");
     }
 
+    #region Change or Add MaM Robot
+    /// <summary>
+    /// Called when the "next" button on the MaM panel is clicked within the simulator. 
+    /// Determines if the user wants to change the active robot or add a robot for local multiplayer and calls the correct function.
+    /// </summary>
+    bool changeMaMRobot = true;
+    public void ChangeOrAddMaMRobot()
+    {
+        if (changeMaMRobot)
+        {
+            ChangeMaMRobot();
+        } else
+        {
+            AddMaMRobot();
+        }
+    }
+
+    public void ChangeMaMClicked()
+    {
+        changeMaMRobot = true;
+    }
+
+    public void AddMaMClicked()
+    {
+        changeMaMRobot = false;
+    }
+
     /// <summary>
     /// When the user changes wheels/drive bases/manipulators within the simulator, changes the robot.
     /// </summary>
-    public void ChangeMaMRobot()
+    void ChangeMaMRobot()
     {
         int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
 
@@ -194,6 +221,25 @@ public class MixAndMatchMode : MonoBehaviour
         stateMachine.GetComponent<SimUI>().MaMChangeRobot(baseDirectory, manipulatorDirectory, robotHasManipulator);
     }
 
+    /// <summary>
+    /// When the user adds a MaMRobot in  multiplayer mode, sets the player prefs to file paths of robot parts
+    /// </summary>
+    void AddMaMRobot()
+    {
+        string baseDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase);
+        string manipulatorDirectory = mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator);
+
+        PlayerPrefs.SetString("simSelectedReplay", string.Empty);
+        PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
+        PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
+        PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
+        PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+        int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
+        GameObject stateMachine = GameObject.Find("StateMachine");
+
+        stateMachine.GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, robotHasManipulator);
+    }
+#endregion
     #region Presets
 
     /// <summary>
