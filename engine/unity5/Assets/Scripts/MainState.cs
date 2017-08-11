@@ -256,6 +256,7 @@ public class MainState : SimState
     {
         sensorManager.RemoveSensorsFromRobot(activeRobot);
         sensorManagerGUI.ShiftOutputPanels();
+        sensorManagerGUI.EndProcesses();
         return activeRobot.InitializeRobot(directory, this);
     }
 
