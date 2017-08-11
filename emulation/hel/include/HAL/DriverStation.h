@@ -110,6 +110,7 @@ int32_t HAL_GetJoystickAxisType(int32_t joystickNum, int32_t axis);
 int32_t HAL_SetJoystickOutputs(int32_t joystickNum, int64_t outputs,
                                int32_t leftRumble, int32_t rightRumble);
 double HAL_GetMatchTime(int32_t* status);
+void HAL_FreeJoystickName(char* name);
 
 #ifndef HAL_USE_LABVIEW
 
