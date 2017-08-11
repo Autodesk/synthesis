@@ -4955,7 +4955,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 860403445}
-        m_MethodName: SwitchTabSim
+        m_MethodName: SwitchSimSelection
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7469,7 +7469,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -175, y: 220.60002}
+  m_AnchoredPosition: {x: -175, y: 220.6}
   m_SizeDelta: {x: 310, y: 52}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1154537509

@@ -17,6 +17,8 @@ public class LocalMultiplayer : MonoBehaviour {
     private GameObject multiplayerWindow;
     private GameObject addRobotWindow;
 
+    private GameObject mixAndMatchPanel;
+
     private GameObject[] robotButtons = new GameObject[6];
     private int activeIndex = 0;
     private GameObject highlight;
@@ -36,6 +38,7 @@ public class LocalMultiplayer : MonoBehaviour {
 
         simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
         highlight = AuxFunctions.FindObject(canvas, "HighlightActiveRobot");
+        mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
     }
 	
 	/// <summary>
@@ -114,6 +117,22 @@ public class LocalMultiplayer : MonoBehaviour {
     }
 
     /// <summary>
+    /// Adds a new robot to the field based on user selection in the popup robot list window
+    /// </summary>
+    public void AddMaMRobot(string baseDirectory, string manipulatorDirectory, int hasManipulator)
+    {
+        if (hasManipulator == 1)
+        {
+            mainState.LoadRobotWithManipulator(baseDirectory, manipulatorDirectory);
+        } else
+        {
+            mainState.LoadRobot(baseDirectory);
+        }
+
+        UpdateUI();
+    }
+
+    /// <summary>
     /// Removes a robot from the field and shifts the indexes to remove any gaps
     /// </summary>
     public void RemoveRobot()
@@ -138,7 +157,23 @@ public class LocalMultiplayer : MonoBehaviour {
             simUI.EndOtherProcesses();
             addRobotWindow.SetActive(true);
         }
-    }   
+    }
+
+    /// <summary>
+    /// Toggles the popup add robot window
+    /// </summary>
+    public void ToggleMaMWindow()
+    {
+        if (mixAndMatchPanel.activeSelf)
+        {
+            mixAndMatchPanel.SetActive(false);
+        }
+        else
+        {
+            simUI.EndOtherProcesses();
+            mixAndMatchPanel.SetActive(true);
+        }
+    }
 
     /// <summary>
     /// Updates the multiplayer window to reflect changes in indexes, controls, etc.

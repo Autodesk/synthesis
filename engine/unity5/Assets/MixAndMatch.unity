@@ -4662,22 +4662,22 @@ Prefab:
     - target: {fileID: 224254910970345262, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 579.15015
+      value: 715.175
       objectReference: {fileID: 0}
     - target: {fileID: 224254910970345262, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
       propertyPath: m_SizeDelta.x
-      value: -1228.5002
+      value: -1500.5499
       objectReference: {fileID: 0}
     - target: {fileID: 224254910970345262, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: -182.2
+      value: -262.0999
       objectReference: {fileID: 0}
     - target: {fileID: 224254910970345262, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 2.3999977
+      value: -37.55005
       objectReference: {fileID: 0}
     - target: {fileID: 224755040360495302, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
@@ -4882,7 +4882,7 @@ Prefab:
     - target: {fileID: 114640658338287846, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ChangeMaMRobot
+      value: ChangeOrAddMaMRobot
       objectReference: {fileID: 0}
     - target: {fileID: 114640658338287846, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
@@ -4941,7 +4941,7 @@ Prefab:
     - target: {fileID: 224930514927610114, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -58.200012
+      value: -98.399994
       objectReference: {fileID: 0}
     - target: {fileID: 224969620892486550, guid: 2e1458182e7af5a459513738338549fc,
         type: 2}
@@ -9641,7 +9641,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 449.99997, y: 0.000076293945}
+  m_AnchoredPosition: {x: 450, y: 0.000076293945}
   m_SizeDelta: {x: 80, y: -84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &384719695
@@ -11338,7 +11338,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 190, y: 316.39993}
+  m_AnchoredPosition: {x: 190, y: 316.39996}
   m_SizeDelta: {x: 380, y: 227.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &439487018
@@ -13768,7 +13768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 190, y: 316.4}
+  m_AnchoredPosition: {x: 190, y: 316.40002}
   m_SizeDelta: {x: 380, y: 227.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &578107674
@@ -18290,7 +18290,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 111.9, y: -127.500114}
+  m_AnchoredPosition: {x: 111.9, y: -127.50012}
   m_SizeDelta: {x: 200.6, y: 56.100006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &738315864
@@ -23610,7 +23610,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 111.9, y: -127.500114}
+  m_AnchoredPosition: {x: 111.9, y: -127.50012}
   m_SizeDelta: {x: 200.6, y: 56.100006}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &944948188
@@ -32072,6 +32072,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 2054748796}
+        m_MethodName: ChangeMaMClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!222 &1290322942
@@ -34937,7 +34948,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 349.99997, y: 0}
+  m_AnchoredPosition: {x: 350, y: 0}
   m_SizeDelta: {x: 61, y: 36}
   m_Pivot: {x: 0.35666856, y: 0.5}
 --- !u!114 &1459393332
@@ -41247,8 +41258,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 721739569}
-        m_MethodName: ToggleAddRobotWindow
+      - m_Target: {fileID: 721739574}
+        m_MethodName: ToggleMaMPanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 2054748796}
+        m_MethodName: AddMaMClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -42657,7 +42679,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 449.99997, y: -50.00003}
+  m_AnchoredPosition: {x: 450, y: -50.00003}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1755621655
@@ -44461,7 +44483,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 33.3, y: -7.5}
+  m_AnchoredPosition: {x: 33.300003, y: -7.5}
   m_SizeDelta: {x: -5.4, y: -3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1826249738
@@ -47132,7 +47154,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 44.5, y: 0}
+  m_AnchoredPosition: {x: 44.500004, y: 0}
   m_SizeDelta: {x: 68.9, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1919993846
@@ -47996,7 +48018,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 349.99997, y: -43.333084}
+  m_AnchoredPosition: {x: 350, y: -43.333084}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1964850715
@@ -49045,7 +49067,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2018803798
 RectTransform:
   m_ObjectHideFlags: 0

@@ -35,6 +35,8 @@ public class MaMSimUI : MonoBehaviour {
 
     GameObject loadingPanel;
 
+    private SimUI simUI;
+
     /// <summary>
     /// Retreives the Main State instance which controls everything in the simulator.
     /// </summary>
@@ -75,7 +77,8 @@ public class MaMSimUI : MonoBehaviour {
 
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
-        
+
+        simUI = StateMachine.Instance.gameObject.GetComponent<SimUI>();
     }
 
     public void ToggleMaMPanel()
@@ -86,7 +89,7 @@ public class MaMSimUI : MonoBehaviour {
         }
         else
         {
-            //EndOtherProcesses();
+            simUI.EndOtherProcesses();
             mixAndMatchPanel.SetActive(true);
         }
     }
