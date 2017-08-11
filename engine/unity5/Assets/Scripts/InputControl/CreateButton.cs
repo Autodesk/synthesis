@@ -137,7 +137,7 @@ public class CreateButton : MonoBehaviour
             }
             #endregion
 
-            Controls.Save();
+            //Controls.Save();
 
             contentHeight += 28;
         }
@@ -174,7 +174,6 @@ public class CreateButton : MonoBehaviour
         float contentHeight = 4;
 
         ReadOnlyCollection<KeyMapping> playerOneKeys = InputControl.getPlayerOneKeys();
-        Debug.Log("playerOneKeys" + playerOneKeys.Count);
 
         foreach (KeyMapping key in playerOneKeys)
         {
@@ -223,7 +222,7 @@ public class CreateButton : MonoBehaviour
             }
             #endregion
 
-            Controls.Save();
+            //Controls.Save();
 
             contentHeight += 28;
         }
