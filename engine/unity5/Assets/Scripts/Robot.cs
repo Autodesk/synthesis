@@ -55,10 +55,11 @@ public class Robot : MonoBehaviour
     private GameObject manipulatorObject;
     private RigidNode_Base manipulatorNode;
 
+    UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
+
     // Use this for initialization
     void Start()
     {
-
     }
 
     /// <summary>
@@ -102,8 +103,9 @@ public class Robot : MonoBehaviour
     {
         if (rootNode != null && ControlsEnabled)
         {
+
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
-            else DriveJoints.UpdateAllMotors(rootNode, new UnityPacket.OutputStatePacket.DIOModule[2], controlIndex, MixAndMatchMode.GetMecanum());
+            else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); //0 is false, 1 is true
            
             int isManipulator = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
@@ -111,10 +113,6 @@ public class Robot : MonoBehaviour
             //If the robot is in Mix and Match mode and has a manipulator, update the manipulator motors
             if (isManipulator == 1 && isMixAndMatch == 1)
             {
-                UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
-                emptyDIO[0] = new UnityPacket.OutputStatePacket.DIOModule();
-                emptyDIO[1] = new UnityPacket.OutputStatePacket.DIOModule();
-
                 DriveJoints.UpdateManipulatorMotors(manipulatorNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
             }
         }

@@ -158,15 +158,15 @@ public class DriverPracticeMode : MonoBehaviour {
 
             if (configuringIndex == 0)
             {
-                intakeControlText.text = InputControl.GetButton(Controls.buttons[0].pickupPrimary).ToString();
-                releaseControlText.text = InputControl.GetButton(Controls.buttons[0].releasePrimary).ToString();
-                spawnControlText.text = InputControl.GetButton(Controls.buttons[0].spawnPrimary).ToString();
+                intakeControlText.text = Controls.buttons[0].pickupPrimary.primaryInput.ToString();
+                releaseControlText.text = Controls.buttons[0].releasePrimary.primaryInput.ToString();
+                spawnControlText.text = Controls.buttons[0].spawnPrimary.primaryInput.ToString();
             }
             else
             {
-                intakeControlText.text = InputControl.GetButton(Controls.buttons[0].pickupSecondary).ToString();
-                releaseControlText.text = InputControl.GetButton(Controls.buttons[0].releaseSecondary).ToString();
-                spawnControlText.text = InputControl.GetButton(Controls.buttons[0].spawnSecondary).ToString();
+                intakeControlText.text = Controls.buttons[0].pickupSecondary.primaryInput.ToString();
+                releaseControlText.text = Controls.buttons[0].releaseSecondary.primaryInput.ToString();
+                spawnControlText.text = Controls.buttons[0].spawnSecondary.primaryInput.ToString();
             }
         }
     }
@@ -257,6 +257,7 @@ public class DriverPracticeMode : MonoBehaviour {
             }
             else
             {
+                dpmWindowOn = true;
                 defineGamepieceWindow.SetActive(false);
                 setSpawnWindow.SetActive(false);
                 defineIntakeWindow.SetActive(false);
@@ -343,7 +344,7 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (dpmRobot.modeEnabled)
         {
-            simUI.EndOtherProcesses();
+            StartNewProcess(); ;
             configuring = true;
             configuringIndex = 0;
             configHeaderText.text = "Configuration Menu - Primary Gamepiece";
@@ -361,7 +362,7 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (dpmRobot.modeEnabled)
         {
-            simUI.EndOtherProcesses();
+            StartNewProcess();
             configuring = true;
             configuringIndex = 1;
             configHeaderText.text = "Configuration Menu - Secondary Gamepiece";
@@ -399,7 +400,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void DefineGamepiece()
     {
-        simUI.EndOtherProcesses();
+        StartNewProcess();
         dpmRobot.DefineGamepiece(configuringIndex);
     }
 
@@ -410,7 +411,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void DefineIntake()
     {
-        simUI.EndOtherProcesses();
+        StartNewProcess();
         dpmRobot.DefineIntake(configuringIndex);
     }
 
@@ -426,7 +427,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void DefineRelease()
     {
-        simUI.EndOtherProcesses();
+        StartNewProcess();
         dpmRobot.DefineRelease(configuringIndex);
     }
 
@@ -442,7 +443,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void SetGamepieceSpawn()
     {
-        simUI.EndOtherProcesses();
+        StartNewProcess();
         dpmRobot.StartGamepieceSpawn(configuringIndex);
     }
 
@@ -551,28 +552,27 @@ public class DriverPracticeMode : MonoBehaviour {
             return;
         }
 
-        KeyMapping[] keys = GetComponentsInChildren<KeyMapping>();
 
-        foreach (KeyMapping key in keys)
+        foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
         {
-            if (InputControl.GetButtonDown(key))
+            if (Input.GetKeyDown(vKey))
             {
+                int index = mainState.activeRobot.controlIndex;
                 if (configuringIndex == 0)
                 {
                     if (settingControl == 1)
                     {
-                        InputControl.GetButton(Controls.buttons[0].pickupPrimary);
+                        InputControl.setKey(Controls.buttons[index].pickupPrimary.name, vKey);
                     }
-                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons[0].pickupPrimary);
-                    else InputControl.GetButton(Controls.buttons[0].spawnPrimary);
+                    else if (settingControl == 2) InputControl.setKey(Controls.buttons[index].releasePrimary.name, vKey);
+                    else InputControl.setKey(Controls.buttons[index].spawnPrimary.name, vKey);
                 }
                 else
                 {
-                    if (settingControl == 1) InputControl.GetButton(Controls.buttons[0].pickupSecondary);
-                    else if (settingControl == 2) InputControl.GetButton(Controls.buttons[0].releaseSecondary);
-                    else InputControl.GetButton(Controls.buttons[0].spawnPrimary);
+                    if (settingControl == 1) InputControl.setKey(Controls.buttons[index].pickupSecondary.name, vKey);
+                    else if (settingControl == 2) InputControl.setKey(Controls.buttons[index].releaseSecondary.name, vKey);
+                    else InputControl.setKey(Controls.buttons[index].spawnSecondary.name, vKey);
                 }
-                Controls.Save();
                 settingControl = 0;
             }
         }
@@ -581,6 +581,8 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void EndProcesses()
     {
+        dpmWindowOn = false;
+        dpmWindow.SetActive(false);
         if (configuring)
         {
             CloseConfigurationWindow();
@@ -588,6 +590,15 @@ public class DriverPracticeMode : MonoBehaviour {
             CancelDefineIntake();
             CancelDefineRelease();
             CancelGamepieceSpawn();
+        }
+    }
+
+    private void StartNewProcess()
+    {
+        if (configuring)
+        {
+            simUI.EndOtherProcesses();
+            configuring = true;
         }
     }
 
