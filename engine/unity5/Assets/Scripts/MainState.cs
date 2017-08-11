@@ -304,6 +304,11 @@ public class MainState : SimState
         }
     }
 
+    public void ChangeControlIndex(int index)
+    {
+        activeRobot.controlIndex = index;
+    }
+
     public void RemoveRobot(int index)
     {
         robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
@@ -561,7 +566,7 @@ public class MainState : SimState
         activeRobot.Packet = unityPacket.GetLastPacket();
         foreach (Robot robot in SpawnedRobots)
         {
-            if (robot != activeRobot) robot.Packet = new UnityPacket.OutputStatePacket();
+            if (robot != activeRobot) robot.Packet = null;
         }
     }
     #endregion
