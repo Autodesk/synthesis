@@ -623,6 +623,23 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Reset configuration window to its default state
+    /// </summary>
+    public void ResetConfigurationWindow()
+    {
+        lockPositionButton.SetActive(false);
+        lockAngleButton.SetActive(false);
+        lockRangeButton.SetActive(false);
+        showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
+        showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
+        sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+        sensorAnglePanel.SetActive(false);
+        sensorRangePanel.SetActive(false);
+        CancelNodeSelection();
+        configureSensorPanel.SetActive(false);
+
+    }
+    /// <summary>
     /// Update the text for current node
     /// </summary>
     public void UpdateNodeAttachment()
@@ -642,7 +659,6 @@ class SensorManagerGUI : MonoBehaviour
         configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         EndProcesses();
     }
-
     #endregion
 
     #region Sensor Output
@@ -742,15 +758,15 @@ class SensorManagerGUI : MonoBehaviour
     {
         isChoosingOption = isSelectingSensor = isAddingSensor = isAddingBeamBreaker = isAddingUltrasonic = nodeConfirmed = false;
         sensorOptionPanel.SetActive(false);
-        configureSensorPanel.SetActive(false);
+        ResetConfigurationWindow();
         sensorTypePanel.SetActive(false);
         selectedNode = null;
-        CancelNodeSelection();
         CancelOptionSelection();
         configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         if (currentSensor != null)
         {
-            currentSensor.IsChangingPosition = false;
+            currentSensor.ResetConfigurationState();
+            currentSensor = null;
         }
 
         if (preConfigState != null)

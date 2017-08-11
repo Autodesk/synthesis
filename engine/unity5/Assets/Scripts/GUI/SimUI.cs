@@ -387,7 +387,7 @@ public class SimUI : MonoBehaviour
     /// </summary>
     private void UpdateSpawnpointWindow()
     {
-        if (main.IsResetting)
+        if (main.activeRobot.IsResetting)
         {
             spawnpointWindow.SetActive(true);
         }
@@ -490,6 +490,13 @@ public class SimUI : MonoBehaviour
         {
             unitConversionButton.GetComponentInChildren<Text>().text = "To Meter";
         }
+    }
+
+    /// <summary>
+    /// Enters replay mode
+    /// </summary>
+    public void EnterReplayMode() {
+        main.EnterReplayState();
     }
     #region swap part
     /// <summary>
