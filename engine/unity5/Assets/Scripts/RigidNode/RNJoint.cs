@@ -18,19 +18,8 @@ public partial class RigidNode : RigidNode_Base
         Y
     }
 
-    public void CreateJoint()
+    public void CreateJoint(int numWheels)
     {
-        if (GetParent() == null)
-        {
-            BRaycastRobot robot = MainObject.AddComponent<BRaycastRobot>();
-            robot.NumWheels = Children.Count(x => x.Value.HasDriverMeta<WheelDriverMeta>() && x.Value.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
-
-            if (MixAndMatchMode.isMixAndMatchMode)
-                robot.Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
-
-            return;
-        }
-
         if (joint != null || GetSkeletalJoint() == null)
         {
             return;
@@ -40,22 +29,41 @@ public partial class RigidNode : RigidNode_Base
         {
             case SkeletalJointType.ROTATIONAL:
 
-                RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
-
-                BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
-                Vector3 rAxis = rNode.axis.AsV3().normalized;
-
-                hc.axisInA = rAxis;
-                hc.axisInB = rAxis;
-
-                if (hc.setLimit = rNode.hasAngularLimit)
+                if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL)
                 {
-                    hc.lowLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitHigh;
-                    hc.highLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitLow;
+                    RigidNode parent = (RigidNode)GetParent();
+
+                    if (parent.MainObject.GetComponent<BRaycastRobot>() == null)
+                    {
+                        BRaycastRobot robot = parent.MainObject.AddComponent<BRaycastRobot>();
+                        robot.NumWheels = numWheels;
+
+                        if (MixAndMatchMode.isMixAndMatchMode)
+                            robot.Friction = PlayerPrefs.GetFloat("wheelFriction", 1);
+                    }
+
+                    WheelType wheelType = this.GetDriverMeta<WheelDriverMeta>().type;
+                    MainObject.AddComponent<BRaycastWheel>().CreateWheel(this);
+                    MainObject.transform.parent = parent.MainObject.transform;
                 }
+                else
+                {
+                    RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
 
-                hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
+                    BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
+                    Vector3 rAxis = rNode.axis.AsV3().normalized;
 
+                    hc.axisInA = rAxis;
+                    hc.axisInB = rAxis;
+
+                    if (hc.setLimit = rNode.hasAngularLimit)
+                    {
+                        hc.lowLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitHigh;
+                        hc.highLimitAngleRadians = rNode.currentAngularPosition - rNode.angularLimitLow;
+                    }
+
+                    hc.constraintType = BTypedConstraint.ConstraintType.constrainToAnotherBody;
+                }
                 break;
             case SkeletalJointType.CYLINDRICAL:
 

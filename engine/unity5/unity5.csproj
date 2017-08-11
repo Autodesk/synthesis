@@ -208,6 +208,7 @@
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BRaycastRobot.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BRaycastWheel.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\BRobotManager.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BRobotRaycaster.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
+    <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPresetMono.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMScroller.cs" />

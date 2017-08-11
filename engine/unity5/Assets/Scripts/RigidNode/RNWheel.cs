@@ -15,7 +15,7 @@ public partial class RigidNode : RigidNode_Base
     {
         if (GetSkeletalJoint() is RotationalJoint_Base)
         {
-            Vector3 com = ((RigidNode)GetParent()).physicalProperties.centerOfMass.AsV3();
+            Vector3 com = ((RigidNode)GetParent()).PhysicalProperties.centerOfMass.AsV3();
             RotationalJoint_Base rJoint = (RotationalJoint_Base)GetSkeletalJoint();
             Vector3 diff = rJoint.basePoint.AsV3() - com;
 

@@ -1445,7 +1445,6 @@ public static class InputControl
     {
         mKeysList.Remove(key);
         mKeysMap.Remove(key.name);
-
     }
 
     /// <summary>
