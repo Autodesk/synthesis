@@ -180,7 +180,7 @@ public class Robot : MonoBehaviour
                 node.MainObject.AddComponent<Tracker>().Trace = true;
         }
 
-        foreach (BRaycastRobot r in FindObjectsOfType<BRaycastRobot>())
+        foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
             r.RaycastRobot.EffectiveMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
@@ -470,7 +470,7 @@ public class Robot : MonoBehaviour
             Debug.Log(t);
         }
 
-        foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
+        foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
             r.RaycastRobot.EffectiveMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
