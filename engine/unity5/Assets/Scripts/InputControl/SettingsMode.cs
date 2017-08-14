@@ -92,35 +92,53 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        if (GameObject.Find("SettingsMode") != null)
+        {
+            if (!Controls.TankDriveEnabled)
+            {
+                enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+                enableTankDriveText.text = "Switch Tank Drive";
+            }
+            else
+            {
+                enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+                enableTankDriveText.text = "Switch Arcade Drive";
+            }
+        }
+        
+    }
+
     #region Player Buttons
     public void OnPlayerOne()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOne();
     }
 
     public void OnPlayerTwo()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerTwo();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwo();
     }
 
     public void OnPlayerThree()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerThree();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThree();
     }
 
     public void OnPlayerFour()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerFour();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFour();
     }
 
     public void OnPlayerFive()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerFive();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFive();
     }
 
     public void OnPlayerSix()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().PlayerSix();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSix();
     }
     #endregion
 

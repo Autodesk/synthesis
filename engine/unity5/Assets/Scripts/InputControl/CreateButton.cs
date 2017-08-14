@@ -82,16 +82,18 @@ public class CreateButton : MonoBehaviour
     }
 
     // Main List: The main list is the list that contains all of the keys in both tank drive and arcade drive.
-    // Each player has its own list of set keys, which is then fed into the main list when setKey() is called. 
+    // Each player has its own list of set keys, which is then fed into the main list when setKey() is called.
+    // Purpose: This allows us to call each player's key lists individually in addition to the main list.
 
     #region Update Main List
-    public void UpdateButtons()
+    public void UpdateMainButtons()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
+        //Reads the main keys list: getKeysList()
         ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
 
         foreach (KeyMapping key in keys)
@@ -155,13 +157,14 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player One Keys
-    public void PlayerOne()
+    public void UpdatePlayerOne()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
+        //Reads player one's keys list: getPlayerOneKeys()
         ReadOnlyCollection<KeyMapping> playerOneKeys = InputControl.getPlayerOneKeys();
 
         foreach (KeyMapping key in playerOneKeys)
@@ -225,13 +228,14 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Two Keys
-    public void PlayerTwo()
+    public void UpdatePlayerTwo()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
+        //Reads player two's keys list: getPlayerTwoKeys()
         ReadOnlyCollection<KeyMapping> playerTwoKeys = InputControl.getPlayerTwoKeys();
 
         foreach (KeyMapping key in playerTwoKeys)
@@ -295,13 +299,14 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Three Keys
-    public void PlayerThree()
+    public void UpdatePlayerThree()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
+        //Reads player three's keys list: getPlayerThreeKeys()
         ReadOnlyCollection<KeyMapping> playerThreeKeys = InputControl.getPlayerThreeKeys();
 
         foreach (KeyMapping key in playerThreeKeys)
@@ -365,13 +370,14 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Four Keys
-    public void PlayerFour()
+    public void UpdatePlayerFour()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
+        //Reads player four's keys list: getPlayerFourKeys()
         ReadOnlyCollection<KeyMapping> playerFourKeys = InputControl.getPlayerFourKeys();
 
         foreach (KeyMapping key in playerFourKeys)
@@ -435,13 +441,14 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Five Keys
-    public void PlayerFive()
+    public void UpdatePlayerFive()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
+        //Reads player five's keys list: getPlayerFiveKeys()
         ReadOnlyCollection<KeyMapping> playerFiveKeys = InputControl.getPlayerFiveKeys();
 
         foreach (KeyMapping key in playerFiveKeys)
@@ -505,13 +512,14 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Six Keys
-    public void PlayerSix()
+    public void UpdatePlayerSix()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
+        //Reads player six's keys list: getPlayerSixKeys()
         ReadOnlyCollection<KeyMapping> playerSixKeys = InputControl.getPlayerSixKeys();
 
         foreach (KeyMapping key in playerSixKeys)

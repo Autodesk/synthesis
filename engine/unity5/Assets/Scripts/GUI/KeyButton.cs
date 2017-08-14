@@ -21,11 +21,13 @@ public class KeyButton : MonoBehaviour
     // Update is called once per frame
     void OnGUI()
     {
-        //Implement assets; (most assets are configured in Unity: OptionsTab > Canvas > SettingsMode
+        //Implements styles; (most assets/styles are configured in Unity: OptionsTab > Canvas > SettingsMode > SettingsPanel
         mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
         mKeyText.color = Color.white;
         mKeyText.fontSize = 13;
 
+        //Checks if the currentInput uses the ignoreMouseMovement or useKeyModifiers
+        //Currently DISABLED (hidden in the Unity menu) due to inconsistent toggle to key updates 8/2017
         if (selectedButton == this)
         {
             CustomInput currentInput = InputControl.currentInput(ignoreMouseMovement, useKeyModifiers);
@@ -50,6 +52,9 @@ public class KeyButton : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the KeyButtons' text.
+    /// </summary>
     public void UpdateText()
     {
         if (mKeyText == null)
@@ -69,6 +74,9 @@ public class KeyButton : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the text when the user clicks the KeyButtons
+    /// </summary>
     public void OnClick()
     {
         if (selectedButton != null)
@@ -86,6 +94,10 @@ public class KeyButton : MonoBehaviour
         mKeyText.text = "...";
     }
 
+    /// <summary>
+    /// Sets the primary or secondary input to the selected input from the user.
+    /// </summary>
+    /// <param name="input">Input from any device or axis (e.g. Joysticks, Mouse, Keyboard)</param>
     private void SetInput(CustomInput input)
     {
         switch (keyIndex)
