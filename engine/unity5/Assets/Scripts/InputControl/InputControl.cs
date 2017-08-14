@@ -1479,6 +1479,12 @@ public static class InputControl
     public static void removeKey(KeyMapping key)
     {
         mKeysList.Remove(key);
+        mKeysListPlayer1.Remove(key);
+        mKeysListPlayer2.Remove(key);
+        mKeysListPlayer3.Remove(key);
+        mKeysListPlayer4.Remove(key);
+        mKeysListPlayer5.Remove(key);
+        mKeysListPlayer6.Remove(key);
         mKeysMap.Remove(key.name);
     }
 

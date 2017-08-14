@@ -53,7 +53,7 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnReset()
     {
-        if (Controls.IsTankDrive)
+        if (Controls.TankDriveEnabled)
         {
             Controls.ResetTankDrive();
             Controls.Save();
@@ -73,7 +73,6 @@ public class SettingsMode : MonoBehaviour
         if (!Controls.TankDriveEnabled)
         {
             Controls.TankDriveEnabled = true;
-            Controls.IsTankDrive = true;
             Controls.CheckForKeyRemoval = false;
             Controls.SwitchControls();
             Controls.Save();
@@ -83,7 +82,6 @@ public class SettingsMode : MonoBehaviour
         else
         {
             Controls.TankDriveEnabled = false;
-            Controls.IsTankDrive = false;
             Controls.CheckForKeyRemoval = true;
             Controls.SwitchControls();
             Controls.Save();

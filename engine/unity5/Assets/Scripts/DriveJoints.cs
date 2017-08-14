@@ -226,7 +226,7 @@ public class DriveJoints
             #endregion
         }
 
-        if (Controls.IsTankDrive)
+        if (Controls.TankDriveEnabled)
         {
             #region Tank Drive
             ////Left motor
