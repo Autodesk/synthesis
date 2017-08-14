@@ -26,8 +26,6 @@ public class Robot : MonoBehaviour
     private Vector3 robotStartPosition = new Vector3(01f, 1f, 0f);
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
-    private List<GameObject> extraElements;
-
     private UnityPacket unityPacket;
 
     private bool isResettingOrientation;
@@ -59,7 +57,10 @@ public class Robot : MonoBehaviour
 
     private int robotHasManipulator;
 
-    // Use this for initialization
+
+    /// <summary>
+    /// Called when robot is first initialized
+    /// </summary>
     void Start()
     {
         robotHasManipulator  = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
@@ -139,29 +140,33 @@ public class Robot : MonoBehaviour
         {
             Transform child = transform.GetChild(i);
 
-            //If not do this the game object is destroyed but the parent-child transform relationship remains!
+            //If this isn't done, the game object is destroyed but the parent-child transform relationship remains!
             child.parent = null;
             Destroy(child.gameObject);
         }
+
+        //Resetting sensor lists
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManager.ResetSensorLists();
 
-        mainState = source;
-        transform.position = robotStartPosition;
+        mainState = source; //stores the main state object
 
+        transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
+
+        //Loads the node and skeleton data
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
             return new RigidNode(guid);
         };
-
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        //Read .robot instead. Maybe need a RobotSkeleton class
         rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
         rootNode.ListAllNodes(nodes);
 
+        //Initializes the wheel variables
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
 
+        //Initializes the nodes
         foreach (RigidNode_Base n in nodes)
         {
             RigidNode node = (RigidNode)n;
@@ -191,8 +196,10 @@ public class Robot : MonoBehaviour
 
         isInitialized = true;
 
+        //Initializing robot cameras
         bool hasRobotCamera = false;
-        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+        //If you are getting an error referencing this line, it is likely that the Game Object "RobotCameraList" in Scene.unity does not have the RobotCameraManager script attached to it.
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>(); 
 
         foreach (GameObject robotCamera in robotCameraManager.GetRobotCameraList())
         {
@@ -221,7 +228,10 @@ public class Robot : MonoBehaviour
         return true;
     }
 
-    public void DeleteNodes()
+    /// <summary>
+    /// Deletes robot manipulator (meant only for use in Mix and Match mode)
+    /// </summary>
+    public void DeleteManipulatorNodes()
     {
         //Deletes all nodes if any exist, take the old node transforms out from the robot object
         int childCount = manipulatorObject.transform.childCount;
@@ -229,7 +239,7 @@ public class Robot : MonoBehaviour
         {
             Transform child = manipulatorObject.transform.GetChild(i);
 
-            //If not do this the game object is destroyed but the parent-child transform relationship remains!
+            //If this isn't done, the game object is destroyed but the parent-child transform relationship remains!
             child.parent = null;
             Destroy(child.gameObject);
         }
@@ -456,11 +466,17 @@ public class Robot : MonoBehaviour
         EndReset();
     }
 
+    /// <summary>
+    /// Returns the driver practice component of this robot
+    /// </summary>
     public DriverPracticeRobot GetDriverPractice()
     {
         return GetComponent<DriverPracticeRobot>();
     }
 
+    /// <summary>
+    /// Loads and initializes the manipulator object (for use in Mix and Match mode)
+    /// </summary>
     public bool LoadManipulator(string directory)
     {
         manipulatorObject = new GameObject("Manipulator");
@@ -520,6 +536,9 @@ public class Robot : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Loads and initializes the manipulator object with a modifiable position (for use in Mix and Match mode)
+    /// </summary>
     public bool LoadManipulator(string directory, Vector3 position)
     {
         manipulatorObject = new GameObject("Manipulator");

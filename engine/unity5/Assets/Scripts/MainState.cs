@@ -265,7 +265,7 @@ public class MainState : SimState
     /// </summary>
     public void DeleteManipulatorNodes()
     {
-        activeRobot.DeleteNodes();
+        activeRobot.DeleteManipulatorNodes();
     }
 
     /// <summary>
