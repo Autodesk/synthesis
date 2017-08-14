@@ -7344,7 +7344,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231149}
-        m_MethodName: ConfigureCameraPosition
+        m_MethodName: ToggleCameraConfiguration
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -33302,8 +33302,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 954008277}
-        m_MethodName: SwitchViewClickMoreBetterer
+      - m_Target: {fileID: 1741231145}
+        m_MethodName: SwitchCameraView
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -42109,8 +42109,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231142}
-        m_MethodName: 
+      - m_Target: {fileID: 1741231145}
+        m_MethodName: OpenTutorialLink
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

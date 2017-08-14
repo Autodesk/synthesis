@@ -135,19 +135,10 @@ public class DriverPracticeRobot : MonoBehaviour
 
         //Setting up the trajectory renderers
         drawnTrajectory = new List<LineRenderer>();
-        drawnTrajectory.Add(gameObject.AddComponent<LineRenderer>());
-        GameObject secondLine = new GameObject();
-        drawnTrajectory.Add(secondLine.AddComponent<LineRenderer>());
-        foreach (LineRenderer line in drawnTrajectory)
-        {
-            line.startWidth = 0.2f;
-            line.material = Resources.Load("Materials/Projection") as Material;
-            line.enabled = false;
-        }
-        drawnTrajectory[0].startColor = Color.blue;
-        drawnTrajectory[0].endColor = Color.cyan;
-        drawnTrajectory[1].startColor = Color.red;
-        drawnTrajectory[1].endColor = Color.magenta;
+        GameObject firstLine = GameObject.Find("DrawnTrajectory1");
+        drawnTrajectory.Add(firstLine.GetComponent<LineRenderer>());
+        GameObject secondLine = GameObject.Find("DrawnTrajectory2");
+        drawnTrajectory.Add(secondLine.GetComponent<LineRenderer>());
 
         displayTrajectories = new List<bool>();
         displayTrajectories.Add(false);

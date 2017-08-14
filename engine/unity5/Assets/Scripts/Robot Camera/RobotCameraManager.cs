@@ -248,7 +248,7 @@ public class RobotCameraManager : MonoBehaviour
         BPhysicsWorld world = BPhysicsWorld.Get();
         world.world.RayTest(start, end, rayResult);
 
-        Debug.Log("Selected:" + rayResult.CollisionObject);
+        //Debug.Log("Selected:" + rayResult.CollisionObject);
         //If there is a collision object and it is a robot part, set that to be new attachment point
         if (rayResult.CollisionObject != null)
         {
@@ -274,10 +274,12 @@ public class RobotCameraManager : MonoBehaviour
 
                     //Revert the current selection back to its original so selectedColors can store the new selection properly
                     RevertNodeColors(lastNode, hoveredColors);
+
                     RevertNodeColors(SelectedNode, selectedColors);
 
                     SelectedNode = selectedObject;
                     ChangeNodeColors(SelectedNode, selectedColor, selectedColors);
+                    Debug.Log(selectedColors.Count);
                     UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
                 }
                 
@@ -304,19 +306,11 @@ public class RobotCameraManager : MonoBehaviour
     /// </summary>
     public void ChangeNodeAttachment()
     {
-        //Set highlighted node back to its original color
-        if (lastNode != null)
-        {
-            RevertNodeColors(lastNode, hoveredColors);
-            lastNode = null;
-        }
-        if(SelectedNode != null)
-        {
-            RevertNodeColors(SelectedNode, selectedColors);
-            SelectedNode = null;
-        }
         CurrentCamera.transform.parent = SelectedNode.transform;
         SelectingNode = false;
+        Debug.Log("Stored color count " + selectedColors.Count);
+        ResetNodeColors();
+        SelectedNode = null;
     }
 
     /// <summary>
@@ -380,14 +374,17 @@ public class RobotCameraManager : MonoBehaviour
     {
         if (node != null && storedColors.Count != 0)
         {
+            
             int counter = 0;
             foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
             {
-
                 foreach (Material m in renderers.materials)
                 {
-                    m.color = storedColors[counter];
-                    counter++;
+                    if (counter <= storedColors.Count - 1)
+                    {
+                        m.color = storedColors[counter];
+                        counter++;
+                    }
                 }
             }
             storedColors.Clear();
