@@ -13,7 +13,7 @@ public class Toolkit : MonoBehaviour
 {
 
     private bool ignoreClick = true;
-
+    
 
 
     private GameObject canvas;
@@ -127,6 +127,11 @@ public class Toolkit : MonoBehaviour
         }
     }
 
+    public void ToggleRulerWindow()
+    {
+        ToggleRulerWindow(!rulerWindow.activeSelf);
+    }
+
     public void StartRuler()
     {
         usingRuler = true;
@@ -216,7 +221,11 @@ public class Toolkit : MonoBehaviour
         {
             stopwatchWindow.SetActive(false);
         }
+    }
 
+    public void ToggleStopwatchWindow()
+    {
+        ToggleStopwatchWindow(!stopwatchWindow.activeSelf);
     }
 
     public void ToggleStopwatch()
