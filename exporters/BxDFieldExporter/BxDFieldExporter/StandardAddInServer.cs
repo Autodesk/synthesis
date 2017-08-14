@@ -51,7 +51,7 @@ namespace BxDFieldExporter
         static ButtonDefinition removeComponent;
         static ButtonDefinition ContextDelete;
         Inventor.Environment oNewEnv;
-        static bool done;
+        public static bool done;
         static bool cancel = false;
         static Random rand;// random number genator that can create internal ids
         static int InternalID = 0;
@@ -71,6 +71,8 @@ namespace BxDFieldExporter
         Inventor.UserInterfaceEventsSink_OnEnvironmentChangeEventHandler enviroment_OnChangeEventDelegate;
         static bool inExportView;// boolean to help in detecting wether or not to react to an event based on wether or not the application is exporting
         static ComponentPropertiesForm form;// form for inputting different properties of the component
+        public static bool okButton_Clicked = false;//bool to determine if the ok button has been selected in a form 
+        public static bool applyButton_Clicked = false;//bool to determine if the apply button was selected in the AddAssembly form
         static String m_ClientId;// string the is the id of the application
         static Object currentSelected;// the current component that the user is editing, needed for the unselection stuff
         static bool found;// boolean to help in searching for objects and the corrosponding actions
@@ -808,9 +810,11 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 SetDone(false);
                 while (!GetDone())
                 {
+                   
                     ComponentOccurrence selectedAssembly = null;
-                    //AssemblyDocument asmDoc = (AssemblyDocument)InventorApplication.ActiveDocument;
                     selectedAssembly = (ComponentOccurrence)InventorApplication.CommandManager.Pick(SelectionFilterEnum.kAssemblyOccurrenceFilter, "Select an assembly to add");
+                    if (done)
+                        return;
                     if (selectedAssembly != null)
                     {
                         foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
@@ -824,12 +828,12 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                         t.CompOccs.Add(selectedAssembly);// add the assembly occurence to the arraylist
                                         partSet.AddItem(selectedAssembly); //add the assembly occurence to a set that is highlighted in purple
                                         ClientNodeResources nodeRescs = oPanes.ClientNodeResources;
-                                        ClientNodeResource nodeRes = null;                                        
+                                        ClientNodeResource nodeRes = null;
                                         try
                                         {
                                             stdole.IPictureDisp assemblyIcon =
                                                 PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.AssemblyIcon16));
-                                          nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, assemblyIcon);                                           
+                                            nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, assemblyIcon);
                                         }
                                         catch
                                         {
@@ -842,13 +846,21 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                 }
                             }
                         }
-                        componentsAdded++; //Tracks how many components are added
+                        componentsAdded++; //Tracks how many components are added                        
                     }
+                    /* if (apply button clicked)
+                         * go through loops again, dont close form
+                         * if (ok button clicked)
+                         * close form
+                         * if (cancel button clicked)
+                         * close form, undo last apply
+                         * */
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
+                SetDone(true);
+                MessageBox.Show(e.Message);
             }
             partSet.Clear(); //Clears the highlighted set
 
@@ -896,11 +908,14 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
             SetDone(false);
             while (!GetDone())
             {
+                if (done)
+                    return;
                 ComponentOccurrence selectedPart = null;
                 AssemblyDocument asmDoc = (AssemblyDocument)
                              InventorApplication.ActiveDocument;
                 selectedPart = (ComponentOccurrence)InventorApplication.CommandManager.Pick// have the user select a part
                           (SelectionFilterEnum.kAssemblyLeafOccurrenceFilter, "Select a part to add");
+               
                 if (selectedPart != null)
                 {
                     foreach (BrowserNode node in oPane.TopNode.BrowserNodes)// look at all the nodes under the top node
@@ -917,9 +932,11 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     ClientNodeResource nodeRes = null;
                                     try
                                     {
-                                        nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, null);
+                                        stdole.IPictureDisp partIcon =
+                                            PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.PartIcon16));
+                                        nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, partIcon);
                                     }
-                                    catch
+                                    catch(Exception e)
                                     {
                                         nodeRes = oPanes.ClientNodeResources.ItemById(node.BrowserNodeDefinition.Label, 1);
                                     }
