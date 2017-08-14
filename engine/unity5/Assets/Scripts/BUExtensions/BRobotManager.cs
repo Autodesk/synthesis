@@ -11,6 +11,10 @@ namespace Assets.Scripts.BUExtensions
         List<RaycastRobot> raycastRobots;
 
         private static BRobotManager _instance;
+
+        /// <summary>
+        /// The global instance of the BRobotManager.
+        /// </summary>
         public static BRobotManager Instance
         {
             get
@@ -22,24 +26,40 @@ namespace Assets.Scripts.BUExtensions
             }
         }
 
+        /// <summary>
+        /// Initializes a new BRobotManager instance.
+        /// </summary>
         private BRobotManager()
         {
             raycastRobots = new List<RaycastRobot>();
         }
 
+        /// <summary>
+        /// Registers a raycast robot with the BRobotManager.
+        /// </summary>
+        /// <param name="raycastRobot"></param>
         public void RegisterRaycastRobot(RaycastRobot raycastRobot)
         {
             if (!raycastRobots.Contains(raycastRobot))
                 raycastRobots.Add(raycastRobot);
         }
 
+        /// <summary>
+        /// Deregisters a raycast robot with the BRobotManager.
+        /// </summary>
+        /// <param name="raycastRobot"></param>
         public void DeregisterRaycastRobot(RaycastRobot raycastRobot)
         {
             if (raycastRobots.Contains(raycastRobot))
                 raycastRobots.Remove(raycastRobot);
         }
 
-        public void UpdateRaycastRobots(DynamicsWorld world, float timeStep)
+        /// <summary>
+        /// Updates all registerd raycast robots.
+        /// </summary>
+        /// <param name="world"></param>
+        /// <param name="timeStep"></param>
+        public void UpdateRaycastRobots(DynamicsWorld world, float timeStep, int framesPassed)
         {
             foreach (RaycastRobot r in raycastRobots)
                 r.UpdateVehicle(timeStep);

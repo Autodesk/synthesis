@@ -165,14 +165,14 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Creates a new ReplayState instance.
         /// </summary>
-        public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints, List<Tracker> trackers)
+        public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints)
         {
             tStart = Time.time;
 
             this.fieldPath = fieldPath;
             this.robotPath = robotPath;
             this.contactPoints = contactPoints.ToList();
-            this.trackers = trackers;
+            trackers = UnityEngine.Object.FindObjectsOfType<Tracker>().ToList();
 
             playbackMode = PlaybackMode.Paused;
             firstFrame = true;
@@ -545,6 +545,10 @@ namespace Assets.Scripts.FEA
                 float percent = replayTime - currentIndex;
 
                 BRigidBody rb = t.GetComponent<BRigidBody>();
+
+                if (!rb.GetCollisionObject().IsActive)
+                    rb.GetCollisionObject().Activate();
+
                 rb.SetPosition(BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent).ToUnity());
                 rb.SetRotation(BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent).GetOrientation().ToUnity());
             }
