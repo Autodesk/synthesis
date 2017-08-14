@@ -442,7 +442,7 @@ public class MainState : SimState
             robot.controlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            robot.LoadManipulator(manipulatorDirectory);
+            robot.LoadManipulator(manipulatorDirectory, robotObject.transform.GetChild(0).transform.position);
             return true;
         }
         return false;
