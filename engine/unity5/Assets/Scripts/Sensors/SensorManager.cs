@@ -18,6 +18,12 @@ class SensorManager : MonoBehaviour
     private List<GameObject> inactiveSensorList = new List<GameObject>();
     private List<GameObject> sensorList = new List<GameObject>();
 
+    private List<Color> hoveredColors = new List<Color>();
+    private List<Color> selectedColors = new List<Color>();
+    private Color selectedColor = new Color(1, 0, 0);
+    private Color hoverColor = new Color(1, 1, 0, 0.1f);
+    private GameObject lastNode;
+
     public bool SelectingNode { get; set; }
     public GameObject SelectedNode { get; private set; }
     public bool SelectingSensor { get; set; }
@@ -33,7 +39,7 @@ class SensorManager : MonoBehaviour
 
     private void Update()
     {
-        if(main == null)
+        if (main == null)
         {
             main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
         }
@@ -109,7 +115,7 @@ class SensorManager : MonoBehaviour
         Gyro sensor = gyro.GetComponent<Gyro>();
         return sensor;
     }
-    
+
     /// <summary>
     /// Start the state of selecting node for attachment
     /// </summary>
@@ -123,39 +129,62 @@ class SensorManager : MonoBehaviour
     /// </summary>
     public void SetNode()
     {
-        if (Input.GetMouseButtonDown(0))
+        //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
+        BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
+
+        //Creates a callback result that will be updated if we do a ray test with it
+        ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
+
+        //Retrieves the bullet physics world and does a ray test with the given coordinates and updates the callback object
+        BPhysicsWorld world = BPhysicsWorld.Get();
+        world.world.RayTest(start, end, rayResult);
+
+        Debug.Log("Selected:" + rayResult.CollisionObject);
+        //If there is a collision object and it is a robot part, set that to be new attachment point
+        if (rayResult.CollisionObject != null)
         {
-            //Casts a ray from the camera in the direction the mouse is in and returns the closest object hit
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            BulletSharp.Math.Vector3 start = ray.origin.ToBullet();
-            BulletSharp.Math.Vector3 end = ray.GetPoint(200).ToBullet();
-
-            //Creates a callback result that will be updated if we do a ray test with it
-            ClosestRayResultCallback rayResult = new ClosestRayResultCallback(ref start, ref end);
-
-            //Retrieves the bullet physics world and does a ray test with the given coordinates and updates the callback object
-            BPhysicsWorld world = BPhysicsWorld.Get();
-            world.world.RayTest(start, end, rayResult);
-
-            Debug.Log("Selected:" + rayResult.CollisionObject);
-            //If there is a collision object and it is a robot part, set that to be new attachment point
-            if (rayResult.CollisionObject != null)
+            GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
+            if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
             {
-                GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
-                if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
+                if (lastNode != null && !selectedObject.Equals(lastNode))
                 {
-                    string name = selectedObject.name;
-
-                    SelectedNode = selectedObject;
-
-                    UserMessageManager.Dispatch(name + " has been selected as the node for sensor attachment", 5);
+                    RevertNodeColors(lastNode, hoveredColors);
+                    lastNode = null;
                 }
                 else
                 {
-                    UserMessageManager.Dispatch("Please select a robot node", 3);
+                    ChangeNodeColors(selectedObject, hoverColor, hoveredColors);
+                    lastNode = selectedObject;
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    string name = selectedObject.name;
+
+                    RevertNodeColors(lastNode, hoveredColors);
+                    RevertNodeColors(SelectedNode, selectedColors);
+
+                    SelectedNode = selectedObject;
+
+                    ChangeNodeColors(SelectedNode, selectedColor, selectedColors);
+                    UserMessageManager.Dispatch(name + " has been selected as the node for sensor attachment", 5);
+                }
+            }
+            else
+            {
+                if (lastNode != null)
+                {
+                    RevertNodeColors(lastNode, hoveredColors);
+                    lastNode = null;
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    UserMessageManager.Dispatch("Please select a robot node!", 3);
                 }
             }
         }
+
     }
 
     /// <summary>
@@ -163,22 +192,46 @@ class SensorManager : MonoBehaviour
     /// </summary>
     public void SetSensor()
     {
-        if (Input.GetMouseButtonDown(0))
+        RaycastHit hitInfo = new RaycastHit();
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Physics.Raycast(ray, out hitInfo);
+        if (hitInfo.transform != null && hitInfo.transform.gameObject.tag == "Sensor")
         {
-            RaycastHit hitInfo = new RaycastHit();
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Physics.Raycast(ray, out hitInfo);
-            if(hitInfo.transform != null && hitInfo.transform.gameObject.tag == "Sensor")
+            GameObject selectedObject = hitInfo.transform.gameObject;
+            
+            if (lastNode != null && !selectedObject.Equals(lastNode))
             {
-                SelectedSensor = hitInfo.transform.gameObject;
-                UserMessageManager.Dispatch(SelectedSensor.name + " has been selected as the current sensor", 5);
-
+                RevertNodeColors(lastNode, hoveredColors);
+                lastNode = null;
             }
             else
             {
-                UserMessageManager.Dispatch("Please select a sensor!", 3f);
+                ChangeNodeColors(selectedObject, hoverColor, hoveredColors);
+                lastNode = selectedObject;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                RevertNodeColors(lastNode, hoveredColors);
+                RevertNodeColors(SelectedSensor, selectedColors);
+                SelectedSensor = hitInfo.transform.gameObject;
+                ChangeNodeColors(SelectedSensor, selectedColor, selectedColors);
+                UserMessageManager.Dispatch(SelectedSensor.name + " has been selected as the current sensor", 5);
             }
         }
+        else
+        {
+            if (lastNode != null)
+            {
+                RevertNodeColors(lastNode, hoveredColors);
+                lastNode = null;
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                UserMessageManager.Dispatch("Please select a sensor!", 3);
+            }
+        }
+
     }
 
     /// <summary>
@@ -186,6 +239,7 @@ class SensorManager : MonoBehaviour
     /// </summary>
     public void ClearSelectedNode()
     {
+        ResetNodeColors();
         SelectedNode = null;
     }
 
@@ -194,6 +248,7 @@ class SensorManager : MonoBehaviour
     /// </summary>
     public void ClearSelectedSensor()
     {
+        ResetSensorColors();
         SelectedSensor = null;
     }
 
@@ -225,7 +280,7 @@ class SensorManager : MonoBehaviour
     public List<GameObject> GetSensorsFromRobot(Robot robot)
     {
         List<GameObject> sensorsOnRobot = new List<GameObject>();
-        foreach(GameObject sensor in activeSensorList)
+        foreach (GameObject sensor in activeSensorList)
         {
             if (sensor.GetComponent<SensorBase>().Robot.Equals(robot))
             {
@@ -243,7 +298,7 @@ class SensorManager : MonoBehaviour
     public void RemoveSensorsFromRobot(Robot robot)
     {
         List<GameObject> sensorsOnRobot = GetSensorsFromRobot(robot);
-        foreach(GameObject removingSensors in sensorsOnRobot)
+        foreach (GameObject removingSensors in sensorsOnRobot)
         {
             if (activeSensorList.Contains(removingSensors))
             {
@@ -274,4 +329,47 @@ class SensorManager : MonoBehaviour
     {
         return inactiveSensorList;
     }
+
+    public void ResetNodeColors()
+    {
+        RevertNodeColors(SelectedNode, selectedColors);
+    }
+
+    public void ResetSensorColors()
+    {
+        RevertNodeColors(SelectedSensor, selectedColors);
+    }
+
+    #region Highlighting Functions
+    private void ChangeNodeColors(GameObject node, Color color, List<Color> storedColors)
+    {
+        foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
+        {
+            foreach (Material m in renderers.materials)
+            {
+                storedColors.Add(m.color);
+                m.color = color;
+            }
+        }
+    }
+
+    private void RevertNodeColors(GameObject node, List<Color> storedColors)
+    {
+        if (node != null && storedColors.Count != 0)
+        {
+            int counter = 0;
+            foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
+            {
+
+                foreach (Material m in renderers.materials)
+                {
+                    m.color = storedColors[counter];
+                    counter++;
+                }
+            }
+            storedColors.Clear();
+        }
+    }
+    #endregion
+
 }
