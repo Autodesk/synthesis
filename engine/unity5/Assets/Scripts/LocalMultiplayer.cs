@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
+using System.Linq;
 
 /// <summary>
 /// Class for controlling the various aspects of local multiplayer
@@ -188,8 +189,10 @@ public class LocalMultiplayer : MonoBehaviour {
 
         highlight.transform.position = robotButtons[activeIndex].transform.position;
 
-        GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
-        GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ActiveRobotText")).First().GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
+        Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ControlIndexDropdown")).First().GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
+        // GameObject.Find("ActiveRobotText").GetComponent<Text>().text = "Robot: " + mainState.SpawnedRobots[activeIndex].RobotName;
+        //GameObject.Find("ControlIndexDropdown").GetComponent<Dropdown>().value = mainState.activeRobot.controlIndex;
     }
 
     /// <summary>
