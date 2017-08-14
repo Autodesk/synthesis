@@ -2,6 +2,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class handles every sensor-related GUI elements in Unity
+/// </summary>
 class SensorManagerGUI : MonoBehaviour
 {
     SimUI simUI;
@@ -293,7 +296,6 @@ class SensorManagerGUI : MonoBehaviour
         cancelOptionButton.SetActive(false);
         sensorManager.SelectingNode = false;
         sensorManager.SelectingSensor = false;
-        selectedNode = null;
     }
 
     #endregion
@@ -424,7 +426,7 @@ class SensorManagerGUI : MonoBehaviour
     {
         if (selectedNode != null)
         {
-            currentSensor = sensorManager.AddBeamBreaker(selectedNode, Vector3.zero, Vector3.zero);
+            currentSensor = sensorManager.AddBeamBreaker(selectedNode, Vector3.zero, new Vector3(0, 90, 0));
             DisplayOutput();
         }
     }
@@ -654,6 +656,7 @@ class SensorManagerGUI : MonoBehaviour
 
         CancelNodeSelection();
     }
+
     /// <summary>
     /// Update the text for current node
     /// </summary>
@@ -776,7 +779,7 @@ class SensorManagerGUI : MonoBehaviour
     #endregion
 
     /// <summary>
-    /// Close all window related to adding/configuring sensor
+    /// Close all window related to adding/configuring sensor, also called in SimUI
     /// </summary>
     public void EndProcesses()
     {
@@ -793,6 +796,7 @@ class SensorManagerGUI : MonoBehaviour
         ResetConfigurationWindow();
 
         configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
+        selectedNode = null;
 
         if (preConfigState != null)
         {
