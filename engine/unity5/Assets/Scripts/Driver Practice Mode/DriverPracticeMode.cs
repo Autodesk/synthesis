@@ -70,6 +70,11 @@ public class DriverPracticeMode : MonoBehaviour {
 
     bool isEditing = false;
 
+    private void Awake()
+    {
+        InitializeTrajectories();
+    }
+
     private void Update()
     {
         if (mainState == null)
@@ -624,5 +629,22 @@ public class DriverPracticeMode : MonoBehaviour {
         UpdateDPMValues();
         dpmRobot = newRobot;
 
+    }
+
+    private void InitializeTrajectories()
+    {
+        LineRenderer[] drawnTrajectory = new LineRenderer[2];
+        drawnTrajectory[0] = new GameObject("DrawnTrajectory1").AddComponent<LineRenderer>();
+        drawnTrajectory[1] = new GameObject("DrawnTrajectory2").AddComponent<LineRenderer>();
+        foreach (LineRenderer line in drawnTrajectory)
+        {
+            line.startWidth = 0.2f;
+            line.material = Resources.Load("Materials/Projection") as Material;
+            line.enabled = false;
+        }
+        drawnTrajectory[0].startColor = Color.blue;
+        drawnTrajectory[0].endColor = Color.cyan;
+        drawnTrajectory[1].startColor = Color.red;
+        drawnTrajectory[1].endColor = Color.magenta;
     }
 }
