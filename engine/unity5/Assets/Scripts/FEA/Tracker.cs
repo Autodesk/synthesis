@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.FSM;
+﻿using Assets.Scripts.BUExtensions;
+using Assets.Scripts.FSM;
 using BulletSharp;
 using BulletUnity;
 using System;
@@ -13,6 +14,7 @@ namespace Assets.Scripts.FEA
     {
         private const float fixedTimeStep = 1f / 60f;
 
+        private MainState mainState;
         private BPhysicsWorld physicsWorld;
         private RigidBody rigidBody;
 
@@ -64,8 +66,11 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Adds the current state to the states queue.
         /// </summary>
-        public void AddState(int numSteps)
+        public void AddState(DynamicsWorld world, float timeStep, int numSteps)
         {
+            if (!mainState.Tracking)
+                return;
+
             StateDescriptor nextState = State;
 
             if (numSteps == 1) // This will be the case the vast majority of the time
@@ -97,17 +102,17 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void Awake()
         {
+            mainState = StateMachine.Instance.CurrentState as MainState;
+
+            if (mainState == null)
+                Destroy(this);
+
             physicsWorld = BPhysicsWorld.Get();
             rigidBody = (RigidBody)GetComponent<BRigidBody>().GetCollisionObject();
 
             States = new FixedQueue<StateDescriptor>(Length, State);
 
-            MainState mainState = StateMachine.Instance.CurrentState as MainState;
-
-            if (mainState != null)
-                mainState.Trackers.Add(this);
-            else
-                Destroy(this);
+            BPhysicsTickListener.Instance.OnTick += AddState;
         }
 
         /// <summary>
@@ -115,15 +120,7 @@ namespace Assets.Scripts.FEA
         /// </summary>
         void OnDestroy()
         {
-            StateMachine sm = StateMachine.Instance;
-
-            if (sm == null)
-                return;
-
-            MainState mainState = sm.CurrentState as MainState;
-
-            if (mainState != null)
-                mainState.Trackers.Remove(this);
+            BPhysicsTickListener.Instance.OnTick -= AddState;
         }
     }
 }

@@ -183,11 +183,7 @@ namespace Assets.Scripts.FEA
                     {
                         bw.Write(c.AppliedImpulse);
                         formatter.Serialize(bw.BaseStream, c.Position);
-
-                        string name = c.RobotBody.name;
-                        int startIndex = name.IndexOf('_');
-
-                        bw.Write(int.Parse(name.Substring(startIndex + 1, name.Length - startIndex - name.IndexOf('.'))));
+                        bw.Write(c.RobotBody.transform.GetSiblingIndex());
                     }
                 }
 

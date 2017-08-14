@@ -203,6 +203,12 @@
     <EmbeddedResource Include="Forms\ComponentPropertiesForm.resx">
       <DependentUpon>ComponentPropertiesForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EditCoordinate.resx">
+      <DependentUpon>EditCoordinate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EnterName.resx">
+      <DependentUpon>EnterName.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\GetPath.resx">
       <DependentUpon>GetPath.cs</DependentUpon>
     </EmbeddedResource>

@@ -12,8 +12,7 @@ namespace Assets.Scripts.FEA
     {
         private MainState mainState;
         private BPhysicsWorld physicsWorld;
-        private List<ContactDescriptor>[] passedContacts;
-        private int framesPassed;
+        private bool newFrame;
         private int lastFrameCount;
 
         /// <summary>
@@ -29,7 +28,6 @@ namespace Assets.Scripts.FEA
         {
             this.mainState = mainState;
             physicsWorld = BPhysicsWorld.Get();
-            framesPassed = -1;
             lastFrameCount = physicsWorld.frameCount;
 
             ContactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
@@ -41,18 +39,7 @@ namespace Assets.Scripts.FEA
         public void Reset()
         {
             ContactPoints.Clear(null);
-            lastFrameCount = physicsWorld.frameCount;
-            framesPassed = -1;
-        }
-
-        /// <summary>
-        /// Synchronizes the CollisionTracker's frame count with the given frame count.
-        /// </summary>
-        /// <param name="updatedFrameCount"></param>
-        public void Synchronize(int updatedFrameCount)
-        {
-            for (int i = 0; i <= updatedFrameCount - lastFrameCount; i++)
-                ContactPoints.Add(null);
+            lastFrameCount = physicsWorld.frameCount - 1;
         }
 
         /// <summary>
@@ -62,13 +49,16 @@ namespace Assets.Scripts.FEA
         public void OnVisitPersistentManifold(PersistentManifold pm)
         {
             if (!mainState.Tracking)
+            {
+                pm.ClearManifold();
                 return;
+            }
 
-            if (framesPassed == -1) // This is the first manifold visited of the frame
-                framesPassed = physicsWorld.frameCount - lastFrameCount;
+            int framesPassed = physicsWorld.frameCount - lastFrameCount;
+            lastFrameCount += framesPassed;
 
-            if (passedContacts == null)
-                passedContacts = new List<ContactDescriptor>[framesPassed];
+            for (int i = 0; i < framesPassed; i++)
+                ContactPoints.Add(new List<ContactDescriptor>());
 
             BRigidBody obA = pm.Body0.UserObject as BRigidBody;
             BRigidBody obB = pm.Body1.UserObject as BRigidBody;
@@ -77,9 +67,12 @@ namespace Assets.Scripts.FEA
             if (robotBody == null)
                 return;
 
+            if (pm.NumContacts < 1)
+                return;
+
             int numContacts = pm.NumContacts;
 
-            for (int i = 0; i < framesPassed; i++)
+            for (int i = 0; i < numContacts; i++)
             {
                 ManifoldPoint mp = pm.GetContactPoint(i);
 
@@ -90,36 +83,15 @@ namespace Assets.Scripts.FEA
                     RobotBody = robotBody
                 };
 
-                if (passedContacts[i] == null)
-                    passedContacts[i] = new List<ContactDescriptor>();
-
-                passedContacts[i].Add(cd);
+                ContactPoints[i].Add(cd);
             }
 
             pm.ClearManifold();
         }
 
-        /// <summary>
-        /// Adds all frame collisions to the queue of total collisions.
-        /// </summary>
         public void OnFinishedVisitingManifolds()
         {
-            if (!mainState.Tracking)
-                return;
-
-            framesPassed = physicsWorld.frameCount - lastFrameCount;
-            lastFrameCount = physicsWorld.frameCount;
-
-            for (int i = 0; i < framesPassed; i++)
-            {
-                if (passedContacts != null)
-                    ContactPoints.Add(passedContacts[i]);
-                else
-                    ContactPoints.Add(null);
-            }
-
-            passedContacts = null;
-            framesPassed = -1;
+            // Not implemented
         }
 
         public void BOnCollisionEnter(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
