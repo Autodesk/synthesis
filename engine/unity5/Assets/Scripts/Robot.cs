@@ -151,6 +151,12 @@ public class Robot : MonoBehaviour
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManager.ResetSensorLists();
 
+        //Removes Driver Practice component if it exists
+        if (dpmRobot != null)
+        {
+            Destroy(dpmRobot);
+        }
+
         mainState = source; //stores the main state object
 
         transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
@@ -197,6 +203,10 @@ public class Robot : MonoBehaviour
         RobotName = new DirectoryInfo(directory).Name;
 
         isInitialized = true;
+
+        //Initializes Driver Practice component
+        dpmRobot = gameObject.AddComponent<DriverPracticeRobot>();
+        dpmRobot.Initialize(directory);
 
         //Initializing robot cameras
         bool hasRobotCamera = false;
