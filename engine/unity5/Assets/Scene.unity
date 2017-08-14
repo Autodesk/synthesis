@@ -7344,7 +7344,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1741231149}
-        m_MethodName: ConfigureCameraPosition
+        m_MethodName: ToggleCameraConfiguration
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -25866,7 +25866,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 904c1dd206e41c149b78490849a38c8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stateMachine: {fileID: 1741231142}
 --- !u!224 &954008278
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33303,8 +33302,8 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 954008277}
-        m_MethodName: SwitchViewClickMoreBetterer
+      - m_Target: {fileID: 1741231145}
+        m_MethodName: SwitchCameraView
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -42110,8 +42109,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1741231142}
-        m_MethodName: 
+      - m_Target: {fileID: 1741231145}
+        m_MethodName: OpenTutorialLink
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
