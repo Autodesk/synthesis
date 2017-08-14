@@ -71,8 +71,11 @@ public class Gyro : SensorBase
         float angleOffset = (current - last);
         sumAngle += angleOffset;
 
-        //Calculate angular rotation rate in degrees/second
-        return (current - last) / (currentTime - lastTime);
+        ////Calculate angular rotation rate in degrees/second
+        //return (current - last) / (currentTime - lastTime);
+
+        //Calculate the current angle, seemingly more useful so set this as output instead of rotation rate
+        return sumAngle;
     }
 
     public override void UpdateAngleTransform()
@@ -104,7 +107,7 @@ public class Gyro : SensorBase
         if (outputPanel != null)
         {
             GameObject outputText = AuxFunctions.FindObject(outputPanel, "Text");
-            outputText.GetComponent<Text>().text = gameObject.name + " Output (degrees/s)";
+            outputText.GetComponent<Text>().text = gameObject.name + " Output (degrees)";
         }
     }
 
