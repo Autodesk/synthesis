@@ -110,7 +110,7 @@ public class Controls
     /// </summary>
     public static void SwitchControls()
     {
-        if (TankDriveEnabled)
+        if (TankDriveEnabled == true)
         {
             TankDrive();
             Load();
