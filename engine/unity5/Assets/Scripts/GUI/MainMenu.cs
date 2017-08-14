@@ -816,6 +816,9 @@ public class MainMenu : MonoBehaviour
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
         fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : fieldDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the field directory no longer exists, set it to the default application path.
 
+        PlayerPrefs.SetString("RobotDirectory", robotDirectory);
+        PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
+
         simSelectedField = PlayerPrefs.GetString("simSelectedField");
         simSelectedFieldName = (Directory.Exists(simSelectedField)) ? PlayerPrefs.GetString("simSelectedFieldName", "No Field Selected!") : "No Field Selected!";
         simSelectedRobot = PlayerPrefs.GetString("simSelectedRobot");
