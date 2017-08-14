@@ -23,9 +23,10 @@ public class Controls
     //};
     #endregion
 
-    public static bool CheckForKeyRemoval;
-    public static bool TankDriveEnabled;
+    public static bool CheckForKeyRemoval;  //Checks for previous activity in TankDrive
+    public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
 
+    ///Player indexes (for initializing and creating separate key lists) <see cref="InputControl"/>
     public static int PlayerOneIndex = 0;
     public static int PlayerTwoIndex = 1;
     public static int PlayerThreeIndex = 2;
@@ -99,6 +100,7 @@ public class Controls
 
     /// <summary>
     /// Initializes the <see cref="Controls"/> class.
+    /// Calls the SwitchControls() function for the tankDrive/arcadeDrive toggle purposes.
     /// </summary>
     static Controls()
     {
@@ -106,7 +108,8 @@ public class Controls
     }
 
     /// <summary>
-    /// Allows for initialization for tank drive or arcade drive.
+    /// Allows initialization for tank drive or arcade drive. 
+    /// ON INITIALIZATION: Defaults to ResetArcadeDrive()
     /// </summary>
     public static void SwitchControls()
     {
@@ -119,6 +122,8 @@ public class Controls
         }
         else
         {
+            //We don't need to switch back to ArcadeDrive unless TankDrive was previously activated.
+            //Checks if TankDrive was previously activated
             if (CheckForKeyRemoval)
             {
                 ArcadeDrive();
@@ -127,6 +132,7 @@ public class Controls
             }
             else
             {
+                //On initialization, we default here.
                 ResetArcadeDrive();
                 Load();
                 Debug.Log("ResetArcadeMode");
@@ -145,7 +151,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Save controls.
+    /// Saves controls.
     /// </summary>
     public static void Save()
     {
@@ -161,7 +167,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Load controls.
+    /// Loads controls.
     /// </summary>
     public static void Load()
     {
@@ -192,34 +198,33 @@ public class Controls
     /// </summary>
     public static void ArcadeDrive()
     {
-        //If there are tank drive keys that need to be removed
-        //Recall at initialization, tank drive has not been turned 
-        //so there are no keys that need to be removed.
+        //We don't need to switch back to ArcadeDrive unless TankDrive was previously activated.
+        //Checks if TankDrive was previously activated; if previously activated, remove unecessary keys from the list.
         if (CheckForKeyRemoval)
         {
+            //Remove unecessary TankDrive keys to only permit ArcadeDrive keys
             RemoveTankKeys();
         }
 
         ArcadeControls();
-
         TankDriveEnabled = false;
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            //Update each individual list, update the main list, and update all the text
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerTwo();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerThree();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFour();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFive();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerSix();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
+            //Updates each individual player list, updates the main list, then updates all the text
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOne();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwo();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThree();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFour();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFive();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSix();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdateMainButtons();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
 
     /// <summary>
-    /// Reset to default Arcade Drive.
+    /// Resets to default Arcade Drive.
     /// </summary>
     public static void ResetArcadeDrive()
     {
@@ -237,6 +242,8 @@ public class Controls
     /// </summary>
     public static void TankDrive()
     {
+        //We don't need to switch back to TankDrive unless ArcadeDrive was previously activated.
+        //If there are keys in the list, remove the unecessary keys to prepare for TankDrive.
         if (GameObject.Find("Content").GetComponent<CreateButton>() != null)
         {
             RemoveArcadeKeys();
@@ -247,13 +254,14 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerTwo();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerThree();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFour();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFive();
-            GameObject.Find("Content").GetComponent<CreateButton>().PlayerSix();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
+            //Updates each individual player list, updates the main list, then updates all the text
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOne();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwo();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThree();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFour();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFive();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSix();
+            GameObject.Find("Content").GetComponent<CreateButton>().UpdateMainButtons();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
@@ -726,6 +734,9 @@ public class Controls
         return null;
     }
 
+    /// <summary>
+    /// Default settings for ArcadeDrive controls.
+    /// </summary>
     public static void ArcadeControls()
     {
         #region Primary Controls
@@ -933,6 +944,9 @@ public class Controls
         #endregion
     }
 
+    /// <summary>
+    /// Default settings for TankDrive controls.
+    /// </summary>
     public static void TankControls()
     {
         #region Primary Controls

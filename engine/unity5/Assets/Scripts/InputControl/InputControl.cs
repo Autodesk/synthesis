@@ -19,6 +19,7 @@ public static class InputControl
 
     // Creates separate sets of keys for each player
     // Each player lists feeds into the mKeysList, which feeds into the mKeysMap
+    // PURPOSE: To allow individual access to a specific list
     private static List<KeyMapping> mKeysListPlayer1 = new List<KeyMapping>();
     private static List<KeyMapping> mKeysListPlayer2 = new List<KeyMapping>();
     private static List<KeyMapping> mKeysListPlayer3 = new List<KeyMapping>();
