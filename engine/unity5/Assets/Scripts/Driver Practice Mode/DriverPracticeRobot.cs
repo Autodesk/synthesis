@@ -93,7 +93,7 @@ public class DriverPracticeRobot : MonoBehaviour
         releaseVelocityVector.Add(UnityEngine.Vector3.zero);
 
         intakeNode = new List<GameObject>();
-        intakeNode.Add(transform.GetChild(0).gameObject); //We want these to be null so that the user must configure it to a node first.
+        intakeNode.Add(transform.GetChild(0).gameObject);
         intakeNode.Add(transform.GetChild(0).gameObject);
 
         releaseNode = new List<GameObject>();
@@ -133,30 +133,24 @@ public class DriverPracticeRobot : MonoBehaviour
         gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
 
 
-
+        //Setting up the trajectory renderers
         drawnTrajectory = new List<LineRenderer>();
-        drawnTrajectory.Add(gameObject.AddComponent<LineRenderer>());
-        GameObject secondLine = new GameObject();
-        drawnTrajectory.Add(secondLine.AddComponent<LineRenderer>());
-        foreach (LineRenderer line in drawnTrajectory)
-        {
-            line.startWidth = 0.2f;
-            line.material = Resources.Load("Materials/Projection") as Material;
-            line.enabled = false;
-        }
-        drawnTrajectory[0].startColor = Color.blue;
-        drawnTrajectory[0].endColor = Color.cyan;
-        drawnTrajectory[1].startColor = Color.red;
-        drawnTrajectory[1].endColor = Color.magenta;
+        GameObject firstLine = GameObject.Find("DrawnTrajectory1");
+        drawnTrajectory.Add(firstLine.GetComponent<LineRenderer>());
+        GameObject secondLine = GameObject.Find("DrawnTrajectory2");
+        drawnTrajectory.Add(secondLine.GetComponent<LineRenderer>());
 
         displayTrajectories = new List<bool>();
         displayTrajectories.Add(false);
         displayTrajectories.Add(false);
 
+        //After initializing all the lists and variables, try to load from the robot directory.
         Load(robotDirectory);
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Update is called once per frame to process controls, tick the highlight timer, and draw trajectories
+    /// </summary>
     void Update()
     {
         if (modeEnabled)
@@ -191,10 +185,6 @@ public class DriverPracticeRobot : MonoBehaviour
                 if (drawnTrajectory[i].enabled) drawnTrajectory[i].enabled = false;
             }
         }
-    }
-
-    private void OnGUI()
-    {
     }
 
     #region Gamepiece Manipulation Functions
@@ -285,8 +275,9 @@ public class DriverPracticeRobot : MonoBehaviour
         }
     }
 
-
-
+    /// <summary>
+    /// Converts a velocity from a scalar speed and two angles into a Unity Vector3 format
+    /// </summary>
     private UnityEngine.Vector3 VelocityToVector3(float speed, float horAngle, float verAngle)
     {
         UnityEngine.Quaternion horVector;
@@ -732,6 +723,9 @@ public class DriverPracticeRobot : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// Saves all the configured values into a text file for future access
+    /// </summary>
     public void Save()
     {
         string filePath = PlayerPrefs.GetString("simSelectedRobot");
@@ -772,6 +766,10 @@ public class DriverPracticeRobot : MonoBehaviour
         Debug.Log("Save successful!");
     }
 
+    /// <summary>
+    /// Tries to load a text file from a set directory. If the file exists, sets the robot's configuration to match the file contents.
+    /// </summary>
+    /// <param name="robotDirectory"></param>
     public void Load(string robotDirectory)
     {
         string filePath = robotDirectory + "\\dpmConfig.txt";
@@ -830,6 +828,11 @@ public class DriverPracticeRobot : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Converts a line reading "float1|float2|float3" into Vector3 with the 3 float values as it's x,y,z componets respectively.
+    /// </summary>
+    /// <param name="aData">the line to deserialize</param>
+    /// <returns>the result vector 3</returns>
     public static UnityEngine.Vector3 DeserializeVector3Array(string aData)
     {
         UnityEngine.Vector3 result = new UnityEngine.Vector3(0, 0, 0);
@@ -840,6 +843,12 @@ public class DriverPracticeRobot : MonoBehaviour
         result = new UnityEngine.Vector3(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
         return result;
     }
+
+    /// <summary>
+    /// Converts a line reading "float1|float2|float3" into a float array with those 3 values.
+    /// </summary>
+    /// <param name="aData">the line to deserialize</param>
+    /// <returns>the result float array</returns>
     public static float[] DeserializeArray(string aData)
     {
         float[] result = new float[3];
@@ -853,6 +862,10 @@ public class DriverPracticeRobot : MonoBehaviour
         return result;
     }
 
+    /// <summary>
+    /// Receives the user input and processes various functions based on input
+    /// The processingIndex variable is alternated between to ensure that the primary and secondary controls do not have precedent over the other.
+    /// </summary>
     private void ProcessControls()
     {
         if (processingIndex == 0)

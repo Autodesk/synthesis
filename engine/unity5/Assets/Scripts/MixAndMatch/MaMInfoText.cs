@@ -65,6 +65,9 @@ public class MaMInfoText : MonoBehaviour {
             case 1: //syntheclaw      
                 txt.text = "Syntheclaw \n\nIdeal for handling Yoga Balls";
                 break;
+            case 2: //syntheshot
+                txt.text = "Syntheshot \n\nIdeal for shooting projectiles";
+                break;
         }
 
     }

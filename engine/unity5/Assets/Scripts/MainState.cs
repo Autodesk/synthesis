@@ -12,6 +12,11 @@ using Assets.Scripts.FSM;
 using System.Linq;
 using Assets.Scripts.BUExtensions;
 
+/// <summary>
+/// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
+/// Handles replay tracking and loading
+/// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
+/// </summary>
 public class MainState : SimState
 {
 
@@ -55,7 +60,6 @@ public class MainState : SimState
 
     private OverlayWindow oWindow;
 
-    public List<Tracker> Trackers { get; private set; }
     public CollisionTracker CollisionTracker { get; private set; }
 
     private string fieldPath;
@@ -87,11 +91,13 @@ public class MainState : SimState
     {
         //getting bullet physics information
         physicsWorld = BPhysicsWorld.Get();
-        ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BRobotManager.Instance.UpdateRaycastRobots);
+        ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BPhysicsTickListener.Instance.PhysicsTick);
         lastFrameCount = physicsWorld.frameCount;
 
+        //setting up raycast robot tick callback
+        BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
+
         //setting up replay
-        Trackers = new List<Tracker>();
         CollisionTracker = new CollisionTracker(this);
 
         //starts a new instance of unity packet which receives packets from the driver station
@@ -112,7 +118,7 @@ public class MainState : SimState
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); // 0 is false, 1 is true
             int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
             if (isMixAndMatch == 1 && hasManipulator == 1)
             {
@@ -162,19 +168,15 @@ public class MainState : SimState
         // Switches to replay mode
         if (!activeRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
         {
-            CollisionTracker.Synchronize(lastFrameCount);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
-
-        UpdateTrackers();
     }
 
     public override void FixedUpdate()
     {
         //This line is essential for the reset to work accurately
         //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
-
-        UpdateTrackers();
 
         SendRobotPackets();
     }
@@ -187,7 +189,7 @@ public class MainState : SimState
         if (awaitingReplay)
         {
             awaitingReplay = false;
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -232,8 +234,6 @@ public class MainState : SimState
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(directory, this)) return false;
 
-            robotObject.AddComponent<DriverPracticeRobot>().Initialize(directory);
-
             //If this is the first robot spawned, then set it to be the active robot and initialize the robot camera on it
             if (activeRobot == null)
             {
@@ -265,7 +265,7 @@ public class MainState : SimState
     /// </summary>
     public void DeleteManipulatorNodes()
     {
-        activeRobot.DeleteNodes();
+        activeRobot.DeleteManipulatorNodes();
     }
 
     /// <summary>
@@ -305,18 +305,30 @@ public class MainState : SimState
         }
     }
 
+    /// <summary>
+    /// Changes the control index of the active robot
+    /// </summary>
     public void ChangeControlIndex(int index)
     {
         activeRobot.controlIndex = index;
     }
 
+    /// <summary>
+    /// If there are two robots or more, remove and delete the robot at that index
+    /// </summary>
     public void RemoveRobot(int index)
     {
-        robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
-        sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
         if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
         {
-            
+            robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
+            sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
+
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
+            if (isMixAndMatch == 1 && SpawnedRobots[index].robotHasManipulator == 1)
+            {
+                GameObject.Destroy(SpawnedRobots[index].manipulatorObject);
+            }
+
             GameObject.Destroy(SpawnedRobots[index].gameObject);
             SpawnedRobots.RemoveAt(index);
             activeRobot = null;
@@ -348,8 +360,10 @@ public class MainState : SimState
         LoadField(simSelectedField);
         LoadRobot(simSelectedRobot);
 
-        List<Tracker> robotTrackers = Trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
-        List<Tracker> fieldTrackers = Trackers.Except(robotTrackers).ToList();
+        List<Tracker> trackers = UnityEngine.Object.FindObjectsOfType<Tracker>().ToList();
+
+        List<Tracker> robotTrackers = trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
+        List<Tracker> fieldTrackers = trackers.Except(robotTrackers).ToList();
 
         int i = 0;
 
@@ -391,7 +405,7 @@ public class MainState : SimState
                 foreach (var d in c)
                 {
                     ContactDescriptor currentContact = d.Key;
-                    currentContact.RobotBody = robotTrackers[d.Value].GetComponent<BRigidBody>();
+                    currentContact.RobotBody = activeRobot.transform.GetChild(d.Value).GetComponent<BRigidBody>();
                     currentContacts.Add(currentContact);
                 }
 
@@ -419,14 +433,16 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
+    int robotNumber = 2; //Only used for mix and match so that manipulator can map to the correct robot in RNJoint
     public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
             robotPath = baseDirectory;
 
-            GameObject robotObject = new GameObject("Robot");
+            GameObject robotObject = new GameObject("Robot" + robotNumber);
             Robot robot = robotObject.AddComponent<Robot>();
+            robot.robotNumber = robotNumber;
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory, this)) return false;
@@ -442,29 +458,19 @@ public class MainState : SimState
             robot.controlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            robot.LoadManipulator(manipulatorDirectory);
+            robot.LoadManipulator(manipulatorDirectory, robotObject.transform.GetChild(0).transform.position, SpawnedRobots.Count-1);
+            robotNumber++;
             return true;
         }
         return false;
-    }
-
-    private void UpdateTrackers()
-    {
-        int numSteps = physicsWorld.frameCount - lastFrameCount;
-
-        if (Tracking && numSteps > 0)
-            foreach (Tracker t in Trackers)
-                t.AddState(numSteps);
-
-        lastFrameCount += numSteps;
     }
 
     public void StartReplay()
     {
         if (!activeRobot.IsResetting)
         {
-            CollisionTracker.Synchronize(lastFrameCount);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -497,8 +503,8 @@ public class MainState : SimState
     {
         if (!activeRobot.IsResetting)
         {
-            CollisionTracker.Synchronize(lastFrameCount);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
         else
         {

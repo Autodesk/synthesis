@@ -165,14 +165,14 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Creates a new ReplayState instance.
         /// </summary>
-        public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints, List<Tracker> trackers)
+        public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints)
         {
             tStart = Time.time;
 
             this.fieldPath = fieldPath;
             this.robotPath = robotPath;
             this.contactPoints = contactPoints.ToList();
-            this.trackers = trackers;
+            trackers = UnityEngine.Object.FindObjectsOfType<Tracker>().ToList();
 
             playbackMode = PlaybackMode.Paused;
             firstFrame = true;

@@ -24,6 +24,7 @@ public class KeyButton : MonoBehaviour
         //Implement assets; (most assets are configured in Unity: OptionsTab > Canvas > SettingsMode
         mKeyText.font = Resources.Load("Fonts/Russo_One") as Font;
         mKeyText.color = Color.white;
+        mKeyText.fontSize = 13;
 
         if (selectedButton == this)
         {
@@ -98,6 +99,7 @@ public class KeyButton : MonoBehaviour
         }
 
         UpdateText();
+        Controls.Save();
 
         selectedButton = null;
     }

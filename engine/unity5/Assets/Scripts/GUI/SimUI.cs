@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using BulletUnity;
 using Assets.Scripts.FSM;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
@@ -20,6 +21,7 @@ public class SimUI : MonoBehaviour
     SensorManagerGUI sensorManagerGUI;
     SensorManager sensorManager;
     RobotCameraManager robotCameraManager;
+    RobotCameraGUI robotCameraGUI;
 
     GameObject canvas;
 
@@ -41,6 +43,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
+    GameObject enableTankText;
     GameObject unitConversionButton;
 
     GameObject mixAndMatchPanel;
@@ -63,13 +66,6 @@ public class SimUI : MonoBehaviour
     private bool freeroamWindowClosed = false;
 
     private bool oppositeSide = false;
-
-    /// <summary>
-    /// Retreives the Main State instance which controls everything in the simulator.
-    /// </summary>
-    void Start()
-    {
-    }
 
     private void Update()
     {
@@ -106,7 +102,6 @@ public class SimUI : MonoBehaviour
             }
 
         }
-
     }
 
     private void OnGUI()
@@ -138,6 +133,8 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+        enableTankText = AuxFunctions.FindObject(canvas, "EnableTankDriveText");
+        unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
@@ -145,16 +142,12 @@ public class SimUI : MonoBehaviour
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
 
-        unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
-
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
-
+        robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
         mixAndMatchPanel = AuxFunctions.FindObject(canvas, "MixAndMatchPanel");
     }
-
-
-
+    
     private void UpdateWindows()
     {
         if (main != null)
@@ -162,16 +155,8 @@ public class SimUI : MonoBehaviour
         UpdateSpawnpointWindow();
         UpdateDriverStationPanel();
     }
-
-
-    #region main button functions
-    /// <summary>
-    /// Resets the robot
-    /// </summary>
-    //public void PressReset()
-    //{
-    //    main.ResetRobot();
-    //}
+    
+    #region change robot/field functions
     public void ChangeRobot()
     {
         GameObject panel = GameObject.Find("RobotListPanel");
@@ -211,7 +196,7 @@ public class SimUI : MonoBehaviour
         if (robotHasManipulator == 1) //0 is false, 1 is true
         {
             main.DeleteManipulatorNodes();
-            
+
         }
 
         //If the new robot has a manipulator, load the manipulator
@@ -249,7 +234,16 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedField", directory);
             PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
             PlayerPrefs.Save();
-            Application.LoadLevel("Scene");
+
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
+            if (isMixAndMatch == 1)
+            {
+                SceneManager.LoadScene("MixAndMatch");
+            } else
+            {
+                SceneManager.LoadScene("Scene");
+            }
+            
         }
         else
         {
@@ -270,60 +264,96 @@ public class SimUI : MonoBehaviour
         }
 
     }
-
-    public void ChooseResetMode(int i)
+    
+    #endregion
+    #region camera button functions
+    /// <summary>
+    /// Toggles between different dynamic camera states
+    /// </summary>
+    /// <param name="joe"></param>
+    public void SwitchCameraView(int joe)
     {
-        switch (i)
+        Debug.Log(joe);
+        switch (joe)
         {
             case 1:
-                main.BeginRobotReset();
-                main.EndRobotReset();
-                resetDropdown.GetComponent<Dropdown>().value = 0;
+                camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera));
+                DynamicCamera.MovingEnabled = true;
                 break;
             case 2:
-                EndOtherProcesses();
-                main.IsResetting = true;
-                main.BeginRobotReset();
-                resetDropdown.GetComponent<Dropdown>().value = 0;
+                camera.SwitchCameraState(new DynamicCamera.OrbitState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+            case 3:
+                camera.SwitchCameraState(new DynamicCamera.FreeroamState(camera));
+                DynamicCamera.MovingEnabled = true;
+                break;
+            case 4:
+                camera.SwitchCameraState(new DynamicCamera.OverviewState(camera));
+                DynamicCamera.MovingEnabled = true;
                 break;
         }
     }
 
     /// <summary>
-    /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
+    /// Change camera tool tips
     /// </summary>
-    public void EndOtherProcesses()
+    public void CameraToolTips()
     {
-        changeFieldPanel.SetActive(false);
-        changeRobotPanel.SetActive(false);
-        exitPanel.SetActive(false);
-        mixAndMatchPanel.SetActive(false);
-        
-        CloseOrientWindow();
-        main.IsResetting = false;
-
-        dpm.EndProcesses();
-        toolkit.EndProcesses();
-        multiplayer.EndProcesses();
-        
-        sensorManagerGUI.EndProcesses();
-    }
-    #endregion
-    #region camera button functions
-    //Camera Functions
-    public void SwitchCameraFreeroam()
-    {
-        camera.SwitchCameraState(0);
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)))
+            camera.GetComponent<Text>().text = "Driver Station";
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+            camera.GetComponent<Text>().text = "Freeroam";
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OrbitState)))
+            camera.GetComponent<Text>().text = "Orbit Robot";
+        else if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.OverviewState)))
+            camera.GetComponent<Text>().text = "Overview";
     }
 
-    public void SwitchCameraOrbit()
+    /// <summary>
+    /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
+    /// </summary>
+    private void UpdateFreeroamWindow()
     {
-        camera.SwitchCameraState(1);
+        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
+        {
+            if (!freeroamWindowClosed)
+            {
+                freeroamCameraWindow.SetActive(true);
+            }
+
+        }
+        else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
+        {
+            freeroamCameraWindow.SetActive(false);
+        }
     }
 
-    public void SwitchCameraDriverStation()
+    /// <summary>
+    /// Close freeroam camera tool tip
+    /// </summary>
+    public void CloseFreeroamWindow()
     {
-        camera.SwitchCameraState(2);
+        freeroamCameraWindow.SetActive(false);
+        freeroamWindowClosed = true;
+    }
+
+
+    /// <summary>
+    /// Activate driver station tool tips if the main camera is in driver station state
+    /// </summary>
+    private void UpdateDriverStationPanel()
+    {
+        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
+    }
+
+    /// <summary>
+    /// Change to driver station view to the opposite side
+    /// </summary>
+    public void ToggleDriverStation()
+    {
+        oppositeSide = !oppositeSide;
+        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
     }
     #endregion
     #region orient button functions
@@ -381,65 +411,7 @@ public class SimUI : MonoBehaviour
     }
 
     #endregion
-
-    /// <summary>
-    /// Pop reset instructions when main is in reset spawnpoint mode
-    /// </summary>
-    private void UpdateSpawnpointWindow()
-    {
-        if (main.activeRobot.IsResetting)
-        {
-            spawnpointWindow.SetActive(true);
-        }
-        else
-        {
-            spawnpointWindow.SetActive(false);
-        }
-    }
-
-    /// <summary>
-    /// Pop freeroam instructions when using freeroam camera, won't show up again if the user closes it
-    /// </summary>
-    private void UpdateFreeroamWindow()
-    {
-        if (camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)) && !freeroamWindowClosed)
-        {
-            if (!freeroamWindowClosed)
-            {
-                freeroamCameraWindow.SetActive(true);
-            }
-
-        }
-        else if (!camera.cameraState.GetType().Equals(typeof(DynamicCamera.FreeroamState)))
-        {
-            freeroamCameraWindow.SetActive(false);
-        }
-    }
-
-
-    public void CloseFreeroamWindow()
-    {
-        freeroamCameraWindow.SetActive(false);
-        freeroamWindowClosed = true;
-    }
-
-    /// <summary>
-    /// Activate driver station panel if the main camera is in driver station state
-    /// </summary>
-    private void UpdateDriverStationPanel()
-    {
-        driverStationPanel.SetActive(camera.cameraState.GetType().Equals(typeof(DynamicCamera.DriverStationState)));
-    }
-
-    /// <summary>
-    /// Change to driver station view to the opposite side
-    /// </summary>
-    public void ToggleDriverStation()
-    {
-        oppositeSide = !oppositeSide;
-        camera.SwitchCameraState(new DynamicCamera.DriverStationState(camera, oppositeSide));
-    }
-
+    #region control panel functions
     public void ShowControlPanel(bool show)
     {
         if (show)
@@ -458,22 +430,12 @@ public class SimUI : MonoBehaviour
         ShowControlPanel(!inputManagerPanel.activeSelf);
     }
 
-    public void MainMenuExit(string option)
+    /// <summary>
+    /// Open totorial link
+    /// </summary>
+    public void OpenTutorialLink()
     {
-        EndOtherProcesses();
-        switch (option)
-        {
-            case "open":
-                exitPanel.SetActive(true);
-                break;
-            case "exit":
-                Application.LoadLevel("MainMenu");
-                break;
-
-            case "cancel":
-                exitPanel.SetActive(false);
-                break;
-        }
+        Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
     }
 
     /// <summary>
@@ -492,10 +454,94 @@ public class SimUI : MonoBehaviour
         }
     }
 
+    #endregion
+    #region reset functions
+    /// <summary>
+    /// Pop reset instructions when main is in reset spawnpoint mode
+    /// </summary>
+    private void UpdateSpawnpointWindow()
+    {
+        if (main.activeRobot.IsResetting)
+        {
+            spawnpointWindow.SetActive(true);
+        }
+        else
+        {
+            spawnpointWindow.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Toggles between quick reset and reset spawnpoint
+    /// </summary>
+    /// <param name="i"></param>
+    public void ChooseResetMode(int i)
+    {
+        switch (i)
+        {
+            case 1:
+                main.BeginRobotReset();
+                main.EndRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+            case 2:
+                EndOtherProcesses();
+                main.IsResetting = true;
+                main.BeginRobotReset();
+                resetDropdown.GetComponent<Dropdown>().value = 0;
+                break;
+        }
+    }
+    #endregion
+
+    /// <summary>
+    /// Exit to main menu window
+    /// </summary>
+    /// <param name="option"></param>
+    public void MainMenuExit(string option)
+    {
+        EndOtherProcesses();
+        switch (option)
+        {
+            case "open":
+                exitPanel.SetActive(true);
+                break;
+            case "exit":
+                Application.LoadLevel("MainMenu");
+                break;
+
+            case "cancel":
+                exitPanel.SetActive(false);
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// Call this function whenever the user enters a new state (ex. selecting a new robot, using ruler function, orenting robot)
+    /// </summary>
+    public void EndOtherProcesses()
+    {
+        changeFieldPanel.SetActive(false);
+        changeRobotPanel.SetActive(false);
+        exitPanel.SetActive(false);
+        mixAndMatchPanel.SetActive(false);
+
+        CloseOrientWindow();
+        main.IsResetting = false;
+
+        dpm.EndProcesses();
+        toolkit.EndProcesses();
+        multiplayer.EndProcesses();
+        sensorManagerGUI.EndProcesses();
+        robotCameraGUI.EndProcesses();
+    }
+
     /// <summary>
     /// Enters replay mode
     /// </summary>
-    public void EnterReplayMode() {
+    public void EnterReplayMode()
+    {
         main.EnterReplayState();
     }
     #region swap part
