@@ -29,11 +29,11 @@ public class MainMenu : MonoBehaviour
 
     public enum Sim
     {
-        Selection, DefaultSimulator, DriverPracticeMode, MixAndMatchMode, Multiplayer, SimLoadRobot,
-        SimLoadField, DPMLoadRobot, DPMLoadField, MultiplayerLoadRobot, MultiplayerLoadField, CustomFieldLoader, DPMConfiguration, SimLoadReplay
+        Selection, DefaultSimulator, MixAndMatchMode, SimLoadRobot,
+        SimLoadField, CustomFieldLoader, SimLoadReplay
     }
    
-    public static Sim currentSim = Sim.DefaultSimulator;
+    public static Sim currentSim = Sim.Selection;
     Sim lastSim;
 
     //These are necessary references to specific UI parent objects.
@@ -186,7 +186,6 @@ public class MainMenu : MonoBehaviour
     {
         currentSim = Sim.Selection;
 
-
         defaultSimulator.SetActive(false);
 
         simLoadField.SetActive(false);
@@ -197,7 +196,6 @@ public class MainMenu : MonoBehaviour
         selectionPanel.SetActive(true);
 
         isMixAndMatch = false;
-
     }
 
     /// <summary>
@@ -294,6 +292,9 @@ public class MainMenu : MonoBehaviour
         simLoadReplay.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the field directory browser
+    /// </summary>
     public void SwitchFieldDir()
     {
         currentTab = Tab.FieldDir;
@@ -306,6 +307,7 @@ public class MainMenu : MonoBehaviour
         fieldBrowser.Active = true;
     }
 
+    //Switches to the robot directory browser
     public void SwitchRobotDir()
     {
         currentTab = Tab.RobotDir;
@@ -318,6 +320,9 @@ public class MainMenu : MonoBehaviour
         robotBrowser.Active = true;
     }
 
+    /// <summary>
+    /// Switches to the graphics settings panel
+    /// </summary>
     public void SwitchGraphics()
     {
         graphics.SetActive(true);
@@ -325,6 +330,9 @@ public class MainMenu : MonoBehaviour
         settingsMode.SetActive(true);
     }
 
+    /// <summary>
+    /// Switches to the input settings panel
+    /// </summary>
     public void SwitchInput()
     {
         graphics.SetActive(false);
@@ -332,6 +340,9 @@ public class MainMenu : MonoBehaviour
         settingsMode.SetActive(true);
     }
 
+    /// <summary>
+    /// If robot and field is properly selected, switch to the default simulator and save robot/field directory information
+    /// </summary>
     public void StartDefaultSim()
     {
         if (Directory.Exists(simSelectedField) && Directory.Exists(simSelectedRobot))
@@ -366,30 +377,9 @@ public class MainMenu : MonoBehaviour
     #endregion
     #region LoadRobot and LoadField Button Methods
 
-    /*//Selects the robot, records the filename, and switches to the main Tab.
-    public void SelectRobotButtonClicked()
-    {
-        if (robots.Count > 0)
-        {
-            selectedRobot = (robotDirectory + "\\" + robots[robotindex] + "\\");
-            selectedRobotName = "Robot: " + currenttext;
-            //SwitchTab(Tab.Main);
-        }
-        else UserMessageManager.Dispatch("No robot in directory!", 2);
-    }
-
-    //Selects the fields, records the filename, and switches to the main Tab.
-    public void SelectFieldButtonClicked()
-    {
-        if (fields.Count > 0)
-        {
-            selectedField = (fieldDirectory + "\\" + fields[fieldindex] + "\\");
-            selectedFieldName = "Field: " + currenttext;
-            //SwitchTab(Tab.Main);
-        }
-        else UserMessageManager.Dispatch("No field in directory!",2);
-    }*/
-
+    /// <summary>
+    /// Initializes and runs the custom field directory browser
+    /// </summary>
     public void InitFieldBrowser()
     {
         if (fieldBrowser == null)
@@ -421,6 +411,9 @@ public class MainMenu : MonoBehaviour
         if (customfieldon) fieldBrowser.Render();
     }
 
+    /// <summary>
+    /// Starts the custom field directory browser
+    /// </summary>
     public void LoadFieldDirectory()
     {
         if (!fieldBrowser.Active)
@@ -431,6 +424,9 @@ public class MainMenu : MonoBehaviour
         currentTab = Tab.FieldDir;
     }
 
+    /// <summary>
+    /// Initializes and runs the custom robot directory browser
+    /// </summary>
     public void InitRobotBrowser()
     {
         if (robotBrowser == null)
@@ -461,6 +457,9 @@ public class MainMenu : MonoBehaviour
         if (customroboton) robotBrowser.Render();
     }
 
+    /// <summary>
+    /// Starts the custom robot directory browser
+    /// </summary>
     public void LoadRobotDirectory()
     {
         if (!robotBrowser.Active)
@@ -473,11 +472,17 @@ public class MainMenu : MonoBehaviour
 
     #endregion
     #region Other Methods
+    /// <summary>
+    /// Resets to default inputs (Arcade Drive for now)
+    /// </summary>
     public void InputDefaultPressed()
     {
         Controls.ArcadeDrive();
     }
 
+    /// <summary>
+    /// Applies the currently selected graphics settings
+    /// </summary>
     public void ApplyGraphics()
     {
         Screen.SetResolution(xresolution[resolutionsetting], yresolution[resolutionsetting], fullscreen);
@@ -486,12 +491,16 @@ public class MainMenu : MonoBehaviour
         SwitchTabHome();
     }
 
+    /// <summary>
+    /// Hides the splash screen after a certain amount of seconds (meant for transitions)
+    /// </summary>
     IEnumerator HideSplashScreen(float seconds)
     {
         yield return new WaitForSeconds(seconds);
         splashScreen.SetActive(false);
     }
 
+    //Various functions for linking to website
     public void OpenWebsite()
     {
         //System.Diagnostics.Process.Start("\\..\\FieldExporter\\Inventor_Exporter.exe");
@@ -500,26 +509,22 @@ public class MainMenu : MonoBehaviour
 
     public void OpenTutorials()
     {
-        Application.OpenURL("http://bxd.autodesk.com/?page=Tutorials");
+        Application.OpenURL("http://bxd.autodesk.com/tutorials.html");
     }
 
     public void OpenRobotExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRobotExporter");
+        Application.OpenURL("http://bxd.autodesk.com/tutorial-robot.html");
     }
 
     public void OpenFieldExportTutorial()
     {
-        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialFieldExporter");
-    }
-
-    public void OpenRobotConfigurationTutorial()
-    {
-        Application.OpenURL("http://bxd.autodesk.com/?page=tutorialRunningSimulator");
+        Application.OpenURL("http://bxd.autodesk.com/tutorial-field.html");
     }
 
     /// <summary>
-    /// Called when the "Select Field" button is clicked within the field  selection panel
+    /// Called when the "Select Field" button is clicked within the field selection panel
+    /// Saves the currently selected value in the panel and switches back to the previous panel
     /// </summary>
     public void SelectSimField()
     {
@@ -548,6 +553,10 @@ public class MainMenu : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Called when the "Select Robot" button is clicked within the robot selection panel
+    /// Saves the currently selected value in the panel and switches back to the previous panel
+    /// </summary>
     public void SelectSimRobot()
     {
         GameObject robotList = GameObject.Find("SimLoadRobotList");
@@ -564,6 +573,10 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called when the "Select Replay" button is clicked within the replay selection panel
+    /// Scene switches to the Scene.unity to load the replay
+    /// </summary>
     public void SelectSimReplay()
     {
         GameObject replayList = GameObject.Find("SimLoadReplayList");
@@ -580,6 +593,10 @@ public class MainMenu : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called when the "Delete replay" button is clicked within the replay selection panel
+    /// Deletes the selected replay
+    /// </summary>
     public void SelectDeleteReplay()
     {
         GameObject replayList = GameObject.Find("SimLoadReplayList");
@@ -594,26 +611,44 @@ public class MainMenu : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// Called at initialization of the MainMenu scene. Initializes all variables and loads pre-existing settings if they exist.
+    /// </summary>
     void Start()
     {
-
+        
         FindAllGameObjects();
-        splashScreen.SetActive(true);
+        splashScreen.SetActive(true); //Turns on the loading screen while initializing
         InitGraphicsSettings();
         fields = new ArrayList();
         robots = new ArrayList();
 
+        //Creates the replay directory
         FileInfo file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\");
         file.Directory.Create();
 
+        //Assigns the currently store registry values or default file path to the proper variables if they exist.
         robotDirectory = PlayerPrefs.GetString("RobotDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Robots"));
-        robotDirectory = (Directory.Exists(robotDirectory)) ? robotDirectory : robotDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //If the robot directory no longer exists, set it to the default application path.
         fieldDirectory = PlayerPrefs.GetString("FieldDirectory", (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "//synthesis//Fields"));
-        fieldDirectory = (Directory.Exists(fieldDirectory)) ? fieldDirectory : fieldDirectory = System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments); //if the field directory no longer exists, set it to the default application path.
 
+        //If the directory doesn't exist, create it.
+        if (!Directory.Exists(robotDirectory))
+        {
+            file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Robots\\");
+            file.Directory.Create();
+            robotDirectory = file.Directory.FullName;
+        }
+        if (!Directory.Exists(fieldDirectory))
+        {
+            file = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Fields\\");
+            file.Directory.Create();
+            fieldDirectory = file.Directory.FullName;
+        }
+        //Saves the current directory information to the registry
         PlayerPrefs.SetString("RobotDirectory", robotDirectory);
         PlayerPrefs.SetString("FieldDirectory", fieldDirectory);
 
+        //Assigns the currently stored registry values for the selected field/robot to the proper variables.
         simSelectedField = PlayerPrefs.GetString("simSelectedField");
         simSelectedFieldName = (Directory.Exists(simSelectedField)) ? PlayerPrefs.GetString("simSelectedFieldName", "No Field Selected!") : "No Field Selected!";
         simSelectedRobot = PlayerPrefs.GetString("simSelectedRobot");
@@ -624,28 +659,28 @@ public class MainMenu : MonoBehaviour
         customfieldon = false;
         customroboton = false;
         ApplyGraphics();
-        if (currentSim != Sim.Selection)
+
+        //This makes it so that if the user exits from the simulator, 
+        //they are put into the panel where they can select a robot/field
+        //In all other cases, users are welcomed with the main menu screen.
+        if (currentSim == Sim.DefaultSimulator)
         {
-            if (currentSim == Sim.DPMConfiguration)
-            {
-                SwitchTabSim();
-                SwitchSimSelection();
-            }
-            else if (currentSim == Sim.DefaultSimulator)
-            {
-                SwitchTabSim();
-                SwitchSimSelection();
-                SwitchSimDefault();
-            }
+            SwitchTabSim();
+            SwitchSimSelection();
+            SwitchSimDefault();
         }
         else
         {
-            SwitchSimDefault();
+            SwitchSimSelection();
             SwitchTabHome();
         }
 
 
     }
+
+    /// <summary>
+    /// Finds all the UI game objects and assigns them to a variable
+    /// </summary>
     void FindAllGameObjects()
     {
         //We need to make refernces to various buttons/text game objects, but using GameObject.Find is inefficient if we do it every update.
@@ -673,6 +708,9 @@ public class MainMenu : MonoBehaviour
         Debug.Log(mixAndMatchModeScript.ToString());
     }
 
+    /// <summary>
+    /// Initializes graphics settings
+    /// </summary>
     void InitGraphicsSettings()
     {
         xresolution[0] = 1024;
@@ -707,6 +745,9 @@ public class MainMenu : MonoBehaviour
         else resolutionsetting = 2;
     }
 
+    /// <summary>
+    /// Changes the quality settings in a positive increment
+    /// </summary>
     public void ChangeQualitySettings()
     {
         if (QualitySettings.GetQualityLevel() < QualitySettings.names.Length - 1) QualitySettings.SetQualityLevel(QualitySettings.GetQualityLevel() + 1);
