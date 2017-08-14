@@ -52,12 +52,14 @@ public class Robot : MonoBehaviour
 
     private RobotCameraManager robotCameraManager;
 
-    private GameObject manipulatorObject;
+    public GameObject manipulatorObject;
     private RigidNode_Base manipulatorNode;
 
     UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
 
-    private int robotHasManipulator;
+    public int robotHasManipulator;
+
+    public int robotNumber = 1; //Used for MixAndMatch to map manipulator to correct robot
 
     // Use this for initialization
     void Start()
@@ -109,7 +111,7 @@ public class Robot : MonoBehaviour
 
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
             else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); //0 is false, 1 is true
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); //0 is false, 1 is true
 
             //If the robot is in Mix and Match mode and has a manipulator, update the manipulator motors
             if (robotHasManipulator == 1 && isMixAndMatch == 1)
@@ -266,9 +268,8 @@ public class Robot : MonoBehaviour
             r.WorldTransform = newTransform;
         }
         
-        int hasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
-        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
-        if (hasManipulator == 1 && isMixAndMatch == 1)
+        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
+        if (robotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -357,7 +358,7 @@ public class Robot : MonoBehaviour
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
 
-        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
+        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
         if (robotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
@@ -491,7 +492,8 @@ public class Robot : MonoBehaviour
             UnityEngine.Object.Destroy(manipulatorObject);
             return false;
         }
-        node.CreateManipulatorJoint("Robot");
+        GameObject robot = GameObject.Find("Robot");
+        node.CreateManipulatorJoint(robot);
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
         Debug.Log(t);
@@ -520,15 +522,14 @@ public class Robot : MonoBehaviour
         return true;
     }
 
-    public bool LoadManipulator(string directory, Vector3 position, string robotName)
+
+    public bool LoadManipulator(string directory, Vector3 position, int robotIndex)
     {
         manipulatorObject = new GameObject("Manipulator");
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
         //manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
-
         manipulatorObject.transform.position = position;
-        //manipulatorObject.transform.position = robotStartPosition;
 
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
@@ -552,7 +553,8 @@ public class Robot : MonoBehaviour
             UnityEngine.Object.Destroy(manipulatorObject);
             return false;
         }
-        node.CreateManipulatorJoint(robotName);
+        GameObject robot = mainState.SpawnedRobots[robotIndex].gameObject;
+        node.CreateManipulatorJoint(robot);
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
         Debug.Log(t);
