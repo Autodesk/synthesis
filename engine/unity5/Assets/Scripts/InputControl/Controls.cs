@@ -68,6 +68,7 @@ public class Controls
         public KeyMapping pickupSecondary;
         public KeyMapping releaseSecondary;
         public KeyMapping spawnSecondary;
+        public KeyMapping practiceMatch;
     }
 
     /// <summary>
@@ -225,6 +226,7 @@ public class Controls
         buttons[0].pickupSecondary = InputControl.setKey("Pick Up Secondary Gamepiece", KeyCode.X, new JoystickInput(JoystickButton.Button3, Joystick.Joystick1));
         buttons[0].releaseSecondary = InputControl.setKey("Release Secondary Gamepiece", KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1));
         buttons[0].spawnSecondary = InputControl.setKey("Spawn Secondary Gamepiece", KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1));
+        buttons[0].practiceMatch = InputControl.setKey("Toggle Practice Match Window", KeyCode.P, new JoystickInput(JoystickButton.Button9, Joystick.Joystick1));
 
         //Set Arcade Drive Axes
         axes[0].horizontal = InputControl.setAxis("Joystick 1 Axis 2", buttons[0].left, buttons[0].right);
