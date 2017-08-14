@@ -457,7 +457,10 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmRobot.FinishGamepieceSpawn();
     }
 
-
+    public void CancelGamepieceGoal()
+    {
+        dpmRobot.FinishGamepieceGoal();
+    }
 
     public void ChangeOffsetX(int sign)
     {
@@ -594,6 +597,7 @@ public class DriverPracticeMode : MonoBehaviour {
             CancelDefineIntake();
             CancelDefineRelease();
             CancelGamepieceSpawn();
+            CancelGamepieceGoal();
         }
     }
 

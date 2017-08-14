@@ -16,7 +16,6 @@ using Assets.Scripts.FSM;
 /// </summary>
 public class DriverPracticeRobot : MonoBehaviour
 {
-
     public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
     public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
     public float[] primaryVelocity = new float[3];
@@ -38,6 +37,10 @@ public class DriverPracticeRobot : MonoBehaviour
     public List<List<GameObject>> spawnedGamepieces;
     public List<GameObject> spawnedPrimary;
     public List<GameObject> spawnedSecondary;
+
+    public List<List<GameObject>> gamepieceGoalObjects; // List of objects with trigger colliders representing gamepiece goals
+    public List<GameObject> gamepieceGoalObjectsPrimary; // Goals stored in list for future possiblity of multiple goals per gamepiece
+    public List<GameObject> gamepieceGoalObjectsSecondary;
 
     public List<bool> displayTrajectories; //projects gamepiece trajectories if true
     private List<LineRenderer> drawnTrajectory;
@@ -62,7 +65,7 @@ public class DriverPracticeRobot : MonoBehaviour
     private List<Color> hoveredColors = new List<Color>();
     private Color hoverColor = new Color(1, 1, 0, 0.1f);
 
-    //for gamepiece spawning customizability
+    //for gamepiece spawn and goal customizability
     private List<UnityEngine.Vector3> gamepieceSpawn;
     private List<UnityEngine.Vector3> gamepieceGoal;
     private List<float> gamepieceGoalSize;
@@ -126,6 +129,12 @@ public class DriverPracticeRobot : MonoBehaviour
         spawnedGamepieces.Add(spawnedPrimary);
         spawnedGamepieces.Add(spawnedSecondary);
 
+        gamepieceGoalObjects = new List<List<GameObject>>();
+        gamepieceGoalObjectsPrimary = new List<GameObject>();
+        gamepieceGoalObjectsSecondary = new List<GameObject>();
+        gamepieceGoalObjects.Add(gamepieceGoalObjectsPrimary);
+        gamepieceGoalObjects.Add(gamepieceGoalObjectsSecondary);
+
         holdingLimit = new List<int>();
         holdingLimit.Add(30);
         holdingLimit.Add(30);
@@ -165,6 +174,9 @@ public class DriverPracticeRobot : MonoBehaviour
         displayTrajectories.Add(false);
 
         Load(robotDirectory);
+
+        GenerateGamepieceGoals(0);
+        GenerateGamepieceGoals(1);
     }
 
     // Update is called once per frame
@@ -518,6 +530,50 @@ public class DriverPracticeRobot : MonoBehaviour
         //MainState.ControlsDisabled = false;
     }
 
+    public void GenerateGamepieceGoals(int index)
+    {
+        if (gamepieceNames[index] != null && GameObject.Find(gamepieceNames[index]) != null)
+        {
+            DestroyGamepieceGoals(index);
+
+            GameObject gameobject = new GameObject("Gamepiece" + index.ToString() + "Goal");
+
+            BBoxShape collider = gameobject.AddComponent<BBoxShape>();
+            collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f) * gamepieceGoalSize[index];
+
+            BRigidBody rigid = gameobject.AddComponent<BRigidBody>();
+            rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
+            rigid.transform.position = gamepieceGoal[index];
+
+            DriverPracticeGoal goal = gameobject.AddComponent<DriverPracticeGoal>();
+            goal.SetKeyword(gamepieceNames[index]);
+            goal.DPRobot = this;
+
+            gamepieceGoalObjects[index].Add(gameobject);
+        }
+        else
+        {
+            Debug.LogError("Cannot generate goal of undefined gamepiece!");
+        }
+    }
+
+    public void DestroyGamepieceGoals(int index)
+    {
+        try //In case the game piece somehow doens't exist in the scene
+        {
+            while (gamepieceGoalObjects[index].Count > 0) // Delete existing goal objects
+            {
+                Destroy(gamepieceGoalObjects[index][0]);
+                gamepieceGoalObjects[index].RemoveAt(0);
+            }
+        }
+        catch
+        {
+            UserMessageManager.Dispatch("Unknown error occurred when generating gamepiece goals!", 5);
+        }
+    }
+
+
     public void StartGamepieceGoal(int index)
     {
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
@@ -540,7 +596,7 @@ public class DriverPracticeRobot : MonoBehaviour
                 settingGoal = index + 1;
                 settingGoalVertical = false;
 
-                 DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                 lastCameraState = dynamicCamera.cameraState;
                 dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
 
@@ -594,6 +650,9 @@ public class DriverPracticeRobot : MonoBehaviour
                     UserMessageManager.Dispatch("New gamepiece goal location has been set!", 3f);
                     gamepieceGoal[index] = goalIndicator.transform.position;
                     gamepieceGoalSize[index] = goalIndicator.transform.localScale.x;
+
+                    GenerateGamepieceGoals(settingGoal - 1);
+
                     FinishGamepieceGoal();
                 }
                 if (Input.GetKeyDown(KeyCode.Escape))
