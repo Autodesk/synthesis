@@ -419,13 +419,14 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
+    int robotNumber = 2; //Only used for mix and match so that manipulator can map to the correct robot in RNJoint
     public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
             robotPath = baseDirectory;
 
-            GameObject robotObject = new GameObject("Robot");
+            GameObject robotObject = new GameObject("Robot" + robotNumber);
             Robot robot = robotObject.AddComponent<Robot>();
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
@@ -442,7 +443,8 @@ public class MainState : SimState
             robot.controlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            robot.LoadManipulator(manipulatorDirectory, robotObject.transform.GetChild(0).transform.position);
+            robot.LoadManipulator(manipulatorDirectory, robotObject.transform.GetChild(0).transform.position, "Robot" + robotNumber);
+            robotNumber++;
             return true;
         }
         return false;

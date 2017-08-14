@@ -491,7 +491,7 @@ public class Robot : MonoBehaviour
             UnityEngine.Object.Destroy(manipulatorObject);
             return false;
         }
-        node.CreateManipulatorJoint();
+        node.CreateManipulatorJoint("Robot");
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
         Debug.Log(t);
@@ -520,7 +520,7 @@ public class Robot : MonoBehaviour
         return true;
     }
 
-    public bool LoadManipulator(string directory, Vector3 position)
+    public bool LoadManipulator(string directory, Vector3 position, string robotName)
     {
         manipulatorObject = new GameObject("Manipulator");
 
@@ -552,7 +552,7 @@ public class Robot : MonoBehaviour
             UnityEngine.Object.Destroy(manipulatorObject);
             return false;
         }
-        node.CreateManipulatorJoint();
+        node.CreateManipulatorJoint(robotName);
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
         Debug.Log(t);
