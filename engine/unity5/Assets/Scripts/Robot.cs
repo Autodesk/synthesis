@@ -24,7 +24,7 @@ public class Robot : MonoBehaviour
 
     private RigidNode_Base rootNode;
 
-    private Vector3 robotStartPosition = new Vector3(01f, 1f, 0f);
+    private Vector3 robotStartPosition = new Vector3(0f, 1f, 0f);
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
     private UnityPacket unityPacket;
@@ -195,6 +195,10 @@ public class Robot : MonoBehaviour
             if (node.MainObject.GetComponent<BRigidBody>() != null)
                 node.MainObject.AddComponent<Tracker>().Trace = true;
         }
+       
+        //Get the offset from the first node to the robot for new robot start position calculation
+        //This line is CRITICAL to new reset position accuracy! DON'T DELETE IT!
+        nodeToRobotOffset = gameObject.transform.GetChild(0).localPosition - robotStartPosition;
 
         foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
             r.RaycastRobot.EffectiveMass = collectiveMass;
@@ -287,7 +291,7 @@ public class Robot : MonoBehaviour
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
             r.WorldTransform = newTransform;
         }
-        
+
         int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
         if (robotHasManipulator == 1 && isMixAndMatch == 1)
         {
@@ -352,8 +356,9 @@ public class Robot : MonoBehaviour
         if (Input.GetKey(KeyCode.Return))
         {
             robotStartOrientation = ((RigidNode)rootNode.ListAllNodes()[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject().WorldTransform.Basis;
-            robotStartPosition = transform.GetChild(0).transform.position - nodeToRobotOffset;
-            //Debug.Log(robotStartPosition);
+
+            robotStartPosition = new Vector3(transform.GetChild(0).transform.localPosition.x - nodeToRobotOffset.x, robotStartPosition.y, 
+                transform.GetChild(0).transform.localPosition.z - nodeToRobotOffset.z);
             EndReset();
         }
     }
