@@ -40,23 +40,14 @@ public class MainMenu : MonoBehaviour
     //We disable and enable these when the state of the main menu changes to reflect the user's selection.
     private GameObject selectionPanel;
     private GameObject defaultSimulator;
-    private GameObject driverPracticeMode;
     private GameObject mixAndMatchMode;
-    private GameObject dpmConfiguration;
-    private GameObject localMultiplayer;
     private GameObject simLoadField;
     private GameObject simLoadRobot;
     private GameObject simLoadReplay;
-    private GameObject dpmLoadField;
-    private GameObject dpmLoadRobot;
-    private GameObject multiplayerLoadField;
-    private GameObject multiplayerLoadRobot;
 
     //We alter these to reflect the user's selected fields and robots.
     private GameObject simRobotSelectText;
     private GameObject simFieldSelectText;
-    private GameObject dpmRobotSelectText;
-    private GameObject dpmFieldSelectText;
 
     //This reflects the state of driver practice mode configuration and displays what field a robot is configured for.
     private GameObject configurationText;
@@ -79,12 +70,6 @@ public class MainMenu : MonoBehaviour
     private string simSelectedFieldName; //the selected field name
     private string simSelectedRobotName; //the selected robot name
 
-    //Variables for Driver Practice mode
-    private string dpmSelectedField; //the selected field file path
-    private string dpmSelectedRobot; //the selected robot file path
-    private string dpmSelectedFieldName; //the selected field name
-    private string dpmSelectedRobotName; //the selected robot name
-
     private FileBrowser fieldBrowser = null; //field directory browser
     private bool customfieldon = true; //whether the field directory browser is on
     public string fieldDirectory; //file path for field directory
@@ -92,8 +77,6 @@ public class MainMenu : MonoBehaviour
     private FileBrowser robotBrowser = null; //robot directory browser
     private bool customroboton = true; //whether the robot directory browser is on
     public string robotDirectory; //file path for robot directory
-
-    public static GameObject inputConflict; //UI object that shows when two inputs conflict with each other
 
     public static bool fullscreen; //true if application is in fullscreen
     public static int resolutionsetting; //resolution setting index
@@ -205,15 +188,10 @@ public class MainMenu : MonoBehaviour
 
 
         defaultSimulator.SetActive(false);
-        driverPracticeMode.SetActive(false);
-        localMultiplayer.SetActive(false);
 
-        dpmLoadField.SetActive(false);
-        dpmLoadRobot.SetActive(false);
         simLoadField.SetActive(false);
         simLoadRobot.SetActive(false);
         simLoadReplay.SetActive(false);
-        dpmConfiguration.SetActive(false);
         mixAndMatchMode.SetActive(false);
 
         selectionPanel.SetActive(true);
@@ -251,23 +229,6 @@ public class MainMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Switches to the driver practice menu within the simulation tab and activates its respective UI elements.
-    /// </summary>
-    public void SwitchDriverPractice()
-    {
-        currentSim = Sim.DriverPracticeMode;
-
-        selectionPanel.SetActive(false);
-        dpmLoadField.SetActive(false);
-        dpmLoadRobot.SetActive(false);
-        driverPracticeMode.SetActive(true);
-        dpmConfiguration.SetActive(false);
-
-        dpmRobotSelectText.GetComponent<Text>().text = dpmSelectedRobotName;
-        dpmFieldSelectText.GetComponent<Text>().text = dpmSelectedFieldName;
-    }
-
-    /// <summary>
     /// Switches to the Mix and Match menu within the simulation tab and activates its respective UI elements.
     /// </summary>
     public void SwitchMixAndMatch()
@@ -284,19 +245,6 @@ public class MainMenu : MonoBehaviour
 
         isMixAndMatch = true;
 
-    }
-
-    /// <summary>
-    /// Switches to the multiplayer menu within the simulation tab and activates its respective UI elements.
-    /// </summary>
-    public void SwitchMultiplayer()
-    {
-        currentSim = Sim.Multiplayer;
-
-        selectionPanel.SetActive(false);
-        multiplayerLoadField.SetActive(false);
-        multiplayerLoadRobot.SetActive(false);
-        localMultiplayer.SetActive(true);
     }
 
     /// <summary>
@@ -346,28 +294,6 @@ public class MainMenu : MonoBehaviour
         simLoadReplay.SetActive(true);
     }
 
-    /// <summary>
-    /// Switches to the load robot menu for the driver practice mode and activates its respective UI elements.
-    /// </summary>
-    public void SwitchDPMLoadRobot()
-    {
-        currentSim = Sim.DPMLoadRobot;
-
-        driverPracticeMode.SetActive(false);
-        dpmLoadRobot.SetActive(true);
-    }
-
-    /// <summary>
-    /// Switches to the load field menu for the driver practice mode and activates its respective UI elements.
-    /// </summary>
-    public void SwitchDPMLoadField()
-    {
-        currentSim = Sim.DPMLoadField;
-
-        driverPracticeMode.SetActive(false);
-        dpmLoadField.SetActive(true);
-    }
-
     public void SwitchFieldDir()
     {
         currentTab = Tab.FieldDir;
@@ -390,41 +316,6 @@ public class MainMenu : MonoBehaviour
 
         customroboton = true;
         robotBrowser.Active = true;
-    }
-
-    public void SwitchDPMConfiguration()
-    {
-        if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))
-        {
-            currentSim = Sim.DPMConfiguration;
-
-            driverPracticeMode.SetActive(false);
-            dpmConfiguration.SetActive(true);
-
-            if (File.Exists(dpmSelectedRobot + "\\dpmConfiguration.txt"))
-            {
-                string line = "";
-                int counter = 0;
-                StreamReader reader = new StreamReader(dpmSelectedRobot + "\\dpmConfiguration.txt");
-
-                string fieldName = "";
-                while ((line = reader.ReadLine()) != null)
-                {
-                    if (line.Equals("#Field")) counter++;
-                    else if (counter == 1)
-                    {
-                        fieldName = line;
-                        break;
-                    }
-                }
-                reader.Close();
-                configurationText.GetComponent<Text>().text = "Robot Status: <color=#008000ff>Configured For " + fieldName + "</color>";
-            }
-            else configurationText.GetComponent<Text>().text = "Robot Status: <color=#a52a2aff>NOT CONFIGURED</color>";
-
-
-        }
-        else UserMessageManager.Dispatch("No Robot/Field Selected!", 5);
     }
 
     public void SwitchGraphics()
@@ -459,73 +350,9 @@ public class MainMenu : MonoBehaviour
         else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
     }
 
-    public void StartRobotConfiguration()
-    {
-        if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))
-        {
-
-            PlayerPrefs.SetString("dpmSelectedField", dpmSelectedField);
-            PlayerPrefs.SetString("dpmSelectedFieldName", dpmSelectedFieldName);
-            PlayerPrefs.SetString("dpmSelectedRobot", dpmSelectedRobot);
-            PlayerPrefs.SetString("dpmSelectedRobotName", dpmSelectedRobotName);
-            PlayerPrefs.Save();
-            Application.LoadLevel("RobotConfiguration");
-        }
-        else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
-    }
-
-    public void StartDPM()
-    {
-        if (Directory.Exists(dpmSelectedField) && Directory.Exists(dpmSelectedField))
-        {
-            if (File.Exists(dpmSelectedRobot + "\\dpmConfiguration.txt"))
-            {
-                PlayerPrefs.SetString("dpmSelectedField", dpmSelectedField);
-                PlayerPrefs.SetString("dpmSelectedFieldName", dpmSelectedFieldName);
-                PlayerPrefs.SetString("dpmSelectedRobot", dpmSelectedRobot);
-                PlayerPrefs.SetString("dpmSelectedRobotName", dpmSelectedRobotName);
-                PlayerPrefs.Save();
-                Application.LoadLevel("DriverPracticeMode");
-            }
-            else UserMessageManager.Dispatch("Robot is not configured yet!", 2);
-        }
-        else UserMessageManager.Dispatch("No Robot/Field Selected!", 2);
-    }
-
 
 
     #region Main Tab Button Methods
-
-    /* //Makes the Start Button display different things depending on whether a robot/field is loaded or not.
-     public void StartButtonHover()
-     {
-         if (selectedFieldName.Equals("No Field Loaded!") || selectedRobotName.Equals("No Robot Loaded!")) 
-         {
-             startButton.GetComponent<Image>().color = Color.red;
-             Text buttontext = readyText.GetComponent<Text>();
-             buttontext.text = ( "Can't start without robot/field loaded!");
-             buttontext.fontSize = 12;
-         }
-         else startButton.GetComponent<Image>().color = Color.green;
-     }
-
-     public void StartButtonExit()
-     {
-         Text buttontext = readyText.GetComponent<Text>();
-         buttontext.text = ("START");
-         buttontext.fontSize = 30;
-     }
-
- /*    //Starts the simulation
-     public void StartButtonClicked()
-     {
-         if (!selectedFieldName.Equals("No Field Loaded!") && !selectedRobotName.Equals("No Robot Loaded!"))
-         {
-             PlayerPrefs.SetString("Field", selectedField);
-             PlayerPrefs.SetString("Robot", selectedRobot);
-             Application.LoadLevel("Scene");
-         }
-     }*/
 
     //Exits the program
     public void Exit()
@@ -765,38 +592,6 @@ public class MainMenu : MonoBehaviour
             replayList.SetActive(true);
         }
     }
-
-    public void SelectDPMField()
-    {
-        GameObject fieldList = GameObject.Find("DPMLoadFieldList");
-        string entry = (fieldList.GetComponent<ScrollablePanel>().selectedEntry);
-        if (entry != null)
-        {
-            dpmSelectedFieldName = fieldList.GetComponent<ScrollablePanel>().selectedEntry;
-            dpmSelectedField = fieldDirectory + "\\" + dpmSelectedFieldName + "\\";
-            SwitchDriverPractice();
-        }
-        else
-        {
-            UserMessageManager.Dispatch("No Field Selected!", 2);
-        }
-    }
-
-    public void SelectDPMRobot()
-    {
-        GameObject robotList = GameObject.Find("DPMLoadRobotList");
-        string entry = (robotList.GetComponent<ScrollablePanel>().selectedEntry);
-        if (entry != null)
-        {
-            dpmSelectedRobotName = robotList.GetComponent<ScrollablePanel>().selectedEntry;
-            dpmSelectedRobot = robotDirectory + "\\" + dpmSelectedRobotName + "\\";
-            SwitchDriverPractice();
-        }
-        else
-        {
-            UserMessageManager.Dispatch("No Robot Selected!", 2);
-        }
-    }
     #endregion
 
     void Start()
@@ -823,10 +618,6 @@ public class MainMenu : MonoBehaviour
         simSelectedFieldName = (Directory.Exists(simSelectedField)) ? PlayerPrefs.GetString("simSelectedFieldName", "No Field Selected!") : "No Field Selected!";
         simSelectedRobot = PlayerPrefs.GetString("simSelectedRobot");
         simSelectedRobotName = (Directory.Exists(simSelectedRobot)) ? PlayerPrefs.GetString("simSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
-        dpmSelectedField = PlayerPrefs.GetString("dpmSelectedField");
-        dpmSelectedFieldName = (Directory.Exists(dpmSelectedField)) ? PlayerPrefs.GetString("dpmSelectedFieldName", "No Field Selected!") : "No Field Selected!";
-        dpmSelectedRobot = PlayerPrefs.GetString("dpmSelectedRobot");
-        dpmSelectedRobotName = (Directory.Exists(dpmSelectedRobot)) ? PlayerPrefs.GetString("dpmSelectedRobotName", "No Robot Selected!") : "No Robot Selected!";
 
         canvas = GetComponent<Canvas>();
 
@@ -839,8 +630,6 @@ public class MainMenu : MonoBehaviour
             {
                 SwitchTabSim();
                 SwitchSimSelection();
-                SwitchDriverPractice();
-                SwitchDPMConfiguration();
             }
             else if (currentSim == Sim.DefaultSimulator)
             {
@@ -863,17 +652,10 @@ public class MainMenu : MonoBehaviour
         //Therefore, we assign variables to them and only use GameObject.Find once for each object in startup.
         selectionPanel = AuxFunctions.FindObject(gameObject, "SelectionPanel"); //The Mode Selection Tab GUI Objects
         defaultSimulator = AuxFunctions.FindObject(gameObject, "DefaultSimulator");
-        driverPracticeMode = AuxFunctions.FindObject(gameObject, "DriverPracticeMode");
         mixAndMatchMode = AuxFunctions.FindObject(gameObject, "MixAndMatchMode");
-        dpmConfiguration = AuxFunctions.FindObject(gameObject, "DPMConfiguration");
-        localMultiplayer = AuxFunctions.FindObject(gameObject, "LocalMultiplayer");
         simLoadField = AuxFunctions.FindObject(gameObject, "SimLoadField");
         simLoadRobot = AuxFunctions.FindObject(gameObject, "SimLoadRobot");
         simLoadReplay = AuxFunctions.FindObject(gameObject, "SimLoadReplay");
-        dpmLoadField = AuxFunctions.FindObject(gameObject, "DPMLoadField");
-        dpmLoadRobot = AuxFunctions.FindObject(gameObject, "DPMLoadRobot");
-        multiplayerLoadField = AuxFunctions.FindObject(gameObject, "MultiplayerLoadField");
-        multiplayerLoadRobot = AuxFunctions.FindObject(gameObject, "MultiplayerLoadRobot");
         splashScreen = AuxFunctions.FindObject(gameObject, "LoadSplash");
 
         graphics = AuxFunctions.FindObject(gameObject, "Graphics");
@@ -884,12 +666,6 @@ public class MainMenu : MonoBehaviour
 
         simFieldSelectText = AuxFunctions.FindObject(defaultSimulator, "SimFieldSelectText");
         simRobotSelectText = AuxFunctions.FindObject(defaultSimulator, "SimRobotSelectText");
-        dpmFieldSelectText = AuxFunctions.FindObject(driverPracticeMode, "DPMFieldSelectText");
-        dpmRobotSelectText = AuxFunctions.FindObject(driverPracticeMode, "DPMRobotSelectText");
-
-        configurationText = AuxFunctions.FindObject(dpmConfiguration, "ConfigurationText");
-
-        inputConflict = AuxFunctions.FindObject(gameObject, "InputConflict");
 
         AuxFunctions.FindObject(gameObject, "QualitySettingsText").GetComponent<Text>().text = QualitySettings.names[QualitySettings.GetQualityLevel()];
 

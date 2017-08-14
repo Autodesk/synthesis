@@ -63,8 +63,6 @@ class SensorManagerGUI : MonoBehaviour
     private bool isSelectingSensor;
     private bool isEditingAngle;
     private bool isEditingRange;
-    private bool nodeConfirmed;
-    private bool sensorConfirmed;
     private bool isHidingOutput;
 
     //A list of all output panels instantiated
@@ -87,6 +85,7 @@ class SensorManagerGUI : MonoBehaviour
         {
             currentSensor.UpdateTransform();
             sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
+
             UpdateSensorAnglePanel();
             UpdateSensorRangePanel();
         }
@@ -174,26 +173,23 @@ class SensorManagerGUI : MonoBehaviour
     public void ToggleAddSensor()
     {
         isAddingSensor = !isAddingSensor;
+        sensorManager.SelectingNode = isAddingSensor;
+        selectExistingButton.SetActive(!isAddingSensor);
+        cancelOptionButton.SetActive(isAddingSensor);
+        sensorOptionToolTip.SetActive(isAddingSensor);
+
         if (isAddingSensor)
         {
             addSensorButton.GetComponentInChildren<Text>().text = "Confirm";
-            selectExistingButton.SetActive(false);
-            sensorOptionToolTip.SetActive(true);
             sensorOptionToolTip.GetComponentInChildren<Text>().text = "Select the robot node to which the new sensor will attach and Confirm";
-            cancelOptionButton.SetActive(sensorManager.SelectingNode = true);
             UserMessageManager.Dispatch("Please select a robot node for sensor attachment", 3);
         }
         else
         {
             addSensorButton.GetComponentInChildren<Text>().text = "Add New Sensor";
-            selectExistingButton.SetActive(true);
             //Turn off selectingNode state
-            sensorManager.SelectingNode = false;
             //Update the node selected to selectedNode
             SyncNodeSelection();
-
-            cancelOptionButton.SetActive(false);
-            sensorOptionToolTip.SetActive(false);
             //Activate sensor type panel if a valid node is selected
             if (selectedNode != null)
             {
@@ -215,25 +211,21 @@ class SensorManagerGUI : MonoBehaviour
     public void ToggleSelectExisting()
     {
         isSelectingSensor = !isSelectingSensor;
+        sensorManager.SelectingSensor = isSelectingSensor;
+        addSensorButton.SetActive(!isSelectingSensor);
+        cancelOptionButton.SetActive(isSelectingSensor);
+        sensorOptionToolTip.SetActive(isSelectingSensor);
+
         if (isSelectingSensor)
         {
             selectExistingButton.GetComponentInChildren<Text>().text = "Confirm";
-            addSensorButton.SetActive(false);
-            sensorOptionToolTip.SetActive(true);
             sensorOptionToolTip.GetComponentInChildren<Text>().text = "Select an existing sensor for configuration and Confirm";
-            cancelOptionButton.SetActive(sensorManager.SelectingSensor = true);
             UserMessageManager.Dispatch("Please select a sensor for configuration", 3f);
 
         }
         else
         {
-            cancelOptionButton.SetActive(false);
-            sensorOptionToolTip.SetActive(false);
-
             selectExistingButton.GetComponentInChildren<Text>().text = "Select Existing Sensor";
-            addSensorButton.SetActive(true);
-            //Turn off selecting sensor state
-            sensorManager.SelectingSensor = false;
             //Update selectedSensor
             SyncSensorSelection();
             //If a valid sensor is selected, start configuring it
@@ -241,6 +233,7 @@ class SensorManagerGUI : MonoBehaviour
             {
                 sensorOptionPanel.SetActive(false);
                 StartConfiguration();
+                //Clean up SelectedSensor and reset the panel
                 CancelOptionSelection();
             }
             //Stay at sensorOptionPanel
@@ -285,19 +278,22 @@ class SensorManagerGUI : MonoBehaviour
         {
             isAddingSensor = false;
             sensorManager.ClearSelectedNode();
-
         }
         else if (isSelectingSensor)
         {
             isSelectingSensor = false;
             sensorManager.ClearSelectedSensor();
-
         }
+        selectExistingButton.SetActive(true);
         selectExistingButton.GetComponentInChildren<Text>().text = "Select Existing Sensor";
+
         addSensorButton.SetActive(true);
         addSensorButton.GetComponentInChildren<Text>().text = "Add New Sensor";
-        selectExistingButton.SetActive(true);
+
         cancelOptionButton.SetActive(false);
+        sensorManager.SelectingNode = false;
+        sensorManager.SelectingSensor = false;
+        selectedNode = null;
     }
 
     #endregion
@@ -363,7 +359,6 @@ class SensorManagerGUI : MonoBehaviour
         if (isAddingGyro)
         {
             addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
-
             AddGyro();
         }
         else
@@ -377,7 +372,7 @@ class SensorManagerGUI : MonoBehaviour
     /// <summary>
     /// Cancel the current sensor type selection and destroy the sensor game object
     /// </summary>
-    public void CancelSensorTypeSelection()
+    public void CancelTypeSelection()
     {
         if (isAddingBeamBreaker)
         {
@@ -398,9 +393,11 @@ class SensorManagerGUI : MonoBehaviour
         addBeamBreakerButton.SetActive(true);
         addGyroButton.SetActive(true);
 
+        //Remove the current sensor - can't use this in EndProcesses because of this part
         if (currentSensor != null)
         {
             sensorManager.RemoveSensor(currentSensor.gameObject);
+            //Shift the panel up for the current sensor destroyed
             ShiftOutputPanels();
             Destroy(currentSensor.gameObject);
             currentSensor = null;
@@ -409,7 +406,7 @@ class SensorManagerGUI : MonoBehaviour
     }
 
     /// <summary>
-    /// Methods that call corresponding add sensor functions in sensorManager, attach a new sensor on selectedNode
+    /// Add an ultrasonic sensor to the selected node and display its output
     /// </summary>
     public void AddUltrasonic()
     {
@@ -419,6 +416,10 @@ class SensorManagerGUI : MonoBehaviour
             DisplayOutput();
         }
     }
+
+    /// <summary>
+    /// Add a beam breaker sensor to the selected node and display its output
+    /// </summary>
     public void AddBeamBreaker()
     {
         if (selectedNode != null)
@@ -427,6 +428,10 @@ class SensorManagerGUI : MonoBehaviour
             DisplayOutput();
         }
     }
+
+    /// <summary>
+    /// Add a gyro to the selected node and display its output
+    /// </summary>
     public void AddGyro()
     {
         if (selectedNode != null)
@@ -471,12 +476,13 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void ToggleChangeNode()
     {
+        deleteSensorButton.SetActive(sensorManager.SelectingNode);
+
         if (!sensorManager.SelectingNode && sensorManager.SelectedNode == null)
         {
             sensorManager.DefineNode(); //Start selecting a new node
             changeSensorNodeButton.GetComponentInChildren<Text>().text = "Confirm";
             cancelNodeSelectionButton.SetActive(true);
-            deleteSensorButton.SetActive(false);
         }
         else if (sensorManager.SelectingNode && sensorManager.SelectedNode != null)
         {
@@ -484,7 +490,6 @@ class SensorManagerGUI : MonoBehaviour
             currentSensor.gameObject.transform.parent = sensorManager.SelectedNode.transform;
             sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
             CancelNodeSelection();
-            deleteSensorButton.SetActive(true);
         }
     }
 
@@ -497,6 +502,7 @@ class SensorManagerGUI : MonoBehaviour
         cancelNodeSelectionButton.SetActive(false);
         deleteSensorButton.SetActive(true);
         sensorManager.ClearSelectedNode();
+        sensorManager.ResetNodeColors();
         sensorManager.SelectingNode = false;
     }
     /// <summary>
@@ -524,7 +530,6 @@ class SensorManagerGUI : MonoBehaviour
             float.TryParse(yAngleEntry.GetComponent<InputField>().text, out yTemp) &&
             float.TryParse(zAngleEntry.GetComponent<InputField>().text, out zTemp))
         {
-            //Debug.Log("Sync angle!");
             currentSensor.transform.localRotation = Quaternion.Euler(new Vector3(xTemp, yTemp, zTemp));
         }
     }
@@ -638,14 +643,16 @@ class SensorManagerGUI : MonoBehaviour
         lockPositionButton.SetActive(false);
         lockAngleButton.SetActive(false);
         lockRangeButton.SetActive(false);
+
         showAngleButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Angle";
         showRangeButton.GetComponentInChildren<Text>().text = "Show/Edit Sensor Range";
         sensorConfigurationModeButton.GetComponentInChildren<Text>().text = "Configure Height";
+
         sensorAnglePanel.SetActive(false);
         sensorRangePanel.SetActive(false);
-        CancelNodeSelection();
         configureSensorPanel.SetActive(false);
 
+        CancelNodeSelection();
     }
     /// <summary>
     /// Update the text for current node
@@ -660,10 +667,12 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void DeleteSensor()
     {
+        //Don't change the order of following lines or it won't work
         Destroy(currentSensor.gameObject);
         sensorManager.RemoveSensor(currentSensor.gameObject);
         ShiftOutputPanels();
         currentSensor = null;
+
         configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         EndProcesses();
     }
@@ -771,18 +780,19 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void EndProcesses()
     {
-        isChoosingOption = isSelectingSensor = isAddingSensor = isAddingBeamBreaker = isAddingUltrasonic = nodeConfirmed = false;
-        sensorOptionPanel.SetActive(false);
-        ResetConfigurationWindow();
-        sensorTypePanel.SetActive(false);
-        selectedNode = null;
-        CancelOptionSelection();
-        configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
+
         if (currentSensor != null)
         {
             currentSensor.ResetConfigurationState();
             currentSensor = null;
         }
+        sensorOptionPanel.SetActive(false);
+        sensorTypePanel.SetActive(false);
+        CancelOptionSelection();
+        CancelTypeSelection();
+        ResetConfigurationWindow();
+
+        configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
 
         if (preConfigState != null)
         {
