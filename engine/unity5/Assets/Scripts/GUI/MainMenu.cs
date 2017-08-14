@@ -731,7 +731,7 @@ public class MainMenu : MonoBehaviour
         yresolution[6] = 1050;
         yresolution[7] = 1080;
 
-        fullscreen = Screen.fullScreen;
+        fullscreen = false;
         int width = Screen.currentResolution.width;
         int height = Screen.currentResolution.height;
         if (width == xresolution[0] && height == yresolution[0]) resolutionsetting = 0;
@@ -742,7 +742,7 @@ public class MainMenu : MonoBehaviour
         else if (width == xresolution[5] && height == yresolution[5]) resolutionsetting = 5;
         else if (width == xresolution[6] && height == yresolution[6]) resolutionsetting = 6;
         else if (width == xresolution[7] && height == yresolution[7]) resolutionsetting = 7;
-        else resolutionsetting = 2;
+        else resolutionsetting = 0;
     }
 
     /// <summary>

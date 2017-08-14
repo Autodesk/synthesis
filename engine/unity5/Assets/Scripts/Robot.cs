@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.FEA;
 using Assets.Scripts.BUExtensions;
+using Assets.Scripts.FSM;
 
 /// <summary>
 /// To be attached to all robot parent objects.
@@ -78,7 +79,7 @@ public class Robot : MonoBehaviour
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
-        if (!IsResetting)
+        if (!IsResetting && StateMachine.Instance.CurrentState is MainState)
         {
             if (InputControl.GetButtonDown(Controls.buttons[controlIndex].resetRobot))
             {
@@ -196,7 +197,10 @@ public class Robot : MonoBehaviour
         }
 
         foreach (BRaycastRobot r in GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.EffectiveMass = collectiveMass;
+        {
+            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
+            r.RaycastRobot.FrictionEffectiveRigidBody = (RigidBody)((RigidNode)nodes[0]).MainObject.GetComponent<BRigidBody>().GetCollisionObject();
+        }
 
         RotateRobot(robotStartOrientation);
 
@@ -266,8 +270,6 @@ public class Robot : MonoBehaviour
     public void BeginReset()
     {
         IsResetting = true;
-        foreach (Tracker t in UnityEngine.Object.FindObjectsOfType<Tracker>())
-            t.Clear();
 
         foreach (RigidNode n in rootNode.ListAllNodes())
         {
@@ -393,6 +395,8 @@ public class Robot : MonoBehaviour
             }
         }
 
+        foreach (Tracker t in GetComponentsInChildren<Tracker>())
+            t.Clear();
     }
 
     /// <summary>
@@ -541,7 +545,7 @@ public class Robot : MonoBehaviour
         }
 
         foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.EffectiveMass = collectiveMass;
+            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;
@@ -604,7 +608,7 @@ public class Robot : MonoBehaviour
         }
 
         foreach (BRaycastRobot r in manipulatorObject.GetComponentsInChildren<BRaycastRobot>())
-            r.RaycastRobot.EffectiveMass = collectiveMass;
+            r.RaycastRobot.SuspensionEffectiveMass = collectiveMass;
 
         RotateRobot(robotStartOrientation);
         return true;
