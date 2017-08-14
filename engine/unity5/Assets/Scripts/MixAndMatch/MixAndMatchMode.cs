@@ -45,6 +45,7 @@ public class MixAndMatchMode : MonoBehaviour
     //Manipulator Options
     private GameObject noManipulator;
     private GameObject syntheClaw;
+    private GameObject syntheShot;
     [HideInInspector] public List<GameObject> manipulators;
     int selectedManipulator;
     public static bool hasManipulator = true;
@@ -104,8 +105,9 @@ public class MixAndMatchMode : MonoBehaviour
         //Find manipulator objects
         noManipulator = GameObject.Find("NoManipulator");
         syntheClaw = GameObject.Find("SyntheClaw");
+        syntheShot = GameObject.Find("SyntheShot");
         //Put all the manipulators in the manipulators list
-        manipulators = new List<GameObject> { noManipulator, syntheClaw };
+        manipulators = new List<GameObject> { noManipulator, syntheClaw, syntheShot };
 
         //Find all the scroll buttons
         wheelRightScroll = GameObject.Find("WheelRightScroll");
