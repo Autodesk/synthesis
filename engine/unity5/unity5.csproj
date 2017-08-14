@@ -257,6 +257,7 @@
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
+    <Compile Include="Assets\Scripts\GUI\ScoreBoardControl.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
@@ -289,6 +290,7 @@
     <Compile Include="Assets\Scripts\Robot.cs" />
     <Compile Include="Assets\Scripts\RobotCamera.cs" />
     <Compile Include="Assets\Scripts\RobotCameraGUI.cs" />
+    <Compile Include="Assets\Scripts\ScoreBoard.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorManager.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorManagerGUI.cs" />
