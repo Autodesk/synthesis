@@ -81,7 +81,7 @@ class SensorManager : MonoBehaviour
     /// <param name="position"></param> local position of the sensor
     /// <param name="rotation"></param> local rotation of the sensor
     /// <param name="distance"></param> the distance offset between the emitter and receiver
-    public SensorBase AddBeamBreaker(GameObject parent, Vector3 position, Vector3 rotation, float distance = 0)
+    public SensorBase AddBeamBreaker(GameObject parent, Vector3 position, Vector3 rotation, float distance = 0.4f)
     {
         GameObject beamBreaker = GameObject.Instantiate(BeamBreaker, parent.transform);
         beamBreaker.transform.localPosition = position;
