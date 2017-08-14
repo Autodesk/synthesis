@@ -17,7 +17,8 @@
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.6.2f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -243,7 +244,6 @@
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectFieldScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
-    <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
@@ -269,6 +269,7 @@
     <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
     <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
     <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
+    <Compile Include="Assets\Scripts\InputControl\TankMode.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
