@@ -209,8 +209,8 @@
     <Compile Include="Assets\Scripts\BUExtensions\BRaycastWheel.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BRobotManager.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\BRobotRaycaster.cs" />
+    <Compile Include="Assets\Scripts\BUExtensions\ICollisionCallback.cs" />
     <Compile Include="Assets\Scripts\BUExtensions\RaycastRobot.cs" />
-    <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
@@ -230,26 +230,28 @@
     <Compile Include="Assets\Scripts\GUI\DialogWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\FileBrowser.cs" />
     <Compile Include="Assets\Scripts\GUI\GUIController.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\InputScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\KeyButton.cs" />
     <Compile Include="Assets\Scripts\GUI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\GUI\OverlayWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\Popup.cs" />
     <Compile Include="Assets\Scripts\GUI\PopupButton.cs" />
-    <Compile Include="Assets\Scripts\GUI\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeFieldScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ChangeRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\DummyScrollable.cs" />
+    <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollableList.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\ScrollablePanel.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectFieldScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\Scrollables\SelectRobotScrollable.cs" />
     <Compile Include="Assets\Scripts\GUI\SimUI.cs" />
     <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
+    <Compile Include="Assets\Scripts\GUI\Toolkit.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
-    <Compile Include="Assets\Scripts\ICollisionCallback.cs" />
+    <Compile Include="Assets\Scripts\Helpers\BXDExtensions.cs" />
+    <Compile Include="Assets\Scripts\Helpers\MathfExt.cs" />
+    <Compile Include="Assets\Scripts\Helpers\UnityExtensions.cs" />
+    <Compile Include="Assets\Scripts\Helpers\auxFunctions.cs" />
     <Compile Include="Assets\Scripts\InputControl\Axis.cs" />
     <Compile Include="Assets\Scripts\InputControl\Controls.cs" />
     <Compile Include="Assets\Scripts\InputControl\CreateButton.cs" />
@@ -270,7 +272,6 @@
     <Compile Include="Assets\Scripts\InputControl\TankMode.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
-    <Compile Include="Assets\Scripts\MathfExt.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMGetters.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMInfoText.cs" />
     <Compile Include="Assets\Scripts\MixAndMatch\MaMPreset.cs" />
@@ -284,10 +285,10 @@
     <Compile Include="Assets\Scripts\RigidNode\RNJoint.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNMesh.cs" />
     <Compile Include="Assets\Scripts\RigidNode\RNWheel.cs" />
+    <Compile Include="Assets\Scripts\Robot Camera\RobotCamera.cs" />
+    <Compile Include="Assets\Scripts\Robot Camera\RobotCameraGUI.cs" />
+    <Compile Include="Assets\Scripts\Robot Camera\RobotCameraManager.cs" />
     <Compile Include="Assets\Scripts\Robot.cs" />
-    <Compile Include="Assets\Scripts\RobotCamera.cs" />
-    <Compile Include="Assets\Scripts\RobotCameraGUI.cs" />
-    <Compile Include="Assets\Scripts\RobotCameraManager.cs" />
     <Compile Include="Assets\Scripts\Sensors\BeamBreaker.cs" />
     <Compile Include="Assets\Scripts\Sensors\Gyro.cs" />
     <Compile Include="Assets\Scripts\Sensors\SensorBase.cs" />
@@ -298,10 +299,7 @@
     <Compile Include="Assets\Scripts\Settings\Settings.cs" />
     <Compile Include="Assets\Scripts\StatePacket\InputStatePacket.cs" />
     <Compile Include="Assets\Scripts\StatePacket\OutputStatePacket.cs" />
-    <Compile Include="Assets\Scripts\Toolkit.cs" />
-    <Compile Include="Assets\Scripts\UnityExtensions.cs" />
     <Compile Include="Assets\Scripts\UnityFieldDefinition.cs" />
-    <Compile Include="Assets\Scripts\auxFunctions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\BulletUnity\Documentation\README-REALY-README.txt" />
