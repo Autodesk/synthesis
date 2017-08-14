@@ -23,10 +23,8 @@ public class Controls
     //};
     #endregion
 
-    public static bool IsTankDrive;
     public static bool CheckForKeyRemoval;
     public static bool TankDriveEnabled = false;
-    public static bool Clicked;
 
     public static int PlayerOneIndex = 0;
     public static int PlayerTwoIndex = 1;
@@ -112,7 +110,7 @@ public class Controls
     /// </summary>
     public static void SwitchControls()
     {
-        if (IsTankDrive)
+        if (TankDriveEnabled)
         {
             TankDrive();
             Load();
@@ -204,12 +202,19 @@ public class Controls
 
         ArcadeControls();
 
-        IsTankDrive = false;
+        TankDriveEnabled = false;
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+            //Update each individual list, update the main list, and update all the text
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerTwo();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerThree();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFour();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFive();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerSix();
             GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
 
@@ -219,8 +224,8 @@ public class Controls
     public static void ResetArcadeDrive()
     {
         ArcadeControls();
+        TankDriveEnabled = false;
 
-        IsTankDrive = false;
         if (GameObject.Find("SettingsMode") != null)
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
@@ -238,12 +243,18 @@ public class Controls
         }
 
         TankControls();
-        IsTankDrive = true;
+        TankDriveEnabled = true;
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerOne();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerTwo();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerThree();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFour();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerFive();
+            GameObject.Find("Content").GetComponent<CreateButton>().PlayerSix();
             GameObject.Find("Content").GetComponent<CreateButton>().UpdateButtons();
+            GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
 
@@ -253,8 +264,8 @@ public class Controls
     public static void ResetTankDrive()
     {
         TankControls();
+        TankDriveEnabled = true;
 
-        IsTankDrive = true;
         if (GameObject.Find("SettingsMode") != null)
         {
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();

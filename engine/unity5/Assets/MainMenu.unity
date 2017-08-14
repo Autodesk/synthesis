@@ -4003,7 +4003,7 @@ GameObject:
   - component: {fileID: 492091599}
   - component: {fileID: 492091598}
   m_Layer: 5
-  m_Name: InputCanvas (1)
+  m_Name: InputCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5682,7 +5682,7 @@ GameObject:
   - component: {fileID: 721022666}
   - component: {fileID: 721022665}
   m_Layer: 5
-  m_Name: InputCanvas
+  m_Name: InputCanvasOld
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
