@@ -63,7 +63,7 @@ public class MixAndMatchMode : MonoBehaviour
     {
         FindAllGameObjects();
         StartMixAndMatch();
-        PlayerPrefs.SetInt("MixAndMatch", 1); //0 is false, 1 is true
+        PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
     }
 
     // Update is called once per frame
@@ -172,7 +172,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
         PlayerPrefs.Save();
         isMixAndMatchMode = true;
-        SceneManager.LoadScene("MixAndMatch");
+        SceneManager.LoadScene("mixAndMatch");
     }
 
     #region Change or Add MaM Robot
