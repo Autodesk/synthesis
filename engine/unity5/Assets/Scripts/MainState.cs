@@ -60,7 +60,6 @@ public class MainState : SimState
 
     private OverlayWindow oWindow;
 
-    public List<Tracker> Trackers { get; private set; }
     public CollisionTracker CollisionTracker { get; private set; }
 
     private string fieldPath;
@@ -92,11 +91,13 @@ public class MainState : SimState
     {
         //getting bullet physics information
         physicsWorld = BPhysicsWorld.Get();
-        ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BRobotManager.Instance.UpdateRaycastRobots);
+        ((DynamicsWorld)physicsWorld.world).SetInternalTickCallback(BPhysicsTickListener.Instance.PhysicsTick);
         lastFrameCount = physicsWorld.frameCount;
 
+        //setting up raycast robot tick callback
+        BPhysicsTickListener.Instance.OnTick += BRobotManager.Instance.UpdateRaycastRobots;
+
         //setting up replay
-        Trackers = new List<Tracker>();
         CollisionTracker = new CollisionTracker(this);
 
         //starts a new instance of unity packet which receives packets from the driver station
@@ -167,19 +168,15 @@ public class MainState : SimState
         // Switches to replay mode
         if (!activeRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
         {
-            CollisionTracker.Synchronize(lastFrameCount);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
-
-        UpdateTrackers();
     }
 
     public override void FixedUpdate()
     {
         //This line is essential for the reset to work accurately
         //robotCameraObject.transform.position = activeRobot.transform.GetChild(0).transform.position;
-
-        UpdateTrackers();
 
         SendRobotPackets();
     }
@@ -192,7 +189,7 @@ public class MainState : SimState
         if (awaitingReplay)
         {
             awaitingReplay = false;
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -363,8 +360,10 @@ public class MainState : SimState
         LoadField(simSelectedField);
         LoadRobot(simSelectedRobot);
 
-        List<Tracker> robotTrackers = Trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
-        List<Tracker> fieldTrackers = Trackers.Except(robotTrackers).ToList();
+        List<Tracker> trackers = UnityEngine.Object.FindObjectsOfType<Tracker>().ToList();
+
+        List<Tracker> robotTrackers = trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
+        List<Tracker> fieldTrackers = trackers.Except(robotTrackers).ToList();
 
         int i = 0;
 
@@ -406,7 +405,7 @@ public class MainState : SimState
                 foreach (var d in c)
                 {
                     ContactDescriptor currentContact = d.Key;
-                    currentContact.RobotBody = robotTrackers[d.Value].GetComponent<BRigidBody>();
+                    currentContact.RobotBody = activeRobot.transform.GetChild(d.Value).GetComponent<BRigidBody>();
                     currentContacts.Add(currentContact);
                 }
 
@@ -466,23 +465,12 @@ public class MainState : SimState
         return false;
     }
 
-    private void UpdateTrackers()
-    {
-        int numSteps = physicsWorld.frameCount - lastFrameCount;
-
-        if (Tracking && numSteps > 0)
-            foreach (Tracker t in Trackers)
-                t.AddState(numSteps);
-
-        lastFrameCount += numSteps;
-    }
-
     public void StartReplay()
     {
         if (!activeRobot.IsResetting)
         {
-            CollisionTracker.Synchronize(lastFrameCount);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -515,8 +503,8 @@ public class MainState : SimState
     {
         if (!activeRobot.IsResetting)
         {
-            CollisionTracker.Synchronize(lastFrameCount);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+            CollisionTracker.ContactPoints.Add(null);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
         }
         else
         {
