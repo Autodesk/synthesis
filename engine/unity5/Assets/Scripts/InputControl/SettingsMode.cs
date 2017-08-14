@@ -70,6 +70,7 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnEnableTankDrive()
     {
+        //TankDriveEnabled is true
         if (!Controls.TankDriveEnabled)
         {
             Controls.TankDriveEnabled = true;
@@ -81,12 +82,27 @@ public class SettingsMode : MonoBehaviour
         }
         else
         {
+            //TankDriveEnabled is false
             Controls.TankDriveEnabled = false;
             Controls.CheckForKeyRemoval = true;
             Controls.SwitchControls();
             Controls.Save();
             enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
             enableTankDriveText.text = "Switch Tank Drive";
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (!Controls.TankDriveEnabled)
+        {
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Switch Tank Drive";
+        }
+        else
+        {
+            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+            enableTankDriveText.text = "Switch Arcade Drive";
         }
     }
 

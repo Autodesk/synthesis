@@ -24,7 +24,7 @@ public class Controls
     #endregion
 
     public static bool CheckForKeyRemoval;
-    public static bool TankDriveEnabled = false;
+    public static bool TankDriveEnabled;
 
     public static int PlayerOneIndex = 0;
     public static int PlayerTwoIndex = 1;
