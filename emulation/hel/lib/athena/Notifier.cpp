@@ -173,6 +173,26 @@ static void threadedNotifierHandler(uint64_t currentTimeInt,
 
 extern "C" {
 
+HAL_NotifierHandle HAL_InitializeNotifierNonThreadedUnsafe(
+  HAL_NotifierProcessFunction process, void* param, int32_t* status) {
+
+  std::shared_ptr<Notifier> notifier = std::make_shared<Notifier>();
+  HAL_NotifierHandle handle = notifierHandles.Allocate(notifier);
+  if (handle == HAL_kInvalidHandle) {
+    *status = HAL_HANDLE_ERROR;
+    return HAL_kInvalidHandle;
+  }
+  // create notifier structure and add to list
+  notifier->next = notifiers;
+  if (notifier->next) notifier->next->prev = notifier;
+  notifier->param = param;
+  notifier->process = process;
+  notifier->handle = handle;
+  notifier->threaded = false;
+  notifiers = notifier;
+  return handle;
+}
+
 HAL_NotifierHandle HAL_InitializeNotifier(HAL_NotifierProcessFunction process,
                                           void* param, int32_t* status) {
   /*if (!process) {

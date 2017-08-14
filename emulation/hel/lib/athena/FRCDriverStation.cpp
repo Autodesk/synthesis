@@ -47,8 +47,6 @@ static hal::priority_condition_variable newDSDataAvailableCond;
 static hal::priority_mutex newDSDataAvailableMutex;
 static int newDSDataAvailableCounter{0};
 
-extern int teamID;
-
 FRCCommonControlData lastDataPacket;
 DynamicControlData lastDynamicControlPacket [32];
 /*WaitSemaphore newDataSemInternal;
@@ -69,6 +67,9 @@ void DriverStationThread() {
 	int robotSocket;
 	int dsSocket;
   
+	char* teamIDString = getenv("TEAM_ID");
+	int teamID;
+	sscanf(teamIDString, "%d", &teamID);
 	uint32_t network = (10 << 24) | (((teamID / 100) & 0xFF) << 16) | ((teamID % 100) << 8) | 0;
 	//uint32_t network = 0xFFFFFFFF; // 127.0.0.1
   //10.0.2.5
@@ -388,6 +389,10 @@ HAL_AllianceStationID HAL_GetAllianceStation(int32_t* status) {
       reinterpret_cast<AllianceStationID_t*>(&allianceStation));
   return allianceStation;*/
   return HAL_AllianceStationID_kRed1;
+}
+
+void HAL_FreeJoystickName(char* name) {
+  std::free(name);
 }
 
 int32_t HAL_GetJoystickAxes(int32_t joystickNum, HAL_JoystickAxes* axes) {

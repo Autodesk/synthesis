@@ -7,8 +7,6 @@ installHELBuildTool:
 	@mkdir -p ../installer/SynthesisDrive/HELBuildTool
 	@echo -e "\e[1m\e[32mINSTALL\e[39m HELBuildTool/Makefile\e[0m"
 	@cp -f HELBuildTool/Makefile ../installer/SynthesisDrive/HELBuildTool/Makefile
-	@echo -e "\e[1m\e[32mINSTALL\e[39m HELBuildTool/teamID.cpp\e[0m"
-	@cp -f HELBuildTool/teamID.cpp ../installer/SynthesisDrive/HELBuildTool/teamID.cpp
 	@if [ -a HELBuildTool/HELBuildTool/bin/Release/b.exe ]; then \
 		echo -e "\e[1m\e[32mINSTALL\e[39m HELBuildTool/HELBuildTool.exe\e[0m"; \
 		cp -f HELBuildTool/HELBuildTool/bin/Release/b.exe ../installer/SynthesisDrive/HELBuildTool/HELBuildTool.exe; \
