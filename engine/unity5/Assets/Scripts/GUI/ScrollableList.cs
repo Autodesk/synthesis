@@ -48,26 +48,7 @@ public class ScrollableList : MonoBehaviour
     // Update is called once per frame
     void OnGUI()
     {
-        if (listType.Equals("Fields") && mainMenu.fieldDirectory != null && items.Count == 0)
-        {
-            string[] folders = System.IO.Directory.GetDirectories(mainMenu.fieldDirectory);
-            foreach (string field in folders)
-            {
-                if (File.Exists(field + "\\definition.bxdf")) items.Add(new DirectoryInfo(field).Name);
-            }
-            if (items.Count > 0) selectedEntry = items[0];
-        }
-
-        else if (listType.Equals("Robots") && mainMenu.robotDirectory != null && items.Count == 0)
-        {
-            string[] folders = System.IO.Directory.GetDirectories(mainMenu.robotDirectory);
-            foreach (string robot in folders)
-            {
-                if (File.Exists(robot + "\\skeleton.bxdj")) items.Add(new DirectoryInfo(robot).Name);
-            }
-            if (items.Count > 0) selectedEntry = items[0];
-        }
-        else if (listType.Equals("Replays") && items.Count == 0)
+        if (listType.Equals("Replays") && items.Count == 0)
         {
             string[] files = Directory.GetFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Synthesis\\Replays\\", "*.replay");
 
@@ -76,16 +57,6 @@ public class ScrollableList : MonoBehaviour
 
             if (items.Count > 0)
                 selectedEntry = items[0];
-        }
-
-        else if (listType.Equals("DPMFields") && mainMenu.fieldDirectory != null && items.Count == 0)
-        {
-            string[] folders = System.IO.Directory.GetDirectories(mainMenu.fieldDirectory);
-            foreach (string field in folders)
-            {
-                if (File.Exists(field + "\\definition.bxdf") && File.Exists(field + "\\driverpracticemode.txt")) items.Add(new DirectoryInfo(field).Name);
-            }
-            if (items.Count > 0) selectedEntry = items[0];
         }
 
         Vector3 p = Camera.main.WorldToScreenPoint(transform.position);
