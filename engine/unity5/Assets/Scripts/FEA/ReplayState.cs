@@ -545,6 +545,10 @@ namespace Assets.Scripts.FEA
                 float percent = replayTime - currentIndex;
 
                 BRigidBody rb = t.GetComponent<BRigidBody>();
+
+                if (!rb.GetCollisionObject().IsActive)
+                    rb.GetCollisionObject().Activate();
+
                 rb.SetPosition(BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent).ToUnity());
                 rb.SetRotation(BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent).GetOrientation().ToUnity());
             }
