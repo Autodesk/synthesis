@@ -89,8 +89,9 @@ namespace WindowsFormsApp1
                 "TEAM_ID=" + number + " " +
                 makeArgs + " " +
                 "&& echo 'Starting robot code' && ./build/FRC_UserProgram " +
-                "|| read -p 'Press enter to continue'\"");
+                "|| read -p 'Press enter to exit'\"");
             startInfo.EnvironmentVariables["PATH"] = cygwinPath + "\\bin";
+            startInfo.EnvironmentVariables["TEAM_ID"] = "" + number;
             startInfo.UseShellExecute = false;
 
             System.Diagnostics.Process.Start(startInfo);
