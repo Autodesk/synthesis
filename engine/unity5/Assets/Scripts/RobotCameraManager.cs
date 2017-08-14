@@ -21,7 +21,13 @@ public class RobotCameraManager : MonoBehaviour
 
     private static float positionSpeed = 0.5f;
     private static float rotationSpeed = 25;
-    
+
+    private List<Color> hoveredColors = new List<Color>();
+    private List<Color> selectedColors = new List<Color>();
+    private Color selectedColor = new Color(1, 0, 0);
+    private Color hoverColor = new Color(1, 1, 0, 0.1f);
+    private GameObject lastNode;
+
     public bool ChangingCameraPosition { get; set; }
     public bool IsChangingHeight { get; set; }
     public bool IsShowingAngle { get; set; }
@@ -38,12 +44,7 @@ public class RobotCameraManager : MonoBehaviour
         //Enable selecting node state, and users can left click on a node to choose it
         if (SelectingNode)
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                SetNode();
-                Debug.Log("Selecting node");
-
-            }
+            SetNode();
         }
         UpdateCameraPosition();
     }
@@ -241,15 +242,41 @@ public class RobotCameraManager : MonoBehaviour
             GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
             if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
             {
-                string name = selectedObject.name;
+                if(lastNode != null && !selectedObject.Equals(lastNode))
+                {
+                    RevertNodeColors(lastNode, hoveredColors);
+                    lastNode = null;
+                }
+                else
+                {
+                    ChangeNodeColors(selectedObject, hoverColor, hoveredColors);
+                    lastNode = selectedObject;
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    string name = selectedObject.name;
 
-                SelectedNode = selectedObject;
+                    RevertNodeColors(lastNode, hoveredColors);
+                    RevertNodeColors(SelectedNode, selectedColors);
 
-                UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
+                    SelectedNode = selectedObject;
+
+                    ChangeNodeColors(SelectedNode, selectedColor, selectedColors);
+                    UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
+                }
+                
             }
             else
             {
-                UserMessageManager.Dispatch("Please select a robot node", 3);
+                if(lastNode != null)
+                {
+                    RevertNodeColors(lastNode, hoveredColors);
+                    lastNode = null;
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    UserMessageManager.Dispatch("Please select a robot node!", 3);
+                }
             }
         }
     }
@@ -259,6 +286,14 @@ public class RobotCameraManager : MonoBehaviour
     /// </summary>
     public void ChangeNodeAttachment()
     {
+        if (lastNode != null)
+        {
+            RevertNodeColors(lastNode, hoveredColors);
+        }
+        if(SelectedNode != null)
+        {
+            RevertNodeColors(SelectedNode, selectedColors);
+        }
         CurrentCamera.transform.parent = SelectedNode.transform;
         SelectingNode = false;
         SelectedNode = null;
@@ -291,4 +326,37 @@ public class RobotCameraManager : MonoBehaviour
             CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();
         }
     }
+
+    #region Highlighting Functions
+    private void ChangeNodeColors(GameObject node, Color color, List<Color> storedColors)
+    {
+        foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
+        {
+            foreach (Material m in renderers.materials)
+            {
+                storedColors.Add(m.color);
+                m.color = color;
+            }
+        }
+    }
+
+    private void RevertNodeColors(GameObject node, List<Color> storedColors)
+    {
+        if (node != null && storedColors.Count != 0)
+        {
+            int counter = 0;
+            foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
+            {
+
+                foreach (Material m in renderers.materials)
+                {
+                    m.color = storedColors[counter];
+                    counter++;
+                }
+            }
+            storedColors.Clear();
+        }
+    }
+    #endregion
+
 }
