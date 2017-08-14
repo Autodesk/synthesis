@@ -6,6 +6,10 @@ using UnityEngine;
 using BulletUnity;
 using BulletSharp;
 using Assets.Scripts.BUExtensions;
+using System.Collections;
+using System.IO;
+using UnityEngine.UI;
+using Assets.Scripts.FSM;
 
 public partial class RigidNode : RigidNode_Base
 {
@@ -114,13 +118,17 @@ public partial class RigidNode : RigidNode_Base
         }
     }
 
+    private MainState mainState;
+
+
     /// <summary>
     /// Creates node_0 of a manipulator for QuickSwap mode. Node_0 is used to attach the manipulator to the robot.
     /// </summary>
-    public void CreateManipulatorJoint()
+    public void CreateManipulatorJoint(GameObject robot)
     {
+
         //Ignore physics/collisions between the manipulator and the robot. Currently not working. 
-        foreach (BRigidBody rb in GameObject.Find("Robot").GetComponentsInChildren<BRigidBody>())
+        foreach (BRigidBody rb in robot.GetComponentsInChildren<BRigidBody>())
         {
             MainObject.GetComponent<BRigidBody>().GetCollisionObject().SetIgnoreCollisionCheck(rb.GetCollisionObject(), true);
         }
@@ -131,7 +139,7 @@ public partial class RigidNode : RigidNode_Base
             B6DOFConstraint hc = MainObject.AddComponent<B6DOFConstraint>();
 
             hc.thisRigidBody = MainObject.GetComponent<BRigidBody>();
-            hc.otherRigidBody = GameObject.Find("Robot").GetComponentInChildren<BRigidBody>();
+            hc.otherRigidBody = robot.GetComponentInChildren<BRigidBody>();
 
             hc.localConstraintPoint = ComOffset;
 

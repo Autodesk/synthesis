@@ -12,6 +12,11 @@ using Assets.Scripts.FSM;
 using System.Linq;
 using Assets.Scripts.BUExtensions;
 
+/// <summary>
+/// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
+/// Handles replay tracking and loading
+/// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
+/// </summary>
 public class MainState : SimState
 {
 
@@ -112,7 +117,7 @@ public class MainState : SimState
             Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
             Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
 
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); // 0 is false, 1 is true
             int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
             if (isMixAndMatch == 1 && hasManipulator == 1)
             {
@@ -265,7 +270,7 @@ public class MainState : SimState
     /// </summary>
     public void DeleteManipulatorNodes()
     {
-        activeRobot.DeleteNodes();
+        activeRobot.DeleteManipulatorNodes();
     }
 
     /// <summary>
@@ -305,18 +310,30 @@ public class MainState : SimState
         }
     }
 
+    /// <summary>
+    /// Changes the control index of the active robot
+    /// </summary>
     public void ChangeControlIndex(int index)
     {
         activeRobot.controlIndex = index;
     }
 
+    /// <summary>
+    /// If there are two robots or more, remove and delete the robot at that index
+    /// </summary>
     public void RemoveRobot(int index)
     {
-        robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
-        sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
         if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
         {
-            
+            robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
+            sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
+
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
+            if (isMixAndMatch == 1 && SpawnedRobots[index].robotHasManipulator == 1)
+            {
+                GameObject.Destroy(SpawnedRobots[index].manipulatorObject);
+            }
+
             GameObject.Destroy(SpawnedRobots[index].gameObject);
             SpawnedRobots.RemoveAt(index);
             activeRobot = null;
@@ -419,14 +436,16 @@ public class MainState : SimState
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
+    int robotNumber = 2; //Only used for mix and match so that manipulator can map to the correct robot in RNJoint
     public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
             robotPath = baseDirectory;
 
-            GameObject robotObject = new GameObject("Robot");
+            GameObject robotObject = new GameObject("Robot" + robotNumber);
             Robot robot = robotObject.AddComponent<Robot>();
+            robot.robotNumber = robotNumber;
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory, this)) return false;
@@ -442,7 +461,8 @@ public class MainState : SimState
             robot.controlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            robot.LoadManipulator(manipulatorDirectory, robotObject.transform.GetChild(0).transform.position);
+            robot.LoadManipulator(manipulatorDirectory, robotObject.transform.GetChild(0).transform.position, SpawnedRobots.Count-1);
+            robotNumber++;
             return true;
         }
         return false;
