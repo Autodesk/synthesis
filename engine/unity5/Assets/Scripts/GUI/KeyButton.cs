@@ -98,6 +98,7 @@ public class KeyButton : MonoBehaviour
         }
 
         UpdateText();
+        Controls.Save();
 
         selectedButton = null;
     }

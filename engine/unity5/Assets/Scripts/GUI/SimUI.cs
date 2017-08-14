@@ -41,6 +41,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
+    GameObject enableTankText;
     GameObject unitConversionButton;
 
     GameObject mixAndMatchPanel;
@@ -138,14 +139,14 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
+        enableTankText = AuxFunctions.FindObject(canvas, "EnableTankDriveText");
+        unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
 
         exitPanel = AuxFunctions.FindObject(canvas, "ExitPanel");
         loadingPanel = AuxFunctions.FindObject(canvas, "LoadingPanel");
-
-        unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
 
         sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
@@ -211,7 +212,7 @@ public class SimUI : MonoBehaviour
         if (robotHasManipulator == 1) //0 is false, 1 is true
         {
             main.DeleteManipulatorNodes();
-            
+
         }
 
         //If the new robot has a manipulator, load the manipulator
@@ -298,14 +299,14 @@ public class SimUI : MonoBehaviour
         changeRobotPanel.SetActive(false);
         exitPanel.SetActive(false);
         mixAndMatchPanel.SetActive(false);
-        
+
         CloseOrientWindow();
         main.IsResetting = false;
 
         dpm.EndProcesses();
         toolkit.EndProcesses();
         multiplayer.EndProcesses();
-        
+
         sensorManagerGUI.EndProcesses();
     }
     #endregion
@@ -495,7 +496,8 @@ public class SimUI : MonoBehaviour
     /// <summary>
     /// Enters replay mode
     /// </summary>
-    public void EnterReplayMode() {
+    public void EnterReplayMode()
+    {
         main.EnterReplayState();
     }
     #region swap part
