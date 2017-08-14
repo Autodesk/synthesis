@@ -166,22 +166,6 @@ public class LocalMultiplayer : MonoBehaviour {
     }
 
     /// <summary>
-    /// Toggles the popup add robot window
-    /// </summary>
-    public void ToggleMaMWindow()
-    {
-        if (mixAndMatchPanel.activeSelf)
-        {
-            mixAndMatchPanel.SetActive(false);
-        }
-        else
-        {
-            simUI.EndOtherProcesses();
-            mixAndMatchPanel.SetActive(true);
-        }
-    }
-
-    /// <summary>
     /// Updates the multiplayer window to reflect changes in indexes, controls, etc.
     /// </summary>
     private void UpdateUI()
