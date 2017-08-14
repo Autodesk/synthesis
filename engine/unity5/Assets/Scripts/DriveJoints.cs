@@ -87,11 +87,19 @@ public class DriveJoints
 
     public static void UpdateManipulatorMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
-        if (dioModules[0] == null)
-            return;
+        float[] pwm;
+        float[] can;
 
-        float[] pwm = dioModules[0].pwmValues;
-        float[] can = dioModules[0].canValues;
+        if (dioModules[0] != null)
+        {
+            pwm = dioModules[0].pwmValues;
+            can = dioModules[0].canValues;
+        }
+        else
+        {
+            pwm = new float[10];
+            can = new float[10];
+        }
 
             pwm[4] +=
                 (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
