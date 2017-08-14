@@ -26,8 +26,6 @@ public class Robot : MonoBehaviour
     private Vector3 robotStartPosition = new Vector3(01f, 1f, 0f);
     private BulletSharp.Math.Matrix robotStartOrientation = BulletSharp.Math.Matrix.Identity;
 
-    private List<GameObject> extraElements;
-
     private UnityPacket unityPacket;
 
     private bool isResettingOrientation;
@@ -52,14 +50,19 @@ public class Robot : MonoBehaviour
 
     private RobotCameraManager robotCameraManager;
 
-    private GameObject manipulatorObject;
+    public GameObject manipulatorObject;
     private RigidNode_Base manipulatorNode;
 
     UnityPacket.OutputStatePacket.DIOModule[] emptyDIO = new UnityPacket.OutputStatePacket.DIOModule[2];
 
-    private int robotHasManipulator;
+    public int robotHasManipulator;
 
-    // Use this for initialization
+    public int robotNumber = 1; //Used for MixAndMatch to map manipulator to correct robot
+
+
+    /// <summary>
+    /// Called when robot is first initialized
+    /// </summary>
     void Start()
     {
         robotHasManipulator  = PlayerPrefs.GetInt("hasManipulator", 0); //0 is false, 1 is true
@@ -109,7 +112,7 @@ public class Robot : MonoBehaviour
 
             if (Packet != null) DriveJoints.UpdateAllMotors(rootNode, Packet.dio, controlIndex, MixAndMatchMode.GetMecanum());
             else DriveJoints.UpdateAllMotors(rootNode, emptyDIO, controlIndex, MixAndMatchMode.GetMecanum());
-            int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); //0 is false, 1 is true
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch", 0); //0 is false, 1 is true
 
             //If the robot is in Mix and Match mode and has a manipulator, update the manipulator motors
             if (robotHasManipulator == 1 && isMixAndMatch == 1)
@@ -139,29 +142,33 @@ public class Robot : MonoBehaviour
         {
             Transform child = transform.GetChild(i);
 
-            //If not do this the game object is destroyed but the parent-child transform relationship remains!
+            //If this isn't done, the game object is destroyed but the parent-child transform relationship remains!
             child.parent = null;
             Destroy(child.gameObject);
         }
+
+        //Resetting sensor lists
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManager.ResetSensorLists();
 
-        mainState = source;
-        transform.position = robotStartPosition;
+        mainState = source; //stores the main state object
 
+        transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
+
+        //Loads the node and skeleton data
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
             return new RigidNode(guid);
         };
-
         List<RigidNode_Base> nodes = new List<RigidNode_Base>();
-        //Read .robot instead. Maybe need a RobotSkeleton class
         rootNode = BXDJSkeleton.ReadSkeleton(directory + "\\skeleton.bxdj");
         rootNode.ListAllNodes(nodes);
 
+        //Initializes the wheel variables
         int numWheels = nodes.Count(x => x.HasDriverMeta<WheelDriverMeta>() && x.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL);
         float collectiveMass = 0f;
 
+        //Initializes the nodes
         foreach (RigidNode_Base n in nodes)
         {
             RigidNode node = (RigidNode)n;
@@ -191,8 +198,10 @@ public class Robot : MonoBehaviour
 
         isInitialized = true;
 
+        //Initializing robot cameras
         bool hasRobotCamera = false;
-        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>();
+        //If you are getting an error referencing this line, it is likely that the Game Object "RobotCameraList" in Scene.unity does not have the RobotCameraManager script attached to it.
+        robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>(); 
 
         foreach (GameObject robotCamera in robotCameraManager.GetRobotCameraList())
         {
@@ -221,7 +230,10 @@ public class Robot : MonoBehaviour
         return true;
     }
 
-    public void DeleteNodes()
+    /// <summary>
+    /// Deletes robot manipulator (meant only for use in Mix and Match mode)
+    /// </summary>
+    public void DeleteManipulatorNodes()
     {
         //Deletes all nodes if any exist, take the old node transforms out from the robot object
         int childCount = manipulatorObject.transform.childCount;
@@ -229,7 +241,7 @@ public class Robot : MonoBehaviour
         {
             Transform child = manipulatorObject.transform.GetChild(i);
 
-            //If not do this the game object is destroyed but the parent-child transform relationship remains!
+            //If this isn't done, the game object is destroyed but the parent-child transform relationship remains!
             child.parent = null;
             Destroy(child.gameObject);
         }
@@ -266,9 +278,8 @@ public class Robot : MonoBehaviour
             r.WorldTransform = newTransform;
         }
         
-        int hasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
-        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
-        if (hasManipulator == 1 && isMixAndMatch == 1)
+        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
+        if (robotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
             {
@@ -357,7 +368,7 @@ public class Robot : MonoBehaviour
             r.LinearFactor = r.AngularFactor = BulletSharp.Math.Vector3.One;
         }
 
-        int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
+        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); // 0 is false, 1 is true
         if (robotHasManipulator == 1 && isMixAndMatch == 1)
         {
             foreach (RigidNode n in manipulatorNode.ListAllNodes())
@@ -456,11 +467,17 @@ public class Robot : MonoBehaviour
         EndReset();
     }
 
+    /// <summary>
+    /// Returns the driver practice component of this robot
+    /// </summary>
     public DriverPracticeRobot GetDriverPractice()
     {
         return GetComponent<DriverPracticeRobot>();
     }
 
+    /// <summary>
+    /// Loads and initializes the manipulator object (for use in Mix and Match mode)
+    /// </summary>
     public bool LoadManipulator(string directory)
     {
         manipulatorObject = new GameObject("Manipulator");
@@ -491,7 +508,8 @@ public class Robot : MonoBehaviour
             UnityEngine.Object.Destroy(manipulatorObject);
             return false;
         }
-        node.CreateManipulatorJoint();
+        GameObject robot = GameObject.Find("Robot");
+        node.CreateManipulatorJoint(robot);
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
         Debug.Log(t);
@@ -520,15 +538,16 @@ public class Robot : MonoBehaviour
         return true;
     }
 
-    public bool LoadManipulator(string directory, Vector3 position)
+    /// <summary>
+    /// Loads and initializes the manipulator object with a modifiable position (for use in Mix and Match mode)
+    /// </summary>
+    public bool LoadManipulator(string directory, Vector3 position, int robotIndex)
     {
         manipulatorObject = new GameObject("Manipulator");
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
         //manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
-
         manipulatorObject.transform.position = position;
-        //manipulatorObject.transform.position = robotStartPosition;
 
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
@@ -552,7 +571,8 @@ public class Robot : MonoBehaviour
             UnityEngine.Object.Destroy(manipulatorObject);
             return false;
         }
-        node.CreateManipulatorJoint();
+        GameObject robot = mainState.SpawnedRobots[robotIndex].gameObject;
+        node.CreateManipulatorJoint(robot);
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
         Debug.Log(t);
