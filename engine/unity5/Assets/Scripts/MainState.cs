@@ -12,6 +12,11 @@ using Assets.Scripts.FSM;
 using System.Linq;
 using Assets.Scripts.BUExtensions;
 
+/// <summary>
+/// This is the main class of the simulator; it handles all the initialization of robot and field objects within the simulator.
+/// Handles replay tracking and loading
+/// Handles interfaces between the SimUI and the active robot such as resetting, orienting, etc.
+/// </summary>
 public class MainState : SimState
 {
 
@@ -265,7 +270,7 @@ public class MainState : SimState
     /// </summary>
     public void DeleteManipulatorNodes()
     {
-        activeRobot.DeleteNodes();
+        activeRobot.DeleteManipulatorNodes();
     }
 
     /// <summary>
@@ -305,24 +310,30 @@ public class MainState : SimState
         }
     }
 
+    /// <summary>
+    /// Changes the control index of the active robot
+    /// </summary>
     public void ChangeControlIndex(int index)
     {
         activeRobot.controlIndex = index;
     }
 
+    /// <summary>
+    /// If there are two robots or more, remove and delete the robot at that index
+    /// </summary>
     public void RemoveRobot(int index)
     {
-        robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
-        sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
-
-        int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
-        if (isMixAndMatch == 1 && SpawnedRobots[index].robotHasManipulator == 1)
-        {
-            GameObject.Destroy(SpawnedRobots[index].manipulatorObject);
-        }
-
         if (index < SpawnedRobots.Count && SpawnedRobots.Count > 1)
         {
+            robotCameraManager.RemoveCamerasFromRobot(SpawnedRobots[index]);
+            sensorManager.RemoveSensorsFromRobot(SpawnedRobots[index]);
+
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
+            if (isMixAndMatch == 1 && SpawnedRobots[index].robotHasManipulator == 1)
+            {
+                GameObject.Destroy(SpawnedRobots[index].manipulatorObject);
+            }
+
             GameObject.Destroy(SpawnedRobots[index].gameObject);
             SpawnedRobots.RemoveAt(index);
             activeRobot = null;
