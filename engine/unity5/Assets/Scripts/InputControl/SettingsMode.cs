@@ -92,20 +92,6 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
-    private void OnEnable()
-    {
-        if (!Controls.TankDriveEnabled)
-        {
-            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Tank Drive";
-        }
-        else
-        {
-            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Arcade Drive";
-        }
-    }
-
     #region Player Buttons
     public void OnPlayerOne()
     {

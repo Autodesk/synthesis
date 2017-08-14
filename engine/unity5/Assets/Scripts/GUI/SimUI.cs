@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using BulletUnity;
 using Assets.Scripts.FSM;
 using System.IO;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// SimUI serves as an interface between the Unity button UI and the various functions within the simulator.
@@ -250,7 +251,16 @@ public class SimUI : MonoBehaviour
             PlayerPrefs.SetString("simSelectedField", directory);
             PlayerPrefs.SetString("simSelectedFieldName", panel.GetComponent<ChangeFieldScrollable>().selectedEntry);
             PlayerPrefs.Save();
-            Application.LoadLevel("Scene");
+
+            int isMixAndMatch = PlayerPrefs.GetInt("mixAndMatch"); //0 is false, 1 is true
+            if (isMixAndMatch == 1)
+            {
+                SceneManager.LoadScene("MixAndMatch");
+            } else
+            {
+                SceneManager.LoadScene("Scene");
+            }
+            
         }
         else
         {
