@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts.FEA;
 using Assets.Scripts.BUExtensions;
+using Assets.Scripts.FSM;
 
 /// <summary>
 /// To be attached to all robot parent objects.
@@ -78,7 +79,7 @@ public class Robot : MonoBehaviour
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
-        if (!IsResetting)
+        if (!IsResetting && StateMachine.Instance.CurrentState is MainState)
         {
             if (InputControl.GetButtonDown(Controls.buttons[controlIndex].resetRobot))
             {
