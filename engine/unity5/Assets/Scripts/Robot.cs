@@ -147,7 +147,7 @@ public class Robot : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        //Resetting sensor lists
+        //Detach and destroy all sensors on the original robot
         SensorManager sensorManager = GameObject.Find("SensorManager").GetComponent<SensorManager>();
         sensorManager.ResetSensorLists();
 
@@ -203,16 +203,18 @@ public class Robot : MonoBehaviour
         //If you are getting an error referencing this line, it is likely that the Game Object "RobotCameraList" in Scene.unity does not have the RobotCameraManager script attached to it.
         robotCameraManager = GameObject.Find("RobotCameraList").GetComponent<RobotCameraManager>(); 
 
+        //Loop through robotCameraList and check if any existing camera should attach to this robot
         foreach (GameObject robotCamera in robotCameraManager.GetRobotCameraList())
         {
             if (robotCamera.GetComponent<RobotCamera>().robot.Equals(this))
             {
+                //Recover the robot camera configurations
                 robotCamera.GetComponent<RobotCamera>().RecoverConfiguration();
                 hasRobotCamera = true;
-                Debug.Log(hasRobotCamera);
             }
 
         }
+        //Add new cameras to the robot if there is none robot camera belong to the current robot (which means it is a new robot)
         if (!hasRobotCamera)
         {
             //Attached to the main frame and face the front
@@ -223,10 +225,7 @@ public class Robot : MonoBehaviour
             ////Attached to main frame and face the back
             robotCameraManager.AddCamera(this, transform.GetChild(0).transform, new Vector3(0, 0, 0), new Vector3(0, 180, 0));
         }
-
-        //sensorManager.AddBeamBreaker(transform.GetChild(0).gameObject, new Vector3(0, 0, 1), new Vector3(0, 90, 0), 1);
-        //sensorManager.AddUltrasonicSensor(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
-        //sensorManager.AddGyro(transform.GetChild(0).gameObject, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
+        
         return true;
     }
 

@@ -5,7 +5,10 @@ using BulletSharp;
 using UnityEngine.UI;
 using Assets.Scripts.FSM;
 
-
+/// <summary>
+/// This class is attached to RobotCameraList object and handles a list of cameras
+/// Includes AddCamera to a specific robot, detach camera from a robot, toggle between cameras, and all robot camera configuration functions
+/// </summary>
 public class RobotCameraManager : MonoBehaviour
 {
     public List<GameObject> robotCameraList = new List<GameObject>();
@@ -17,8 +20,7 @@ public class RobotCameraManager : MonoBehaviour
     private GameObject robotCameraListObject;
     public GameObject SelectedNode;
     public bool SelectingNode { get; set; }
-
-
+    
     private static float positionSpeed = 0.5f;
     private static float rotationSpeed = 25;
 
@@ -41,11 +43,12 @@ public class RobotCameraManager : MonoBehaviour
 
     private void Update()
     {
-        //Enable selecting node state, and users can left click on a node to choose it
+        //SelectingNode is enabled, users can pick the node for camera attachment
         if (SelectingNode)
         {
             SetNode();
         }
+        //Update configurations
         UpdateCameraPosition();
     }
 
@@ -87,6 +90,7 @@ public class RobotCameraManager : MonoBehaviour
 
         RobotCamera configuration = newCamera.AddComponent<RobotCamera>();
         configuration.UpdateConfiguration();
+        //Set the camera parent robot, which is necessary when changing robot and restoring the configuration
         configuration.SetParentRobot(robot);
 
         newCamera.SetActive(false);
@@ -99,7 +103,7 @@ public class RobotCameraManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Add a new camera to the robot using the default position and rotation
+    /// Add a new camera to the robot using the default position (0, 0.5, 0) and rotation
     /// </summary>
     /// <returns></returns>
     public GameObject AddCamera(Robot robot, Transform anchor)
@@ -113,15 +117,16 @@ public class RobotCameraManager : MonoBehaviour
 
         RobotCamera configuration = newCamera.AddComponent<RobotCamera>();
         configuration.UpdateConfiguration();
+        //Set the camera parent robot, which is necessary when changing robot and restoring the configuration
         configuration.SetParentRobot(robot);
 
         newCamera.SetActive(false);
+        //Make sure current camera is the first one on the list
         if (robotCameraList.Count == 0)
             CurrentCamera = newCamera;
 
         robotCameraList.Add(newCamera);
-        if (robotCameraList.Count == 0)
-            CurrentCamera = newCamera;
+
         return newCamera;
     }
 
@@ -132,6 +137,7 @@ public class RobotCameraManager : MonoBehaviour
     public void RemoveAllCameras()
     {
         CurrentCamera = null;
+        //Move out camera indicator in case it get destroyed with a removed robot in multiplayer
         cameraIndicator.transform.parent = robotCameraListObject.transform;
         foreach(GameObject robotCamera in robotCameraList)
         {
@@ -160,8 +166,10 @@ public class RobotCameraManager : MonoBehaviour
                 Destroy(camera);
             }
         }
+        //Reset the current camera to the first one on the list in case the current one gets destroyed already
         CurrentCamera = robotCameraList[0];
     }
+
     /// <summary>
     /// Detach the robot camera from a given robot in preparation for changing robot or other operation that needs to take out a specific group of robot camera
     /// </summary>
@@ -195,6 +203,7 @@ public class RobotCameraManager : MonoBehaviour
         }
         return camerasOnRobot;
     }
+
     /// <summary>
     /// Return true if the current camera is the last on the list
     /// </summary>
@@ -204,6 +213,10 @@ public class RobotCameraManager : MonoBehaviour
         return robotCameraList.IndexOf(CurrentCamera) == robotCameraList.Count - 1;
     }
 
+    /// <summary>
+    /// Returns the robot camera list
+    /// </summary>
+    /// <returns></returns>
     public List<GameObject> GetRobotCameraList()
     {
         return robotCameraList;
@@ -242,25 +255,28 @@ public class RobotCameraManager : MonoBehaviour
             GameObject selectedObject = ((BRigidBody)rayResult.CollisionObject.UserObject).gameObject;
             if (selectedObject.transform.parent != null && selectedObject.transform.parent.name == "Robot")
             {
+                //Change highlight target when the mouse point to a different object
                 if(lastNode != null && !selectedObject.Equals(lastNode))
                 {
                     RevertNodeColors(lastNode, hoveredColors);
                     lastNode = null;
                 }
+                //Highlight the node which mouse is pointing to to yellow
                 else
                 {
                     ChangeNodeColors(selectedObject, hoverColor, hoveredColors);
                     lastNode = selectedObject;
                 }
+                //Change the color to selected color when user click and choose the node
                 if (Input.GetMouseButtonDown(0))
                 {
                     string name = selectedObject.name;
 
+                    //Revert the current selection back to its original so selectedColors can store the new selection properly
                     RevertNodeColors(lastNode, hoveredColors);
                     RevertNodeColors(SelectedNode, selectedColors);
 
                     SelectedNode = selectedObject;
-
                     ChangeNodeColors(SelectedNode, selectedColor, selectedColors);
                     UserMessageManager.Dispatch(name + " has been selected as the node for camera attachment", 5);
                 }
@@ -268,11 +284,13 @@ public class RobotCameraManager : MonoBehaviour
             }
             else
             {
+                //When mouse is not pointing to any robot node, set the last hovered node back to its original color
                 if(lastNode != null)
                 {
                     RevertNodeColors(lastNode, hoveredColors);
                     lastNode = null;
                 }
+                //When users try to select a non-robotNode object
                 if (Input.GetMouseButtonDown(0))
                 {
                     UserMessageManager.Dispatch("Please select a robot node!", 3);
@@ -286,21 +304,31 @@ public class RobotCameraManager : MonoBehaviour
     /// </summary>
     public void ChangeNodeAttachment()
     {
+        //Set highlighted node back to its original color
         if (lastNode != null)
         {
             RevertNodeColors(lastNode, hoveredColors);
+            lastNode = null;
         }
         if(SelectedNode != null)
         {
             RevertNodeColors(SelectedNode, selectedColors);
+            SelectedNode = null;
         }
         CurrentCamera.transform.parent = SelectedNode.transform;
         SelectingNode = false;
-        SelectedNode = null;
     }
 
     /// <summary>
-    /// Use WASD change the position, rotation, fov of camera
+    /// Reset the selected node color to its original, called after confirming node selection or in EndProcesses
+    /// </summary>
+    public void ResetNodeColors()
+    {
+        RevertNodeColors(SelectedNode, selectedColors);
+    }
+
+    /// <summary>
+    /// Use WASD tp change the position, rotation, fov of camera
     /// </summary>
     private void UpdateCameraPosition()
     {
@@ -325,6 +353,14 @@ public class RobotCameraManager : MonoBehaviour
             //Update configuration info of the current camera
             CurrentCamera.GetComponent<RobotCamera>().UpdateConfiguration();
         }
+    }
+
+    /// <summary>
+    /// Reset the configuration states to false so nothing can be changed in UpdateCameraPosition
+    /// </summary>
+    public void ResetConfigurationState()
+    {
+        ChangingCameraPosition = IsChangingFOV = IsShowingAngle = IsChangingHeight = false;
     }
 
     #region Highlighting Functions
