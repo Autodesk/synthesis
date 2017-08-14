@@ -256,6 +256,7 @@ public class MainState : SimState
     {
         sensorManager.RemoveSensorsFromRobot(activeRobot);
         sensorManagerGUI.ShiftOutputPanels();
+        sensorManagerGUI.EndProcesses();
         return activeRobot.InitializeRobot(directory, this);
     }
 
@@ -490,6 +491,19 @@ public class MainState : SimState
 
         foreach (Canvas c in Resources.FindObjectsOfTypeAll<Canvas>().Where(x => x.transform.root.name.Equals("Main Camera")))
             c.enabled = false;
+    }
+
+    public void EnterReplayState()
+    {
+        if (!activeRobot.IsResetting)
+        {
+            CollisionTracker.Synchronize(lastFrameCount);
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints, Trackers));
+        }
+        else
+        {
+            UserMessageManager.Dispatch("Please finish resetting before entering replay mode!", 5f);
+        }
     }
     #endregion
 

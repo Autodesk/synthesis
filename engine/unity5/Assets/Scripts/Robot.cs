@@ -265,7 +265,7 @@ public class Robot : MonoBehaviour
             newTransform.Basis = BulletSharp.Math.Matrix.Identity;
             r.WorldTransform = newTransform;
         }
-
+        
         int hasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
         int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch"); // 0 is false, 1 is true
         if (hasManipulator == 1 && isMixAndMatch == 1)
@@ -289,7 +289,9 @@ public class Robot : MonoBehaviour
             }
 
         }
-
+        
+        //Where "save orientation" works
+        RotateRobot(robotStartOrientation);
 
         GameObject.Find("Robot").transform.GetChild(0).transform.position = new Vector3(10, 20, 5) ;
         if (IsResetting)
