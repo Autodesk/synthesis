@@ -357,14 +357,17 @@ class SensorManager : MonoBehaviour
     {
         if (node != null && storedColors.Count != 0)
         {
+
             int counter = 0;
             foreach (Renderer renderers in node.GetComponentsInChildren<Renderer>())
             {
-
                 foreach (Material m in renderers.materials)
                 {
-                    m.color = storedColors[counter];
-                    counter++;
+                    if (counter <= storedColors.Count - 1)
+                    {
+                        m.color = storedColors[counter];
+                        counter++;
+                    }
                 }
             }
             storedColors.Clear();
