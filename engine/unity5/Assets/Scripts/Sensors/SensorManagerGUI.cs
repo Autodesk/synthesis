@@ -359,7 +359,6 @@ class SensorManagerGUI : MonoBehaviour
         if (isAddingGyro)
         {
             addGyroButton.GetComponentInChildren<Text>().text = "Confirm";
-
             AddGyro();
         }
         else
