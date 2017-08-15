@@ -108,11 +108,16 @@ public class MaMScroller : MonoBehaviour {
     public void ScrollPreset(bool right)
     {
         presetClones = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().presetClones;
-        Debug.Log(presetClones.Count);
-        Vector2[] positions = { new Vector2(220, 0), new Vector2(415, 0), new Vector2(605, 0), new Vector2(800, 0), new Vector2(955, 0), };
+        Debug.Log("First Preset" + firstPreset);
+        Vector2[] positions = { new Vector2(-255, 0), new Vector2(-65, 0), new Vector2(125, 0), new Vector2(315, 0), new Vector2(505, 0), };
         if (Scroll(right, presetClones, firstPreset, positions, presetRightScroll, presetLeftScroll)) firstPreset = (right) ? firstPreset + 1 : firstPreset - 1;
     }
 
-
+    public void ResetFirsts()
+    {
+        firstWheel = 0;
+        firstDriveBase = 0;
+        firstPreset = 0;
+    }
 
 }
