@@ -20,7 +20,7 @@ public class CreateButton : MonoBehaviour
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerOneKeys();
 
         foreach (KeyMapping key in keys)
         {
@@ -156,15 +156,16 @@ public class CreateButton : MonoBehaviour
     }
     #endregion
 
-    #region Update Player One Keys
+    #region Update Player One Keys 
     public void UpdatePlayerOne()
     {
+        //Destroys all previous keys
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads player one's keys list: getPlayerOneKeys()
+        //Calls the getPlayerOneKeys list to generate ONLY Player One's keys
         ReadOnlyCollection<KeyMapping> playerOneKeys = InputControl.getPlayerOneKeys();
 
         foreach (KeyMapping key in playerOneKeys)
@@ -235,7 +236,7 @@ public class CreateButton : MonoBehaviour
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads player two's keys list: getPlayerTwoKeys()
+        //Calls the getPlayerTwoKeys list to generate ONLY Player Two's keys
         ReadOnlyCollection<KeyMapping> playerTwoKeys = InputControl.getPlayerTwoKeys();
 
         foreach (KeyMapping key in playerTwoKeys)
@@ -306,7 +307,7 @@ public class CreateButton : MonoBehaviour
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads player three's keys list: getPlayerThreeKeys()
+        //Calls the getPlayerThreeKeys list to generate ONLY Player Three's keys
         ReadOnlyCollection<KeyMapping> playerThreeKeys = InputControl.getPlayerThreeKeys();
 
         foreach (KeyMapping key in playerThreeKeys)
@@ -377,7 +378,7 @@ public class CreateButton : MonoBehaviour
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads player four's keys list: getPlayerFourKeys()
+        //Calls the getPlayerFourKeys list to generate ONLY Player Four's keys
         ReadOnlyCollection<KeyMapping> playerFourKeys = InputControl.getPlayerFourKeys();
 
         foreach (KeyMapping key in playerFourKeys)
@@ -448,7 +449,7 @@ public class CreateButton : MonoBehaviour
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads player five's keys list: getPlayerFiveKeys()
+        //Calls the getPlayerFiveKeys list to generate ONLY Player Five's keys
         ReadOnlyCollection<KeyMapping> playerFiveKeys = InputControl.getPlayerFiveKeys();
 
         foreach (KeyMapping key in playerFiveKeys)
@@ -519,7 +520,7 @@ public class CreateButton : MonoBehaviour
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads player six's keys list: getPlayerSixKeys()
+        //Calls the getPlayerSixKeys list to generate ONLY Player Six's keys
         ReadOnlyCollection<KeyMapping> playerSixKeys = InputControl.getPlayerSixKeys();
 
         foreach (KeyMapping key in playerSixKeys)

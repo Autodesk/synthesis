@@ -25,6 +25,7 @@ public class Controls
 
     public static bool CheckForKeyRemoval;  //Checks for previous activity in TankDrive
     public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
+    public static bool Initialized;
 
     ///Player indexes (for initializing and creating separate key lists) <see cref="InputControl"/>
     public static int PlayerOneIndex = 0;
@@ -105,6 +106,7 @@ public class Controls
     static Controls()
     {
         SwitchControls();
+        Initialized = true;
     }
 
     /// <summary>
@@ -115,6 +117,7 @@ public class Controls
     {
         if (TankDriveEnabled == true)
         {
+            //If TankDriveEnabled, call all the TankDrive keys to initialize
             TankDrive();
             Load();
 
@@ -122,21 +125,9 @@ public class Controls
         }
         else
         {
-            //We don't need to switch back to ArcadeDrive unless TankDrive was previously activated.
-            //Checks if TankDrive was previously activated
-            if (CheckForKeyRemoval)
-            {
-                ArcadeDrive();
-                Load();
-                Debug.Log("ArcadeMode");
-            }
-            else
-            {
-                //On initialization, we default here.
-                ResetArcadeDrive();
-                Load();
-                Debug.Log("ResetArcadeMode");
-            }
+            //If TankDrive is disabled, call all the ArcadeDrive keys
+            ArcadeDrive();
+            Load();
 
             Debug.Log("tankDrive false");
         }
@@ -211,14 +202,9 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            //Updates each individual player list, updates the main list, then updates all the text
+            //Loads initialized keys, then defaults to PlayerOne's list
+            Load();
             GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOne();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwo();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThree();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFour();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFive();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSix();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateMainButtons();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
@@ -254,14 +240,9 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            //Updates each individual player list, updates the main list, then updates all the text
+            //Loads initialized keys, then defaults to PlayerOne's list
+            Load();
             GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOne();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwo();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThree();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFour();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFive();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSix();
-            GameObject.Find("Content").GetComponent<CreateButton>().UpdateMainButtons();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         }
     }
