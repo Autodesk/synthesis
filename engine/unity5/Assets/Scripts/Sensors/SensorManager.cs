@@ -141,7 +141,6 @@ class SensorManager : MonoBehaviour
         BPhysicsWorld world = BPhysicsWorld.Get();
         world.world.RayTest(start, end, rayResult);
 
-        Debug.Log("Selected:" + rayResult.CollisionObject);
         //If there is a collision object and it is a robot part, set that to be new attachment point
         if (rayResult.CollisionObject != null)
         {
