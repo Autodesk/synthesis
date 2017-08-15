@@ -207,10 +207,11 @@
     <Compile Include="Assets\Scripts\BUExtensions\BMultiHullShape.cs" />
     <Compile Include="Assets\Scripts\BXDExtensions.cs" />
     <Compile Include="Assets\Scripts\DriveJoints.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeGoal.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeMode.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
+    <Compile Include="Assets\Scripts\Driver Practice Mode\GamepieceGoal.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\GameplayTimer.cs" />
+    <Compile Include="Assets\Scripts\Driver Practice Mode\GoalManager.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\Scoreboard.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />

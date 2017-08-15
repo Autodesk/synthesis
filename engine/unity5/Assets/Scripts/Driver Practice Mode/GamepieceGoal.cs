@@ -16,6 +16,9 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
 
     public string gamepieceKeyword;
 
+    public int pointValue;
+    public string description;
+
     /// <summary>
     /// Method is called whenever interactor collides with another object.
     /// Checks if the name of the other object contains the keyword of the gamepiece we are looking for and destroys it if it does.
@@ -36,6 +39,8 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
                     GameObject gamepieceObject = ((BRigidBody)other.UserObject).gameObject;
 
                     gamepieceObject.SetActive(false);
+
+                    AuxFunctions.FindObject("ScorePanel").GetComponent<Scoreboard>().AddPoints(pointValue, description);
                 }
             }
         }

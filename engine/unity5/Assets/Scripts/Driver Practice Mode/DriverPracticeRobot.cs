@@ -67,12 +67,13 @@ public class DriverPracticeRobot : MonoBehaviour
 
     //for gamepiece spawn and goal customizability
     private List<UnityEngine.Vector3> gamepieceSpawn;
-    private List<UnityEngine.Vector3> gamepieceGoal;
-    private List<float> gamepieceGoalSize;
+    private List<List<UnityEngine.Vector3>> gamepieceGoals;
+    private List<List<float>> gamepieceGoalSizes;
     private GameObject spawnIndicator;
     private GameObject goalIndicator;
     public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
-    public int settingGoal = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
+    public int settingGamepieceGoal = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
+    public int settingGamepieceGoalIndex = 0; // Index of goal being edited
     public bool settingGoalVertical = false;
     private DynamicCamera.CameraState lastCameraState;
 
@@ -145,13 +146,13 @@ public class DriverPracticeRobot : MonoBehaviour
         gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
         gamepieceSpawn.Add(new UnityEngine.Vector3(0f, 3f, 0f));
 
-        gamepieceGoal = new List<UnityEngine.Vector3>();
-        gamepieceGoal.Add(new UnityEngine.Vector3(0f, 3f, 0f));
-        gamepieceGoal.Add(new UnityEngine.Vector3(0f, 3f, 0f));
+        gamepieceGoals = new List<List<UnityEngine.Vector3>>();
+        gamepieceGoals.Add(new List<UnityEngine.Vector3>());
+        gamepieceGoals.Add(new List<UnityEngine.Vector3>());
         
-        gamepieceGoalSize = new List<float>();
-        gamepieceGoalSize.Add(1f);
-        gamepieceGoalSize.Add(1f);
+        gamepieceGoalSizes = new List<List<float>>();
+        gamepieceGoalSizes.Add(new List<float>());
+        gamepieceGoalSizes.Add(new List<float>());
 
         drawnTrajectory = new List<LineRenderer>();
         drawnTrajectory.Add(gameObject.AddComponent<LineRenderer>());
@@ -198,7 +199,7 @@ public class DriverPracticeRobot : MonoBehaviour
             else if (highlightTimer == 0) RevertHighlight();
 
             if (settingSpawn != 0) UpdateGamepieceSpawn();
-            if (settingGoal != 0) UpdateGamepieceGoal();
+            if (settingGamepieceGoal != 0) UpdateGamepieceGoal();
         }
 
         for (int i = 0; i < 2; i++)
@@ -460,7 +461,7 @@ public class DriverPracticeRobot : MonoBehaviour
 
     public void StartGamepieceSpawn(int index)
     {
-        if (definingRelease || definingIntake || addingGamepiece || settingGoal != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
+        if (definingRelease || definingIntake || addingGamepiece || settingGamepieceGoal != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
         else if (settingSpawn == 0)
         {
             if (GameObject.Find(gamepieceNames[index]) != null)
@@ -535,20 +536,27 @@ public class DriverPracticeRobot : MonoBehaviour
         {
             DestroyGamepieceGoals(index);
 
-            GameObject gameobject = new GameObject("Gamepiece" + index.ToString() + "Goal");
+            for (int goalIndex = 0; goalIndex < gamepieceGoals[index].Count; goalIndex++)
+            {
+                GameObject gameobject = new GameObject("Gamepiece" + index.ToString() + "Goal" + goalIndex.ToString());
 
-            BBoxShape collider = gameobject.AddComponent<BBoxShape>();
-            collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f) * gamepieceGoalSize[index];
+                BBoxShape collider = gameobject.AddComponent<BBoxShape>();
+                collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f) * gamepieceGoalSizes[index][goalIndex];
 
-            BRigidBody rigid = gameobject.AddComponent<BRigidBody>();
-            rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
-            rigid.transform.position = gamepieceGoal[index];
+                BRigidBody rigid = gameobject.AddComponent<BRigidBody>();
+                rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
+                rigid.transform.position = gamepieceGoals[index][goalIndex];
 
-            DriverPracticeGoal goal = gameobject.AddComponent<DriverPracticeGoal>();
-            goal.SetKeyword(gamepieceNames[index]);
-            goal.DPRobot = this;
+                DriverPracticeGoal goal = gameobject.AddComponent<DriverPracticeGoal>();
+                goal.SetKeyword(gamepieceNames[index]);
 
-            gamepieceGoalObjects[index].Add(gameobject);
+                goal.description = "Test";
+                goal.pointValue = 15;
+
+                goal.DPRobot = this;
+
+                gamepieceGoalObjects[index].Add(gameobject);
+            }
         }
         else
         {
@@ -572,11 +580,10 @@ public class DriverPracticeRobot : MonoBehaviour
         }
     }
 
-
-    public void StartGamepieceGoal(int index)
+    public void StartGamepieceGoal(int index, int goalIndex)
     {
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
-        else if (settingGoal == 0)
+        else if (settingGamepieceGoal == 0)
         {
             if (GameObject.Find(gamepieceNames[index]) != null)
             {
@@ -591,8 +598,9 @@ public class DriverPracticeRobot : MonoBehaviour
                     newColor.a = 0.6f;
                     render.material.color = newColor;
                 }
-                goalIndicator.transform.position = gamepieceGoal[index];
-                settingGoal = index + 1;
+                goalIndicator.transform.position = gamepieceGoals[index][goalIndex];
+                settingGamepieceGoal = index + 1;
+                settingGamepieceGoalIndex = goalIndex;
                 settingGoalVertical = false;
 
                 DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
@@ -608,7 +616,8 @@ public class DriverPracticeRobot : MonoBehaviour
 
     private void UpdateGamepieceGoal()
     {
-        int index = settingGoal - 1;
+        int index = settingGamepieceGoal - 1;
+        int goalIndex = settingGamepieceGoalIndex;
         if (goalIndicator != null)
         {
             if (!settingGoalVertical)
@@ -621,8 +630,8 @@ public class DriverPracticeRobot : MonoBehaviour
                 if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
                 if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
                 if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
-                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.1f;
-                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.1f;
+                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.05f;
+                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.05f;
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
                     settingGoalVertical = true;
@@ -638,19 +647,19 @@ public class DriverPracticeRobot : MonoBehaviour
                 satellite.target = goalIndicator;
                 satellite.targetOffset = new UnityEngine.Vector3(-6f, 0f, 0f);
                 satellite.rotationVector = new UnityEngine.Vector3(0f, 90f, 0f);
-                if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.up * 0.1f;
-                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.down * 0.1f;
-                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.1f;
-                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.1f;
+                if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.05f;
+                if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.05f;
+                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.up * 0.05f;
+                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.down * 0.05f;
+                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.05f;
+                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.05f;
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
                     UserMessageManager.Dispatch("New gamepiece goal location has been set!", 3f);
-                    gamepieceGoal[index] = goalIndicator.transform.position;
-                    gamepieceGoalSize[index] = goalIndicator.transform.localScale.x;
+                    gamepieceGoals[index][goalIndex] = goalIndicator.transform.position;
+                    gamepieceGoalSizes[index][goalIndex] = goalIndicator.transform.localScale.x;
 
-                    GenerateGamepieceGoals(settingGoal - 1);
+                    GenerateGamepieceGoals(settingGamepieceGoal - 1);
 
                     FinishGamepieceGoal();
                 }
@@ -664,7 +673,7 @@ public class DriverPracticeRobot : MonoBehaviour
 
     public void FinishGamepieceGoal()
     {
-        settingGoal = 0;
+        settingGamepieceGoal = 0;
         if (goalIndicator != null) Destroy(goalIndicator);
         if (lastCameraState != null)
         {
@@ -927,12 +936,15 @@ public class DriverPracticeRobot : MonoBehaviour
                 sb = new StringBuilder();
                 writer.WriteLine(sb.Append(gamepieceSpawn[i].x).Append("|").Append(gamepieceSpawn[i].y).Append("|").Append(gamepieceSpawn[i].z));
 
-                writer.WriteLine("#Goal");
-                sb = new StringBuilder();
-                writer.WriteLine(sb.Append(gamepieceGoal[i].x).Append("|").Append(gamepieceGoal[i].y).Append("|").Append(gamepieceGoal[i].z));
+                for (int j = 0; j < gamepieceGoals[i].Count; j++)
+                {
+                    writer.WriteLine("#Goal" + j);
+                    sb = new StringBuilder();
+                    writer.WriteLine(sb.Append(gamepieceGoals[i][j].x).Append("|").Append(gamepieceGoals[i][j].y).Append("|").Append(gamepieceGoals[i][j].z));
 
-                writer.WriteLine("#Goal Size");
-                writer.WriteLine(gamepieceGoalSize[i]);
+                    writer.WriteLine("#Goal Size");
+                    writer.WriteLine(gamepieceGoalSizes[i][j]);
+                }
 
                 writer.WriteLine("#Intake Node");
                 writer.WriteLine(intakeNode[i].name);
@@ -962,6 +974,7 @@ public class DriverPracticeRobot : MonoBehaviour
             string line = "";
             int counter = 0;
             int index = 0;
+            int goalIndex = 0;
 
             while ((line = reader.ReadLine()) != null)
             {
@@ -976,18 +989,23 @@ public class DriverPracticeRobot : MonoBehaviour
                 }
                 else if (counter == 2)
                 {
-                    if (line.Equals("#Goal")) counter++;
+                    if (line.Contains("#Goal")) counter++;
                     else gamepieceSpawn[index] = DeserializeVector3Array(line);
                 }
                 else if (counter == 3)
                 {
                     if (line.Equals("#Goal Size")) counter++;
-                    else gamepieceGoal[index] = DeserializeVector3Array(line);
+                    else
+                    {
+                        gamepieceGoals[index].Add(DeserializeVector3Array(line));
+                        gamepieceGoalSizes[index].Add(1f);
+                    }
                 }
                 else if (counter == 4)
                 {
                     if (line.Equals("#Intake Node")) counter++;
-                    else gamepieceGoalSize[index] = float.Parse(line);
+                    else if (line.Contains("#Goal")) counter = 3;
+                    else gamepieceGoalSizes[index][goalIndex++] = float.Parse(line);
                 }
                 else if (counter == 5)
                 {
@@ -1010,6 +1028,7 @@ public class DriverPracticeRobot : MonoBehaviour
                     {
                         counter = 0;
                         index++;
+                        goalIndex = 0;
                     }
                     else releaseVelocity[index] = DeserializeArray(line);
                 }

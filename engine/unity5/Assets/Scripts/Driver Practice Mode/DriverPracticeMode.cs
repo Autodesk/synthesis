@@ -15,6 +15,7 @@ public class DriverPracticeMode : MonoBehaviour {
     GameObject dpmWindow;
     GameObject scoreWindow;
     GameObject configWindow;
+    GameObject goalConfigWindow;
     GameObject defineIntakeWindow;
     GameObject defineReleaseWindow;
     GameObject setSpawnWindow;
@@ -100,6 +101,7 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
+        goalConfigWindow = AuxFunctions.FindObject(canvas, "GoalConfigPanel");
 
         enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
 
@@ -236,24 +238,28 @@ public class DriverPracticeMode : MonoBehaviour {
             if (dpmRobot.addingGamepiece)
             {
                 configWindow.SetActive(false);
+                goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
                 defineGamepieceWindow.SetActive(true);
             }
-            else if (dpmRobot.settingSpawn != 0 || dpmRobot.settingGoal != 0)
+            else if (dpmRobot.settingSpawn != 0 || dpmRobot.settingGamepieceGoal != 0)
             {
                 configWindow.SetActive(false);
+                goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
                 setSpawnWindow.SetActive(true);
             }
             else if (dpmRobot.definingIntake)
             {
                 configWindow.SetActive(false);
+                goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
                 defineIntakeWindow.SetActive(true);
             }
             else if (dpmRobot.definingRelease)
             {
                 configWindow.SetActive(false);
+                goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
                 defineReleaseWindow.SetActive(true);
             }
@@ -449,15 +455,28 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmRobot.StartGamepieceSpawn(configuringIndex);
     }
 
-    public void SetGamepieceGoal()
+    public void SetGamepieceGoals()
+    {
+        goalConfigWindow.SetActive(true);
+        goalConfigWindow.GetComponent<GoalManager>().InitGamepiece(configuringIndex);
+    }
+
+    // Set specific goal of the current gamepiece
+    public void SetGamepieceGoal(int goalIndex)
     {
         simUI.EndOtherProcesses();
-        dpmRobot.StartGamepieceGoal(configuringIndex);
+        dpmRobot.StartGamepieceGoal(configuringIndex, goalIndex);
     }
 
     public void CancelGamepieceSpawn()
     {
         dpmRobot.FinishGamepieceSpawn();
+    }
+
+    public void CancelGamepieceGoals()
+    {
+        dpmRobot.FinishGamepieceGoal();
+        goalConfigWindow.SetActive(false);
     }
 
     public void CancelGamepieceGoal()
@@ -600,7 +619,7 @@ public class DriverPracticeMode : MonoBehaviour {
             CancelDefineIntake();
             CancelDefineRelease();
             CancelGamepieceSpawn();
-            CancelGamepieceGoal();
+            CancelGamepieceGoals();
         }
     }
 
