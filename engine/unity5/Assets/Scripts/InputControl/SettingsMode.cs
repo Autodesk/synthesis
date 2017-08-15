@@ -53,21 +53,16 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnReset()
     {
-        if (Controls.IsTankDrive)
+        if (Controls.TankDriveEnabled)
         {
             Controls.ResetTankDrive();
             Controls.Save();
         }
         else
         {
-            //Controls.ResetArcadeDrive();
+            Controls.ResetArcadeDrive();
             Controls.Save();
         }
-    }
-
-    public void OnPlayerOne()
-    {
-        
     }
 
     /// <summary>
@@ -75,20 +70,20 @@ public class SettingsMode : MonoBehaviour
     /// </summary>
     public void OnEnableTankDrive()
     {
+        //TankDriveEnabled is true
         if (!Controls.TankDriveEnabled)
         {
             Controls.TankDriveEnabled = true;
-            Controls.IsTankDrive = true;
             Controls.CheckForKeyRemoval = false;
             Controls.SwitchControls();
             Controls.Save();
             enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Arcade Drive"; 
+            enableTankDriveText.text = "Switch Arcade Drive";
         }
         else
         {
+            //TankDriveEnabled is false
             Controls.TankDriveEnabled = false;
-            Controls.IsTankDrive = false;
             Controls.CheckForKeyRemoval = true;
             Controls.SwitchControls();
             Controls.Save();
@@ -97,19 +92,55 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
-    public void UpdateTankText()
+    void OnEnable()
     {
-        if (Controls.IsTankDrive)
+        if (GameObject.Find("SettingsMode") != null)
         {
-            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Arcade Drive";
+            if (!Controls.TankDriveEnabled)
+            {
+                enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+                enableTankDriveText.text = "Switch Tank Drive";
+            }
+            else
+            {
+                enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
+                enableTankDriveText.text = "Switch Arcade Drive";
+            }
         }
-        else
-        {
-            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-            enableTankDriveText.text = "Switch Tank Drive";
-        }
+        
     }
+
+    #region Player Buttons
+    public void OnPlayerOne()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOne();
+    }
+
+    public void OnPlayerTwo()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwo();
+    }
+
+    public void OnPlayerThree()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThree();
+    }
+
+    public void OnPlayerFour()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFour();
+    }
+
+    public void OnPlayerFive()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFive();
+    }
+
+    public void OnPlayerSix()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSix();
+    }
+    #endregion
 
     /// <summary>
     /// Updates all the key buttons.

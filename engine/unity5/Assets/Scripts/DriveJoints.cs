@@ -85,17 +85,117 @@ public class DriveJoints
         return MathfExt.ToDegrees(Mathf.Acos(Vector3.Dot(childUp, parentUp) / (childUp.magnitude * parentUp.magnitude)));
     }
 
+    public static void UpdateManipulatorMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
+    {
+        float[] pwm;
+        float[] can;
 
+        if (dioModules[0] != null)
+        {
+            pwm = dioModules[0].pwmValues;
+            can = dioModules[0].canValues;
+        }
+        else
+        {
+            pwm = new float[10];
+            can = new float[10];
+        }
+
+            pwm[4] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Neg)) ? -SPEED_ARROW_PWM : 0f;
+        Debug.Log("PWM 4: " + pwm[4].ToString());
+            pwm[5] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+            pwm[6] +=
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
+                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
+
+        listOfSubNodes.Clear();
+        skeleton.ListAllNodes(listOfSubNodes);
+
+        for (int i = 0; i < pwm.Length; i++)
+        {
+            foreach (RigidNode_Base node in listOfSubNodes)
+            {
+                RigidNode rigidNode = (RigidNode)node;
+
+                BRaycastWheel raycastWheel = rigidNode.MainObject.GetComponent<BRaycastWheel>();
+
+                if (raycastWheel != null)
+                {
+                    if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                    {
+                        raycastWheel.ApplyForce(pwm[i]);
+                    }
+                }
+
+                if (rigidNode.GetSkeletalJoint() != null && rigidNode.GetSkeletalJoint().cDriver != null)
+                {
+                    if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsMotor() && rigidNode.MainObject.GetComponent<BHingedConstraint>() != null)
+                    {
+                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1)
+                        {
+                            float maxSpeed = 0f;
+                            float impulse = 0f;
+                            float friction = 0f;
+
+                            if (rigidNode.HasDriverMeta<WheelDriverMeta>())
+                            {
+                                maxSpeed = WHEEL_MAX_SPEED;
+                                impulse = WHEEL_MOTOR_IMPULSE;
+                                friction = WHEEL_COAST_FRICTION;
+                            }
+                            else
+                            {
+                                maxSpeed = HINGE_MAX_SPEED;
+                                impulse = HINGE_MOTOR_IMPULSE;
+                                friction = HINGE_COAST_FRICTION;
+                            }
+
+                            BHingedConstraint hingedConstraint = rigidNode.MainObject.GetComponent<BHingedConstraint>();
+                            hingedConstraint.enableMotor = true;
+                            hingedConstraint.targetMotorAngularVelocity = pwm[i] > 0f ? maxSpeed : pwm[i] < 0f ? -maxSpeed : 0f;
+                            hingedConstraint.maxMotorImpulse = pwm[i] == 0f ? friction : Mathf.Abs(pwm[i] * impulse);
+                        }
+                    }
+                    else if (rigidNode.GetSkeletalJoint().cDriver.GetDriveType().IsElevator())
+                    {
+                        if (rigidNode.GetSkeletalJoint().cDriver.portA == i + 1 && rigidNode.HasDriverMeta<ElevatorDriverMeta>())
+                        {
+                            BSliderConstraint bSliderConstraint = rigidNode.MainObject.GetComponent<BSliderConstraint>();
+                            SliderConstraint sc = (SliderConstraint)bSliderConstraint.GetConstraint();
+                            sc.PoweredLinearMotor = true;
+                            sc.MaxLinearMotorForce = MAX_SLIDER_FORCE;
+                            sc.TargetLinearMotorVelocity = pwm[i] * MAX_SLIDER_SPEED;
+                        }
+                    }
+                }
+            }
+        }
+    }
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
-        if (dioModules[0] == null)
-            return;
+        
 
         bool IsMecanum = mecanum;
         int reverse = -1;
 
-        float[] pwm = dioModules[0].pwmValues;
-        float[] can = dioModules[0].canValues;
+        float[] pwm;
+        float[] can;
+
+        if (dioModules[0] != null)
+        {
+            pwm = dioModules[0].pwmValues;
+            can = dioModules[0].canValues;
+        }
+        else
+        {
+            pwm = new float[10];
+            can = new float[10];
+        }
 
         if (IsMecanum)
         {
@@ -134,7 +234,7 @@ public class DriveJoints
             #endregion
         }
 
-        if (Controls.IsTankDrive)
+        if (Controls.TankDriveEnabled)
         {
             #region Tank Drive
             ////Left motor

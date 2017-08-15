@@ -92,7 +92,7 @@ public class MaMScroller : MonoBehaviour {
     public void ScrollWheels(bool right)
     {
         
-        Vector2[] positions = { new Vector2(-426f, 7.5f), new Vector2(-165f, 7.5f), new Vector2(96f, 7.5f), new Vector2(363f, 7.5f), new Vector2(624f, 7.5f), };
+        Vector2[] positions = { new Vector2(-290f, 7.5f), new Vector2(-90f, 7.5f), new Vector2(110f, 7.5f), new Vector2(310f, 7.5f), new Vector2(510f, 7.5f), };
         if (Scroll(right, wheels, firstWheel, positions, wheelRightScroll, wheelLeftScroll)) firstWheel = (right) ? firstWheel + 1 : firstWheel - 1;
     }
 
@@ -100,7 +100,7 @@ public class MaMScroller : MonoBehaviour {
     public void ScrollDriveBase(bool right)
     {
 
-        Vector2[] positions = { new Vector2(-426f, 8f), new Vector2(-165f, 8f), new Vector2(96f, 8f), new Vector2(363f, 8f), new Vector2(624f, 8f), };
+        Vector2[] positions = { new Vector2(-290f, 8f), new Vector2(-90f, 8f), new Vector2(110f, 8f), new Vector2(310f, 8f), new Vector2(510f, 8f), };
         if (Scroll(right, driveBases, firstDriveBase, positions, driveBaseRightScroll, driveBaseLeftScroll)) firstDriveBase = (right) ? firstDriveBase + 1 : firstDriveBase - 1;
     }
 
@@ -108,11 +108,16 @@ public class MaMScroller : MonoBehaviour {
     public void ScrollPreset(bool right)
     {
         presetClones = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().presetClones;
-        Debug.Log(presetClones.Count);
-        Vector2[] positions = { new Vector2(200, 0), new Vector2(450, 0), new Vector2(700, 0), new Vector2(950, 0), new Vector2(1200, 0), };
+        Debug.Log("First Preset" + firstPreset);
+        Vector2[] positions = { new Vector2(-255, 0), new Vector2(-65, 0), new Vector2(125, 0), new Vector2(315, 0), new Vector2(505, 0), };
         if (Scroll(right, presetClones, firstPreset, positions, presetRightScroll, presetLeftScroll)) firstPreset = (right) ? firstPreset + 1 : firstPreset - 1;
     }
 
-
+    public void ResetFirsts()
+    {
+        firstWheel = 0;
+        firstDriveBase = 0;
+        firstPreset = 0;
+    }
 
 }
