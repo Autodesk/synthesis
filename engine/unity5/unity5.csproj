@@ -271,6 +271,7 @@
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
     <Compile Include="Assets\Scripts\GUI\UIScroll.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
+    <Compile Include="Assets\Scripts\GameplayTimer.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\LocalizationHelperr.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
