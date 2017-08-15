@@ -39,14 +39,14 @@ public partial class RigidNode : RigidNode_Base
 
             ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
 
-        });
+        }, true);
 
         Mesh[] colliders = new Mesh[mesh.colliders.Count];
 
         AuxFunctions.ReadMeshSet(mesh.colliders, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
         {
             colliders[id] = meshu;
-        });
+        }, true);
 
         MainObject.transform.position = root.position + ComOffset;
         MainObject.transform.rotation = root.rotation;
@@ -81,8 +81,6 @@ public partial class RigidNode : RigidNode_Base
 
         if (this.HasDriverMeta<WheelDriverMeta>() && this.GetDriverMeta<WheelDriverMeta>().type != WheelType.NOT_A_WHEEL && GetParent() == null)
         {
-
-
             BRigidBody rigidBody = MainObject.GetComponent<BRigidBody>();
             if (MixAndMatchMode.isMixAndMatchMode)
             {

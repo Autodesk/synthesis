@@ -52,7 +52,7 @@ public class UltraSensor : SensorBase
             isMetric = main.IsMetric;
         }
         UpdateOutputDisplay();
-        Debug.Log(ReturnOutput());
+        //Debug.Log(ReturnOutput());
     }
 
     //Step #2

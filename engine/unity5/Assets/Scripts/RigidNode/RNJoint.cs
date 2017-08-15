@@ -53,6 +53,7 @@ public partial class RigidNode : RigidNode_Base
                 else
                 {
                     RotationalJoint_Base rNode = (RotationalJoint_Base)GetSkeletalJoint();
+                    rNode.basePoint.x *= -1;
 
                     BHingedConstraintEx hc = (BHingedConstraintEx)(joint = ConfigJoint<BHingedConstraintEx>(rNode.basePoint.AsV3() - ComOffset, rNode.axis.AsV3(), AxisType.X));
                     Vector3 rAxis = rNode.axis.AsV3().normalized;
@@ -85,6 +86,8 @@ public partial class RigidNode : RigidNode_Base
 
                 LinearJoint_Base lNode = (LinearJoint_Base)GetSkeletalJoint();
 
+                lNode.basePoint.x *= -1;
+
                 Vector3 lAxis = lNode.axis.AsV3().normalized;
                 // TODO: Figure out how to make a vertical slider?
                 BSliderConstraint sc = (BSliderConstraint)(joint = ConfigJoint<BSliderConstraint>(lNode.basePoint.AsV3() - ComOffset, lNode.axis.AsV3(), AxisType.X));
@@ -92,7 +95,7 @@ public partial class RigidNode : RigidNode_Base
                 if (lAxis.x < 0) lAxis.x *= -1f;
                 if (lAxis.y < 0) lAxis.y *= -1f;
                 if (lAxis.z < 0) lAxis.z *= -1f;
-
+                
                 sc.localConstraintAxisX = lAxis;
                 sc.localConstraintAxisY = new Vector3(lAxis.y, lAxis.z, lAxis.x);
 

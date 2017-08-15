@@ -347,7 +347,7 @@ public class MainState : SimState
     void LoadReplay(string name)
     {
         List<FixedQueue<StateDescriptor>> fieldStates;
-        Dictionary<string, List<FixedQueue<StateDescriptor>>> robotStates;
+        List<KeyValuePair<string, List<FixedQueue<StateDescriptor>>>> robotStates;
         Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates;
         List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
 
