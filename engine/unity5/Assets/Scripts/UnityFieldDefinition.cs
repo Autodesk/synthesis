@@ -19,8 +19,7 @@ public class UnityFieldDefinition : FieldDefinition
 
     public void CreateTransform(Transform root)
     {
-        unityObject = new GameObject();
-        unityObject.name = NodeGroup.NodeGroupID;
+        unityObject = root.gameObject;
     }
 
     public bool CreateMesh(string filePath)
