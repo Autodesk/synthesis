@@ -421,20 +421,28 @@ public class MainState : SimState
     }
 
     /// <summary>
+    /// Loads a manipulator for Quick Swap Mode and maps it to the robot. 
+    /// </summary>
+    /// <param name="directory"></param>
+    /// <returns></returns>
+    public bool LoadManipulator(string directory, GameObject robotGameObject)
+    {
+        return activeRobot.LoadManipulator(directory, robotGameObject);
+    }
+
+    /// <summary>
     /// Loads a new robot and manipulator from given directorys
     /// </summary>
     /// <param name="directory">robot directory</param>
     /// <returns>whether the process was successful</returns>
-    int robotNumber = 2; //Only used for mix and match so that manipulator can map to the correct robot in RNJoint
     public bool LoadRobotWithManipulator(string baseDirectory, string manipulatorDirectory)
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
             robotPath = baseDirectory;
 
-            GameObject robotObject = new GameObject("Robot" + robotNumber);
+            GameObject robotObject = new GameObject("Robot");
             Robot robot = robotObject.AddComponent<Robot>();
-            robot.robotNumber = robotNumber;
 
             //Initialiezs the physical robot based off of robot directory. Returns false if not sucessful
             if (!robot.InitializeRobot(baseDirectory, this)) return false;
@@ -450,8 +458,7 @@ public class MainState : SimState
             robot.controlIndex = SpawnedRobots.Count;
             SpawnedRobots.Add(robot);
 
-            robot.LoadManipulator(manipulatorDirectory, robotObject.transform.GetChild(0).transform.position, SpawnedRobots.Count-1);
-            robotNumber++;
+            robot.LoadManipulator(manipulatorDirectory, robot.gameObject);
             return true;
         }
         return false;
