@@ -1,0 +1,12 @@
+#Name
+2015 Recycle Rush
+#Nodes
+Tote Intake
+Tote Release
+#Vectors
+Release Vector
+Tote Offset
+#Gamepieces
+TOTE
+#HoldingLimit
+1
