@@ -174,6 +174,18 @@ public class SimUI : MonoBehaviour
     //{
     //    main.ResetRobot();
     //}
+
+    public void SetIsMixAndMatch (bool isMixAndMatch)
+    {
+        if (isMixAndMatch)
+        {
+            PlayerPrefs.SetInt("mixAndMatch", 1); //0 is false, 1 is true
+        } else
+        {
+            PlayerPrefs.SetInt("mixAndMatch", 0);
+        }
+    }
+
     public void ChangeRobot()
     {
         GameObject panel = GameObject.Find("RobotListPanel");
@@ -206,7 +218,6 @@ public class SimUI : MonoBehaviour
         robotCameraManager.DetachCamerasFromRobot(main.activeRobot);
         sensorManager.RemoveSensorsFromRobot(main.activeRobot);
 
-        //Change the drive base 
         main.ChangeRobot(robotDirectory);
 
         //If the current robot has a manipulator, destroy the manipulator
@@ -220,7 +231,10 @@ public class SimUI : MonoBehaviour
         int newRobotHasManipulator = PlayerPrefs.GetInt("hasManipulator");
         if (newRobotHasManipulator == 1) //0 is false, 1 is true
         {
-            main.LoadManipulator(manipulatorDirectory);
+            main.LoadManipulator(manipulatorDirectory, main.activeRobot.gameObject);
+        } else
+        {
+            main.activeRobot.robotHasManipulator = 0; 
         }
     }
 
