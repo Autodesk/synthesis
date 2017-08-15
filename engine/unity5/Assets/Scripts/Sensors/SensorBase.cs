@@ -121,6 +121,15 @@ public abstract class SensorBase : MonoBehaviour
     }
     
     /// <summary>
+    /// Change the visibility of the sensor
+    /// </summary>
+    /// <param name="visible"></param>
+    public void ChangeVisibility(bool visible)
+    {
+        IsVisible = visible;
+        SyncVisibility();
+    }
+    /// <summary>
     /// Set the sensor to be visible temporarily, for choosing sensor option
     /// </summary>
     public void SetTemporaryVisible()

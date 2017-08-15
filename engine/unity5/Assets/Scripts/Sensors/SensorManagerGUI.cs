@@ -89,8 +89,6 @@ class SensorManagerGUI : MonoBehaviour
         if (currentSensor != null && currentSensor.IsChangingPosition)
         {
             currentSensor.UpdateTransform();
-            sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
-
             UpdateSensorAnglePanel();
             UpdateSensorRangePanel();
         }
@@ -152,7 +150,7 @@ class SensorManagerGUI : MonoBehaviour
         showSensorButton = AuxFunctions.FindObject(canvas, "ShowOutputButton");
         sensorOutputPanel = AuxFunctions.FindObject(canvas, "SensorOutputBorder");
         robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
-        
+
     }
 
     #region Sensor Option Panel
@@ -460,8 +458,11 @@ class SensorManagerGUI : MonoBehaviour
     public void StartConfiguration()
     {
         HideInvisibleSensors();
+        currentSensor.ChangeVisibility(true);
+        SyncHideSensorButton();
         currentSensor.IsChangingPosition = true;
         configureSensorPanel.SetActive(true);
+        sensorNodeText.text = "Current Node: " + currentSensor.transform.parent.gameObject.name;
         dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera, currentSensor.gameObject));
     }
 
@@ -704,6 +705,21 @@ class SensorManagerGUI : MonoBehaviour
             hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
         }
     }
+
+    /// <summary>
+    /// Sync the text of hide button so that it actually reflect the state of the sensor
+    /// </summary>
+    public void SyncHideSensorButton()
+    {
+        if (currentSensor.IsVisible)
+        {
+            hideSensorButton.GetComponentInChildren<Text>().text = "Hide Sensor";
+        }
+        else
+        {
+            hideSensorButton.GetComponentInChildren<Text>().text = "Show Sensor";
+        }
+    }
     #endregion
 
     #region Sensor Output
@@ -745,7 +761,8 @@ class SensorManagerGUI : MonoBehaviour
                         sensorOutputPanels.Remove(uselessPanel);
                         Destroy(uselessPanel);
                     }
-                }catch(MissingReferenceException e)
+                }
+                catch (MissingReferenceException e)
                 {
                     continue;
                 }
@@ -759,7 +776,8 @@ class SensorManagerGUI : MonoBehaviour
                 string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
                 GameObject sensor = GameObject.Find(sensorName);
                 panel.transform.localPosition = new Vector3(0, -42 - (sensorManager.GetSensorIndex(sensor)) * 56, 0);
-            }        }
+            }
+        }
         else
         {
             showSensorButton.SetActive(false);
