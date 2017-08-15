@@ -12,8 +12,9 @@ namespace Assets.Scripts.FEA
     {
         private MainState mainState;
         private BPhysicsWorld physicsWorld;
-        private bool newFrame;
+        private List<ContactDescriptor> frameContacts;
         private int lastFrameCount;
+        private int framesPassed;
 
         /// <summary>
         /// The list of contact points tracked by the CollisionTracker.
@@ -29,6 +30,8 @@ namespace Assets.Scripts.FEA
             this.mainState = mainState;
             physicsWorld = BPhysicsWorld.Get();
             lastFrameCount = physicsWorld.frameCount;
+            framesPassed = -1;
+            frameContacts = new List<ContactDescriptor>();
 
             ContactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         }
@@ -43,7 +46,7 @@ namespace Assets.Scripts.FEA
         }
 
         /// <summary>
-        /// Finds any robot collisions and adds them to the list of collisions for the current frame.
+        /// Finds any robot collisions and adds them to the list of contact points.
         /// </summary>
         /// <param name="pm"></param>
         public void OnVisitPersistentManifold(PersistentManifold pm)
@@ -54,11 +57,13 @@ namespace Assets.Scripts.FEA
                 return;
             }
 
-            int framesPassed = physicsWorld.frameCount - lastFrameCount;
-            lastFrameCount += framesPassed;
+            if (framesPassed == -1)
+            {
+                framesPassed = physicsWorld.frameCount - lastFrameCount;
 
-            for (int i = 0; i < framesPassed; i++)
-                ContactPoints.Add(new List<ContactDescriptor>());
+                for (int i = 0; i < framesPassed; i++)
+                    ContactPoints.Add(new List<ContactDescriptor>());
+            }
 
             BRigidBody obA = pm.Body0.UserObject as BRigidBody;
             BRigidBody obB = pm.Body1.UserObject as BRigidBody;
@@ -89,9 +94,21 @@ namespace Assets.Scripts.FEA
             pm.ClearManifold();
         }
 
+        /// <summary>
+        /// Adds an empty list of contact points for any frames without manifolds.
+        /// </summary>
         public void OnFinishedVisitingManifolds()
         {
-            // Not implemented
+            if (framesPassed == -1)
+            {
+                framesPassed = physicsWorld.frameCount - lastFrameCount;
+
+                for (int i = 0; i < framesPassed; i++)
+                    ContactPoints.Add(null);
+            }
+
+            lastFrameCount += framesPassed;
+            framesPassed = -1;
         }
 
         public void BOnCollisionEnter(CollisionObject other, BCollisionCallbacksDefault.PersistentManifoldList manifoldList)
