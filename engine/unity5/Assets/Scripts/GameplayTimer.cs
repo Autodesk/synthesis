@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GameplayTimer : MonoBehaviour
 {
     public Text timerText;
+    public Image scoreBackground;
 
     public bool timerRunning;
     public float timeLimit = 135.0f;
@@ -38,9 +39,19 @@ public class GameplayTimer : MonoBehaviour
     public void UpdateTimer()
     {
         if (timerRunning)
+        {
             timeStop = Time.time;
 
-        timerText.text = ((int) (timeLimit - (timeStop - timeStart))).ToString();
+            scoreBackground.color = Color.green;
+        }
+        else
+        {
+            scoreBackground.color = Color.red;
+        }
+
+        float timeLeft = timeLimit - (timeStop - timeStart);
+
+        timerText.text = ((int) timeLeft).ToString();
 
         if (timeLimit - (Time.time - timeStart) <= 0)
         {
