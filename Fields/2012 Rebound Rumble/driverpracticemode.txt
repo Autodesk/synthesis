@@ -1,0 +1,12 @@
+#Name
+2012 Rebound Rumble
+#Nodes
+Ball Intake Mechanism
+Ball Shooting Mechanism
+#Vectors
+Shooting Vector
+Ball Offset
+#Gamepieces
+2012BB
+#HoldingLimit
+4

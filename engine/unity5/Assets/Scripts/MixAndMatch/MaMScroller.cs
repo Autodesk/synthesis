@@ -15,6 +15,10 @@ public class MaMScroller : MonoBehaviour {
     private GameObject driveBaseLeftScroll;
     private List<GameObject> driveBases;
 
+    private GameObject manipulatorRightScroll;
+    private GameObject manipulatorLeftScroll;
+    private List<GameObject> manipulators;
+
     private GameObject presetRightScroll;
     private GameObject presetLeftScroll;
     private List<GameObject> presetClones;
@@ -30,6 +34,10 @@ public class MaMScroller : MonoBehaviour {
         driveBaseRightScroll = GameObject.Find("BaseRightScroll");
         driveBaseLeftScroll = GameObject.Find("BaseLeftScroll");
         driveBases = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().bases;
+
+        manipulatorRightScroll = GameObject.Find("ManipulatorRightScroll");
+        manipulatorLeftScroll = GameObject.Find("ManipulatorLeftScroll");
+        manipulators = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().manipulators;
 
         presetRightScroll = GameObject.Find("PresetRightScroll");
         presetLeftScroll = GameObject.Find("PresetLeftScroll");
@@ -104,6 +112,14 @@ public class MaMScroller : MonoBehaviour {
         if (Scroll(right, driveBases, firstDriveBase, positions, driveBaseRightScroll, driveBaseLeftScroll)) firstDriveBase = (right) ? firstDriveBase + 1 : firstDriveBase - 1;
     }
 
+    int firstManipulator = 0;
+    public void ScrollManipulator(bool right)
+    {
+
+        Vector2[] positions = { new Vector2(-290f, 7.5f), new Vector2(-90f, 7.5f), new Vector2(110f, 7.5f), new Vector2(310f, 7.5f), new Vector2(510f, 7.5f), };
+        if (Scroll(right, manipulators, firstManipulator, positions, manipulatorRightScroll, manipulatorLeftScroll)) firstManipulator = (right) ? firstManipulator + 1 : firstManipulator - 1;
+    }
+
     public static int firstPreset = 0;
     public void ScrollPreset(bool right)
     {
@@ -117,6 +133,7 @@ public class MaMScroller : MonoBehaviour {
     {
         firstWheel = 0;
         firstDriveBase = 0;
+        firstManipulator = 0;
         firstPreset = 0;
     }
 
