@@ -14,6 +14,7 @@ public class MixAndMatchMode : MonoBehaviour
     private GameObject mixAndMatchModeScript;
     public static bool isMixAndMatchMode = false;
     private GameObject infoText;
+    private GameObject mecWheelPanel;
 
     //Presets
     private GameObject presetsPanel;
@@ -82,6 +83,7 @@ public class MixAndMatchMode : MonoBehaviour
         setPresetPanel = GameObject.Find("SetPresetPanel");
         inputField = GameObject.Find("InputField");
         deletePresetButton = GameObject.Find("DeleteButton");
+        mecWheelPanel = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("MecWheelLabel")).First();
 
         //Find wheel objects
         tractionWheel = GameObject.Find("TractionWheel");
@@ -136,6 +138,8 @@ public class MixAndMatchMode : MonoBehaviour
             presetLeftScroll.SetActive(false);
             presetRightScroll.SetActive(false);
 
+            mecWheelPanel.SetActive(false);
+
             setPresetPanel.SetActive(false);
 
             deletePresetButton.SetActive(false);
@@ -153,6 +157,8 @@ public class MixAndMatchMode : MonoBehaviour
             SelectWheel(0);
             SelectDriveBase(0);
             SelectManipulator(0);
+
+            this.gameObject.GetComponent<MaMScroller>().ResetFirsts();
 
             // Sets info panel to blank
             Text txt = infoText.GetComponent<Text>();
@@ -407,7 +413,12 @@ public class MixAndMatchMode : MonoBehaviour
         SetColor(bases[driveBase], purple);
         this.gameObject.GetComponent<MaMInfoText>().SetBaseInfoText(driveBase);
         selectedDriveBase = driveBase;
-        if (selectedDriveBase == 1) isMecanum = true;
+        mecWheelPanel.SetActive(false);
+        if (selectedDriveBase == 1)
+        {
+            isMecanum = true;
+            mecWheelPanel.SetActive(true);
+        }
     }
 
     public static bool GetMecanum()
