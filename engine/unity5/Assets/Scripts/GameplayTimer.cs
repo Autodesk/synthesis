@@ -3,40 +3,50 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameplayTimer : MonoBehaviour {
+public class GameplayTimer : MonoBehaviour
+{
+    public Text timerText;
 
-    [SerializeField]
+    public bool timerRunning;
+    public float timeLimit = 135.0f;
 
-    private Text gameplayTimer = null;
+    float timeStart;
+    float timeStop;
+
     void Update()
     {
-        runTimer();
+        UpdateTimer();
     }
-    // Use this for initialization
-    void Start () {
-		
-	}
- 
-    public static bool timeRunning;
 
-    public static double timeLeft = 135.0;
-
-    public void runTimer()
+    public void StartTimer()
     {
-        if (timeRunning == true)
+        timeStart = Time.time;
+        timerRunning = true;
+    }
+
+    public void StopTimer()
+    {
+        timerRunning = false;
+    }
+
+    public void ResumeTimer()
+    {
+        timeStart = Time.time - (timeStop - timeStart);
+        timerRunning = true;
+    }
+
+    public void UpdateTimer()
+    {
+        if (timerRunning)
+            timeStop = Time.time;
+
+        timerText.text = (timeLimit - (timeStop - timeStart)).ToString();
+
+        if (timeLimit - (Time.time - timeStart) <= 0)
         {
-            timeLeft -= Time.deltaTime;
-            int intTimeLeft = (int)timeLeft;
-            string timeLeftText = intTimeLeft.ToString();
-            gameplayTimer.text = timeLeftText;
-            if (timeLeft < 0)
-            {
-                GameBehaviour.GameEnd();
-                //return;
-            }
+            // End of game
+            //GameBehaviour.GameEnd();
+            //return;
         }
     }
-
-   
-    }
-
+}
