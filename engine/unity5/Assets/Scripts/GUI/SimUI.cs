@@ -34,7 +34,6 @@ public class SimUI : MonoBehaviour
     GameObject driveBasePanel;
     GameObject manipulatorPanel;
 
-
     GameObject changeRobotPanel;
     GameObject robotListPanel;
     GameObject changeFieldPanel;
@@ -43,7 +42,6 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
-    GameObject enableTankText;
     GameObject unitConversionButton;
 
     GameObject mixAndMatchPanel;
@@ -58,8 +56,6 @@ public class SimUI : MonoBehaviour
     GameObject orientWindow;
     bool isOrienting = false;
     GameObject resetDropdown;
-
-    Text cameraNodeText;
 
     GameObject loadingPanel;
 
@@ -133,7 +129,6 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
-        enableTankText = AuxFunctions.FindObject(canvas, "EnableTankDriveText");
         unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
