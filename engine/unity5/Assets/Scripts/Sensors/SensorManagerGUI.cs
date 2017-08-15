@@ -13,6 +13,7 @@ class SensorManagerGUI : MonoBehaviour
     SensorManager sensorManager;
     DynamicCamera.CameraState preConfigState;
     DynamicCamera dynamicCamera;
+    RobotCameraGUI robotCameraGUI;
 
     GameObject configureSensorButton;
     GameObject sensorOptionPanel;
@@ -52,7 +53,7 @@ class SensorManagerGUI : MonoBehaviour
     GameObject lockAngleButton;
     GameObject lockRangeButton;
 
-    GameObject hideOutputPanelsButton;
+    GameObject sensorOutputPanel;
 
     Text sensorNodeText;
 
@@ -146,7 +147,10 @@ class SensorManagerGUI : MonoBehaviour
         lockAngleButton = AuxFunctions.FindObject(configureSensorPanel, "LockAngleButton");
         lockRangeButton = AuxFunctions.FindObject(configureSensorPanel, "LockRangeButton");
 
-        hideOutputPanelsButton = AuxFunctions.FindObject(canvas, "HideOutputButton");
+        showSensorButton = AuxFunctions.FindObject(canvas, "ShowOutputButton");
+        sensorOutputPanel = AuxFunctions.FindObject(canvas, "SensorOutputBorder");
+        robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
+        
     }
 
     #region Sensor Option Panel
@@ -155,17 +159,17 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void ToggleSensorOption()
     {
+        //Deal with UI conflicts between robot camera & sensors
+        robotCameraGUI.EndProcesses();
         isChoosingOption = !isChoosingOption;
         sensorOptionPanel.SetActive(isChoosingOption);
         if (isChoosingOption)
         {
             preConfigState = dynamicCamera.cameraState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
-            configureSensorButton.GetComponentInChildren<Text>().text = "End Configuration";
         }
         else
         {
-            configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
             EndProcesses();
         }
     }
@@ -676,7 +680,6 @@ class SensorManagerGUI : MonoBehaviour
         ShiftOutputPanels();
         currentSensor = null;
 
-        configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         EndProcesses();
     }
     #endregion
@@ -690,20 +693,24 @@ class SensorManagerGUI : MonoBehaviour
         if (GameObject.Find(currentSensor.name + "_Panel") == null)
         {
             int index = sensorManager.GetSensorIndex(currentSensor.gameObject);
-            GameObject panel = Instantiate(sensorManager.OutputPanel, new Vector3(1190, 690 - (index+1) * 60, 0), new Quaternion(0, 0, 0, 0), canvas.transform);
-            panel.transform.parent = canvas.transform;
+            GameObject panel = Instantiate(sensorManager.OutputPanel, Vector3.zero, Quaternion.identity, sensorOutputPanel.transform);
+            panel.transform.parent = sensorOutputPanel.transform;
+            //sensorOutputPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(198, 22 + (index + 1) * 58);
+            panel.transform.localPosition = new Vector3(0, -42 - (index) * 56, 0);
             panel.name = currentSensor.name + "_Panel";
+            Debug.Log(panel.name + " " + panel.transform.localPosition);
             sensorOutputPanels.Add(panel);
-            DisplayAllOutput();
+            ShowSensorOutput();
         }
     }
 
     /// <summary>
     /// Shift the position of the output panel according to the sensor index in the active sensor list
+    /// first panel pos: -99, -55, 0, output panel header height 27, panel height 83 w/first panel
     /// </summary>
     public void ShiftOutputPanels()
     {
-        DisplayAllOutput();
+        ShowSensorOutput();
         //currentSensor = null;
         if (sensorManager.GetInactiveSensors().Count != 0)
         {
@@ -727,54 +734,44 @@ class SensorManagerGUI : MonoBehaviour
         //Shift position of remaining panels
         if (sensorOutputPanels.Count > 0)
         {
+            //sensorOutputPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(198, 22 + sensorOutputPanels.Count * 58);
+
             foreach (GameObject panel in sensorOutputPanels)
             {
                 string sensorName = panel.name.Substring(0, panel.name.IndexOf("_Panel"));
                 GameObject sensor = GameObject.Find(sensorName);
-                panel.transform.position = new Vector3(1190, 690 - (sensorManager.GetSensorIndex(sensor) + 1) * 60, 0);
+                panel.transform.localPosition = new Vector3(0, -42 - (sensorManager.GetSensorIndex(sensor)) * 56, 0);
+                Debug.Log(panel.name + " " + panel.transform.localPosition);
             }
+            //sensorOutputPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(198, 22 + sensorOutputPanels.Count * 58);
         }
         else
         {
-            hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Show Sensor Output";
-            hideOutputPanelsButton.SetActive(false);
+            showSensorButton.SetActive(false);
+            sensorOutputPanel.SetActive(false);
         }
     }
-    
+
     /// <summary>
     /// Toggle between showing sensor output and hiding them
     /// </summary>
-    public void ToggleSensorOutput()
+    public void ShowSensorOutput()
     {
-        isHidingOutput = !isHidingOutput;
-
+        sensorOutputPanel.SetActive(true);
+        showSensorButton.SetActive(false);
         foreach (GameObject panel in sensorOutputPanels)
         {
-            panel.SetActive(!isHidingOutput);
-        }
-
-        if (isHidingOutput)
-        {
-            hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Show Sensor Output";
-        }
-        else
-        {
-            hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Hide Sensor Output";
+            Debug.Log(panel.name + " " + panel.transform.localPosition);
         }
     }
 
     /// <summary>
-    /// Display all sensor output and set the toggle button text to "Hide Sensor Output"
+    /// Hide sensor output
     /// </summary>
-    public void DisplayAllOutput()
+    public void HideSensorOutput()
     {
-        isHidingOutput = false;
-        foreach (GameObject panel in sensorOutputPanels)
-        {
-            panel.SetActive(true);
-        }
-        hideOutputPanelsButton.SetActive(true);
-        hideOutputPanelsButton.GetComponentInChildren<Text>().text = "Hide Sensor Output";
+        sensorOutputPanel.SetActive(false);
+        showSensorButton.SetActive(true);
     }
     #endregion
 
@@ -783,7 +780,7 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void EndProcesses()
     {
-
+        isChoosingOption = false;
         if (currentSensor != null)
         {
             currentSensor.ResetConfigurationState();
@@ -794,8 +791,8 @@ class SensorManagerGUI : MonoBehaviour
         CancelOptionSelection();
         CancelTypeSelection();
         ResetConfigurationWindow();
-
-        configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
+        HideSensorOutput();
+        //configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         selectedNode = null;
 
         if (preConfigState != null)

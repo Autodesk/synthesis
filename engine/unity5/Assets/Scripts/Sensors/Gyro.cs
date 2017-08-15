@@ -30,8 +30,8 @@ public class Gyro : SensorBase
         currentAngle = gameObject.transform.parent.transform.localEulerAngles.y + angleOffset;
         //Update the output panel
         UpdateOutputDisplay();
-        Debug.Log(ReturnOutput());
-        Debug.Log("Current angle is " + GetAngle());
+        //Debug.Log(ReturnOutput());
+        //Debug.Log("Current angle is " + GetAngle());
         //Set last time to current time
         lastTime = currentTime;
     }
