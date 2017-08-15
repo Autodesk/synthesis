@@ -47,6 +47,7 @@ public class Robot : MonoBehaviour
     private const float HOLD_TIME = 0.8f;
     private float keyDownTime = 0f;
 
+    public string RobotDirectory { get; private set; }
     public string RobotName;
 
     private RobotCameraManager robotCameraManager;
@@ -135,7 +136,8 @@ public class Robot : MonoBehaviour
     /// <returns></returns>
     public bool InitializeRobot(string directory, MainState source)
     {
-        
+        RobotDirectory = directory;
+
         //Deletes all nodes if any exist, take the old node transforms out from the robot object
         int childCount = transform.childCount;
         for (int i = childCount - 1; i >= 0; i--)
