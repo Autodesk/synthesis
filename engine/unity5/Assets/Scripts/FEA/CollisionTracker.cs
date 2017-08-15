@@ -86,7 +86,8 @@ namespace Assets.Scripts.FEA
                     RobotBody = robotBody
                 };
 
-                ContactPoints[i].Add(cd);
+                if (ContactPoints[i] != null)
+                    ContactPoints[i].Add(cd);
             }
 
             pm.ClearManifold();
@@ -102,7 +103,7 @@ namespace Assets.Scripts.FEA
                 framesPassed = physicsWorld.frameCount - lastFrameCount;
 
                 for (int i = 0; i < framesPassed; i++)
-                    ContactPoints.Add(null);
+                    ContactPoints.Add(new List<ContactDescriptor>());
             }
 
             lastFrameCount += framesPassed;
