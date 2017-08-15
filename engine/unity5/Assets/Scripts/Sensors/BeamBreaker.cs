@@ -23,7 +23,7 @@ public class BeamBreaker : SensorBase
         UpdateOutputDisplay();
         float output = ReturnOutput();
 
-        Debug.Log(ReturnOutput());
+        //Debug.Log(ReturnOutput());
     }
 
     public override float ReturnOutput()

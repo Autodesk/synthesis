@@ -38,9 +38,11 @@ namespace Assets.Scripts.BUExtensions
                 Destroy(this);
             }
 
+            RotationalJoint_Base joint = (RotationalJoint_Base)node.GetSkeletalJoint();
+            joint.basePoint.x *= -1;
+
             node.OrientWheelNormals();
 
-            RotationalJoint_Base joint = (RotationalJoint_Base)node.GetSkeletalJoint();
             axis = joint.axis.AsV3();
 
             WheelDriverMeta driverMeta = node.GetDriverMeta<WheelDriverMeta>();

@@ -9,7 +9,7 @@ public class AuxFunctions
 {
     public delegate void HandleMesh(int id, BXDAMesh.BXDASubMesh subMesh, Mesh mesh);
 
-    public static void ReadMeshSet(List<BXDAMesh.BXDASubMesh> meshes, HandleMesh handleMesh)
+    public static void ReadMeshSet(List<BXDAMesh.BXDASubMesh> meshes, HandleMesh handleMesh, bool mirror = false)
     {
         for (int j = 0; j < meshes.Count; j++)
         {
@@ -18,7 +18,7 @@ public class AuxFunctions
             Vector3[] vertices = sub.verts == null ? null : ArrayUtilities.WrapArray<Vector3>(
                 delegate (double x, double y, double z)
                 {
-                    return new Vector3((float)x * 0.01f, (float)y * 0.01f, (float)z * 0.01f);
+                    return new Vector3((float)x * (mirror ? -0.01f : 0.01f), (float)y * 0.01f, (float)z * 0.01f);
                 }, sub.verts);
             Vector3[] normals = sub.norms == null ? null : ArrayUtilities.WrapArray<Vector3>(
                 delegate (double x, double y, double z)
@@ -35,7 +35,8 @@ public class AuxFunctions
             {
                 int[] cpy = new int[sub.surfaces[i].indicies.Length];
                 Array.Copy(sub.surfaces[i].indicies, cpy, cpy.Length);
-                //Array.Reverse(cpy); <-- don't uncomment this.
+                if (mirror)
+                    Array.Reverse(cpy);
                 unityMesh.SetTriangles(cpy, i);
             }
             if (normals != null)

@@ -12,6 +12,7 @@ namespace Assets.Scripts.FEA
     {
         private MainState mainState;
         private BPhysicsWorld physicsWorld;
+        private List<PersistentManifold> manifoldsToClear;
         private int lastFrameCount;
         private int framesPassed;
 
@@ -28,6 +29,7 @@ namespace Assets.Scripts.FEA
         {
             this.mainState = mainState;
             physicsWorld = BPhysicsWorld.Get();
+            manifoldsToClear = new List<PersistentManifold>();
             lastFrameCount = physicsWorld.frameCount;
             framesPassed = -1;
 
@@ -49,11 +51,10 @@ namespace Assets.Scripts.FEA
         /// <param name="pm"></param>
         public void OnVisitPersistentManifold(PersistentManifold pm)
         {
+            manifoldsToClear.Add(pm);
+
             if (!mainState.Tracking)
-            {
-                pm.ClearManifold();
                 return;
-            }
 
             if (framesPassed == -1)
             {
@@ -89,8 +90,6 @@ namespace Assets.Scripts.FEA
                 if (ContactPoints[i] != null)
                     ContactPoints[i].Add(cd);
             }
-
-            pm.ClearManifold();
         }
 
         /// <summary>
@@ -98,6 +97,11 @@ namespace Assets.Scripts.FEA
         /// </summary>
         public void OnFinishedVisitingManifolds()
         {
+            foreach (PersistentManifold pm in manifoldsToClear)
+                pm.ClearManifold();
+
+            manifoldsToClear.Clear();
+
             if (framesPassed == -1)
             {
                 framesPassed = physicsWorld.frameCount - lastFrameCount;
