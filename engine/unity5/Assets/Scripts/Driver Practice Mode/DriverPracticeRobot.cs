@@ -16,7 +16,6 @@ using Assets.Scripts.FSM;
 /// </summary>
 public class DriverPracticeRobot : MonoBehaviour
 {
-
     public UnityEngine.Vector3[] positionOffset; //position offset vectors for gamepiece while its being held
     public List<float[]> releaseVelocity; //release velocity vectors for gamepiece, defined not in x,y,z coordinates, but speed, hor angle, and ver angle.
     public float[] primaryVelocity = new float[3];
@@ -67,7 +66,6 @@ public class DriverPracticeRobot : MonoBehaviour
     private GameObject spawnIndicator;
     public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
     private DynamicCamera.CameraState lastCameraState;
-
 
     /// <summary>
     /// If configuration file exists, loads information and auto-configures robot.
