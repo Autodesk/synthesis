@@ -13,7 +13,7 @@ public class MaMGetters : MonoBehaviour {
         switch (baseID)
         {
             case 0: //Default Drive Base
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\DriveBase2557");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\Default");
             case 1: //Mech Drive Base
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\DriveBases\\SyntheMac");
             case 2: //Swerve Drive
@@ -35,10 +35,16 @@ public class MaMGetters : MonoBehaviour {
         {
             case 0: //No manipulator
                 MixAndMatchMode.hasManipulator = false;
+                PlayerPrefs.SetInt("hasManipulator", 0); //0 is false, 1 is true
                 break;
             case 1: //SyntheClaw
                 MixAndMatchMode.hasManipulator = true;
+                PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
+            case 2: //SyntheShot
+                MixAndMatchMode.hasManipulator = true;
+                PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheShot");
         }
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
     }

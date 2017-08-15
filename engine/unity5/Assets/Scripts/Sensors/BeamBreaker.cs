@@ -7,6 +7,9 @@ using BulletUnity;
 using BulletSharp;
 using UnityEngine.UI;
 
+/// <summary>
+/// Gyroscope sensor class, must be attached to a prefab gameobject
+/// </summary>
 public class BeamBreaker : SensorBase
 {
     public bool IsEmitter;
@@ -20,7 +23,7 @@ public class BeamBreaker : SensorBase
         UpdateOutputDisplay();
         float output = ReturnOutput();
 
-        Debug.Log(ReturnOutput());
+        //Debug.Log(ReturnOutput());
     }
 
     public override float ReturnOutput()

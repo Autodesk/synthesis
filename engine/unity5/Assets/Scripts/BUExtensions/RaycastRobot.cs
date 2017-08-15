@@ -70,6 +70,10 @@ namespace Assets.Scripts.BUExtensions
             get { return chassisBody; }
         }
 
+        public float SuspensionEffectiveMass { get; set; }
+
+        public RigidBody FrictionEffectiveRigidBody { get; set; }
+
         IVehicleRaycaster vehicleRaycaster;
 
         static RigidBody fixedBody;
@@ -118,9 +122,11 @@ namespace Assets.Scripts.BUExtensions
         public RaycastRobot(VehicleTuning tuning, RigidBody chassis, IVehicleRaycaster raycaster)
         {
             chassisBody = chassis;
+            FrictionEffectiveRigidBody = chassis;
             vehicleRaycaster = raycaster;
 
             SlidingFriction = 1.0f;
+            SuspensionEffectiveMass = 1.0f / chassis.InvMass;
         }
 
         public WheelInfo AddWheel(Vector3 connectionPointCS, Vector3 wheelDirectionCS0, Vector3 wheelAxleCS, float suspensionRestLength, float wheelRadius, VehicleTuning tuning, bool isFrontWheel)
@@ -351,13 +357,8 @@ namespace Assets.Scripts.BUExtensions
             float rel_vel;
             Vector3.Dot(ref normal, ref vel, out rel_vel);
 
-#if ONLY_USE_LINEAR_MASS
-	        float massTerm = 1.0f / (body1.InvMass + body2.InvMass);
-	        impulse = - contactDamping * rel_vel * massTerm;
-#else
             float velocityImpulse = -contactDamping * rel_vel * jacDiagABInv;
             impulse = velocityImpulse;
-#endif
         }
 
         public void UpdateAction(CollisionWorld collisionWorld, float deltaTimeStep)
@@ -412,7 +413,7 @@ namespace Assets.Scripts.BUExtensions
                     Vector3.Cross(ref surfNormalWS, ref axle[i], out forwardWS[i]);
                     forwardWS[i].Normalize();
 
-                    ResolveSingleBilateral(chassisBody, wheel.RaycastInfo.ContactPointWS,
+                    ResolveSingleBilateral(FrictionEffectiveRigidBody, wheel.RaycastInfo.ContactPointWS,
                               groundObject, wheel.RaycastInfo.ContactPointWS,
                               0, axle[i], ref sideImpulse[i], timeStep);
 
@@ -456,7 +457,6 @@ namespace Assets.Scripts.BUExtensions
                     float maximpSide = maximp;
 
                     float maximpSquared = maximp * maximpSide;
-
 
                     forwardImpulse[i] = rollingFriction;//wheel.EngineForce* timeStep;
 
@@ -535,7 +535,7 @@ namespace Assets.Scripts.BUExtensions
 
         public void UpdateSuspension(float step)
         {
-            float chassisMass = 1.0f / chassisBody.InvMass;
+            //float chassisMass = 1.0f / chassisBody.InvMass;
 
             for (int w_it = 0; w_it < NumWheels; w_it++)
             {
@@ -573,7 +573,7 @@ namespace Assets.Scripts.BUExtensions
                     }
 
                     // RESULT
-                    wheel_info.WheelsSuspensionForce = force * chassisMass;
+                    wheel_info.WheelsSuspensionForce = force * SuspensionEffectiveMass;
                     if (wheel_info.WheelsSuspensionForce < 0)
                     {
                         wheel_info.WheelsSuspensionForce = 0;

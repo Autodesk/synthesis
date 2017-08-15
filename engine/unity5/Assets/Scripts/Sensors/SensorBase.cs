@@ -17,17 +17,20 @@ public abstract class SensorBase : MonoBehaviour
     public bool IsChangingRange { get; set; }
     private static float positionSpeed = 0.5f;
     private static float rotationSpeed = 25;
+    public bool IsVisible = true;
+    
     public Robot Robot { get; set; }
 
     // Use this for initialization
     void Start()
     {
-
+        IsVisible = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        
     }
 
     public abstract float ReturnOutput();
@@ -112,5 +115,41 @@ public abstract class SensorBase : MonoBehaviour
 
     }
 
+    public void ResetConfigurationState()
+    {
+        IsChangingPosition = IsChangingAngle = IsChangingHeight = IsChangingRange = false;
+    }
     
+    /// <summary>
+    /// Change the visibility of the sensor
+    /// </summary>
+    /// <param name="visible"></param>
+    public void ChangeVisibility(bool visible)
+    {
+        IsVisible = visible;
+        SyncVisibility();
+    }
+    /// <summary>
+    /// Set the sensor to be visible temporarily, for choosing sensor option
+    /// </summary>
+    public void SetTemporaryVisible()
+    {
+        if (gameObject.GetComponent<Renderer>() != null) gameObject.GetComponent<Renderer>().enabled = true;
+        foreach(Transform child in gameObject.transform)
+        {
+            if (child.GetComponent<Renderer>() != null) child.GetComponent<Renderer>().enabled = true;
+        }
+    }
+
+    /// <summary>
+    /// Update the sensor visibility with its state
+    /// </summary>
+    public void SyncVisibility()
+    {
+        if(gameObject.GetComponent<Renderer>() != null) gameObject.GetComponent<Renderer>().enabled = IsVisible;
+        foreach (Transform child in gameObject.transform)
+        {
+            if (child.GetComponent<Renderer>() != null) child.GetComponent<Renderer>().enabled = IsVisible;
+        }
+    }
 }

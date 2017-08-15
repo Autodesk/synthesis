@@ -234,33 +234,35 @@ class FileBrowser : OverlayWindow
         DirectoryInfo directorySelection;
 
         // Get the directory info of the current location
+        FileInfo fileSelection = new FileInfo(directoryLocation);
+        if ((fileSelection.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
         {
-            FileInfo fileSelection = new FileInfo(directoryLocation);
-            if ((fileSelection.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+            directoryInfo = new DirectoryInfo(directoryLocation);
+            //If there is no directory in the current location go back to its parent folder
+            if (directoryInfo.GetDirectories().Length == 0 && title.Equals("Load Robot"))
             {
-                directoryInfo = new DirectoryInfo(directoryLocation);
-                if (directoryInfo.GetDirectories().Length == 0 && title.Equals("Load Robot"))
-                {
-                    directoryInfo = directoryInfo.Parent;
-                }
-            }
-            else
-            {
-                directoryInfo = fileSelection.Directory;
+                directoryInfo = directoryInfo.Parent;
             }
         }
+        else
+        {
+            directoryInfo = fileSelection.Directory;
+        }
 
+        //If click Exit, close file browser
         if (_allowEsc && GUI.Button(new Rect(410, 10, 80, 20), "Exit", fileBrowserButton))
         {
             Active = false;
         }
 
-        if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 10, 120, 25), "Up one level", fileBrowserButton))
+        //If hit Up One Level, go back to parent folder level
+        if (directoryInfo.Parent != null && GUI.Button(new Rect(10, 10, 120, 25), "Up One Level", fileBrowserButton))
         {
             directoryInfo = directoryInfo.Parent;
             directoryLocation = directoryInfo.FullName;
             selectedDirectoryLocation = directoryInfo.FullName;
             tempSelection = null;
+            //Reset the target folder list and set the folder to unsearched
             targetFolderList.Clear();
             directorySearched = false;
         }
@@ -273,6 +275,7 @@ class FileBrowser : OverlayWindow
 
         directoryScroll = GUILayout.BeginScrollView(directoryScroll);
 
+        //Create a scrolling list and all the buttons having the folder names
         directorySelection = SelectList(directoryInfo.GetDirectories(), (DirectoryInfo o) =>
         {
             return o.Name;
@@ -284,11 +287,11 @@ class FileBrowser : OverlayWindow
         if (directorySelection != null && selectedDirectoryLocation != null)
         {
             bool doubleClick = directorySelection != null && (Time.time - lastClick) > 0 && (Time.time - lastClick) < DOUBLE_CLICK_TIME;
+            //Use try/catch to prevent users from getting in unauthorized folders
             try
             {
                 if (doubleClick)
                 {
-
                     // If directory contains field or robot files, display error message to user prompting them to select directory
                     // instead of the actual field
                     if (directorySelection.GetFiles("*.bxdf").Length != 0 || directorySelection.GetFiles("*.bxda").Length != 0
@@ -298,8 +301,7 @@ class FileBrowser : OverlayWindow
                     }
                     else
                     {
-                        // If a directory was double clicked, jump there
-
+                        // If a directory without robot/field files was double clicked, jump there
                         directoryLocation = directorySelection.FullName;
 
                         targetFolderList.Clear();
@@ -348,6 +350,7 @@ class FileBrowser : OverlayWindow
             }
             else
             {
+                //One click displays the path of the selected folder
                 GUILayout.Label(selectedDirectoryLocation.Length > labelLen ?
                                 selectedDirectoryLocation.Substring(0, 5) + "..." +
                                 selectedDirectoryLocation.Substring(selectedDirectoryLocation.Length - labelLen + 8) :
@@ -361,6 +364,8 @@ class FileBrowser : OverlayWindow
         GUILayout.EndArea();
         GUILayout.BeginArea(new Rect(10, 390, 480, 25));
         GUILayout.BeginHorizontal();
+        
+        //When this button is clicked, th
         if (GUILayout.Button("Search for Target Directory", fileBrowserButton, GUILayout.Width(250)))
         {
             SearchDirectories(directoryInfo);
