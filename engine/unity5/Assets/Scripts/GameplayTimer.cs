@@ -40,11 +40,14 @@ public class GameplayTimer : MonoBehaviour
         if (timerRunning)
             timeStop = Time.time;
 
-        timerText.text = (timeLimit - (timeStop - timeStart)).ToString();
+        timerText.text = ((int) (timeLimit - (timeStop - timeStart))).ToString();
 
         if (timeLimit - (Time.time - timeStart) <= 0)
         {
             // End of game
+            StopTimer();
+            timeStop = timeStart + timeLimit;
+
             //GameBehaviour.GameEnd();
             //return;
         }
