@@ -169,7 +169,7 @@ public class MainState : SimState
         if (!activeRobot.IsResetting && Input.GetKeyDown(KeyCode.Tab))
         {
             CollisionTracker.ContactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -189,7 +189,7 @@ public class MainState : SimState
         if (awaitingReplay)
         {
             awaitingReplay = false;
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -208,7 +208,6 @@ public class MainState : SimState
         {
             return new UnityFieldDefinition(guid, name);
         };
-
 
         string loadResult;
         fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
@@ -348,36 +347,36 @@ public class MainState : SimState
     void LoadReplay(string name)
     {
         List<FixedQueue<StateDescriptor>> fieldStates;
-        List<FixedQueue<StateDescriptor>> robotStates;
+        Dictionary<string, List<FixedQueue<StateDescriptor>>> robotStates;
         Dictionary<string, List<FixedQueue<StateDescriptor>>> gamePieceStates;
         List<List<KeyValuePair<ContactDescriptor, int>>> contacts;
 
-        string simSelectedField;
-        string simSelectedRobot;
+        string fieldDirectory;
 
-        ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
+        ReplayImporter.Read(name, out fieldDirectory, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
-        LoadField(simSelectedField);
-        LoadRobot(simSelectedRobot);
+        LoadField(fieldDirectory);
 
-        List<Tracker> trackers = UnityEngine.Object.FindObjectsOfType<Tracker>().ToList();
+        foreach (KeyValuePair<string, List<FixedQueue<StateDescriptor>>> rs in robotStates)
+        {
+            LoadRobot(rs.Key);
 
-        List<Tracker> robotTrackers = trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();
-        List<Tracker> fieldTrackers = trackers.Except(robotTrackers).ToList();
+            int j = 0;
+
+            foreach (Tracker t in SpawnedRobots.Last().GetComponentsInChildren<Tracker>())
+            {
+                t.States = rs.Value[j];
+                j++;
+            }
+        }
+
+        Tracker[] fieldTrackers = fieldObject.GetComponentsInChildren<Tracker>();
 
         int i = 0;
 
         foreach (Tracker t in fieldTrackers)
         {
             t.States = fieldStates[i];
-            i++;
-        }
-
-        i = 0;
-
-        foreach (Tracker t in robotTrackers)
-        {
-            t.States = robotStates[i];
             i++;
         }
 
@@ -477,7 +476,7 @@ public class MainState : SimState
         if (!activeRobot.IsResetting)
         {
             CollisionTracker.ContactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
     }
 
@@ -511,7 +510,7 @@ public class MainState : SimState
         if (!activeRobot.IsResetting)
         {
             CollisionTracker.ContactPoints.Add(null);
-            StateMachine.Instance.PushState(new ReplayState(fieldPath, robotPath, CollisionTracker.ContactPoints));
+            StateMachine.Instance.PushState(new ReplayState(fieldPath, CollisionTracker.ContactPoints));
         }
         else
         {

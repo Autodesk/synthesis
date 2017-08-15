@@ -12,7 +12,6 @@ namespace Assets.Scripts.FEA
     {
         private MainState mainState;
         private BPhysicsWorld physicsWorld;
-        private List<ContactDescriptor> frameContacts;
         private int lastFrameCount;
         private int framesPassed;
 
@@ -31,7 +30,6 @@ namespace Assets.Scripts.FEA
             physicsWorld = BPhysicsWorld.Get();
             lastFrameCount = physicsWorld.frameCount;
             framesPassed = -1;
-            frameContacts = new List<ContactDescriptor>();
 
             ContactPoints = new FixedQueue<List<ContactDescriptor>>(Tracker.Length);
         }
