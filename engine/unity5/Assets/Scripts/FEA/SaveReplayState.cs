@@ -12,7 +12,6 @@ namespace Assets.Scripts.FEA
     public class SaveReplayState : SimState
     {
         string fieldPath;
-        string robotPath;
 
         List<Tracker> trackers;
         List<List<ContactDescriptor>> contacts;
@@ -27,10 +26,9 @@ namespace Assets.Scripts.FEA
         /// </summary>
         /// <param name="trackers"></param>
         /// <param name="contacts"></param>
-        public SaveReplayState(string fieldPath, string robotPath, List<Tracker> trackers, List<List<ContactDescriptor>> contacts)
+        public SaveReplayState(string fieldPath, List<Tracker> trackers, List<List<ContactDescriptor>> contacts)
         {
             this.fieldPath = fieldPath;
-            this.robotPath = robotPath;
             this.trackers = trackers;
             this.contacts = contacts;
         }
@@ -82,7 +80,7 @@ namespace Assets.Scripts.FEA
                 return;
             }
 
-            ReplayExporter.Write(replayNameText.text, fieldPath, robotPath, trackers, contacts);
+            ReplayExporter.Write(replayNameText.text, fieldPath, trackers, contacts);
             StateMachine.Instance.PopState();
         }
 
