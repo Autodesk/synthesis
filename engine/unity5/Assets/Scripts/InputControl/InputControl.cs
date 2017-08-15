@@ -27,6 +27,31 @@ public static class InputControl
     private static List<KeyMapping> mKeysListPlayer5 = new List<KeyMapping>();
     private static List<KeyMapping> mKeysListPlayer6 = new List<KeyMapping>();
 
+    //=========================================================================
+    //                  Transferring to new Key Lists
+    //====================================================================
+    // Set of keys
+    private static List<KeyMapping> mKeysListTankDrive = new List<KeyMapping>();
+    private static Dictionary<string, KeyMapping> mKeysMapTankDrive = new Dictionary<string, KeyMapping>();
+
+    // Set of keys
+    private static List<KeyMapping> mKeysListArcadeDrive = new List<KeyMapping>();
+    private static Dictionary<string, KeyMapping> mKeysMapArcadeDrive = new Dictionary<string, KeyMapping>();
+
+    private static List<KeyMapping> mKeysListTankDriveP1 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListTankDriveP2 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListTankDriveP3 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListTankDriveP4 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListTankDriveP5 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListTankDriveP6 = new List<KeyMapping>();
+
+    private static List<KeyMapping> mKeysListArcadeDriveP1 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListArcadeDriveP2 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListArcadeDriveP3 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListArcadeDriveP4 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListArcadeDriveP5 = new List<KeyMapping>();
+    private static List<KeyMapping> mKeysListArcadeDriveP6 = new List<KeyMapping>();
+
     // Set of axes
     private static List<Axis> mAxesList = new List<Axis>();
     private static Dictionary<string, Axis> mAxesMap = new Dictionary<string, Axis>();
@@ -1427,6 +1452,62 @@ public static class InputControl
         {
             outKey = new KeyMapping(name, primary, secondary, third);
 
+            if (Controls.TankDriveEnabled)
+            {
+                switch (controlIndex)
+                {
+                    case 0:
+                        mKeysListTankDriveP1.Add(outKey);
+                        break;
+                    case 1:
+                        mKeysListTankDriveP2.Add(outKey);
+                        break;
+                    case 2:
+                        mKeysListTankDriveP3.Add(outKey);
+                        break;
+                    case 3:
+                        mKeysListTankDriveP4.Add(outKey);
+                        break;
+                    case 4:
+                        mKeysListTankDriveP5.Add(outKey);
+                        break;
+                    case 5:
+                        mKeysListTankDriveP6.Add(outKey);
+                        break;
+                }
+
+                mKeysListTankDrive.Add(outKey);
+                mKeysMapTankDrive.Add(name, outKey);
+            }
+            else
+            {
+                switch (controlIndex)
+                {
+                    case 0:
+                        mKeysListArcadeDriveP1.Add(outKey);
+                        break;
+                    case 1:
+                        mKeysListArcadeDriveP2.Add(outKey);
+                        break;
+                    case 2:
+                        mKeysListArcadeDriveP3.Add(outKey);
+                        break;
+                    case 3:
+                        mKeysListArcadeDriveP4.Add(outKey);
+                        break;
+                    case 4:
+                        mKeysListArcadeDriveP5.Add(outKey);
+                        break;
+                    case 5:
+                        mKeysListArcadeDriveP6.Add(outKey);
+                        break;
+                }
+
+                mKeysListArcadeDrive.Add(outKey);
+                mKeysMapArcadeDrive.Add(name, outKey);
+            }
+
+
             switch (controlIndex)
             {
                 case 0:
@@ -1552,6 +1633,82 @@ public static class InputControl
     public static ReadOnlyCollection<KeyMapping> getPlayerSixKeys()
     {
         return mKeysListPlayer6.AsReadOnly();
+    }
+
+    //========================================================================
+    //                      In transition to new keys
+    //========================================================================
+    public static ReadOnlyCollection<KeyMapping> getTankDriveKeys()
+    {
+        return mKeysListTankDrive.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getTankDriveP1Keys()
+    {
+        return mKeysListTankDriveP1.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getTankDriveP2Keys()
+    {
+        return mKeysListTankDriveP2.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getTankDriveP3Keys()
+    {
+        return mKeysListTankDriveP3.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getTankDriveP4Keys()
+    {
+        return mKeysListTankDriveP4.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getTankDriveP5Keys()
+    {
+        return mKeysListTankDriveP5.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getTankDriveP6Keys()
+    {
+        return mKeysListTankDriveP6.AsReadOnly();
+    }
+
+    //===================================================================
+    //                      In Transition Arcade Keys
+    //====================================================================
+    public static ReadOnlyCollection<KeyMapping> getArcadeDriveKeys()
+    {
+        return mKeysListArcadeDrive.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP1Keys()
+    {
+        return mKeysListArcadeDriveP1.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP2Keys()
+    {
+        return mKeysListArcadeDriveP2.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP3Keys()
+    {
+        return mKeysListArcadeDriveP3.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP4Keys()
+    {
+        return mKeysListArcadeDriveP4.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP5Keys()
+    {
+        return mKeysListArcadeDriveP5.AsReadOnly();
+    }
+
+    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP6Keys()
+    {
+        return mKeysListArcadeDriveP6.AsReadOnly();
     }
     #endregion
 

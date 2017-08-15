@@ -583,6 +583,993 @@ public class CreateButton : MonoBehaviour
     }
     #endregion
 
+    //=============================================================================
+    //                          Key Transitions: Tank Drive
+    //=============================================================================
+    #region Update Tank Drive Key Buttons
+    public void UpdateTankDriveList()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getTankDriveKeys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Tank Drive Player One Key Buttons
+    public void UpdateTankDriveP1()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getTankDriveP1Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Tank Drive Player Two Key Buttons
+    public void UpdateTankDriveP2()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getTankDriveP2Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Tank Drive Player Three Key Buttons
+    public void UpdateTankDriveP3()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getTankDriveP3Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Tank Drive Player Four Key Buttons
+    public void UpdateTankDriveP4()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getTankDriveP4Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Tank Drive Player Five Key Buttons
+    public void UpdateTankDriveP5()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getTankDriveP5Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Tank Drive Player Six Key Buttons
+    public void UpdateTankDriveP6()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getTankDriveP6Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+
+    //==================================Arcade Drive==========================================
+    #region Update Arcade Drive Key Buttons
+    public void UpdateArcadeDriveList()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getArcadeDriveKeys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Arcade Drive Player One Key Buttons
+    public void UpdateArcadeDriveP1()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getArcadeDriveP1Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Arcade Drive Player Two Key Buttons
+    public void UpdateArcadeDriveP2()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getArcadeDriveP2Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Arcade Drive Player Three Key Buttons
+    public void UpdateArcadeDriveP3()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getArcadeDriveP3Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Arcade Drive Player Four Key Buttons
+    public void UpdateArcadeDriveP4()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getArcadeDriveP4Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Arcade Drive Player Five Key Buttons
+    public void UpdateArcadeDriveP5()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getArcadeDriveP5Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
+    #region Update Arcade Drive Player Six Key Buttons
+    public void UpdateArcadeDriveP6()
+    {
+        DestroyList();
+
+        float maxNameWidth = 0;
+        float contentHeight = 4;
+
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getArcadeDriveP6Keys();
+
+        foreach (KeyMapping key in keys)
+        {
+            //******************************Key Text vs Key Buttons***********************************
+            //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
+            //Key Buttons: The buttons in the second and third column of the Input Manager menu
+            #region Key text
+            GameObject keyNameText = Instantiate(keyNamePrefab) as GameObject;
+            keyNameText.name = key.name;
+
+            RectTransform keyNameTextRectTransform = keyNameText.GetComponent<RectTransform>();
+
+            keyNameTextRectTransform.transform.SetParent(namesTransform);
+            keyNameTextRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyNameTextRectTransform.localScale = new Vector3(1, 1, 1);
+
+            Text keyText = keyNameText.GetComponentInChildren<Text>();
+            keyText.text = key.name;
+
+            float keyNameWidth = keyText.preferredWidth + 8;
+
+            if (keyNameWidth > maxNameWidth)
+            {
+                maxNameWidth = keyNameWidth;
+            }
+            #endregion
+
+            #region Key buttons
+            GameObject keyButtons = Instantiate(keyButtonsPrefab) as GameObject;
+            keyButtons.name = key.name;
+
+            RectTransform keyButtonsRectTransform = keyButtons.GetComponent<RectTransform>();
+
+            keyButtonsRectTransform.transform.SetParent(keysTransform);
+            keyButtonsRectTransform.anchoredPosition3D = new Vector3(0, 0, 0);
+            keyButtonsRectTransform.localScale = new Vector3(1, 1, 1);
+
+            for (int i = 0; i < 2; ++i)
+            {
+                KeyButton buttonScript = keyButtons.transform.GetChild(i).GetComponent<KeyButton>();
+
+                buttonScript.keyMapping = key;
+                buttonScript.keyIndex = i;
+
+                buttonScript.UpdateText();
+            }
+            #endregion
+
+            contentHeight += 28;
+        }
+
+        RectTransform namesRectTransform = namesTransform.GetComponent<RectTransform>();
+        RectTransform keysRectTransform = keysTransform.GetComponent<RectTransform>();
+        RectTransform rectTransform = GetComponent<RectTransform>();
+
+        namesRectTransform.offsetMax = new Vector2(maxNameWidth, 0);
+        keysRectTransform.offsetMin = new Vector2(maxNameWidth, 0);
+        rectTransform.offsetMin = new Vector2(0, -contentHeight);
+    }
+    #endregion
+
     /// <summary>
     /// Destroys old lists before regenerating a new list.
     /// </summary>
