@@ -58,7 +58,6 @@ public class Robot : MonoBehaviour
 
     public int robotHasManipulator;
 
-    public int robotNumber = 1; //Used for MixAndMatch to map manipulator to correct robot
 
 
     /// <summary>
@@ -556,16 +555,14 @@ public class Robot : MonoBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Loads and initializes the manipulator object with a modifiable position (for use in Mix and Match mode)
-    /// </summary>
-    public bool LoadManipulator(string directory, Vector3 position, int robotIndex)
+
+    public bool LoadManipulator(string directory, GameObject robotGameObject)
     {
         manipulatorObject = new GameObject("Manipulator");
 
         //Set the manipulator transform to match with the position of node_0 of the robot. THIS ONE ACTUALLY DOES SOMETHING:
-        //manipulatorObject.transform.position = GameObject.Find("Robot").transform.GetChild(0).transform.position;
-        manipulatorObject.transform.position = position;
+        manipulatorObject.transform.position = robotGameObject.transform.GetChild(0).transform.position;
+        //manipulatorObject.transform.position = robotStartPosition;
 
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
         {
@@ -589,7 +586,7 @@ public class Robot : MonoBehaviour
             UnityEngine.Object.Destroy(manipulatorObject);
             return false;
         }
-        GameObject robot = mainState.SpawnedRobots[robotIndex].gameObject;
+        GameObject robot = robotGameObject;
         node.CreateManipulatorJoint(robot);
         node.MainObject.AddComponent<Tracker>().Trace = true;
         Tracker t = node.MainObject.GetComponent<Tracker>();
