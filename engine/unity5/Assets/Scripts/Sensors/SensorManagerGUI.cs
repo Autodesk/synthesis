@@ -13,6 +13,7 @@ class SensorManagerGUI : MonoBehaviour
     SensorManager sensorManager;
     DynamicCamera.CameraState preConfigState;
     DynamicCamera dynamicCamera;
+    RobotCameraGUI robotCameraGUI;
 
     GameObject configureSensorButton;
     GameObject sensorOptionPanel;
@@ -147,6 +148,7 @@ class SensorManagerGUI : MonoBehaviour
         lockRangeButton = AuxFunctions.FindObject(configureSensorPanel, "LockRangeButton");
 
         hideOutputPanelsButton = AuxFunctions.FindObject(canvas, "HideOutputButton");
+        robotCameraGUI = GameObject.Find("StateMachine").GetComponent<RobotCameraGUI>();
     }
 
     #region Sensor Option Panel
@@ -155,17 +157,19 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void ToggleSensorOption()
     {
+        //Deal with UI conflicts between robot camera & sensors
+        robotCameraGUI.EndProcesses();
         isChoosingOption = !isChoosingOption;
         sensorOptionPanel.SetActive(isChoosingOption);
         if (isChoosingOption)
         {
             preConfigState = dynamicCamera.cameraState;
             dynamicCamera.SwitchCameraState(new DynamicCamera.ConfigurationState(dynamicCamera));
-            configureSensorButton.GetComponentInChildren<Text>().text = "End Configuration";
+            //configureSensorButton.GetComponentInChildren<Text>().text = "End Configuration";
         }
         else
         {
-            configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
+            //configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
             EndProcesses();
         }
     }
@@ -783,7 +787,7 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void EndProcesses()
     {
-
+        isChoosingOption = false;
         if (currentSensor != null)
         {
             currentSensor.ResetConfigurationState();
@@ -795,7 +799,7 @@ class SensorManagerGUI : MonoBehaviour
         CancelTypeSelection();
         ResetConfigurationWindow();
 
-        configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
+        //configureSensorButton.GetComponentInChildren<Text>().text = "Add/Configure Sensor";
         selectedNode = null;
 
         if (preConfigState != null)

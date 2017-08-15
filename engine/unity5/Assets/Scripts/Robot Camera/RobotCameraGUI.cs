@@ -14,7 +14,9 @@ class RobotCameraGUI : MonoBehaviour
     DynamicCamera.CameraState preConfigCamState;
     GameObject robotCameraListObject;
     RobotCameraManager robotCameraManager;
-    
+    SimUI simUI;
+    SensorManagerGUI sensorManagerGUI;
+
     //Angle panel
     GameObject cameraAnglePanel;
     GameObject xAngleEntry;
@@ -89,7 +91,8 @@ class RobotCameraGUI : MonoBehaviour
     public void FindGUIElements()
     {
         canvas = GameObject.Find("Canvas");
-
+        simUI = GameObject.Find("StateMachine").GetComponent<SimUI>();
+        sensorManagerGUI = GameObject.Find("StateMachine").GetComponent<SensorManagerGUI>();
         //For robot camera view window
         robotCameraView = Resources.Load("Images/RobotCameraView") as RenderTexture;
         robotCameraViewWindow = AuxFunctions.FindObject(canvas, "RobotCameraPanel");
@@ -174,6 +177,8 @@ class RobotCameraGUI : MonoBehaviour
     /// </summary>
     public void ToggleCameraWindow()
     {
+        //Deal with UI conflicts between robot camera & sensors
+        sensorManagerGUI.EndProcesses();
         usingRobotView = !usingRobotView;
         robotCameraViewWindow.SetActive(usingRobotView);
         if (usingRobotView)
