@@ -524,7 +524,8 @@ public class MainMenu : MonoBehaviour
 
     /// <summary>
     /// Called when the "Select Field" button is clicked within the field selection panel
-    /// Saves the currently selected value in the panel and switches back to the previous panel
+    /// If not in Mix and Match Mode, Saves the currently selected value in the panel and switches back to the previous panel
+    /// It in Mix and Match Mode, starts the simulation for Mix and Match 
     /// </summary>
     public void SelectSimField()
     {
@@ -540,7 +541,7 @@ public class MainMenu : MonoBehaviour
                 PlayerPrefs.SetString("simSelectedField", simSelectedField);
                 fieldList.SetActive(false);
                 splashScreen.SetActive(true);
-                mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartSwapSim();
+                mixAndMatchModeScript.GetComponent<MixAndMatchMode>().StartMaMSim();
             } else
             {
                 SwitchSimDefault();

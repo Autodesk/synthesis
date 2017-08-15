@@ -73,7 +73,6 @@ namespace Assets.Scripts.FEA
         private EditMode editMode;
 
         private string fieldPath;
-        private string robotPath;
 
         private float rewindTime;
         private float playbackSpeed;
@@ -165,12 +164,11 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Creates a new ReplayState instance.
         /// </summary>
-        public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints)
+        public ReplayState(string fieldPath, FixedQueue<List<ContactDescriptor>> contactPoints)
         {
             tStart = Time.time;
 
             this.fieldPath = fieldPath;
-            this.robotPath = robotPath;
             this.contactPoints = contactPoints.ToList();
             trackers = UnityEngine.Object.FindObjectsOfType<Tracker>().ToList();
 
@@ -444,7 +442,7 @@ namespace Assets.Scripts.FEA
             Rect saveRect = new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight);
 
             if (GUI.Button(saveRect, string.Empty, saveStyle))
-                StateMachine.Instance.PushState(new SaveReplayState(fieldPath, robotPath, trackers, contactPoints));
+                StateMachine.Instance.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
 
             if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))
                 StateMachine.Instance.PopState();
