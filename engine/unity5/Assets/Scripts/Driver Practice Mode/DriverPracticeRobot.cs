@@ -76,7 +76,6 @@ public class DriverPracticeRobot : MonoBehaviour
     public bool settingGoalVertical = false;
     private DynamicCamera.CameraState lastCameraState;
 
-
     /// <summary>
     /// If configuration file exists, loads information and auto-configures robot.
     /// If coniguration file doesn't exist, initializes variables for users to configure.

@@ -13,6 +13,7 @@ public class DriverPracticeMode : MonoBehaviour {
     GameObject canvas;
 
     GameObject dpmWindow;
+    GameObject scoreWindow;
     GameObject configWindow;
     GameObject defineIntakeWindow;
     GameObject defineReleaseWindow;
@@ -97,6 +98,7 @@ public class DriverPracticeMode : MonoBehaviour {
         simUI = GetComponent<SimUI>();
 
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
+        scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
 
         enableDPMText = AuxFunctions.FindObject(canvas, "EnableDPMText").GetComponent<Text>();
@@ -275,13 +277,13 @@ public class DriverPracticeMode : MonoBehaviour {
         if (dpmWindowOn)
         {
             dpmWindowOn = false;
-
         }
         else
         {
             simUI.EndOtherProcesses();
             dpmWindowOn = true;
         }
+
         dpmWindow.SetActive(dpmWindowOn);
     }
 
@@ -295,7 +297,7 @@ public class DriverPracticeMode : MonoBehaviour {
             dpmRobot.modeEnabled = true;
             enableDPMText.text = "Disable Driver Practice Mode";
             lockPanel.SetActive(false);
-
+            scoreWindow.SetActive(true);
         }
         else
         {
@@ -307,6 +309,7 @@ public class DriverPracticeMode : MonoBehaviour {
                 dpmRobot.displayTrajectories[1] = false;
                 dpmRobot.modeEnabled = false;
                 lockPanel.SetActive(true);
+                scoreWindow.SetActive(false);
             }
 
         }
@@ -612,7 +615,6 @@ public class DriverPracticeMode : MonoBehaviour {
         {
             enableDPMText.text = "Disable Driver Practice Mode";
             lockPanel.SetActive(false);
-
         }
         else
         { 
