@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class MixAndMatchMode : MonoBehaviour
 {
-
+#region variables
     private GameObject mixAndMatchMode;
     private GameObject mixAndMatchModeScript;
     public static bool isMixAndMatchMode = false;
@@ -57,7 +57,7 @@ public class MixAndMatchMode : MonoBehaviour
     private GameObject driveBaseLeftScroll;
     private GameObject presetRightScroll;
     private GameObject presetLeftScroll;
-
+#endregion
     // Use this for initialization
     void Start()
     {
@@ -163,7 +163,7 @@ public class MixAndMatchMode : MonoBehaviour
     /// <summary>
     /// Sets the destination paths of the selected field, robot base and manipulator to be used by MainState. Starts the simulation in Quick Swap Mode. 
     /// </summary>
-    public void StartSwapSim()
+    public void StartMaMSim()
     {
         PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
@@ -242,6 +242,7 @@ public class MixAndMatchMode : MonoBehaviour
         stateMachine.GetComponent<LocalMultiplayer>().AddMaMRobot(baseDirectory, manipulatorDirectory, robotHasManipulator);
     }
 #endregion
+   
     #region Presets
 
     /// <summary>
