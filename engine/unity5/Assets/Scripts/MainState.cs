@@ -390,7 +390,7 @@ public class MainState : SimState
             foreach (FixedQueue<StateDescriptor> f in k.Value)
             {
                 GameObject currentPiece = UnityEngine.Object.Instantiate(referenceObject);
-                currentPiece.name = "clone_" + k.Key;
+                currentPiece.name = k.Key + "(Clone)";
                 currentPiece.GetComponent<Tracker>().States = f;
             }
         }
