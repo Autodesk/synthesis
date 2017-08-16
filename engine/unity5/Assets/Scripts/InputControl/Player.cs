@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.ObjectModel;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
