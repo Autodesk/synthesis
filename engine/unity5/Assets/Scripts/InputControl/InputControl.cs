@@ -15,7 +15,7 @@ public static class InputControl
     private static List<KeyMapping> mKeysList = new List<KeyMapping>();
     private static Dictionary<string, KeyMapping> mKeysMap = new Dictionary<string, KeyMapping>();
 
-    private static Player[] mPlayerList = new Player[6];
+    public static Player[] mPlayerList = new Player[6];
     public static int activePlayerIndex;
 
     // Set of axes
@@ -1470,7 +1470,7 @@ public static class InputControl
 
     public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
     {
-        //controlIndex = activePlayerIndex;
+        controlIndex = activePlayerIndex;
         return mPlayerList[controlIndex].GetActiveList();
     }
     #endregion

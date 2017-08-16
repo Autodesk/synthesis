@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
 		
 	}
 
-    private bool isTankDrive;
+    public bool isTankDrive;
 
     private List<KeyMapping> activeList;
     private List<KeyMapping> arcadeDriveList = new List<KeyMapping>();
