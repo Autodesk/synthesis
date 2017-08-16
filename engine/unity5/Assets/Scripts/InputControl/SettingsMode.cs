@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
-    GameObject tankDriveSwitch;
     private Text enableTankDriveText;
 
     // Update is called once per frame
@@ -113,60 +112,6 @@ public class SettingsMode : MonoBehaviour
 
     //}
 
-    //public void ToggleUnitConversion()
-    //{
-    //    int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-
-    //    main.IsMetric = (i == 1 ? true : false);
-    //}
-
-    public void OnTankToggle()
-    {
-        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
-        int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
-
-        if (InputControl.isTankDrive)
-        {
-            InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
-        }
-        else
-        {
-            InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
-        }
-
-        //switch(i)
-        //{
-        //    case 0:
-        //        InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
-        //        break;
-        //    case 1:
-        //        InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
-        //        break;
-        //}
-    }
-
-    //public static OnValueChanged()
-    //{
-    //get slider component
-    //if slider = 0 (tank drive is off)
-    //SetArcadeDrive() = active player index
-    //mPlayerList[activePlayerIndex].SetArcadeDrive();
-    //else tank drive on = 1
-    //SetTankDrive()
-    //so basically the OnValueChanged() function called by the slider will find the slider object
-    //(which hopefully has a decent name) and then check its value. If it is 0 (tank drive off), then call 
-    //SetArcadeDrive on the active player (which can be found with the active player index), else it is 1, 
-    //then call SetTankDrive
-    //public void ToggleUnitConversion()
-    //{
-    //    int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-
-    //    main.IsMetric = (i == 1 ? true : false);
-    //}
-    //}
-
-    //unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
-
     #region Player Buttons
     public void OnPlayerOne()
     {
@@ -198,6 +143,11 @@ public class SettingsMode : MonoBehaviour
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSixButtons();
     }
     #endregion
+
+    public void OnTankToggle()
+    {
+        GameObject.Find("Content").GetComponent<CreateButton>().OnTankToggle();
+    }
 
     /// <summary>
     /// Updates all the key buttons.

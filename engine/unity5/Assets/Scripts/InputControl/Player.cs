@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
 		
 	}
 
-    //public bool isTankDrive;
+    public bool isTankDrive;
 
     private List<KeyMapping> activeList;
     private List<KeyMapping> arcadeDriveList = new List<KeyMapping>();
@@ -174,14 +174,14 @@ public class Player : MonoBehaviour
 
     public void SetTankDrive()
     {
-        InputControl.isTankDrive = true;
+        isTankDrive = true;
         activeList = tankDriveList;
     }
 
     public void SetArcadeDrive()
     {
-        InputControl.isTankDrive = false;
-        activeList = tankDriveList;
+        isTankDrive = false;
+        activeList = arcadeDriveList;
     }
 
     /// <summary>
