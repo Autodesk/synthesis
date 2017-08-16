@@ -42,7 +42,7 @@ public class SimUI : MonoBehaviour
     GameObject driverStationPanel;
 
     GameObject inputManagerPanel;
-    GameObject unitConversionButton;
+    GameObject unitConversionSwitch;
 
     GameObject mixAndMatchPanel;
 
@@ -129,7 +129,7 @@ public class SimUI : MonoBehaviour
         changeFieldPanel = AuxFunctions.FindObject(canvas, "ChangeFieldPanel");
 
         inputManagerPanel = AuxFunctions.FindObject(canvas, "InputManagerPanel");
-        unitConversionButton = AuxFunctions.FindObject(canvas, "UnitConversionButton");
+        unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
 
         orientWindow = AuxFunctions.FindObject(canvas, "OrientWindow");
         resetDropdown = GameObject.Find("Reset Robot Dropdown");
@@ -281,7 +281,7 @@ public class SimUI : MonoBehaviour
     /// <param name="joe"></param>
     public void SwitchCameraView(int joe)
     {
-        Debug.Log(joe);
+        //Debug.Log(joe);
         switch (joe)
         {
             case 1:
@@ -451,15 +451,9 @@ public class SimUI : MonoBehaviour
     /// </summary>
     public void ToggleUnitConversion()
     {
-        main.IsMetric = !main.IsMetric;
-        if (main.IsMetric)
-        {
-            unitConversionButton.GetComponentInChildren<Text>().text = "To Feet";
-        }
-        else
-        {
-            unitConversionButton.GetComponentInChildren<Text>().text = "To Meters";
-        }
+        int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
+
+        main.IsMetric = (i == 1 ? true : false);
     }
 
     #endregion
