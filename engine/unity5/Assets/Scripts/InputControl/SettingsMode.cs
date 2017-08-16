@@ -125,17 +125,24 @@ public class SettingsMode : MonoBehaviour
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
 
-        //if (Player.isTankDrive)
-
-        switch(i)
+        if (InputControl.isTankDrive)
         {
-            case 0:
-                InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
-                break;
-            case 1:
-                InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
-                break;
+            InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
         }
+        else
+        {
+            InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
+        }
+
+        //switch(i)
+        //{
+        //    case 0:
+        //        InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+        //        break;
+        //    case 1:
+        //        InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
+        //        break;
+        //}
     }
 
     //public static OnValueChanged()
