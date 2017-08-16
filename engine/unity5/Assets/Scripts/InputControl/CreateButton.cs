@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class CreateButton : MonoBehaviour
 {
+    GameObject tankDriveSwitch;
     public GameObject keyNamePrefab;
     public GameObject keyButtonsPrefab;
     public List<GameObject> keyButtonList;
@@ -522,6 +523,24 @@ public class CreateButton : MonoBehaviour
         foreach (Transform child in keysTransform)
         {
             Destroy(child.gameObject);
+        }
+    }
+
+    public void OnTankToggle()
+    {
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
+
+        switch (i)
+        {
+            case 0:
+                InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+                UpdatePlayerOneButtons();
+                break;
+            case 1:
+                InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
+                UpdatePlayerOneButtons();
+                break;
         }
     }
 }

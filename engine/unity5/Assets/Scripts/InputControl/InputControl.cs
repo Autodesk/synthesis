@@ -18,8 +18,6 @@ public static class InputControl
     public static Player[] mPlayerList = new Player[6];
     public static int activePlayerIndex;
 
-    public static bool isTankDrive;
-
     // Set of axes
     private static List<Axis> mAxesList = new List<Axis>();
     private static Dictionary<string, Axis> mAxesMap = new Dictionary<string, Axis>();
@@ -1472,7 +1470,6 @@ public static class InputControl
 
     public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
     {
-        //controlIndex = activePlayerIndex;
         activePlayerIndex = controlIndex;
         return mPlayerList[controlIndex].GetActiveList();
     }
