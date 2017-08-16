@@ -125,10 +125,38 @@ public class SettingsMode : MonoBehaviour
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
 
-        //isTankDrive
+        //if (Player.isTankDrive)
+
+        switch(i)
+        {
+            case 0:
+                InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+                break;
+            case 1:
+                InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
+                break;
+        }
     }
 
-    
+    //public static OnValueChanged()
+    //{
+    //get slider component
+    //if slider = 0 (tank drive is off)
+    //SetArcadeDrive() = active player index
+    //mPlayerList[activePlayerIndex].SetArcadeDrive();
+    //else tank drive on = 1
+    //SetTankDrive()
+    //so basically the OnValueChanged() function called by the slider will find the slider object
+    //(which hopefully has a decent name) and then check its value. If it is 0 (tank drive off), then call 
+    //SetArcadeDrive on the active player (which can be found with the active player index), else it is 1, 
+    //then call SetTankDrive
+    //public void ToggleUnitConversion()
+    //{
+    //    int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
+
+    //    main.IsMetric = (i == 1 ? true : false);
+    //}
+    //}
 
     //unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
 

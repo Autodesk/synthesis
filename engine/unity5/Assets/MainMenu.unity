@@ -2638,7 +2638,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -216, y: -95.76198}
+  m_AnchoredPosition: {x: -216, y: -95.76199}
   m_SizeDelta: {x: 269, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &273640680
@@ -3968,7 +3968,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -499.80002, y: -95.76196}
+  m_AnchoredPosition: {x: -499.80005, y: -95.76195}
   m_SizeDelta: {x: 276, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &509204076
@@ -6973,7 +6973,17 @@ Prefab:
         type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 2074039509}
+      objectReference: {fileID: 2074039511}
+    - target: {fileID: 114370741316481692, guid: 881cd292b39cab34299d513854a261dd,
+        type: 2}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnTankToggle
+      objectReference: {fileID: 0}
+    - target: {fileID: 114370741316481692, guid: 881cd292b39cab34299d513854a261dd,
+        type: 2}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 881cd292b39cab34299d513854a261dd, type: 2}
   m_IsPrefabParent: 0
@@ -13874,7 +13884,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -150, y: 226.59998}
+  m_AnchoredPosition: {x: -150, y: 226.59999}
   m_SizeDelta: {x: 303, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1856573095
