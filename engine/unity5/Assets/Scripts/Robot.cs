@@ -9,6 +9,7 @@ using System.Linq;
 using Assets.Scripts.FEA;
 using Assets.Scripts.BUExtensions;
 using Assets.Scripts.FSM;
+using Assets.Scripts;
 
 /// <summary>
 /// To be attached to all robot parent objects.
@@ -59,8 +60,6 @@ public class Robot : MonoBehaviour
 
     public int robotHasManipulator;
 
-
-
     /// <summary>
     /// Called when robot is first initialized
     /// </summary>
@@ -74,8 +73,13 @@ public class Robot : MonoBehaviour
     /// </summary>
     void Update()
     {
-
         BRigidBody rigidBody = GetComponentInChildren<BRigidBody>();
+
+        if (rigidBody == null)
+        {
+            AppModel.ErrorToMenu("Could not generate robot physics data.");
+            return;
+        }
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
@@ -103,6 +107,7 @@ public class Robot : MonoBehaviour
         }
 
     }
+
     /// <summary>
     /// Called once every physics step (framerate independent) to drive motor joints as well as handle the resetting of the robot
     /// </summary>
@@ -162,6 +167,9 @@ public class Robot : MonoBehaviour
         mainState = source; //stores the main state object
 
         transform.position = robotStartPosition; //Sets the position of the object to the set spawn point
+
+        if (!File.Exists(directory + "\\skeleton.bxdj"))
+            return false;
 
         //Loads the node and skeleton data
         RigidNode_Base.NODE_FACTORY = delegate (Guid guid)
