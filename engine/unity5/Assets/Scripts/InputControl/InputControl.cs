@@ -17,53 +17,12 @@ public static class InputControl
     private static List<KeyMapping> mKeysList = new List<KeyMapping>();
     private static Dictionary<string, KeyMapping> mKeysMap = new Dictionary<string, KeyMapping>();
 
-    // Creates separate sets of keys for each player
-    // Each player lists feeds into the mKeysList, which feeds into the mKeysMap
-    // PURPOSE: To allow individual access to a specific list
-    private static List<KeyMapping> mKeysListPlayer1 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListPlayer2 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListPlayer3 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListPlayer4 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListPlayer5 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListPlayer6 = new List<KeyMapping>();
-
-    //=========================================================================
-    //                  Transferring to new Key Lists
-    //====================================================================
-    // Set of keys
-    private static List<KeyMapping> mKeysListTankDrive = new List<KeyMapping>();
-    private static Dictionary<string, KeyMapping> mKeysMapTankDrive = new Dictionary<string, KeyMapping>();
-
-    // Set of keys
-    private static List<KeyMapping> mKeysListArcadeDrive = new List<KeyMapping>();
-    private static Dictionary<string, KeyMapping> mKeysMapArcadeDrive = new Dictionary<string, KeyMapping>();
-
-    private static List<KeyMapping> mKeysListTankDriveP1 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListTankDriveP2 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListTankDriveP3 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListTankDriveP4 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListTankDriveP5 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListTankDriveP6 = new List<KeyMapping>();
-
-    private static List<KeyMapping> mKeysListArcadeDriveP1 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListArcadeDriveP2 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListArcadeDriveP3 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListArcadeDriveP4 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListArcadeDriveP5 = new List<KeyMapping>();
-    private static List<KeyMapping> mKeysListArcadeDriveP6 = new List<KeyMapping>();
+    private static Player[] mPlayerList = new Player[6];
+    public static int activePlayerIndex;
 
     // Set of axes
     private static List<Axis> mAxesList = new List<Axis>();
     private static Dictionary<string, Axis> mAxesMap = new Dictionary<string, Axis>();
-
-    // Creates separate sets of axes for each player
-    // Each player axes list feeds into the mAxesList, which feeds into the mAxesMap
-    private static List<Axis> mAxesListPlayer1 = new List<Axis>();
-    private static List<Axis> mAxesListPlayer2 = new List<Axis>();
-    private static List<Axis> mAxesListPlayer3 = new List<Axis>();
-    private static List<Axis> mAxesListPlayer4 = new List<Axis>();
-    private static List<Axis> mAxesListPlayer5 = new List<Axis>();
-    private static List<Axis> mAxesListPlayer6 = new List<Axis>();
 
     // Smooth for GetAxis
     private static Dictionary<string, float> mSmoothAxesValues = new Dictionary<string, float>();
@@ -196,6 +155,10 @@ public static class InputControl
 
     static InputControl()
     {
+        for (int i = 0; i < 6; i++)
+        {
+            mPlayerList[i] = new Player();
+        }
         Controls.Init();
     }
 
@@ -213,6 +176,11 @@ public static class InputControl
     public static KeyMapping setKey(string name, KeyCode primary)
     {
         return setKey(name, argToInput(primary));
+    }
+
+    public static KeyMapping setKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
+    {
+        return mPlayerList[controlIndex].setKey(name, argToInput(primary), null, isTankDrive);
     }
 
     /// <summary>
@@ -303,9 +271,15 @@ public static class InputControl
     /// <param name="controlIndex">Integer index to specify which controls a player is using.</param>
     /// <param name="primary">Primary input.</param>
     /// <param name="secondary">Secondary input.</param>
-    public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary)
+    public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
     {
-        return setKey(name, controlIndex, argToInput(primary), argToInput(secondary));
+        return mPlayerList[controlIndex].setKey(name, argToInput(primary), argToInput(secondary), isTankDrive);
+    }
+
+    //=================================================================================================================
+    public static Axis setAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
+    {
+        return mPlayerList[controlIndex].setAxis(name, negative, positive, isTankDrive);
     }
 
     /// <summary>
@@ -1430,117 +1404,6 @@ public static class InputControl
     }
 
     /// <summary>
-    /// Create new <see cref="KeyMapping"/> with specified name, a player's control index, and inputs.
-    /// </summary>
-    /// /// <returns>Created KeyMapping.</returns>
-    /// <param name="name">KeyMapping name.</param>
-    /// <param name="controlIndex">Integer index to specify which controls a player is using.</param>
-    /// <param name="primary">Primary input.</param>
-    /// <param name="secondary">Secondary input.</param>
-    /// <param name="third">Third input.</param>
-    public static KeyMapping setKey(string name, int controlIndex, CustomInput primary = null, CustomInput secondary = null, CustomInput third = null)
-    {
-        KeyMapping outKey = null;
-
-        if (mKeysMap.TryGetValue(name, out outKey))
-        {
-            outKey.primaryInput = primary;
-            outKey.secondaryInput = secondary;
-            outKey.thirdInput = third;
-        }
-        else
-        {
-            outKey = new KeyMapping(name, primary, secondary, third);
-
-            //if (Controls.TankDriveEnabled)
-            //{
-            //    switch (controlIndex)
-            //    {
-            //        case 0:
-            //            mKeysListTankDriveP1.Add(outKey);
-            //            break;
-            //        case 1:
-            //            mKeysListTankDriveP2.Add(outKey);
-            //            break;
-            //        case 2:
-            //            mKeysListTankDriveP3.Add(outKey);
-            //            break;
-            //        case 3:
-            //            mKeysListTankDriveP4.Add(outKey);
-            //            break;
-            //        case 4:
-            //            mKeysListTankDriveP5.Add(outKey);
-            //            break;
-            //        case 5:
-            //            mKeysListTankDriveP6.Add(outKey);
-            //            break;
-            //    }
-
-            //    mKeysListTankDrive.Add(outKey);
-            //    mKeysMapTankDrive.Add(name, outKey);
-            //}
-            //else
-            //{
-            //    switch (controlIndex)
-            //    {
-            //        case 0:
-            //            mKeysListArcadeDriveP1.Add(outKey);
-            //            break;
-            //        case 1:
-            //            mKeysListArcadeDriveP2.Add(outKey);
-            //            break;
-            //        case 2:
-            //            mKeysListArcadeDriveP3.Add(outKey);
-            //            break;
-            //        case 3:
-            //            mKeysListArcadeDriveP4.Add(outKey);
-            //            break;
-            //        case 4:
-            //            mKeysListArcadeDriveP5.Add(outKey);
-            //            break;
-            //        case 5:
-            //            mKeysListArcadeDriveP6.Add(outKey);
-            //            break;
-            //    }
-
-            //    mKeysListArcadeDrive.Add(outKey);
-            //    mKeysMapArcadeDrive.Add(name, outKey);
-            //}
-
-
-            switch (controlIndex)
-            {
-                case 0:
-                    mKeysListPlayer1.Add(outKey);
-                    break;
-                case 1:
-                    mKeysListPlayer2.Add(outKey);
-                    break;
-                case 2:
-                    mKeysListPlayer3.Add(outKey);
-                    break;
-                case 3:
-                    mKeysListPlayer4.Add(outKey);
-                    break;
-                case 4:
-                    mKeysListPlayer5.Add(outKey);
-                    break;
-                case 5:
-                    mKeysListPlayer6.Add(outKey);
-                    break;
-                default:
-                    mKeysList.Add(outKey);
-                    break;
-            }
-
-            mKeysList.Add(outKey);
-            mKeysMap.Add(name, outKey);
-        }
-
-        return outKey;
-    }
-
-    /// <summary>
     /// Removes <see cref="KeyMapping"/> by name.
     /// </summary>
     /// <param name="name">KeyMapping name.</param>
@@ -1561,12 +1424,6 @@ public static class InputControl
     public static void removeKey(KeyMapping key)
     {
         mKeysList.Remove(key);
-        mKeysListPlayer1.Remove(key);
-        mKeysListPlayer2.Remove(key);
-        mKeysListPlayer3.Remove(key);
-        mKeysListPlayer4.Remove(key);
-        mKeysListPlayer5.Remove(key);
-        mKeysListPlayer6.Remove(key);
         mKeysMap.Remove(key.name);
     }
 
@@ -1602,114 +1459,38 @@ public static class InputControl
     /// <returns>List of keys.</returns>
     public static ReadOnlyCollection<KeyMapping> getKeysList()
     {
+        mKeysList.Clear();
+        foreach (Player player in mPlayerList)
+        {
+            foreach (KeyMapping key in player.GetActiveList())
+            {
+                mKeysList.Add(key);
+            }
+        }
         return mKeysList.AsReadOnly();
     }
 
-    public static ReadOnlyCollection<KeyMapping> getPlayerOneKeys()
+    public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
     {
-        return mKeysListPlayer1.AsReadOnly();
+        //controlIndex = activePlayerIndex;
+        return mPlayerList[controlIndex].GetActiveList();
     }
 
-    public static ReadOnlyCollection<KeyMapping> getPlayerTwoKeys()
-    {
-        return mKeysListPlayer2.AsReadOnly();
-    }
+    //public static OnValueChanged()
+    //{
+    //get slider component
+    //if slider = 0 (tank drive is off)
+    //SetArcadeDrive() = active player index
+    //mPlayerList[activePlayerIndex].SetArcadeDrive();
+    //else tank drive on = 1
+    //SetTankDrive()
+    //public void ToggleUnitConversion()
+    //{
+    //    int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
 
-    public static ReadOnlyCollection<KeyMapping> getPlayerThreeKeys()
-    {
-        return mKeysListPlayer3.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getPlayerFourKeys()
-    {
-        return mKeysListPlayer4.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getPlayerFiveKeys()
-    {
-        return mKeysListPlayer5.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getPlayerSixKeys()
-    {
-        return mKeysListPlayer6.AsReadOnly();
-    }
-
-    //========================================================================
-    //                      In transition to new keys
-    //========================================================================
-    public static ReadOnlyCollection<KeyMapping> getTankDriveKeys()
-    {
-        return mKeysListTankDrive.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getTankDriveP1Keys()
-    {
-        return mKeysListTankDriveP1.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getTankDriveP2Keys()
-    {
-        return mKeysListTankDriveP2.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getTankDriveP3Keys()
-    {
-        return mKeysListTankDriveP3.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getTankDriveP4Keys()
-    {
-        return mKeysListTankDriveP4.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getTankDriveP5Keys()
-    {
-        return mKeysListTankDriveP5.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getTankDriveP6Keys()
-    {
-        return mKeysListTankDriveP6.AsReadOnly();
-    }
-
-    //===================================================================
-    //                      In Transition Arcade Keys
-    //====================================================================
-    public static ReadOnlyCollection<KeyMapping> getArcadeDriveKeys()
-    {
-        return mKeysListArcadeDrive.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP1Keys()
-    {
-        return mKeysListArcadeDriveP1.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP2Keys()
-    {
-        return mKeysListArcadeDriveP2.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP3Keys()
-    {
-        return mKeysListArcadeDriveP3.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP4Keys()
-    {
-        return mKeysListArcadeDriveP4.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP5Keys()
-    {
-        return mKeysListArcadeDriveP5.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getArcadeDriveP6Keys()
-    {
-        return mKeysListArcadeDriveP6.AsReadOnly();
-    }
+    //    main.IsMetric = (i == 1 ? true : false);
+    //}
+    //}
     #endregion
 
     #region Setup axes
@@ -1760,60 +1541,6 @@ public static class InputControl
         else
         {
             outAxis = new Axis(name, negative, positive);
-
-            mAxesList.Add(outAxis);
-            mAxesMap.Add(name, outAxis);
-        }
-
-        return outAxis;
-    }
-
-    /// <summary>
-    /// Create new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
-    /// </summary>
-    /// <returns>Created Axis.</returns>
-    /// <param name="name">Axis name.</param>
-    /// <param name="negative">Negative KeyMapping.</param>
-    /// <param name="positive">Positive KeyMapping.</param>
-    public static Axis setAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive)
-    {
-        Axis outAxis = null;
-
-        if (mAxesMap.TryGetValue(name, out outAxis))
-        {
-            outAxis.set(negative, positive);
-        }
-        else
-        {
-            outAxis = new Axis(name, negative, positive);
-
-            switch (controlIndex)
-            {
-                case 0:
-                    mAxesListPlayer1.Add(outAxis);
-                    break;
-                case 1:
-                    mAxesListPlayer2.Add(outAxis);
-                    break;
-                case 3:
-                    mAxesListPlayer2.Add(outAxis);
-                    break;
-                case 4:
-                    mAxesListPlayer3.Add(outAxis);
-                    break;
-                case 5:
-                    mAxesListPlayer4.Add(outAxis);
-                    break;
-                case 6:
-                    mAxesListPlayer5.Add(outAxis);
-                    break;
-                case 7:
-                    mAxesListPlayer6.Add(outAxis);
-                    break;
-                default:
-                    mAxesList.Add(outAxis);
-                    break;
-            }
 
             mAxesList.Add(outAxis);
             mAxesMap.Add(name, outAxis);
