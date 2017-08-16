@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GoalManager : MonoBehaviour
+public class GoalDisplayManager : MonoBehaviour
 {
     public VerticalLayoutGroup goalDisplay;
     public GameObject goalElementPrefab;
@@ -32,19 +32,25 @@ public class GoalManager : MonoBehaviour
 
         for (int i = 0; i < descriptions.Length; i++)
         {
+            int id = i;
+
             GameObject newGoalElement = Instantiate(goalElementPrefab);
             newGoalElement.transform.parent = goalDisplay.gameObject.transform;
             newGoalElement.name = "Goal" + i.ToString();
 
-            Text descText = AuxFunctions.FindObject(newGoalElement, "DescriptionText").GetComponent<Text>();
-            descText.text = descriptions[i] + " (" + points[i].ToString() + " points)";
+            InputField descText = AuxFunctions.FindObject(newGoalElement, "DescriptionText").GetComponent<InputField>();
+            descText.text = descriptions[i];
+            descText.onValueChanged.AddListener(delegate { dpMode.SetGamepieceGoalDescription(id, descText.text); });
 
-            int id = i;
+            InputField pointValue = AuxFunctions.FindObject(newGoalElement, "PointValue").GetComponent<InputField>();
+            pointValue.text = points[i].ToString();
+            pointValue.onValueChanged.AddListener(delegate { dpMode.SetGamepieceGoalPoints(id, int.Parse(pointValue.text)); });
+
             Button moveButton = AuxFunctions.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
-            moveButton.onClick.AddListener(() => { dpMode.SetGamepieceGoal(id); });
+            moveButton.onClick.AddListener(delegate { dpMode.SetGamepieceGoal(id); });
 
             Button deleteButton = AuxFunctions.FindObject(newGoalElement, "DeleteButton").GetComponent<Button>();
-            deleteButton.onClick.AddListener(() => { dpMode.DeleteGamepieceGoal(id); });
+            deleteButton.onClick.AddListener(delegate { dpMode.DeleteGamepieceGoal(id); });
             
             goalElements.Add(newGoalElement);
         }

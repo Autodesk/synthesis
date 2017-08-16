@@ -541,6 +541,16 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
+    /// Initialize a goal manager display using goal data of a gamepiece.
+    /// </summary>
+    /// <param name="gamepieceIndex">Gamepiece to get goal data from.</param>
+    /// <param name="gm">Goal Manager to initialize display of.</param>
+    public void InitGoalManagerDisplay(int gamepieceIndex, GoalDisplayManager gm)
+    {
+        gm.InitializeDisplay(gamepieceGoalDesc[gamepieceIndex].ToArray(), gamepieceGoalPoints[gamepieceIndex].ToArray());
+    }
+
+    /// <summary>
     /// Add a new goal to a gamepiece.
     /// </summary>
     /// <param name="gamepieceIndex">The gamepiece to add a goal to.</param>
@@ -582,71 +592,41 @@ public class DriverPracticeRobot : MonoBehaviour
     }
 
     /// <summary>
-    /// Initialize a goal manager display using goal data of a gamepiece.
+    /// Sets the description of a goal of a gamepiece.
     /// </summary>
-    /// <param name="gamepieceIndex">Gamepiece to get goal data from.</param>
-    /// <param name="gm">Goal Manager to initialize display of.</param>
-    public void InitGoalManagerDisplay(int gamepieceIndex, GoalManager gm)
+    /// <param name="gamepieceIndex">Gamepiece to select goal from.</param>
+    /// <param name="goalIndex">Goal to set description of.</param>
+    /// <param name="description">Description of goal.</param>
+    public void SetGamepieceGoalDescription(int gamepieceIndex, int goalIndex, string description)
     {
-        gm.InitializeDisplay(gamepieceGoalDesc[gamepieceIndex].ToArray(), gamepieceGoalPoints[gamepieceIndex].ToArray());
+        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        {
+            if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
+            {
+                gamepieceGoalDesc[gamepieceIndex][goalIndex] = description;
+            }
+            else Debug.LogError("Cannot set goal description, goal does not exist!");
+        }
+        else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
     }
 
     /// <summary>
-    /// Place colliders for all the goals of a gamepiece.
+    /// Sets the point value of a goal of a gamepiece.
     /// </summary>
-    /// <param name="index">The gamepiece to create goal colliders for.</param>
-    public void GenerateGamepieceGoalColliders(int index)
+    /// <param name="gamepieceIndex">Gamepiece to select goal from.</param>
+    /// <param name="goalIndex">Goal to set point value of.</param>
+    /// <param name="points">Point value of goal.</param>
+    public void SetGamepieceGoalPoints(int gamepieceIndex, int goalIndex, int points)
     {
-        if (gamepieceNames[index] != null && GameObject.Find(gamepieceNames[index]) != null)
+        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
         {
-            DestroyGamepieceGoalColliders(index);
-
-            for (int goalIndex = 0; goalIndex < gamepieceGoals[index].Count; goalIndex++)
+            if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
             {
-                GameObject gameobject = new GameObject("Gamepiece" + index.ToString() + "Goal" + goalIndex.ToString());
-
-                BBoxShape collider = gameobject.AddComponent<BBoxShape>();
-                collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f) * gamepieceGoalSizes[index][goalIndex];
-
-                BRigidBody rigid = gameobject.AddComponent<BRigidBody>();
-                rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
-                rigid.transform.position = gamepieceGoals[index][goalIndex];
-
-                DriverPracticeGoal goal = gameobject.AddComponent<DriverPracticeGoal>();
-                goal.SetKeyword(gamepieceNames[index]);
-
-                goal.description = gamepieceGoalDesc[index][goalIndex];
-                goal.pointValue = gamepieceGoalPoints[index][goalIndex];
-
-                goal.DPRobot = this;
-
-                gamepieceGoalObjects[index].Add(gameobject);
+                gamepieceGoalPoints[gamepieceIndex][goalIndex] = points;
             }
+            else Debug.LogError("Cannot set goal points, goal does not exist!");
         }
-        else
-        {
-            Debug.LogError("Cannot generate goal of undefined gamepiece!");
-        }
-    }
-
-    /// <summary>
-    /// Remove all goal colliders from the scene.
-    /// </summary>
-    /// <param name="index">The gamepiece to remove all goals from.</param>
-    public void DestroyGamepieceGoalColliders(int index)
-    {
-        try //In case the gamepiece somehow doens't exist in the scene
-        {
-            while (gamepieceGoalObjects[index].Count > 0) // Delete existing goal objects
-            {
-                Destroy(gamepieceGoalObjects[index][0]);
-                gamepieceGoalObjects[index].RemoveAt(0);
-            }
-        }
-        catch
-        {
-            UserMessageManager.Dispatch("Unknown error occurred when generating gamepiece goals!", 5);
-        }
+        else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
     }
 
     /// <summary>
@@ -765,6 +745,64 @@ public class DriverPracticeRobot : MonoBehaviour
             lastCameraState = null;
         }
         //MainState.ControlsDisabled = false;
+    }
+
+    /// <summary>
+    /// Place colliders for all the goals of a gamepiece.
+    /// </summary>
+    /// <param name="index">The gamepiece to create goal colliders for.</param>
+    public void GenerateGamepieceGoalColliders(int index)
+    {
+        if (gamepieceNames[index] != null && GameObject.Find(gamepieceNames[index]) != null)
+        {
+            DestroyGamepieceGoalColliders(index);
+
+            for (int goalIndex = 0; goalIndex < gamepieceGoals[index].Count; goalIndex++)
+            {
+                GameObject gameobject = new GameObject("Gamepiece" + index.ToString() + "Goal" + goalIndex.ToString());
+
+                BBoxShape collider = gameobject.AddComponent<BBoxShape>();
+                collider.Extents = new UnityEngine.Vector3(0.5f, 0.5f, 0.5f) * gamepieceGoalSizes[index][goalIndex];
+
+                BRigidBody rigid = gameobject.AddComponent<BRigidBody>();
+                rigid.collisionFlags = rigid.collisionFlags | BulletSharp.CollisionFlags.NoContactResponse | BulletSharp.CollisionFlags.StaticObject;
+                rigid.transform.position = gamepieceGoals[index][goalIndex];
+
+                DriverPracticeGoal goal = gameobject.AddComponent<DriverPracticeGoal>();
+                goal.SetKeyword(gamepieceNames[index]);
+
+                goal.description = gamepieceGoalDesc[index][goalIndex];
+                goal.pointValue = gamepieceGoalPoints[index][goalIndex];
+
+                goal.DPRobot = this;
+
+                gamepieceGoalObjects[index].Add(gameobject);
+            }
+        }
+        else
+        {
+            Debug.LogError("Cannot generate goal of undefined gamepiece!");
+        }
+    }
+
+    /// <summary>
+    /// Remove all goal colliders from the scene.
+    /// </summary>
+    /// <param name="index">The gamepiece to remove all goals from.</param>
+    public void DestroyGamepieceGoalColliders(int index)
+    {
+        try //In case the gamepiece somehow doens't exist in the scene
+        {
+            while (gamepieceGoalObjects[index].Count > 0) // Delete existing goal objects
+            {
+                Destroy(gamepieceGoalObjects[index][0]);
+                gamepieceGoalObjects[index].RemoveAt(0);
+            }
+        }
+        catch
+        {
+            UserMessageManager.Dispatch("Unknown error occurred when generating gamepiece goals!", 5);
+        }
     }
 
     #endregion
@@ -1204,7 +1242,7 @@ public class DriverPracticeRobot : MonoBehaviour
             else
             {
                 HoldGamepiece(1);
-            }   
+            }
             if ((InputControl.GetButtonDown(Controls.buttons[0].releasePrimary)))
             {
                 ReleaseGamepiece(0);

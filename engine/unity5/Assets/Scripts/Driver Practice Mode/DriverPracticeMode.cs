@@ -400,6 +400,7 @@ public class DriverPracticeMode : MonoBehaviour {
     #region dpm configuration button functions
     public void CloseConfigurationWindow()
     {
+        CloseGamepieceGoalsConfig();
         configWindow.SetActive(false);
         configuring = false;
         dpmRobot.displayTrajectories[configuringIndex] = false;
@@ -457,26 +458,36 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public void OpenGamepieceGoalsConfig()
     {
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
         goalConfigWindow.SetActive(true);
     }
     
     public void NewGamepieceGoal()
     {
         dpmRobot.NewGoal(configuringIndex);
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
     }
 
     public void DeleteGamepieceGoal(int goalIndex)
     {
         dpmRobot.DeleteGoal(configuringIndex, goalIndex);
-        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalManager>());
+        dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
     }
 
     public void SetGamepieceGoal(int goalIndex)
     {
         simUI.EndOtherProcesses();
         dpmRobot.StartGamepieceGoal(configuringIndex, goalIndex);
+    }
+
+    public void SetGamepieceGoalDescription(int goalIndex, string description)
+    {
+        dpmRobot.SetGamepieceGoalDescription(configuringIndex, goalIndex, description);
+    }
+
+    public void SetGamepieceGoalPoints(int goalIndex, int points)
+    {
+        dpmRobot.SetGamepieceGoalPoints(configuringIndex, goalIndex, points);
     }
 
     public void CancelGamepieceSpawn()

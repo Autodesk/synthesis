@@ -211,7 +211,7 @@
     <Compile Include="Assets\Scripts\Driver Practice Mode\DriverPracticeRobot.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\GamepieceGoal.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\GameplayTimer.cs" />
-    <Compile Include="Assets\Scripts\Driver Practice Mode\GoalManager.cs" />
+    <Compile Include="Assets\Scripts\Driver Practice Mode\GoalDisplayManager.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\Interactor.cs" />
     <Compile Include="Assets\Scripts\Driver Practice Mode\Scoreboard.cs" />
     <Compile Include="Assets\Scripts\DynamicCamera.cs" />
@@ -272,6 +272,7 @@
     <Compile Include="Assets\Scripts\GUI\SimulatorUI.cs" />
     <Compile Include="Assets\Scripts\GUI\TextWindow.cs" />
     <Compile Include="Assets\Scripts\GUI\UIDrag.cs" />
+    <Compile Include="Assets\Scripts\GUI\UIField.cs" />
     <Compile Include="Assets\Scripts\GUI\UIScroll.cs" />
     <Compile Include="Assets\Scripts\GUI\UserMessageManager.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
