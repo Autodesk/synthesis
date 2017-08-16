@@ -69,6 +69,8 @@ public class DriverPracticeRobot : MonoBehaviour
     private List<UnityEngine.Vector3> gamepieceSpawn;
     private List<List<UnityEngine.Vector3>> gamepieceGoals;
     private List<List<float>> gamepieceGoalSizes;
+    private List<List<int>> gamepieceGoalPoints;
+    private List<List<string>> gamepieceGoalDesc;
     private GameObject spawnIndicator;
     private GameObject goalIndicator;
     public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
@@ -154,6 +156,14 @@ public class DriverPracticeRobot : MonoBehaviour
         gamepieceGoalSizes.Add(new List<float>());
         gamepieceGoalSizes.Add(new List<float>());
 
+        gamepieceGoalPoints = new List<List<int>>();
+        gamepieceGoalPoints.Add(new List<int>());
+        gamepieceGoalPoints.Add(new List<int>());
+
+        gamepieceGoalDesc = new List<List<string>>();
+        gamepieceGoalDesc.Add(new List<string>());
+        gamepieceGoalDesc.Add(new List<string>());
+
         drawnTrajectory = new List<LineRenderer>();
         drawnTrajectory.Add(gameObject.AddComponent<LineRenderer>());
         GameObject secondLine = new GameObject();
@@ -175,8 +185,8 @@ public class DriverPracticeRobot : MonoBehaviour
 
         Load(robotDirectory);
 
-        GenerateGamepieceGoals(0);
-        GenerateGamepieceGoals(1);
+        GenerateGamepieceGoalColliders(0);
+        GenerateGamepieceGoalColliders(1);
     }
 
     // Update is called once per frame
@@ -530,11 +540,66 @@ public class DriverPracticeRobot : MonoBehaviour
         //MainState.ControlsDisabled = false;
     }
 
-    public void GenerateGamepieceGoals(int index)
+    /// <summary>
+    /// Add a new goal to a gamepiece.
+    /// </summary>
+    /// <param name="gamepieceIndex">The gamepiece to add a goal to.</param>
+    public void NewGoal(int gamepieceIndex)
+    {
+        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        {
+            gamepieceGoals[gamepieceIndex].Add(new UnityEngine.Vector3(0, 4, 0));
+            gamepieceGoalSizes[gamepieceIndex].Add(1);
+            gamepieceGoalPoints[gamepieceIndex].Add(0);
+            gamepieceGoalDesc[gamepieceIndex].Add("New Goal");
+
+            GenerateGamepieceGoalColliders(gamepieceIndex);
+        }
+        else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
+    }
+
+    /// <summary>
+    /// Delete a goal of a gamepiece.
+    /// </summary>
+    /// <param name="gamepieceIndex">The gamepiece to delete a goal from.</param>
+    /// <param name="goalIndex">The goal to delete.</param>
+    public void DeleteGoal(int gamepieceIndex, int goalIndex)
+    {
+        if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
+        {
+            if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
+            {
+                gamepieceGoals[gamepieceIndex].RemoveAt(goalIndex);
+                gamepieceGoalSizes[gamepieceIndex].RemoveAt(goalIndex);
+                gamepieceGoalPoints[gamepieceIndex].RemoveAt(goalIndex);
+                gamepieceGoalDesc[gamepieceIndex].RemoveAt(goalIndex);
+
+                GenerateGamepieceGoalColliders(gamepieceIndex);
+            }
+            else Debug.LogError("Cannot delete goal, does not exist!");
+        }
+        else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
+    }
+
+    /// <summary>
+    /// Initialize a goal manager display using goal data of a gamepiece.
+    /// </summary>
+    /// <param name="gamepieceIndex">Gamepiece to get goal data from.</param>
+    /// <param name="gm">Goal Manager to initialize display of.</param>
+    public void InitGoalManagerDisplay(int gamepieceIndex, GoalManager gm)
+    {
+        gm.InitializeDisplay(gamepieceGoalDesc[gamepieceIndex].ToArray(), gamepieceGoalPoints[gamepieceIndex].ToArray());
+    }
+
+    /// <summary>
+    /// Place colliders for all the goals of a gamepiece.
+    /// </summary>
+    /// <param name="index">The gamepiece to create goal colliders for.</param>
+    public void GenerateGamepieceGoalColliders(int index)
     {
         if (gamepieceNames[index] != null && GameObject.Find(gamepieceNames[index]) != null)
         {
-            DestroyGamepieceGoals(index);
+            DestroyGamepieceGoalColliders(index);
 
             for (int goalIndex = 0; goalIndex < gamepieceGoals[index].Count; goalIndex++)
             {
@@ -550,8 +615,8 @@ public class DriverPracticeRobot : MonoBehaviour
                 DriverPracticeGoal goal = gameobject.AddComponent<DriverPracticeGoal>();
                 goal.SetKeyword(gamepieceNames[index]);
 
-                goal.description = "Test";
-                goal.pointValue = 15;
+                goal.description = gamepieceGoalDesc[index][goalIndex];
+                goal.pointValue = gamepieceGoalPoints[index][goalIndex];
 
                 goal.DPRobot = this;
 
@@ -564,9 +629,13 @@ public class DriverPracticeRobot : MonoBehaviour
         }
     }
 
-    public void DestroyGamepieceGoals(int index)
+    /// <summary>
+    /// Remove all goal colliders from the scene.
+    /// </summary>
+    /// <param name="index">The gamepiece to remove all goals from.</param>
+    public void DestroyGamepieceGoalColliders(int index)
     {
-        try //In case the game piece somehow doens't exist in the scene
+        try //In case the gamepiece somehow doens't exist in the scene
         {
             while (gamepieceGoalObjects[index].Count > 0) // Delete existing goal objects
             {
@@ -580,34 +649,48 @@ public class DriverPracticeRobot : MonoBehaviour
         }
     }
 
-    public void StartGamepieceGoal(int index, int goalIndex)
+    /// <summary>
+    /// Begins the configuration of a specific goal of a gamepiece. (position and size)
+    /// </summary>
+    /// <param name="gamepieceIndex">The index of the gamepiece that owns the goal</param>
+    /// <param name="goalIndex">The index of the goal to be configured</param>
+    public void StartGamepieceGoal(int gamepieceIndex, int goalIndex)
     {
+        Debug.Log(gamepieceGoals[gamepieceIndex].Count);
+        Debug.Log(gamepieceGoalDesc[gamepieceIndex].Count);
+        Debug.Log(gamepieceGoalPoints[gamepieceIndex].Count);
+        Debug.Log(gamepieceIndex);
+        Debug.Log(goalIndex);
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
         else if (settingGamepieceGoal == 0)
         {
-            if (GameObject.Find(gamepieceNames[index]) != null)
+            if (GameObject.Find(gamepieceNames[gamepieceIndex]) != null)
             {
-                if (goalIndicator != null) Destroy(goalIndicator);
-                if (goalIndicator == null)
+                if (goalIndex >= 0 && goalIndex < gamepieceGoals[gamepieceIndex].Count)
                 {
-                    goalIndicator = GameObject.CreatePrimitive(PrimitiveType.Cube); // Create cube to show goal region
-                    goalIndicator.name = "GoalIndicator";
-                    Renderer render = goalIndicator.GetComponentInChildren<Renderer>();
-                    render.material.shader = Shader.Find("Transparent/Diffuse");
-                    Color newColor = render.material.color;
-                    newColor.a = 0.6f;
-                    render.material.color = newColor;
+                    if (goalIndicator != null) Destroy(goalIndicator);
+                    if (goalIndicator == null)
+                    {
+                        goalIndicator = GameObject.CreatePrimitive(PrimitiveType.Cube); // Create cube to show goal region
+                        goalIndicator.name = "GoalIndicator";
+                        Renderer render = goalIndicator.GetComponentInChildren<Renderer>();
+                        render.material.shader = Shader.Find("Transparent/Diffuse");
+                        Color newColor = render.material.color;
+                        newColor.a = 0.6f;
+                        render.material.color = newColor;
+                    }
+                    goalIndicator.transform.position = gamepieceGoals[gamepieceIndex][goalIndex];
+                    settingGamepieceGoal = gamepieceIndex + 1;
+                    settingGamepieceGoalIndex = goalIndex;
+                    settingGoalVertical = false;
+
+                    DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                    lastCameraState = dynamicCamera.cameraState;
+                    dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+
+                    //MainState.ControlsDisabled = true;
                 }
-                goalIndicator.transform.position = gamepieceGoals[index][goalIndex];
-                settingGamepieceGoal = index + 1;
-                settingGamepieceGoalIndex = goalIndex;
-                settingGoalVertical = false;
-
-                DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
-                lastCameraState = dynamicCamera.cameraState;
-                dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
-
-                //MainState.ControlsDisabled = true;
+                else Debug.LogError("Goal does not exist!");
             }
             else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
         }
@@ -659,7 +742,7 @@ public class DriverPracticeRobot : MonoBehaviour
                     gamepieceGoals[index][goalIndex] = goalIndicator.transform.position;
                     gamepieceGoalSizes[index][goalIndex] = goalIndicator.transform.localScale.x;
 
-                    GenerateGamepieceGoals(settingGamepieceGoal - 1);
+                    GenerateGamepieceGoalColliders(settingGamepieceGoal - 1);
 
                     FinishGamepieceGoal();
                 }
@@ -938,12 +1021,19 @@ public class DriverPracticeRobot : MonoBehaviour
 
                 for (int j = 0; j < gamepieceGoals[i].Count; j++)
                 {
-                    writer.WriteLine("#Goal" + j);
+                    writer.WriteLine("##Goal" + j);
+                    writer.WriteLine("#Position");
                     sb = new StringBuilder();
                     writer.WriteLine(sb.Append(gamepieceGoals[i][j].x).Append("|").Append(gamepieceGoals[i][j].y).Append("|").Append(gamepieceGoals[i][j].z));
 
-                    writer.WriteLine("#Goal Size");
+                    writer.WriteLine("#Size");
                     writer.WriteLine(gamepieceGoalSizes[i][j]);
+
+                    writer.WriteLine("#Points");
+                    writer.WriteLine(gamepieceGoalPoints[i][j]);
+
+                    writer.WriteLine("#Description");
+                    writer.WriteLine(gamepieceGoalDesc[i][j]);
                 }
 
                 writer.WriteLine("#Intake Node");
@@ -973,65 +1063,67 @@ public class DriverPracticeRobot : MonoBehaviour
             StreamReader reader = new StreamReader(filePath);
             string line = "";
             int counter = 0;
-            int index = 0;
-            int goalIndex = 0;
+            int index = -1;
+            int goalIndex = -1;
 
             while ((line = reader.ReadLine()) != null)
             {
-                if (line.Equals("#Name")) counter++;
+                if (line.Contains("#Gamepiece"))
+                {
+                    counter = 0;
+                    index++;
+                    goalIndex = -1;
+                }
+                else if (line.Equals("#Name"))
+                    counter = 1;
+                else if (line.Equals("#Spawnpoint"))
+                    counter = 2;
+                else if (line.Contains("#Goal"))
+                {
+                    goalIndex++;
+
+                    gamepieceGoals[index].Add(new UnityEngine.Vector3(0, 4, 0));
+                    gamepieceGoalSizes[index].Add(1f);
+                    gamepieceGoalPoints[index].Add(0);
+                    gamepieceGoalDesc[index].Add("");
+                }
+                else if (line.Equals("#Position"))
+                    counter = 3;
+                else if (line.Equals("#Size"))
+                    counter = 4;
+                else if (line.Equals("#Points"))
+                    counter = 5;
+                else if (line.Equals("#Description"))
+                    counter = 6;
+                else if (line.Equals("#Intake Node"))
+                    counter = 7;
+                else if (line.Equals("#Release Node"))
+                    counter = 8;
+                else if (line.Equals("#Release Position"))
+                    counter = 9;
+                else if (line.Equals("#Release Velocity"))
+                    counter = 10;
+
                 else if (counter == 1)
-                {
-                    if (line.Equals("#Spawnpoint")) counter++;
-                    else
-                    {
-                        gamepieceNames[index] = line;
-                    }
-                }
+                    gamepieceNames[index] = line;
                 else if (counter == 2)
-                {
-                    if (line.Contains("#Goal")) counter++;
-                    else gamepieceSpawn[index] = DeserializeVector3Array(line);
-                }
+                    gamepieceSpawn[index] = DeserializeVector3Array(line);
                 else if (counter == 3)
-                {
-                    if (line.Equals("#Goal Size")) counter++;
-                    else
-                    {
-                        gamepieceGoals[index].Add(DeserializeVector3Array(line));
-                        gamepieceGoalSizes[index].Add(1f);
-                    }
-                }
+                    gamepieceGoals[index][goalIndex] = DeserializeVector3Array(line);
                 else if (counter == 4)
-                {
-                    if (line.Equals("#Intake Node")) counter++;
-                    else if (line.Contains("#Goal")) counter = 3;
-                    else gamepieceGoalSizes[index][goalIndex++] = float.Parse(line);
-                }
+                    gamepieceGoalSizes[index][goalIndex] = float.Parse(line);
                 else if (counter == 5)
-                {
-                    if (line.Equals("#Release Node")) counter++;
-                    else intakeNode[index] = GameObject.Find(line);
-                }
+                    gamepieceGoalPoints[index][goalIndex] = int.Parse(line);
                 else if (counter == 6)
-                {
-                    if (line.Equals("#Release Position")) counter++;
-                    else releaseNode[index] = GameObject.Find(line);
-                }
+                    gamepieceGoalDesc[index][goalIndex] = line;
                 else if (counter == 7)
-                {
-                    if (line.Equals("#Release Velocity")) counter++;
-                    else positionOffset[index] = DeserializeVector3Array(line);
-                }
+                    intakeNode[index] = GameObject.Find(line);
                 else if (counter == 8)
-                {
-                    if (line.Contains("#Gamepiece"))
-                    {
-                        counter = 0;
-                        index++;
-                        goalIndex = 0;
-                    }
-                    else releaseVelocity[index] = DeserializeArray(line);
-                }
+                    releaseNode[index] = GameObject.Find(line);
+                else if (counter == 9)
+                    positionOffset[index] = DeserializeVector3Array(line);
+                else if (counter == 10)
+                    releaseVelocity[index] = DeserializeArray(line);
             }
             reader.Close();
 

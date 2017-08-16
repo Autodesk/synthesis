@@ -5,57 +5,48 @@ using UnityEngine.UI;
 
 public class GoalManager : MonoBehaviour
 {
-    public List<GameObject> goalElements;
+    public VerticalLayoutGroup goalDisplay;
+    public GameObject goalElementPrefab;
 
-    private GameObject DPMode;
+    private DriverPracticeMode dpMode;
+    private List<GameObject> goalElements;
 
-    int currentGamepiece;
-
-    public void InitGamepiece(int index)
+    /// <summary>
+    /// Prepares the goal display to show descriptions and buttons for a set of goals.
+    /// </summary>
+    /// <param name="descriptions">Descriptions of the goals.</param>
+    /// <param name="points">Point value of the goals.</param>
+    public void InitializeDisplay(string[] descriptions, int[] points)
     {
-        currentGamepiece = index;
+        if (goalElements == null)
+            goalElements = new List<GameObject>();
 
-        for (int i = 0; i < goalElements.Count; i++)
-            goalElements[i].SetActive(false);
+        if (dpMode == null)
+            dpMode = AuxFunctions.FindObject("StateMachine").GetComponent<DriverPracticeMode>();
 
-        //DPRobot = AuxFunctions.FindObject(goalElements[nextGoal], "DescriptionText")
-    }
-
-    public void NewGoal()
-    {
-        // Update UI elements
-        int nextGoal = 0;
-        while (nextGoal < goalElements.Count && goalElements[nextGoal].activeSelf) // Iterate through goal elements until finding one that's disabled or until out of elements
-            nextGoal++;
-
-        if (nextGoal < goalElements.Count)
-        {
-            goalElements[nextGoal].SetActive(true);
-
-            AuxFunctions.FindObject(goalElements[nextGoal], "DescriptionText").GetComponent<Text>().text = "New Goal";
-        }
-        else
-        {
-            UserMessageManager.Dispatch("You cannot have more than " + goalElements.Count.ToString() + " goals per gamepiece", 5);
+        while (goalElements.Count > 0)
+        { 
+            Destroy(goalElements[0]);
+            goalElements.RemoveAt(0);
         }
 
-        // Update goal list
-
-    }
-
-    public void RemoveGoal(int index)
-    {
-        // Update UI elements
-        int i = index;
-
-        for (; i < goalElements.Count - 1 && goalElements[i + 1].activeSelf; i++)
+        for (int i = 0; i < descriptions.Length; i++)
         {
-            Text textA = AuxFunctions.FindObject(goalElements[i], "DescriptionText").GetComponent<Text>();
-            Text textB = AuxFunctions.FindObject(goalElements[i + 1], "DescriptionText").GetComponent<Text>();
+            GameObject newGoalElement = Instantiate(goalElementPrefab);
+            newGoalElement.transform.parent = goalDisplay.gameObject.transform;
+            newGoalElement.name = "Goal" + i.ToString();
 
-            textA.text = textB.text;
+            Text descText = AuxFunctions.FindObject(newGoalElement, "DescriptionText").GetComponent<Text>();
+            descText.text = descriptions[i] + " (" + points[i].ToString() + " points)";
+
+            int id = i;
+            Button moveButton = AuxFunctions.FindObject(newGoalElement, "MoveButton").GetComponent<Button>();
+            moveButton.onClick.AddListener(() => { dpMode.SetGamepieceGoal(id); });
+
+            Button deleteButton = AuxFunctions.FindObject(newGoalElement, "DeleteButton").GetComponent<Button>();
+            deleteButton.onClick.AddListener(() => { dpMode.DeleteGamepieceGoal(id); });
+            
+            goalElements.Add(newGoalElement);
         }
-
-        goalElements[i].SetActive(false);
     }
 }
