@@ -269,6 +269,7 @@
     <Compile Include="Assets\Scripts\InputControl\Inputs\KeyboardInput.cs" />
     <Compile Include="Assets\Scripts\InputControl\Inputs\MouseInput.cs" />
     <Compile Include="Assets\Scripts\InputControl\KeyMapping.cs" />
+    <Compile Include="Assets\Scripts\InputControl\Player.cs" />
     <Compile Include="Assets\Scripts\InputControl\SettingsMode.cs" />
     <Compile Include="Assets\Scripts\LocalMultiplayer.cs" />
     <Compile Include="Assets\Scripts\MainState.cs" />
