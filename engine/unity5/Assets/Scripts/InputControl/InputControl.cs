@@ -1484,6 +1484,7 @@ public static class InputControl
     //mPlayerList[activePlayerIndex].SetArcadeDrive();
     //else tank drive on = 1
     //SetTankDrive()
+    //so basically the OnValueChanged() function called by the slider will find the slider object(which hopefully has a decent name) and then check its value. If it is 0 (tank drive off), then call SetArcadeDrive on the active player (which can be found with the active player index), else it is 1, then call SetTankDrive
     //public void ToggleUnitConversion()
     //{
     //    int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
