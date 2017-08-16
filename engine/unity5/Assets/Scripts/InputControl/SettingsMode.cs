@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
+    GameObject tankDriveSwitch;
     private Text enableTankDriveText;
 
     // Update is called once per frame
@@ -118,6 +119,18 @@ public class SettingsMode : MonoBehaviour
 
     //    main.IsMetric = (i == 1 ? true : false);
     //}
+
+    public void OnTankToggle()
+    {
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
+
+        //isTankDrive
+    }
+
+    
+
+    //unitConversionSwitch = AuxFunctions.FindObject(canvas, "UnitConversionSwitch");
 
     #region Player Buttons
     public void OnPlayerOne()

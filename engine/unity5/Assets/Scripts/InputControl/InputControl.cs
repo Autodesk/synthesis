@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-
-
 /// <summary>
 /// <see cref="InputControl"/> provide interface to the Input system. It's based on <see cref="Input"/> class and allow to change key mappings in runtime.
 /// </summary>
@@ -1475,23 +1473,6 @@ public static class InputControl
         //controlIndex = activePlayerIndex;
         return mPlayerList[controlIndex].GetActiveList();
     }
-
-    //public static OnValueChanged()
-    //{
-    //get slider component
-    //if slider = 0 (tank drive is off)
-    //SetArcadeDrive() = active player index
-    //mPlayerList[activePlayerIndex].SetArcadeDrive();
-    //else tank drive on = 1
-    //SetTankDrive()
-    //so basically the OnValueChanged() function called by the slider will find the slider object(which hopefully has a decent name) and then check its value. If it is 0 (tank drive off), then call SetArcadeDrive on the active player (which can be found with the active player index), else it is 1, then call SetTankDrive
-    //public void ToggleUnitConversion()
-    //{
-    //    int i = (int)unitConversionSwitch.GetComponent<Slider>().value;
-
-    //    main.IsMetric = (i == 1 ? true : false);
-    //}
-    //}
     #endregion
 
     #region Setup axes
