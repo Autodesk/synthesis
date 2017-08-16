@@ -1452,60 +1452,60 @@ public static class InputControl
         {
             outKey = new KeyMapping(name, primary, secondary, third);
 
-            if (Controls.TankDriveEnabled)
-            {
-                switch (controlIndex)
-                {
-                    case 0:
-                        mKeysListTankDriveP1.Add(outKey);
-                        break;
-                    case 1:
-                        mKeysListTankDriveP2.Add(outKey);
-                        break;
-                    case 2:
-                        mKeysListTankDriveP3.Add(outKey);
-                        break;
-                    case 3:
-                        mKeysListTankDriveP4.Add(outKey);
-                        break;
-                    case 4:
-                        mKeysListTankDriveP5.Add(outKey);
-                        break;
-                    case 5:
-                        mKeysListTankDriveP6.Add(outKey);
-                        break;
-                }
+            //if (Controls.TankDriveEnabled)
+            //{
+            //    switch (controlIndex)
+            //    {
+            //        case 0:
+            //            mKeysListTankDriveP1.Add(outKey);
+            //            break;
+            //        case 1:
+            //            mKeysListTankDriveP2.Add(outKey);
+            //            break;
+            //        case 2:
+            //            mKeysListTankDriveP3.Add(outKey);
+            //            break;
+            //        case 3:
+            //            mKeysListTankDriveP4.Add(outKey);
+            //            break;
+            //        case 4:
+            //            mKeysListTankDriveP5.Add(outKey);
+            //            break;
+            //        case 5:
+            //            mKeysListTankDriveP6.Add(outKey);
+            //            break;
+            //    }
 
-                mKeysListTankDrive.Add(outKey);
-                mKeysMapTankDrive.Add(name, outKey);
-            }
-            else
-            {
-                switch (controlIndex)
-                {
-                    case 0:
-                        mKeysListArcadeDriveP1.Add(outKey);
-                        break;
-                    case 1:
-                        mKeysListArcadeDriveP2.Add(outKey);
-                        break;
-                    case 2:
-                        mKeysListArcadeDriveP3.Add(outKey);
-                        break;
-                    case 3:
-                        mKeysListArcadeDriveP4.Add(outKey);
-                        break;
-                    case 4:
-                        mKeysListArcadeDriveP5.Add(outKey);
-                        break;
-                    case 5:
-                        mKeysListArcadeDriveP6.Add(outKey);
-                        break;
-                }
+            //    mKeysListTankDrive.Add(outKey);
+            //    mKeysMapTankDrive.Add(name, outKey);
+            //}
+            //else
+            //{
+            //    switch (controlIndex)
+            //    {
+            //        case 0:
+            //            mKeysListArcadeDriveP1.Add(outKey);
+            //            break;
+            //        case 1:
+            //            mKeysListArcadeDriveP2.Add(outKey);
+            //            break;
+            //        case 2:
+            //            mKeysListArcadeDriveP3.Add(outKey);
+            //            break;
+            //        case 3:
+            //            mKeysListArcadeDriveP4.Add(outKey);
+            //            break;
+            //        case 4:
+            //            mKeysListArcadeDriveP5.Add(outKey);
+            //            break;
+            //        case 5:
+            //            mKeysListArcadeDriveP6.Add(outKey);
+            //            break;
+            //    }
 
-                mKeysListArcadeDrive.Add(outKey);
-                mKeysMapArcadeDrive.Add(name, outKey);
-            }
+            //    mKeysListArcadeDrive.Add(outKey);
+            //    mKeysMapArcadeDrive.Add(name, outKey);
+            //}
 
 
             switch (controlIndex)
