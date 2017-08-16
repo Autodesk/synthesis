@@ -30,7 +30,7 @@ namespace Assets.Scripts.FEA
                 writer.WriteStartElement("replay");
                 writer.WriteAttributeString("length", Tracker.Length.ToString());
 
-                List<Tracker> gamePieceTrackers = trackers.Where(x => x.gameObject.name.StartsWith("clone_")).ToList();
+                List<Tracker> gamePieceTrackers = trackers.Where(x => x.gameObject.name.EndsWith("(Clone)")).ToList();
                 List<Tracker> fieldTrackers = GameObject.Find("Field").GetComponentsInChildren<Tracker>().Except(gamePieceTrackers).ToList();
 
                 WriteField(writer, fieldPath, fieldTrackers);
@@ -98,7 +98,7 @@ namespace Assets.Scripts.FEA
 
             foreach (Tracker t in trackers)
             {
-                string name = t.gameObject.name.Substring(t.gameObject.name.IndexOf('_') + 1);
+                string name = t.gameObject.name.Remove(t.gameObject.name.IndexOf("(Clone)"));
 
                 if (!sortedTrackers.ContainsKey(name))
                     sortedTrackers[name] = new List<Tracker>();
