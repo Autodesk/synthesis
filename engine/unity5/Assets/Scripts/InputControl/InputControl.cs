@@ -1470,9 +1470,17 @@ public static class InputControl
 
     public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
     {
-        activePlayerIndex = controlIndex;
+        //activePlayerIndex = controlIndex;
+        Debug.Log("activePlayer " + activePlayerIndex);
         return mPlayerList[controlIndex].GetActiveList();
     }
+
+    public static ReadOnlyCollection<KeyMapping> getActivePlayerKeys(int activePlayerIndex)
+    {
+        return mPlayerList[activePlayerIndex].GetActiveList();
+    }
+
+
     #endregion
 
     #region Setup axes
