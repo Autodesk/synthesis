@@ -186,6 +186,7 @@ class FileBrowser : OverlayWindow
         descriptionStyle.font = Resources.GetBuiltinResource<Font>("Arial.ttf") as Font;
         descriptionStyle.fontSize = 13;
         descriptionStyle.margin = new RectOffset(5, 5, 5, 2);
+
     }
 
     /// <summary>
@@ -333,7 +334,7 @@ class FileBrowser : OverlayWindow
         }
 
         // The manual location box and the select button
-        GUILayout.BeginArea(new Rect(10, 360, 480, 25));
+        GUILayout.BeginArea(new Rect(12, 335, 480, 25));
         //GUILayout.BeginHorizontal();
         const int labelLen = 70;
 
@@ -362,13 +363,14 @@ class FileBrowser : OverlayWindow
             UserMessageManager.Dispatch("You don't have the authorization to access this folder", 3f);
         }
         GUILayout.EndArea();
-        GUILayout.BeginArea(new Rect(10, 390, 480, 25));
+        GUILayout.BeginArea(new Rect(12, 360, 480, 25));
         GUILayout.BeginHorizontal();
         
         //When this button is clicked, th
         if (GUILayout.Button("Search for Target Directory", fileBrowserButton, GUILayout.Width(250)))
         {
             SearchDirectories(directoryInfo);
+
             //Notify the user there's nothing related inside the current directory
             if (targetFolderList.Count == 0)
             {
@@ -397,6 +399,9 @@ class FileBrowser : OverlayWindow
         }
 
         GUILayout.EndHorizontal();
+        GUILayout.EndArea();
+        GUILayout.BeginArea(new Rect(12, 385, 480, 25));
+        GUILayout.Label("Searching through a large directory takes time. Please be patient :)", descriptionStyle);
         GUILayout.EndArea();
     }
 
