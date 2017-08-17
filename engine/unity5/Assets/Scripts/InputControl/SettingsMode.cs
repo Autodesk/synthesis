@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
+    public GameObject tankDriveSwitch;
     private Text enableTankDriveText;
 
     // Update is called once per frame
@@ -65,53 +66,6 @@ public class SettingsMode : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Enables tank drive.
-    /// </summary>
-    //public void OnEnableTankDrive()
-    //{
-    //    //TankDriveEnabled is true
-    //    if (!Controls.TankDriveEnabled)
-    //    {
-    //        Controls.TankDriveEnabled = true;
-    //        Controls.CheckForKeyRemoval = false;
-    //        //Controls.SwitchControls();
-    //        GameObject.Find("Player").GetComponent<Player>().SetTankDrive();
-    //        Controls.Save();
-    //        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-    //        enableTankDriveText.text = "Switch Arcade Drive";
-    //    }
-    //    else
-    //    {
-    //        //TankDriveEnabled is false
-    //        Controls.TankDriveEnabled = false;
-    //        Controls.CheckForKeyRemoval = true;
-    //        Controls.SwitchControls();
-    //        GameObject.Find("Player").GetComponent<Player>().SetArcadeDrive();
-    //        Controls.Save();
-    //        enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-    //        enableTankDriveText.text = "Switch Tank Drive";
-    //    }
-    //}
-
-    //void OnEnable()
-    //{
-    //    if (GameObject.Find("SettingsMode") != null)
-    //    {
-    //        if (!Controls.TankDriveEnabled)
-    //        {
-    //            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-    //            enableTankDriveText.text = "Switch Tank Drive";
-    //        }
-    //        else
-    //        {
-    //            enableTankDriveText = AuxFunctions.FindObject(gameObject, "EnableTankDriveText").GetComponent<Text>();
-    //            enableTankDriveText.text = "Switch Arcade Drive";
-    //        }
-    //    }
-
-    //}
-
     #region Player Buttons
     public void OnPlayerOne()
     {
@@ -146,7 +100,7 @@ public class SettingsMode : MonoBehaviour
 
     public void OnTankToggle()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().OnTankToggle();
+        GameObject.Find("Content").GetComponent<CreateButton>().TankToggle();
     }
 
     /// <summary>
