@@ -20,7 +20,7 @@ public class CreateButton : MonoBehaviour
     void Start()
     {
         DestroyList();
-
+        GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
         namesTransform = transform.Find("Names");
         keysTransform = transform.Find("Keys");
 

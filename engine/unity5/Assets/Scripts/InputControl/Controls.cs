@@ -751,7 +751,7 @@ public class Controls
         buttons[5].releaseSecondary = InputControl.setKey("6: Release Secondary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), true);
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), true);
 
-        //Set Arcade Drive Axes (PWM [0] and PWM [1])
+                //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[5].tankLeftAxes = InputControl.setAxis("Joystick 6 Axis 9", PlayerSixIndex, buttons[5].tankBackLeft, buttons[5].tankFrontLeft, true);
         axes[5].tankRightAxes = InputControl.setAxis("Joystick 6 Axis 10", PlayerSixIndex, buttons[5].tankFrontRight, buttons[5].tankBackRight, true);
 
