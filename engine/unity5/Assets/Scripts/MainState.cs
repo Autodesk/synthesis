@@ -46,8 +46,8 @@ public class MainState : SimState
     private Vector3 robotCameraRotation3 = new Vector3(0f, 180f, 0f);
     //Testing camera location, can be deleted later
 
-    private GameObject fieldObject;
-    private UnityFieldDefinition fieldDefinition;
+    // private GameObject fieldObject; TODO: Remove? 
+    // private UnityFieldDefinition fieldDefinition;
 
     public bool IsResetting;
     private const float HOLD_TIME = 0.8f;
@@ -109,8 +109,10 @@ public class MainState : SimState
         if (string.IsNullOrEmpty(selectedReplay))
         {
             Tracking = true;
-            Debug.Log(LoadField(PlayerPrefs.GetString("simSelectedField")) ? "Load field success!" : "Load field failed.");
-            Debug.Log(LoadRobot(PlayerPrefs.GetString("simSelectedRobot")) ? "Load robot success!" : "Load robot failed.");
+            fieldPath = PlayerPrefs.GetString("simSelectedField");
+            robotPath = PlayerPrefs.GetString("simSelectedRobot");
+            Debug.Log(RobotFieldLoader.LoadField(fieldPath) ? "Load field success!" : "Load field failed.");
+            Debug.Log(LoadRobot(robotPath) ? "Load robot success!" : "Load robot failed.");
 
             int isMixAndMatch = PlayerPrefs.GetInt("MixAndMatch", 0); // 0 is false, 1 is true
             int hasManipulator = PlayerPrefs.GetInt("hasManipulator");
@@ -191,29 +193,27 @@ public class MainState : SimState
         }
     }
 
-    /// <summary>
-    /// Loads the field from a given directory
-    /// </summary>
-    /// <param name="directory">field directory</param>
-    /// <returns>whether the process was successful</returns>
-    bool LoadField(string directory)
-    {
-        fieldPath = directory;
+    // TODO: Get rid of this commented code? 
+    // bool LoadField(string directory)
+    // {
+    //     // fieldPath = directory;
 
-        fieldObject = new GameObject("Field");
+    //     // fieldObject = new GameObject("Field");
 
-        FieldDefinition.Factory = delegate (Guid guid, string name)
-        {
-            return new UnityFieldDefinition(guid, name);
-        };
+    //     // FieldDefinition.Factory = delegate (Guid guid, string name)
+    //     // {
+    //     //     return new UnityFieldDefinition(guid, name);
+    //     // };
 
 
-        string loadResult;
-        fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
-        Debug.Log(loadResult);
-        fieldDefinition.CreateTransform(fieldObject.transform);
-        return fieldDefinition.CreateMesh(directory + "\\mesh.bxda");
-    }
+    //     // string loadResult;
+    //     // fieldDefinition = (UnityFieldDefinition)BXDFProperties.ReadProperties(directory + "\\definition.bxdf", out loadResult);
+    //     // Debug.Log(loadResult);
+    //     // fieldDefinition.CreateTransform(fieldObject.transform);
+    //     // return fieldDefinition.CreateMesh(directory + "\\mesh.bxda");
+
+    //     return RobotFieldLoader.LoadField(directory);
+    // }
 
     /// <summary>
     /// Loads a new robot from a given directory
@@ -224,8 +224,6 @@ public class MainState : SimState
     {
         if (SpawnedRobots.Count < MAX_ROBOTS)
         {
-            robotPath = directory;
-
             GameObject robotObject = new GameObject("Robot");
             Robot robot = robotObject.AddComponent<Robot>();
 
@@ -244,7 +242,7 @@ public class MainState : SimState
             SpawnedRobots.Add(robot);
             return true;
         }
-        return false;
+        else return false;
     }
 
     /// <summary>
@@ -345,7 +343,7 @@ public class MainState : SimState
 
         ReplayImporter.Read(name, out simSelectedField, out simSelectedRobot, out fieldStates, out robotStates, out gamePieceStates, out contacts);
 
-        LoadField(simSelectedField);
+        RobotFieldLoader.LoadField(simSelectedField);
         LoadRobot(simSelectedRobot);
 
         List<Tracker> robotTrackers = Trackers.Where(x => x.transform.parent.name.Equals("Robot")).ToList();

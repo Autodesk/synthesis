@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using SceneType = UnityEngine.SceneManagement.Scene;
 
 namespace Assets.Scripts.FSM
 {
@@ -14,6 +16,12 @@ namespace Assets.Scripts.FSM
         /// The current state in the StateMachine.
         /// </summary>
         public SimState CurrentState { get; private set; }
+
+        public Dictionary<string, SimState> DefaultSceneState = new Dictionary<string, SimState>()
+        {
+            {"Scene", new MainState()},
+            {"EditScoreZones", new EditScoreZoneState()}
+        };
 
         /// <summary>
         /// The global StateMachine instance.
@@ -32,6 +40,7 @@ namespace Assets.Scripts.FSM
         private StateMachine()
         {
             activeStates = new Stack<SimState>();
+            
         }
 
         /// <summary>
@@ -84,7 +93,18 @@ namespace Assets.Scripts.FSM
             if (CurrentState != null)
                 return;
 
-            PushState(new MainState());
+            // PushState(new MainState());
+            
+            foreach (string key in DefaultSceneState.Keys)
+            {
+                Debug.Log("Checking " + key + " and " + SceneManager.GetActiveScene().name);
+                if (key == SceneManager.GetActiveScene().name)
+                {
+                    Debug.Log("Match");
+                    PushState(DefaultSceneState[key]);
+                    break;
+                }
+            }
         }
 
         /// <summary>
