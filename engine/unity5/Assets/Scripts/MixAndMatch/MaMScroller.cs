@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -28,19 +29,19 @@ public class MaMScroller : MonoBehaviour {
         mixAndMatchModeScript = GameObject.Find("MixAndMatchModeScript");        
 
         wheelRightScroll = GameObject.Find("WheelRightScroll");
-        wheelLeftScroll = GameObject.Find("WheelLeftScroll");
+        wheelLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("WheelLeftScroll")).First(); 
         wheels = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().wheels;
 
         driveBaseRightScroll = GameObject.Find("BaseRightScroll");
-        driveBaseLeftScroll = GameObject.Find("BaseLeftScroll");
+        driveBaseLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("BaseLeftScroll")).First();
         driveBases = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().bases;
 
         manipulatorRightScroll = GameObject.Find("ManipulatorRightScroll");
-        manipulatorLeftScroll = GameObject.Find("ManipulatorLeftScroll");
+        manipulatorLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("ManipulatorLeftScroll")).First();
         manipulators = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().manipulators;
 
         presetRightScroll = GameObject.Find("PresetRightScroll");
-        presetLeftScroll = GameObject.Find("PresetLeftScroll");
+        presetLeftScroll = Resources.FindObjectsOfTypeAll<GameObject>().Where(x => x.name.Equals("PresetLeftScroll")).First();
         presetClones = mixAndMatchModeScript.GetComponent<MixAndMatchMode>().presetClones;
     }
 
