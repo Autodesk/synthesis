@@ -44,7 +44,7 @@ namespace BxDFieldExporter
                 //Looks for our DemoAddin CLSID;
                 if (oAddIn.ClassIdString == "{E50BE244-9F7B-4B94-8F87-8224FABA8CA1}")
                 {
-                    
+
                     //Calls Automation property    
                     mAddInInterface = (IAutomationInterface)oAddIn.Automation;
                 }
@@ -53,35 +53,28 @@ namespace BxDFieldExporter
 
         private void OKButton_OnClick(object sender, EventArgs e)
         {
+            StandardAddInServer.okButton_Clicked = true;
             mAddInInterface.SetRunOnce(false);
-            mAddInInterface.SetDone(true);
-            this.Close();
+            StandardAddInServer.done = true;
+            StandardAddInServer.task.TrySetResult(true);
+            Close();
         }
 
         private void CancelButton_onClick(object sender, EventArgs e)
         {
+            mApplication.CommandManager.StopActiveCommand();
             mAddInInterface.SetCancel(true);
             mAddInInterface.SetRunOnce(false);
-            this.Close();
+            StandardAddInServer.task.TrySetResult(true);
+            Close();
         }
+
 
         private void SelectPartsLabel_onClick(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void CancelButton_onClick(object sender, MouseEventArgs e)
-        {
-            mAddInInterface.SetCancel(true);
-            mAddInInterface.SetRunOnce(false);
-            this.Close();
-        }
-
-        private void CancelButton_onClick(object sender, FormClosedEventArgs e)
-        {
-            mAddInInterface.SetCancel(true);
-            mAddInInterface.SetRunOnce(false);
-        }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -96,6 +89,13 @@ namespace BxDFieldExporter
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void ApplyButton_Click(object sender, EventArgs e)
+        {
+            mAddInInterface.SetRunOnce(false);
+            StandardAddInServer.applyButton_Clicked = true;
+            StandardAddInServer.task.TrySetResult(true);
         }
     }
 }
