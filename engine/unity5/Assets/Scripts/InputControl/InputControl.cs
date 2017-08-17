@@ -1471,8 +1471,6 @@ public static class InputControl
     public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
     {
         activePlayerIndex = controlIndex;
-        Debug.Log("activePlayer: " + activePlayerIndex);
-        Debug.Log("controlIndex: " + controlIndex);
         return mPlayerList[controlIndex].GetActiveList();
     }
 

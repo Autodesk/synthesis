@@ -46,7 +46,7 @@ public class SettingsMode : MonoBehaviour
     public void OnLoadClick()
     {
         Controls.Load();
-        UpdateAllText();
+        //UpdateAllText();
     }
 
     /// <summary>

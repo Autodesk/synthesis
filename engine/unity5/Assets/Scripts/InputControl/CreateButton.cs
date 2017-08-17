@@ -607,15 +607,11 @@ public class CreateButton : MonoBehaviour
         {
             case 0:
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
-                Debug.Log("ActivePlayerIndex: " + InputControl.activePlayerIndex);
                 UpdateActiveButtons();
-                //UpdateSlider();
                 break;
             case 1:
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
-                Debug.Log("ActivePlayerIndex: " + InputControl.activePlayerIndex);
                 UpdateActiveButtons();
-                //UpdateSlider();
                 Controls.TankDriveEnabled = true;
                 break;
             default:
@@ -623,7 +619,6 @@ public class CreateButton : MonoBehaviour
                 UpdateActiveButtons();
                 break;
         }
-        //UpdateSlider();
     }
 
     public void OnEnable()
@@ -636,6 +631,5 @@ public class CreateButton : MonoBehaviour
     {
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
-        Debug.Log("Slider Value: " + InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive);
     }
 }
