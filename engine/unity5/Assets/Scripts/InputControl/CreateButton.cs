@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class CreateButton : MonoBehaviour
 {
-    GameObject tankDriveSwitch;
+    public GameObject tankDriveSwitch;
     public GameObject keyNamePrefab;
     public GameObject keyButtonsPrefab;
     public List<GameObject> keyButtonList;

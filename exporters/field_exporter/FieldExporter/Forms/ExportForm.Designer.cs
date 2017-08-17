@@ -56,7 +56,7 @@
             this.filePathTextBox.Location = new System.Drawing.Point(192, 6);
             this.filePathTextBox.Name = "filePathTextBox";
             this.filePathTextBox.ReadOnly = true;
-            this.filePathTextBox.Size = new System.Drawing.Size(402, 22);
+            this.filePathTextBox.Size = new System.Drawing.Size(402, 20);
             this.filePathTextBox.TabIndex = 9;
             // 
             // exportLocationLabel
@@ -64,7 +64,7 @@
             this.exportLocationLabel.AutoSize = true;
             this.exportLocationLabel.Location = new System.Drawing.Point(6, 10);
             this.exportLocationLabel.Name = "exportLocationLabel";
-            this.exportLocationLabel.Size = new System.Drawing.Size(110, 17);
+            this.exportLocationLabel.Size = new System.Drawing.Size(84, 13);
             this.exportLocationLabel.TabIndex = 8;
             this.exportLocationLabel.Text = "Export Location:";
             // 
@@ -101,7 +101,7 @@
             this.statusLabel.AutoSize = true;
             this.statusLabel.Location = new System.Drawing.Point(143, 275);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(212, 17);
+            this.statusLabel.Size = new System.Drawing.Size(160, 13);
             this.statusLabel.TabIndex = 12;
             this.statusLabel.Text = "Please select an export location.";
             // 
@@ -128,6 +128,7 @@
             this.Controls.Add(this.exportButton);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExportForm";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Load += new System.EventHandler(this.ExportForm_Load);

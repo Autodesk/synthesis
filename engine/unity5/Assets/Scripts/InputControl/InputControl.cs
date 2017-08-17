@@ -6,19 +6,23 @@ using System.Collections.ObjectModel;
 
 /// <summary>
 /// <see cref="InputControl"/> provide interface to the Input system. It's based on <see cref="Input"/> class and allow to change key mappings in runtime.
+/// Derived from: https://github.com/Gris87/InputControl
 /// </summary>
 public static class InputControl
 {
     public const float NO_SMOOTH = 1000f;
 
-    // Set of keys
+    // Set of main keys
     private static List<KeyMapping> mKeysList = new List<KeyMapping>();
     private static Dictionary<string, KeyMapping> mKeysMap = new Dictionary<string, KeyMapping>();
 
+    /// Set of players (player keys are declared in the <see cref="Player"/>)
     public static Player[] mPlayerList = new Player[6];
+
+    // Variable to keep track of the active player
     public static int activePlayerIndex;
 
-    // Set of axes
+    // Set of main axes
     private static List<Axis> mAxesList = new List<Axis>();
     private static Dictionary<string, Axis> mAxesMap = new Dictionary<string, Axis>();
 
@@ -149,8 +153,11 @@ public static class InputControl
 
     #endregion
 
+    // ---------------------------------------------------------------
 
+    #region Synthesis
 
+    //Contructor: Initialize players and player controls
     static InputControl()
     {
         for (int i = 0; i < 6; i++)
@@ -160,7 +167,98 @@ public static class InputControl
         Controls.Init();
     }
 
-    #region Setup keys
+    #region Synthesis Setup Keys
+
+    /// <summary>
+    /// Create new <see cref="KeyMapping"/> with specified name, active player, inputs, and drive type.
+    /// </summary>
+    /// <returns>Created KeyMapping.</returns>
+    /// <param name="name">KeyMapping name.</param>
+    /// <param name="controlIndex">Integer index to specify which player is active.</param>
+    /// <param name="primary">Primary input.</param>
+    /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
+    public static KeyMapping setKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
+    {
+        return mPlayerList[controlIndex].setKey(name, argToInput(primary), null, isTankDrive);
+    }
+
+    /// <summary>
+    /// Create new <see cref="KeyMapping"/> with specified name, active player, inputs, and drive type.
+    /// </summary>
+    /// <returns>Created KeyMapping.</returns>
+    /// <param name="name">KeyMapping name.</param>
+    /// <param name="controlIndex">Integer index to specify which player is active.</param>
+    /// <param name="primary">Primary input.</param>
+    /// <param name="secondary">Secondary input.</param>
+    /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
+    public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
+    {
+        return mPlayerList[controlIndex].setKey(name, argToInput(primary), argToInput(secondary), isTankDrive);
+    }
+
+    /// <summary>
+    /// Gets the list of keys.
+    /// </summary>
+    /// <returns>List of keys.</returns>
+    public static ReadOnlyCollection<KeyMapping> getKeysList()
+    {
+        mKeysList.Clear();
+        foreach (Player player in mPlayerList)
+        {
+            foreach (KeyMapping key in player.GetActiveList())
+            {
+                mKeysList.Add(key);
+            }
+        }
+        return mKeysList.AsReadOnly();
+    }
+
+    /// <summary>
+    /// Gets the list of a player's keys. Player specified by controlIndex.
+    /// </summary>
+    /// <param name="controlIndex"></param>
+    /// <returns>List of a player's keys.</returns>
+    public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
+    {
+        // Set the activePlayerIndex equal to the selected player
+        activePlayerIndex = controlIndex;
+        return mPlayerList[controlIndex].GetActiveList();
+    }
+
+    /// <summary>
+    /// Gets the list of all the active player's keys. 
+    /// </summary>
+    /// <returns>The list of all the active player's keys.</returns>
+    public static ReadOnlyCollection<KeyMapping> getActivePlayerKeys()
+    {
+        return mPlayerList[activePlayerIndex].GetActiveList();
+    }
+
+    #endregion
+
+    #region Synthesis Setup Axes
+
+    /// <summary>
+    /// Create new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
+    /// </summary>
+    /// <returns>Created Axis.</returns>
+    /// <param name="name">Axis name.</param>
+    /// <param name="controlIndex">Integer index to specify which player is active.</param>
+    /// <param name="negative">Name of negative KeyMapping.</param>
+    /// <param name="positive">Name of positive KeyMapping.</param>
+    /// <param name="isTankDrive">Boolean to check if TankDrive is active.</param>
+    public static Axis setAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
+    {
+        return mPlayerList[controlIndex].setAxis(name, negative, positive, isTankDrive);
+    }
+
+    #endregion
+
+    #endregion
+
+    // ----------------------------------------------------------------
+
+    #region Setup/Remove Key Variations (With Different Arguments)
 
     #region setKey with different arguments
 
@@ -174,11 +272,6 @@ public static class InputControl
     public static KeyMapping setKey(string name, KeyCode primary)
     {
         return setKey(name, argToInput(primary));
-    }
-
-    public static KeyMapping setKey(string name, int controlIndex, CustomInput primary, bool isTankDrive)
-    {
-        return mPlayerList[controlIndex].setKey(name, argToInput(primary), null, isTankDrive);
     }
 
     /// <summary>
@@ -259,25 +352,6 @@ public static class InputControl
     public static KeyMapping setKey(string name, KeyCode primary, CustomInput secondary)
     {
         return setKey(name, argToInput(primary), argToInput(secondary));
-    }
-
-    /// <summary>
-    /// Create new <see cref="KeyMapping"/> with specified name, player's controls index, and inputs.
-    /// </summary>
-    /// <returns>Created KeyMapping.</returns>
-    /// <param name="name">KeyMapping name.</param>
-    /// <param name="controlIndex">Integer index to specify which controls a player is using.</param>
-    /// <param name="primary">Primary input.</param>
-    /// <param name="secondary">Secondary input.</param>
-    public static KeyMapping setKey(string name, int controlIndex, KeyCode primary, CustomInput secondary, bool isTankDrive)
-    {
-        return mPlayerList[controlIndex].setKey(name, argToInput(primary), argToInput(secondary), isTankDrive);
-    }
-
-    //=================================================================================================================
-    public static Axis setAxis(string name, int controlIndex, KeyMapping negative, KeyMapping positive, bool isTankDrive)
-    {
-        return mPlayerList[controlIndex].setAxis(name, negative, positive, isTankDrive);
     }
 
     /// <summary>
@@ -1452,37 +1526,17 @@ public static class InputControl
     }
 
     /// <summary>
-    /// Gets the list of keys.
+    /// Gets the list of keys. FOR USE IF NOT USING SYNTHESIS KEYS
     /// </summary>
     /// <returns>List of keys.</returns>
-    public static ReadOnlyCollection<KeyMapping> getKeysList()
-    {
-        mKeysList.Clear();
-        foreach (Player player in mPlayerList)
-        {
-            foreach (KeyMapping key in player.GetActiveList())
-            {
-                mKeysList.Add(key);
-            }
-        }
-        return mKeysList.AsReadOnly();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
-    {
-        activePlayerIndex = controlIndex;
-        return mPlayerList[controlIndex].GetActiveList();
-    }
-
-    public static ReadOnlyCollection<KeyMapping> getActivePlayerKeys()
-    {
-        return mPlayerList[activePlayerIndex].GetActiveList();
-    }
-
+    //public static ReadOnlyCollection<KeyMapping> getKeysList()
+    //{
+    //    return mKeysList.AsReadOnly();
+    //}
 
     #endregion
 
-    #region Setup axes
+    #region Setup/Remove Axes Variations (With Different Arguments)
     /// <summary>
     /// Create new <see cref="Axis"/> with specified negative <see cref="KeyMapping"/> and positive <see cref="KeyMapping"/>.
     /// </summary>
@@ -1600,6 +1654,7 @@ public static class InputControl
 
     // ----------------------------------------------------------------
 
+    #region Get Inputs (GetButton, GetButtonDown, GetAxis, GetAxisRaw, Acceleration, Sensors, and More)
     /// <summary>
     /// Gets the last measured linear acceleration of a device in three-dimensional space.
     /// </summary>
@@ -2300,7 +2355,9 @@ public static class InputControl
     {
         return Input.GetTouch(index);
     }
+    #endregion
 
+    #region Other Input Functions: Gyro, IMECompositionMode, IMEIsSelected, InputString, Location, Position, Touch, and More
     /// <summary>
     /// Returns default gyroscope.
     /// </summary>
@@ -2484,4 +2541,5 @@ public static class InputControl
             return Input.touchSupported;
         }
     }
+    #endregion
 }
