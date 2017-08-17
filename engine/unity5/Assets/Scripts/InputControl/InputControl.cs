@@ -1470,12 +1470,13 @@ public static class InputControl
 
     public static ReadOnlyCollection<KeyMapping> getPlayerKeys(int controlIndex)
     {
-        //activePlayerIndex = controlIndex;
-        Debug.Log("activePlayer " + activePlayerIndex);
+        activePlayerIndex = controlIndex;
+        Debug.Log("activePlayer: " + activePlayerIndex);
+        Debug.Log("controlIndex: " + controlIndex);
         return mPlayerList[controlIndex].GetActiveList();
     }
 
-    public static ReadOnlyCollection<KeyMapping> getActivePlayerKeys(int activePlayerIndex)
+    public static ReadOnlyCollection<KeyMapping> getActivePlayerKeys()
     {
         return mPlayerList[activePlayerIndex].GetActiveList();
     }

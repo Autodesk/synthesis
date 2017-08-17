@@ -23,7 +23,6 @@ public class Controls
     //};
     #endregion
 
-    public static bool CheckForKeyRemoval;  //Checks for previous activity in TankDrive
     public static bool TankDriveEnabled;    //Checks if TankDrive is enabled
 
     ///Player indexes (for initializing and creating separate key lists) <see cref="InputControl"/>
@@ -231,13 +230,6 @@ public class Controls
     /// </summary>
     public static void TankDrive()
     {
-        //We don't need to switch back to TankDrive unless ArcadeDrive was previously activated.
-        //If there are keys in the list, remove the unecessary keys to prepare for TankDrive.
-        //if (GameObject.Find("Content").GetComponent<CreateButton>() != null)
-        //{
-        //    RemoveArcadeKeys();
-        //}
-
         TankControls();
         TankDriveEnabled = true;
 
