@@ -797,16 +797,16 @@ public class Robot : MonoBehaviour
         //calculates stats of robot
         if (mainNode != null)
         {
-            Speed = (float)Math.Abs(mainNode.GetComponent<BRigidBody>().velocity.magnitude);
-            Weight = GetWeight();
-            AngularVelocity = (float)Math.Abs(mainNode.GetComponent<BRigidBody>().angularVelocity.magnitude);
-            Acceleration = (float)(mainNode.GetComponent<BRigidBody>().velocity.magnitude - oldSpeed) / Time.deltaTime;
+            Speed = (float)Math.Round(Math.Abs(mainNode.GetComponent<BRigidBody>().velocity.magnitude), 3);
+            Weight = (float)Math.Round(GetWeight(), 3);
+            AngularVelocity = (float)Math.Round(Math.Abs(mainNode.GetComponent<BRigidBody>().angularVelocity.magnitude), 3);
+            Acceleration = (float)Math.Round((mainNode.GetComponent<BRigidBody>().velocity.magnitude - oldSpeed) / Time.deltaTime, 3);
             oldSpeed = Speed;
             if (!mainState.IsMetric)
             {
-                Speed = (float)Math.Round(Speed * 3.28084, 1);
-                Acceleration = (float)Math.Round(Acceleration * 3.28084, 1);
-                Weight = (float)Math.Round(Weight * 2.20462, 1);
+                Speed = (float)Math.Round(Speed * 3.28084, 3);
+                Acceleration = (float)Math.Round(Acceleration * 3.28084, 3);
+                Weight = (float)Math.Round(Weight * 2.20462, 3);
             }
         }
     }
