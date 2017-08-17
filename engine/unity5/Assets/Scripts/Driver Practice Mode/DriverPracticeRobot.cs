@@ -493,7 +493,14 @@ public class DriverPracticeRobot : MonoBehaviour
 
                 DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                 lastCameraState = dynamicCamera.cameraState;
-                dynamicCamera.SwitchCameraState(new DynamicCamera.OrthographicSateliteState(dynamicCamera));
+
+                DynamicCamera.OrthographicSateliteState satellite = new DynamicCamera.OrthographicSateliteState(dynamicCamera);
+                satellite.target = spawnIndicator;
+                satellite.rotationVector = new UnityEngine.Vector3(90f, 90f, 0f);
+                satellite.targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
+                satellite.orthoSize = 4;
+
+                dynamicCamera.SwitchCameraState(satellite);
 
                 Robot.ControlsEnabled = false;
             }
@@ -507,10 +514,6 @@ public class DriverPracticeRobot : MonoBehaviour
         int index = settingSpawn - 1;
         if (spawnIndicator != null)
         {
-            DynamicCamera.OrthographicSateliteState satellite = ((DynamicCamera.OrthographicSateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
-            satellite.target = spawnIndicator;
-            satellite.targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
-            satellite.orthoSize = 4;
             if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.05f;
             if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.05f;
             if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.05f;
@@ -658,7 +661,13 @@ public class DriverPracticeRobot : MonoBehaviour
 
                     DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
-                    dynamicCamera.SwitchCameraState(new DynamicCamera.OrthographicSateliteState(dynamicCamera));
+
+                    DynamicCamera.OrthographicSateliteState satellite = new DynamicCamera.OrthographicSateliteState(dynamicCamera);
+                    satellite.target = goalIndicator;
+                    satellite.targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
+                    satellite.rotationVector = new UnityEngine.Vector3(90f, 90f, 0f);
+                    satellite.orthoSize = 4;
+                    dynamicCamera.SwitchCameraState(satellite);
 
                     Robot.ControlsEnabled = false;
                 }
@@ -677,11 +686,6 @@ public class DriverPracticeRobot : MonoBehaviour
         {
             if (!settingGamepieceGoalVertical)
             {
-                DynamicCamera.OrthographicSateliteState satellite = ((DynamicCamera.OrthographicSateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
-                satellite.target = goalIndicator;
-                satellite.targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
-                satellite.rotationVector = new UnityEngine.Vector3(90f, 90f, 0f);
-                satellite.orthoSize = 4;
                 if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.04f;
                 if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.04f;
                 if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.04f;
@@ -692,15 +696,23 @@ public class DriverPracticeRobot : MonoBehaviour
                 {
                     DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                     DynamicCamera.SateliteState newSatelliteState = new DynamicCamera.SateliteState(dynamicCamera);
-                    dynamicCamera.SwitchCameraState(newSatelliteState);
+                    newSatelliteState.target = goalIndicator;
                     newSatelliteState.rotationVector = new UnityEngine.Vector3(15f, 0f, 0f); // Downward tilt of camera to view slightly from above
+
+                    float offsetDist = goalIndicator.transform.localScale.magnitude + 2; // Set distance of camera to two units further than size of box
+                    newSatelliteState.targetOffset = new UnityEngine.Vector3(0f, 0f, -offsetDist);// offsetDist / 32f, -offsetDist);
+                    newSatelliteState.targetOffset = UnityEngine.Quaternion.Euler(newSatelliteState.rotationVector) * newSatelliteState.targetOffset; // Rotate camera offset to face block
+                    newSatelliteState.targetOffset += new UnityEngine.Vector3(0f, -offsetDist / 10, 0f);
+
+                    dynamicCamera.SwitchCameraState(newSatelliteState);
+
                     settingGamepieceGoalVertical = true;
                 }
             }
             else
             {
                 DynamicCamera.SateliteState satellite = ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
-                satellite.target = goalIndicator;
+                
                 if (Input.GetKey(KeyCode.LeftArrow)) satellite.rotationVector += UnityEngine.Vector3.up * 1f;
                 if (Input.GetKey(KeyCode.RightArrow)) satellite.rotationVector += UnityEngine.Vector3.down * 1f;
                 if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.up * 0.03f;
@@ -709,7 +721,7 @@ public class DriverPracticeRobot : MonoBehaviour
                 if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.03f;
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    UserMessageManager.Dispatch("New gamepiece goal location has been set!", 3f);
+                    UserMessageManager.Dispatch("New goal location has been set!", 3f);
                     gamepieceGoals[index][goalIndex] = goalIndicator.transform.position;
                     gamepieceGoalSizes[index][goalIndex] = goalIndicator.transform.localScale.x;
 

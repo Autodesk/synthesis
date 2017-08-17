@@ -296,9 +296,9 @@ public class DynamicCamera : MonoBehaviour
     public class SateliteState : CameraState
     {
         Vector3 targetPosition;
-        public GameObject target;
-        public Vector3 targetOffset;
-        public Vector3 rotationVector;
+        public GameObject target = GameObject.Find("Robot");
+        public Vector3 targetOffset = new Vector3(0f, 6f, 0f);
+        public Vector3 rotationVector = new Vector3(90f, 90f, 0f);
 
         public SateliteState(MonoBehaviour mono)
         {
@@ -307,10 +307,8 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            target = GameObject.Find("Robot");
             targetPosition = target.transform.position;
-            targetOffset = new Vector3(0f, 6f, 0f);
-            rotationVector = new Vector3(90f, 90f, 0f);
+            mono.transform.position = targetPosition + targetOffset;
             mono.transform.rotation = Quaternion.Euler(rotationVector);
         }
 
@@ -339,10 +337,10 @@ public class DynamicCamera : MonoBehaviour
     public class OrthographicSateliteState : CameraState
     {
         Vector3 targetPosition;
-        public GameObject target;
-        public Vector3 targetOffset;
-        public Vector3 rotationVector;
-        public float orthoSize;
+        public GameObject target = GameObject.Find("Robot");
+        public Vector3 targetOffset = new Vector3(0f, 6f, 0f);
+        public Vector3 rotationVector = new Vector3(90f, 90f, 0f);
+        public float orthoSize = 5;
 
         public OrthographicSateliteState(MonoBehaviour mono)
         {
@@ -351,12 +349,13 @@ public class DynamicCamera : MonoBehaviour
 
         public override void Init()
         {
-            target = GameObject.Find("Robot");
             targetPosition = target.transform.position;
-            targetOffset = new Vector3(0f, 6f, 0f);
-            rotationVector = new Vector3(90f, 90f, 0f);
-            orthoSize = 5;
+
+            mono.transform.position = targetPosition + targetOffset;
             mono.transform.rotation = Quaternion.Euler(rotationVector);
+
+            mono.GetComponent<Camera>().orthographic = true;
+            mono.GetComponent<Camera>().orthographicSize = orthoSize;
         }
 
         public override void Update()

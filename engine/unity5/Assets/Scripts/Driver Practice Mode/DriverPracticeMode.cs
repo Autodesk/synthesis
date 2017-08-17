@@ -335,7 +335,7 @@ public class DriverPracticeMode : MonoBehaviour {
         }
         else
         {
-            if (goalConfiguring) UserMessageManager.Dispatch("You must close the goal configuration window first!", 5);
+            if (goalConfiguring) UserMessageManager.Dispatch("You must close all configuration windows first!", 5);
             else if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
             else
             {
