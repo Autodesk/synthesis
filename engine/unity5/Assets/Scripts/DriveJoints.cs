@@ -261,10 +261,10 @@ public class DriveJoints
             //   (InputControl.GetButton(Controls.buttons[controlIndex].tankBackRight) ? SPEED_ARROW_PWM : 0.0f);
 
             pwm[0] +=
-               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxes) * SPEED_ARROW_PWM);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxes) * SPEED_ARROW_PWM);
 
             pwm[1] +=
-               (InputControl.GetAxis(Controls.axes[controlIndex].tankRightAxes) * SPEED_ARROW_PWM);
+               (InputControl.GetAxis(Controls.axes[controlIndex].tankLeftAxes) * SPEED_ARROW_PWM);
 
             pwm[2] +=
                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm2Axes) * SPEED_ARROW_PWM);
@@ -298,11 +298,11 @@ public class DriveJoints
             //    (InputControl.GetButton(Controls.buttons[controlIndex].right) ? SPEED_ARROW_PWM : 0.0f);
 
             pwm[0] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
 
             pwm[1] +=
-                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
+                (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
                 (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
 
             pwm[2] +=
