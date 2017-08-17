@@ -15,6 +15,8 @@ public class CreateButton : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        DestroyList();
+
         namesTransform = transform.Find("Names");
         keysTransform = transform.Find("Keys");
 
@@ -90,7 +92,6 @@ public class CreateButton : MonoBehaviour
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads the main keys list: getKeysList()
         ReadOnlyCollection<KeyMapping> keys = InputControl.getActivePlayerKeys();
 
         foreach (KeyMapping key in keys)
@@ -601,17 +602,20 @@ public class CreateButton : MonoBehaviour
     {
         tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
         int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
-        Debug.Log("i " + i);
 
         switch (i)
         {
             case 0:
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+                Debug.Log("ActivePlayerIndex: " + InputControl.activePlayerIndex);
                 UpdateActiveButtons();
+                //UpdateSlider();
                 break;
             case 1:
                 InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
+                Debug.Log("ActivePlayerIndex: " + InputControl.activePlayerIndex);
                 UpdateActiveButtons();
+                //UpdateSlider();
                 Controls.TankDriveEnabled = true;
                 break;
             default:
@@ -619,34 +623,19 @@ public class CreateButton : MonoBehaviour
                 UpdateActiveButtons();
                 break;
         }
+        //UpdateSlider();
     }
 
-    //but I am looking at a different issue, the keys are gone after switching though the switch value updates correctly
-    //public void UpdateSlider()
-    //{
-    //    if (Player.isTankDrive)
-    //    {
-    //        tankDriveSwitch.GetComponent<Slider>().value = 0;
-    //    }
-    //    else
-    //    {
-    //        tankDriveSwitch.GetComponent<Slider>().value = 1;
-    //    }
+    public void OnEnable()
+    {
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
+    }
 
-    //The index (2) should be whatever player index your update is
-    //put those lines after u create the buttons.If you put it before it will break
-    //tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
-    //tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[2].isTankDrive? 1 : 0;
-    //}
-
-    //void OnEnable()
-    //{
-    //    if (GameObject.Find("SettingsMode") != null)
-    //    {
-    //        if (mainSlider.direction == Slider.Direction.BottomToTop)
-    //        {
-    //            mainSlider.direction = Slider.Direction.TopToBottom;
-    //        }
-    //    }
-    //}
+    public void UpdateSlider()
+    {
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
+        Debug.Log("Slider Value: " + InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive);
+    }
 }
