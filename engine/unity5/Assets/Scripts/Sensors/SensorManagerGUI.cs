@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Assets.Scripts.FSM;
 
 /// <summary>
 /// This class handles every sensor-related GUI elements in Unity
@@ -14,6 +15,7 @@ class SensorManagerGUI : MonoBehaviour
     DynamicCamera.CameraState preConfigState;
     DynamicCamera dynamicCamera;
     RobotCameraGUI robotCameraGUI;
+    MainState main;
 
     GameObject configureSensorButton;
     GameObject sensorOptionPanel;
@@ -41,6 +43,7 @@ class SensorManagerGUI : MonoBehaviour
     GameObject editRangeButton;
     GameObject showRangeButton;
     GameObject RangeEntry;
+    Text rangeUnit;
 
     GameObject showSensorButton;
     GameObject sensorConfigurationModeButton;
@@ -80,6 +83,10 @@ class SensorManagerGUI : MonoBehaviour
 
     private void Update()
     {
+        if(main == null)
+        {
+            main = GameObject.Find("StateMachine").GetComponent<StateMachine>().CurrentState as MainState;
+        }
         //Find the dynamic camera
         if (dynamicCamera == null)
         {
@@ -143,6 +150,7 @@ class SensorManagerGUI : MonoBehaviour
         RangeEntry = AuxFunctions.FindObject(sensorRangePanel, "RangeEntry");
         showRangeButton = AuxFunctions.FindObject(configureSensorPanel, "ShowSensorRangeButton");
         editRangeButton = AuxFunctions.FindObject(sensorRangePanel, "EditButton");
+        rangeUnit = AuxFunctions.FindObject(sensorRangePanel, "RangeUnit").GetComponent<Text>();
 
         lockPositionButton = AuxFunctions.FindObject(configureSensorPanel, "LockPositionButton");
         lockAngleButton = AuxFunctions.FindObject(configureSensorPanel, "LockAngleButton");
@@ -600,6 +608,8 @@ class SensorManagerGUI : MonoBehaviour
     /// </summary>
     public void UpdateSensorRangePanel()
     {
+        if (main.IsMetric) rangeUnit.text = "Range (meters)";
+        else rangeUnit.text = "Range (feet)";
         if (!isEditingRange)
         {
             RangeEntry.GetComponent<InputField>().text = currentSensor.GetSensorRange().ToString();
@@ -614,7 +624,7 @@ class SensorManagerGUI : MonoBehaviour
         float temp = 0;
         if ((float.TryParse(RangeEntry.GetComponent<InputField>().text, out temp) && temp >= 0))
         {
-            currentSensor.SetSensorRange(temp);
+            currentSensor.SetSensorRange(temp, true);
         }
     }
 

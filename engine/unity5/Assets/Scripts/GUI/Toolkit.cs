@@ -14,8 +14,6 @@ public class Toolkit : MonoBehaviour
 
     private bool ignoreClick = true;
     
-
-
     private GameObject canvas;
     private MainState mainState;
     private GameObject toolkitWindow;
@@ -41,6 +39,16 @@ public class Toolkit : MonoBehaviour
     private bool stopwatchOn;
     private bool stopwatchPaused;
     private float stopwatchTime;
+
+    private GameObject statsWindow;
+    private GameObject speedEntry;
+    private GameObject accelerationEntry;
+    private GameObject angularVelocityEntry;
+    private GameObject weightEntry;
+    private Text speedUnit;
+    private Text accelerationUnit;
+    private Text weightUnit;
+    private bool statsOn;
 
     //dummy robot variables
     private GameObject dummyWindow;
@@ -74,6 +82,16 @@ public class Toolkit : MonoBehaviour
         dummyList = AuxFunctions.FindObject(canvas, "DummyList").GetComponent<DummyScrollable>();
         dummyIndicator = GameObject.Find("DummyIndicator");
         dummyIndicator.SetActive(false);
+
+        //Stats Objects
+        statsWindow = AuxFunctions.FindObject(canvas, "StatsPanel");
+        speedEntry = AuxFunctions.FindObject(statsWindow, "SpeedEntry");
+        speedUnit = AuxFunctions.FindObject(speedEntry, "Unit").GetComponent<Text>();
+        accelerationEntry = AuxFunctions.FindObject(statsWindow, "AccelerationEntry");
+        accelerationUnit = AuxFunctions.FindObject(accelerationEntry, "Unit").GetComponent<Text>();
+        angularVelocityEntry = AuxFunctions.FindObject(statsWindow, "AngularVelocityEntry");
+        weightEntry = AuxFunctions.FindObject(statsWindow, "WeightEntry");
+        weightUnit = AuxFunctions.FindObject(weightEntry, "Unit").GetComponent<Text>();
     }
 
     // Update is called once per frame
@@ -88,6 +106,10 @@ public class Toolkit : MonoBehaviour
 
         UpdateStopwatch();
 
+        if (statsOn)
+        {
+            UpdateStatsWindow();
+        }
         //UpdateControlIndicator();
 
     }
@@ -117,8 +139,8 @@ public class Toolkit : MonoBehaviour
     {
         if (show)
         {
+            EndProcesses(true);
             rulerWindow.SetActive(true);
-            ToggleStopwatchWindow(false);
         }
         else
         {
@@ -214,7 +236,7 @@ public class Toolkit : MonoBehaviour
     {
         if (show)
         {
-            ToggleRulerWindow(false);
+            EndProcesses(true);
             stopwatchWindow.SetActive(true);
         }
         else
@@ -280,11 +302,49 @@ public class Toolkit : MonoBehaviour
 
 
     #endregion
+    #region Stats Functions
+    public void ToggleStatsWindow(bool show)
+    {
+        if (show) EndProcesses(true);
+        statsOn = show;
+        statsWindow.SetActive(show);
+    }
 
-    public void EndProcesses()
+    public void ToggleStatsWindow()
+    {
+        ToggleStatsWindow(!statsWindow.activeSelf);
+    }
+
+    /// <summary>
+    /// Update the stats window and give it correct units when statsOn
+    /// </summary>
+    public void UpdateStatsWindow()
+    {
+        speedEntry.GetComponent<InputField>().text = mainState.activeRobot.Speed.ToString();
+        accelerationEntry.GetComponent<InputField>().text = mainState.activeRobot.Acceleration.ToString();
+        angularVelocityEntry.GetComponent<InputField>().text = mainState.activeRobot.AngularVelocity.ToString();
+        weightEntry.GetComponent<InputField>().text = mainState.activeRobot.Weight.ToString();
+        if (mainState.IsMetric)
+        {
+            speedUnit.text = "m/s";
+            accelerationUnit.text = "m/s^2";
+            weightUnit.text = "kg";
+        }
+        else
+        {
+            speedUnit.text = "ft/s";
+            accelerationUnit.text = "ft/s^2";
+            weightUnit.text = "lbs";
+        }
+    }
+    #endregion
+
+    public void EndProcesses(bool toolkitWindowOn = false)
     {
         ToggleRulerWindow(false);
-        toolkitWindow.SetActive(false);
+        toolkitWindow.SetActive(toolkitWindowOn);
+        ToggleStatsWindow(false);
+        ToggleStopwatchWindow(false);
     }
     /*
     #region Dummy Robot
