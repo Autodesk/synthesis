@@ -61,17 +61,17 @@ public class MaMGetters : MonoBehaviour {
         switch (wheelID)
         {
             case 0: //traction wheel
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Traction\\node_0.bxda");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Traction");
             case 1: //colson wheel
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson\\node_0.bxda");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson");
             case 2: //omni wheel
                 break;
             case 3: //pnemuatic wheel
-                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Pneumatic\\node_0.bxda");
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Pneumatic");
 
         }
 
-        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson\\node_0.bxda");
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson");
     }
 
     ///<summary> 
@@ -109,6 +109,25 @@ public class MaMGetters : MonoBehaviour {
                 return 0.42f;
             case 3: //pneumatic wheel
                 return 0.51f;
+        }
+        return 1.0f;
+    }
+
+    ///<summary>
+    ///Returns the wheel radius associated with a wheel. Radius are taken off Vex's website and converted to meters.
+    /// </summary>
+    public float GetWheelRadius(int wheelID)
+    {
+        switch (wheelID)
+        {
+            case 0: //traction wheel
+                return 0.0762f;
+            case 1: //colson wheel
+                return 0.0508f;
+            case 2: //omni wheel
+                return 0.0762f;
+            case 3: //pneumatic wheel
+                return 0.1016f;
         }
         return 1.0f;
     }
