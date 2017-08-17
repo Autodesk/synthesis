@@ -4,33 +4,51 @@ using UnityEngine;
 using System.Collections.ObjectModel;
 using UnityEngine.UI;
 
+//=========================================================================================
+//                          Player Class
+// Description: Controls the individual player's controls through KeyMapping Lists and Maps
+// Adapted from: https://github.com/Gris87/InputControl
+//=========================================================================================
 public class Player : MonoBehaviour
 {
     public Player()
     {
+        //Constructor; defaults the player to Arcade Drive
         activeList = arcadeDriveList;
     }
-	// Use this for initialization
-	void Start ()
-    {
-		
-	}
 
+    // Use this for initialization
+    void Start()
+    {
+
+    }
+
+    //Checks if Tank Drive is enabled
     public bool isTankDrive;
 
+    //The list called on the current player; set of current keys
     private List<KeyMapping> activeList;
-    private List<KeyMapping> arcadeDriveList = new List<KeyMapping>();
-    private List<KeyMapping> tankDriveList = new List<KeyMapping>();
 
+    //Set of arcade drive keys
+    private List<KeyMapping> arcadeDriveList = new List<KeyMapping>();
     private Dictionary<string, KeyMapping> arcadeDriveMap = new Dictionary<string, KeyMapping>();
+
+    //Set of Tank Drive keys
+    private List<KeyMapping> tankDriveList = new List<KeyMapping>();
     private Dictionary<string, KeyMapping> tankDriveMap = new Dictionary<string, KeyMapping>();
 
+    //Set of arcade drive axes.
     private List<Axis> arcadeAxesList = new List<Axis>();
+    private Dictionary<string, Axis> arcadeAxesMap = new Dictionary<string, Axis>();
+
+    //Set of tank drive axes.
+    private Dictionary<string, Axis> tankAxesMap = new Dictionary<string, Axis>();
     private List<Axis> tankAxesList = new List<Axis>();
 
-    private Dictionary<string, Axis> arcadeAxesMap = new Dictionary<string, Axis>();
-    private Dictionary<string, Axis> tankAxesMap = new Dictionary<string, Axis>();
 
+    ///The SetKey() and SetAxis() Functions called here are specific to our Controls.cs initialization.
+    ///Additional functions can be found in <see cref="InputControl"/>
+    #region setKey() and setAxis() Functions
     /// <summary>
     /// Create new <see cref="KeyMapping"/> with specified name and inputs.
     /// </summary>
@@ -146,44 +164,9 @@ public class Player : MonoBehaviour
     //        TankAxesMap.Add(name, outAxis);
     //    }
     //}
+    #endregion
 
-    public ReadOnlyCollection<KeyMapping> GetTankList()
-    {
-        return tankDriveList.AsReadOnly();
-    }
-
-    public ReadOnlyCollection<KeyMapping> GetArcadeList()
-    {
-        return arcadeDriveList.AsReadOnly();
-    }
-
-    public ReadOnlyCollection<Axis> GetTankAxesList()
-    {
-        return tankAxesList.AsReadOnly();
-    }
-
-    public ReadOnlyCollection<Axis> GetArcadeAxesList()
-    {
-        return arcadeAxesList.AsReadOnly();
-    }
-
-    public ReadOnlyCollection<KeyMapping> GetActiveList()
-    {
-        return activeList.AsReadOnly();
-    }
-
-    public void SetTankDrive()
-    {
-        isTankDrive = true;
-        activeList = tankDriveList;
-    }
-
-    public void SetArcadeDrive()
-    {
-        isTankDrive = false;
-        activeList = arcadeDriveList;
-    }
-
+    #region argToInput Helper Functions for setKey() and setAxis()
     /// <summary>
     /// Convert argument to <see cref="CustomInput"/>.
     /// </summary>
@@ -202,5 +185,50 @@ public class Player : MonoBehaviour
     private static CustomInput argToInput(KeyCode arg)
     {
         return new KeyboardInput(arg);
+    }
+    #endregion
+
+
+    public ReadOnlyCollection<KeyMapping> GetTankList()
+    {
+        return tankDriveList.AsReadOnly();
+    }
+
+    public ReadOnlyCollection<KeyMapping> GetArcadeList()
+    {
+        return arcadeDriveList.AsReadOnly();
+    }
+
+    public ReadOnlyCollection<KeyMapping> GetActiveList()
+    {
+        return activeList.AsReadOnly();
+    }
+
+    public ReadOnlyCollection<Axis> GetTankAxesList()
+    {
+        return tankAxesList.AsReadOnly();
+    }
+
+    public ReadOnlyCollection<Axis> GetArcadeAxesList()
+    {
+        return arcadeAxesList.AsReadOnly();
+    }
+
+    /// <summary>
+    /// Sets the activeList to Tank Drive.
+    /// </summary>
+    public void SetTankDrive()
+    {
+        isTankDrive = true;
+        activeList = tankDriveList;
+    }
+
+    /// <summary>
+    /// Sets the activeList to Arcade Drive.
+    /// </summary>
+    public void SetArcadeDrive()
+    {
+        isTankDrive = false;
+        activeList = arcadeDriveList;
     }
 }
