@@ -6,28 +6,68 @@ using UnityEngine.UI;
 public class GameplayTimer : MonoBehaviour
 {
     public Text timerText;
+    public Image timerBackground;
     public Image scoreBackground;
 
-    public bool timerRunning;
     public float timeLimit = 135.0f;
 
+    bool timerRunning;
     float timeStart;
     float timeStop;
+    float timeLeft;
 
     void Update()
     {
         UpdateTimer();
     }
 
+    private void UpdateTimer()
+    {
+        if (timerRunning)
+        {
+            timeStop = Time.time;
+            
+            if (Time.time - timeStart >= timeLimit)
+            {
+                timeStop = timeStart + timeLimit + 0.01f; // Adjust past time limit to ensure time left is negative (prevents the ceiling function from returning 1 as the time)
+                EndOfGame();
+            }
+        }
+
+        timeLeft = timeLimit - (timeStop - timeStart);
+
+        timerText.text = Mathf.CeilToInt(timeLeft).ToString();
+    }
+
+    public bool IsTimerRunning()
+    {
+        return timerRunning;
+    }
+
+    public float GetTimeLeft()
+    {
+        UpdateTimer();
+        return timeLeft;
+    }
+
+    public float GetTimeSinceStart()
+    {
+        return timeLimit - GetTimeLeft();
+    }
+
     public void StartTimer()
     {
         timeStart = Time.time;
         timerRunning = true;
+        scoreBackground.color = new Color(0 /255f,  235 /255f,  0 /255f,  127 /255f);
+        timerBackground.color = new Color(0 / 255f, 255 / 255f, 0 / 255f, 127 / 255f);
     }
 
     public void StopTimer()
     {
         timerRunning = false;
+        scoreBackground.color = new Color(255 /255f,  255 /255f, 255 /255f, 50 /255f);
+        timerBackground.color = new Color(255 / 255f, 0 / 255f,  0 / 255f,  127 / 255f);
     }
 
     public void ResumeTimer()
@@ -36,31 +76,10 @@ public class GameplayTimer : MonoBehaviour
         timerRunning = true;
     }
 
-    public void UpdateTimer()
+    public void EndOfGame()
     {
-        if (timerRunning)
-        {
-            timeStop = Time.time;
-
-            scoreBackground.color = Color.green;
-        }
-        else
-        {
-            scoreBackground.color = Color.red;
-        }
-
-        float timeLeft = timeLimit - (timeStop - timeStart);
-
-        timerText.text = ((int) timeLeft).ToString();
-
-        if (timeLimit - (Time.time - timeStart) <= 0)
-        {
-            // End of game
-            StopTimer();
-            timeStop = timeStart + timeLimit;
-
-            //GameBehaviour.GameEnd();
-            //return;
-        }
+        timerRunning = false;
+        scoreBackground.color = new Color(235 / 255f, 0 / 255f, 0 / 255f, 50 / 255f);
+        timerBackground.color = new Color(255 / 255f, 0 / 255f, 0 / 255f, 127 / 255f);
     }
 }

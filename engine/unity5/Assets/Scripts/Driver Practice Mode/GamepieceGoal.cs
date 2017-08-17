@@ -40,7 +40,9 @@ public class DriverPracticeGoal : BCollisionCallbacksDefault
 
                     gamepieceObject.SetActive(false);
 
-                    AuxFunctions.FindObject("ScorePanel").GetComponent<Scoreboard>().AddPoints(pointValue, description);
+                    GameObject stateMachine = AuxFunctions.FindObject("StateMachine");
+                    
+                    stateMachine.GetComponent<Scoreboard>().AddPoints(pointValue, description);
                 }
             }
         }

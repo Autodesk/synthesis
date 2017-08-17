@@ -7,6 +7,8 @@ using Assets.Scripts.FSM;
 public class DriverPracticeMode : MonoBehaviour {
 
     private DriverPracticeRobot dpmRobot;
+    private Scoreboard scoreboard;
+    private GameplayTimer timer;
     private SimUI simUI;
     private MainState mainState;
 
@@ -14,6 +16,8 @@ public class DriverPracticeMode : MonoBehaviour {
 
     GameObject dpmWindow;
     GameObject scoreWindow;
+    GameObject scoreLogWindow;
+    GameObject timerWindow;
     GameObject configWindow;
     GameObject goalConfigWindow;
     GameObject defineIntakeWindow;
@@ -53,6 +57,8 @@ public class DriverPracticeMode : MonoBehaviour {
     GameObject lockPanel;
 
     public bool dpmWindowOn = false; //if the driver practice mode window is active
+    public bool gameStarted = false; //if a game has started
+    public bool gameEnded = false; //if the game started has ended
     public bool configuring = false; //if the configuration window is active
     public bool goalConfiguring = false; //if the goal configuration window is active
     public int configuringIndex = 0; //0 if user is configuring primary, 1 if user is configuring secondary
@@ -93,16 +99,23 @@ public class DriverPracticeMode : MonoBehaviour {
             UpdateWindows();
 
             if (settingControl != 0) ListenControl();
+
+            if (gameStarted && !timer.IsTimerRunning())
+                gameEnded = true;
         }
     }
 
     void FindElements()
     {
         canvas = GameObject.Find("Canvas");
+        scoreboard = GetComponent<Scoreboard>();
+        timer = GetComponent<GameplayTimer>();
         simUI = GetComponent<SimUI>();
 
         dpmWindow = AuxFunctions.FindObject(canvas, "DPMPanel");
         scoreWindow = AuxFunctions.FindObject(canvas, "ScorePanel");
+        scoreLogWindow = AuxFunctions.FindObject(canvas, "ScoreLogPanel");
+        timerWindow = AuxFunctions.FindObject(canvas, "GameplayTimerPanel");
         configWindow = AuxFunctions.FindObject(canvas, "ConfigurationPanel");
         goalConfigWindow = AuxFunctions.FindObject(canvas, "GoalConfigPanel");
 
@@ -245,6 +258,9 @@ public class DriverPracticeMode : MonoBehaviour {
                 configWindow.SetActive(false);
                 goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
+                scoreWindow.SetActive(false);
+                scoreLogWindow.SetActive(false);
+                timerWindow.SetActive(false);
                 defineGamepieceWindow.SetActive(true);
             }
             else if (dpmRobot.settingSpawn != 0)
@@ -252,6 +268,9 @@ public class DriverPracticeMode : MonoBehaviour {
                 configWindow.SetActive(false);
                 goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
+                scoreWindow.SetActive(false);
+                scoreLogWindow.SetActive(false);
+                timerWindow.SetActive(false);
                 setSpawnWindow.SetActive(true);
             }
             else if (dpmRobot.settingGamepieceGoal != 0)
@@ -259,6 +278,9 @@ public class DriverPracticeMode : MonoBehaviour {
                 configWindow.SetActive(false);
                 goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
+                scoreWindow.SetActive(false);
+                scoreLogWindow.SetActive(false);
+                timerWindow.SetActive(false);
                 if (!dpmRobot.settingGamepieceGoalVertical)
                 {
                     setGoalXZWindow.SetActive(true);
@@ -275,6 +297,9 @@ public class DriverPracticeMode : MonoBehaviour {
                 configWindow.SetActive(false);
                 goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
+                scoreWindow.SetActive(false);
+                scoreLogWindow.SetActive(false);
+                timerWindow.SetActive(false);
                 defineIntakeWindow.SetActive(true);
             }
             else if (dpmRobot.definingRelease)
@@ -282,6 +307,9 @@ public class DriverPracticeMode : MonoBehaviour {
                 configWindow.SetActive(false);
                 goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
+                scoreWindow.SetActive(false);
+                scoreLogWindow.SetActive(false);
+                timerWindow.SetActive(false);
                 defineReleaseWindow.SetActive(true);
             }
             else
@@ -293,10 +321,14 @@ public class DriverPracticeMode : MonoBehaviour {
                 defineIntakeWindow.SetActive(false);
                 defineReleaseWindow.SetActive(false);
                 dpmWindow.SetActive(true);
+                scoreWindow.SetActive(true);
                 configWindow.SetActive(true);
 
                 if (goalConfiguring)
                     goalConfigWindow.SetActive(true);
+
+                if (gameStarted)
+                    timerWindow.SetActive(true);
             }
         }
     }
@@ -332,6 +364,7 @@ public class DriverPracticeMode : MonoBehaviour {
             enableDPMText.text = "Disable Driver Practice Mode";
             lockPanel.SetActive(false);
             scoreWindow.SetActive(true);
+            scoreboard.ResetScore();
         }
         else
         {
@@ -345,9 +378,30 @@ public class DriverPracticeMode : MonoBehaviour {
                 dpmRobot.modeEnabled = false;
                 lockPanel.SetActive(true);
                 scoreWindow.SetActive(false);
+                scoreLogWindow.SetActive(false);
+                timer.StopTimer();
+                timerWindow.SetActive(false);
             }
 
         }
+    }
+
+    public void StartGame()
+    {
+        timerWindow.SetActive(true);
+        timer.StartTimer();
+        scoreboard.ResetScore();
+        gameStarted = true;
+        gameEnded = false;
+    }
+
+    public void StopGame()
+    {
+        timer.StopTimer();
+        timerWindow.SetActive(false);
+        scoreboard.ResetScore();
+        gameStarted = false;
+        gameEnded = true;
     }
 
     /// <summary>
@@ -672,6 +726,7 @@ public class DriverPracticeMode : MonoBehaviour {
             CancelDefineRelease();
             CancelGamepieceSpawn();
             CancelGamepieceGoal();
+            StopGame();
         }
     }
 

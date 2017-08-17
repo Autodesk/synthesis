@@ -12,7 +12,10 @@ public struct ScoreEvent
 
     public override string ToString()
     {
-        return "(" + timeStamp.ToString() + "s)    " + description + "  (" + value.ToString() + " points)";
+        if (timeStamp < 0) // No timestamp
+            return description + "  (" + value.ToString() + " points)";
+        else
+            return "(" + timeStamp.ToString("0.00") + "s)  " + description + "  (" + value.ToString() + " points)";
     }
 }
 
@@ -21,33 +24,43 @@ public class Scoreboard : MonoBehaviour
     public Text scoreDisplay;
     public Text scoreLog;
 
+    Scrollbar scoreLogScrollbar;
+    GameplayTimer timer;
+    DriverPracticeMode dpm;
+
     List<ScoreEvent> scoreEvents;
 
-    Scrollbar scoreLogScrollbar;
-
-    private void Awake()
+    private void Start()
     {
         // Get scrollbar so that it can be reset when log is updated
         GameObject verticalScroll = AuxFunctions.FindObject(scoreLog.transform.parent.parent.parent.gameObject, "Scrollbar Vertical");
         scoreLogScrollbar = verticalScroll.GetComponent<Scrollbar>();
-    }
+        
+        timer = GetComponent<GameplayTimer>();
+        dpm = GetComponent<DriverPracticeMode>();
 
-    private void OnEnable()
-    {
         ResetScore();
     }
 
     public void AddPoints(int points, string description)
     {
-        ScoreEvent scrEvnt = new ScoreEvent();
+        if (dpm.gameStarted && !dpm.gameEnded || !dpm.gameStarted)
+        {
+            ScoreEvent scrEvnt = new ScoreEvent();
 
-        scrEvnt.value = points;
-        scrEvnt.timeStamp = Time.time;
-        scrEvnt.description = description;
+            scrEvnt.value = points;
 
-        scoreEvents.Add(scrEvnt);
+            if (dpm.gameStarted && !dpm.gameEnded)
+                scrEvnt.timeStamp = timer.GetTimeSinceStart();
+            else
+                scrEvnt.timeStamp = -1; // Game has not started, no point of reference for time.
 
-        UpdateDisplay();
+            scrEvnt.description = description;
+
+            scoreEvents.Add(scrEvnt);
+
+            UpdateDisplay();
+        }
     }
 
     public int GetScoreTotal()
