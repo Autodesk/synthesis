@@ -69,7 +69,7 @@
             this.textBoxX.Name = "textBoxX";
             this.textBoxX.Size = new System.Drawing.Size(100, 22);
             this.textBoxX.TabIndex = 3;
-            this.textBoxX.TextChanged += new System.EventHandler(this.textBoxX_TextChanged);
+            this.textBoxX.TextChanged += new System.EventHandler(this.TextBoxX_TextChanged);
             // 
             // textBoxY
             // 
@@ -77,7 +77,7 @@
             this.textBoxY.Name = "textBoxY";
             this.textBoxY.Size = new System.Drawing.Size(100, 22);
             this.textBoxY.TabIndex = 4;
-            this.textBoxY.TextChanged += new System.EventHandler(this.textBoxY_TextChanged);
+            this.textBoxY.TextChanged += new System.EventHandler(this.TextBoxY_TextChanged);
             // 
             // textBoxZ
             // 
@@ -85,7 +85,7 @@
             this.textBoxZ.Name = "textBoxZ";
             this.textBoxZ.Size = new System.Drawing.Size(100, 22);
             this.textBoxZ.TabIndex = 5;
-            this.textBoxZ.TextChanged += new System.EventHandler(this.textBoxZ_TextChanged);
+            this.textBoxZ.TextChanged += new System.EventHandler(this.TextBoxZ_TextChanged);
             // 
             // EditCoordinate
             // 

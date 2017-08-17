@@ -73,7 +73,6 @@ namespace Assets.Scripts.FEA
         private EditMode editMode;
 
         private string fieldPath;
-        private string robotPath;
 
         private float rewindTime;
         private float playbackSpeed;
@@ -165,14 +164,13 @@ namespace Assets.Scripts.FEA
         /// <summary>
         /// Creates a new ReplayState instance.
         /// </summary>
-        public ReplayState(string fieldPath, string robotPath, FixedQueue<List<ContactDescriptor>> contactPoints, List<Tracker> trackers)
+        public ReplayState(string fieldPath, FixedQueue<List<ContactDescriptor>> contactPoints)
         {
             tStart = Time.time;
 
             this.fieldPath = fieldPath;
-            this.robotPath = robotPath;
             this.contactPoints = contactPoints.ToList();
-            this.trackers = trackers;
+            trackers = UnityEngine.Object.FindObjectsOfType<Tracker>().ToList();
 
             playbackMode = PlaybackMode.Paused;
             firstFrame = true;
@@ -391,7 +389,7 @@ namespace Assets.Scripts.FEA
 
                             if (collisionPoint.z > 0.0f)
                             {
-                                Rect circleRect = new Rect(collisionPoint.x - CircleRadius, Screen.height - (collisionPoint.y - CircleRadius),
+                                Rect circleRect = new Rect(collisionPoint.x - CircleRadius, Screen.height - (collisionPoint.y + CircleRadius),
                                     CircleRadius * 2, CircleRadius * 2);
 
                                 bool shouldActivate = false;
@@ -444,16 +442,25 @@ namespace Assets.Scripts.FEA
             Rect saveRect = new Rect(Screen.width - SaveWidth - SaveMargin, SaveMargin, SaveWidth, SaveHeight);
 
             if (GUI.Button(saveRect, string.Empty, saveStyle))
-                StateMachine.Instance.PushState(new SaveReplayState(fieldPath, robotPath, trackers, contactPoints));
+                StateMachine.Instance.PushState(new SaveReplayState(fieldPath, trackers, contactPoints));
 
             if (GUI.Button(new Rect(ReturnMargin, ReturnMargin, ReturnWidth, ReturnHeight), string.Empty, returnStyle))
                 StateMachine.Instance.PopState();
         }
 
         /// <summary>
-        /// Updates the positions and rotations of each tracker's parent object according to the replay time.
+        /// Pops the replay state if the tab key is pressed.
         /// </summary>
         public override void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Tab))
+                StateMachine.Instance.PopState();
+        }
+
+        /// <summary>
+        /// Updates the positions and rotations of each tracker's parent object according to the replay time.
+        /// </summary>
+        public override void LateUpdate()
         {
             if (dynamicCamera == null)
             {
@@ -461,7 +468,7 @@ namespace Assets.Scripts.FEA
                 camera = dynamicCamera.GetComponent<Camera>();
             }
 
-            if (InputControl.GetButtonDown(Controls.buttons.cameraToggle))
+            if (InputControl.GetButtonDown(Controls.buttons[0].cameraToggle))
                 dynamicCamera.ToggleCameraState(dynamicCamera.cameraState);
 
             if (firstFrame)
@@ -495,22 +502,22 @@ namespace Assets.Scripts.FEA
             switch (playbackMode)
             {
                 case PlaybackMode.Rewind:
-                    rewindTime += Time.smoothDeltaTime * playbackSpeed;
+                    rewindTime += Time.deltaTime;
                     break;
                 case PlaybackMode.Play:
-                    rewindTime -= Time.smoothDeltaTime * playbackSpeed;
+                    rewindTime -= Time.deltaTime;
                     break;
             }
 
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                rewindTime += Time.smoothDeltaTime * 0.25f;
+                rewindTime += Time.deltaTime * (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ? 0.05f : 0.25f);
                 playbackMode = PlaybackMode.Paused;
             }
 
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                rewindTime -= Time.smoothDeltaTime * 0.25f;
+                rewindTime -= Time.deltaTime * (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ? 0.05f : 0.25f);
                 playbackMode = PlaybackMode.Paused;
             }
 
@@ -535,21 +542,14 @@ namespace Assets.Scripts.FEA
 
                 float percent = replayTime - currentIndex;
 
-                RigidBody r = (RigidBody)t.GetComponent<BRigidBody>().GetCollisionObject();
+                BRigidBody rb = t.GetComponent<BRigidBody>();
 
-                if (!r.IsActive)
-                    r.Activate();
+                if (!rb.GetCollisionObject().IsActive)
+                    rb.GetCollisionObject().Activate();
 
-                BulletSharp.Math.Matrix worldTransform = r.WorldTransform;
-
-                worldTransform.Origin = BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent);
-                worldTransform.Basis = BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent);
-
-                r.WorldTransform = worldTransform;
+                rb.SetPosition(BulletSharp.Math.Vector3.Lerp(lowerState.Position, upperState.Position, percent).ToUnity());
+                rb.SetRotation(BulletSharp.Math.Matrix.Lerp(lowerState.Rotation, upperState.Rotation, percent).GetOrientation().ToUnity());
             }
-
-            if (Input.GetKeyDown(KeyCode.Tab))
-                StateMachine.Instance.PopState();
         }
 
         /// <summary>

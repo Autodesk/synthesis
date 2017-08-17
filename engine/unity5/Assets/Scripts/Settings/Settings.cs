@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
-public class Settings : MonoBehaviour {
-
+public class Settings : MonoBehaviour
+{
 	// Use this for initialization
 	void Start () {
         DontDestroyOnLoad(this);
-        //gameObject.AddComponent<Controls>();
-        //Controls.Reset();
         Controls.Load();
 	}
 	

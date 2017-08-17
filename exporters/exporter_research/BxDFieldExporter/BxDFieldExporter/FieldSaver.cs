@@ -7,60 +7,105 @@ using System.IO;
 using System.Collections;
 using BxDFieldExporter;
 
-namespace ExportProcess {
-    public class FieldSaver {
+namespace ExportProcess
+{
+    public class FieldSaver
+    {
         #region State Variables
         private TempReader tempReader;
         private TempWriter tempWriter;
         private JointResolver jointResolver;
         private Inventor.Application currentApplication;
         private List<byte> fileData = new List<byte>();
-
+        private InvAddIn.LoadingForm loadAnimation = new InvAddIn.LoadingForm();
+        private readonly byte majVersion = 1, minVersion = 0, patVersion = 0, intVersion = 0;
+        private byte[] majVersionBytes, minVersionBytes, patVersionBytes, intVersionBytes;
+        private readonly string filePath = "C:\\Users\\" + System.Environment.UserName + "\\Documents\\Synthesis\\Fields\\";
         #endregion
-        public FieldSaver(Inventor.Application currentApplication, ArrayList fieldDataList) {
-            tempReader = new TempReader((AssemblyDocument)currentApplication.ActiveDocument, fieldDataList);
-            tempWriter = new TempWriter(currentApplication, ((AssemblyDocument)currentApplication.ActiveDocument).Thumbnail, fieldDataList);
-            jointResolver = new JointResolver(currentApplication, tempReader.getSTLDict());
-            this.currentApplication = currentApplication;
-           
-        }
-        private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            MessageBox.Show("Conversion " + (((bool)e.Result) ? "successful." : "failed."));
-        }
-        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e) {
-            e.Result = Manager();
-        }
-        private bool Manager() {
-            try {
-                tempWriter.Save();
-                foreach(byte fileSec in tempReader.readFiles()) {
-                    fileData.Add(fileSec);
+        /// <summary>
+        /// Constructor for the field saver object which will begin the export process
+        /// </summary>
+        /// <param name="currentApplication"></param>
+        /// <param name="fieldDataList"></param>
+        public FieldSaver(Inventor.Application currentApplication, ArrayList fieldDataList)
+        {
+            try
+            {
+                if (System.IO.File.Exists(filePath + currentApplication.ActiveDocument.DisplayName.Substring
+                    (0, currentApplication.ActiveDocument.DisplayName.Length - 3) + "field"))
+                {
+                    DialogResult dialogResult = MessageBox.Show("This file already exists, would you like to replace it?", "Error", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes) System.IO.File.Delete(filePath + currentApplication.ActiveDocument.DisplayName.Substring
+                      (0, currentApplication.ActiveDocument.DisplayName.Length - 3) + "field");
+                    if (dialogResult == DialogResult.No) throw new Exception();
                 }
-                foreach (byte jointSec in jointResolver.readJoints()) {
-                    fileData.Add(jointSec);
-                        }
+                majVersionBytes = BitConverter.GetBytes(majVersion);
+                minVersionBytes = BitConverter.GetBytes(minVersion);
+                patVersionBytes = BitConverter.GetBytes(patVersion);
+                intVersionBytes = BitConverter.GetBytes(intVersion);
+                tempReader = new TempReader((AssemblyDocument)currentApplication.ActiveDocument, fieldDataList);
+                tempWriter = new TempWriter(currentApplication, (currentApplication.ActiveDocument).Thumbnail, fieldDataList);
+                this.currentApplication = currentApplication;
+            }
+            catch (Exception e)
+            {
+                return;
+            }
+        }
+ 
+        private bool Manager()
+        {
+            try
+            {
+                List<byte> versionBytes = new List<byte>();
+                versionBytes.AddRange(majVersionBytes);
+                versionBytes.AddRange(minVersionBytes);
+                versionBytes.AddRange(patVersionBytes);
+                versionBytes.AddRange(intVersionBytes);
+                fileData.AddRange(versionBytes);
+                for (int bit = 0; bit != 72; bit++)
+                {
+                    fileData.Add(BitConverter.GetBytes(' ')[0]);
+                }
+                tempWriter.Save();
+                jointResolver = new JointResolver(currentApplication, tempReader.GetSTLDict());
+                fileData.AddRange(tempReader.ReadFiles());
+                byte[] jointBytes;
+                jointBytes = jointResolver.ReadJoints();
+                if (jointBytes != null) fileData.AddRange(jointBytes);
                 Assembler();
                 return true;
             }
-            catch(Exception e) {
+            catch (Exception e)
+            {
                 MessageBox.Show(e.Message + e.StackTrace);
                 return false;
             }
         }
 
-        private void Assembler() {
-            using (BinaryWriter robotWriter = new BinaryWriter(new FileStream("C:\\Users\\" + System.Environment.UserName + "\\AppData\\Roaming\\Autodesk\\Synthesis\\" + 
-                currentApplication.ActiveDocument.DisplayName.Substring(0, currentApplication.ActiveDocument.DisplayName.Length-3) + ".robot", FileMode.Append))) {
-                foreach (byte fileSection in fileData) {
-                    robotWriter.Write(fileSection);
+        private void Assembler()
+        {
+            try
+            {
+                if (!Directory.Exists(filePath)) Directory.CreateDirectory(filePath);
+                using (BinaryWriter fieldWriter = new BinaryWriter(new FileStream(filePath +
+                    currentApplication.ActiveDocument.DisplayName.Substring(0, currentApplication.ActiveDocument.DisplayName.Length - 3) + "field", FileMode.Append)))
+                {
+                    foreach (byte fileSection in fileData)
+                    {
+                        fieldWriter.Write(fileSection);
+                    }
+
                 }
             }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
         }
-        public void beginExport() {
-            BackgroundWorker converter = new BackgroundWorker();
-            converter.DoWork += backgroundWorker_DoWork;
-            converter.RunWorkerCompleted += backgroundWorker_RunWorkerCompleted;
-            if (!converter.IsBusy) converter.RunWorkerAsync();
+        public void BeginExport()
+        {
+            MessageBox.Show("Conversion " + ((Manager()) ? "successful." : "failed."));
         }
     }
 }

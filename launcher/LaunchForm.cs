@@ -21,12 +21,13 @@ namespace SynthesisLauncher
 {
     public partial class LaunchForm : Form
     {
-        const String buildCurrent = "3.1.1.0";
+        const String buildCurrent = "3.2.0.0";
         string exePath = Application.StartupPath;
         public LaunchForm()
         {
             InitializeComponent();
             updateStream();
+
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -62,7 +63,11 @@ namespace SynthesisLauncher
 
         public void updateStream()
         {
-            string streamResults = "Changes in " + buildCurrent +": \n -Added experimental simulator using Bullet Physics";
+            string streamResults = "Changes in " + buildCurrent +
+                ": \n -Added joystick support with new input manager" +
+                ": \n -Reworked simulator user interface to improve useability" +
+                ": \n -Added robot camera and indicator" +
+                ": \n -Added toolkit features with ruler and stopwatch";
             liveUpdater.Text = streamResults;
             string build = Page_Load();
 
@@ -82,7 +87,7 @@ namespace SynthesisLauncher
                 if (dialogResult == DialogResult.Yes)
                 {
                     //do something
-                    Process.Start("http://bxd.autodesk.com/Downloadables/SynthesisBetaInstaller.exe");
+                    Process.Start("http://bxd.autodesk.com/Downloadables/Synthesis%20Installer.exe");
                     System.Environment.Exit(1);
                 }
             }
@@ -166,6 +171,27 @@ namespace SynthesisLauncher
         private void driverstationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Process.Start("http://bxd.autodesk.com/?page=tutorialDriverStation");
+        }
+
+
+        private void LaunchForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void liveUpdater_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

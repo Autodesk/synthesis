@@ -9,22 +9,28 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Inventor;
 
-namespace BxDFieldExporter {
+namespace BxDFieldExporter
+{
     // form that allows the user to enter properties for the field types
-    public partial class ComponentPropertiesForm : Form {
+    public partial class ComponentPropertiesForm : Form
+    {
         //keeps track of whether mass is in kg or lb, kg is true, lb is false
         Boolean massMode = true;
+        public bool KeyPreview;
 
         FieldDataComponent field;
-        public ComponentPropertiesForm() {
+        public ComponentPropertiesForm()
+        {
             InitializeComponent();// inits and populates the form
-            comboBox1.SelectedItem = "kgs";//sets the massMode to kgs by default
+            comboBox1.SelectedItem = "kgs";//sets the massMode to kgs by default                
         }
         // these methods react to changes in the fields so we can save the data
-        private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e) {// changes the collider box based on the selection
+        private void colliderTypeCombobox_SelectedIndexChanged(object sender, EventArgs e)
+        {// changes the collider box based on the selection
             Type selectedType = null;// make space for a form to add to the form
 
-            switch (colliderTypeCombobox.SelectedIndex) {// change selected form based on selection
+            switch (colliderTypeCombobox.SelectedIndex)
+            {// change selected form based on selection
                 case 0: // Box
                     field.colliderType = ColliderType.Box;
                     selectedType = typeof(BoxColliderPropertiesForm);// sets the type to the correct form
@@ -42,7 +48,8 @@ namespace BxDFieldExporter {
                     break;
             }
 
-            if (meshPropertiesTable.Controls.Count > 1) {
+            if (meshPropertiesTable.Controls.Count > 1)
+            {
                 if (selectedType == null || meshPropertiesTable.Controls[1].GetType().Equals(selectedType))
                     return;// clears the form so we don't get multiple forms
 
@@ -54,76 +61,97 @@ namespace BxDFieldExporter {
             {
                 ((SphereColliderPropertiesForm)controller).readFromData(field);
             }
-            else if (field.colliderType == ColliderType.Mesh) {
+            else if (field.colliderType == ColliderType.Mesh)
+            {
                 ((MeshColliderPropertiesForm)controller).readFromData(field);
             }
-            else {
+            else
+            {
                 ((BoxColliderPropertiesForm)controller).readFromData(field);
             }
         }
-        public void MassChanged(object sender, EventArgs e) {
+        public void MassChanged(object sender, EventArgs e)
+        {
 
-            field.Mass = (double)getMass();
+            field.Mass = (double)GetMass();
         }
-        private void UpdateFrictionLabel() {
+        private void UpdateFrictionLabel()
+        {
             frictionLabel.Text = "Friction:\n" + frictionTrackBar.Value + "/100";
             field.Friction = (double)frictionTrackBar.Value;
         }
-        private void frictionTrackBar_Scroll(object sender, EventArgs e) {
+        private void FrictionTrackBar_Scroll(object sender, EventArgs e)
+        {
             UpdateFrictionLabel();
         }
-        private void dynamicCheckBox_CheckedChanged(object sender, EventArgs e) {
-            if (dynamicCheckBox.Checked) {
+        private void DynamicCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (dynamicCheckBox.Checked)
+            {
                 dynamicGroupBox.Enabled = true;
                 field.Dynamic = true;
             }
-            else {
+            else
+            {
                 dynamicGroupBox.Enabled = false;
                 massNumericUpDown.Value = 0;
                 field.Dynamic = false;
             }
         }
-        public void readFromData(FieldDataComponent d) {// reads from the data so user can see the same values from the last time they entered them
-            try {
+        public void ReadFromData(FieldDataComponent d)
+        {// reads from the data so user can see the same values from the last time they entered them
+            try
+            {
                 field = d;
-                if (field.colliderType == ColliderType.Sphere) {
+                if (field.colliderType == ColliderType.Sphere)
+                {
                     colliderTypeCombobox.SelectedIndex = 1;
                 }
-                else if (field.colliderType == ColliderType.Mesh) {
+                else if (field.colliderType == ColliderType.Mesh)
+                {
                     colliderTypeCombobox.SelectedIndex = 2;
                 }
-                else {
+                else
+                {
                     colliderTypeCombobox.SelectedIndex = 0;
                 }
-                if (field.Dynamic) {
+                if (field.Dynamic)
+                {
                     dynamicGroupBox.Enabled = true;
                 }
-                else {
+                else
+                {
                     dynamicGroupBox.Enabled = false;
                     massNumericUpDown.Value = 0;
                 }
                 frictionTrackBar.Value = (int)field.Friction;
                 massNumericUpDown.Value = (decimal)field.Mass;
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 MessageBox.Show(e.ToString());
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
-            if (comboBox1.Text == "kgs") {
+            if (comboBox1.Text == "kgs")
+            {
 
-                if (massMode == false) {
+                if (massMode == false)
+                {
 
                     massNumericUpDown.Value = massNumericUpDown.Value / (decimal)2.20462;
                 }
                 massNumericUpDown.Maximum = (decimal)453.5;
                 massMode = true;
             }
-            else {
+            else
+            {
                 massNumericUpDown.Maximum = (decimal)1000;
-                if (massMode == true) {
+                if (massMode == true)
+                {
                     massNumericUpDown.Value = massNumericUpDown.Value * (decimal)2.20462;
                 }
 
@@ -131,17 +159,42 @@ namespace BxDFieldExporter {
             }
         }
 
-        private decimal getMass() {
-            if (!massMode) {
+        private decimal GetMass()
+        {
+            if (!massMode)
+            {
                 return massNumericUpDown.Value / (decimal)2.20462;
             }
-            else {
+            else
+            {
                 return massNumericUpDown.Value;
             }
         }
 
-        private void btnSave_Click(object sender, EventArgs e) {
+        private void btnSave_Click(object sender, EventArgs e)
+        {
             this.Close();
+        }
+        
+        /// <summary>
+        /// Override ProcessCmdKey in order to collect escape key input
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="keyData"></param>
+        /// <returns></returns>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+            {
+                this.Close();
+                
+            }
+            else if(keyData == Keys.Enter)
+            {
+                this.Close();
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }
