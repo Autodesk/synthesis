@@ -4,8 +4,6 @@ using UnityEngine.UI;
 public class SettingsMode : MonoBehaviour
 {
     public GameObject settingsMode;
-    public GameObject tankDriveSwitch;
-    private Text enableTankDriveText;
 
     // Update is called once per frame
     void Update()
@@ -46,6 +44,8 @@ public class SettingsMode : MonoBehaviour
     public void OnLoadClick()
     {
         Controls.Load();
+
+        //Enable this for auto-saving. To complete auto-saving, enable the comments in KeyButton.cs > SetInput().
         //UpdateAllText();
     }
 
@@ -70,43 +70,43 @@ public class SettingsMode : MonoBehaviour
     public void OnPlayerOne()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
     }
 
     public void OnPlayerTwo()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerTwoButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
     }
 
     public void OnPlayerThree()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerThreeButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
     }
 
     public void OnPlayerFour()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFourButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
     }
 
     public void OnPlayerFive()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerFiveButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
     }
 
     public void OnPlayerSix()
     {
         GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerSixButtons();
-        GameObject.Find("Content").GetComponent<CreateButton>().UpdateSlider();
+        GameObject.Find("Content").GetComponent<CreateButton>().UpdateTankSlider();
     }
     #endregion
 
     public void OnTankToggle()
     {
-        GameObject.Find("Content").GetComponent<CreateButton>().TankToggle();
+        GameObject.Find("Content").GetComponent<CreateButton>().TankSlider();
     }
 
     /// <summary>
