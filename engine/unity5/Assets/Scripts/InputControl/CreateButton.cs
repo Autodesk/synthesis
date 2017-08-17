@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class CreateButton : MonoBehaviour
 {
+    public GameObject tankDriveSwitch;
     public GameObject keyNamePrefab;
     public GameObject keyButtonsPrefab;
     public List<GameObject> keyButtonList;
@@ -14,13 +15,15 @@ public class CreateButton : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        DestroyList();
+
         namesTransform = transform.Find("Names");
         keysTransform = transform.Find("Keys");
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerOneKeys();
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(0);
 
         foreach (KeyMapping key in keys)
         {
@@ -81,20 +84,15 @@ public class CreateButton : MonoBehaviour
         rectTransform.offsetMin = new Vector2(0, -contentHeight);
     }
 
-    // Main List: The main list is the list that contains all of the keys in both tank drive and arcade drive.
-    // Each player has its own list of set keys, which is then fed into the main list when setKey() is called.
-    // Purpose: This allows us to call each player's key lists individually in addition to the main list.
-
-    #region Update Main List
-    public void UpdateMainButtons()
+    #region UpdateButtons
+    public void UpdateActiveButtons()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Reads the main keys list: getKeysList()
-        ReadOnlyCollection<KeyMapping> keys = InputControl.getKeysList();
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getActivePlayerKeys();
 
         foreach (KeyMapping key in keys)
         {
@@ -156,19 +154,18 @@ public class CreateButton : MonoBehaviour
     }
     #endregion
 
-    #region Update Player One Keys 
-    public void UpdatePlayerOne()
+    #region Update Player One Keys
+    public void UpdatePlayerOneButtons()
     {
-        //Destroys all previous keys
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Calls the getPlayerOneKeys list to generate ONLY Player One's keys
-        ReadOnlyCollection<KeyMapping> playerOneKeys = InputControl.getPlayerOneKeys();
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(0);
 
-        foreach (KeyMapping key in playerOneKeys)
+        foreach (KeyMapping key in keys)
         {
             //******************************Key Text vs Key Buttons***********************************
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
@@ -229,17 +226,17 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Two Keys
-    public void UpdatePlayerTwo()
+    public void UpdatePlayerTwoButtons()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Calls the getPlayerTwoKeys list to generate ONLY Player Two's keys
-        ReadOnlyCollection<KeyMapping> playerTwoKeys = InputControl.getPlayerTwoKeys();
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(1);
 
-        foreach (KeyMapping key in playerTwoKeys)
+        foreach (KeyMapping key in keys)
         {
             //******************************Key Text vs Key Buttons***********************************
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
@@ -300,17 +297,17 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Three Keys
-    public void UpdatePlayerThree()
+    public void UpdatePlayerThreeButtons()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Calls the getPlayerThreeKeys list to generate ONLY Player Three's keys
-        ReadOnlyCollection<KeyMapping> playerThreeKeys = InputControl.getPlayerThreeKeys();
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(2);
 
-        foreach (KeyMapping key in playerThreeKeys)
+        foreach (KeyMapping key in keys)
         {
             //******************************Key Text vs Key Buttons***********************************
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
@@ -371,17 +368,17 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Four Keys
-    public void UpdatePlayerFour()
+    public void UpdatePlayerFourButtons()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Calls the getPlayerFourKeys list to generate ONLY Player Four's keys
-        ReadOnlyCollection<KeyMapping> playerFourKeys = InputControl.getPlayerFourKeys();
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(3);
 
-        foreach (KeyMapping key in playerFourKeys)
+        foreach (KeyMapping key in keys)
         {
             //******************************Key Text vs Key Buttons***********************************
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
@@ -442,17 +439,17 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Five Keys
-    public void UpdatePlayerFive()
+    public void UpdatePlayerFiveButtons()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Calls the getPlayerFiveKeys list to generate ONLY Player Five's keys
-        ReadOnlyCollection<KeyMapping> playerFiveKeys = InputControl.getPlayerFiveKeys();
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(4);
 
-        foreach (KeyMapping key in playerFiveKeys)
+        foreach (KeyMapping key in keys)
         {
             //******************************Key Text vs Key Buttons***********************************
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
@@ -513,17 +510,17 @@ public class CreateButton : MonoBehaviour
     #endregion
 
     #region Update Player Six Keys
-    public void UpdatePlayerSix()
+    public void UpdatePlayerSixButtons()
     {
         DestroyList();
 
         float maxNameWidth = 0;
         float contentHeight = 4;
 
-        //Calls the getPlayerSixKeys list to generate ONLY Player Six's keys
-        ReadOnlyCollection<KeyMapping> playerSixKeys = InputControl.getPlayerSixKeys();
+        //Reads the main keys list: getKeysList()
+        ReadOnlyCollection<KeyMapping> keys = InputControl.getPlayerKeys(5);
 
-        foreach (KeyMapping key in playerSixKeys)
+        foreach (KeyMapping key in keys)
         {
             //******************************Key Text vs Key Buttons***********************************
             //Key Text: The labels/text in the first column of the InputManager menu (see Options tab)
@@ -599,5 +596,40 @@ public class CreateButton : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+    }
+
+    public void TankToggle()
+    {
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        int i = (int)tankDriveSwitch.GetComponent<Slider>().value;
+
+        switch (i)
+        {
+            case 0:
+                InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+                UpdateActiveButtons();
+                break;
+            case 1:
+                InputControl.mPlayerList[InputControl.activePlayerIndex].SetTankDrive();
+                UpdateActiveButtons();
+                Controls.TankDriveEnabled = true;
+                break;
+            default:
+                InputControl.mPlayerList[InputControl.activePlayerIndex].SetArcadeDrive();
+                UpdateActiveButtons();
+                break;
+        }
+    }
+
+    public void OnEnable()
+    {
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
+    }
+
+    public void UpdateSlider()
+    {
+        tankDriveSwitch = AuxFunctions.FindObject("TankDriveSwitch");
+        tankDriveSwitch.GetComponent<Slider>().value = InputControl.mPlayerList[InputControl.activePlayerIndex].isTankDrive ? 1 : 0;
     }
 }

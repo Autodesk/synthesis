@@ -111,7 +111,7 @@ public class KeyButton : MonoBehaviour
         }
 
         UpdateText();
-        Controls.Save();
+        //Controls.Save();
 
         selectedButton = null;
     }
