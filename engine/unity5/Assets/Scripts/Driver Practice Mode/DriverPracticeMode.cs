@@ -19,6 +19,8 @@ public class DriverPracticeMode : MonoBehaviour {
     GameObject defineIntakeWindow;
     GameObject defineReleaseWindow;
     GameObject setSpawnWindow;
+    GameObject setGoalXZWindow;
+    GameObject setGoalYWindow;
     GameObject defineGamepieceWindow;
 
     GameObject releaseVelocityPanel;
@@ -52,6 +54,7 @@ public class DriverPracticeMode : MonoBehaviour {
 
     public bool dpmWindowOn = false; //if the driver practice mode window is active
     public bool configuring = false; //if the configuration window is active
+    public bool goalConfiguring = false; //if the goal configuration window is active
     public int configuringIndex = 0; //0 if user is configuring primary, 1 if user is configuring secondary
 
     private int holdCount = 0; //counts how long a button has been pressed (for add/subtract buttons to increase increment)
@@ -127,6 +130,8 @@ public class DriverPracticeMode : MonoBehaviour {
         defineReleaseWindow = AuxFunctions.FindObject(canvas, "DefineReleasePanel");
         defineGamepieceWindow = AuxFunctions.FindObject(canvas, "DefineGamepiecePanel");
         setSpawnWindow = AuxFunctions.FindObject(canvas, "SetGamepieceSpawnPanel");
+        setGoalXZWindow = AuxFunctions.FindObject(canvas, "SetGamepieceGoalXZPanel");
+        setGoalYWindow = AuxFunctions.FindObject(canvas, "SetGamepieceGoalYPanel");
 
         intakeControlText = AuxFunctions.FindObject(canvas, "IntakeInputButton").GetComponentInChildren<Text>();
         releaseControlText = AuxFunctions.FindObject(canvas, "ReleaseInputButton").GetComponentInChildren<Text>();
@@ -242,12 +247,28 @@ public class DriverPracticeMode : MonoBehaviour {
                 dpmWindow.SetActive(false);
                 defineGamepieceWindow.SetActive(true);
             }
-            else if (dpmRobot.settingSpawn != 0 || dpmRobot.settingGamepieceGoal != 0)
+            else if (dpmRobot.settingSpawn != 0)
             {
                 configWindow.SetActive(false);
                 goalConfigWindow.SetActive(false);
                 dpmWindow.SetActive(false);
                 setSpawnWindow.SetActive(true);
+            }
+            else if (dpmRobot.settingGamepieceGoal != 0)
+            {
+                configWindow.SetActive(false);
+                goalConfigWindow.SetActive(false);
+                dpmWindow.SetActive(false);
+                if (!dpmRobot.settingGamepieceGoalVertical)
+                {
+                    setGoalXZWindow.SetActive(true);
+                    setGoalYWindow.SetActive(false);
+                }
+                else
+                {
+                    setGoalXZWindow.SetActive(false);
+                    setGoalYWindow.SetActive(true);
+                }
             }
             else if (dpmRobot.definingIntake)
             {
@@ -267,10 +288,15 @@ public class DriverPracticeMode : MonoBehaviour {
             {
                 defineGamepieceWindow.SetActive(false);
                 setSpawnWindow.SetActive(false);
+                setGoalXZWindow.SetActive(false);
+                setGoalYWindow.SetActive(false);
                 defineIntakeWindow.SetActive(false);
                 defineReleaseWindow.SetActive(false);
                 dpmWindow.SetActive(true);
                 configWindow.SetActive(true);
+
+                if (goalConfiguring)
+                    goalConfigWindow.SetActive(true);
             }
         }
     }
@@ -282,7 +308,9 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (dpmWindowOn)
         {
-            dpmWindowOn = false;
+            if (!configuring && !goalConfiguring)
+                dpmWindowOn = false;
+            else UserMessageManager.Dispatch("You must close all configuration windows first!", 5);
         }
         else
         {
@@ -307,7 +335,8 @@ public class DriverPracticeMode : MonoBehaviour {
         }
         else
         {
-            if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
+            if (goalConfiguring) UserMessageManager.Dispatch("You must close all configuration windows first!", 5);
+            else if (configuring) UserMessageManager.Dispatch("You must close the configuration window first!", 5);
             else
             {
                 enableDPMText.text = "Enable Driver Practice Mode";
@@ -456,12 +485,25 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmRobot.StartGamepieceSpawn(configuringIndex);
     }
 
+    public void CancelGamepieceSpawn()
+    {
+        dpmRobot.FinishGamepieceSpawn();
+    }
+
     public void OpenGamepieceGoalsConfig()
     {
         dpmRobot.InitGoalManagerDisplay(configuringIndex, goalConfigWindow.GetComponent<GoalDisplayManager>());
         goalConfigWindow.SetActive(true);
+        goalConfiguring = true;
     }
-    
+
+    public void CloseGamepieceGoalsConfig()
+    {
+        dpmRobot.FinishGamepieceGoal();
+        goalConfigWindow.SetActive(false);
+        goalConfiguring = false;
+    }
+
     public void NewGamepieceGoal()
     {
         dpmRobot.NewGoal(configuringIndex);
@@ -480,6 +522,11 @@ public class DriverPracticeMode : MonoBehaviour {
         dpmRobot.StartGamepieceGoal(configuringIndex, goalIndex);
     }
 
+    public void CancelGamepieceGoal()
+    {
+        dpmRobot.FinishGamepieceGoal();
+    }
+
     public void SetGamepieceGoalDescription(int goalIndex, string description)
     {
         dpmRobot.SetGamepieceGoalDescription(configuringIndex, goalIndex, description);
@@ -488,22 +535,6 @@ public class DriverPracticeMode : MonoBehaviour {
     public void SetGamepieceGoalPoints(int goalIndex, int points)
     {
         dpmRobot.SetGamepieceGoalPoints(configuringIndex, goalIndex, points);
-    }
-
-    public void CancelGamepieceSpawn()
-    {
-        dpmRobot.FinishGamepieceSpawn();
-    }
-
-    public void CloseGamepieceGoalsConfig()
-    {
-        dpmRobot.FinishGamepieceGoal();
-        goalConfigWindow.SetActive(false);
-    }
-
-    public void CancelGamepieceGoal()
-    {
-        dpmRobot.FinishGamepieceGoal();
     }
 
     public void ChangeOffsetX(int sign)
@@ -636,12 +667,11 @@ public class DriverPracticeMode : MonoBehaviour {
     {
         if (configuring)
         {
-            CloseConfigurationWindow();
             CancelDefineGamepiece();
             CancelDefineIntake();
             CancelDefineRelease();
             CancelGamepieceSpawn();
-            CloseGamepieceGoalsConfig();
+            CancelGamepieceGoal();
         }
     }
 
