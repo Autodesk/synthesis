@@ -1,0 +1,12 @@
+#Name
+2013 Ultimate Ascent
+#Nodes
+Frisbee Intake Mechanism
+Frisbee Shooting Mechanism
+#Vectors
+Shooting Vector
+Frisbee Offset
+#Gamepieces
+disc
+#HoldingLimit
+5

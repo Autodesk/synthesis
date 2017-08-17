@@ -45,6 +45,10 @@ public class MaMGetters : MonoBehaviour {
                 MixAndMatchMode.hasManipulator = true;
                 PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheShot");
+            case 3: //Lift
+                MixAndMatchMode.hasManipulator = true;
+                PlayerPrefs.SetInt("hasManipulator", 1);
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheLift");
         }
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
     }
