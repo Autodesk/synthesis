@@ -32,7 +32,7 @@ public class Robot : MonoBehaviour {
 
     private DriverPracticeRobot dpmRobot;
 
-    public bool ControlsEnabled = true;
+    public static bool ControlsEnabled = true;
 
     private Vector3 nodeToRobotOffset;
 
@@ -65,7 +65,7 @@ public class Robot : MonoBehaviour {
 
         if (!rigidBody.GetCollisionObject().IsActive)
             rigidBody.GetCollisionObject().Activate();
-        if (!IsResetting)
+        if (!IsResetting && ControlsEnabled)
         {
             if (InputControl.GetButtonDown(Controls.buttons[controlIndex].resetRobot))
             {
