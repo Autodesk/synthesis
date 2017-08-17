@@ -40,28 +40,31 @@
             // 
             // nameTextBox
             // 
-            this.nameTextBox.Location = new System.Drawing.Point(105, 12);
+            this.nameTextBox.Location = new System.Drawing.Point(79, 10);
+            this.nameTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.nameTextBox.MaxLength = 20;
             this.nameTextBox.Name = "nameTextBox";
-            this.nameTextBox.Size = new System.Drawing.Size(249, 22);
+            this.nameTextBox.Size = new System.Drawing.Size(188, 20);
             this.nameTextBox.TabIndex = 0;
             this.nameTextBox.TextChanged += new System.EventHandler(this.nameTextBox_TextChanged);
             // 
             // enterNameLabel
             // 
             this.enterNameLabel.AutoSize = true;
-            this.enterNameLabel.Location = new System.Drawing.Point(12, 15);
+            this.enterNameLabel.Location = new System.Drawing.Point(9, 12);
+            this.enterNameLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.enterNameLabel.Name = "enterNameLabel";
-            this.enterNameLabel.Size = new System.Drawing.Size(87, 17);
+            this.enterNameLabel.Size = new System.Drawing.Size(66, 13);
             this.enterNameLabel.TabIndex = 1;
             this.enterNameLabel.Text = "Enter Name:";
             // 
             // cancelButton
             // 
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(156, 40);
+            this.cancelButton.Location = new System.Drawing.Point(117, 32);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(96, 32);
+            this.cancelButton.Size = new System.Drawing.Size(72, 26);
             this.cancelButton.TabIndex = 2;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -70,9 +73,10 @@
             // 
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.Enabled = false;
-            this.okButton.Location = new System.Drawing.Point(258, 40);
+            this.okButton.Location = new System.Drawing.Point(194, 32);
+            this.okButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(96, 32);
+            this.okButton.Size = new System.Drawing.Size(72, 26);
             this.okButton.TabIndex = 3;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -81,9 +85,10 @@
             // 
             this.reservedLabel.AutoSize = true;
             this.reservedLabel.ForeColor = System.Drawing.Color.Red;
-            this.reservedLabel.Location = new System.Drawing.Point(12, 48);
+            this.reservedLabel.Location = new System.Drawing.Point(9, 39);
+            this.reservedLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.reservedLabel.Name = "reservedLabel";
-            this.reservedLabel.Size = new System.Drawing.Size(123, 17);
+            this.reservedLabel.Size = new System.Drawing.Size(92, 13);
             this.reservedLabel.TabIndex = 4;
             this.reservedLabel.Text = "Name is reserved.";
             this.reservedLabel.Visible = false;
@@ -95,9 +100,10 @@
             this.warningImage.Image = ((System.Drawing.Image)(resources.GetObject("warningImage.Image")));
             this.warningImage.ImageLocation = "";
             this.warningImage.InitialImage = null;
-            this.warningImage.Location = new System.Drawing.Point(86, 40);
+            this.warningImage.Location = new System.Drawing.Point(64, 32);
+            this.warningImage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.warningImage.Name = "warningImage";
-            this.warningImage.Size = new System.Drawing.Size(64, 32);
+            this.warningImage.Size = new System.Drawing.Size(48, 26);
             this.warningImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.warningImage.TabIndex = 5;
             this.warningImage.TabStop = false;
@@ -106,10 +112,10 @@
             // EnterNameDialog
             // 
             this.AcceptButton = this.okButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(366, 84);
+            this.ClientSize = new System.Drawing.Size(274, 68);
             this.Controls.Add(this.warningImage);
             this.Controls.Add(this.reservedLabel);
             this.Controls.Add(this.okButton);
@@ -117,6 +123,8 @@
             this.Controls.Add(this.enterNameLabel);
             this.Controls.Add(this.nameTextBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "EnterNameDialog";
