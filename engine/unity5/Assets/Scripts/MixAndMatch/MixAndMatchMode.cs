@@ -183,6 +183,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(selectedWheel));
         PlayerPrefs.Save();
         isMixAndMatchMode = true;
         SceneManager.LoadScene("mixAndMatch");
@@ -231,6 +232,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(selectedWheel));
 
         GameObject stateMachine = GameObject.Find("StateMachine");
 
@@ -251,6 +253,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
+        PlayerPrefs.SetFloat("wheelRadius", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelRadius(selectedWheel));
         int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
         GameObject stateMachine = GameObject.Find("StateMachine");
 
