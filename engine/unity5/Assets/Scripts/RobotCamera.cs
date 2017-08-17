@@ -134,7 +134,6 @@ public class RobotCamera : MonoBehaviour
     /// </summary>
     public void DefineNode()
     {
-        UserMessageManager.Dispatch("Click on a robot node to set it as the attachment node", 5);
         SelectingNode = true;
         //SelectedNode = null;
     }

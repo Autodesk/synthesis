@@ -335,6 +335,54 @@ public class DynamicCamera : MonoBehaviour
         }
     }
 
+    //This state locates directly above the target and follows it with an orthographic view
+    public class OrthographicSateliteState : CameraState
+    {
+        Vector3 targetPosition;
+        public GameObject target;
+        public Vector3 targetOffset;
+        public Vector3 rotationVector;
+        public float orthoSize;
+
+        public OrthographicSateliteState(MonoBehaviour mono)
+        {
+            this.mono = mono;
+        }
+
+        public override void Init()
+        {
+            target = GameObject.Find("Robot");
+            targetPosition = target.transform.position;
+            targetOffset = new Vector3(0f, 6f, 0f);
+            rotationVector = new Vector3(90f, 90f, 0f);
+            orthoSize = 5;
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+        }
+
+        public override void Update()
+        {
+            if (target != null && target.transform.childCount > 0)
+            {
+                targetPosition = target.transform.GetChild(0).transform.position;
+            }
+            else if (target != null)
+            {
+                targetPosition = target.transform.position;
+            }
+
+            mono.transform.position = targetPosition + targetOffset;
+            mono.transform.rotation = Quaternion.Euler(rotationVector);
+
+            mono.GetComponent<Camera>().orthographic = true;
+            mono.GetComponent<Camera>().orthographicSize = orthoSize;
+        }
+
+        public override void End()
+        {
+            mono.GetComponent<Camera>().orthographic = false;
+        }
+    }
+
     public class CameraConfigurationState : CameraState
     {
         Vector3 targetVector;

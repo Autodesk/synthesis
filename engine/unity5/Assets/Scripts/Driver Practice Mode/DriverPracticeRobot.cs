@@ -76,7 +76,7 @@ public class DriverPracticeRobot : MonoBehaviour
     public int settingSpawn = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
     public int settingGamepieceGoal = 0; //0 if not, 1 if editing primary, and 2 if editing secondary
     public int settingGamepieceGoalIndex = 0; // Index of goal being edited
-    public bool settingGoalVertical = false;
+    public bool settingGamepieceGoalVertical = false;
     private DynamicCamera.CameraState lastCameraState;
 
     /// <summary>
@@ -425,7 +425,6 @@ public class DriverPracticeRobot : MonoBehaviour
             else if (settingSpawn != 0) UserMessageManager.Dispatch("You must set the gamepiece spawnpoint first! Press enter to save your the current position", 5);
             else
             {
-                UserMessageManager.Dispatch("Click on a dynamic object to add it as a gamepiece", 5);
                 configuringIndex = index;
                 addingGamepiece = true;
             }
@@ -494,9 +493,9 @@ public class DriverPracticeRobot : MonoBehaviour
 
                 DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                 lastCameraState = dynamicCamera.cameraState;
-                dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+                dynamicCamera.SwitchCameraState(new DynamicCamera.OrthographicSateliteState(dynamicCamera));
 
-                //MainState.ControlsDisabled = true;
+                Robot.ControlsEnabled = false;
             }
             else UserMessageManager.Dispatch("You must define the gamepiece first!", 5f);
         }
@@ -508,20 +507,18 @@ public class DriverPracticeRobot : MonoBehaviour
         int index = settingSpawn - 1;
         if (spawnIndicator != null)
         {
-            ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).target = spawnIndicator;
-            ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState).targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
-            if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-            if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-            if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-            if (Input.GetKey(KeyCode.DownArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
+            DynamicCamera.OrthographicSateliteState satellite = ((DynamicCamera.OrthographicSateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
+            satellite.target = spawnIndicator;
+            satellite.targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
+            satellite.orthoSize = 4;
+            if (Input.GetKey(KeyCode.LeftArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.forward * 0.05f;
+            if (Input.GetKey(KeyCode.RightArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.back * 0.05f;
+            if (Input.GetKey(KeyCode.UpArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.right * 0.05f;
+            if (Input.GetKey(KeyCode.DownArrow)) spawnIndicator.transform.position += UnityEngine.Vector3.left * 0.05f;
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 UserMessageManager.Dispatch("New gamepiece spawn location has been set!", 3f);
                 gamepieceSpawn[index] = spawnIndicator.transform.position;
-                FinishGamepieceSpawn();
-            }
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
                 FinishGamepieceSpawn();
             }
         }
@@ -537,7 +534,7 @@ public class DriverPracticeRobot : MonoBehaviour
             dynamicCamera.SwitchCameraState(lastCameraState);
             lastCameraState = null;
         }
-        //MainState.ControlsDisabled = false;
+        Robot.ControlsEnabled = true;
     }
 
     /// <summary>
@@ -636,11 +633,6 @@ public class DriverPracticeRobot : MonoBehaviour
     /// <param name="goalIndex">The index of the goal to be configured</param>
     public void StartGamepieceGoal(int gamepieceIndex, int goalIndex)
     {
-        Debug.Log(gamepieceGoals[gamepieceIndex].Count);
-        Debug.Log(gamepieceGoalDesc[gamepieceIndex].Count);
-        Debug.Log(gamepieceGoalPoints[gamepieceIndex].Count);
-        Debug.Log(gamepieceIndex);
-        Debug.Log(goalIndex);
         if (definingRelease || definingIntake || addingGamepiece || settingSpawn != 0) Debug.Log("User Error"); //Message Manager already dispatches error message to user
         else if (settingGamepieceGoal == 0)
         {
@@ -655,20 +647,20 @@ public class DriverPracticeRobot : MonoBehaviour
                         goalIndicator.name = "GoalIndicator";
                         Renderer render = goalIndicator.GetComponentInChildren<Renderer>();
                         render.material.shader = Shader.Find("Transparent/Diffuse");
-                        Color newColor = render.material.color;
-                        newColor.a = 0.6f;
+                        Color newColor = new Color(0, 0.88f, 0, 0.6f);
                         render.material.color = newColor;
                     }
                     goalIndicator.transform.position = gamepieceGoals[gamepieceIndex][goalIndex];
+                    goalIndicator.transform.localScale *= gamepieceGoalSizes[gamepieceIndex][goalIndex];
                     settingGamepieceGoal = gamepieceIndex + 1;
                     settingGamepieceGoalIndex = goalIndex;
-                    settingGoalVertical = false;
+                    settingGamepieceGoalVertical = false;
 
                     DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
                     lastCameraState = dynamicCamera.cameraState;
-                    dynamicCamera.SwitchCameraState(new DynamicCamera.SateliteState(dynamicCamera));
+                    dynamicCamera.SwitchCameraState(new DynamicCamera.OrthographicSateliteState(dynamicCamera));
 
-                    //MainState.ControlsDisabled = true;
+                    Robot.ControlsEnabled = false;
                 }
                 else Debug.LogError("Goal does not exist!");
             }
@@ -683,39 +675,38 @@ public class DriverPracticeRobot : MonoBehaviour
         int goalIndex = settingGamepieceGoalIndex;
         if (goalIndicator != null)
         {
-            if (!settingGoalVertical)
+            if (!settingGamepieceGoalVertical)
             {
-                DynamicCamera.SateliteState satellite = ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
+                DynamicCamera.OrthographicSateliteState satellite = ((DynamicCamera.OrthographicSateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
                 satellite.target = goalIndicator;
                 satellite.targetOffset = new UnityEngine.Vector3(0f, 6f, 0f);
                 satellite.rotationVector = new UnityEngine.Vector3(90f, 90f, 0f);
-                if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.1f;
-                if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.1f;
-                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.1f;
-                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.1f;
-                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.05f;
-                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.05f;
+                satellite.orthoSize = 4;
+                if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.04f;
+                if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.04f;
+                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.right * 0.04f;
+                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.left * 0.04f;
+                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.03f;
+                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.03f;
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    settingGoalVertical = true;
-                }
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    FinishGamepieceGoal();
+                    DynamicCamera dynamicCamera = Camera.main.transform.GetComponent<DynamicCamera>();
+                    DynamicCamera.SateliteState newSatelliteState = new DynamicCamera.SateliteState(dynamicCamera);
+                    dynamicCamera.SwitchCameraState(newSatelliteState);
+                    newSatelliteState.rotationVector = new UnityEngine.Vector3(15f, 0f, 0f); // Downward tilt of camera to view slightly from above
+                    settingGamepieceGoalVertical = true;
                 }
             }
             else
             {
                 DynamicCamera.SateliteState satellite = ((DynamicCamera.SateliteState)Camera.main.transform.GetComponent<DynamicCamera>().cameraState);
                 satellite.target = goalIndicator;
-                satellite.targetOffset = new UnityEngine.Vector3(-6f, 0f, 0f);
-                satellite.rotationVector = new UnityEngine.Vector3(0f, 90f, 0f);
-                if (Input.GetKey(KeyCode.LeftArrow)) goalIndicator.transform.position += UnityEngine.Vector3.forward * 0.05f;
-                if (Input.GetKey(KeyCode.RightArrow)) goalIndicator.transform.position += UnityEngine.Vector3.back * 0.05f;
-                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.up * 0.05f;
-                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.down * 0.05f;
-                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.05f;
-                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.05f;
+                if (Input.GetKey(KeyCode.LeftArrow)) satellite.rotationVector += UnityEngine.Vector3.up * 1f;
+                if (Input.GetKey(KeyCode.RightArrow)) satellite.rotationVector += UnityEngine.Vector3.down * 1f;
+                if (Input.GetKey(KeyCode.UpArrow)) goalIndicator.transform.position += UnityEngine.Vector3.up * 0.03f;
+                if (Input.GetKey(KeyCode.DownArrow)) goalIndicator.transform.position += UnityEngine.Vector3.down * 0.03f;
+                if (Input.GetKey(KeyCode.Comma)) goalIndicator.transform.localScale /= 1.03f;
+                if (Input.GetKey(KeyCode.Period)) goalIndicator.transform.localScale *= 1.03f;
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
                     UserMessageManager.Dispatch("New gamepiece goal location has been set!", 3f);
@@ -725,11 +716,13 @@ public class DriverPracticeRobot : MonoBehaviour
                     GenerateGamepieceGoalColliders(settingGamepieceGoal - 1);
 
                     FinishGamepieceGoal();
+                    return;
                 }
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    FinishGamepieceGoal();
-                }
+
+                float offsetDist = goalIndicator.transform.localScale.magnitude + 2; // Set distance of camera to two units further than size of box
+                satellite.targetOffset = new UnityEngine.Vector3(0f, 0f, -offsetDist);// offsetDist / 32f, -offsetDist);
+                satellite.targetOffset = UnityEngine.Quaternion.Euler(satellite.rotationVector) * satellite.targetOffset; // Rotate camera offset to face block
+                satellite.targetOffset += new UnityEngine.Vector3(0f, -offsetDist / 10, 0f);
             }
         }
     }
@@ -744,7 +737,7 @@ public class DriverPracticeRobot : MonoBehaviour
             dynamicCamera.SwitchCameraState(lastCameraState);
             lastCameraState = null;
         }
-        //MainState.ControlsDisabled = false;
+        Robot.ControlsEnabled = true;
     }
 
     /// <summary>
