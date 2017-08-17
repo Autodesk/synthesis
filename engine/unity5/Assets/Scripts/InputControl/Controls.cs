@@ -107,39 +107,11 @@ public class Controls
 
     /// <summary>
     /// Initializes the <see cref="Controls"/> class.
-    /// Calls the SwitchControls() function for the tankDrive/arcadeDrive toggle purposes.
     /// </summary>
     static Controls()
     {
-        ///SwitchControls();
         TankControls();
         ArcadeControls();
-    }
-
-    /// <summary>
-    /// Allows initialization for tank drive or arcade drive. 
-    /// ON INITIALIZATION: Defaults to ResetArcadeDrive()
-    /// </summary>
-    public static void SwitchControls()
-    {
-        if (TankDriveEnabled)
-        {
-            //If TankDriveEnabled, call all the TankDrive keys to initialize
-
-            TankDrive();
-            Load();
-
-            Debug.Log("tankDrive true/TankMode");
-        }
-        else
-        {
-            //If TankDrive is disabled, call all the ArcadeDrive keys
-            ArcadeDrive();
-         
-            Load();
-
-            Debug.Log("tankDrive false");
-        }
     }
 
     /// <summary>
@@ -151,7 +123,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Saves controls.
+    /// Saves all primary and secondary controls.
     /// </summary>
     public static void Save()
     {
@@ -167,7 +139,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Loads controls.
+    /// Loads all primary and secondary controls.
     /// </summary>
     public static void Load()
     {
@@ -198,20 +170,12 @@ public class Controls
     /// </summary>
     public static void ArcadeDrive()
     {
-        //We don't need to switch back to ArcadeDrive unless TankDrive was previously activated.
-        //Checks if TankDrive was previously activated; if previously activated, remove unecessary keys from the list.
-        //if (CheckForKeyRemoval)
-        //{
-        //    //Remove unecessary TankDrive keys to only permit ArcadeDrive keys
-        //    RemoveTankKeys();
-        //}
-
         ArcadeControls();
         TankDriveEnabled = false;
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            //Loads initialized keys, then defaults to PlayerOne's list
+            //Loads initialized keys then defaults to PlayerOne's list on the landing page
             Load();
             GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
@@ -219,7 +183,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Resets to default Arcade Drive.
+    /// Resets to default Arcade Drive then updates the control/keybuttons' text.
     /// </summary>
     public static void ResetArcadeDrive()
     {
@@ -242,7 +206,7 @@ public class Controls
 
         if (GameObject.Find("SettingsMode") != null)
         {
-            //Loads initialized keys, then defaults to PlayerOne's list
+            //Loads initialized keys then defaults to PlayerOne's list on the landing page
             Load();
             GameObject.Find("Content").GetComponent<CreateButton>().UpdatePlayerOneButtons();
             GameObject.Find("SettingsMode").GetComponent<SettingsMode>().UpdateAllText();
@@ -250,7 +214,7 @@ public class Controls
     }
 
     /// <summary>
-    /// Reset to default Tank Drive.
+    /// Resets to default Tank Drive then updates the control/keybuttons' text.
     /// </summary>
     public static void ResetTankDrive()
     {
@@ -330,7 +294,7 @@ public class Controls
         buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), false);
         buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), false);
 
-        //Set Arcade Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[0].horizontal = InputControl.setAxis("1: Joystick 1 Axis 2", PlayerOneIndex, buttons[0].left, buttons[0].right, false);
         axes[0].vertical = InputControl.setAxis("1: Joystick 1 Axis 4", PlayerOneIndex, buttons[0].backward, buttons[0].forward, false);
         
@@ -371,7 +335,7 @@ public class Controls
         buttons[1].releaseSecondary = InputControl.setKey("2: Release Secondary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick2), false);
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick2), false);
 
-        //Set Arcade Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[1].horizontal = InputControl.setAxis("Joystick 2 Axis 2", PlayerTwoIndex, buttons[1].left, buttons[1].right, false);
         axes[1].vertical = InputControl.setAxis("Joystick 2 Axis 4", PlayerTwoIndex, buttons[1].backward, buttons[1].forward, false);
 
@@ -412,7 +376,7 @@ public class Controls
         buttons[2].releaseSecondary = InputControl.setKey("3: Release Secondary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick3), false);
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick3), false);
 
-        //Set Arcade Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[2].horizontal = InputControl.setAxis("Joystick 3 Axis 2", PlayerThreeIndex, buttons[2].left, buttons[2].right, false);
         axes[2].vertical = InputControl.setAxis("Joystick 3 Axis 4", PlayerThreeIndex, buttons[2].backward, buttons[2].forward, false);
 
@@ -453,7 +417,7 @@ public class Controls
         buttons[3].releaseSecondary = InputControl.setKey("4: Release Secondary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick4), false);
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), false);
 
-        //Set Arcade Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[3].horizontal = InputControl.setAxis("Joystick 4 Axis 2", PlayerFourIndex, buttons[3].left, buttons[3].right, false);
         axes[3].vertical = InputControl.setAxis("Joystick 4 Axis 4", PlayerFourIndex, buttons[3].backward, buttons[3].forward, false);
 
@@ -494,7 +458,7 @@ public class Controls
         buttons[4].releaseSecondary = InputControl.setKey("5: Release Secondary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick5), false);
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), false);
 
-        //Set Arcade Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[4].horizontal = InputControl.setAxis("Joystick 5 Axis 2", PlayerFiveIndex, buttons[4].left, buttons[4].right, false);
         axes[4].vertical = InputControl.setAxis("Joystick 5 Axis 4", PlayerFiveIndex, buttons[4].backward, buttons[4].forward, false);
 
@@ -535,7 +499,7 @@ public class Controls
         buttons[5].releaseSecondary = InputControl.setKey("6: Release Secondary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), false);
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), false);
 
-        //Set Arcade Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[5].horizontal = InputControl.setAxis("Joystick 6 Axis 2", PlayerSixIndex, buttons[5].left, buttons[5].right, false);
         axes[5].vertical = InputControl.setAxis("Joystick 6 Axis 4", PlayerSixIndex, buttons[5].backward, buttons[5].forward, false);
 
@@ -582,7 +546,7 @@ public class Controls
         buttons[0].releaseSecondary = InputControl.setKey("1: Release Secondary Gamepiece", PlayerOneIndex, KeyCode.E, new JoystickInput(JoystickButton.Button4, Joystick.Joystick1), true);
         buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
 
-        //Set Tank Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[0].tankLeftAxes = InputControl.setAxis("1: Joystick 1 Axis 9", PlayerOneIndex, buttons[0].tankBackLeft, buttons[0].tankFrontLeft, true);
         axes[0].tankRightAxes = InputControl.setAxis("1: Joystick 1 Axis 10", PlayerOneIndex, buttons[0].tankFrontRight, buttons[0].tankBackRight, true);
 
@@ -623,7 +587,7 @@ public class Controls
         buttons[1].releaseSecondary = InputControl.setKey("2: Release Secondary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick2), true);
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick2), true);
 
-        //Set Tank Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[1].tankLeftAxes = InputControl.setAxis("Joystick 2 Axis 9", PlayerTwoIndex, buttons[1].tankBackLeft, buttons[1].tankFrontLeft, true);
         axes[1].tankRightAxes = InputControl.setAxis("Joystick 2 Axis 10", PlayerTwoIndex, buttons[1].tankFrontRight, buttons[1].tankBackRight, true);
 
@@ -664,7 +628,7 @@ public class Controls
         buttons[2].releaseSecondary = InputControl.setKey("3: Release Secondary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick3), true);
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick3), true);
 
-        //Set Tank Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[2].tankLeftAxes = InputControl.setAxis("Joystick 3 Axis 9", PlayerThreeIndex, buttons[2].tankBackLeft, buttons[2].tankFrontLeft, true);
         axes[2].tankRightAxes = InputControl.setAxis("Joystick 3 Axis 10", PlayerThreeIndex, buttons[2].tankFrontRight, buttons[2].tankBackRight, true);
 
@@ -705,7 +669,7 @@ public class Controls
         buttons[3].releaseSecondary = InputControl.setKey("4: Release Secondary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick4), true);
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), true);
 
-        //Set Tank Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[3].tankLeftAxes = InputControl.setAxis("Joystick 4 Axis 9", PlayerFourIndex, buttons[3].tankBackLeft, buttons[3].tankFrontLeft, true);
         axes[3].tankRightAxes = InputControl.setAxis("Joystick 4 Axis 10", PlayerFourIndex, buttons[3].tankFrontRight, buttons[3].tankBackRight, true);
 
@@ -746,7 +710,7 @@ public class Controls
         buttons[4].releaseSecondary = InputControl.setKey("5: Release Secondary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick5), true);
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), true);
 
-        //Set Tank Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[4].tankLeftAxes = InputControl.setAxis("Joystick 5 Axis 9", PlayerFiveIndex, buttons[4].tankBackLeft, buttons[4].tankFrontLeft, true);
         axes[4].tankRightAxes = InputControl.setAxis("Joystick 5 Axis 10", PlayerFiveIndex, buttons[4].tankFrontRight, buttons[4].tankBackRight, true);
 
@@ -787,7 +751,7 @@ public class Controls
         buttons[5].releaseSecondary = InputControl.setKey("6: Release Secondary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button4, Joystick.Joystick6), true);
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), true);
 
-        //Set Tank Drive Axes
+        //Set Arcade Drive Axes (PWM [0] and PWM [1])
         axes[5].tankLeftAxes = InputControl.setAxis("Joystick 6 Axis 9", PlayerSixIndex, buttons[5].tankBackLeft, buttons[5].tankFrontLeft, true);
         axes[5].tankRightAxes = InputControl.setAxis("Joystick 6 Axis 10", PlayerSixIndex, buttons[5].tankFrontRight, buttons[5].tankBackRight, true);
 

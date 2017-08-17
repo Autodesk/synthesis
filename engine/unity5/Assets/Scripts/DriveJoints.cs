@@ -102,16 +102,13 @@ public class DriveJoints
         }
 
             pwm[4] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Plus)) ? SPEED_ARROW_PWM :
-                (InputControl.GetButton(Controls.buttons[controlIndex].pwm4Neg)) ? -SPEED_ARROW_PWM : 0f;
+                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm4Axes) * SPEED_ARROW_PWM);
         Debug.Log("PWM 4: " + pwm[4].ToString());
             pwm[5] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Plus)) ? SPEED_ARROW_PWM :
-                (InputControl.GetButton(Controls.buttons[controlIndex].pwm5Neg)) ? -SPEED_ARROW_PWM : 0f;
+                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm5Axes) * SPEED_ARROW_PWM);
 
-            pwm[6] +=
-                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Plus)) ? SPEED_ARROW_PWM :
-                (InputControl.GetButton(Controls.buttons[controlIndex].pwm6Neg)) ? -SPEED_ARROW_PWM : 0f;
+        pwm[6] +=
+                 (InputControl.GetAxis(Controls.axes[controlIndex].pwm6Axes) * SPEED_ARROW_PWM);
 
         listOfSubNodes.Clear();
         skeleton.ListAllNodes(listOfSubNodes);
@@ -200,6 +197,17 @@ public class DriveJoints
             
             #region Mecanum Drive
             pwm[(int)MecanumPorts.FRONT_RIGHT] +=
+            //    pwm[0] +=
+            //    (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
+            //    (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+
+            //pwm[1] +=
+            //    (InputControl.GetAxis(Controls.axes[controlIndex].vertical) * -SPEED_ARROW_PWM) +
+            //    (InputControl.GetAxis(Controls.axes[controlIndex].horizontal) * SPEED_ARROW_PWM);
+
+            //(InputControl.GetAxis(Controls.axes[controlIndex].vertical) * SPEED_ARROW_PWM) +
+            //========================================CONSTRUCTION====================================
+
             (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? reverse * SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * SPEED_ARROW_PWM : 0.0f) +
