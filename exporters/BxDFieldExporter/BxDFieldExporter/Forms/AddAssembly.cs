@@ -70,13 +70,6 @@ namespace BxDFieldExporter
             this.Close();
         }
 
-        private void ApplyButton_OnClick(object sender, EventArgs e)
-        {
-            mAddInInterface.SetRunOnce(false);
-            StandardAddInServer.applyButton_Clicked = true;
-            StandardAddInServer.task.TrySetResult(true);
-        }
-
         private void AddAssembly_Load(object sender, EventArgs e)
         {
 
@@ -86,6 +79,18 @@ namespace BxDFieldExporter
         {
             mAddInInterface.SetCancel(true);
             mAddInInterface.SetRunOnce(false);
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ApplyButton_Click(object sender, EventArgs e)
+        {
+            mAddInInterface.SetRunOnce(false);
+            StandardAddInServer.applyButton_Clicked = true;
+            StandardAddInServer.task.TrySetResult(true);
         }
 
         ///// <summary>

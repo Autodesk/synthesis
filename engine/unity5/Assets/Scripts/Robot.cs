@@ -217,14 +217,14 @@ public class Robot : MonoBehaviour
             //Load the other nodes (wheels)
             string wheelDirectory = PlayerPrefs.GetString("simSelectedWheel");
             BXDAMesh mesh = new BXDAMesh();
-            mesh.ReadFromFile(wheelDirectory);
+            mesh.ReadFromFile(wheelDirectory + "\\node_0.bxda");
 
             List<Mesh> meshList = new List<Mesh>();
             List<Material[]> materialList = new List<Material[]>();
 
-            // RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelDirectory);
+            RigidNode wheelNode = (RigidNode)BXDJSkeleton.ReadSkeleton(wheelDirectory + "\\skeleton.bxdj");
 
-            Material[] materials = { new Material("empty") };
+            Material[] materials = new Material[0];
             AuxFunctions.ReadMeshSet(mesh.meshes, delegate (int id, BXDAMesh.BXDASubMesh sub, Mesh meshu)
             {
 
@@ -281,7 +281,11 @@ public class Robot : MonoBehaviour
                 //node.MainObject.GetComponentInChildren<MeshFilter>().mesh.bounds = b;
 
                 node.CreateJoint(numWheels);
-                // node.MainObject.GetComponent<BRaycastWheel>().Radius = wheelNode.GetDriverMeta<WheelDriverMeta>().radius;
+
+                Debug.Log(wheelNode.HasDriverMeta<WheelDriverMeta>());
+
+                float radius = PlayerPrefs.GetFloat("wheelRadius");
+                node.MainObject.GetComponent<BRaycastWheel>().Radius = radius;
                 if (node.PhysicalProperties != null)
                     collectiveMass += node.PhysicalProperties.mass;
 
