@@ -46,7 +46,7 @@ public class SettingsMode : MonoBehaviour
         Controls.Load();
 
         //Enable this for auto-saving. To complete auto-saving, enable the comments in KeyButton.cs > SetInput().
-        //UpdateAllText();
+        UpdateAllText();
     }
 
     /// <summary>

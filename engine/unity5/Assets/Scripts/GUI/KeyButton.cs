@@ -115,7 +115,7 @@ public class KeyButton : MonoBehaviour
         UpdateText();
 
         //Enable this for auto-saving. To complete auto-saving, enable the comments in SettingsMode.cs > OnLoadClick().
-        //Controls.Save();
+        Controls.Save();
 
         selectedButton = null;
     }
