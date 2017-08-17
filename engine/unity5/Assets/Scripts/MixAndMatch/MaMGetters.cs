@@ -45,8 +45,33 @@ public class MaMGetters : MonoBehaviour {
                 MixAndMatchMode.hasManipulator = true;
                 PlayerPrefs.SetInt("hasManipulator", 1); //0 is false, 1 is true
                 return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheShot");
+            case 3: //Lift
+                MixAndMatchMode.hasManipulator = true;
+                PlayerPrefs.SetInt("hasManipulator", 1);
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\SyntheLift");
         }
         return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Manipulators\\Claw");
+    }
+
+    ///<summary>
+    ///Returns the string destination path of a wheel
+    /// </summary>
+    public string GetWheel(int wheelID)
+    {
+        switch (wheelID)
+        {
+            case 0: //traction wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Traction\\node_0.bxda");
+            case 1: //colson wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson\\node_0.bxda");
+            case 2: //omni wheel
+                break;
+            case 3: //pnemuatic wheel
+                return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Pneumatic\\node_0.bxda");
+
+        }
+
+        return (System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments) + "\\MixAndMatch\\Wheels\\Colson\\node_0.bxda");
     }
 
     ///<summary> 

@@ -12,11 +12,16 @@ public partial class RigidNode : RigidNode_Base
 {
     public bool CreateMesh(string filePath)
     {
+        Debug.Log(filePath);
         BXDAMesh mesh = new BXDAMesh();
         mesh.ReadFromFile(filePath);
 
-        if (!mesh.GUID.Equals(GUID))
-            return false;
+        //if (!mesh.GUID.Equals(GUID))
+        //{
+        //    Debug.Log("Returning false");
+        //    return false;
+        //}
+
 
         List<GameObject> meshObjects = new List<GameObject>();
 
@@ -38,6 +43,8 @@ public partial class RigidNode : RigidNode_Base
             meshObject.transform.rotation = root.rotation;
 
             ComOffset = meshObject.transform.GetComponent<MeshFilter>().mesh.bounds.center;
+
+            Debug.Log("Mesh Objects count " + meshObjects.Count);
 
         }, true);
 
