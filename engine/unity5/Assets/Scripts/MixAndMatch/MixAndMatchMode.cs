@@ -174,6 +174,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedRobot", mixAndMatchModeScript.GetComponent<MaMGetters>().GetDriveBase(selectedDriveBase));
         PlayerPrefs.SetString("simSelectedRobotName", "DriveBase2557");
         PlayerPrefs.SetString("simSelectedManipulator", mixAndMatchModeScript.GetComponent<MaMGetters>().GetManipulator(selectedManipulator));
+        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
         PlayerPrefs.Save();
@@ -221,6 +222,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
         PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
         PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
+        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
 
@@ -240,6 +242,7 @@ public class MixAndMatchMode : MonoBehaviour
         PlayerPrefs.SetString("simSelectedReplay", string.Empty);
         PlayerPrefs.SetString("simSelectedRobot", baseDirectory);
         PlayerPrefs.SetString("simSelectedManipulator", manipulatorDirectory);
+        PlayerPrefs.SetString("simSelectedWheel", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheel(selectedWheel));
         PlayerPrefs.SetFloat("wheelFriction", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelFriction(selectedWheel));
         PlayerPrefs.SetFloat("wheelMass", mixAndMatchModeScript.GetComponent<MaMGetters>().GetWheelMass(selectedWheel));
         int robotHasManipulator = PlayerPrefs.GetInt("hasManipulator"); //0 is false, 1 is true
