@@ -917,11 +917,15 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                                     ClientNodeResource nodeRes = null;
                                     try
                                     {
-                                        nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 1, null);
+                                        stdole.IPictureDisp partIcon =
+                                                PictureDispConverter.ToIPictureDisp(new Bitmap(BxDFieldExporter.Resource.PartIcon16));
+                                        nodeRes = nodeRescs.Add(node.BrowserNodeDefinition.Label, 2, partIcon);
+                                        MessageBox.Show("just added first icon");
                                     }
                                     catch
                                     {
-                                        nodeRes = oPanes.ClientNodeResources.ItemById(node.BrowserNodeDefinition.Label, 1);
+                                        nodeRes = oPanes.ClientNodeResources.ItemById(node.BrowserNodeDefinition.Label, 2);
+                                        MessageBox.Show("catch being thrown");
                                     }
                                     node.AddChild((BrowserNodeDefinition)oPanes.CreateBrowserNodeDefinition(selectedPart.Name, rand.Next(), nodeRes));
                                     node.DoSelect();
@@ -1144,13 +1148,23 @@ Checking “Dynamic” enables an object to be moved in the simulator. For example, 
                 SetAllButtons(true);
                 return;
             }
-            //envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
-            //FieldSaver exporter = new FieldSaver(m_inventorApplication, FieldComponents);
-            UpdateLegacy();
-            Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
-            Program.INVENTOR_APPLICATION = InventorApplication;
-            LegacyUtilities.exporter.ShowDialog();
-            SetAllButtons(true);
+            DialogResult result = MessageBox.Show("All parts or assemblies must be added to components to export correctly.\nDo you wish to continue?",
+                "Warning", MessageBoxButtons.OKCancel);
+            if(result == DialogResult.Cancel)
+            {
+                SetAllButtons(true);
+                return;
+            }
+            else
+            {
+                //envMan.SetCurrentEnvironment(envMan.BaseEnvironment);
+                //FieldSaver exporter = new FieldSaver(m_inventorApplication, FieldComponents);
+                UpdateLegacy();
+                Program.ASSEMBLY_DOCUMENT = (AssemblyDocument)InventorApplication.ActiveDocument;
+                Program.INVENTOR_APPLICATION = InventorApplication;
+                LegacyUtilities.exporter.ShowDialog();
+                SetAllButtons(true);
+            }            
         }
 
         //Generic function for removing both parts and assemblies

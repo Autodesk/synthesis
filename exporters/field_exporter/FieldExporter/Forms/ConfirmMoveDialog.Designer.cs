@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmMoveDialog));
             this.messageLabel = new System.Windows.Forms.Label();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
@@ -36,18 +37,20 @@
             // 
             // messageLabel
             // 
-            this.messageLabel.Location = new System.Drawing.Point(13, 13);
+            this.messageLabel.Location = new System.Drawing.Point(10, 11);
+            this.messageLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.messageLabel.Name = "messageLabel";
-            this.messageLabel.Size = new System.Drawing.Size(341, 58);
+            this.messageLabel.Size = new System.Drawing.Size(256, 47);
             this.messageLabel.TabIndex = 0;
             this.messageLabel.Text = "...";
             // 
             // cancelButton
             // 
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(220, 101);
+            this.cancelButton.Location = new System.Drawing.Point(165, 82);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(64, 32);
+            this.cancelButton.Size = new System.Drawing.Size(48, 26);
             this.cancelButton.TabIndex = 1;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -55,9 +58,10 @@
             // okButton
             // 
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(290, 101);
+            this.okButton.Location = new System.Drawing.Point(218, 82);
+            this.okButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(64, 32);
+            this.okButton.Size = new System.Drawing.Size(48, 26);
             this.okButton.TabIndex = 2;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
@@ -65,23 +69,26 @@
             // futureCheckBox
             // 
             this.futureCheckBox.AutoSize = true;
-            this.futureCheckBox.Location = new System.Drawing.Point(12, 74);
+            this.futureCheckBox.Location = new System.Drawing.Point(9, 60);
+            this.futureCheckBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.futureCheckBox.Name = "futureCheckBox";
-            this.futureCheckBox.Size = new System.Drawing.Size(249, 21);
+            this.futureCheckBox.Size = new System.Drawing.Size(189, 17);
             this.futureCheckBox.TabIndex = 3;
             this.futureCheckBox.Text = "Do this for any future occurrences.";
             this.futureCheckBox.UseVisualStyleBackColor = true;
             // 
             // ConfirmMoveDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(366, 145);
+            this.ClientSize = new System.Drawing.Size(274, 118);
             this.Controls.Add(this.futureCheckBox);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.messageLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ConfirmMoveDialog";

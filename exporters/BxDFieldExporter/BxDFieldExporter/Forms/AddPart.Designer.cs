@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddPart));
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.Label = new System.Windows.Forms.Label();
@@ -45,10 +46,10 @@
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.OKButton_OnClick);
             // 
-            // CancelButton
+            // cancelButton
             // 
             this.cancelButton.Location = new System.Drawing.Point(110, 70);
-            this.cancelButton.Name = "CancelButton";
+            this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 1;
             this.cancelButton.Text = "Cancel";
@@ -83,6 +84,7 @@
             this.Controls.Add(this.Label);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AddPart";
             this.Text = "Add Part";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CancelButton_onClick);
