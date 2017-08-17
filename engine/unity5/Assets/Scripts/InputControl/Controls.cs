@@ -83,8 +83,15 @@ public class Controls
         public Axis horizontal;
 
         //Tank Axes
-        public Axis tankLeftAxis;
-        public Axis tankRightAxis;
+        public Axis tankLeftAxes;
+        public Axis tankRightAxes;
+
+        //PWM Axes
+        public Axis pwm2Axes;
+        public Axis pwm3Axes;
+        public Axis pwm4Axes;
+        public Axis pwm5Axes;
+        public Axis pwm6Axes;
     }
 
     /// <summary>
@@ -257,427 +264,6 @@ public class Controls
     }
 
     /// <summary>
-    /// Removes arcade drive keys for tank drive.
-    /// </summary>
-    public static void RemoveArcadeKeys()
-    {
-
-        #region Remove Primary Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[0].forward);
-        InputControl.removeKey(buttons[0].backward);
-        InputControl.removeKey(buttons[0].left);
-        InputControl.removeKey(buttons[0].right);
-
-        //Remove remaining PWM controls
-        InputControl.removeKey(buttons[0].pwm2Plus);
-        InputControl.removeKey(buttons[0].pwm2Neg);
-        InputControl.removeKey(buttons[0].pwm3Plus);
-        InputControl.removeKey(buttons[0].pwm3Neg);
-        InputControl.removeKey(buttons[0].pwm4Plus);
-        InputControl.removeKey(buttons[0].pwm4Neg);
-        InputControl.removeKey(buttons[0].pwm5Plus);
-        InputControl.removeKey(buttons[0].pwm5Neg);
-        InputControl.removeKey(buttons[0].pwm6Plus);
-        InputControl.removeKey(buttons[0].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[0].resetRobot);
-        InputControl.removeKey(buttons[0].cameraToggle);
-        InputControl.removeKey(buttons[0].pickupPrimary);
-        InputControl.removeKey(buttons[0].releasePrimary);
-        InputControl.removeKey(buttons[0].spawnPrimary);
-        InputControl.removeKey(buttons[0].pickupSecondary);
-        InputControl.removeKey(buttons[0].releaseSecondary);
-        InputControl.removeKey(buttons[0].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[0].horizontal);
-        InputControl.removeAxis(axes[0].vertical);
-        #endregion
-
-        #region Player 2 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[1].forward);
-        InputControl.removeKey(buttons[1].backward);
-        InputControl.removeKey(buttons[1].left);
-        InputControl.removeKey(buttons[1].right);
-
-        //Remove remaining PWM controls
-        InputControl.removeKey(buttons[1].pwm2Plus);
-        InputControl.removeKey(buttons[1].pwm2Neg);
-        InputControl.removeKey(buttons[1].pwm3Plus);
-        InputControl.removeKey(buttons[1].pwm3Neg);
-        InputControl.removeKey(buttons[1].pwm4Plus);
-        InputControl.removeKey(buttons[1].pwm4Neg);
-        InputControl.removeKey(buttons[1].pwm5Plus);
-        InputControl.removeKey(buttons[1].pwm5Neg);
-        InputControl.removeKey(buttons[1].pwm6Plus);
-        InputControl.removeKey(buttons[1].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[1].resetRobot);
-        InputControl.removeKey(buttons[1].cameraToggle);
-        InputControl.removeKey(buttons[1].pickupPrimary);
-        InputControl.removeKey(buttons[1].releasePrimary);
-        InputControl.removeKey(buttons[1].spawnPrimary);
-        InputControl.removeKey(buttons[1].pickupSecondary);
-        InputControl.removeKey(buttons[1].releaseSecondary);
-        InputControl.removeKey(buttons[1].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[1].horizontal);
-        InputControl.removeAxis(axes[1].vertical);
-        #endregion
-
-        #region Player 3 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[2].forward);
-        InputControl.removeKey(buttons[2].backward);
-        InputControl.removeKey(buttons[2].left);
-        InputControl.removeKey(buttons[2].right);
-
-        //Rmove remaining PWM controls
-        InputControl.removeKey(buttons[2].pwm2Plus);
-        InputControl.removeKey(buttons[2].pwm2Neg);
-        InputControl.removeKey(buttons[2].pwm3Plus);
-        InputControl.removeKey(buttons[2].pwm3Neg);
-        InputControl.removeKey(buttons[2].pwm4Plus);
-        InputControl.removeKey(buttons[2].pwm4Neg);
-        InputControl.removeKey(buttons[2].pwm5Plus);
-        InputControl.removeKey(buttons[2].pwm5Neg);
-        InputControl.removeKey(buttons[2].pwm6Plus);
-        InputControl.removeKey(buttons[2].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[2].resetRobot);
-        InputControl.removeKey(buttons[2].cameraToggle);
-        InputControl.removeKey(buttons[2].pickupPrimary);
-        InputControl.removeKey(buttons[2].releasePrimary);
-        InputControl.removeKey(buttons[2].spawnPrimary);
-        InputControl.removeKey(buttons[2].pickupSecondary);
-        InputControl.removeKey(buttons[2].releaseSecondary);
-        InputControl.removeKey(buttons[2].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[2].horizontal);
-        InputControl.removeAxis(axes[2].vertical);
-        #endregion
-
-        #region Player4 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[3].forward);
-        InputControl.removeKey(buttons[3].backward);
-        InputControl.removeKey(buttons[3].left);
-        InputControl.removeKey(buttons[3].right);
-
-        //Rmove remaining PWM controls
-        InputControl.removeKey(buttons[3].pwm2Plus);
-        InputControl.removeKey(buttons[3].pwm2Neg);
-        InputControl.removeKey(buttons[3].pwm3Plus);
-        InputControl.removeKey(buttons[3].pwm3Neg);
-        InputControl.removeKey(buttons[3].pwm4Plus);
-        InputControl.removeKey(buttons[3].pwm4Neg);
-        InputControl.removeKey(buttons[3].pwm5Plus);
-        InputControl.removeKey(buttons[3].pwm5Neg);
-        InputControl.removeKey(buttons[3].pwm6Plus);
-        InputControl.removeKey(buttons[3].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[3].resetRobot);
-        InputControl.removeKey(buttons[3].cameraToggle);
-        InputControl.removeKey(buttons[3].pickupPrimary);
-        InputControl.removeKey(buttons[3].releasePrimary);
-        InputControl.removeKey(buttons[3].spawnPrimary);
-        InputControl.removeKey(buttons[3].pickupSecondary);
-        InputControl.removeKey(buttons[3].releaseSecondary);
-        InputControl.removeKey(buttons[3].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[3].horizontal);
-        InputControl.removeAxis(axes[3].vertical);
-        #endregion
-
-        #region Player 5 Controls
-        //Remove bBasic robot controls
-        InputControl.removeKey(buttons[4].forward);
-        InputControl.removeKey(buttons[4].backward);
-        InputControl.removeKey(buttons[4].left);
-        InputControl.removeKey(buttons[4].right);
-
-        //Rmove remaining PWM controls
-        InputControl.removeKey(buttons[4].pwm2Plus);
-        InputControl.removeKey(buttons[4].pwm2Neg);
-        InputControl.removeKey(buttons[4].pwm3Plus);
-        InputControl.removeKey(buttons[4].pwm3Neg);
-        InputControl.removeKey(buttons[4].pwm4Plus);
-        InputControl.removeKey(buttons[4].pwm4Neg);
-        InputControl.removeKey(buttons[4].pwm5Plus);
-        InputControl.removeKey(buttons[4].pwm5Neg);
-        InputControl.removeKey(buttons[4].pwm6Plus);
-        InputControl.removeKey(buttons[4].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[4].resetRobot);
-        InputControl.removeKey(buttons[4].cameraToggle);
-        InputControl.removeKey(buttons[4].pickupPrimary);
-        InputControl.removeKey(buttons[4].releasePrimary);
-        InputControl.removeKey(buttons[4].spawnPrimary);
-        InputControl.removeKey(buttons[4].pickupSecondary);
-        InputControl.removeKey(buttons[4].releaseSecondary);
-        InputControl.removeKey(buttons[4].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[4].horizontal);
-        InputControl.removeAxis(axes[4].vertical);
-        #endregion
-
-        #region Player 6 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[5].forward);
-        InputControl.removeKey(buttons[5].backward);
-        InputControl.removeKey(buttons[5].left);
-        InputControl.removeKey(buttons[5].right);
-
-        //Rmove remaining PWM controls
-        InputControl.removeKey(buttons[5].pwm2Plus);
-        InputControl.removeKey(buttons[5].pwm2Neg);
-        InputControl.removeKey(buttons[5].pwm3Plus);
-        InputControl.removeKey(buttons[5].pwm3Neg);
-        InputControl.removeKey(buttons[5].pwm4Plus);
-        InputControl.removeKey(buttons[5].pwm4Neg);
-        InputControl.removeKey(buttons[5].pwm5Plus);
-        InputControl.removeKey(buttons[5].pwm5Neg);
-        InputControl.removeKey(buttons[5].pwm6Plus);
-        InputControl.removeKey(buttons[5].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[5].resetRobot);
-        InputControl.removeKey(buttons[5].cameraToggle);
-        InputControl.removeKey(buttons[5].pickupPrimary);
-        InputControl.removeKey(buttons[5].releasePrimary);
-        InputControl.removeKey(buttons[5].spawnPrimary);
-        InputControl.removeKey(buttons[5].pickupSecondary);
-        InputControl.removeKey(buttons[5].releaseSecondary);
-        InputControl.removeKey(buttons[5].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[5].horizontal);
-        InputControl.removeAxis(axes[5].vertical);
-        #endregion
-    }
-
-    /// <summary>
-    /// Removes tank drive keys for arcade drive.
-    /// </summary>
-    public static void RemoveTankKeys()
-    {
-        #region Remove Primary Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[0].tankFrontLeft);
-        InputControl.removeKey(buttons[0].tankFrontRight);
-        InputControl.removeKey(buttons[0].tankBackLeft);
-        InputControl.removeKey(buttons[0].tankBackRight);
-
-        //Remove remaining PWM controls
-        InputControl.removeKey(buttons[0].pwm2Plus);
-        InputControl.removeKey(buttons[0].pwm2Neg);
-        InputControl.removeKey(buttons[0].pwm3Plus);
-        InputControl.removeKey(buttons[0].pwm3Neg);
-        InputControl.removeKey(buttons[0].pwm4Plus);
-        InputControl.removeKey(buttons[0].pwm4Neg);
-        InputControl.removeKey(buttons[0].pwm5Plus);
-        InputControl.removeKey(buttons[0].pwm5Neg);
-        InputControl.removeKey(buttons[0].pwm6Plus);
-        InputControl.removeKey(buttons[0].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[0].resetRobot);
-        InputControl.removeKey(buttons[0].cameraToggle);
-        InputControl.removeKey(buttons[0].pickupPrimary);
-        InputControl.removeKey(buttons[0].releasePrimary);
-        InputControl.removeKey(buttons[0].spawnPrimary);
-        InputControl.removeKey(buttons[0].pickupSecondary);
-        InputControl.removeKey(buttons[0].releaseSecondary);
-        InputControl.removeKey(buttons[0].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[0].tankLeftAxis);
-        InputControl.removeAxis(axes[0].tankRightAxis);
-        #endregion
-
-        #region Player 2 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[1].tankFrontLeft);
-        InputControl.removeKey(buttons[1].tankFrontRight);
-        InputControl.removeKey(buttons[1].tankBackLeft);
-        InputControl.removeKey(buttons[1].tankBackRight);
-
-        //Remove remaining PWM controls
-        InputControl.removeKey(buttons[1].pwm2Plus);
-        InputControl.removeKey(buttons[1].pwm2Neg);
-        InputControl.removeKey(buttons[1].pwm3Plus);
-        InputControl.removeKey(buttons[1].pwm3Neg);
-        InputControl.removeKey(buttons[1].pwm4Plus);
-        InputControl.removeKey(buttons[1].pwm4Neg);
-        InputControl.removeKey(buttons[1].pwm5Plus);
-        InputControl.removeKey(buttons[1].pwm5Neg);
-        InputControl.removeKey(buttons[1].pwm6Plus);
-        InputControl.removeKey(buttons[1].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[1].resetRobot);
-        InputControl.removeKey(buttons[1].cameraToggle);
-        InputControl.removeKey(buttons[1].pickupPrimary);
-        InputControl.removeKey(buttons[1].releasePrimary);
-        InputControl.removeKey(buttons[1].spawnPrimary);
-        InputControl.removeKey(buttons[1].pickupSecondary);
-        InputControl.removeKey(buttons[1].releaseSecondary);
-        InputControl.removeKey(buttons[1].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[1].tankLeftAxis);
-        InputControl.removeAxis(axes[1].tankRightAxis);
-        #endregion
-
-        #region Player 3 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[2].tankFrontLeft);
-        InputControl.removeKey(buttons[2].tankFrontRight);
-        InputControl.removeKey(buttons[2].tankBackLeft);
-        InputControl.removeKey(buttons[2].tankBackRight);
-
-        //Rmove remaining PWM controls
-        InputControl.removeKey(buttons[2].pwm2Plus);
-        InputControl.removeKey(buttons[2].pwm2Neg);
-        InputControl.removeKey(buttons[2].pwm3Plus);
-        InputControl.removeKey(buttons[2].pwm3Neg);
-        InputControl.removeKey(buttons[2].pwm4Plus);
-        InputControl.removeKey(buttons[2].pwm4Neg);
-        InputControl.removeKey(buttons[2].pwm5Plus);
-        InputControl.removeKey(buttons[2].pwm5Neg);
-        InputControl.removeKey(buttons[2].pwm6Plus);
-        InputControl.removeKey(buttons[2].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[2].resetRobot);
-        InputControl.removeKey(buttons[2].cameraToggle);
-        InputControl.removeKey(buttons[2].pickupPrimary);
-        InputControl.removeKey(buttons[2].releasePrimary);
-        InputControl.removeKey(buttons[2].spawnPrimary);
-        InputControl.removeKey(buttons[2].pickupSecondary);
-        InputControl.removeKey(buttons[2].releaseSecondary);
-        InputControl.removeKey(buttons[2].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[2].tankLeftAxis);
-        InputControl.removeAxis(axes[2].tankRightAxis);
-        #endregion
-
-        #region Player4 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[3].tankFrontLeft);
-        InputControl.removeKey(buttons[3].tankFrontRight);
-        InputControl.removeKey(buttons[3].tankBackLeft);
-        InputControl.removeKey(buttons[3].tankBackRight);
-
-        //Rmove remaining PWM controls
-        InputControl.removeKey(buttons[3].pwm2Plus);
-        InputControl.removeKey(buttons[3].pwm2Neg);
-        InputControl.removeKey(buttons[3].pwm3Plus);
-        InputControl.removeKey(buttons[3].pwm3Neg);
-        InputControl.removeKey(buttons[3].pwm4Plus);
-        InputControl.removeKey(buttons[3].pwm4Neg);
-        InputControl.removeKey(buttons[3].pwm5Plus);
-        InputControl.removeKey(buttons[3].pwm5Neg);
-        InputControl.removeKey(buttons[3].pwm6Plus);
-        InputControl.removeKey(buttons[3].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[3].resetRobot);
-        InputControl.removeKey(buttons[3].cameraToggle);
-        InputControl.removeKey(buttons[3].pickupPrimary);
-        InputControl.removeKey(buttons[3].releasePrimary);
-        InputControl.removeKey(buttons[3].spawnPrimary);
-        InputControl.removeKey(buttons[3].pickupSecondary);
-        InputControl.removeKey(buttons[3].releaseSecondary);
-        InputControl.removeKey(buttons[3].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[3].tankLeftAxis);
-        InputControl.removeAxis(axes[3].tankRightAxis);
-        #endregion
-
-        #region Player 5 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[4].tankFrontLeft);
-        InputControl.removeKey(buttons[4].tankFrontRight);
-        InputControl.removeKey(buttons[4].tankBackLeft);
-        InputControl.removeKey(buttons[4].tankBackRight);
-
-        //Remove remaining PWM controls
-        InputControl.removeKey(buttons[4].pwm2Plus);
-        InputControl.removeKey(buttons[4].pwm2Neg);
-        InputControl.removeKey(buttons[4].pwm3Plus);
-        InputControl.removeKey(buttons[4].pwm3Neg);
-        InputControl.removeKey(buttons[4].pwm4Plus);
-        InputControl.removeKey(buttons[4].pwm4Neg);
-        InputControl.removeKey(buttons[4].pwm5Plus);
-        InputControl.removeKey(buttons[4].pwm5Neg);
-        InputControl.removeKey(buttons[4].pwm6Plus);
-        InputControl.removeKey(buttons[4].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[4].resetRobot);
-        InputControl.removeKey(buttons[4].cameraToggle);
-        InputControl.removeKey(buttons[4].pickupPrimary);
-        InputControl.removeKey(buttons[4].releasePrimary);
-        InputControl.removeKey(buttons[4].spawnPrimary);
-        InputControl.removeKey(buttons[4].pickupSecondary);
-        InputControl.removeKey(buttons[4].releaseSecondary);
-        InputControl.removeKey(buttons[4].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[4].tankLeftAxis);
-        InputControl.removeAxis(axes[4].tankRightAxis);
-        #endregion
-
-        #region Player 6 Controls
-        //Remove basic robot controls
-        InputControl.removeKey(buttons[5].tankFrontLeft);
-        InputControl.removeKey(buttons[5].tankFrontRight);
-        InputControl.removeKey(buttons[5].tankBackLeft);
-        InputControl.removeKey(buttons[5].tankBackRight);
-
-        //Remove remaining PWM controls
-        InputControl.removeKey(buttons[5].pwm2Plus);
-        InputControl.removeKey(buttons[5].pwm2Neg);
-        InputControl.removeKey(buttons[5].pwm3Plus);
-        InputControl.removeKey(buttons[5].pwm3Neg);
-        InputControl.removeKey(buttons[5].pwm4Plus);
-        InputControl.removeKey(buttons[5].pwm4Neg);
-        InputControl.removeKey(buttons[5].pwm5Plus);
-        InputControl.removeKey(buttons[5].pwm5Neg);
-        InputControl.removeKey(buttons[5].pwm6Plus);
-        InputControl.removeKey(buttons[5].pwm6Neg);
-
-        //Remove other controls
-        InputControl.removeKey(buttons[5].resetRobot);
-        InputControl.removeKey(buttons[5].cameraToggle);
-        InputControl.removeKey(buttons[5].pickupPrimary);
-        InputControl.removeKey(buttons[5].releasePrimary);
-        InputControl.removeKey(buttons[5].spawnPrimary);
-        InputControl.removeKey(buttons[5].pickupSecondary);
-        InputControl.removeKey(buttons[5].releaseSecondary);
-        InputControl.removeKey(buttons[5].spawnSecondary);
-
-        //Remove axes
-        InputControl.removeAxis(axes[5].tankLeftAxis);
-        InputControl.removeAxis(axes[5].tankRightAxis);
-        #endregion
-    }
-
-    /// <summary>
     /// Converts string representation of CustomInput to CustomInput.
     /// </summary>
     /// <returns>CustomInput from string.</returns>
@@ -747,6 +333,13 @@ public class Controls
         //Set Arcade Drive Axes
         axes[0].horizontal = InputControl.setAxis("1: Joystick 1 Axis 2", PlayerOneIndex, buttons[0].left, buttons[0].right, false);
         axes[0].vertical = InputControl.setAxis("1: Joystick 1 Axis 4", PlayerOneIndex, buttons[0].backward, buttons[0].forward, false);
+        
+        //Set PWM Axes
+        axes[0].pwm2Axes = InputControl.setAxis("1: PWM 2 Axis 3", PlayerOneIndex, buttons[0].pwm2Neg, buttons[0].pwm2Plus, false);
+        axes[0].pwm3Axes = InputControl.setAxis("1: PWM 3 Axis 5", PlayerOneIndex, buttons[0].pwm3Neg, buttons[0].pwm3Plus, false);
+        axes[0].pwm4Axes = InputControl.setAxis("1: PWM 4 Axis 6", PlayerOneIndex, buttons[0].pwm4Neg, buttons[0].pwm4Plus, false);
+        axes[0].pwm5Axes = InputControl.setAxis("1: PWM 5 Axis 7", PlayerOneIndex, buttons[0].pwm5Neg, buttons[0].pwm5Plus, false);
+        axes[0].pwm6Axes = InputControl.setAxis("1: PWM 6 Axis 8", PlayerOneIndex, buttons[0].pwm6Neg, buttons[0].pwm6Plus, false);
         #endregion
 
         #region Player 2 Controls
@@ -781,6 +374,13 @@ public class Controls
         //Set Arcade Drive Axes
         axes[1].horizontal = InputControl.setAxis("Joystick 2 Axis 2", PlayerTwoIndex, buttons[1].left, buttons[1].right, false);
         axes[1].vertical = InputControl.setAxis("Joystick 2 Axis 4", PlayerTwoIndex, buttons[1].backward, buttons[1].forward, false);
+
+        //Set PWM Axes
+        axes[1].pwm2Axes = InputControl.setAxis("2: PWM 2 Axis 3", PlayerOneIndex, buttons[1].pwm2Neg, buttons[1].pwm2Plus, false);
+        axes[1].pwm3Axes = InputControl.setAxis("2: PWM 3 Axis 5", PlayerOneIndex, buttons[1].pwm3Neg, buttons[1].pwm3Plus, false);
+        axes[1].pwm4Axes = InputControl.setAxis("2: PWM 4 Axis 6", PlayerOneIndex, buttons[1].pwm4Neg, buttons[1].pwm4Plus, false);
+        axes[1].pwm5Axes = InputControl.setAxis("2: PWM 5 Axis 7", PlayerOneIndex, buttons[1].pwm5Neg, buttons[1].pwm5Plus, false);
+        axes[1].pwm6Axes = InputControl.setAxis("2: PWM 6 Axis 8", PlayerOneIndex, buttons[1].pwm6Neg, buttons[1].pwm6Plus, false);
         #endregion
 
         #region Player 3 Controls
@@ -815,6 +415,13 @@ public class Controls
         //Set Arcade Drive Axes
         axes[2].horizontal = InputControl.setAxis("Joystick 3 Axis 2", PlayerThreeIndex, buttons[2].left, buttons[2].right, false);
         axes[2].vertical = InputControl.setAxis("Joystick 3 Axis 4", PlayerThreeIndex, buttons[2].backward, buttons[2].forward, false);
+
+        //Set PWM Axes
+        axes[2].pwm2Axes = InputControl.setAxis("3: PWM 2 Axis 3", PlayerOneIndex, buttons[2].pwm2Neg, buttons[2].pwm2Plus, false);
+        axes[2].pwm3Axes = InputControl.setAxis("3: PWM 3 Axis 5", PlayerOneIndex, buttons[2].pwm3Neg, buttons[2].pwm3Plus, false);
+        axes[2].pwm4Axes = InputControl.setAxis("3: PWM 4 Axis 6", PlayerOneIndex, buttons[2].pwm4Neg, buttons[2].pwm4Plus, false);
+        axes[2].pwm5Axes = InputControl.setAxis("3: PWM 5 Axis 7", PlayerOneIndex, buttons[2].pwm5Neg, buttons[2].pwm5Plus, false);
+        axes[2].pwm6Axes = InputControl.setAxis("3: PWM 6 Axis 8", PlayerOneIndex, buttons[2].pwm6Neg, buttons[2].pwm6Plus, false);
         #endregion
 
         #region Player 4 Controls
@@ -849,6 +456,13 @@ public class Controls
         //Set Arcade Drive Axes
         axes[3].horizontal = InputControl.setAxis("Joystick 4 Axis 2", PlayerFourIndex, buttons[3].left, buttons[3].right, false);
         axes[3].vertical = InputControl.setAxis("Joystick 4 Axis 4", PlayerFourIndex, buttons[3].backward, buttons[3].forward, false);
+
+        //Set PWM Axes
+        axes[3].pwm2Axes = InputControl.setAxis("4: PWM 2 Axis 3", PlayerOneIndex, buttons[3].pwm2Neg, buttons[3].pwm2Plus, false);
+        axes[3].pwm3Axes = InputControl.setAxis("4: PWM 3 Axis 5", PlayerOneIndex, buttons[3].pwm3Neg, buttons[3].pwm3Plus, false);
+        axes[3].pwm4Axes = InputControl.setAxis("4: PWM 4 Axis 6", PlayerOneIndex, buttons[3].pwm4Neg, buttons[3].pwm4Plus, false);
+        axes[3].pwm5Axes = InputControl.setAxis("4: PWM 5 Axis 7", PlayerOneIndex, buttons[3].pwm5Neg, buttons[3].pwm5Plus, false);
+        axes[3].pwm6Axes = InputControl.setAxis("4: PWM 6 Axis 8", PlayerOneIndex, buttons[3].pwm6Neg, buttons[3].pwm6Plus, false);
         #endregion
 
         #region Player 5 Controls
@@ -883,6 +497,13 @@ public class Controls
         //Set Arcade Drive Axes
         axes[4].horizontal = InputControl.setAxis("Joystick 5 Axis 2", PlayerFiveIndex, buttons[4].left, buttons[4].right, false);
         axes[4].vertical = InputControl.setAxis("Joystick 5 Axis 4", PlayerFiveIndex, buttons[4].backward, buttons[4].forward, false);
+
+        //Set PWM Axes
+        axes[4].pwm2Axes = InputControl.setAxis("5: PWM 2 Axis 3", PlayerOneIndex, buttons[4].pwm2Neg, buttons[4].pwm2Plus, false);
+        axes[4].pwm3Axes = InputControl.setAxis("5: PWM 3 Axis 5", PlayerOneIndex, buttons[4].pwm3Neg, buttons[4].pwm3Plus, false);
+        axes[4].pwm4Axes = InputControl.setAxis("5: PWM 4 Axis 6", PlayerOneIndex, buttons[4].pwm4Neg, buttons[4].pwm4Plus, false);
+        axes[4].pwm5Axes = InputControl.setAxis("5: PWM 5 Axis 7", PlayerOneIndex, buttons[4].pwm5Neg, buttons[4].pwm5Plus, false);
+        axes[4].pwm6Axes = InputControl.setAxis("5: PWM 6 Axis 8", PlayerOneIndex, buttons[4].pwm6Neg, buttons[4].pwm6Plus, false);
         #endregion
 
         #region Player 6 Controls
@@ -917,6 +538,13 @@ public class Controls
         //Set Arcade Drive Axes
         axes[5].horizontal = InputControl.setAxis("Joystick 6 Axis 2", PlayerSixIndex, buttons[5].left, buttons[5].right, false);
         axes[5].vertical = InputControl.setAxis("Joystick 6 Axis 4", PlayerSixIndex, buttons[5].backward, buttons[5].forward, false);
+
+        //Set PWM Axes
+        axes[5].pwm2Axes = InputControl.setAxis("6: PWM 2 Axis 3", PlayerOneIndex, buttons[5].pwm2Neg, buttons[5].pwm2Plus, false);
+        axes[5].pwm3Axes = InputControl.setAxis("6: PWM 3 Axis 5", PlayerOneIndex, buttons[5].pwm3Neg, buttons[5].pwm3Plus, false);
+        axes[5].pwm4Axes = InputControl.setAxis("6: PWM 4 Axis 6", PlayerOneIndex, buttons[5].pwm4Neg, buttons[5].pwm4Plus, false);
+        axes[5].pwm5Axes = InputControl.setAxis("6: PWM 5 Axis 7", PlayerOneIndex, buttons[5].pwm5Neg, buttons[5].pwm5Plus, false);
+        axes[5].pwm6Axes = InputControl.setAxis("6: PWM 6 Axis 8", PlayerOneIndex, buttons[5].pwm6Neg, buttons[5].pwm6Plus, false);
         #endregion
     }
 
@@ -955,8 +583,15 @@ public class Controls
         buttons[0].spawnSecondary = InputControl.setKey("1: Spawn Secondary Gamepiece", PlayerOneIndex, KeyCode.Q, new JoystickInput(JoystickButton.Button5, Joystick.Joystick1), true);
 
         //Set Tank Drive Axes
-        axes[0].tankLeftAxis = InputControl.setAxis("1: Joystick 1 Axis 9", PlayerOneIndex, buttons[0].tankBackLeft, buttons[0].tankFrontLeft, true);
-        axes[0].tankRightAxis = InputControl.setAxis("1: Joystick 1 Axis 10", PlayerOneIndex, buttons[0].tankFrontRight, buttons[0].tankBackRight, true);
+        axes[0].tankLeftAxes = InputControl.setAxis("1: Joystick 1 Axis 9", PlayerOneIndex, buttons[0].tankBackLeft, buttons[0].tankFrontLeft, true);
+        axes[0].tankRightAxes = InputControl.setAxis("1: Joystick 1 Axis 10", PlayerOneIndex, buttons[0].tankFrontRight, buttons[0].tankBackRight, true);
+
+        //Set PWM Axes
+        axes[0].pwm2Axes = InputControl.setAxis("1: PWM 2 Axis 3", PlayerOneIndex, buttons[0].pwm2Neg, buttons[0].pwm2Plus, true);
+        axes[0].pwm3Axes = InputControl.setAxis("1: PWM 3 Axis 5", PlayerOneIndex, buttons[0].pwm3Neg, buttons[0].pwm3Plus, true);
+        axes[0].pwm4Axes = InputControl.setAxis("1: PWM 4 Axis 6", PlayerOneIndex, buttons[0].pwm4Neg, buttons[0].pwm4Plus, true);
+        axes[0].pwm5Axes = InputControl.setAxis("1: PWM 5 Axis 7", PlayerOneIndex, buttons[0].pwm5Neg, buttons[0].pwm5Plus, true);
+        axes[0].pwm6Axes = InputControl.setAxis("1: PWM 6 Axis 8", PlayerOneIndex, buttons[0].pwm6Neg, buttons[0].pwm6Plus, true);
         #endregion
 
         #region Player 2 Controls
@@ -989,8 +624,15 @@ public class Controls
         buttons[1].spawnSecondary = InputControl.setKey("2: Spawn Secondary Gamepiece", PlayerTwoIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick2), true);
 
         //Set Tank Drive Axes
-        axes[1].tankLeftAxis = InputControl.setAxis("Joystick 2 Axis 9", PlayerTwoIndex, buttons[1].tankBackLeft, buttons[1].tankFrontLeft, true);
-        axes[1].tankRightAxis = InputControl.setAxis("Joystick 2 Axis 10", PlayerTwoIndex, buttons[1].tankFrontRight, buttons[1].tankBackRight, true);
+        axes[1].tankLeftAxes = InputControl.setAxis("Joystick 2 Axis 9", PlayerTwoIndex, buttons[1].tankBackLeft, buttons[1].tankFrontLeft, true);
+        axes[1].tankRightAxes = InputControl.setAxis("Joystick 2 Axis 10", PlayerTwoIndex, buttons[1].tankFrontRight, buttons[1].tankBackRight, true);
+
+        //Set PWM Axes
+        axes[1].pwm2Axes = InputControl.setAxis("2: PWM 2 Axis 3", PlayerOneIndex, buttons[1].pwm2Neg, buttons[1].pwm2Plus, true);
+        axes[1].pwm3Axes = InputControl.setAxis("2: PWM 3 Axis 5", PlayerOneIndex, buttons[1].pwm3Neg, buttons[1].pwm3Plus, true);
+        axes[1].pwm4Axes = InputControl.setAxis("2: PWM 4 Axis 6", PlayerOneIndex, buttons[1].pwm4Neg, buttons[1].pwm4Plus, true);
+        axes[1].pwm5Axes = InputControl.setAxis("2: PWM 5 Axis 7", PlayerOneIndex, buttons[1].pwm5Neg, buttons[1].pwm5Plus, true);
+        axes[1].pwm6Axes = InputControl.setAxis("2: PWM 6 Axis 8", PlayerOneIndex, buttons[1].pwm6Neg, buttons[1].pwm6Plus, true);
         #endregion
 
         #region Player 3 Controls
@@ -1023,8 +665,15 @@ public class Controls
         buttons[2].spawnSecondary = InputControl.setKey("3: Spawn Secondary Gamepiece", PlayerThreeIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick3), true);
 
         //Set Tank Drive Axes
-        axes[2].tankLeftAxis = InputControl.setAxis("Joystick 3 Axis 9", PlayerThreeIndex, buttons[2].tankBackLeft, buttons[2].tankFrontLeft, true);
-        axes[2].tankRightAxis = InputControl.setAxis("Joystick 3 Axis 10", PlayerThreeIndex, buttons[2].tankFrontRight, buttons[2].tankBackRight, true);
+        axes[2].tankLeftAxes = InputControl.setAxis("Joystick 3 Axis 9", PlayerThreeIndex, buttons[2].tankBackLeft, buttons[2].tankFrontLeft, true);
+        axes[2].tankRightAxes = InputControl.setAxis("Joystick 3 Axis 10", PlayerThreeIndex, buttons[2].tankFrontRight, buttons[2].tankBackRight, true);
+
+        //Set PWM Axes
+        axes[2].pwm2Axes = InputControl.setAxis("3: PWM 2 Axis 3", PlayerOneIndex, buttons[2].pwm2Neg, buttons[2].pwm2Plus, true);
+        axes[2].pwm3Axes = InputControl.setAxis("3: PWM 3 Axis 5", PlayerOneIndex, buttons[2].pwm3Neg, buttons[2].pwm3Plus, true);
+        axes[2].pwm4Axes = InputControl.setAxis("3: PWM 4 Axis 6", PlayerOneIndex, buttons[2].pwm4Neg, buttons[2].pwm4Plus, true);
+        axes[2].pwm5Axes = InputControl.setAxis("3: PWM 5 Axis 7", PlayerOneIndex, buttons[2].pwm5Neg, buttons[2].pwm5Plus, true);
+        axes[2].pwm6Axes = InputControl.setAxis("3: PWM 6 Axis 8", PlayerOneIndex, buttons[2].pwm6Neg, buttons[2].pwm6Plus, true);
         #endregion
 
         #region Player 4 Controls
@@ -1057,8 +706,15 @@ public class Controls
         buttons[3].spawnSecondary = InputControl.setKey("4: Spawn Secondary Gamepiece", PlayerFourIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick4), true);
 
         //Set Tank Drive Axes
-        axes[3].tankLeftAxis = InputControl.setAxis("Joystick 4 Axis 9", PlayerFourIndex, buttons[3].tankBackLeft, buttons[3].tankFrontLeft, true);
-        axes[3].tankRightAxis = InputControl.setAxis("Joystick 4 Axis 10", PlayerFourIndex, buttons[3].tankFrontRight, buttons[3].tankBackRight, true);
+        axes[3].tankLeftAxes = InputControl.setAxis("Joystick 4 Axis 9", PlayerFourIndex, buttons[3].tankBackLeft, buttons[3].tankFrontLeft, true);
+        axes[3].tankRightAxes = InputControl.setAxis("Joystick 4 Axis 10", PlayerFourIndex, buttons[3].tankFrontRight, buttons[3].tankBackRight, true);
+
+        //Set PWM Axes
+        axes[3].pwm2Axes = InputControl.setAxis("4: PWM 2 Axis 3", PlayerOneIndex, buttons[3].pwm2Neg, buttons[3].pwm2Plus, true);
+        axes[3].pwm3Axes = InputControl.setAxis("4: PWM 3 Axis 5", PlayerOneIndex, buttons[3].pwm3Neg, buttons[3].pwm3Plus, true);
+        axes[3].pwm4Axes = InputControl.setAxis("4: PWM 4 Axis 6", PlayerOneIndex, buttons[3].pwm4Neg, buttons[3].pwm4Plus, true);
+        axes[3].pwm5Axes = InputControl.setAxis("4: PWM 5 Axis 7", PlayerOneIndex, buttons[3].pwm5Neg, buttons[3].pwm5Plus, true);
+        axes[3].pwm6Axes = InputControl.setAxis("4: PWM 6 Axis 8", PlayerOneIndex, buttons[3].pwm6Neg, buttons[3].pwm6Plus, true);
         #endregion
 
         #region Player 5 Controls
@@ -1091,8 +747,15 @@ public class Controls
         buttons[4].spawnSecondary = InputControl.setKey("5: Spawn Secondary Gamepiece", PlayerFiveIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick5), true);
 
         //Set Tank Drive Axes
-        axes[4].tankLeftAxis = InputControl.setAxis("Joystick 5 Axis 9", PlayerFiveIndex, buttons[4].tankBackLeft, buttons[4].tankFrontLeft, true);
-        axes[4].tankRightAxis = InputControl.setAxis("Joystick 5 Axis 10", PlayerFiveIndex, buttons[4].tankFrontRight, buttons[4].tankBackRight, true);
+        axes[4].tankLeftAxes = InputControl.setAxis("Joystick 5 Axis 9", PlayerFiveIndex, buttons[4].tankBackLeft, buttons[4].tankFrontLeft, true);
+        axes[4].tankRightAxes = InputControl.setAxis("Joystick 5 Axis 10", PlayerFiveIndex, buttons[4].tankFrontRight, buttons[4].tankBackRight, true);
+
+        //Set PWM Axes
+        axes[4].pwm2Axes = InputControl.setAxis("5: PWM 2 Axis 3", PlayerOneIndex, buttons[4].pwm2Neg, buttons[4].pwm2Plus, true);
+        axes[4].pwm3Axes = InputControl.setAxis("5: PWM 3 Axis 5", PlayerOneIndex, buttons[4].pwm3Neg, buttons[4].pwm3Plus, true);
+        axes[4].pwm4Axes = InputControl.setAxis("5: PWM 4 Axis 6", PlayerOneIndex, buttons[4].pwm4Neg, buttons[4].pwm4Plus, true);
+        axes[4].pwm5Axes = InputControl.setAxis("5: PWM 5 Axis 7", PlayerOneIndex, buttons[4].pwm5Neg, buttons[4].pwm5Plus, true);
+        axes[4].pwm6Axes = InputControl.setAxis("5: PWM 6 Axis 8", PlayerOneIndex, buttons[4].pwm6Neg, buttons[4].pwm6Plus, true);
         #endregion
 
         #region Player 6 Controls
@@ -1125,8 +788,15 @@ public class Controls
         buttons[5].spawnSecondary = InputControl.setKey("6: Spawn Secondary Gamepiece", PlayerSixIndex, new JoystickInput(JoystickButton.Button5, Joystick.Joystick6), true);
 
         //Set Tank Drive Axes
-        axes[5].tankLeftAxis = InputControl.setAxis("Joystick 6 Axis 9", PlayerSixIndex, buttons[5].tankBackLeft, buttons[5].tankFrontLeft, true);
-        axes[5].tankRightAxis = InputControl.setAxis("Joystick 6 Axis 10", PlayerSixIndex, buttons[5].tankFrontRight, buttons[5].tankBackRight, true);
+        axes[5].tankLeftAxes = InputControl.setAxis("Joystick 6 Axis 9", PlayerSixIndex, buttons[5].tankBackLeft, buttons[5].tankFrontLeft, true);
+        axes[5].tankRightAxes = InputControl.setAxis("Joystick 6 Axis 10", PlayerSixIndex, buttons[5].tankFrontRight, buttons[5].tankBackRight, true);
+
+        //Set PWM Axes
+        axes[5].pwm2Axes = InputControl.setAxis("6: PWM 2 Axis 3", PlayerOneIndex, buttons[5].pwm2Neg, buttons[5].pwm2Plus, true);
+        axes[5].pwm3Axes = InputControl.setAxis("6: PWM 3 Axis 5", PlayerOneIndex, buttons[5].pwm3Neg, buttons[5].pwm3Plus, true);
+        axes[5].pwm4Axes = InputControl.setAxis("6: PWM 4 Axis 6", PlayerOneIndex, buttons[5].pwm4Neg, buttons[5].pwm4Plus, true);
+        axes[5].pwm5Axes = InputControl.setAxis("6: PWM 5 Axis 7", PlayerOneIndex, buttons[5].pwm5Neg, buttons[5].pwm5Plus, true);
+        axes[5].pwm6Axes = InputControl.setAxis("6: PWM 6 Axis 8", PlayerOneIndex, buttons[5].pwm6Neg, buttons[5].pwm6Plus, true);
         #endregion
     }
 }

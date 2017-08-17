@@ -79,7 +79,7 @@
             this.descriptionLabel.AutoSize = true;
             this.descriptionLabel.Location = new System.Drawing.Point(12, 180);
             this.descriptionLabel.Name = "descriptionLabel";
-            this.descriptionLabel.Size = new System.Drawing.Size(133, 17);
+            this.descriptionLabel.Size = new System.Drawing.Size(100, 13);
             this.descriptionLabel.TabIndex = 4;
             this.descriptionLabel.Text = "Steps to reproduce:";
             // 
@@ -87,7 +87,7 @@
             // 
             this.emailTextBox.Location = new System.Drawing.Point(12, 395);
             this.emailTextBox.Name = "emailTextBox";
-            this.emailTextBox.Size = new System.Drawing.Size(342, 22);
+            this.emailTextBox.Size = new System.Drawing.Size(342, 20);
             this.emailTextBox.TabIndex = 5;
             // 
             // emailLabel
@@ -95,7 +95,7 @@
             this.emailLabel.AutoSize = true;
             this.emailLabel.Location = new System.Drawing.Point(9, 375);
             this.emailLabel.Name = "emailLabel";
-            this.emailLabel.Size = new System.Drawing.Size(134, 17);
+            this.emailLabel.Size = new System.Drawing.Size(99, 13);
             this.emailLabel.TabIndex = 6;
             this.emailLabel.Text = "Your email address:";
             // 
