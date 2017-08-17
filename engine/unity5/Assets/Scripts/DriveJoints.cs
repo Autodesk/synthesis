@@ -178,10 +178,8 @@ public class DriveJoints
     }
     public static void UpdateAllMotors(RigidNode_Base skeleton, UnityPacket.OutputStatePacket.DIOModule[] dioModules, int controlIndex, bool mecanum)
     {
-        
-
         bool IsMecanum = mecanum;
-        int reverse = -1;
+        int reverse = 1;
 
         float[] pwm;
         float[] can;
@@ -199,14 +197,23 @@ public class DriveJoints
 
         if (IsMecanum)
         {
+            
             #region Mecanum Drive
             pwm[(int)MecanumPorts.FRONT_RIGHT] +=
             (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? reverse * SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
             (Input.GetKey(KeyCode.O) ? reverse * SPEED_ARROW_PWM : 0.0f) + //Left Rotate
             (Input.GetKey(KeyCode.P) ? reverse * -SPEED_ARROW_PWM : 0.0f); //Right Rotate
+
+            if (Input.GetKey(KeyCode.O))
+            {
+                Debug.Log("O down" + pwm[(int)MecanumPorts.FRONT_RIGHT]);
+            } else
+            {
+                Debug.Log("not o");
+            }
 
             pwm[(int)MecanumPorts.BACK_LEFT] +=
             (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? SPEED_ARROW_PWM : 0.0f) +
@@ -227,8 +234,8 @@ public class DriveJoints
             pwm[(int)MecanumPorts.BACK_RIGHT] +=
             (InputControl.GetButton(Controls.buttons[controlIndex].forward) ? reverse * SPEED_ARROW_PWM : 0.0f) +
             (InputControl.GetButton(Controls.buttons[controlIndex].backward) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * SPEED_ARROW_PWM : 0.0f) +
-            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].left) ? reverse * -SPEED_ARROW_PWM : 0.0f) +
+            (InputControl.GetButton(Controls.buttons[controlIndex].right) ? reverse * SPEED_ARROW_PWM : 0.0f) +
             (Input.GetKey(KeyCode.O) ? reverse * SPEED_ARROW_PWM : 0.0f) + //Left Rotate
             (Input.GetKey(KeyCode.P) ? reverse * -SPEED_ARROW_PWM : 0.0f); //Right Rotate
             #endregion
